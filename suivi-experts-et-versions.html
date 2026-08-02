@@ -265,6 +265,30 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .dedup .actions{display:flex;gap:6px}
 .dedup .accept{padding:6px 14px;border-radius:6px;background:var(--ok);color:#fff;font-weight:600;font-size:12px}
 .dedup .reject{padding:6px 12px;border-radius:6px;border:1px solid var(--line-2);color:var(--text-2);font-size:12px}
+/* T7 — manager's outbound batch */
+.qa-batch{border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:16px;background:var(--panel-2)}
+.qa-batch-h{font-size:12px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.qa-batch-n{font-size:10.5px;font-weight:700;background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:1px 8px}
+.qa-batch-empty{font-size:12px;color:var(--text-3);font-style:italic}
+.qa-batch-list{display:flex;flex-direction:column;gap:6px}
+.qa-batch-item{display:flex;align-items:center;gap:10px;font-size:11.5px;padding:7px 9px;border-radius:7px;background:var(--panel)}
+.qa-batch-q{flex:1;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qa-batch-src{color:var(--text-3);white-space:nowrap;font-size:10.5px}
+.qa-batch-st{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--accent);white-space:nowrap}
+.qa-batch-st.orphan{color:var(--text-3)}
+/* T8 — inbound dossier + matching result */
+.qa-upload{border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:16px;background:var(--panel-2)}
+.qa-upload-h{font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px}
+.qa-upload-t{font-size:11.5px;color:var(--text-3);line-height:1.5;margin-bottom:10px}
+.qa-upload-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qa-match{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.qa-match-h{font-size:12px;font-weight:700;color:var(--ok);margin-bottom:8px}
+.qa-match-row{display:flex;align-items:center;gap:10px;font-size:11.5px;padding:6px 0;color:var(--text-2)}
+.qa-match-ok{color:var(--ok);font-weight:600;margin-left:auto}
+.qa-match-warn{color:var(--warn);font-weight:600;margin-left:auto}
+/* Q&A card additions — branch link + blocking flag on a raised question */
+.qa-branch{font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
+.qa-blocking{font-size:10px;font-weight:700;color:var(--warn)}
 
 /* ---------- Right panel ---------- */
 .settings{width:330px;flex-shrink:0;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line)}
@@ -569,8 +593,8 @@ const REQS=[
   {id:"EXG-008",sec:"4. Security requirements",type:"Security",
    text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"cyber",status:"answered",compliance:"compliant",age:8,
-      resp:{note:"MFA enforced through the corporate IdP for all privileged profiles.",att:0,date:"Jul 13"}},
+     {typology:"sig",manager:"m_sig",expert:"cyber",status:"awaiting_qa",compliance:null,age:5,qaRef:"QA-04",
+      qaNote:"MFA is enforced through the corporate IdP, but I need to know whether TLS 1.3 is mandatory on gateways already deployed on existing sites before I can commit."},
    ]},
   {id:"EXG-009",sec:"4. Security requirements",type:"Security",
    text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years.",
@@ -581,19 +605,38 @@ const REQS=[
   {id:"EXG-010",sec:"4. Security requirements",type:"Security",
    text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"cyber",status:"answered",compliance:"compliant",age:8,
-      resp:{note:"TLS 1.3 supported end-to-end on new deployments; see open question regarding legacy gateways.",att:0,date:"Jul 13"}},
+     {typology:"sig",manager:"m_sig",expert:"cyber",status:"awaiting_qa",compliance:null,age:4,qaRef:"QA-03",
+      qaNote:"TLS 1.3 is supported end-to-end on new deployments, but I cannot commit until the issuer states which TLS version applies to legacy site gateways."},
    ]},
 ];
 const OVERDUE_DAYS=5;
+/* T7 — a question is a first-class object: raised by one expert, bound to exactly one
+   branch (reqId + typology), and that branch sits in `awaiting_qa` until an answer lands. */
 let QA=[
-  {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",reqs:["EXG-006"],from:"Karim Benali",date:"Jul 14"},
-  {id:"QA-02",st:"internal",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",reqs:["EXG-009"],from:"Claire Moreau",date:"Jul 15"},
-  {id:"QA-03",st:"draft",q:"Which TLS version applies to legacy site gateways?",reqs:["EXG-010"],from:"Claire Moreau",date:"Jul 16",dup:"QA-04"},
-  {id:"QA-04",st:"draft",q:"Is TLS 1.3 mandatory for gateways already deployed on existing sites?",reqs:["EXG-008"],from:"Karim Benali",date:"Jul 16",dup:"QA-03"},
-  {id:"QA-05",st:"answered",q:"Does the escalation matrix referenced in the alerting requirement come from the issuer or the contractor?",reqs:["EXG-003"],from:"Sophie Lang",date:"Jul 10",
+  {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",
+   reqs:["EXG-006"],branch:{req:"EXG-006",typology:"mln"},expert:"infra",from:"Karim Benali",date:"Jul 14"},
+  {id:"QA-02",st:"internal",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
+   reqs:["EXG-009"],branch:{req:"EXG-009",typology:"mln"},expert:"cyber",from:"Claire Moreau",date:"Jul 15"},
+  {id:"QA-03",st:"draft",q:"Which TLS version applies to legacy site gateways?",
+   reqs:["EXG-010"],branch:{req:"EXG-010",typology:"sig"},expert:"cyber",from:"Claire Moreau",date:"Jul 16",dup:"QA-04"},
+  {id:"QA-04",st:"draft",q:"Is TLS 1.3 mandatory for gateways already deployed on existing sites?",
+   reqs:["EXG-008"],branch:{req:"EXG-008",typology:"sig"},expert:"cyber",from:"Claire Moreau",date:"Jul 16",dup:"QA-03"},
+  {id:"QA-05",st:"answered",q:"Does the escalation matrix referenced in the alerting requirement come from the issuer or the contractor?",
+   reqs:["EXG-003"],branch:{req:"EXG-003",typology:"sig"},expert:"sup",from:"Sophie Lang",date:"Jul 10",
    ans:"The escalation matrix will be provided by the issuer at contract award (Annex F).",ansDate:"Jul 13"},
 ];
+/* resolve a question back to the branch(es) it blocks — usually one, but a merged
+   question (T7 dedup) can cover several via extraBranches; keep this the single
+   place that walks that link so no call site can forget the merged case */
+function branchRefsOfQ(q){ return [q.branch,...(q.extraBranches||[])].filter(Boolean); }
+function branchesOfQ(q){
+  return branchRefsOfQ(q).map(ref=>{
+    const r=findR(ref.req); return r&&r.branches.find(b=>b.typology===ref.typology);
+  }).filter(Boolean);
+}
+function branchOfQ(q){ return branchesOfQ(q)[0]||null; } // single-branch convenience (display only)
+const questionsToSend=()=>QA.filter(q=>q.st==="draft"||q.st==="internal");
+const questionsSent=()=>QA.filter(q=>q.st==="sent");
 const VERSIONS=[
   {num:"v2.1",state:"reviewing",date:"Jul 16, 2026",note:"Addendum n°2 — alerting threshold revision",gap:{a:1,m:2,r:1},prog:"2/4 changes reviewed"},
   {num:"v2.0",state:"integrated",date:"May 28, 2026",note:"Consolidated issue after pre-tender meeting",gap:{a:6,m:9,r:2}},
@@ -631,6 +674,8 @@ function consolidate(r){
   return {compliance:worst,pending:false,blocking:null,remaining:0};
 }
 const isConsolidated=r=>!consolidate(r).pending;
+/* experts available for (re)allocation — same pool everywhere */
+const ALLOC_EXPERTS=()=>EXPERTS;
 
 /* =====================================================
    TOASTS
@@ -830,8 +875,34 @@ function qaGroups(){ return [["draft","Draft"],["internal","Internal review"],["
 function renderQA(){
   const v=document.getElementById("view-qa");
   const dupPair=QA.filter(q=>q.dup&&QA.find(x=>x.id===q.dup));
-  let html=`<div class="view-head"><h2>Q&amp;A register</h2><span class="sub">${QA.length} questions · duplicates are merged before submission</span>
-    <button class="btn-primary" style="margin-left:auto" id="send-batch">Send batch to issuer</button></div>`;
+  const toSend=questionsToSend(), sent=questionsSent();
+  let html=`<div class="view-head"><h2>Q&amp;A register</h2><span class="sub">${QA.length} questions · one question blocks exactly one assignment</span>
+    <button class="btn-primary" style="margin-left:auto" id="send-batch">Send batch to issuer${toSend.length?` (${toSend.length})`:""}</button></div>`;
+  // T7 — the manager's batch: everything raised by experts and not yet with the issuer
+  html+=`<div class="qa-batch">
+    <div class="qa-batch-h">📤 Questions to send <span class="qa-batch-n">${toSend.length}</span></div>
+    ${toSend.length
+      ? `<div class="qa-batch-list">${toSend.map(q=>{
+          const brs=branchesOfQ(q), e=q.expert?expOf(q.expert):null;
+          const refs=branchRefsOfQ(q).map(ref=>`${ref.req} · ${TY(ref.typology).label}`).join(", ");
+          return `<div class="qa-batch-item">
+            <span class="qa-id">${q.id}</span>
+            <span class="qa-batch-q">${esc(q.q)}</span>
+            <span class="qa-batch-src">${refs||"—"}${e?` · ${e.name.split(" ")[0]}`:""}</span>
+            <span class="qa-batch-st ${brs.length?"":"orphan"}">${brs.length?`blocking${brs.length>1?` ×${brs.length}`:""}`:"unlinked"}</span>
+          </div>`;}).join("")}</div>`
+      : `<div class="qa-batch-empty">Nothing waiting — every raised question is already with the issuer.</div>`}
+  </div>`;
+  // T8 — one dossier, all answers, matched back onto the blocked branches
+  html+=`<div class="qa-upload">
+    <div class="qa-upload-h">📥 Issuer answer dossier</div>
+    <div class="qa-upload-t">The issuer replies to every company in a single document. Upload it once — answers are matched back to the questions that are blocking your assignments.</div>
+    <div class="qa-upload-row">
+      <span class="attach">📎 issuer-QA-responses-batch1.pdf</span>
+      <button class="cta blue" id="qa-upload-btn" style="margin:0;width:auto" ${sent.length?"":"disabled"}>Upload &amp; match${sent.length?` (${sent.length} sent)`:" — nothing sent yet"}</button>
+    </div>
+    <div id="qa-match-out"></div>
+  </div>`;
   if(dupPair.length>=2){
     const[a,b]=dupPair;
     html+=`<div class="dedup"><div class="ia-head">✦ AI — possible duplicate detected</div>
@@ -843,8 +914,13 @@ function renderQA(){
     if(!items.length)return;
     html+=`<div class="qa-group"><div class="qa-group-head">${label} <span style="color:var(--text-2)">· ${items.length}</span></div>`;
     items.forEach(q=>{
-      html+=`<div class="qa-card"><div class="qa-top"><span class="qa-id">${q.id}</span><span class="qa-q">${q.q}</span></div>
-        <div class="qa-meta">${q.reqs.map(r=>`<span class="qa-req">${r}</span>`).join("")}<span>raised by ${q.from} · ${q.date}</span></div>
+      const stillBlocking=branchesOfQ(q).filter(b=>b.status==="awaiting_qa");
+      const refs=branchRefsOfQ(q);
+      html+=`<div class="qa-card"><div class="qa-top"><span class="qa-id">${q.id}</span><span class="qa-q">${esc(q.q)}</span></div>
+        <div class="qa-meta">${q.reqs.map(r=>`<span class="qa-req">${r}</span>`).join("")}
+          ${refs.map(ref=>`<span class="qa-branch">⑂ ${TY(ref.typology).label}</span>`).join("")}
+          <span>raised by ${q.from} · ${q.date}</span>
+          ${stillBlocking.length?`<span class="qa-blocking">blocking ${stillBlocking.length>1?`${stillBlocking.length} assignments`:"this assignment"}</span>`:""}</div>
         ${q.ans?`<div class="qa-ans"><b>Issuer answer · ${q.ansDate}</b>${esc(q.ans)}</div>`:""}</div>`;
     });
     html+=`</div>`;
@@ -854,15 +930,54 @@ function renderQA(){
     const[a,b]=QA.filter(q=>q.dup);
     a.q="Please confirm which TLS version applies to legacy gateways already deployed on existing sites (TLS 1.3 mandatory or grandfathering allowed?).";
     a.reqs=[...new Set([...a.reqs,...b.reqs])];a.st="internal";delete a.dup;
+    // the merged-away question was blocking its own branch — carry that link over, otherwise
+    // that assignment would stay in awaiting_qa forever with no question to unblock it
+    if(b.branch){ a.extraBranches=[...(a.extraBranches||[]),b.branch]; }
+    // repoint the orphaned branch at the surviving question
+    const ob=branchOfQ(b); if(ob&&ob.status==="awaiting_qa") ob.qaRef=a.id;
     QA=QA.filter(q=>q.id!==b.id);
-    toast("Questions merged — moved to Internal review with both requirement links","ok");refreshAll();
+    toast("Questions merged — one question now covers both assignments","ok");refreshAll();
   });
   v.querySelector("#merge-no")?.addEventListener("click",()=>{QA.forEach(q=>delete q.dup);toast("Kept as separate questions","ok");refreshAll();});
   v.querySelector("#send-batch")?.addEventListener("click",()=>{
-    const n=QA.filter(q=>q.st==="internal").length;
-    if(!n){toast("No question in Internal review — nothing to send","warn");return;}
-    QA.forEach(q=>{if(q.st==="internal")q.st="sent";});
-    toast(`Batch of ${n} question${n>1?"s":""} sent to the issuer — record answers in Versions & exchanges`,"ok");refreshAll();
+    const batch=questionsToSend();
+    if(!batch.length){toast("Nothing waiting — every raised question is already with the issuer","warn");return;}
+    batch.forEach(q=>{q.st="sent";q.sentDate="Today";});
+    toast(`Batch of ${batch.length} question${batch.length>1?"s":""} sent to the issuer`,"ok");refreshAll();
+  });
+  /* T8 — one dossier in, answers matched onto the blocked branches.
+     Matching is SIMULATED: every question already with the issuer is treated as answered.
+     A matched branch goes back to the EXPERT (awaiting_answer) — the issuer's reply is not
+     itself an answer to the requirement. One round; a second would work the same way. */
+  v.querySelector("#qa-upload-btn")?.addEventListener("click",()=>{
+    const sentQs=questionsSent();
+    if(!sentQs.length){toast("No question is with the issuer yet","warn");return;}
+    const matched=[],unmatched=[];
+    sentQs.forEach(q=>{
+      const refs=branchRefsOfQ(q);
+      q.st="answered"; q.ans=q.ans||"Issuer response recorded from the batch dossier."; q.ansDate="Today";
+      let any=false;
+      refs.forEach(ref=>{
+        const r=findR(ref.req), br=r&&r.branches.find(b=>b.typology===ref.typology);
+        if(br&&br.status==="awaiting_qa"){
+          br.status="awaiting_answer"; br.age=0; br.qaNote=null; br.unblockedAt="Today";
+          matched.push({q,br,reqId:ref.req}); any=true;
+        }
+      });
+      if(!any) unmatched.push(q);
+    });
+    state.uploaded=true;
+    const out=document.getElementById("qa-match-out");
+    if(out) out.innerHTML=`<div class="qa-match">
+      <div class="qa-match-h">✓ Matched ${matched.length} assignment${matched.length!==1?"s":""} from ${sentQs.length} question${sentQs.length!==1?"s":""}</div>
+      ${matched.map(({q,br})=>`<div class="qa-match-row"><span class="qa-id">${q.id}</span>
+        <span>→ ${br.reqId||findR_forBranch(br)} · ${TY(br.typology).label}</span>
+        <span class="qa-match-ok">unblocked → awaiting answer</span></div>`).join("")}
+      ${unmatched.map(q=>`<div class="qa-match-row"><span class="qa-id">${q.id}</span>
+        <span class="qa-match-warn">no blocked assignment to unblock — confirm manually</span></div>`).join("")}
+    </div>`;
+    toast(`${matched.length} assignment${matched.length>1?"s":""} unblocked — back to the experts`,"ok");
+    refreshAll();
   });
   document.getElementById("qa-count").textContent=QA.length;
 }
@@ -934,11 +1049,25 @@ function renderPanel2(){
         <button class="cta line" id="a-goqa">→ Open the Q&amp;A register</button>`;
       b.querySelector("#a-goqa").addEventListener("click",()=>{setView("qa");});
     }else if(br.status==="reassignment_needed"){
+      // T5 — internal loop: the manager reallocates, the branch goes back out to an expert.
+      // Nothing leaves the company here (contrast with the Q&A loop above).
       b.innerHTML=whoBlock+`
         <div class="reassign-block"><div class="reassign-h">↩ Returned by the expert</div>
           <div class="reassign-t">${esc(br.reassignComment||"The expert judged this allocation wrong and returned it.")}</div></div>
-        <div class="fval" style="font-size:11.5px;color:var(--text-3);margin-bottom:12px">This is an internal action — it stays inside the company and comes back to you as the manager.</div>
-        <button class="cta line" disabled style="cursor:default">Reassignment handling — ticket T5</button>`;
+        <div class="fval" style="font-size:11.5px;color:var(--text-3);margin-bottom:12px">Internal action — this stays inside the company and comes back to you as the manager.</div>
+        <div class="field"><label>Reallocate to</label>
+          <select id="ra-mgr">${['<option value="">— Branch manager —</option>'].concat(MANAGERS.map(x=>`<option value="${x.id}" ${br.manager===x.id?"selected":""}>${x.name} — ${x.role}</option>`)).join("")}</select></div>
+        <div class="field"><label>Expert</label>
+          <select id="ra-exp">${['<option value="">— Expert —</option>'].concat(ALLOC_EXPERTS().map(x=>`<option value="${x.id}" ${br.expert===x.id?"selected":""}>${x.name} — ${x.team}</option>`)).join("")}</select></div>
+        <button class="cta ok" id="a-reassign">↪ Reassign and send back out</button>`;
+      b.querySelector("#a-reassign").addEventListener("click",()=>{
+        const nm=b.querySelector("#ra-mgr").value||null, nx=b.querySelector("#ra-exp").value||null;
+        if(!nx){ toast("Pick an expert before reassigning","warn"); return; }
+        br.manager=nm; br.expert=nx; br.status="awaiting_answer"; br.age=0;
+        br.reassignComment=null; br.reassignedAt="Today";
+        toast(`${r.id} · ${TY(br.typology).label} reassigned to ${expOf(nx).name} — awaiting answer`,"ok");
+        refreshAll();
+      });
     }else{
       b.innerHTML=whoBlock+`
         <div class="field"><label>Waiting</label>
