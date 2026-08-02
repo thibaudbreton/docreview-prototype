@@ -144,6 +144,12 @@ header{display:flex;align-items:center;gap:14px;height:52px;padding:0 16px;backg
 .exp-meta{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-3)}
 .exp-meta b{color:var(--text-2)}
 .exp-silence{color:var(--warn);font-weight:600}
+.exp-counts{display:flex;gap:8px;margin:8px 0 4px;flex-wrap:wrap}
+.ec{font-size:10px;font-weight:600;padding:2px 7px;border-radius:9px;white-space:nowrap}
+.ec-ok{background:var(--ok-soft);color:var(--ok)}
+.ec-wait{background:var(--panel-3);color:var(--text-2)}
+.ec-blocked{background:var(--accent-soft);color:var(--accent)}
+.exp-remind:disabled{opacity:.4;cursor:default}
 
 /* ---------- Center ---------- */
 .center{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
@@ -289,6 +295,31 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 /* Q&A card additions — branch link + blocking flag on a raised question */
 .qa-branch{font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
 .qa-blocking{font-size:10px;font-weight:700;color:var(--warn)}
+/* T9/T10 — toolbar + "what needs you now" banner, above the tracking list */
+.needs-you{margin-bottom:12px}
+.ny-empty{font-size:12px;color:var(--text-3);font-style:italic;padding:9px 12px;border:1px dashed var(--line-2);border-radius:8px}
+.ny-head{font-size:11px;font-weight:700;letter-spacing:.3px;color:var(--text-2);margin-bottom:7px}
+.ny-row{display:flex;gap:8px;flex-wrap:wrap}
+.ny-pill{font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;border:1px solid transparent}
+.ny-pill.ny-warn{background:var(--warn-soft);color:var(--warn);border-color:rgba(224,164,60,.3)}
+.ny-pill.ny-accent{background:var(--accent-soft);color:var(--accent);border-color:rgba(110,123,242,.3)}
+.ny-pill.ny-ok{background:var(--ok-soft);color:var(--ok);border-color:rgba(63,178,127,.3)}
+.f10-tools{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.f10-tools input{flex:1;min-width:160px;font-size:12px;padding:7px 10px;border-radius:7px;border:1px solid var(--line-2);background:var(--panel);color:var(--text)}
+.f10-tools select{font-size:12px;padding:7px 9px;border-radius:7px;border:1px solid var(--line-2);background:var(--panel);color:var(--text-2)}
+.f10-needsme{font-size:12px;font-weight:600;padding:7px 12px;border-radius:7px;border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);white-space:nowrap}
+.f10-needsme.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+/* T12 — export readiness banner */
+.export-ready{margin-bottom:12px}
+.xr-ready,.xr-pending{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:8px;font-size:12.5px}
+.xr-ready{background:var(--ok-soft);border:1px solid rgba(63,178,127,.3)}
+.xr-ready .xr-ico{color:var(--ok);font-weight:700;font-size:15px}
+.xr-ready .xr-t{color:var(--text-2)}
+.xr-ready .xr-t b{color:var(--ok)}
+.xr-btn{margin-left:auto;font-size:12px;font-weight:600;padding:6px 13px;border-radius:6px;background:var(--ok);color:#fff;white-space:nowrap}
+.xr-pending{background:var(--panel-2);border:1px solid var(--line)}
+.xr-pending .xr-ico{color:var(--text-3);font-size:15px}
+.xr-pending .xr-t{color:var(--text-3)}
 
 /* ---------- Right panel ---------- */
 .settings{width:330px;flex-shrink:0;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line)}
@@ -450,6 +481,20 @@ textarea.resp-in:focus{border-color:var(--accent)}
       <section class="center">
         <div class="view view-pad on" id="view-table">
           <div class="view-head"><h2>Expert qualification tracking</h2><span class="sub" id="table-sub"></span></div>
+          <div class="export-ready" id="export-ready"></div>
+          <div class="needs-you" id="needs-you"></div>
+          <div class="f10-tools">
+            <input id="f10-search" placeholder="Search requirement ref or text…" autocomplete="off">
+            <select id="f10-expert"><option value="">All experts</option></select>
+            <select id="f10-typo"><option value="">All typologies</option></select>
+            <select id="f10-sort">
+              <option value="action">Sort: action needed first</option>
+              <option value="status">Sort: status</option>
+              <option value="expert">Sort: expert</option>
+              <option value="req">Sort: requirement ref</option>
+            </select>
+            <button class="f10-needsme" id="f10-needsme">⚡ Needs my action</button>
+          </div>
           <table class="grid"><thead><tr>
             <th style="width:70px">ID</th><th>Requirement / assignment</th><th style="width:160px">Expert</th>
             <th style="width:190px">Status</th><th style="width:160px">Compliance</th><th style="width:70px">Age</th>
@@ -642,7 +687,8 @@ const VERSIONS=[
   {num:"v2.0",state:"integrated",date:"May 28, 2026",note:"Consolidated issue after pre-tender meeting",gap:{a:6,m:9,r:2}},
   {num:"v1.0",state:"integrated",date:"Mar 3, 2026",note:"Initial AO release",gap:null},
 ];
-const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:null,tab:"response",htab:"versions",selQ:null,uploaded:false};
+const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:null,tab:"response",htab:"versions",selQ:null,uploaded:false,
+  search:"",sortBy:"action",fExpert:"",fTypo:"",needsMe:false};
 
 const expOf=id=>EXPERTS.find(e=>e.id===id);
 const mgrOf=id=>MANAGERS.find(m=>m.id===id);
@@ -692,17 +738,32 @@ function toast(msg,kind="ok"){
    FILTERS
 ===================================================== */
 /* a branch passes the active filter… */
+/* T9 — "needs my action": the manager to-dos a branch can carry (reassignment requests,
+   or an assignment the issuer just unblocked that's now waiting on the expert again) */
+const needsMyAction=b=>needsReassign(b)||!!(b.unblockedAt&&b.status==="awaiting_answer");
 function passesB(b){
   if(state.filter==="answered")return isAnswered(b);
   if(state.filter==="await")return isAwaitingAnswer(b);
   if(state.filter==="qa")return isAwaitingQA(b);
   if(state.filter==="reassign")return needsReassign(b);
   if(state.filter==="over")return isOverB(b);
+  if(state.fExpert&&b.expert!==state.fExpert)return false;
+  if(state.fTypo&&b.typology!==state.fTypo)return false;
+  if(state.needsMe&&!needsMyAction(b))return false;
   return true;
 }
-/* …and a requirement passes when at least one of its branches does (the "out" filter is
-   requirement-level: the whole requirement was answered against a superseded version) */
+/* T10 — search matches the requirement itself or any of its branches (typology/expert) */
+function matchesSearch(r){
+  if(!state.search)return true;
+  const q=state.search.toLowerCase();
+  if(r.id.toLowerCase().includes(q)||r.text.toLowerCase().includes(q))return true;
+  return (r.branches||[]).some(b=>TY(b.typology).label.toLowerCase().includes(q)||(b.expert&&expOf(b.expert).name.toLowerCase().includes(q)));
+}
+/* …and a requirement passes when it matches the search AND at least one of its branches
+   passes the status/expert/typology/needs-me filters (the "out" filter is requirement-level:
+   the whole requirement was answered against a superseded version) */
 function passes(r){
+  if(!matchesSearch(r))return false;
   if(state.filter==="out")return !!r.outdated;
   return (r.branches||[]).some(passesB);
 }
@@ -728,9 +789,12 @@ function renderNav2(){
   }else{
     // by expert — counts are per BRANCH now (an expert holds branches, not requirements)
     EXPERTS.forEach(e=>{
+      // T11 — per-expert progress broken into the three states a manager needs to
+      // tell apart: answered, pending (with the expert), blocked (with the issuer)
       const mine=allBranches().filter(b=>b.expert===e.id);
       const done=mine.filter(isAnswered).length;
-      const pending=mine.filter(b=>isAwaitingAnswer(b)||isAwaitingQA(b)).length;
+      const pending=mine.filter(isAwaitingAnswer).length;
+      const blocked=mine.filter(isAwaitingQA).length;
       const over=mine.filter(isOverB).length;
       const silence=Math.max(0,...mine.filter(isAwaitingAnswer).map(b=>b.age));
       const card=document.createElement("div");
@@ -739,11 +803,16 @@ function renderNav2(){
         <div class="exp-top">
           <div class="exp-avatar" style="background:${e.color}">${e.init}</div>
           <div><div class="exp-name">${e.name}</div><div class="exp-team">${e.team}</div></div>
-          <button class="exp-remind" data-remind="${e.id}">🔔 Remind</button>
+          <button class="exp-remind" data-remind="${e.id}" ${pending?"":"disabled"}>🔔 Remind</button>
         </div>
         <div class="exp-bar"><div style="width:${mine.length?done/mine.length*100:0}%"></div></div>
-        <div class="exp-meta"><span><b>${done}/${mine.length}</b> answered</span>
-          <span>${over?`<span class="exp-silence">${over} overdue · silent ${silence} d</span>`:pending?`${pending} pending`:mine.length?"all done ✓":"no assignment"}</span></div>`;
+        <div class="exp-counts">
+          <span class="ec ec-ok">${done} answered</span>
+          <span class="ec ec-wait">${pending} pending</span>
+          <span class="ec ec-blocked">${blocked} blocked</span>
+        </div>
+        <div class="exp-meta"><span></span>
+          <span>${over?`<span class="exp-silence">${over} overdue · silent ${silence} d</span>`:mine.length?(done===mine.length?"all done ✓":""):"no assignment"}</span></div>`;
       card.addEventListener("click",ev=>{
         if(ev.target.closest("[data-remind]"))return;
         const first=mine.find(b=>passes(b.req))||mine[0];
@@ -772,7 +841,17 @@ function actionScore(r){
   if(!isConsolidated(r))return 4;
   return 5;
 }
-function tableRows(){ return REQS.filter(passes).sort((a,b)=>actionScore(a)-actionScore(b)); }
+/* T10 — sort options. "action" is the default (reassignments/Q&A/overdue first); the
+   others are plain manager conveniences layered on top of the same filtered set. */
+function statusScore(r){ const st=r.branches.map(b=>b.status); return BLOCK_PRIORITY.findIndex(s=>st.includes(s))+ (st.includes("answered")?0:100); }
+function firstExpertName(r){ const b=r.branches.find(x=>x.expert); return b?expOf(b.expert).name:"~"; }
+function tableRows(){
+  const rows=REQS.filter(passes);
+  if(state.sortBy==="status") return rows.sort((a,b)=>statusScore(a)-statusScore(b)||a.id.localeCompare(b.id));
+  if(state.sortBy==="expert") return rows.sort((a,b)=>firstExpertName(a).localeCompare(firstExpertName(b))||a.id.localeCompare(b.id));
+  if(state.sortBy==="req") return rows.sort((a,b)=>a.id.localeCompare(b.id));
+  return rows.sort((a,b)=>actionScore(a)-actionScore(b)||a.id.localeCompare(b.id));
+}
 /* consolidated verdict cell — pending must never read as a decided verdict */
 function consolidatedCellHTML(c){
   if(c.pending) return `<span class="vpill none pending-pill">Pending${c.remaining>1?` · ${c.remaining} branches`:""}</span>`;
@@ -782,6 +861,42 @@ function branchWhoHTML(b){
   const e=b.expert?expOf(b.expert):null;
   if(!e) return `<span class="exp-mini none">— no expert —</span>`;
   return `<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name.split(" ")[0]}</span>`;
+}
+/* T12 — consolidation & export readiness: the follow-up screen's end state is a
+   client-ready compliance matrix, so make that state explicit rather than implied
+   by an empty to-do list. Links straight into the existing modular export. */
+function renderExportReady(){
+  const el=document.getElementById("export-ready"); if(!el) return;
+  const consolidated=REQS.filter(isConsolidated).length, total=REQS.length;
+  if(consolidated===total){
+    el.innerHTML=`<div class="xr-ready"><span class="xr-ico">✓</span>
+      <span class="xr-t"><b>Compliance matrix complete</b> — all ${total} requirements consolidated, ready for the client export.</span>
+      <button class="xr-btn" id="xr-go">Go to export →</button></div>`;
+    el.querySelector("#xr-go").addEventListener("click",()=>document.getElementById("export2-btn").click());
+  }else{
+    const remaining=total-consolidated;
+    el.innerHTML=`<div class="xr-pending"><span class="xr-ico">◔</span>
+      <span class="xr-t">${remaining} of ${total} requirement${total>1?"s":""} still pending consolidation before the compliance matrix is export-ready.</span></div>`;
+  }
+}
+/* T10 — "what needs you now": the three manager to-dos, gathered in one glance
+   regardless of what the list below is currently filtered/sorted to. */
+function renderNeedsYou(){
+  const el=document.getElementById("needs-you"); if(!el) return;
+  const brs=allBranches();
+  const reassign=brs.filter(needsReassign);
+  const toSend=questionsToSend();
+  const justUnblocked=brs.filter(b=>b.unblockedAt==="Today"&&b.status==="awaiting_answer");
+  const total=reassign.length+toSend.length+justUnblocked.length;
+  if(!total){ el.innerHTML=`<div class="ny-empty">✓ Nothing needs you right now — every open item is with an expert or the issuer.</div>`; return; }
+  el.innerHTML=`<div class="ny-head">⚡ What needs you now</div><div class="ny-row">
+    ${reassign.length?`<button class="ny-pill ny-warn" id="ny-reassign">${reassign.length} reassignment${reassign.length>1?"s":""} to handle</button>`:""}
+    ${toSend.length?`<button class="ny-pill ny-accent" id="ny-tosend">${toSend.length} question${toSend.length>1?"s":""} ready to send</button>`:""}
+    ${justUnblocked.length?`<button class="ny-pill ny-ok" id="ny-unblocked">${justUnblocked.length} just unblocked by the issuer</button>`:""}
+  </div>`;
+  el.querySelector("#ny-reassign")?.addEventListener("click",()=>{state.filter="reassign";state.fExpert="";state.fTypo="";state.needsMe=false;refreshAll();});
+  el.querySelector("#ny-tosend")?.addEventListener("click",()=>{setView("qa");});
+  el.querySelector("#ny-unblocked")?.addEventListener("click",()=>{state.filter=null;state.needsMe=true;refreshAll();});
 }
 function renderTable2(){
   const body=document.getElementById("table2-body");body.innerHTML="";
@@ -809,7 +924,8 @@ function renderTable2(){
     body.appendChild(tr);
     // ---- child rows: one per branch ----
     r.branches.forEach((b,i)=>{
-      if(!passesB(b) && state.filter && state.filter!=="out") return;
+      const branchFilterActive=(state.filter&&state.filter!=="out")||state.fExpert||state.fTypo||state.needsMe;
+      if(!passesB(b) && branchFilterActive) return;
       const m=b.manager?mgrOf(b.manager):null;
       const br=document.createElement("tr");
       br.className="rrow branch-row"+(state.sel===r.id&&state.selBranch===i?" active":"");
@@ -1260,11 +1376,24 @@ function setView(v){
   document.getElementById("view-qa").classList.toggle("on",v==="qa");
 }
 function refreshAll(){
-  renderNav2();renderTable2();renderDoc2();renderQA();renderPanel2();renderTriage2();
+  renderNav2();renderTable2();renderDoc2();renderQA();renderPanel2();renderTriage2();renderNeedsYou();renderExportReady();
   if(state.screen===3){renderVersions();renderIssuer();}
 }
 document.querySelectorAll("#phase-nav [data-screen]").forEach(b=>b.addEventListener("click",()=>setScreen(+b.dataset.screen)));
 document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
+/* T9/T10 toolbar — populate the expert/typology selects once, then wire up live filtering */
+(function initF10(){
+  const expSel=document.getElementById("f10-expert"), tySel=document.getElementById("f10-typo");
+  EXPERTS.forEach(e=>expSel.insertAdjacentHTML("beforeend",`<option value="${e.id}">${e.name}</option>`));
+  [...new Set(allBranches().map(b=>b.typology))].forEach(t=>tySel.insertAdjacentHTML("beforeend",`<option value="${t}">${TY(t).label}</option>`));
+  document.getElementById("f10-search").addEventListener("input",e=>{state.search=e.target.value;renderTable2();});
+  expSel.addEventListener("change",e=>{state.fExpert=e.target.value;refreshAll();});
+  tySel.addEventListener("change",e=>{state.fTypo=e.target.value;refreshAll();});
+  document.getElementById("f10-sort").addEventListener("change",e=>{state.sortBy=e.target.value;renderTable2();});
+  document.getElementById("f10-needsme").addEventListener("click",function(){
+    state.needsMe=!state.needsMe;this.classList.toggle("on",state.needsMe);refreshAll();
+  });
+})();
 document.querySelectorAll(".nav-toggle button").forEach(b=>b.addEventListener("click",()=>{
   state.navBy=b.dataset.by;
   document.querySelectorAll(".nav-toggle button").forEach(x=>x.classList.toggle("on",x===b));
