@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocReview — STB-2026 · Dashboard & Configuration</title>
+<style>
+:root{
+  --bg:#0d0f14; --panel:#12151c; --panel-2:#171b24; --panel-3:#1d2230;
+  --line:#232937; --line-2:#2d3446;
+  --text:#e6e9f0; --text-2:#9aa3b5; --text-3:#66708a;
+  --accent:#6e7bf2; --accent-soft:rgba(110,123,242,.14);
+  --ia:#e0a43c; --ia-soft:rgba(224,164,60,.12);
+  --ok:#3fb27f; --ok-soft:rgba(63,178,127,.12);
+  --human:#a06ef2; --human-soft:rgba(160,110,242,.12);
+  --warn:#e5544b; --warn-soft:rgba(229,84,75,.12);
+  --paper:#fbfaf6; --paper-ink:#1d2129;
+  --radius:8px;
+  --font-ui:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+}
+
+html[data-theme="light"]{
+  --bg:#eef1f5;
+  --panel:#ffffff;
+  --panel-2:#f4f6f9;
+  --panel-3:#e9edf3;
+  --line:#e4e8ee;
+  --line-2:#d0d6df;
+  --text:#1a1e27;
+  --text-2:#525d72;
+  --text-3:#87909f;
+  --accent:#5562e6;
+  --accent-soft:rgba(85,98,230,.10);
+  --ia:#b9770f;
+  --ia-soft:rgba(185,119,15,.12);
+  --ok:#2f9d6b;
+  --ok-soft:rgba(47,157,107,.12);
+  --human:#8250dc;
+  --human-soft:rgba(130,80,220,.12);
+  --warn:#d23f38;
+  --warn-soft:rgba(210,63,56,.10);
+  --paper:#ffffff;
+  --paper-ink:#1d2129;
+  --paper-ink-2:#4a5162;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);font-size:13px;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:5px;border:2px solid var(--bg)}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+#app{display:flex;flex-direction:column;height:100vh}
+
+/* ---------- Header ---------- */
+header{display:flex;align-items:center;gap:14px;height:52px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;letter-spacing:-.2px;cursor:pointer}
+.logo-mark{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--accent),#4a55c4);display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff}
+.crumb{display:flex;align-items:center;gap:8px;color:var(--text-2);min-width:0}
+.crumb .sep{color:var(--text-3)}
+.crumb .crumb-home{color:var(--text-3);font-weight:500;transition:color .15s}
+.crumb .crumb-home:hover{color:var(--accent)}
+.crumb .project{color:var(--text);font-weight:600;white-space:nowrap}
+.screen-nav{display:flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:3px;margin-left:6px}
+.screen-nav .sn{padding:5px 12px;border-radius:6px;color:var(--text-2);font-weight:500;font-size:12px;transition:all .15s;cursor:pointer;white-space:nowrap}
+.screen-nav .sn:hover{color:var(--text)}
+.screen-nav .sn.on{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.hdr-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.icon-btn{position:relative;width:32px;height:32px;border-radius:var(--radius);display:grid;place-items:center;color:var(--text-2);transition:all .15s}
+.icon-btn:hover{background:var(--panel-3);color:var(--text)}
+.icon-btn.on{background:var(--accent-soft);color:var(--accent)}
+.badge-dot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--warn);border:2px solid var(--panel)}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#e0a43c,#c4763a);display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer}
+.btn-primary{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:var(--radius);background:var(--accent);color:#fff;font-weight:600;font-size:12.5px;transition:all .15s}
+.btn-primary:hover{background:#7d89ff;transform:translateY(-1px)}
+.btn-ghost{padding:6px 12px;border-radius:var(--radius);border:1px solid var(--line-2);color:var(--text-2);font-weight:500;font-size:12px;transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+
+.scroll{flex:1;overflow-y:auto}
+.wrap{max-width:1120px;margin:0 auto;padding:26px 24px 80px}
+
+/* ===================== DASHBOARD ===================== */
+.dash-hero{display:flex;align-items:flex-start;gap:20px;margin-bottom:26px}
+.hero-kicker{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text-3);margin-bottom:5px}
+.dash-hero h1{font-size:23px;font-weight:700;letter-spacing:-.4px}
+.dash-hero .meta{font-size:12.5px;color:var(--text-3);margin-top:7px;display:flex;gap:14px;flex-wrap:wrap}
+.dash-hero .meta b{color:var(--text-2)}
+.deadline{margin-left:auto;text-align:right;flex-shrink:0}
+.deadline .d-num{font-size:32px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1}
+.deadline .d-lbl{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.deadline.warn .d-num{color:var(--ia)}
+
+/* phase rail */
+.rail-label{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
+.rail-label span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3);opacity:.8}
+.phase-rail{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:26px}
+.phase{position:relative;display:flex;gap:13px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px;cursor:pointer;transition:all .15s;min-height:96px}
+.phase:hover{border-color:var(--accent);transform:translateY(-2px)}
+.ph-num{width:30px;height:30px;border-radius:9px;background:var(--panel-3);color:var(--text-3);display:grid;place-items:center;font-size:14px;font-weight:700;flex-shrink:0}
+.ph-num.transversal{font-size:15px}
+.phase.active-phase{border-color:var(--accent)}
+.phase.active-phase .ph-num{background:var(--accent);color:#fff}
+.phase.done-phase{border-color:rgba(63,178,127,.45)}
+.phase.done-phase .ph-num{background:var(--ok);color:#fff}
+.phase.locked{cursor:not-allowed;opacity:.6}
+.phase.locked:hover{transform:none;border-color:var(--line)}
+.ph-info{flex:1;min-width:0}
+.ph-name{font-size:14.5px;font-weight:600;letter-spacing:-.2px}
+.ph-stat{font-size:12px;color:var(--text-2);margin-top:8px;display:flex;align-items:baseline;gap:6px}
+.ph-stat .big{font-size:20px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.ph-bar{height:5px;border-radius:3px;background:var(--panel-3);margin-top:9px;overflow:hidden}
+.ph-bar>div{height:100%;border-radius:3px}
+.ph-sub{font-size:10.5px;color:var(--text-3);margin-top:8px;line-height:1.4}
+.ph-lock{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--text-3);margin-top:10px;line-height:1.4}
+.ph-lock svg{flex-shrink:0}
+.ph-badge{position:absolute;top:13px;right:14px;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.3px}
+.ph-badge.current{background:var(--accent-soft);color:var(--accent)}
+.ph-badge.done{background:var(--ok-soft);color:var(--ok)}
+.ph-badge.wait{background:var(--panel-3);color:var(--text-3)}
+.ph-open-btn{position:absolute;bottom:13px;right:14px;font-size:11px;font-weight:600;color:var(--accent);
+  display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:20px;border:1px solid var(--line-2);
+  background:var(--panel-2);transition:all .15s;pointer-events:none}
+.phase:hover .ph-open-btn{border-color:var(--accent);background:var(--accent-soft)}
+.phase.locked .ph-open-btn{display:none}
+.p2only.hidden,.p1only.hidden{display:none}
+
+/* main columns */
+.dash-main{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-bottom:16px;align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h3{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card h3 .count{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;background:var(--warn-soft);color:var(--warn)}
+.card h3 a{margin-left:auto;font-size:11.5px;color:var(--accent);font-weight:500}
+.att-card h3{font-size:14px}
+.health{display:flex;flex-direction:column;gap:16px}
+.locked-hint{font-size:11.5px;color:var(--text-3);line-height:1.55;background:var(--panel);border:1px dashed var(--line-2)}
+
+/* attention list */
+.att{display:flex;align-items:flex-start;gap:11px;padding:12px 10px;border-radius:9px;cursor:pointer;transition:background .12s;border-bottom:1px solid var(--line)}
+.att:last-child{border-bottom:none}
+.att:hover{background:var(--panel-2)}
+.att .att-ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:13px;flex-shrink:0;margin-top:1px}
+.att-ic.warn{background:var(--warn-soft);color:var(--warn)}
+.att-ic.ia{background:var(--ia-soft);color:var(--ia)}
+.att-ic.accent{background:var(--accent-soft);color:var(--accent)}
+.att .att-t{font-size:13px;line-height:1.45}
+.att .att-t b{font-weight:600}
+.att .att-sub{font-size:11px;color:var(--text-3);margin-top:3px;line-height:1.4}
+.att .att-go{margin-left:auto;font-size:11px;color:var(--accent);white-space:nowrap;align-self:center;opacity:0;transition:opacity .12s}
+.att:hover .att-go{opacity:1}
+
+/* health stats */
+.health-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hstat .hs-num{font-size:22px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.hstat .hs-slash{font-size:14px;color:var(--text-3);font-weight:600}
+.hstat .hs-lbl{font-size:11px;color:var(--text-3);margin-top:2px}
+
+/* compliance */
+.comp-bar{display:flex;height:24px;border-radius:7px;overflow:hidden;background:var(--panel-3);margin-bottom:12px}
+.comp-seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;transition:width .5s}
+.comp-seg.compliant{background:var(--ok)}
+.comp-seg.partial{background:var(--ia)}
+.comp-seg.non{background:var(--warn)}
+.comp-seg.pending{background:var(--line-2);color:var(--text-2)}
+.comp-legend{display:flex;flex-direction:column;gap:7px;font-size:11.5px;color:var(--text-2)}
+.comp-legend span{display:inline-flex;align-items:center;gap:7px}
+.comp-legend .dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.dot.compliant{background:var(--ok)}.dot.partial{background:var(--ia)}.dot.non{background:var(--warn)}.dot.pending{background:var(--line-2)}
+
+/* experts compact list */
+.exp-list{display:flex;flex-direction:column;gap:11px}
+.exp-line{display:flex;align-items:center;gap:10px}
+.exp-av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.exp-ln{font-size:12px;font-weight:600;display:flex;flex-direction:column;min-width:64px}
+.exp-ln span{font-size:10px;color:var(--text-3);font-weight:400}
+.exp-lbar{flex:1;height:5px;border-radius:3px;background:var(--panel-3);overflow:hidden}
+.exp-lbar>div{height:100%;background:var(--ok);border-radius:3px}
+.exp-lm{font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:34px;text-align:right}
+.exp-lm.over{color:var(--warn);font-weight:600}
+
+/* activity feed */
+.feed{position:relative;padding-left:20px}
+.feed::before{content:"";position:absolute;left:6px;top:5px;bottom:5px;width:1.5px;background:var(--line-2)}
+.feed-item{position:relative;margin-bottom:15px}
+.feed-item:last-child{margin-bottom:0}
+.feed-item::before{content:"";position:absolute;left:-17px;top:3px;width:9px;height:9px;border-radius:50%;background:var(--panel);border:2px solid var(--text-3)}
+.feed-item.ok::before{border-color:var(--ok)}
+.feed-item.send::before{border-color:var(--accent)}
+.feed-item.ia::before{border-color:var(--ia)}
+.feed-item.warn::before{border-color:var(--warn)}
+.feed-w{font-size:12px;color:var(--text-2);line-height:1.45}
+.feed-w b{color:var(--text);font-weight:600}
+.feed-t{font-size:10.5px;color:var(--text-3);margin-top:2px}
+
+
+/* ===================== CONFIG ===================== */
+.cfg-layout{display:grid;grid-template-columns:220px 1fr;gap:0;flex:1;min-height:0}
+.cfg-nav{border-right:1px solid var(--line);background:var(--panel);padding:16px 10px;overflow-y:auto}
+.cfg-nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--text-2);font-size:12.5px;font-weight:500;transition:all .12s;margin-bottom:2px}
+.cfg-nav-item:hover{background:var(--panel-2);color:var(--text)}
+.cfg-nav-item.on{background:var(--accent-soft);color:var(--text)}
+.cfg-nav-item .ci{width:16px;text-align:center;opacity:.8}
+.cfg-body{overflow-y:auto;padding:26px 32px 80px}
+.cfg-body-inner{max-width:680px}
+.cfg-sec{display:none;animation:fadeIn .2s ease}
+.cfg-sec.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.cfg-h{font-size:17px;font-weight:700;letter-spacing:-.2px;margin-bottom:4px}
+.cfg-sub{font-size:12.5px;color:var(--text-3);margin-bottom:24px;line-height:1.5}
+.frow{display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line);align-items:flex-start}
+.frow:last-child{border-bottom:1px solid var(--line)}
+.frow .fl{width:230px;flex-shrink:0}
+.frow .fl .flt{font-size:12.5px;font-weight:600}
+.frow .fl .fld{font-size:11.5px;color:var(--text-3);margin-top:3px;line-height:1.45}
+.frow .fc{flex:1}
+.inp,.sel,textarea.inp{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:8px;padding:9px 11px;color:var(--text);outline:none;font-size:12.5px;transition:border-color .15s}
+.inp:focus,.sel:focus,textarea.inp:focus{border-color:var(--accent)}
+textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
+.hintbox{font-size:11px;color:var(--ia);margin-top:7px;display:flex;gap:6px;align-items:flex-start;line-height:1.45}
+/* toggle */
+.tog{position:relative;width:40px;height:22px;border-radius:20px;background:var(--panel-3);border:1px solid var(--line-2);cursor:pointer;transition:all .2s;flex-shrink:0}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--text-2);transition:all .2s}
+.tog.on{background:var(--accent-soft);border-color:var(--accent)}
+.tog.on::after{left:20px;background:var(--accent)}
+.tog-row{display:flex;align-items:center;gap:12px}
+.tog-row .tl{font-size:12.5px}
+/* segmented control */
+.segc{display:inline-flex;background:var(--panel-2);border:1px solid var(--line-2);border-radius:8px;padding:3px;gap:2px;flex-wrap:wrap}
+.segc button{padding:7px 13px;border-radius:6px;font-size:12px;font-weight:500;color:var(--text-2);transition:all .12s}
+.segc button.on{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.segc button:hover:not(.on){color:var(--text)}
+.opt-desc{font-size:11.5px;color:var(--text-3);margin-top:8px;line-height:1.5;padding:10px 12px;background:var(--panel-2);border-radius:8px;border:1px solid var(--line)}
+.opt-desc b{color:var(--text-2)}
+/* experts editor */
+.exp-edit-row{display:flex;align-items:center;gap:12px;padding:11px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
+.exp-edit-row .exp-av{width:32px;height:32px;font-size:11px}
+.exp-edit-row .een{font-size:12.5px;font-weight:600}
+.exp-edit-row .eet{font-size:11px;color:var(--text-3)}
+.exp-edit-row .eec{margin-left:auto;font-size:11px;color:var(--text-3)}
+.exp-edit-row .del{width:26px;height:26px;border-radius:6px;color:var(--text-3);display:grid;place-items:center}
+.exp-edit-row .del:hover{background:var(--warn-soft);color:var(--warn)}
+.add-exp{display:flex;gap:8px;margin-top:10px}
+.add-exp .inp{flex:1}
+.range-wrap{display:flex;align-items:center;gap:14px}
+.range-wrap input[type=range]{flex:1;accent-color:var(--accent)}
+.range-val{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--accent);min-width:52px;text-align:right}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip-tog{padding:6px 12px;border-radius:20px;border:1px solid var(--line-2);font-size:12px;color:var(--text-2);cursor:pointer;transition:all .12s}
+.chip-tog.on{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}
+.cfg-foot{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 40%);padding:18px 0 4px;display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.theme-pick{display:inline-flex;gap:8px}
+.theme-opt{display:inline-flex;align-items:center;gap:9px;padding:9px 15px;border-radius:10px;border:1.5px solid var(--line-2);color:var(--text-2);font-size:12.5px;font-weight:500;transition:all .15s}
+.theme-opt:hover{border-color:var(--accent);color:var(--text)}
+.theme-opt.on{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
+.theme-opt .sw{width:26px;height:18px;border-radius:5px;border:1px solid var(--line-2)}
+.theme-opt .sw-dark{background:linear-gradient(135deg,#171b24 50%,#6e7bf2 50%)}
+.theme-opt .sw-light{background:linear-gradient(135deg,#ffffff 50%,#5562e6 50%)}
+/* AI feedback panel */
+.fb-accept{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.fb-card{border:1px solid var(--line);border-radius:11px;padding:14px}
+.fb-card .fn{font-size:22px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.fb-card .fl{font-size:11px;color:var(--text-3);margin-top:3px}
+.fb-card .fbar{height:4px;border-radius:2px;background:var(--panel-3);margin-top:9px;overflow:hidden}
+.fb-card .fbar>div{height:100%;border-radius:2px}
+.fb-block{margin-bottom:22px}
+.fb-bh{font-size:12.5px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.fb-hint{font-size:11px;font-weight:400;color:var(--text-3)}
+.pat{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
+.pat .pic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:12px;flex-shrink:0;background:var(--ia-soft);color:var(--ia);font-family:var(--font-mono);font-weight:700}
+.pat .pt{font-size:12.5px;color:var(--text);line-height:1.45}
+.pat .pt b{font-weight:600}
+.pat .pn{margin-left:auto;font-size:11px;color:var(--text-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pat .pn b{color:var(--warn)}
+.fb-live-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:12px}
+.fb-live-row:last-child{border-bottom:none}
+.fb-live-row .fs{font-family:var(--font-mono);font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--panel-3);color:var(--text-2);text-transform:uppercase}
+.fb-live-row .fd{color:var(--text-2)}
+.fb-live-row .fw{margin-left:auto;font-size:11px;color:var(--ia)}
+.fb-empty{border:1px dashed var(--line-2);border-radius:10px;padding:18px;text-align:center;font-size:12px;color:var(--text-3);line-height:1.5}
+.fb-status{display:flex;gap:11px;align-items:flex-start;background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:13px 15px;font-size:11.5px;color:var(--text-2);line-height:1.55}
+.fb-status b{color:var(--text)}
+.fb-status .fb-dot{width:9px;height:9px;border-radius:50%;background:var(--ok);margin-top:3px;flex-shrink:0;box-shadow:0 0 0 3px var(--ok-soft)}
+
+#toast-zone{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{display:flex;align-items:center;gap:10px;background:var(--panel-3);border:1px solid var(--line-2);border-radius:10px;padding:10px 16px;font-size:12.5px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.34,1.3,.64,1)}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.toast .t-ok{color:var(--ok)}
+@media(max-width:960px){.grid2{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}.pipeline{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo" id="logo"><div class="logo-mark">D</div>DocReview</div>
+    <div class="crumb"><a class="crumb-home" href="javascript:parent.route('home')">My tenders</a><span class="sep">/</span><span class="project" id="crumb-project">STB-2026 · Energy Monitoring System</span></div>
+    <div style="margin-left:auto"></div>
+    <div class="hdr-actions">
+      <a class="btn-ghost" id="new-proj" href="javascript:parent.route('new')">＋ New project</a>
+      <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span></button>
+      <button class="icon-btn" id="cfg-btn" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <div class="avatar" title="Thibaud Breton">TB</div>
+    </div>
+  </header>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <div class="scroll" id="dash-screen">
+    <div class="wrap">
+      <div class="dash-hero">
+        <div>
+          <div class="hero-kicker">Tender project</div>
+          <h1>Energy Monitoring System</h1>
+          <div class="meta"><span>Ref. <b>STB-2026</b></span><span>Multi-site EMS</span><span><b>Signalling &amp; Urban</b></span><span>Bid Director: <b>Thibaud Breton</b></span></div>
+        </div>
+        <div class="deadline warn"><div class="d-num">23</div><div class="d-lbl">days to submission</div></div>
+      </div>
+
+      <!-- phase rail -->
+      <div class="rail-label">Process <span>· click a phase to open it</span></div>
+      <div class="phase-rail">
+        <a class="phase active-phase" id="ph-review" href="javascript:parent.route('review')">
+          <div class="ph-num">1</div>
+          <div class="ph-info">
+            <div class="ph-name">Document review</div>
+            <div class="ph-stat" id="ph-review-stat"><span class="big" id="ph-review-n">10</span><span id="ph-review-txt">/ 12 requirements validated</span></div>
+            <div class="ph-bar"><div id="ph-review-bar" style="width:83%;background:var(--ia)"></div></div>
+          </div>
+          <span class="ph-badge current" id="ph-review-badge">Current</span>
+          <span class="ph-open-btn">Open →</span>
+        </a>
+        <div class="phase locked" id="ph-followup">
+          <div class="ph-num">2</div>
+          <div class="ph-info">
+            <div class="ph-name">Expert follow-up</div>
+            <div class="ph-lock" id="ph-followup-body">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+              Unlocks when review is finalized
+            </div>
+          </div>
+          <span class="ph-badge wait" id="ph-followup-badge">Locked</span>
+          <span class="ph-open-btn" id="ph-followup-open">Open →</span>
+        </div>
+        <a class="phase" id="ph-versions" href="javascript:parent.route('versions')">
+          <div class="ph-num transversal">↻</div>
+          <div class="ph-info">
+            <div class="ph-name">Versions &amp; Q&amp;A</div>
+            <div class="ph-stat"><span class="big">5</span><span>questions · 1 answered</span></div>
+            <div class="ph-sub">Open throughout — a new AO version can arrive anytime</div>
+          </div>
+          <span class="ph-badge current">Open</span>
+          <span class="ph-open-btn">Open →</span>
+        </a>
+      </div>
+
+      <!-- main: attention (primary) + health (secondary) -->
+      <div class="dash-main">
+        <div class="card att-card">
+          <h3>What needs you now <span class="count" id="att-count">5</span></h3>
+          <div class="att p1only" data-go="revue-documentaire.html">
+            <div class="att-ic warn">✓</div>
+            <div><div class="att-t"><b>Document review not finalized</b></div><div class="att-sub" id="att-review-sub">2 requirements still to validate before Follow-up unlocks</div></div>
+            <span class="att-go">Finalize review →</span>
+          </div>
+          <div class="att" data-go="suivi-experts-et-versions.html#versions">
+            <div class="att-ic ia">⇄</div>
+            <div><div class="att-t"><b>New version v2.2 ready for review</b></div><div class="att-sub">Arrived during allocation · +2 ~1 −0 · EXG-005 response now on an outdated version</div></div>
+            <span class="att-go">Review changes →</span>
+          </div>
+          <div class="att" data-go="revue-documentaire.html">
+            <div class="att-ic ia">✂</div>
+            <div><div class="att-t"><b>2 uncertain segmentations</b></div><div class="att-sub">Table rows in section 2 flagged by the AI — confirm boundaries before validating</div></div>
+            <span class="att-go">Fix in review →</span>
+          </div>
+          <div class="att p2only" data-go="suivi-experts-et-versions.html">
+            <div class="att-ic warn">🔔</div>
+            <div><div class="att-t"><b>2 expert responses overdue</b></div><div class="att-sub">Karim Benali — silent 7 days on EXG-007 · Sophie Lang — EXG-004 unopened</div></div>
+            <span class="att-go">Remind →</span>
+          </div>
+          <div class="att p2only" data-go="suivi-experts-et-versions.html">
+            <div class="att-ic accent">⇗</div>
+            <div><div class="att-t"><b>2 questions awaiting internal review</b></div><div class="att-sub">A possible duplicate was detected (TLS on legacy gateways) — merge before sending</div></div>
+            <span class="att-go">Open Q&amp;A →</span>
+          </div>
+          <div class="att p2only" data-go="suivi-experts-et-versions.html">
+            <div class="att-ic warn">⚠</div>
+            <div><div class="att-t"><b>1 non-compliant requirement</b></div><div class="att-sub">EXG-011 — REST API rate limits below third-party load (Infrastructure)</div></div>
+            <span class="att-go">See verdict →</span>
+          </div>
+        </div>
+
+        <aside class="health">
+          <div class="card">
+            <h3>Project health</h3>
+            <div class="health-stats">
+              <div class="hstat"><div class="hs-num">12</div><div class="hs-lbl">Requirements</div></div>
+              <div class="hstat"><div class="hs-num">100%</div><div class="hs-lbl">Managers assigned</div></div>
+              <div class="hstat p1only"><div class="hs-num">10<span class="hs-slash">/12</span></div><div class="hs-lbl">Validated</div></div>
+              <div class="hstat p2only"><div class="hs-num">75%</div><div class="hs-lbl">Response rate</div></div>
+            </div>
+          </div>
+
+          <div class="card p2only">
+            <h3>Compliance</h3>
+            <div class="comp-bar">
+              <div class="comp-seg compliant" style="width:41.7%">5</div>
+              <div class="comp-seg partial" style="width:8.3%">1</div>
+              <div class="comp-seg non" style="width:8.3%">1</div>
+              <div class="comp-seg pending" style="width:41.7%">5</div>
+            </div>
+            <div class="comp-legend">
+              <span><span class="dot compliant"></span>Compliant · 5</span>
+              <span><span class="dot partial"></span>Partial · 1</span>
+              <span><span class="dot non"></span>Non-compliant · 1</span>
+              <span><span class="dot pending"></span>Awaiting · 5</span>
+            </div>
+          </div>
+
+          <div class="card p2only">
+            <h3>Experts</h3>
+            <div class="exp-list">
+              <div class="exp-line"><div class="exp-av" style="background:#6e7bf2">SL</div><div class="exp-ln">Sophie L.<span>Monitoring</span></div><div class="exp-lbar"><div style="width:75%"></div></div><div class="exp-lm">3/4</div></div>
+              <div class="exp-line"><div class="exp-av" style="background:#3fb27f">KB</div><div class="exp-ln">Karim B.<span>Infra</span></div><div class="exp-lbar"><div style="width:60%;background:var(--ia)"></div></div><div class="exp-lm over">2 late</div></div>
+              <div class="exp-line"><div class="exp-av" style="background:#e0a43c">CM</div><div class="exp-ln">Claire M.<span>Cybersec</span></div><div class="exp-lbar"><div style="width:100%"></div></div><div class="exp-lm">3/3</div></div>
+            </div>
+          </div>
+
+          <div class="card locked-hint p1only">
+            Compliance, experts and response tracking appear here once the document review is finalized.
+          </div>
+        </aside>
+      </div>
+
+      <!-- activity -->
+      <div class="card">
+        <h3>Recent activity <a href="#">View all</a></h3>
+        <div class="feed">
+          <div class="feed-item ia"><div class="feed-w"><b>Version v2.2</b> uploaded and processed — gap analysis ready (+2 ~1 −0)</div><div class="feed-t">Today, 10:46 AM</div></div>
+          <div class="feed-item warn"><div class="feed-w"><b>EXG-005</b> flagged as answered on outdated version after v2.2</div><div class="feed-t">Today, 10:46 AM</div></div>
+          <div class="feed-item ok"><div class="feed-w"><b>Claire Moreau</b> responded on EXG-009 — verdict Needs clarification</div><div class="feed-t">Jul 15, 4:20 PM</div></div>
+          <div class="feed-item send"><div class="feed-w"><b>Q&amp;A batch</b> — 1 question sent to the issuer (retention period)</div><div class="feed-t">Jul 15, 2:10 PM</div></div>
+          <div class="feed-item ok"><div class="feed-w"><b>Document review</b> milestone reached — register exported, 3 experts notified</div><div class="feed-t">Jul 12, 9:30 AM</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CONFIGURATION ===================== -->
+  <div class="cfg-layout" id="cfg-screen" style="display:none">
+    <aside class="cfg-nav" id="cfg-nav">
+      <div class="cfg-nav-item on" data-sec="general"><span class="ci">◈</span> General</div>
+      <div class="cfg-nav-item" data-sec="team"><span class="ci">◉</span> Team &amp; experts</div>
+      <div class="cfg-nav-item" data-sec="workflow"><span class="ci">⇄</span> Workflow &amp; milestones</div>
+      <div class="cfg-nav-item" data-sec="appearance"><span class="ci">◐</span> Appearance</div>
+      <div class="cfg-nav-item" data-sec="ai"><span class="ci">✦</span> AI &amp; segmentation</div>
+      <div class="cfg-nav-item" data-sec="feedback"><span class="ci">↺</span> AI feedback</div>
+      <div class="cfg-nav-item" data-sec="qa"><span class="ci">⇗</span> Q&amp;A &amp; submission</div>
+      <div class="cfg-nav-item" data-sec="versions"><span class="ci">◷</span> Versions</div>
+      <div class="cfg-nav-item" data-sec="lang"><span class="ci">Aa</span> Language</div>
+    </aside>
+    <div class="cfg-body">
+      <div class="cfg-body-inner">
+
+        <!-- General -->
+        <section class="cfg-sec on" data-sec="general">
+          <div class="cfg-h">General</div>
+          <div class="cfg-sub">Project identity and key dates. The submission deadline drives the countdown and the overdue calculations.</div>
+          <div class="frow"><div class="fl"><div class="flt">Project name</div><div class="fld">Displayed across all screens.</div></div><div class="fc"><input class="inp" value="Energy Monitoring System"></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Tender reference</div></div><div class="fc"><input class="inp" value="STB-2026"></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Product line</div></div><div class="fc"><select class="sel"><option>Signalling &amp; Urban</option><option>Rolling stock</option><option>Services</option><option>Systems</option></select></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Submission deadline</div><div class="fld">Sets the countdown and overdue thresholds baseline.</div></div><div class="fc"><input class="inp" type="date" value="2026-08-12"></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Source document</div><div class="fld">Active version used for review.</div></div><div class="fc"><div class="tog-row"><span class="tl" style="font-family:var(--font-mono)">STB-2026_v2.1.pdf</span><span style="font-size:11px;color:var(--text-3)">· 24 pages · managed in Versions</span></div></div></div>
+        </section>
+
+        <!-- Team -->
+        <section class="cfg-sec" data-sec="team">
+          <div class="cfg-h">Team &amp; experts</div>
+          <div class="cfg-sub">Experts available for requirement assignment during document review. Each can be assigned requirements and receives a qualification link.</div>
+          <div id="exp-editor"></div>
+          <div class="add-exp"><input class="inp" id="new-exp-name" placeholder="Full name"><input class="inp" id="new-exp-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="add-exp-btn">Add expert</button></div>
+          <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria</div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (activity)</span><span class="chip-tog on">OBS (organization)</span><span class="chip-tog">Discipline</span></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Restricted view</div><div class="fld">What a manager sees for requirements outside their assignments (the admin/project lead always sees everything).</div></div><div class="fc"><div class="segc" data-seg="redact"><button class="on" data-redact="redact">Redacted</button><button data-redact="hide">Hidden</button></div><div class="opt-desc"><b>Redacted:</b> the manager sees blacked-out passages — they perceive the volume and context but not the content. <b>Hidden:</b> out-of-scope passages disappear entirely.</div></div></div>
+        </section>
+
+        <!-- Workflow -->
+        <section class="cfg-sec" data-sec="workflow">
+          <div class="cfg-h">Workflow &amp; milestones</div>
+          <div class="cfg-sub">Rules that govern phase transitions, reminders and the review gate.</div>
+          <div class="frow"><div class="fl"><div class="flt">Review milestone gate</div><div class="fld">Requires 100% of requirements assigned and validated before export to the follow-up phase.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="gate"></span><span class="tl">Enforce full validation before export</span></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Overdue threshold</div><div class="fld">Days without an expert response before a request is flagged overdue.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="1" max="14" value="5" id="over-range"><span class="range-val" id="over-val">5 days</span></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Maximum reminder cadence</div><div class="fld">Prevents reminder spam to experts.</div></div><div class="fc"><select class="sel"><option>Once every 2 days</option><option>Daily</option><option>Once every 3 days</option><option>Manual only</option></select></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Outdated-response re-flag</div><div class="fld">When a new version changes a requirement that already had a response.</div></div><div class="fc"><div class="segc" data-seg="reflag"><button class="on">Substantive changes only</button><button>Any change</button></div><div class="opt-desc"><b>Substantive changes only:</b> typo-level edits don't invalidate an existing expert response — a human arbitrates borderline cases.</div></div></div>
+        </section>
+
+        <!-- AI -->
+        <section class="cfg-sec" data-sec="ai">
+          <div class="cfg-h">AI &amp; segmentation</div>
+          <div class="cfg-sub">How the document is processed into blocks, and how the AI surfaces its uncertainty.</div>
+          <div class="frow"><div class="fl"><div class="flt">Document rendering</div><div class="fld">The core technical trade-off — affects fidelity, overlays and performance on large documents.</div></div><div class="fc"><div class="segc" data-seg="render"><button class="on">Faithful PDF</button><button>Reconstructed HTML</button></div><div class="opt-desc"><b>Faithful PDF:</b> pixel-perfect to the source, block overlays sit on top. <b>Reconstructed HTML:</b> easier overlays and reflow, approximate fidelity. Decision pending — test on a real tender.</div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Uncertainty threshold</div><div class="fld">Below this confidence, a block is flagged "uncertain segmentation" for manual review. Tables are almost always flagged.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="50" max="95" value="80" id="conf-range"><span class="range-val" id="conf-val">80%</span></div><div class="hintbox">⚠ Confidence is used internally to prioritize, never shown to users as a score.</div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Default table granularity</div><div class="fld">How table rows map to requirements on first pass.</div></div><div class="fc"><div class="segc" data-seg="gran"><button class="on">One requirement per row</button><button>Whole table</button></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Re-segmentation on new version</div><div class="fld">Full re-processing is cleaner; incremental diff is faster on large documents.</div></div><div class="fc"><div class="segc" data-seg="reseg"><button>Full re-segmentation</button><button class="on">Incremental diff</button></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Never overwrite manual edits</div><div class="fld">AI re-processing preserves human segmentation corrections.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="preserve"></span><span class="tl">Protect manual corrections on re-run</span></div></div></div>
+        </section>
+
+        <!-- Q&A -->
+        <section class="cfg-sec" data-sec="qa">
+          <div class="cfg-h">Q&amp;A &amp; submission</div>
+          <div class="cfg-sub">How clarification questions are consolidated and transmitted to the tender issuer.</div>
+          <div class="frow"><div class="fl"><div class="flt">Issuer channel</div><div class="fld">Determines whether the batch is a simple export or a formatted submission.</div></div><div class="fc"><div class="segc" data-seg="channel"><button class="on">Buyer portal</button><button>Standard form</button><button>Free document</button></div><div class="opt-desc"><b>Buyer portal:</b> the batch is exported to the issuer's imposed format/template. <b>Free document:</b> a plain export you attach yourself.</div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">AI duplicate detection</div><div class="fld">Proposes merging near-identical questions raised by different experts, keeping all requirement links.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="dedup"></span><span class="tl">Suggest merges before submission</span></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Internal review before sending</div><div class="fld">Questions pass through an internal-review stage before leaving the team.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="review"></span><span class="tl">Require internal review stage</span></div></div></div>
+        </section>
+
+        <!-- Versions -->
+        <section class="cfg-sec" data-sec="versions">
+          <div class="cfg-h">Versions</div>
+          <div class="cfg-sub">How incoming AO document versions are numbered and handled.</div>
+          <div class="frow"><div class="fl"><div class="flt">Numbering</div><div class="fld">Auto-increment with an optional free alias is recommended.</div></div><div class="fc"><div class="segc" data-seg="numbering"><button class="on">Auto-increment + alias</button><button>Free entry</button></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Detect addendum-as-answer</div><div class="fld">When an issuer response actually amends the document, propose treating it as a new version.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="addendum"></span><span class="tl">AI suggests requalifying as a version</span></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Expert notification on version switch</div><div class="fld">When the active review switches to a newer version.</div></div><div class="fc"><div class="segc" data-seg="notif"><button>Immediate</button><button class="on">Grouped at change-review validation</button></div></div></div>
+        </section>
+
+        <!-- Language -->
+        <section class="cfg-sec" data-sec="lang">
+          <div class="cfg-h">Language</div>
+          <div class="cfg-sub">Interface and translation defaults. Source text always remains authoritative.</div>
+          <div class="frow"><div class="fl"><div class="flt">Source document language</div></div><div class="fc"><select class="sel"><option>English</option><option>French</option><option>German</option></select></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Default translation target</div><div class="fld">Used by the Translate tab in the review panel.</div></div><div class="fc"><select class="sel"><option>French (FR)</option><option>German (DE)</option><option>Spanish (ES)</option></select></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Interface language</div></div><div class="fc"><select class="sel"><option>English</option><option>French</option></select></div></div>
+        </section>
+
+        <!-- Appearance -->
+        <section class="cfg-sec" data-sec="appearance">
+          <div class="cfg-h">Appearance</div>
+          <div class="cfg-sub">Applies across the whole application. Useful to match the room and screen when running user tests.</div>
+          <div class="frow"><div class="fl"><div class="flt">Theme</div><div class="fld">Dark is the default. Light improves readability on shared screens and in recordings.</div></div>
+            <div class="fc"><div class="theme-pick" id="theme-pick">
+              <button class="theme-opt" data-theme="dark"><span class="sw sw-dark"></span>Dark</button>
+              <button class="theme-opt" data-theme="light"><span class="sw sw-light"></span>Light</button>
+            </div></div></div>
+        </section>
+
+        <!-- AI feedback -->
+        <section class="cfg-sec" data-sec="feedback">
+          <div class="cfg-h">AI feedback</div>
+          <div class="cfg-sub">Every correction you make is captured as a training signal — silently. Explanations are requested only when the AI was highly confident and still wrong. Nothing here changes the current project: it feeds the next model.</div>
+
+          <div class="fb-accept" id="fb-accept"></div>
+
+          <div class="fb-block">
+            <div class="fb-bh">Recurring patterns <span class="fb-hint">detected across your corrections</span></div>
+            <div id="fb-patterns"></div>
+          </div>
+
+          <div class="fb-block">
+            <div class="fb-bh">This session <span class="fb-hint">live signal from the review screen</span></div>
+            <div id="fb-live"></div>
+          </div>
+
+          <div class="fb-status">
+            <div class="fb-dot"></div>
+            <div><b>Next retraining window</b> — signals from this tender are queued and anonymized. Estimated integration: next quarterly model update. This project is never re-scored retroactively.</div>
+          </div>
+        </section>
+
+        <div class="cfg-foot">
+          <button class="btn-ghost" id="cfg-reset">Discard changes</button>
+          <button class="btn-primary" id="cfg-save">Save configuration</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast-zone"></div>
+
+<script>
+function toast(msg,kind="ok"){
+  const z=document.getElementById("toast-zone"),t=document.createElement("div");
+  t.className="toast";
+  t.innerHTML=`<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>`;
+  z.appendChild(t);
+  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3400);
+}
+
+/* Screen switch dash <-> config */
+function showConfig(on){
+  document.getElementById("dash-screen").style.display=on?"none":"block";
+  document.getElementById("cfg-screen").style.display=on?"grid":"none";
+  document.getElementById("cfg-btn").classList.toggle("on",on);
+}
+document.getElementById("cfg-btn").addEventListener("click",()=>showConfig(document.getElementById("cfg-screen").style.display==="none"));
+document.getElementById("logo").addEventListener("click",()=>goRoute("accueil.html"));
+/* reflect the project opened from the tender list */
+(function(){ try{ if(window.parent!==window && window.parent.getCurrentProject){ const p=window.parent.getCurrentProject(); if(p){ const el=document.getElementById("crumb-project"); if(el) el.textContent=p.ref+" · "+p.name; } } }catch(e){} })();
+
+/* Phase gating — reads shared state from the shell (merged app) */
+function reviewDone(){ try{ return !!(window.parent!==window && window.parent.isReviewValidated && window.parent.isReviewValidated()); }catch(e){ return false; } }
+function goRoute(url){
+  try{ if(window.parent!==window && window.parent.routeUrl){ window.parent.routeUrl(url); return; } }catch(e){}
+  location.href=url; // standalone fallback
+}
+function applyGating(){
+  const done=reviewDone();
+  document.body.classList.toggle("review-done",done);
+  // phase 2 dependent blocks
+  document.querySelectorAll(".p2only").forEach(el=>el.classList.toggle("hidden",!done));
+  document.querySelectorAll(".p1only").forEach(el=>el.classList.toggle("hidden",done));
+  // review phase card
+  const rBadge=document.getElementById("ph-review-badge"),rCard=document.getElementById("ph-review");
+  if(done){
+    rBadge.textContent="Done"; rBadge.className="ph-badge done";
+    rCard.classList.remove("active-phase"); rCard.classList.add("done-phase");
+    document.getElementById("ph-review-n").textContent="12";
+    document.getElementById("ph-review-txt").textContent="/ 12 validated · finalized";
+    document.getElementById("ph-review-bar").style.width="100%";
+    document.getElementById("ph-review-bar").style.background="var(--ok)";
+  }
+  // follow-up phase card
+  // TEMP (dev/demo): unlocked unconditionally so the screen stays reachable while it's being worked on.
+  // The real gate logic (reviewDone()) is untouched above/below — only this card ignores it for now.
+  const f=document.getElementById("ph-followup"),fb=document.getElementById("ph-followup-badge"),fbody=document.getElementById("ph-followup-body");
+  {
+    f.className="phase active-phase"; f.style.cursor="pointer";
+    fb.textContent="Current"; fb.className="ph-badge current";
+    fbody.outerHTML=`<div class="ph-stat" id="ph-followup-body"><span class="big">9</span><span>/ 12 answered · 2 overdue</span></div><div class="ph-bar"><div style="width:75%;background:var(--ia)"></div></div>`;
+    f.onclick=()=>goRoute("suivi-experts-et-versions.html");
+  }
+  // attention count
+  const visibleAtt=[...document.querySelectorAll(".att")].filter(a=>a.offsetParent!==null||!a.classList.contains("hidden"));
+  document.getElementById("att-count").textContent=document.querySelectorAll(".att:not(.hidden)").length;
+}
+
+/* Dashboard attention navigation (routes through shell when merged) */
+document.querySelectorAll(".att[data-go]").forEach(a=>a.addEventListener("click",()=>goRoute(a.dataset.go)));
+/* Phase cards routing through shell */
+document.getElementById("ph-review").addEventListener("click",e=>{e.preventDefault();goRoute("revue-documentaire.html");});
+document.getElementById("ph-versions").addEventListener("click",e=>{e.preventDefault();goRoute("suivi-experts-et-versions.html#versions");});
+document.getElementById("new-proj").addEventListener("click",e=>{e.preventDefault();goRoute("creation-projet.html");});
+
+/* Config nav */
+document.querySelectorAll(".cfg-nav-item").forEach(it=>it.addEventListener("click",()=>{
+  document.querySelectorAll(".cfg-nav-item").forEach(x=>x.classList.remove("on"));
+  it.classList.add("on");
+  document.querySelectorAll(".cfg-sec").forEach(s=>s.classList.toggle("on",s.dataset.sec===it.dataset.sec));
+}));
+
+/* Toggles */
+document.querySelectorAll(".tog").forEach(t=>t.addEventListener("click",()=>t.classList.toggle("on")));
+/* Segmented controls */
+document.querySelectorAll(".segc").forEach(seg=>seg.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+  seg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+})));
+/* Chips */
+document.querySelectorAll(".chip-tog").forEach(c=>c.addEventListener("click",()=>c.classList.toggle("on")));
+/* Ranges */
+const oR=document.getElementById("over-range"),oV=document.getElementById("over-val");
+oR.addEventListener("input",()=>oV.textContent=oR.value+(oR.value==="1"?" day":" days"));
+const cR=document.getElementById("conf-range"),cV=document.getElementById("conf-val");
+cR.addEventListener("input",()=>cV.textContent=cR.value+"%");
+
+/* Experts editor */
+const EXPERTS=[
+  {name:"Sophie Lang",team:"Monitoring Team",init:"SL",color:"#6e7bf2",count:4},
+  {name:"Karim Benali",team:"Infrastructure Team",init:"KB",color:"#3fb27f",count:3},
+  {name:"Claire Moreau",team:"Cybersecurity",init:"CM",color:"#e0a43c",count:3},
+];
+const COLORS=["#6e7bf2","#3fb27f","#e0a43c","#a06ef2","#e5544b","#3fa9b2"];
+function renderExperts(){
+  const c=document.getElementById("exp-editor");c.innerHTML="";
+  EXPERTS.forEach((e,i)=>{
+    const row=document.createElement("div");row.className="exp-edit-row";
+    row.innerHTML=`<div class="exp-av" style="background:${e.color}">${e.init}</div>
+      <div><div class="een">${e.name}</div><div class="eet">${e.team}</div></div>
+      <span class="eec">${e.count} requirement${e.count!==1?"s":""} assigned</span>
+      <button class="del" title="Remove" data-i="${i}">✕</button>`;
+    row.querySelector(".del").addEventListener("click",()=>{
+      if(e.count>0){toast(`Cannot remove ${e.name} — ${e.count} requirements still assigned`,"warn");return;}
+      EXPERTS.splice(i,1);renderExperts();
+    });
+    c.appendChild(row);
+  });
+}
+document.getElementById("add-exp-btn").addEventListener("click",()=>{
+  const n=document.getElementById("new-exp-name"),t=document.getElementById("new-exp-team");
+  if(!n.value.trim()){toast("Enter a name","warn");return;}
+  const init=n.value.trim().split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  EXPERTS.push({name:n.value.trim(),team:t.value.trim()||"—",init,color:COLORS[EXPERTS.length%COLORS.length],count:0});
+  n.value="";t.value="";renderExperts();toast("Expert added","ok");
+});
+renderExperts();
+
+/* Save */
+document.getElementById("cfg-save").addEventListener("click",()=>toast("Project configuration saved","ok"));
+document.getElementById("cfg-reset").addEventListener("click",()=>toast("Changes discarded","ok"));
+
+/* deep link #config */
+if(location.hash==="#config"){showConfig(true);}
+
+/* theme picker */
+function applyThemeUI(t){
+  document.documentElement.setAttribute("data-theme",t);
+  document.querySelectorAll(".theme-opt").forEach(b=>b.classList.toggle("on",b.dataset.theme===t));
+}
+(function(){
+  let t="dark"; try{ if(window.parent!==window&&window.parent.getTheme) t=window.parent.getTheme(); }catch(e){}
+  applyThemeUI(t);
+})();
+document.querySelectorAll(".theme-opt").forEach(b=>b.addEventListener("click",()=>{
+  const t=b.dataset.theme;
+  applyThemeUI(t);
+  try{ if(window.parent!==window&&window.parent.setTheme) window.parent.setTheme(t); }catch(e){}
+  toast(`${t.charAt(0).toUpperCase()+t.slice(1)} theme applied`,"ok");
+}));
+
+/* redact mode -> shell shared state */
+document.querySelectorAll('[data-redact]').forEach(b=>b.addEventListener("click",()=>{
+  try{ if(window.parent!==window && window.parent.setRedactMode) window.parent.setRedactMode(b.dataset.redact); }catch(e){}
+}));
+
+/* apply phase gating on load */
+applyGating();
+
+/* ---------- AI feedback panel ---------- */
+const FB_RATES=[
+  {k:"Segmentation",v:94,c:"var(--ok)"},
+  {k:"Typology",v:82,c:"var(--ia)"},
+  {k:"Characterization",v:88,c:"var(--ok)"},
+  {k:"Assignment (OBS)",v:71,c:"var(--warn)"},
+];
+const FB_PATTERNS=[
+  {code:"→",t:"<b>SIG → MLN</b> corrected on alerting requirements",n:14},
+  {code:"OBS",t:"Assignment moved from <b>Monitoring</b> to <b>Infrastructure</b> on real-time perf",n:9},
+  {code:"⚑",t:"High-confidence OBS overridden — <b>reporting</b> requirements mis-routed",n:6},
+  {code:"TKY",t:"<b>Turnkey</b> added where the AI saw a single perimeter",n:5},
+];
+const SURF_LABEL={alloc:"OBS",typo:"TYPO",char:"CHAR",deriv:"DERIV"};
+function renderFeedback(){
+  const a=document.getElementById("fb-accept");
+  if(a) a.innerHTML=FB_RATES.map(r=>`<div class="fb-card"><div class="fn">${r.v}%</div><div class="fl">${r.k} accepted</div><div class="fbar"><div style="width:${r.v}%;background:${r.c}"></div></div></div>`).join("");
+  const p=document.getElementById("fb-patterns");
+  if(p) p.innerHTML=FB_PATTERNS.map(x=>`<div class="pat"><div class="pic">${x.code}</div><div class="pt">${x.t}</div><div class="pn"><b>${x.n}×</b> this tender</div></div>`).join("");
+  const live=document.getElementById("fb-live");
+  let items=[]; try{ if(window.parent!==window&&window.parent.getAIFeedback) items=window.parent.getAIFeedback(); }catch(e){}
+  if(live){
+    if(!items.length){
+      live.innerHTML=`<div class="fb-empty">No correction captured yet in this session. Reassign a requirement or change a typology in the review screen — it will appear here instantly, silently logged.</div>`;
+    }else{
+      live.innerHTML=items.slice(-8).reverse().map(f=>`<div class="fb-live-row">
+        <span class="fs">${SURF_LABEL[f.surface]||f.surface}</span>
+        <span class="fd">${f.id}: ${f.before} → <b style="color:var(--text)">${f.after}</b></span>
+        ${f.conf!=null&&f.conf>=85?`<span class="fw">high-conf override${f.reason?" · "+f.reason:""}</span>`:(f.reason?`<span class="fw">${f.reason}</span>`:"")}
+      </div>`).join("");
+    }
+  }
+}
+// re-render feedback whenever the config section is opened
+document.querySelectorAll('.cfg-nav-item[data-sec="feedback"]').forEach(it=>it.addEventListener("click",renderFeedback));
+renderFeedback();
+</script>
+</body>
+</html>

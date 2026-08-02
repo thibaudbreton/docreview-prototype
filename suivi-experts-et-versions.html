@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocReview — STB-2026 · Expert follow-up & Versions</title>
+<style>
+:root{
+  --bg:#0d0f14; --panel:#12151c; --panel-2:#171b24; --panel-3:#1d2230;
+  --line:#232937; --line-2:#2d3446;
+  --text:#e6e9f0; --text-2:#9aa3b5; --text-3:#66708a;
+  --accent:#6e7bf2; --accent-soft:rgba(110,123,242,.14);
+  --ia:#e0a43c; --ia-soft:rgba(224,164,60,.12);
+  --ok:#3fb27f; --ok-soft:rgba(63,178,127,.12);
+  --human:#a06ef2; --human-soft:rgba(160,110,242,.12);
+  --warn:#e5544b; --warn-soft:rgba(229,84,75,.12);
+  --paper:#fbfaf6; --paper-ink:#1d2129; --paper-ink-2:#4a5162;
+  --radius:8px;
+  --font-ui:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-doc:Georgia,"Times New Roman",serif;
+  --font-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+}
+
+html[data-theme="light"]{
+  --bg:#eef1f5;
+  --panel:#ffffff;
+  --panel-2:#f4f6f9;
+  --panel-3:#e9edf3;
+  --line:#e4e8ee;
+  --line-2:#d0d6df;
+  --text:#1a1e27;
+  --text-2:#525d72;
+  --text-3:#87909f;
+  --accent:#5562e6;
+  --accent-soft:rgba(85,98,230,.10);
+  --ia:#b9770f;
+  --ia-soft:rgba(185,119,15,.12);
+  --ok:#2f9d6b;
+  --ok-soft:rgba(47,157,107,.12);
+  --human:#8250dc;
+  --human-soft:rgba(130,80,220,.12);
+  --warn:#d23f38;
+  --warn-soft:rgba(210,63,56,.10);
+  --paper:#ffffff;
+  --paper-ink:#1d2129;
+  --paper-ink-2:#4a5162;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);font-size:13px;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:5px;border:2px solid var(--bg)}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+#app{display:flex;flex-direction:column;height:100vh}
+main{display:flex;flex:1;min-height:0}
+
+/* ---------- Header ---------- */
+header{display:flex;align-items:center;gap:14px;height:52px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;letter-spacing:-.2px}
+.logo-mark{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--accent),#4a55c4);display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff}
+.crumb{display:flex;align-items:center;gap:8px;color:var(--text-2);min-width:0}
+.crumb .sep{color:var(--text-3)}
+.crumb .project{color:var(--text);font-weight:600;white-space:nowrap}
+.screen-nav{display:flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:3px}
+.screen-nav .sn{padding:5px 12px;border-radius:6px;color:var(--text-2);font-weight:500;font-size:12px;transition:all .15s;cursor:pointer;white-space:nowrap}
+.screen-nav .sn:hover{color:var(--text)}
+.screen-nav .sn.on{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.screen-nav .sn.locked{opacity:.5;cursor:not-allowed}
+.mode-switch{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:3px;margin-left:auto}
+.mode-switch button{padding:5px 14px;border-radius:6px;color:var(--text-2);font-weight:500;font-size:12.5px;transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.mode-switch button.active{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.mode-switch button:hover:not(.active){color:var(--text)}
+.mode-switch .mcount{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--accent-soft);color:var(--accent)}
+.hdr-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{position:relative;width:32px;height:32px;border-radius:var(--radius);display:grid;place-items:center;color:var(--text-2);transition:all .15s}
+.icon-btn:hover{background:var(--panel-3);color:var(--text)}
+.badge-dot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--warn);border:2px solid var(--panel)}
+.btn-primary{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:var(--radius);background:var(--accent);color:#fff;font-weight:600;font-size:12.5px;transition:all .15s}
+.btn-primary:hover{background:#7d89ff;transform:translateY(-1px)}
+.btn-ghost{padding:6px 12px;border-radius:var(--radius);border:1px solid var(--line-2);color:var(--text-2);font-weight:500;font-size:12px;transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#e0a43c,#c4763a);display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer}
+
+/* ---------- Triage ---------- */
+.triage{display:flex;align-items:center;gap:14px;height:44px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+.progress-wrap{display:flex;align-items:center;gap:10px}
+.progress-track{width:120px;height:5px;border-radius:3px;background:var(--panel-3);overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--ok),#5ccf99);transition:width .5s cubic-bezier(.4,0,.2,1)}
+.progress-label{font-size:12px;color:var(--text-2)}
+.progress-label b{color:var(--text);font-variant-numeric:tabular-nums}
+.triage-pills{display:flex;gap:6px}
+.tpill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;border:1px solid var(--line);font-size:11.5px;color:var(--text-2);transition:all .15s;cursor:pointer}
+.tpill .n{font-weight:700;font-variant-numeric:tabular-nums}
+.tpill.p-wait .n{color:var(--text-2)}
+.tpill.p-clar .n{color:var(--accent)}
+.tpill.p-over .n{color:var(--warn)}
+.tpill.p-out .n{color:var(--ia)}
+.tpill:hover{border-color:var(--line-2);background:var(--panel-2)}
+.tpill.active{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
+.clear-filter{font-size:11.5px;color:var(--accent);display:none;align-items:center;gap:6px}
+.clear-filter.visible{display:inline-flex}
+.triage-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-toggle{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:20px;padding:2px;font-size:11px}
+.nav-toggle button{padding:3px 11px;border-radius:20px;color:var(--text-3);font-weight:600}
+.nav-toggle button.on{background:var(--panel-3);color:var(--text)}
+.kbd-hint{font-size:11px;color:var(--text-3);display:flex;gap:10px}
+.kbd-hint kbd{font-family:var(--font-mono);font-size:10px;padding:1px 5px;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;background:var(--panel-2)}
+
+/* ---------- Left nav ---------- */
+.nav{width:272px;flex-shrink:0;display:flex;flex-direction:column;background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;padding:10px 8px 16px}
+.nav-section-head{padding:8px 8px 4px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
+.nav-item{display:flex;align-items:center;gap:8px;padding:6px 8px;margin:1px 0;border-radius:6px;cursor:pointer;color:var(--text-2);font-size:12.5px;transition:background .12s;border-left:2px solid transparent}
+.nav-item:hover{background:var(--panel-2);color:var(--text)}
+.nav-item.active{background:var(--accent-soft);color:var(--text);border-left-color:var(--accent)}
+.nav-item .nid{font-family:var(--font-mono);font-size:10px;color:var(--text-3);flex-shrink:0;width:56px}
+.nav-item .nlabel{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.vdot.compliant{background:var(--ok)}
+.vdot.partial{background:var(--ia)}
+.vdot.non{background:var(--warn)}
+.vdot.needs-clar{background:var(--accent)}
+.vdot.none{background:var(--line-2)}
+.nav-item.dimmed{opacity:.28;pointer-events:none}
+/* expert cards */
+.exp-card{border:1px solid var(--line);border-radius:10px;padding:12px;margin:6px 4px;cursor:pointer;transition:border-color .15s}
+.exp-card:hover{border-color:var(--line-2)}
+.exp-card.active{border-color:var(--accent);background:var(--accent-soft)}
+.exp-top{display:flex;align-items:center;gap:10px}
+.exp-avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.exp-name{font-weight:600;font-size:12.5px}
+.exp-team{font-size:11px;color:var(--text-3)}
+.exp-remind{margin-left:auto;font-size:10.5px;padding:3px 9px;border-radius:12px;border:1px solid var(--line-2);color:var(--text-2)}
+.exp-remind:hover{border-color:var(--accent);color:var(--text)}
+.exp-bar{height:4px;border-radius:2px;background:var(--panel-3);margin:10px 0 6px;overflow:hidden}
+.exp-bar>div{height:100%;background:var(--ok);border-radius:2px}
+.exp-meta{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-3)}
+.exp-meta b{color:var(--text-2)}
+.exp-silence{color:var(--warn);font-weight:600}
+
+/* ---------- Center ---------- */
+.center{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+.view{flex:1;overflow:auto;display:none}
+.view.on{display:block}
+.view-pad{padding:20px}
+.view-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.view-head h2{font-size:15px;font-weight:600;letter-spacing:-.2px}
+.view-head .sub{font-size:12px;color:var(--text-3)}
+table.grid{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:12.5px}
+table.grid th{text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);padding:10px 12px;background:var(--panel-2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+table.grid td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.grid tr.rrow{cursor:pointer;transition:background .12s}
+table.grid tr.rrow:hover{background:var(--panel-2)}
+table.grid tr.rrow.active{background:var(--accent-soft);box-shadow:inset 2px 0 0 var(--accent)}
+.rid{font-family:var(--font-mono);font-size:11px;color:var(--text-2);white-space:nowrap}
+.rtext{max-width:360px;color:var(--text);line-height:1.45}
+.rtext .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.peek-btn{font-size:11px;color:var(--accent);margin-top:3px;display:inline-flex;gap:4px;align-items:center}
+.peek-btn:hover{text-decoration:underline}
+tr.peek-row td{background:var(--bg);padding:14px 16px}
+.peek-paper{background:var(--paper);color:var(--paper-ink);border-radius:4px;padding:16px 20px;font-family:var(--font-doc);font-size:13px;line-height:1.6;max-width:640px;box-shadow:0 4px 16px rgba(0,0,0,.3);border-left:3px solid var(--accent)}
+.peek-paper .peek-ctx{font-family:var(--font-ui);font-size:10.5px;color:var(--paper-ink-2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+.exp-mini{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.exp-mini .exp-avatar{width:22px;height:22px;font-size:9px}
+.spill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.spill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.spill.sent,.spill.opened{background:var(--panel-3);color:var(--text-2)}
+.spill.answered{background:var(--ok-soft);color:var(--ok)}
+.spill.clarif{background:var(--accent-soft);color:var(--accent)}
+.spill.closed{background:var(--human-soft);color:var(--human)}
+.vpill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;white-space:nowrap}
+.vpill.compliant{background:var(--ok-soft);color:var(--ok)}
+.vpill.partial{background:var(--ia-soft);color:var(--ia)}
+.vpill.non{background:var(--warn-soft);color:var(--warn)}
+.vpill.needs-clar{background:var(--accent-soft);color:var(--accent)}
+.vpill.none{color:var(--text-3)}
+.age{font-variant-numeric:tabular-nums;color:var(--text-2);white-space:nowrap}
+.age.over{color:var(--warn);font-weight:700}
+.flag-out{display:inline-flex;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;background:var(--ia-soft);color:var(--ia);margin-left:6px;white-space:nowrap}
+
+/* Document view */
+.doc-scroll{padding:24px 0 80px}
+.legend{display:flex;gap:14px;justify-content:center;margin-bottom:16px;font-size:11px;color:var(--text-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.paper{width:min(760px,calc(100% - 48px));margin:0 auto 26px;background:var(--paper);color:var(--paper-ink);border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.5),0 12px 40px rgba(0,0,0,.45);padding:56px 72px 64px;font-family:var(--font-doc);font-size:14px;line-height:1.65;position:relative}
+.doc-h1{font-size:20px;font-weight:700;margin-bottom:4px}
+.doc-sub{font-size:13px;color:var(--paper-ink-2);margin-bottom:28px;font-style:italic}
+.doc-h2{font-size:16px;font-weight:700;margin:26px 0 4px}
+.dblk{position:relative;margin:10px -14px;padding:8px 14px;border-radius:4px;border:1.5px solid transparent;cursor:pointer;transition:all .15s}
+.dblk .blk-id{position:absolute;top:8px;left:-58px;font-family:var(--font-mono);font-size:10px;color:var(--paper-ink-2);opacity:.6}
+.dblk.compliant{border-color:rgba(48,150,104,.5);background:rgba(63,178,127,.05)}
+.dblk.partial{border-color:rgba(200,140,30,.55);background:rgba(224,164,60,.06)}
+.dblk.non{border-color:rgba(180,60,52,.55);background:rgba(229,84,75,.06)}
+.dblk.needs-clar{border-color:rgba(74,85,196,.5);background:rgba(110,123,242,.06)}
+.dblk.none{border-style:dashed;border-color:#c9c4b8}
+.dblk:hover{box-shadow:0 0 0 3px rgba(110,123,242,.14)}
+.dblk.selected{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(110,123,242,.2)}
+.dblk .vtag{position:absolute;top:-9px;right:10px;font-family:var(--font-ui);font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:2px 8px;border-radius:10px;opacity:0;transform:translateY(3px);transition:all .15s;pointer-events:none}
+.dblk:hover .vtag,.dblk.selected .vtag{opacity:1;transform:none}
+.dblk.compliant .vtag{background:#d3ecdf;color:#1d7a4f}
+.dblk.partial .vtag{background:#f3e3c3;color:#8a5f10}
+.dblk.non .vtag{background:#f6d5d2;color:#a5342c}
+.dblk.needs-clar .vtag{background:#dfe3fb;color:#4a55c4}
+.dblk.none .vtag{background:#eceade;color:#6b6455}
+
+/* Q&A register */
+.qa-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.qa-group{margin-bottom:22px}
+.qa-group-head{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.qa-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:8px;transition:border-color .15s}
+.qa-card:hover{border-color:var(--line-2)}
+.qa-top{display:flex;align-items:flex-start;gap:10px}
+.qa-id{font-family:var(--font-mono);font-size:10.5px;color:var(--accent);font-weight:600;padding-top:2px}
+.qa-q{flex:1;font-size:12.5px;line-height:1.5}
+.qa-meta{display:flex;gap:10px;align-items:center;margin-top:8px;font-size:11px;color:var(--text-3);flex-wrap:wrap}
+.qa-req{font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:6px;background:var(--panel-3);color:var(--text-2)}
+.qa-ans{margin-top:9px;padding:9px 11px;border-radius:8px;background:var(--ok-soft);font-size:12px;color:var(--text-2);border:1px solid rgba(63,178,127,.25)}
+.qa-ans b{color:var(--ok);font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:3px}
+.dedup{border:1px dashed rgba(224,164,60,.55);background:var(--ia-soft);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.dedup .ia-head{display:flex;gap:6px;font-size:11px;font-weight:700;color:var(--ia);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.dedup p{font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:10px}
+.dedup p b{color:var(--text)}
+.dedup .actions{display:flex;gap:6px}
+.dedup .accept{padding:6px 14px;border-radius:6px;background:var(--ok);color:#fff;font-weight:600;font-size:12px}
+.dedup .reject{padding:6px 12px;border-radius:6px;border:1px solid var(--line-2);color:var(--text-2);font-size:12px}
+
+/* ---------- Right panel ---------- */
+.settings{width:330px;flex-shrink:0;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line)}
+.set-head{padding:14px 16px 0}
+.set-id-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.set-id{font-family:var(--font-mono);font-size:12px;color:var(--accent);font-weight:600}
+.set-title{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:12px;color:var(--text)}
+.set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px}
+.set-tabs button{padding:8px 11px;font-size:12.5px;font-weight:500;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.set-tabs button:hover{color:var(--text-2)}
+.set-tabs button.active{color:var(--text);border-bottom-color:var(--accent)}
+.set-body{flex:1;overflow-y:auto;padding:16px}
+.set-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:32px;text-align:center;color:var(--text-3)}
+.set-empty .big{font-size:13px;color:var(--text-2);font-weight:500}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+.field .fval{font-size:12.5px;color:var(--text);line-height:1.5}
+.resp-note{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:11px 12px;font-size:12.5px;line-height:1.55;color:var(--text-2)}
+.attach{display:inline-flex;gap:6px;align-items:center;font-size:11.5px;color:var(--text-2);padding:5px 10px;border:1px solid var(--line-2);border-radius:8px;margin-top:8px}
+.cta{width:100%;padding:9px;border-radius:var(--radius);font-weight:600;font-size:12.5px;margin-top:8px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.cta.ok{background:var(--ok);color:#fff}
+.cta.blue{background:var(--accent);color:#fff}
+.cta.line{border:1px solid var(--line-2);color:var(--text-2)}
+.cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:1.5px;background:var(--line-2)}
+.tl-item{position:relative;margin-bottom:16px}
+.tl-item::before{content:"";position:absolute;left:-18px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--panel);border:2px solid var(--text-3)}
+.tl-item.tl-ok::before{border-color:var(--ok)}
+.tl-item.tl-send::before{border-color:var(--accent)}
+.tl-item.tl-warn::before{border-color:var(--warn)}
+.tl-who{font-size:12px;font-weight:600;color:var(--text)}
+.tl-what{font-size:12px;color:var(--text-2);line-height:1.5;margin-top:2px}
+.tl-time{font-size:10.5px;color:var(--text-3);margin-top:3px}
+.frozen{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:10px}
+.frozen .fk{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-3)}
+.frozen .fv{font-size:12.5px;margin-top:2px}
+.lock-note{font-size:10.5px;color:var(--text-3);display:flex;gap:6px;align-items:center;margin-bottom:12px}
+
+/* ---------- Screen 3 : hub ---------- */
+.hub{flex:1;overflow-y:auto;display:none}
+.hub.on{display:block}
+.hub-inner{max-width:880px;margin:0 auto;padding:28px 24px 80px}
+.hub-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.hub-tabs button{padding:10px 16px;font-size:13px;font-weight:500;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;display:inline-flex;gap:8px;align-items:center}
+.hub-tabs button.active{color:var(--text);border-bottom-color:var(--accent)}
+.hub-tabs .tcount{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--warn-soft);color:var(--warn)}
+.upload-zone{border:1.5px dashed var(--line-2);border-radius:12px;padding:22px;display:flex;align-items:center;gap:16px;margin-bottom:24px;transition:border-color .15s;background:var(--panel)}
+.upload-zone:hover{border-color:var(--accent)}
+.upload-ic{width:42px;height:42px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.upload-t{font-size:13.5px;font-weight:600}
+.upload-d{font-size:12px;color:var(--text-3);margin-top:3px}
+.upload-zone .btn-primary{margin-left:auto}
+.vtimeline{position:relative;padding-left:26px}
+.vtimeline::before{content:"";position:absolute;left:8px;top:8px;bottom:8px;width:1.5px;background:var(--line-2)}
+.vcard{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;animation:fadeIn .3s ease}
+.vcard::before{content:"";position:absolute;left:-24px;top:22px;width:11px;height:11px;border-radius:50%;background:var(--panel);border:2.5px solid var(--text-3)}
+.vcard.processing::before{border-color:var(--accent);animation:pulse 1.2s infinite}
+.vcard.ready::before{border-color:var(--ia)}
+.vcard.reviewing::before{border-color:var(--accent)}
+.vcard.integrated::before{border-color:var(--ok)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(110,123,242,.4)}50%{box-shadow:0 0 0 6px rgba(110,123,242,0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.vtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.vnum{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.vstate{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.vstate::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.vstate.processing{background:var(--accent-soft);color:var(--accent)}
+.vstate.ready{background:var(--ia-soft);color:var(--ia)}
+.vstate.reviewing{background:var(--accent-soft);color:var(--accent)}
+.vstate.integrated{background:var(--ok-soft);color:var(--ok)}
+.vdate{margin-left:auto;font-size:11.5px;color:var(--text-3)}
+.vnote{font-size:12.5px;color:var(--text-2);margin-top:6px}
+.gap-chips{display:flex;gap:6px;margin-top:10px}
+.gchip{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.gchip.a{background:var(--ok-soft);color:var(--ok)}
+.gchip.m{background:var(--ia-soft);color:var(--ia)}
+.gchip.r{background:var(--warn-soft);color:var(--warn)}
+.vimpact{margin-top:10px;padding:9px 11px;border-radius:8px;background:var(--ia-soft);border:1px solid rgba(224,164,60,.3);font-size:11.5px;color:var(--text-2);line-height:1.5}
+.vimpact b{color:var(--ia)}
+.vactions{display:flex;gap:8px;margin-top:12px}
+.vprog{margin-top:10px;display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--text-3)}
+.vprog .progress-track{width:160px}
+.procbar{margin-top:12px;height:5px;border-radius:3px;background:var(--panel-3);overflow:hidden}
+.procbar>div{height:100%;width:30%;border-radius:3px;background:var(--accent);animation:slide 1.4s ease-in-out infinite}
+@keyframes slide{0%{margin-left:-30%}100%{margin-left:100%}}
+/* issuer */
+.iss-layout{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+.iss-row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.iss-row:hover{border-color:var(--line-2)}
+.iss-row.active{border-color:var(--accent);background:var(--accent-soft)}
+.iss-row.flagged{border-style:dashed;border-color:rgba(229,84,75,.55)}
+.iss-top{display:flex;gap:10px;align-items:flex-start}
+.iss-q{flex:1;font-size:12.5px;line-height:1.5}
+.iss-meta{display:flex;gap:10px;margin-top:8px;font-size:11px;color:var(--text-3);align-items:center;flex-wrap:wrap}
+.iss-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;position:sticky;top:0}
+.iss-panel h3{font-size:13px;font-weight:600;margin-bottom:12px}
+textarea.resp-in{width:100%;min-height:110px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:8px;padding:10px;font-size:12.5px;resize:vertical;outline:none;line-height:1.5}
+textarea.resp-in:focus{border-color:var(--accent)}
+.prop-chain{margin-top:12px;font-size:11.5px;color:var(--text-3);line-height:1.7}
+.prop-chain .done{color:var(--ok)}
+
+#toast-zone{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{display:flex;align-items:center;gap:10px;background:var(--panel-3);border:1px solid var(--line-2);border-radius:10px;padding:10px 16px;font-size:12.5px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.34,1.3,.64,1)}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.toast .t-ok{color:var(--ok)}
+@media(max-width:1100px){.settings{width:290px}.nav{width:236px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo"><a href="javascript:parent.route('dashboard')" style="display:flex;align-items:center;gap:8px;color:inherit;text-decoration:none"><div class="logo-mark">D</div>DocReview</a></div>
+    <div class="crumb"><span class="sep">/</span><span class="project">STB-2026 · Energy Monitoring System</span></div>
+    <nav class="screen-nav" id="phase-nav">
+      <button class="sn" data-screen="2" id="tab-followup">Follow-up</button>
+      <button class="sn" data-screen="3" id="tab-versions">Versions &amp; Q&amp;A</button>
+    </nav>
+    <div class="mode-switch" id="s2-views">
+      <button data-view="table" class="active">Table</button>
+      <button data-view="doc">Document</button>
+      <button data-view="qa">Q&amp;A <span class="mcount" id="qa-count">0</span></button>
+    </div>
+    <div class="hdr-actions">
+      <a class="btn-ghost" href="javascript:parent.route('dashboard')" title="Back to dashboard">← Dashboard</a>
+      <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span></button>
+      <button class="btn-primary" id="export2-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Export</button>
+      <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
+      <div class="avatar" title="Thibaud Breton">TB</div>
+    </div>
+  </header>
+
+  <!-- ============ SCREEN 2 ============ -->
+  <div id="screen2" style="display:flex;flex-direction:column;flex:1;min-height:0">
+    <div class="triage">
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="p2-fill"></div></div>
+        <span class="progress-label"><b id="p2-num">0/0</b> answered</span>
+      </div>
+      <div class="triage-pills">
+        <button class="tpill p-wait" data-filter="await"><span class="n" id="n-await">0</span> awaiting response</button>
+        <button class="tpill p-clar" data-filter="clar"><span class="n" id="n-clar">0</span> need clarification</button>
+        <button class="tpill p-over" data-filter="over"><span class="n" id="n-over">0</span> overdue</button>
+        <button class="tpill p-out" data-filter="out"><span class="n" id="n-out">0</span> outdated version</button>
+      </div>
+      <button class="clear-filter" id="clear2">✕ Clear filter</button>
+      <div class="triage-right">
+        <button class="btn-ghost" id="remind-all">🔔 Remind all overdue</button>
+        <div class="nav-toggle"><button data-by="section" class="on">By section</button><button data-by="expert">By expert</button></div>
+        <div class="kbd-hint"><span><kbd>J</kbd>/<kbd>K</kbd></span><span><kbd>R</kbd> remind</span><span><kbd>Q</kbd> to Q&amp;A</span></div>
+      </div>
+    </div>
+    <main>
+      <aside class="nav" id="nav2"></aside>
+      <section class="center">
+        <div class="view view-pad on" id="view-table">
+          <div class="view-head"><h2>Expert qualification tracking</h2><span class="sub" id="table-sub"></span></div>
+          <table class="grid"><thead><tr>
+            <th style="width:70px">ID</th><th>Requirement</th><th style="width:160px">Expert</th>
+            <th style="width:150px">Status</th><th style="width:150px">Verdict</th><th style="width:70px">Age</th>
+          </tr></thead><tbody id="table2-body"></tbody></table>
+        </div>
+        <div class="view doc-scroll" id="view-doc"></div>
+        <div class="view view-pad" id="view-qa"></div>
+      </section>
+      <aside class="settings" id="settings2"></aside>
+    </main>
+  </div>
+
+  <!-- ============ SCREEN 3 ============ -->
+  <div class="hub" id="screen3">
+    <div class="hub-inner">
+      <div class="hub-tabs">
+        <button data-htab="versions" class="active">Document versions</button>
+        <button data-htab="issuer">Issuer responses <span class="tcount" id="iss-count">1</span></button>
+      </div>
+      <div id="htab-versions">
+        <div class="upload-zone">
+          <div class="upload-ic">⬆</div>
+          <div>
+            <div class="upload-t">Add a new AO document version</div>
+            <div class="upload-d">Drop a PDF here — AI processing starts immediately, then the gap analysis opens in Document review (Compare mode). Works at any stage, even mid-allocation.</div>
+          </div>
+          <button class="btn-primary" id="sim-upload">Simulate upload — v2.2</button>
+        </div>
+        <div class="vtimeline" id="vtimeline"></div>
+      </div>
+      <div id="htab-issuer" style="display:none">
+        <div class="iss-layout">
+          <div>
+            <div class="qa-toolbar" style="margin-bottom:12px">
+              <span style="font-size:12px;color:var(--text-3)">Q&amp;A batch sent to the issuer — record official answers below.</span>
+              <button class="btn-ghost" id="bulk-import" style="margin-left:auto">⇪ Import response document</button>
+            </div>
+            <div id="iss-list"></div>
+          </div>
+          <div class="iss-panel" id="iss-panel"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast-zone"></div>
+
+<script>
+/* =====================================================
+   SHARED DATA
+===================================================== */
+const EXPERTS=[
+  {id:"sup",name:"Sophie Lang",team:"Monitoring Team",init:"SL",color:"#6e7bf2"},
+  {id:"infra",name:"Karim Benali",team:"Infrastructure Team",init:"KB",color:"#3fb27f"},
+  {id:"cyber",name:"Claire Moreau",team:"Cybersecurity",init:"CM",color:"#e0a43c"},
+];
+const REQS=[
+  {id:"EXG-001",sec:"2. Functional requirements",type:"Functional",exp:"sup",st:"answered",verdict:"compliant",age:9,
+   text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family.",
+   resp:{note:"Standard acquisition stack covers all listed measurement families. No deviation from the requirement.",att:0,date:"Jul 12"}},
+  {id:"EXG-002",sec:"2. Functional requirements",type:"Functional",exp:"sup",st:"answered",verdict:"compliant",age:9,
+   text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type.",
+   resp:{note:"Dashboard aggregation (site / region / type) is available out of the box.",att:1,date:"Jul 12"}},
+  {id:"EXG-003",sec:"2. Functional requirements",type:"Functional",exp:"sup",st:"answered",verdict:"partial",age:8,outdated:true,
+   text:"The system SHALL generate an alert when a site's consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.",
+   resp:{note:"5-minute alerting is achievable, but the escalation matrix integration requires custom development (est. 12 days). Compliant with reservation.",att:0,date:"Jul 13"}},
+  {id:"EXG-004",sec:"2. Functional requirements",type:"Functional",exp:"sup",st:"opened",age:6,
+   text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets."},
+  {id:"EXG-011",sec:"2. Functional requirements",type:"Interface",exp:"infra",st:"answered",verdict:"non",age:7,
+   text:"The system SHALL expose site telemetry to third-party tools through a documented REST API.",
+   resp:{note:"Current API rate limits are below the implied third-party load. Meeting the requirement would need a gateway rework — not feasible within the proposed budget envelope.",att:1,date:"Jul 14"}},
+  {id:"EXG-012",sec:"2. Functional requirements",type:"Interface",exp:"infra",st:"opened",age:2,
+   text:"The system SHALL import weather forecast feeds, refreshed every 15 minutes."},
+  {id:"EXG-005",sec:"3. Performance requirements",type:"Performance",exp:"infra",st:"answered",verdict:"compliant",age:8,
+   text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites.",
+   resp:{note:"3 s refresh validated in load test for 250 simultaneous sites.",att:1,date:"Jul 12"}},
+  {id:"EXG-006",sec:"3. Performance requirements",type:"Performance",exp:"infra",st:"answered",verdict:"needs-clar",age:7,
+   text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile.",
+   resp:{note:"Cannot commit without knowing whether the one-year depth is a rolling year or a calendar year — the storage strategy differs. Please clarify with the issuer.",att:0,date:"Jul 14"}},
+  {id:"EXG-007",sec:"3. Performance requirements",type:"Performance",exp:"infra",st:"sent",age:7,
+   text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows."},
+  {id:"EXG-008",sec:"4. Security requirements",type:"Security",exp:"cyber",st:"answered",verdict:"compliant",age:8,
+   text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges.",
+   resp:{note:"MFA enforced through the corporate IdP for all privileged profiles.",att:0,date:"Jul 13"}},
+  {id:"EXG-009",sec:"4. Security requirements",type:"Security",exp:"cyber",st:"answered",verdict:"needs-clar",age:6,
+   text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years.",
+   resp:{note:"Logging is fully supported. However the 3-year retention conflicts with the group policy (5 years) — needs to be confirmed with the issuer before commitment.",att:0,date:"Jul 15"}},
+  {id:"EXG-010",sec:"4. Security requirements",type:"Security",exp:"cyber",st:"answered",verdict:"compliant",age:8,
+   text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review.",
+   resp:{note:"TLS 1.3 supported end-to-end on new deployments; see open question regarding legacy gateways.",att:0,date:"Jul 13"}},
+];
+const OVERDUE_DAYS=5;
+let QA=[
+  {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",reqs:["EXG-006"],from:"Karim Benali",date:"Jul 14"},
+  {id:"QA-02",st:"internal",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",reqs:["EXG-009"],from:"Claire Moreau",date:"Jul 15"},
+  {id:"QA-03",st:"draft",q:"Which TLS version applies to legacy site gateways?",reqs:["EXG-010"],from:"Claire Moreau",date:"Jul 16",dup:"QA-04"},
+  {id:"QA-04",st:"draft",q:"Is TLS 1.3 mandatory for gateways already deployed on existing sites?",reqs:["EXG-008"],from:"Karim Benali",date:"Jul 16",dup:"QA-03"},
+  {id:"QA-05",st:"answered",q:"Does the escalation matrix referenced in the alerting requirement come from the issuer or the contractor?",reqs:["EXG-003"],from:"Sophie Lang",date:"Jul 10",
+   ans:"The escalation matrix will be provided by the issuer at contract award (Annex F).",ansDate:"Jul 13"},
+];
+const VERSIONS=[
+  {num:"v2.1",state:"reviewing",date:"Jul 16, 2026",note:"Addendum n°2 — alerting threshold revision",gap:{a:1,m:2,r:1},prog:"2/4 changes reviewed"},
+  {num:"v2.0",state:"integrated",date:"May 28, 2026",note:"Consolidated issue after pre-tender meeting",gap:{a:6,m:9,r:2}},
+  {num:"v1.0",state:"integrated",date:"Mar 3, 2026",note:"Initial AO release",gap:null},
+];
+const STL={sent:"Sent",opened:"Opened",answered:"Answered",clarif:"Clarification requested",closed:"Closed"};
+const VDL={compliant:"Compliant",partial:"Partially compliant",non:"Non-compliant","needs-clar":"Needs clarification"};
+
+const state={screen:2,view:"table",navBy:"section",sel:null,filter:null,tab:"response",htab:"versions",selQ:null,uploaded:false};
+
+const expOf=id=>EXPERTS.find(e=>e.id===id);
+const findR=id=>REQS.find(r=>r.id===id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+const isAwait=r=>r.st==="sent"||r.st==="opened";
+const isOver=r=>isAwait(r)&&r.age>=OVERDUE_DAYS;
+const needsClar=r=>r.verdict==="needs-clar"||r.st==="clarif";
+
+/* =====================================================
+   TOASTS
+===================================================== */
+function toast(msg,kind="ok"){
+  const z=document.getElementById("toast-zone"),t=document.createElement("div");
+  t.className="toast";
+  t.innerHTML=`<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>`;
+  z.appendChild(t);
+  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3600);
+}
+
+/* =====================================================
+   FILTERS
+===================================================== */
+function passes(r){
+  if(state.filter==="await")return isAwait(r);
+  if(state.filter==="clar")return needsClar(r);
+  if(state.filter==="over")return isOver(r);
+  if(state.filter==="out")return !!r.outdated;
+  return true;
+}
+
+/* =====================================================
+   NAV (screen 2)
+===================================================== */
+function renderNav2(){
+  const nav=document.getElementById("nav2");nav.innerHTML="";
+  if(state.navBy==="section"){
+    const secs=[...new Set(REQS.map(r=>r.sec))];
+    secs.forEach(sec=>{
+      const h=document.createElement("div");h.className="nav-section-head";h.textContent=sec;nav.appendChild(h);
+      REQS.filter(r=>r.sec===sec).forEach(r=>{
+        const el=document.createElement("div");
+        el.className="nav-item"+(state.sel===r.id?" active":"")+(passes(r)?"":" dimmed");
+        el.innerHTML=`<span class="vdot ${r.verdict||"none"}"></span><span class="nid">${r.id}</span><span class="nlabel">${r.text.slice(0,46)}…</span>`;
+        el.addEventListener("click",()=>select(r.id));
+        nav.appendChild(el);
+      });
+    });
+  }else{
+    EXPERTS.forEach(e=>{
+      const mine=REQS.filter(r=>r.exp===e.id);
+      const done=mine.filter(r=>r.st==="answered"||r.st==="closed").length;
+      const pending=mine.filter(isAwait).length;
+      const over=mine.filter(isOver).length;
+      const silence=Math.max(0,...mine.filter(isAwait).map(r=>r.age));
+      const card=document.createElement("div");
+      card.className="exp-card";
+      card.innerHTML=`
+        <div class="exp-top">
+          <div class="exp-avatar" style="background:${e.color}">${e.init}</div>
+          <div><div class="exp-name">${e.name}</div><div class="exp-team">${e.team}</div></div>
+          <button class="exp-remind" data-remind="${e.id}">🔔 Remind</button>
+        </div>
+        <div class="exp-bar"><div style="width:${done/mine.length*100}%"></div></div>
+        <div class="exp-meta"><span><b>${done}/${mine.length}</b> answered</span>
+          <span>${over?`<span class="exp-silence">${over} overdue · silent ${silence} d</span>`:pending?`${pending} pending`:"all done ✓"}</span></div>`;
+      card.addEventListener("click",ev=>{
+        if(ev.target.closest("[data-remind]"))return;
+        const first=mine.find(r=>passes(r))||mine[0];select(first.id);
+      });
+      card.querySelector("[data-remind]").addEventListener("click",()=>remindExpert(e));
+      nav.appendChild(card);
+    });
+  }
+}
+function remindExpert(e){
+  const over=REQS.filter(r=>r.exp===e.id&&isAwait(r));
+  toast(`Reminder sent to ${e.name} — ${over.length} pending requirement${over.length>1?"s":""}`,"ok");
+}
+
+/* =====================================================
+   TABLE (screen 2)
+===================================================== */
+function actionScore(r){ if(isOver(r))return 0; if(needsClar(r))return 1; if(r.outdated)return 2; if(isAwait(r))return 3; if(r.st==="answered")return 4; return 5; }
+function tableRows(){ return REQS.filter(passes).sort((a,b)=>actionScore(a)-actionScore(b)); }
+function renderTable2(){
+  const body=document.getElementById("table2-body");body.innerHTML="";
+  const rows=tableRows();
+  document.getElementById("table-sub").textContent=`${rows.length} requirements — action items first (overdue, clarifications, outdated)`;
+  rows.forEach(r=>{
+    const e=expOf(r.exp);
+    const tr=document.createElement("tr");
+    tr.className="rrow"+(state.sel===r.id?" active":"");
+    tr.dataset.id=r.id;
+    tr.innerHTML=`
+      <td class="rid">${r.id}</td>
+      <td class="rtext"><div class="excerpt">${r.text}</div><button class="peek-btn" data-peek="${r.id}">↳ View source passage</button></td>
+      <td><span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name.split(" ")[0]}</span></td>
+      <td><span class="spill ${r.st}">${STL[r.st]}</span>${r.outdated?'<span class="flag-out">Δ outdated version</span>':""}</td>
+      <td>${r.verdict?`<span class="vpill ${r.verdict}">${VDL[r.verdict]}</span>`:'<span class="vpill none">—</span>'}</td>
+      <td class="age ${isOver(r)?"over":""}">${r.age} d</td>`;
+    tr.addEventListener("click",ev=>{ if(ev.target.closest("button"))return; select(r.id); });
+    body.appendChild(tr);
+  });
+  body.querySelectorAll("[data-peek]").forEach(b=>b.addEventListener("click",ev=>{
+    ev.stopPropagation();
+    const tr=b.closest("tr"),nx=tr.nextElementSibling;
+    if(nx&&nx.classList.contains("peek-row")){nx.remove();return;}
+    document.querySelectorAll(".peek-row").forEach(x=>x.remove());
+    const r=findR(b.dataset.peek);
+    const p=document.createElement("tr");p.className="peek-row";
+    p.innerHTML=`<td colspan="6"><div class="peek-paper"><div class="peek-ctx">Source passage (read-only) — ${r.sec} · ${r.id}</div>${r.text}</div></td>`;
+    tr.after(p);
+  }));
+}
+
+/* =====================================================
+   DOCUMENT VIEW (screen 2)
+===================================================== */
+function renderDoc2(){
+  const v=document.getElementById("view-doc");
+  const legend=`<div class="legend">
+    <span><span class="vdot compliant"></span>Compliant</span>
+    <span><span class="vdot partial"></span>Partially</span>
+    <span><span class="vdot non"></span>Non-compliant</span>
+    <span><span class="vdot needs-clar"></span>Needs clarification</span>
+    <span><span class="vdot none"></span>Awaiting</span></div>`;
+  const secs=[...new Set(REQS.map(r=>r.sec))];
+  let paper=`<div class="paper"><div class="doc-h1">Technical Requirements Specification</div>
+    <div class="doc-sub">Qualification synthesis — verdicts overlaid on source · read-only</div>`;
+  secs.forEach(sec=>{
+    paper+=`<div class="doc-h2">${sec}</div>`;
+    REQS.filter(r=>r.sec===sec).forEach(r=>{
+      paper+=`<div class="dblk ${r.verdict||"none"}${state.sel===r.id?" selected":""}" data-id="${r.id}">
+        <span class="blk-id">${r.id}</span>
+        <span class="vtag">${r.verdict?VDL[r.verdict]:STL[r.st]}</span>${r.text}</div>`;
+    });
+  });
+  paper+=`</div>`;
+  v.innerHTML=legend+paper;
+  v.querySelectorAll(".dblk").forEach(b=>b.addEventListener("click",()=>select(b.dataset.id)));
+}
+
+/* =====================================================
+   Q&A REGISTER (screen 2)
+===================================================== */
+function qaGroups(){ return [["draft","Draft"],["internal","Internal review"],["sent","Sent to issuer"],["answered","Answered by issuer"]]; }
+function renderQA(){
+  const v=document.getElementById("view-qa");
+  const dupPair=QA.filter(q=>q.dup&&QA.find(x=>x.id===q.dup));
+  let html=`<div class="view-head"><h2>Q&amp;A register</h2><span class="sub">${QA.length} questions · duplicates are merged before submission</span>
+    <button class="btn-primary" style="margin-left:auto" id="send-batch">Send batch to issuer</button></div>`;
+  if(dupPair.length>=2){
+    const[a,b]=dupPair;
+    html+=`<div class="dedup"><div class="ia-head">✦ AI — possible duplicate detected</div>
+      <p><b>${a.id}</b> "${a.q}" and <b>${b.id}</b> "${b.q}" appear to ask the same thing. Merging keeps all requirement links (${[...a.reqs,...b.reqs].join(", ")}).</p>
+      <div class="actions"><button class="accept" id="merge-yes">Merge into one question</button><button class="reject" id="merge-no">Keep separate</button></div></div>`;
+  }
+  qaGroups().forEach(([st,label])=>{
+    const items=QA.filter(q=>q.st===st);
+    if(!items.length)return;
+    html+=`<div class="qa-group"><div class="qa-group-head">${label} <span style="color:var(--text-2)">· ${items.length}</span></div>`;
+    items.forEach(q=>{
+      html+=`<div class="qa-card"><div class="qa-top"><span class="qa-id">${q.id}</span><span class="qa-q">${q.q}</span></div>
+        <div class="qa-meta">${q.reqs.map(r=>`<span class="qa-req">${r}</span>`).join("")}<span>raised by ${q.from} · ${q.date}</span></div>
+        ${q.ans?`<div class="qa-ans"><b>Issuer answer · ${q.ansDate}</b>${esc(q.ans)}</div>`:""}</div>`;
+    });
+    html+=`</div>`;
+  });
+  v.innerHTML=html;
+  v.querySelector("#merge-yes")?.addEventListener("click",()=>{
+    const[a,b]=QA.filter(q=>q.dup);
+    a.q="Please confirm which TLS version applies to legacy gateways already deployed on existing sites (TLS 1.3 mandatory or grandfathering allowed?).";
+    a.reqs=[...new Set([...a.reqs,...b.reqs])];a.st="internal";delete a.dup;
+    QA=QA.filter(q=>q.id!==b.id);
+    toast("Questions merged — moved to Internal review with both requirement links","ok");refreshAll();
+  });
+  v.querySelector("#merge-no")?.addEventListener("click",()=>{QA.forEach(q=>delete q.dup);toast("Kept as separate questions","ok");refreshAll();});
+  v.querySelector("#send-batch")?.addEventListener("click",()=>{
+    const n=QA.filter(q=>q.st==="internal").length;
+    if(!n){toast("No question in Internal review — nothing to send","warn");return;}
+    QA.forEach(q=>{if(q.st==="internal")q.st="sent";});
+    toast(`Batch of ${n} question${n>1?"s":""} sent to the issuer — record answers in Versions & exchanges`,"ok");refreshAll();
+  });
+  document.getElementById("qa-count").textContent=QA.length;
+}
+
+/* =====================================================
+   RIGHT PANEL (screen 2)
+===================================================== */
+function renderPanel2(){
+  const p=document.getElementById("settings2");
+  if(!state.sel){
+    const done=REQS.filter(r=>r.st==="answered"||r.st==="closed").length;
+    p.innerHTML=`<div class="set-empty"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
+      <div class="big">No requirement selected</div>
+      <div>Select a row or a block to see the expert response.<br><br><b style="color:var(--text-2)">${done}/${REQS.length}</b> answered · <b style="color:var(--text-2)">${REQS.filter(isOver).length}</b> overdue.</div></div>`;
+    return;
+  }
+  const r=findR(state.sel),e=expOf(r.exp);
+  p.innerHTML=`
+    <div class="set-head">
+      <div class="set-id-row"><span class="set-id">${r.id}</span>
+        <span class="spill ${r.st}">${STL[r.st]}</span>
+        ${r.verdict?`<span class="vpill ${r.verdict}">${VDL[r.verdict]}</span>`:""}
+        ${r.outdated?'<span class="flag-out">Δ outdated version</span>':""}</div>
+      <div class="set-title">${r.text.slice(0,90)}…</div>
+    </div>
+    <div class="set-tabs">
+      <button data-t="response" class="${state.tab==="response"?"active":""}">Response</button>
+      <button data-t="activity" class="${state.tab==="activity"?"active":""}">Activity</button>
+      <button data-t="req" class="${state.tab==="req"?"active":""}">Requirement</button>
+    </div>
+    <div class="set-body" id="set2-body"></div>`;
+  p.querySelectorAll("[data-t]").forEach(t=>t.addEventListener("click",()=>{state.tab=t.dataset.t;renderPanel2()}));
+  const b=p.querySelector("#set2-body");
+  if(state.tab==="response"){
+    if(r.resp){
+      b.innerHTML=`
+        <div class="field"><label>Expert</label>
+          <div class="fval"><span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.team}</span></div></div>
+        <div class="field"><label>Response · ${r.resp.date}</label>
+          <div class="resp-note">${r.resp.note}</div>
+          ${r.resp.att?`<span class="attach">📎 evidence-${r.id.toLowerCase()}.pdf</span>`:""}</div>
+        ${r.outdated?`<div class="vimpact" style="margin-bottom:12px"><b>Answered on outdated version.</b> The requirement text changed in a later document version — the expert must confirm or update this response.</div>`:""}
+        ${r.st!=="closed"?`
+        <button class="cta ok" id="a-accept">✓ Accept response</button>
+        <button class="cta line" id="a-clarify">↩ Request clarification</button>
+        <button class="cta blue" id="a-escalate">⇗ Escalate to client Q&amp;A <kbd style="font-family:var(--font-mono);font-size:10px;opacity:.7">Q</kbd></button>`:
+        `<button class="cta line" disabled style="cursor:default">Response accepted — closed</button>`}`;
+      b.querySelector("#a-accept")?.addEventListener("click",()=>{r.st="closed";toast(`${r.id} — response accepted and closed`,"ok");refreshAll();});
+      b.querySelector("#a-clarify")?.addEventListener("click",()=>{r.st="clarif";toast(`Clarification requested from ${e.name} on ${r.id}`,"ok");refreshAll();});
+      b.querySelector("#a-escalate")?.addEventListener("click",()=>escalate(r));
+    }else{
+      b.innerHTML=`
+        <div class="field"><label>Expert</label>
+          <div class="fval"><span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.team}</span></div></div>
+        <div class="field"><label>Status</label>
+          <div class="fval">No response yet — request ${r.st==="opened"?"opened but unanswered":"sent"} <b class="${isOver(r)?"age over":""}">${r.age} days ago</b>.${isOver(r)?" Above the "+OVERDUE_DAYS+"-day threshold.":""}</div></div>
+        <button class="cta blue" id="a-remind">🔔 Send a reminder <kbd style="font-family:var(--font-mono);font-size:10px;opacity:.7">R</kbd></button>`;
+      b.querySelector("#a-remind").addEventListener("click",()=>toast(`Reminder sent to ${e.name} for ${r.id}`,"ok"));
+    }
+  }else if(state.tab==="activity"){
+    const items=[];
+    if(r.st==="closed")items.push({k:"tl-ok",who:"Thibaud Breton",what:"Response accepted — requirement closed.",time:"Today"});
+    if(r.st==="clarif")items.push({k:"tl-send",who:"Thibaud Breton",what:`Clarification requested from ${e.name}.`,time:"Today"});
+    if(r.resp)items.push({k:"tl-ok",who:e.name,what:`Responded — verdict "${VDL[r.verdict]||"—"}".`,time:r.resp.date});
+    if(isOver(r))items.push({k:"tl-warn",who:"System",what:`Overdue threshold reached (${OVERDUE_DAYS} days without response).`,time:`${r.age-OVERDUE_DAYS+1} d ago`});
+    if(r.st==="opened"||r.resp)items.push({k:"",who:e.name,what:"Opened the qualification request.",time:`${Math.max(1,r.age-1)} d ago`});
+    items.push({k:"tl-send",who:"Thibaud Breton",what:`Qualification request sent with link to the requirement.`,time:`${r.age} d ago (export from Document review)`});
+    b.innerHTML=`<div class="timeline">${items.map(i=>`<div class="tl-item ${i.k}"><div class="tl-who">${i.who}</div><div class="tl-what">${i.what}</div><div class="tl-time">${i.time}</div></div>`).join("")}</div>`;
+  }else{
+    b.innerHTML=`
+      <div class="lock-note">🔒 Frozen at review export — editable only through a new document version (Versions &amp; exchanges).</div>
+      <div class="frozen"><div class="fk">Type</div><div class="fv">${r.type}</div></div>
+      <div class="frozen"><div class="fk">Assignment</div><div class="fv">${e.name} — ${e.team}</div></div>
+      <div class="frozen"><div class="fk">Source section</div><div class="fv">${r.sec}</div></div>
+      <div class="field" style="margin-top:14px"><label>Source passage (read-only)</label>
+        <div class="fval" style="font-family:var(--font-doc);background:var(--paper);color:var(--paper-ink);padding:11px 13px;border-radius:6px;line-height:1.55">${r.text}</div></div>`;
+  }
+}
+function escalate(r){
+  const id="QA-0"+(QA.length+2);
+  QA.unshift({id,st:"draft",q:`[Draft] Clarification needed on ${r.id}: ${r.resp?r.resp.note.split(".")[0]+".":r.text.slice(0,80)+"…"}`,reqs:[r.id],from:"Thibaud Breton",date:"Today"});
+  toast(`${r.id} escalated — draft question ${id} created in the Q&A register`,"ok");
+  refreshAll();
+}
+
+/* =====================================================
+   TRIAGE (screen 2)
+===================================================== */
+function renderTriage2(){
+  const done=REQS.filter(r=>r.st==="answered"||r.st==="closed").length;
+  document.getElementById("p2-num").textContent=`${done}/${REQS.length}`;
+  document.getElementById("p2-fill").style.width=(done/REQS.length*100)+"%";
+  document.getElementById("n-await").textContent=REQS.filter(isAwait).length;
+  document.getElementById("n-clar").textContent=REQS.filter(needsClar).length;
+  document.getElementById("n-over").textContent=REQS.filter(isOver).length;
+  document.getElementById("n-out").textContent=REQS.filter(r=>r.outdated).length;
+}
+
+/* =====================================================
+   SCREEN 3 — VERSIONS
+===================================================== */
+function vcardHTML(v){
+  const states={processing:"AI processing",ready:"Gap analysis ready",reviewing:"Review in progress",integrated:"Integrated"};
+  let inner=`<div class="vtop"><span class="vnum">${v.num}</span><span class="vstate ${v.state}">${states[v.state]}</span><span class="vdate">${v.date}</span></div>
+    <div class="vnote">${v.note}</div>`;
+  if(v.state==="processing")inner+=`<div class="procbar"><div></div></div><div class="vprog">Segmenting document · computing diff against ${v.prev||"previous version"}…</div>`;
+  if(v.gap&&v.state!=="processing")inner+=`<div class="gap-chips"><span class="gchip a">+${v.gap.a} added</span><span class="gchip m">~${v.gap.m} modified</span><span class="gchip r">−${v.gap.r} removed</span></div>`;
+  if(v.impact)inner+=`<div class="vimpact"><b>Downstream impact:</b> ${v.impact}</div>`;
+  if(v.state==="reviewing")inner+=`<div class="vprog"><div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>${v.prog}</div>`;
+  if(v.state==="ready"||v.state==="reviewing")
+    inner+=`<div class="vactions"><a class="btn-primary" href="javascript:parent.route('review')">⇄ ${v.state==="ready"?"Review changes in Compare mode":"Resume change review"}</a></div>`;
+  if(v.state==="integrated"&&v.gap)inner+=`<div class="vactions"><button class="btn-ghost" onclick="toast('Historical diff opened (read-only)','ok')">View historical diff</button></div>`;
+  return inner;
+}
+function renderVersions(){
+  const t=document.getElementById("vtimeline");t.innerHTML="";
+  VERSIONS.forEach(v=>{
+    const c=document.createElement("div");c.className="vcard "+v.state;c.innerHTML=vcardHTML(v);t.appendChild(c);
+  });
+}
+document.getElementById("sim-upload").addEventListener("click",()=>{
+  if(state.uploaded){toast("v2.2 already uploaded","warn");return;}
+  state.uploaded=true;
+  VERSIONS.unshift({num:"v2.2",state:"processing",date:"Today",note:"Addendum n°3 — received during allocation of v2.1",prev:"v2.1"});
+  renderVersions();
+  toast("v2.2 uploaded — AI processing started","ok");
+  setTimeout(()=>{
+    VERSIONS[0]={num:"v2.2",state:"ready",date:"Today",note:"Addendum n°3 — received during allocation of v2.1",gap:{a:2,m:1,r:0},
+      impact:"EXG-005 was modified and already has an expert response → flagged as <b>answered on outdated version</b> in Expert follow-up. Unchanged requirements keep their characterization, assignment and status."};
+    const r5=findR("EXG-005");r5.outdated=true;
+    renderVersions();refreshAll();
+    toast("Gap analysis ready: +2 ~1 −0 — the active review switches to v2.2","ok");
+    setTimeout(()=>toast("1 expert response flagged as answered on outdated version (EXG-005)","warn"),1000);
+  },2400);
+});
+
+/* =====================================================
+   SCREEN 3 — ISSUER RESPONSES
+===================================================== */
+function renderIssuer(){
+  const list=document.getElementById("iss-list");list.innerHTML="";
+  const rows=QA.filter(q=>q.st==="sent"||q.st==="answered");
+  document.getElementById("iss-count").textContent=QA.filter(q=>q.st==="sent").length;
+  rows.forEach(q=>{
+    const el=document.createElement("div");
+    el.className="iss-row"+(state.selQ===q.id?" active":"")+(q.flagged?" flagged":"");
+    el.innerHTML=`<div class="iss-top"><span class="qa-id">${q.id}</span><span class="iss-q">${q.q}</span></div>
+      <div class="iss-meta">${q.reqs.map(r=>`<span class="qa-req">${r}</span>`).join("")}
+        <span>sent ${q.date}</span>
+        ${q.st==="answered"?'<span class="vpill compliant">Answered · propagated</span>':'<span class="vpill none">Awaiting issuer</span>'}
+        ${q.flagged?'<span class="flag-out" style="background:var(--warn-soft);color:var(--warn)">Uncertain match — confirm manually</span>':""}</div>
+      ${q.ans?`<div class="qa-ans"><b>Issuer answer · ${q.ansDate}</b>${esc(q.ans)}</div>`:""}`;
+    el.addEventListener("click",()=>{state.selQ=q.id;renderIssuer();});
+    list.appendChild(el);
+  });
+  const panel=document.getElementById("iss-panel");
+  const q=QA.find(x=>x.id===state.selQ);
+  if(!q){panel.innerHTML=`<h3>Record an issuer answer</h3><div style="font-size:12px;color:var(--text-3);line-height:1.6">Select a question on the left, or import the official response document to let the AI match answers to questions.</div>`;return;}
+  if(q.st==="answered"){
+    panel.innerHTML=`<h3>${q.id} — answered</h3>
+      <div class="field"><label>Official answer · ${q.ansDate}</label><div class="resp-note">${esc(q.ans)}</div></div>
+      <div class="prop-chain"><span class="done">✓ Recorded</span><br><span class="done">✓ Propagated to ${q.reqs.join(", ")}</span><br><span class="done">✓ Experts notified — awaiting expert update</span></div>`;
+    return;
+  }
+  panel.innerHTML=`<h3>${q.id} — record the issuer answer</h3>
+    <div class="field"><label>Answer text</label><textarea class="resp-in" id="iss-text" placeholder="Paste the official answer…">The one-year depth refers to a rolling year. P95 commitment is confirmed on that basis.</textarea></div>
+    <div class="field"><label>Attachment</label><span class="attach">📎 issuer-QA-responses-batch1.pdf</span></div>
+    <button class="cta blue" id="iss-record">Record &amp; propagate</button>
+    <div class="prop-chain" id="iss-chain">Will propagate to ${q.reqs.join(", ")} and notify the assigned expert${q.reqs.length>1?"s":""}.</div>`;
+  panel.querySelector("#iss-record").addEventListener("click",()=>{
+    q.ans=panel.querySelector("#iss-text").value;q.ansDate="Today";q.st="answered";delete q.flagged;
+    q.reqs.forEach(id=>{const r=findR(id);if(r&&r.verdict==="needs-clar"){r.st="clarif";}});
+    toast(`${q.id} recorded`,"ok");
+    setTimeout(()=>toast(`Propagated to ${q.reqs.join(", ")} — expert notified, awaiting expert update`,"ok"),700);
+    renderIssuer();refreshAll();
+  });
+}
+document.getElementById("bulk-import").addEventListener("click",()=>{
+  toast("Response document processed — 1 answer matched automatically","ok");
+  const q=QA.find(x=>x.st==="sent"&&!x.flagged);
+  if(q){q.flagged=true;setTimeout(()=>toast("1 uncertain match flagged for manual confirmation","warn"),900);}
+  renderIssuer();
+});
+
+/* =====================================================
+   NAVIGATION / GLOBAL
+===================================================== */
+function select(id){state.sel=id;refreshAll();
+  const el=document.querySelector(`.dblk[data-id="${id}"]`);
+  if(state.view==="doc"&&el)el.scrollIntoView({block:"center",behavior:"smooth"});
+}
+function reviewDone(){ try{ return !!(window.parent!==window && window.parent.isReviewValidated && window.parent.isReviewValidated()); }catch(e){ return false; } }
+function setScreen(n){
+  // TEMP (dev/demo): the review→follow-up gate below is left in place but bypassed, so the
+  // Follow-up screen stays reachable while it's being worked on. reviewDone() itself is untouched.
+  // if(n===2 && !reviewDone()){
+  //   toast("Follow-up is locked — finalize the document review first","warn");
+  //   n=3;
+  // }
+  state.screen=n;
+  document.getElementById("screen2").style.display=n===2?"flex":"none";
+  document.getElementById("screen3").classList.toggle("on",n===3);
+  document.getElementById("s2-views").style.display=n===2?"flex":"none";
+  document.getElementById("export2-btn").style.display=n===2?"inline-flex":"none";
+  const locked=false; // TEMP: see note above
+  const tf=document.getElementById("tab-followup");
+  tf.classList.toggle("locked",locked);
+  tf.innerHTML = locked ? "🔒 Follow-up" : "Follow-up";
+  document.querySelectorAll("#phase-nav .sn").forEach(s=>s.classList.toggle("on",s.dataset.screen==String(n)));
+  refreshAll();
+}
+function setView(v){
+  state.view=v;
+  document.querySelectorAll("#s2-views button").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
+  document.getElementById("view-table").classList.toggle("on",v==="table");
+  document.getElementById("view-doc").classList.toggle("on",v==="doc");
+  document.getElementById("view-qa").classList.toggle("on",v==="qa");
+}
+function refreshAll(){
+  renderNav2();renderTable2();renderDoc2();renderQA();renderPanel2();renderTriage2();
+  if(state.screen===3){renderVersions();renderIssuer();}
+}
+document.querySelectorAll("#phase-nav [data-screen]").forEach(b=>b.addEventListener("click",()=>setScreen(+b.dataset.screen)));
+document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
+document.querySelectorAll(".nav-toggle button").forEach(b=>b.addEventListener("click",()=>{
+  state.navBy=b.dataset.by;
+  document.querySelectorAll(".nav-toggle button").forEach(x=>x.classList.toggle("on",x===b));
+  renderNav2();
+}));
+document.querySelectorAll(".tpill").forEach(p=>p.addEventListener("click",()=>{
+  state.filter=state.filter===p.dataset.filter?null:p.dataset.filter;
+  document.querySelectorAll(".tpill").forEach(x=>x.classList.toggle("active",x.dataset.filter===state.filter));
+  document.getElementById("clear2").classList.toggle("visible",!!state.filter);
+  refreshAll();
+}));
+document.getElementById("clear2").addEventListener("click",()=>{
+  state.filter=null;
+  document.querySelectorAll(".tpill").forEach(x=>x.classList.remove("active"));
+  document.getElementById("clear2").classList.remove("visible");
+  refreshAll();
+});
+document.getElementById("remind-all").addEventListener("click",()=>{
+  const over=REQS.filter(isOver);
+  if(!over.length){toast("Nothing overdue — all good","ok");return;}
+  const exps=[...new Set(over.map(r=>r.exp))].map(id=>expOf(id).name);
+  toast(`Reminders sent to ${exps.join(" and ")} — ${over.length} overdue requirement${over.length>1?"s":""}`,"ok");
+});
+document.getElementById("export2-btn").addEventListener("click",()=>{
+  const non=REQS.filter(r=>r.verdict==="non").length,wait=REQS.filter(isAwait).length;
+  toast("Compliance register STB-2026_qualification.xlsx generated","ok");
+  setTimeout(()=>toast(`Risk summary included: ${non} non-compliant · ${wait} without response`,"warn"),800);
+});
+document.querySelectorAll(".hub-tabs button").forEach(b=>b.addEventListener("click",()=>{
+  state.htab=b.dataset.htab;
+  document.querySelectorAll(".hub-tabs button").forEach(x=>x.classList.toggle("active",x===b));
+  document.getElementById("htab-versions").style.display=state.htab==="versions"?"block":"none";
+  document.getElementById("htab-issuer").style.display=state.htab==="issuer"?"block":"none";
+  refreshAll();
+}));
+/* Keyboard — table view */
+document.addEventListener("keydown",e=>{
+  if(e.target.matches("input,select,textarea"))return;
+  if(state.screen!==2||state.view!=="table")return;
+  const rows=tableRows();if(!rows.length)return;
+  let i=rows.findIndex(r=>r.id===state.sel);
+  if(e.key==="j"||e.key==="J"||e.key==="ArrowDown"){e.preventDefault();select(rows[Math.min(i+1,rows.length-1)].id);}
+  if(e.key==="k"||e.key==="K"||e.key==="ArrowUp"){e.preventDefault();select(rows[Math.max(i-1,0)].id);}
+  if((e.key==="r"||e.key==="R")&&state.sel){const r=findR(state.sel);toast(`Reminder sent to ${expOf(r.exp).name} for ${r.id}`,"ok");}
+  if((e.key==="q"||e.key==="Q")&&state.sel){escalate(findR(state.sel));}
+});
+/* Init — default to Follow-up. TEMP (dev/demo): was gated on reviewDone(), now always accessible; see setScreen(). */
+if(location.hash==="#versions"){setScreen(3);}else{setScreen(2);}
+</script>
+</body>
+</html>

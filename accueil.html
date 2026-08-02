@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocReview — My tenders</title>
+<style>
+:root{
+  --bg:#0d0f14; --panel:#12151c; --panel-2:#171b24; --panel-3:#1d2230;
+  --line:#232937; --line-2:#2d3446;
+  --text:#e6e9f0; --text-2:#9aa3b5; --text-3:#66708a;
+  --accent:#6e7bf2; --accent-soft:rgba(110,123,242,.14);
+  --ia:#e0a43c; --ia-soft:rgba(224,164,60,.12);
+  --ok:#3fb27f; --ok-soft:rgba(63,178,127,.12);
+  --human:#a06ef2; --human-soft:rgba(160,110,242,.12);
+  --warn:#e5544b; --warn-soft:rgba(229,84,75,.12);
+  --font-ui:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+}
+html[data-theme="light"]{
+  --bg:#eef1f5; --panel:#ffffff; --panel-2:#f4f6f9; --panel-3:#e9edf3;
+  --line:#e4e8ee; --line-2:#d0d6df;
+  --text:#1a1e27; --text-2:#525d72; --text-3:#87909f;
+  --accent:#5562e6; --accent-soft:rgba(85,98,230,.10);
+  --ia:#b9770f; --ia-soft:rgba(185,119,15,.12);
+  --ok:#2f9d6b; --ok-soft:rgba(47,157,107,.12);
+  --human:#8250dc; --human-soft:rgba(130,80,220,.12);
+  --warn:#d23f38; --warn-soft:rgba(210,63,56,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:5px;border:2px solid var(--bg)}
+#app{display:flex;flex-direction:column;height:100vh}
+header{display:flex;align-items:center;gap:14px;height:52px;padding:0 18px;background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;letter-spacing:-.2px}
+.logo-mark{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--accent),#4a55c4);display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn-ghost{padding:7px 13px;border-radius:8px;border:1px solid var(--line-2);color:var(--text-2);font-weight:500;font-size:12px;transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+.btn-primary{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;font-size:12.5px;transition:all .15s}
+.btn-primary:hover{background:#7d89ff}
+.reset-btn{font-size:11px;color:var(--text-3);padding:5px 10px;border-radius:7px;border:1px solid transparent}
+.reset-btn:hover{border-color:var(--warn);color:var(--warn)}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6e7bf2,#a06ef2);display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff}
+
+.scroll{flex:1;overflow-y:auto}
+.wrap{max-width:1120px;margin:0 auto;padding:30px 24px 80px}
+.home-hero{display:flex;align-items:flex-end;gap:16px;margin-bottom:22px}
+.home-hero h1{font-size:23px;font-weight:700;letter-spacing:-.4px}
+.home-hero .sub{font-size:12.5px;color:var(--text-3);margin-top:5px}
+.home-hero .btn-primary{margin-left:auto}
+.tabs{display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.tab{padding:9px 14px;font-size:12.5px;color:var(--text-3);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab:hover{color:var(--text-2)}
+.tab.on{color:var(--text);border-bottom-color:var(--accent)}
+.tab .c{font-size:10.5px;color:var(--text-3);margin-left:5px;font-variant-numeric:tabular-nums}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.pcard{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:17px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:12px;min-height:172px}
+.pcard:hover{border-color:var(--accent);transform:translateY(-2px)}
+.pcard.processing{cursor:default}
+.pcard.processing:hover{transform:none;border-color:var(--line)}
+.pcard.submitted{opacity:.72}
+.pc-top{display:flex;align-items:center;gap:8px}
+.pc-ref{font-family:var(--font-mono);font-size:10.5px;color:var(--text-3);letter-spacing:.3px}
+.pc-badge{margin-left:auto;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;letter-spacing:.2px}
+.pc-badge .bdot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.b-processing{background:var(--accent-soft);color:var(--accent)}
+.b-processing .bdot{animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.b-req{background:var(--ia-soft);color:var(--ia)}
+.b-exp{background:var(--accent-soft);color:var(--accent)}
+.b-qa{background:var(--human-soft);color:var(--human)}
+.b-sub{background:var(--ok-soft);color:var(--ok)}
+.pc-name{font-size:15.5px;font-weight:600;letter-spacing:-.2px;line-height:1.3}
+.pc-meta{font-size:11.5px;color:var(--text-3);display:flex;flex-wrap:wrap;gap:5px 12px}
+.pc-meta b{color:var(--text-2);font-weight:600}
+.pc-body{margin-top:auto}
+.pc-prog{display:flex;flex-direction:column;gap:7px}
+.pc-prog-top{display:flex;justify-content:space-between;font-size:11px;color:var(--text-2)}
+.pc-prog-top .pct{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600}
+.pc-bar{height:6px;border-radius:3px;background:var(--panel-3);overflow:hidden}
+.pc-bar>div{height:100%;background:linear-gradient(90deg,var(--accent),#8b95ff);border-radius:3px;transition:width .5s ease}
+.pc-stat{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)}
+.pc-stat .mini-bar{flex:1;height:5px;border-radius:3px;background:var(--panel-3);overflow:hidden}
+.pc-stat .mini-bar>div{height:100%;border-radius:3px;background:var(--ok)}
+.pc-foot{display:flex;align-items:center;font-size:10.5px;color:var(--text-3);margin-top:11px;padding-top:11px;border-top:1px solid var(--line)}
+.pc-foot .open{margin-left:auto;color:var(--accent);opacity:0;transition:opacity .15s}
+.pcard:hover .pc-foot .open{opacity:1}
+.pc-processing-note{font-size:10.5px;color:var(--text-3)}
+.deadline-chip{font-weight:600}
+.deadline-chip.soon{color:var(--ia)}
+.deadline-chip.urgent{color:var(--warn)}
+.empty{grid-column:1/-1;border:1px dashed var(--line-2);border-radius:12px;padding:40px;text-align:center;color:var(--text-3);font-size:13px}
+
+#toast-zone{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{display:flex;align-items:center;gap:10px;background:var(--panel-3);border:1px solid var(--line-2);border-radius:10px;padding:10px 16px;font-size:12.5px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:tin .3s cubic-bezier(.34,1.3,.64,1)}
+@keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.t-ok{color:var(--ok)}.t-warn{color:var(--ia)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo"><div class="logo-mark">D</div>DocReview</div>
+    <div class="hdr-r">
+      <button class="reset-btn" id="reset-btn" title="Reset the demo to its initial state (for user testing)">↺ Reset demo</button>
+      <button class="btn-primary" id="new-btn">＋ New tender</button>
+      <div class="avatar">TB</div>
+    </div>
+  </header>
+
+  <div class="scroll">
+    <div class="wrap">
+      <div class="home-hero">
+        <div>
+          <h1>My tenders</h1>
+          <div class="sub" id="home-sub">Tenders you lead as Bid Director</div>
+        </div>
+        <button class="btn-primary" id="new-btn-2">＋ New tender</button>
+      </div>
+
+      <div class="tabs" id="tabs"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+</div>
+<div id="toast-zone"></div>
+
+<script>
+function toast(msg,kind="ok"){
+  const z=document.getElementById("toast-zone"),t=document.createElement("div");
+  t.className="toast";
+  t.innerHTML=`<span class="${kind==="ok"?"t-ok":"t-warn"}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>`;
+  z.appendChild(t);
+  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},2600);
+}
+const STATUS={
+  processing:   {label:"Processing",       cls:"b-processing"},
+  requirement_review:{label:"Requirement review", cls:"b-req"},
+  expert_review:{label:"Expert review",    cls:"b-exp"},
+  qa_versioning:{label:"Q&A & Versioning", cls:"b-qa"},
+  submitted:    {label:"Submitted",        cls:"b-sub"},
+};
+const TAB_DEFS=[
+  {id:"all",label:"All"},
+  {id:"processing",label:"Processing"},
+  {id:"active",label:"In progress"},
+  {id:"submitted",label:"Submitted"},
+];
+let activeTab="all";
+
+function getProjects(){
+  try{ if(window.parent!==window && window.parent.getProjects) return window.parent.getProjects(); }catch(e){}
+  return [];
+}
+function inTab(p){
+  if(activeTab==="all") return true;
+  if(activeTab==="processing") return p.status==="processing";
+  if(activeTab==="submitted") return p.status==="submitted";
+  if(activeTab==="active") return p.status!=="processing" && p.status!=="submitted";
+  return true;
+}
+function deadlineChip(days){
+  if(days==null) return "";
+  const cls = days<=10?"urgent":(days<=25?"soon":"");
+  const txt = days<0?"overdue":`${days} days left`;
+  return `<span class="deadline-chip ${cls}">${txt}</span>`;
+}
+function cardHTML(p){
+  const s=STATUS[p.status]||STATUS.requirement_review;
+  let body="";
+  if(p.status==="processing"){
+    body=`<div class="pc-prog">
+      <div class="pc-prog-top"><span>${p.procLabel||"AI capturing & characterising…"}</span><span class="pct">${Math.round(p.progress||0)}%</span></div>
+      <div class="pc-bar"><div style="width:${p.progress||0}%"></div></div></div>`;
+  }else if(p.status==="submitted"){
+    body=`<div class="pc-stat">Response submitted · ${p.reqs||0} requirements</div>`;
+  }else{
+    const pctv = p.total?Math.round((p.done/p.total)*100):0;
+    const lbl = p.status==="requirement_review" ? `${p.done}/${p.total} validated`
+      : p.status==="expert_review" ? `${p.done}/${p.total} answered`
+      : `${p.done}/${p.total} resolved`;
+    body=`<div class="pc-stat"><span>${lbl}</span><span class="mini-bar"><div style="width:${pctv}%"></div></span></div>`;
+  }
+  return `<div class="pcard ${p.status}" data-id="${p.id}">
+    <div class="pc-top"><span class="pc-ref">${p.ref}</span><span class="pc-badge ${s.cls}"><span class="bdot"></span>${s.label}</span></div>
+    <div class="pc-name">${p.name}</div>
+    <div class="pc-meta"><span><b>${p.line}</b></span>${p.deadline!=null?"<span>"+deadlineChip(p.days)+"</span>":""}</div>
+    <div class="pc-body">${body}</div>
+    <div class="pc-foot"><span>${p.status==="processing"?'<span class="pc-processing-note">Opens when processing completes</span>':"Updated "+(p.updated||"recently")}</span>
+      ${p.status!=="processing"?'<span class="open">Open →</span>':""}</div>
+  </div>`;
+}
+function render(){
+  const projects=getProjects();
+  document.getElementById("home-sub").textContent=`${projects.length} tender${projects.length!==1?"s":""} · you lead as Bid Director`;
+  // tabs
+  const tabs=document.getElementById("tabs");
+  tabs.innerHTML=TAB_DEFS.map(t=>{
+    const n = t.id==="all"?projects.length
+      :t.id==="processing"?projects.filter(p=>p.status==="processing").length
+      :t.id==="submitted"?projects.filter(p=>p.status==="submitted").length
+      :projects.filter(p=>p.status!=="processing"&&p.status!=="submitted").length;
+    return `<button class="tab ${activeTab===t.id?"on":""}" data-tab="${t.id}">${t.label}<span class="c">${n}</span></button>`;
+  }).join("");
+  tabs.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{activeTab=b.dataset.tab;render();}));
+  // grid
+  const shown=projects.filter(inTab);
+  const grid=document.getElementById("grid");
+  grid.innerHTML = shown.length?shown.map(cardHTML).join(""):`<div class="empty">No tender in this view.</div>`;
+  grid.querySelectorAll(".pcard").forEach(c=>c.addEventListener("click",()=>{
+    const p=projects.find(x=>x.id===c.dataset.id);
+    if(!p) return;
+    if(p.status==="processing"){ toast("Still processing — it will open when the models finish","warn"); return; }
+    try{ if(window.parent!==window && window.parent.openProject) window.parent.openProject(p.id); }catch(e){}
+  }));
+}
+document.getElementById("new-btn").addEventListener("click",()=>{ try{ window.parent.route("new"); }catch(e){} });
+document.getElementById("new-btn-2").addEventListener("click",()=>{ try{ window.parent.route("new"); }catch(e){} });
+document.getElementById("reset-btn").addEventListener("click",()=>{
+  if(confirm("Reset the demo to its initial state? This clears all progress made during the session.")){
+    try{ if(window.parent!==window && window.parent.resetDemo) window.parent.resetDemo(); }catch(e){}
+  }
+});
+// poll so background processing bars animate live
+render();
+setInterval(()=>{ if(getProjects().some(p=>p.status==="processing")) render(); }, 700);
+// apply theme
+try{ var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"dark"; document.documentElement.setAttribute("data-theme",t);}catch(e){}
+</script>
+</body>
+</html>
