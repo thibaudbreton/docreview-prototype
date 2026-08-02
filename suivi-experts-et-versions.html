@@ -100,6 +100,9 @@ header{display:flex;align-items:center;gap:14px;height:52px;padding:0 16px;backg
 .tpill.p-clar .n{color:var(--accent)}
 .tpill.p-over .n{color:var(--warn)}
 .tpill.p-out .n{color:var(--ia)}
+.tpill.p-done .n{color:var(--ok)}
+.tpill.p-reassign .n{color:var(--warn)}
+.p2-sub{color:var(--text-3);font-size:11px}
 .tpill:hover{border-color:var(--line-2);background:var(--panel-2)}
 .tpill.active{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
 .clear-filter{font-size:11.5px;color:var(--accent);display:none;align-items:center;gap:6px}
@@ -168,16 +171,51 @@ tr.peek-row td{background:var(--bg);padding:14px 16px}
 .exp-mini .exp-avatar{width:22px;height:22px;font-size:9px}
 .spill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
 .spill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.spill.sent,.spill.opened{background:var(--panel-3);color:var(--text-2)}
+/* branch status (T2 — progress axis) */
+.spill.proposed,.spill.assigned{background:var(--panel-3);color:var(--text-2)}
+.spill.awaiting_answer{background:var(--panel-3);color:var(--text-2)}
+.spill.awaiting_qa{background:var(--accent-soft);color:var(--accent)}
+.spill.reassignment_needed{background:var(--warn-soft);color:var(--warn)}
 .spill.answered{background:var(--ok-soft);color:var(--ok)}
-.spill.clarif{background:var(--accent-soft);color:var(--accent)}
-.spill.closed{background:var(--human-soft);color:var(--human)}
+/* compliance (T2 — result axis) */
 .vpill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;white-space:nowrap}
 .vpill.compliant{background:var(--ok-soft);color:var(--ok)}
-.vpill.partial{background:var(--ia-soft);color:var(--ia)}
-.vpill.non{background:var(--warn-soft);color:var(--warn)}
-.vpill.needs-clar{background:var(--accent-soft);color:var(--accent)}
+.vpill.compliant_rnd{background:var(--ia-soft);color:var(--ia)}
+.vpill.non_compliant{background:var(--warn-soft);color:var(--warn)}
 .vpill.none{color:var(--text-3)}
+/* pending is NOT a verdict — dashed outline, muted, italic, never reads as decided */
+.vpill.pending-pill{border:1px dashed var(--line-2);color:var(--text-3);font-style:italic;font-weight:500;background:transparent}
+/* T3 — requirement parent row vs branch child rows */
+.req-row .rid{font-weight:700;color:var(--text)}
+.branch-n{font-size:11px;color:var(--text-3);font-style:italic;white-space:nowrap}
+.blocking-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:10.5px;font-weight:700;background:var(--warn-soft);color:var(--warn);white-space:nowrap}
+tr.branch-row>td{background:var(--panel-2)}
+tr.branch-row:hover>td{background:var(--panel-3)}
+.branch-ind{color:var(--text-3);text-align:right;padding-right:10px!important}
+.branch-cell{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.branch-label{font-size:12px;color:var(--text-2)}
+.branch-mgr{font-size:10.5px;color:var(--text-3);white-space:nowrap}
+.branch-cell .none,.exp-mini.none{color:var(--text-3);font-style:italic;font-size:11.5px}
+.ptag{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.6px;padding:1px 5px;border:1px solid var(--line-2);border-radius:3px;color:var(--text-3);white-space:nowrap}
+.nav-brn{margin-left:auto;font-size:9.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:10px;padding:1px 6px}
+/* panel — branch switcher + the two loops, kept visually distinct (internal vs external) */
+.branch-switch{display:flex;gap:6px;margin-top:10px}
+.branch-switch button{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border:1px solid var(--line-2);border-radius:7px;background:var(--panel-2);transition:all .13s}
+.branch-switch button:hover{border-color:var(--accent)}
+.branch-switch button.on{border-color:var(--accent);background:var(--accent-soft)}
+.bs-dot{width:6px;height:6px;border-radius:50%;background:var(--text-3)}
+.bs-dot.answered{background:var(--ok)}
+.bs-dot.awaiting_qa{background:var(--accent)}
+.bs-dot.reassignment_needed{background:var(--warn)}
+/* external loop — to the client */
+.qa-block{border:1px solid var(--line-2);border-left:3px solid var(--accent);border-radius:8px;padding:11px 12px;margin-bottom:12px;background:var(--accent-soft)}
+.qa-block-h{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:6px}
+.qa-block-t{font-size:12px;color:var(--text-2);line-height:1.5}
+.qa-block-ref{font-size:11px;color:var(--text-3);margin-top:7px}
+/* internal loop — back to the manager */
+.reassign-block{border:1px solid var(--line-2);border-left:3px solid var(--warn);border-radius:8px;padding:11px 12px;margin-bottom:12px;background:var(--warn-soft)}
+.reassign-h{font-size:12px;font-weight:700;color:var(--warn);margin-bottom:6px}
+.reassign-t{font-size:12px;color:var(--text-2);line-height:1.5;font-style:italic}
 .age{font-variant-numeric:tabular-nums;color:var(--text-2);white-space:nowrap}
 .age.over{color:var(--warn);font-weight:700}
 .flag-out{display:inline-flex;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;background:var(--ia-soft);color:var(--ia);margin-left:6px;white-space:nowrap}
@@ -366,11 +404,13 @@ textarea.resp-in:focus{border-color:var(--accent)}
     <div class="triage">
       <div class="progress-wrap">
         <div class="progress-track"><div class="progress-fill" id="p2-fill"></div></div>
-        <span class="progress-label"><b id="p2-num">0/0</b> answered</span>
+        <span class="progress-label"><b id="p2-num">0/0</b> consolidated <span class="p2-sub" id="p2-sub"></span></span>
       </div>
       <div class="triage-pills">
-        <button class="tpill p-wait" data-filter="await"><span class="n" id="n-await">0</span> awaiting response</button>
-        <button class="tpill p-clar" data-filter="clar"><span class="n" id="n-clar">0</span> need clarification</button>
+        <button class="tpill p-done" data-filter="answered"><span class="n" id="n-answered">0</span> answered</button>
+        <button class="tpill p-wait" data-filter="await"><span class="n" id="n-await">0</span> awaiting answer</button>
+        <button class="tpill p-clar" data-filter="qa"><span class="n" id="n-qa">0</span> awaiting Q&amp;A</button>
+        <button class="tpill p-reassign" data-filter="reassign"><span class="n" id="n-reassign">0</span> reassignment needed</button>
         <button class="tpill p-over" data-filter="over"><span class="n" id="n-over">0</span> overdue</button>
         <button class="tpill p-out" data-filter="out"><span class="n" id="n-out">0</span> outdated version</button>
       </div>
@@ -387,8 +427,8 @@ textarea.resp-in:focus{border-color:var(--accent)}
         <div class="view view-pad on" id="view-table">
           <div class="view-head"><h2>Expert qualification tracking</h2><span class="sub" id="table-sub"></span></div>
           <table class="grid"><thead><tr>
-            <th style="width:70px">ID</th><th>Requirement</th><th style="width:160px">Expert</th>
-            <th style="width:150px">Status</th><th style="width:150px">Verdict</th><th style="width:70px">Age</th>
+            <th style="width:70px">ID</th><th>Requirement / assignment</th><th style="width:160px">Expert</th>
+            <th style="width:190px">Status</th><th style="width:160px">Compliance</th><th style="width:70px">Age</th>
           </tr></thead><tbody id="table2-body"></tbody></table>
         </div>
         <div class="view doc-scroll" id="view-doc"></div>
@@ -442,40 +482,108 @@ const EXPERTS=[
   {id:"infra",name:"Karim Benali",team:"Infrastructure Team",init:"KB",color:"#3fb27f"},
   {id:"cyber",name:"Claire Moreau",team:"Cybersecurity",init:"CM",color:"#e0a43c"},
 ];
+/* Managers own branches (one branch per typology); experts answer them. Mirrors MANAGERS in revue-documentaire.html. */
+const MANAGERS=[
+  {id:"m_sig",name:"Louis Renaud",role:"SIG manager",init:"LR",color:"#3fb27f"},
+  {id:"m_mln",name:"Amina Cherif",role:"Mainline manager",init:"AC",color:"#e0a43c"},
+  {id:"m_inf",name:"Paolo Ferri",role:"Infrastructure manager",init:"PF",color:"#a06ef2"},
+];
+const TYPOS={
+  sig:{code:"SIG",label:"SIG & Urban"},
+  mln:{code:"MLN",label:"Mainline Wayside"},
+  sys:{code:"SYS",label:"Safety"},
+  tlc:{code:"TLC",label:"Telecom"},
+  inf:{code:"INF",label:"Infrastructure"},
+};
+/* T2 — two separate axes.
+   BST = progress (where the assignment stands). CMP = result (only meaningful once answered).
+   `awaiting_qa` is a progress status, never a verdict, and it blocks consolidation. */
+const BST={proposed:"Proposed",assigned:"Assigned",awaiting_answer:"Awaiting answer",awaiting_qa:"Awaiting Q&A",reassignment_needed:"Reassignment needed",answered:"Answered"};
+const CMP={compliant:"Compliant",compliant_rnd:"Compliant with R&D",non_compliant:"Non compliant"};
+/* most restrictive first — drives requirement-level consolidation */
+const CMP_ORDER=["non_compliant","compliant_rnd","compliant"];
+/* which unfinished branch to surface as "what is holding this requirement up" */
+const BLOCK_PRIORITY=["reassignment_needed","awaiting_qa","awaiting_answer","assigned","proposed"];
+/* T1 — assignments live at BRANCH level: one branch per typology per requirement.
+   Single-typology requirement = 1 branch; multi-typology = N branches, one expert each.
+   EXG-003 (3 branches) and EXG-007 (2 branches) mirror the branches seeded in
+   revue-documentaire.html so both screens tell the same story.
+   All values hand-authored — nothing here is computed. */
 const REQS=[
-  {id:"EXG-001",sec:"2. Functional requirements",type:"Functional",exp:"sup",st:"answered",verdict:"compliant",age:9,
+  {id:"EXG-001",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family.",
-   resp:{note:"Standard acquisition stack covers all listed measurement families. No deviation from the requirement.",att:0,date:"Jul 12"}},
-  {id:"EXG-002",sec:"2. Functional requirements",type:"Functional",exp:"sup",st:"answered",verdict:"compliant",age:9,
+   branches:[
+     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"compliant",age:9,
+      resp:{note:"Standard acquisition stack covers all listed measurement families. No deviation from the requirement.",att:0,date:"Jul 12"}},
+   ]},
+  {id:"EXG-002",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type.",
-   resp:{note:"Dashboard aggregation (site / region / type) is available out of the box.",att:1,date:"Jul 12"}},
-  {id:"EXG-003",sec:"2. Functional requirements",type:"Functional",exp:"sup",st:"answered",verdict:"partial",age:8,outdated:true,
+   branches:[
+     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"compliant",age:9,
+      resp:{note:"Dashboard aggregation (site / region / type) is available out of the box.",att:1,date:"Jul 12"}},
+   ]},
+  {id:"EXG-003",sec:"2. Functional requirements",type:"Functional",outdated:true,
    text:"The system SHALL generate an alert when a site's consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.",
-   resp:{note:"5-minute alerting is achievable, but the escalation matrix integration requires custom development (est. 12 days). Compliant with reservation.",att:0,date:"Jul 13"}},
-  {id:"EXG-004",sec:"2. Functional requirements",type:"Functional",exp:"sup",st:"opened",age:6,
-   text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets."},
-  {id:"EXG-011",sec:"2. Functional requirements",type:"Interface",exp:"infra",st:"answered",verdict:"non",age:7,
+   branches:[
+     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"non_compliant",age:8,
+      resp:{note:"The 5-minute alerting threshold is achievable, but integrating the issuer's escalation matrix falls outside the proposed scope and budget envelope. Not compliant as specified.",att:0,date:"Jul 13"}},
+     {typology:"mln",manager:"m_mln",expert:"infra",status:"awaiting_answer",compliance:null,age:4},
+     {typology:"sys",manager:null,expert:null,status:"reassignment_needed",compliance:null,age:3,
+      reassignComment:"Alerting escalation is a safety-critical chain — this should sit with the Safety authority, not with my perimeter. Please reallocate."},
+   ]},
+  {id:"EXG-004",sec:"2. Functional requirements",type:"Functional",
+   text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets.",
+   branches:[
+     {typology:"mln",manager:"m_mln",expert:"sup",status:"awaiting_answer",compliance:null,age:6},
+   ]},
+  {id:"EXG-011",sec:"2. Functional requirements",type:"Interface",
    text:"The system SHALL expose site telemetry to third-party tools through a documented REST API.",
-   resp:{note:"Current API rate limits are below the implied third-party load. Meeting the requirement would need a gateway rework — not feasible within the proposed budget envelope.",att:1,date:"Jul 14"}},
-  {id:"EXG-012",sec:"2. Functional requirements",type:"Interface",exp:"infra",st:"opened",age:2,
-   text:"The system SHALL import weather forecast feeds, refreshed every 15 minutes."},
-  {id:"EXG-005",sec:"3. Performance requirements",type:"Performance",exp:"infra",st:"answered",verdict:"compliant",age:8,
+   branches:[
+     {typology:"sig",manager:"m_sig",expert:"infra",status:"answered",compliance:"non_compliant",age:7,
+      resp:{note:"Current API rate limits are below the implied third-party load. Meeting the requirement would need a gateway rework — not feasible within the proposed budget envelope.",att:1,date:"Jul 14"}},
+   ]},
+  {id:"EXG-012",sec:"2. Functional requirements",type:"Interface",
+   text:"The system SHALL import weather forecast feeds, refreshed every 15 minutes.",
+   branches:[
+     {typology:"tlc",manager:"m_mln",expert:"infra",status:"awaiting_answer",compliance:null,age:2},
+   ]},
+  {id:"EXG-005",sec:"3. Performance requirements",type:"Performance",
    text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites.",
-   resp:{note:"3 s refresh validated in load test for 250 simultaneous sites.",att:1,date:"Jul 12"}},
-  {id:"EXG-006",sec:"3. Performance requirements",type:"Performance",exp:"infra",st:"answered",verdict:"needs-clar",age:7,
+   branches:[
+     {typology:"mln",manager:"m_inf",expert:"infra",status:"answered",compliance:"compliant",age:8,
+      resp:{note:"3 s refresh validated in load test for 250 simultaneous sites.",att:1,date:"Jul 12"}},
+   ]},
+  {id:"EXG-006",sec:"3. Performance requirements",type:"Performance",
    text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile.",
-   resp:{note:"Cannot commit without knowing whether the one-year depth is a rolling year or a calendar year — the storage strategy differs. Please clarify with the issuer.",att:0,date:"Jul 14"}},
-  {id:"EXG-007",sec:"3. Performance requirements",type:"Performance",exp:"infra",st:"sent",age:7,
-   text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows."},
-  {id:"EXG-008",sec:"4. Security requirements",type:"Security",exp:"cyber",st:"answered",verdict:"compliant",age:8,
+   branches:[
+     {typology:"mln",manager:"m_inf",expert:"infra",status:"awaiting_qa",compliance:null,age:7,qaRef:"QA-01",
+      qaNote:"Cannot commit without knowing whether the one-year depth is a rolling year or a calendar year — the storage strategy differs."},
+   ]},
+  {id:"EXG-007",sec:"3. Performance requirements",type:"Performance",
+   text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.",
+   branches:[
+     {typology:"sig",manager:"m_sig",expert:null,status:"proposed",compliance:null,age:7},
+     {typology:"mln",manager:"m_mln",expert:"infra",status:"answered",compliance:"compliant",age:5,
+      resp:{note:"99.7% business-hours availability is met by the standard redundant deployment; maintenance windows are already excluded contractually.",att:0,date:"Jul 15"}},
+   ]},
+  {id:"EXG-008",sec:"4. Security requirements",type:"Security",
    text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges.",
-   resp:{note:"MFA enforced through the corporate IdP for all privileged profiles.",att:0,date:"Jul 13"}},
-  {id:"EXG-009",sec:"4. Security requirements",type:"Security",exp:"cyber",st:"answered",verdict:"needs-clar",age:6,
+   branches:[
+     {typology:"sig",manager:"m_sig",expert:"cyber",status:"answered",compliance:"compliant",age:8,
+      resp:{note:"MFA enforced through the corporate IdP for all privileged profiles.",att:0,date:"Jul 13"}},
+   ]},
+  {id:"EXG-009",sec:"4. Security requirements",type:"Security",
    text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years.",
-   resp:{note:"Logging is fully supported. However the 3-year retention conflicts with the group policy (5 years) — needs to be confirmed with the issuer before commitment.",att:0,date:"Jul 15"}},
-  {id:"EXG-010",sec:"4. Security requirements",type:"Security",exp:"cyber",st:"answered",verdict:"compliant",age:8,
+   branches:[
+     {typology:"mln",manager:"m_mln",expert:"cyber",status:"awaiting_qa",compliance:null,age:6,qaRef:"QA-02",
+      qaNote:"Logging is fully supported, but the 3-year retention conflicts with the group policy (5 years) — needs issuer confirmation before commitment."},
+   ]},
+  {id:"EXG-010",sec:"4. Security requirements",type:"Security",
    text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review.",
-   resp:{note:"TLS 1.3 supported end-to-end on new deployments; see open question regarding legacy gateways.",att:0,date:"Jul 13"}},
+   branches:[
+     {typology:"sig",manager:"m_sig",expert:"cyber",status:"answered",compliance:"compliant",age:8,
+      resp:{note:"TLS 1.3 supported end-to-end on new deployments; see open question regarding legacy gateways.",att:0,date:"Jul 13"}},
+   ]},
 ];
 const OVERDUE_DAYS=5;
 let QA=[
@@ -491,17 +599,38 @@ const VERSIONS=[
   {num:"v2.0",state:"integrated",date:"May 28, 2026",note:"Consolidated issue after pre-tender meeting",gap:{a:6,m:9,r:2}},
   {num:"v1.0",state:"integrated",date:"Mar 3, 2026",note:"Initial AO release",gap:null},
 ];
-const STL={sent:"Sent",opened:"Opened",answered:"Answered",clarif:"Clarification requested",closed:"Closed"};
-const VDL={compliant:"Compliant",partial:"Partially compliant",non:"Non-compliant","needs-clar":"Needs clarification"};
-
-const state={screen:2,view:"table",navBy:"section",sel:null,filter:null,tab:"response",htab:"versions",selQ:null,uploaded:false};
+const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:null,tab:"response",htab:"versions",selQ:null,uploaded:false};
 
 const expOf=id=>EXPERTS.find(e=>e.id===id);
+const mgrOf=id=>MANAGERS.find(m=>m.id===id);
+const TY=id=>TYPOS[id]||{code:String(id||"—").toUpperCase(),label:id||"—"};
 const findR=id=>REQS.find(r=>r.id===id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
-const isAwait=r=>r.st==="sent"||r.st==="opened";
-const isOver=r=>isAwait(r)&&r.age>=OVERDUE_DAYS;
-const needsClar=r=>r.verdict==="needs-clar"||r.st==="clarif";
+
+/* ---- branch-level predicates (T2: status and compliance are separate axes) ---- */
+const allBranches=()=>REQS.flatMap(r=>r.branches.map(b=>({...b,req:r})));
+const isAnswered=b=>b.status==="answered";
+const isAwaitingAnswer=b=>b.status==="awaiting_answer";
+const isAwaitingQA=b=>b.status==="awaiting_qa";
+const needsReassign=b=>b.status==="reassignment_needed";
+/* only a branch actually waiting on its expert can be "overdue" — a branch blocked on the
+   issuer (awaiting_qa) or bounced back to the manager (reassignment_needed) is not the expert's delay */
+const isOverB=b=>isAwaitingAnswer(b)&&b.age>=OVERDUE_DAYS;
+
+/* T3 — requirement-level consolidation, DERIVED (unlike the review table, where the
+   rollup is hand-written). Rule: pending until every branch is answered, then the most
+   restrictive verdict wins. `awaiting_qa` counts as not-yet-answered, so it blocks. */
+function consolidate(r){
+  const brs=r.branches||[];
+  const unfinished=brs.filter(b=>!isAnswered(b));
+  if(unfinished.length){
+    const blocking=BLOCK_PRIORITY.map(s=>unfinished.find(b=>b.status===s)).find(Boolean)||unfinished[0];
+    return {compliance:null,pending:true,blocking,remaining:unfinished.length};
+  }
+  const worst=CMP_ORDER.find(c=>brs.some(b=>b.compliance===c))||null;
+  return {compliance:worst,pending:false,blocking:null,remaining:0};
+}
+const isConsolidated=r=>!consolidate(r).pending;
 
 /* =====================================================
    TOASTS
@@ -517,12 +646,20 @@ function toast(msg,kind="ok"){
 /* =====================================================
    FILTERS
 ===================================================== */
-function passes(r){
-  if(state.filter==="await")return isAwait(r);
-  if(state.filter==="clar")return needsClar(r);
-  if(state.filter==="over")return isOver(r);
-  if(state.filter==="out")return !!r.outdated;
+/* a branch passes the active filter… */
+function passesB(b){
+  if(state.filter==="answered")return isAnswered(b);
+  if(state.filter==="await")return isAwaitingAnswer(b);
+  if(state.filter==="qa")return isAwaitingQA(b);
+  if(state.filter==="reassign")return needsReassign(b);
+  if(state.filter==="over")return isOverB(b);
   return true;
+}
+/* …and a requirement passes when at least one of its branches does (the "out" filter is
+   requirement-level: the whole requirement was answered against a superseded version) */
+function passes(r){
+  if(state.filter==="out")return !!r.outdated;
+  return (r.branches||[]).some(passesB);
 }
 
 /* =====================================================
@@ -537,18 +674,20 @@ function renderNav2(){
       REQS.filter(r=>r.sec===sec).forEach(r=>{
         const el=document.createElement("div");
         el.className="nav-item"+(state.sel===r.id?" active":"")+(passes(r)?"":" dimmed");
-        el.innerHTML=`<span class="vdot ${r.verdict||"none"}"></span><span class="nid">${r.id}</span><span class="nlabel">${r.text.slice(0,46)}…</span>`;
+        const c=consolidate(r);
+        el.innerHTML=`<span class="vdot ${c.pending?"none":c.compliance}"></span><span class="nid">${r.id}</span><span class="nlabel">${esc(r.text.slice(0,46))}…</span>${r.branches.length>1?`<span class="nav-brn">${r.branches.length}</span>`:""}`;
         el.addEventListener("click",()=>select(r.id));
         nav.appendChild(el);
       });
     });
   }else{
+    // by expert — counts are per BRANCH now (an expert holds branches, not requirements)
     EXPERTS.forEach(e=>{
-      const mine=REQS.filter(r=>r.exp===e.id);
-      const done=mine.filter(r=>r.st==="answered"||r.st==="closed").length;
-      const pending=mine.filter(isAwait).length;
-      const over=mine.filter(isOver).length;
-      const silence=Math.max(0,...mine.filter(isAwait).map(r=>r.age));
+      const mine=allBranches().filter(b=>b.expert===e.id);
+      const done=mine.filter(isAnswered).length;
+      const pending=mine.filter(b=>isAwaitingAnswer(b)||isAwaitingQA(b)).length;
+      const over=mine.filter(isOverB).length;
+      const silence=Math.max(0,...mine.filter(isAwaitingAnswer).map(b=>b.age));
       const card=document.createElement("div");
       card.className="exp-card";
       card.innerHTML=`
@@ -557,12 +696,13 @@ function renderNav2(){
           <div><div class="exp-name">${e.name}</div><div class="exp-team">${e.team}</div></div>
           <button class="exp-remind" data-remind="${e.id}">🔔 Remind</button>
         </div>
-        <div class="exp-bar"><div style="width:${done/mine.length*100}%"></div></div>
+        <div class="exp-bar"><div style="width:${mine.length?done/mine.length*100:0}%"></div></div>
         <div class="exp-meta"><span><b>${done}/${mine.length}</b> answered</span>
-          <span>${over?`<span class="exp-silence">${over} overdue · silent ${silence} d</span>`:pending?`${pending} pending`:"all done ✓"}</span></div>`;
+          <span>${over?`<span class="exp-silence">${over} overdue · silent ${silence} d</span>`:pending?`${pending} pending`:mine.length?"all done ✓":"no assignment"}</span></div>`;
       card.addEventListener("click",ev=>{
         if(ev.target.closest("[data-remind]"))return;
-        const first=mine.find(r=>passes(r))||mine[0];select(first.id);
+        const first=mine.find(b=>passes(b.req))||mine[0];
+        if(first) select(first.req.id, first.req.branches.indexOf(first.req.branches.find(x=>x.typology===first.typology)));
       });
       card.querySelector("[data-remind]").addEventListener("click",()=>remindExpert(e));
       nav.appendChild(card);
@@ -570,33 +710,78 @@ function renderNav2(){
   }
 }
 function remindExpert(e){
-  const over=REQS.filter(r=>r.exp===e.id&&isAwait(r));
-  toast(`Reminder sent to ${e.name} — ${over.length} pending requirement${over.length>1?"s":""}`,"ok");
+  const open=allBranches().filter(b=>b.expert===e.id&&isAwaitingAnswer(b));
+  toast(`Reminder sent to ${e.name} — ${open.length} pending assignment${open.length>1?"s":""}`,"ok");
 }
 
 /* =====================================================
    TABLE (screen 2)
 ===================================================== */
-function actionScore(r){ if(isOver(r))return 0; if(needsClar(r))return 1; if(r.outdated)return 2; if(isAwait(r))return 3; if(r.st==="answered")return 4; return 5; }
+/* action items first: reassignment requests, then Q&A blocks, then overdue, then the rest */
+function actionScore(r){
+  const brs=r.branches||[];
+  if(brs.some(needsReassign))return 0;
+  if(brs.some(isAwaitingQA))return 1;
+  if(brs.some(isOverB))return 2;
+  if(r.outdated)return 3;
+  if(!isConsolidated(r))return 4;
+  return 5;
+}
 function tableRows(){ return REQS.filter(passes).sort((a,b)=>actionScore(a)-actionScore(b)); }
+/* consolidated verdict cell — pending must never read as a decided verdict */
+function consolidatedCellHTML(c){
+  if(c.pending) return `<span class="vpill none pending-pill">Pending${c.remaining>1?` · ${c.remaining} branches`:""}</span>`;
+  return `<span class="vpill ${c.compliance}">${CMP[c.compliance]||"—"}</span>`;
+}
+function branchWhoHTML(b){
+  const e=b.expert?expOf(b.expert):null;
+  if(!e) return `<span class="exp-mini none">— no expert —</span>`;
+  return `<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name.split(" ")[0]}</span>`;
+}
 function renderTable2(){
   const body=document.getElementById("table2-body");body.innerHTML="";
   const rows=tableRows();
-  document.getElementById("table-sub").textContent=`${rows.length} requirements — action items first (overdue, clarifications, outdated)`;
+  const shownBranches=rows.reduce((n,r)=>n+r.branches.filter(passesB).length,0);
+  document.getElementById("table-sub").textContent=
+    `${rows.length} requirement${rows.length>1?"s":""} · ${shownBranches} assignment${shownBranches>1?"s":""} — action items first (reassignments, Q&A blocks, overdue)`;
   rows.forEach(r=>{
-    const e=expOf(r.exp);
+    const c=consolidate(r);
+    // ---- parent row: the requirement, with its consolidated verdict ----
     const tr=document.createElement("tr");
-    tr.className="rrow"+(state.sel===r.id?" active":"");
+    tr.className="rrow req-row"+(state.sel===r.id?" active":"");
     tr.dataset.id=r.id;
     tr.innerHTML=`
       <td class="rid">${r.id}</td>
-      <td class="rtext"><div class="excerpt">${r.text}</div><button class="peek-btn" data-peek="${r.id}">↳ View source passage</button></td>
-      <td><span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name.split(" ")[0]}</span></td>
-      <td><span class="spill ${r.st}">${STL[r.st]}</span>${r.outdated?'<span class="flag-out">Δ outdated version</span>':""}</td>
-      <td>${r.verdict?`<span class="vpill ${r.verdict}">${VDL[r.verdict]}</span>`:'<span class="vpill none">—</span>'}</td>
-      <td class="age ${isOver(r)?"over":""}">${r.age} d</td>`;
+      <td class="rtext"><div class="excerpt">${esc(r.text)}</div>
+        <button class="peek-btn" data-peek="${r.id}">↳ View source passage</button></td>
+      <td><span class="branch-n">${r.branches.length} assignment${r.branches.length>1?"s":""}</span></td>
+      <td>${c.pending
+            ? `<span class="blocking-chip" title="This branch is holding consolidation up">⛔ ${TY(c.blocking.typology).label} · ${BST[c.blocking.status]}</span>`
+            : `<span class="spill answered">Consolidated</span>`}${r.outdated?'<span class="flag-out">Δ outdated version</span>':""}</td>
+      <td>${consolidatedCellHTML(c)}</td>
+      <td class="age"></td>`;
     tr.addEventListener("click",ev=>{ if(ev.target.closest("button"))return; select(r.id); });
     body.appendChild(tr);
+    // ---- child rows: one per branch ----
+    r.branches.forEach((b,i)=>{
+      if(!passesB(b) && state.filter && state.filter!=="out") return;
+      const m=b.manager?mgrOf(b.manager):null;
+      const br=document.createElement("tr");
+      br.className="rrow branch-row"+(state.sel===r.id&&state.selBranch===i?" active":"");
+      br.dataset.id=r.id; br.dataset.branch=i;
+      br.innerHTML=`
+        <td class="rid branch-ind">↳</td>
+        <td class="branch-cell">
+          <span class="ptag">${TY(b.typology).code}</span>
+          <span class="branch-label">${TY(b.typology).label}</span>
+          <span class="branch-mgr">${m?`mgr ${m.name.split(" ")[0]}`:"<span class='none'>no manager</span>"}</span></td>
+        <td>${branchWhoHTML(b)}</td>
+        <td><span class="spill ${b.status}">${BST[b.status]}</span></td>
+        <td>${b.compliance?`<span class="vpill ${b.compliance}">${CMP[b.compliance]}</span>`:'<span class="vpill none">—</span>'}</td>
+        <td class="age ${isOverB(b)?"over":""}">${isAnswered(b)?"":b.age+" d"}</td>`;
+      br.addEventListener("click",ev=>{ if(ev.target.closest("button"))return; select(r.id,i); });
+      body.appendChild(br);
+    });
   });
   body.querySelectorAll("[data-peek]").forEach(b=>b.addEventListener("click",ev=>{
     ev.stopPropagation();
@@ -605,7 +790,7 @@ function renderTable2(){
     document.querySelectorAll(".peek-row").forEach(x=>x.remove());
     const r=findR(b.dataset.peek);
     const p=document.createElement("tr");p.className="peek-row";
-    p.innerHTML=`<td colspan="6"><div class="peek-paper"><div class="peek-ctx">Source passage (read-only) — ${r.sec} · ${r.id}</div>${r.text}</div></td>`;
+    p.innerHTML=`<td colspan="6"><div class="peek-paper"><div class="peek-ctx">Source passage (read-only) — ${r.sec} · ${r.id}</div>${esc(r.text)}</div></td>`;
     tr.after(p);
   }));
 }
@@ -627,9 +812,10 @@ function renderDoc2(){
   secs.forEach(sec=>{
     paper+=`<div class="doc-h2">${sec}</div>`;
     REQS.filter(r=>r.sec===sec).forEach(r=>{
-      paper+=`<div class="dblk ${r.verdict||"none"}${state.sel===r.id?" selected":""}" data-id="${r.id}">
+      const c=consolidate(r);
+      paper+=`<div class="dblk ${c.pending?"none":c.compliance}${state.sel===r.id?" selected":""}" data-id="${r.id}">
         <span class="blk-id">${r.id}</span>
-        <span class="vtag">${r.verdict?VDL[r.verdict]:STL[r.st]}</span>${r.text}</div>`;
+        <span class="vtag">${c.pending?(c.blocking?BST[c.blocking.status]:"Pending"):CMP[c.compliance]}</span>${esc(r.text)}</div>`;
     });
   });
   paper+=`</div>`;
@@ -687,91 +873,127 @@ function renderQA(){
 function renderPanel2(){
   const p=document.getElementById("settings2");
   if(!state.sel){
-    const done=REQS.filter(r=>r.st==="answered"||r.st==="closed").length;
+    const consolidated=REQS.filter(isConsolidated).length;
     p.innerHTML=`<div class="set-empty"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
-      <div class="big">No requirement selected</div>
-      <div>Select a row or a block to see the expert response.<br><br><b style="color:var(--text-2)">${done}/${REQS.length}</b> answered · <b style="color:var(--text-2)">${REQS.filter(isOver).length}</b> overdue.</div></div>`;
+      <div class="big">No assignment selected</div>
+      <div>Select a requirement or one of its assignments to see the expert response.<br><br><b style="color:var(--text-2)">${consolidated}/${REQS.length}</b> requirements consolidated · <b style="color:var(--text-2)">${allBranches().filter(isOverB).length}</b> overdue assignments.</div></div>`;
     return;
   }
-  const r=findR(state.sel),e=expOf(r.exp);
+  const r=findR(state.sel);
+  const c=consolidate(r);
+  const idx=Math.min(state.selBranch||0, r.branches.length-1);
+  const br=r.branches[idx];
+  const e=br.expert?expOf(br.expert):null;
+  const m=br.manager?mgrOf(br.manager):null;
   p.innerHTML=`
     <div class="set-head">
       <div class="set-id-row"><span class="set-id">${r.id}</span>
-        <span class="spill ${r.st}">${STL[r.st]}</span>
-        ${r.verdict?`<span class="vpill ${r.verdict}">${VDL[r.verdict]}</span>`:""}
+        ${c.pending
+          ? `<span class="vpill none pending-pill">Pending consolidation</span>`
+          : `<span class="vpill ${c.compliance}">${CMP[c.compliance]}</span>`}
         ${r.outdated?'<span class="flag-out">Δ outdated version</span>':""}</div>
-      <div class="set-title">${r.text.slice(0,90)}…</div>
+      <div class="set-title">${esc(r.text.slice(0,90))}…</div>
+      ${r.branches.length>1?`<div class="branch-switch" id="branch-switch">
+        ${r.branches.map((x,i)=>`<button data-bi="${i}" class="${i===idx?"on":""}" title="${TY(x.typology).label} · ${BST[x.status]}">
+          <span class="ptag">${TY(x.typology).code}</span><span class="bs-dot ${x.status}"></span></button>`).join("")}
+      </div>`:""}
     </div>
     <div class="set-tabs">
-      <button data-t="response" class="${state.tab==="response"?"active":""}">Response</button>
+      <button data-t="response" class="${state.tab==="response"?"active":""}">Assignment</button>
       <button data-t="activity" class="${state.tab==="activity"?"active":""}">Activity</button>
       <button data-t="req" class="${state.tab==="req"?"active":""}">Requirement</button>
     </div>
     <div class="set-body" id="set2-body"></div>`;
   p.querySelectorAll("[data-t]").forEach(t=>t.addEventListener("click",()=>{state.tab=t.dataset.t;renderPanel2()}));
+  p.querySelectorAll("[data-bi]").forEach(t=>t.addEventListener("click",()=>{state.selBranch=+t.dataset.bi;renderPanel2()}));
   const b=p.querySelector("#set2-body");
+
+  const whoBlock=`
+    <div class="field"><label>Assignment · ${TY(br.typology).label}</label>
+      <div class="fval">${e?`<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.team}</span>`:`<span class="exp-mini none">No expert assigned yet</span>`}</div>
+      <div class="branch-mgr" style="margin-top:6px">Branch manager: ${m?m.name:"<span class='none'>unassigned</span>"}</div></div>
+    <div class="field"><label>Status</label><div class="fval"><span class="spill ${br.status}">${BST[br.status]}</span></div></div>`;
+
   if(state.tab==="response"){
-    if(r.resp){
-      b.innerHTML=`
-        <div class="field"><label>Expert</label>
-          <div class="fval"><span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.team}</span></div></div>
-        <div class="field"><label>Response · ${r.resp.date}</label>
-          <div class="resp-note">${r.resp.note}</div>
-          ${r.resp.att?`<span class="attach">📎 evidence-${r.id.toLowerCase()}.pdf</span>`:""}</div>
+    if(br.status==="answered"&&br.resp){
+      b.innerHTML=whoBlock+`
+        <div class="field"><label>Response · ${br.resp.date}</label>
+          <div class="resp-note">${esc(br.resp.note)}</div>
+          ${br.resp.att?`<span class="attach">📎 evidence-${r.id.toLowerCase()}-${TY(br.typology).code.toLowerCase()}.pdf</span>`:""}</div>
+        <div class="field"><label>Compliance for this branch</label>
+          <div class="fval">${br.compliance?`<span class="vpill ${br.compliance}">${CMP[br.compliance]}</span>`:'<span class="vpill none">—</span>'}</div></div>
         ${r.outdated?`<div class="vimpact" style="margin-bottom:12px"><b>Answered on outdated version.</b> The requirement text changed in a later document version — the expert must confirm or update this response.</div>`:""}
-        ${r.st!=="closed"?`
-        <button class="cta ok" id="a-accept">✓ Accept response</button>
-        <button class="cta line" id="a-clarify">↩ Request clarification</button>
-        <button class="cta blue" id="a-escalate">⇗ Escalate to client Q&amp;A <kbd style="font-family:var(--font-mono);font-size:10px;opacity:.7">Q</kbd></button>`:
-        `<button class="cta line" disabled style="cursor:default">Response accepted — closed</button>`}`;
-      b.querySelector("#a-accept")?.addEventListener("click",()=>{r.st="closed";toast(`${r.id} — response accepted and closed`,"ok");refreshAll();});
-      b.querySelector("#a-clarify")?.addEventListener("click",()=>{r.st="clarif";toast(`Clarification requested from ${e.name} on ${r.id}`,"ok");refreshAll();});
-      b.querySelector("#a-escalate")?.addEventListener("click",()=>escalate(r));
+        <button class="cta blue" id="a-escalate">⇗ Escalate to client Q&amp;A <kbd style="font-family:var(--font-mono);font-size:10px;opacity:.7">Q</kbd></button>`;
+      b.querySelector("#a-escalate")?.addEventListener("click",()=>escalate(r,br));
+    }else if(br.status==="awaiting_qa"){
+      b.innerHTML=whoBlock+`
+        <div class="qa-block"><div class="qa-block-h">⇗ Blocked on the issuer</div>
+          <div class="qa-block-t">${esc(br.qaNote||"The expert needs a precision from the tender issuer before answering.")}</div>
+          ${br.qaRef?`<div class="qa-block-ref">Question <b>${br.qaRef}</b> — see the Q&amp;A register</div>`:""}</div>
+        <div class="fval" style="font-size:11.5px;color:var(--text-3);margin-bottom:12px">This assignment cannot be answered yet and counts as not answered, so it blocks consolidation of ${r.id}.</div>
+        <button class="cta line" id="a-goqa">→ Open the Q&amp;A register</button>`;
+      b.querySelector("#a-goqa").addEventListener("click",()=>{setView("qa");});
+    }else if(br.status==="reassignment_needed"){
+      b.innerHTML=whoBlock+`
+        <div class="reassign-block"><div class="reassign-h">↩ Returned by the expert</div>
+          <div class="reassign-t">${esc(br.reassignComment||"The expert judged this allocation wrong and returned it.")}</div></div>
+        <div class="fval" style="font-size:11.5px;color:var(--text-3);margin-bottom:12px">This is an internal action — it stays inside the company and comes back to you as the manager.</div>
+        <button class="cta line" disabled style="cursor:default">Reassignment handling — ticket T5</button>`;
     }else{
-      b.innerHTML=`
-        <div class="field"><label>Expert</label>
-          <div class="fval"><span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.team}</span></div></div>
-        <div class="field"><label>Status</label>
-          <div class="fval">No response yet — request ${r.st==="opened"?"opened but unanswered":"sent"} <b class="${isOver(r)?"age over":""}">${r.age} days ago</b>.${isOver(r)?" Above the "+OVERDUE_DAYS+"-day threshold.":""}</div></div>
-        <button class="cta blue" id="a-remind">🔔 Send a reminder <kbd style="font-family:var(--font-mono);font-size:10px;opacity:.7">R</kbd></button>`;
-      b.querySelector("#a-remind").addEventListener("click",()=>toast(`Reminder sent to ${e.name} for ${r.id}`,"ok"));
+      b.innerHTML=whoBlock+`
+        <div class="field"><label>Waiting</label>
+          <div class="fval">${br.status==="proposed"?"Allocation proposed — not dispatched to an expert yet.":`No response yet — sent <b class="${isOverB(br)?"age over":""}">${br.age} days ago</b>.${isOverB(br)?" Above the "+OVERDUE_DAYS+"-day threshold.":""}`}</div></div>
+        ${e?`<button class="cta blue" id="a-remind">🔔 Send a reminder <kbd style="font-family:var(--font-mono);font-size:10px;opacity:.7">R</kbd></button>`:""}`;
+      b.querySelector("#a-remind")?.addEventListener("click",()=>toast(`Reminder sent to ${e.name} for ${r.id} · ${TY(br.typology).label}`,"ok"));
     }
   }else if(state.tab==="activity"){
+    const who=e?e.name:"—";
     const items=[];
-    if(r.st==="closed")items.push({k:"tl-ok",who:"Thibaud Breton",what:"Response accepted — requirement closed.",time:"Today"});
-    if(r.st==="clarif")items.push({k:"tl-send",who:"Thibaud Breton",what:`Clarification requested from ${e.name}.`,time:"Today"});
-    if(r.resp)items.push({k:"tl-ok",who:e.name,what:`Responded — verdict "${VDL[r.verdict]||"—"}".`,time:r.resp.date});
-    if(isOver(r))items.push({k:"tl-warn",who:"System",what:`Overdue threshold reached (${OVERDUE_DAYS} days without response).`,time:`${r.age-OVERDUE_DAYS+1} d ago`});
-    if(r.st==="opened"||r.resp)items.push({k:"",who:e.name,what:"Opened the qualification request.",time:`${Math.max(1,r.age-1)} d ago`});
-    items.push({k:"tl-send",who:"Thibaud Breton",what:`Qualification request sent with link to the requirement.`,time:`${r.age} d ago (export from Document review)`});
+    if(br.status==="answered"&&br.resp)items.push({k:"tl-ok",who,what:`Responded — compliance "${CMP[br.compliance]||"—"}".`,time:br.resp.date});
+    if(br.status==="awaiting_qa")items.push({k:"tl-send",who,what:`Raised a question to the issuer — assignment blocked until answered.`,time:`${br.age} d ago`});
+    if(br.status==="reassignment_needed")items.push({k:"tl-warn",who:"Expert",what:`Returned the assignment — wrong allocation.`,time:`${br.age} d ago`});
+    if(isOverB(br))items.push({k:"tl-warn",who:"System",what:`Overdue threshold reached (${OVERDUE_DAYS} days without response).`,time:`${Math.max(1,br.age-OVERDUE_DAYS+1)} d ago`});
+    items.push({k:"tl-send",who:"Thibaud Breton",what:`Assignment created for ${TY(br.typology).label}${e?` and sent to ${e.name}`:""}.`,time:`${br.age} d ago (export from Document review)`});
     b.innerHTML=`<div class="timeline">${items.map(i=>`<div class="tl-item ${i.k}"><div class="tl-who">${i.who}</div><div class="tl-what">${i.what}</div><div class="tl-time">${i.time}</div></div>`).join("")}</div>`;
   }else{
     b.innerHTML=`
       <div class="lock-note">🔒 Frozen at review export — editable only through a new document version (Versions &amp; exchanges).</div>
       <div class="frozen"><div class="fk">Type</div><div class="fv">${r.type}</div></div>
-      <div class="frozen"><div class="fk">Assignment</div><div class="fv">${e.name} — ${e.team}</div></div>
+      <div class="frozen"><div class="fk">Assignments</div><div class="fv">${r.branches.map(x=>TY(x.typology).label).join(", ")}</div></div>
+      <div class="frozen"><div class="fk">Consolidated</div><div class="fv">${c.pending?`Pending — blocked by ${TY(c.blocking.typology).label} (${BST[c.blocking.status]})`:CMP[c.compliance]}</div></div>
       <div class="frozen"><div class="fk">Source section</div><div class="fv">${r.sec}</div></div>
       <div class="field" style="margin-top:14px"><label>Source passage (read-only)</label>
-        <div class="fval" style="font-family:var(--font-doc);background:var(--paper);color:var(--paper-ink);padding:11px 13px;border-radius:6px;line-height:1.55">${r.text}</div></div>`;
+        <div class="fval" style="font-family:var(--font-doc);background:var(--paper);color:var(--paper-ink);padding:11px 13px;border-radius:6px;line-height:1.55">${esc(r.text)}</div></div>`;
   }
 }
-function escalate(r){
+/* escalate a specific BRANCH to the client Q&A: the assignment does not change, but the
+   branch becomes blocked on the issuer and therefore stops counting as answered */
+function escalate(r,br){
   const id="QA-0"+(QA.length+2);
-  QA.unshift({id,st:"draft",q:`[Draft] Clarification needed on ${r.id}: ${r.resp?r.resp.note.split(".")[0]+".":r.text.slice(0,80)+"…"}`,reqs:[r.id],from:"Thibaud Breton",date:"Today"});
-  toast(`${r.id} escalated — draft question ${id} created in the Q&A register`,"ok");
+  const seed=(br&&br.resp)?br.resp.note.split(".")[0]+".":r.text.slice(0,80)+"…";
+  QA.unshift({id,st:"draft",q:`[Draft] Clarification needed on ${r.id}: ${seed}`,reqs:[r.id],from:"Thibaud Breton",date:"Today"});
+  if(br){ br.status="awaiting_qa"; br.qaRef=id; br.qaNote=br.qaNote||"Escalated to the issuer by the manager — awaiting an answer before this branch can be closed."; }
+  toast(`${r.id}${br?` · ${TY(br.typology).label}`:""} escalated — draft question ${id} created`,"ok");
   refreshAll();
 }
 
 /* =====================================================
    TRIAGE (screen 2)
 ===================================================== */
+/* T4 — progress overview. Counts are per BRANCH (that is the unit of work);
+   the headline % is per REQUIREMENT, since consolidation is what the tender needs. */
 function renderTriage2(){
-  const done=REQS.filter(r=>r.st==="answered"||r.st==="closed").length;
-  document.getElementById("p2-num").textContent=`${done}/${REQS.length}`;
-  document.getElementById("p2-fill").style.width=(done/REQS.length*100)+"%";
-  document.getElementById("n-await").textContent=REQS.filter(isAwait).length;
-  document.getElementById("n-clar").textContent=REQS.filter(needsClar).length;
-  document.getElementById("n-over").textContent=REQS.filter(isOver).length;
+  const brs=allBranches();
+  const consolidated=REQS.filter(isConsolidated).length;
+  const pct=REQS.length?Math.round(consolidated/REQS.length*100):0;
+  document.getElementById("p2-num").textContent=`${consolidated}/${REQS.length}`;
+  document.getElementById("p2-fill").style.width=pct+"%";
+  document.getElementById("p2-sub").textContent=`· ${pct}% · ${brs.filter(isAnswered).length}/${brs.length} assignments answered`;
+  document.getElementById("n-answered").textContent=brs.filter(isAnswered).length;
+  document.getElementById("n-await").textContent=brs.filter(isAwaitingAnswer).length;
+  document.getElementById("n-qa").textContent=brs.filter(isAwaitingQA).length;
+  document.getElementById("n-reassign").textContent=brs.filter(needsReassign).length;
+  document.getElementById("n-over").textContent=brs.filter(isOverB).length;
   document.getElementById("n-out").textContent=REQS.filter(r=>r.outdated).length;
 }
 
@@ -848,7 +1070,13 @@ function renderIssuer(){
     <div class="prop-chain" id="iss-chain">Will propagate to ${q.reqs.join(", ")} and notify the assigned expert${q.reqs.length>1?"s":""}.</div>`;
   panel.querySelector("#iss-record").addEventListener("click",()=>{
     q.ans=panel.querySelector("#iss-text").value;q.ansDate="Today";q.st="answered";delete q.flagged;
-    q.reqs.forEach(id=>{const r=findR(id);if(r&&r.verdict==="needs-clar"){r.st="clarif";}});
+    // an issuer answer unblocks the branches that were waiting on it: they go back to the
+    // expert (awaiting_answer), they are not answered by the issuer's reply itself
+    REQS.forEach(rq=>rq.branches.forEach(br=>{
+      if(br.status==="awaiting_qa" && (br.qaRef===q.id || q.reqs.includes(rq.id))){
+        br.status="awaiting_answer"; br.age=0; br.qaNote=null;
+      }
+    }));
     toast(`${q.id} recorded`,"ok");
     setTimeout(()=>toast(`Propagated to ${q.reqs.join(", ")} — expert notified, awaiting expert update`,"ok"),700);
     renderIssuer();refreshAll();
@@ -864,7 +1092,14 @@ document.getElementById("bulk-import").addEventListener("click",()=>{
 /* =====================================================
    NAVIGATION / GLOBAL
 ===================================================== */
-function select(id){state.sel=id;refreshAll();
+function select(id,branchIdx){
+  state.sel=id;
+  // default to the branch that is holding consolidation up — that is what the manager needs
+  if(branchIdx==null){
+    const r=findR(id), c=r?consolidate(r):null;
+    state.selBranch = (c&&c.blocking) ? r.branches.indexOf(c.blocking) : 0;
+  } else state.selBranch=branchIdx;
+  refreshAll();
   const el=document.querySelector(`.dblk[data-id="${id}"]`);
   if(state.view==="doc"&&el)el.scrollIntoView({block:"center",behavior:"smooth"});
 }
@@ -919,15 +1154,16 @@ document.getElementById("clear2").addEventListener("click",()=>{
   refreshAll();
 });
 document.getElementById("remind-all").addEventListener("click",()=>{
-  const over=REQS.filter(isOver);
+  const over=allBranches().filter(isOverB);
   if(!over.length){toast("Nothing overdue — all good","ok");return;}
-  const exps=[...new Set(over.map(r=>r.exp))].map(id=>expOf(id).name);
-  toast(`Reminders sent to ${exps.join(" and ")} — ${over.length} overdue requirement${over.length>1?"s":""}`,"ok");
+  const exps=[...new Set(over.map(b=>b.expert).filter(Boolean))].map(id=>expOf(id).name);
+  toast(`Reminders sent to ${exps.join(" and ")} — ${over.length} overdue assignment${over.length>1?"s":""}`,"ok");
 });
 document.getElementById("export2-btn").addEventListener("click",()=>{
-  const non=REQS.filter(r=>r.verdict==="non").length,wait=REQS.filter(isAwait).length;
+  const non=REQS.filter(r=>consolidate(r).compliance==="non_compliant").length;
+  const pend=REQS.filter(r=>consolidate(r).pending).length;
   toast("Compliance register STB-2026_qualification.xlsx generated","ok");
-  setTimeout(()=>toast(`Risk summary included: ${non} non-compliant · ${wait} without response`,"warn"),800);
+  setTimeout(()=>toast(`Risk summary included: ${non} non-compliant · ${pend} still pending consolidation`,"warn"),800);
 });
 document.querySelectorAll(".hub-tabs button").forEach(b=>b.addEventListener("click",()=>{
   state.htab=b.dataset.htab;
@@ -944,8 +1180,15 @@ document.addEventListener("keydown",e=>{
   let i=rows.findIndex(r=>r.id===state.sel);
   if(e.key==="j"||e.key==="J"||e.key==="ArrowDown"){e.preventDefault();select(rows[Math.min(i+1,rows.length-1)].id);}
   if(e.key==="k"||e.key==="K"||e.key==="ArrowUp"){e.preventDefault();select(rows[Math.max(i-1,0)].id);}
-  if((e.key==="r"||e.key==="R")&&state.sel){const r=findR(state.sel);toast(`Reminder sent to ${expOf(r.exp).name} for ${r.id}`,"ok");}
-  if((e.key==="q"||e.key==="Q")&&state.sel){escalate(findR(state.sel));}
+  if((e.key==="r"||e.key==="R")&&state.sel){
+    const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
+    if(br&&br.expert) toast(`Reminder sent to ${expOf(br.expert).name} for ${r.id} · ${TY(br.typology).label}`,"ok");
+    else toast(`No expert assigned yet on this branch`,"warn");
+  }
+  if((e.key==="q"||e.key==="Q")&&state.sel){
+    const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
+    escalate(r,br);
+  }
 });
 /* Init — default to Follow-up. TEMP (dev/demo): was gated on reviewDone(), now always accessible; see setScreen(). */
 if(location.hash==="#versions"){setScreen(3);}else{setScreen(2);}
