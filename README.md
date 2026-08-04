@@ -1,4 +1,4 @@
-# DocReview — interactive prototype
+# Smart Requirement Manager (SRM) — interactive prototype
 
 A clickable, single-file prototype of an AI-assisted review experience for rail-industry
 tender documents: requirements are captured and characterised automatically, then a human
