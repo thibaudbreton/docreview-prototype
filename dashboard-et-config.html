@@ -354,7 +354,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <a class="phase active-phase" id="ph-review" href="javascript:parent.route('review')">
           <div class="ph-num">1</div>
           <div class="ph-info">
-            <div class="ph-name">Document review</div>
+            <div class="ph-name">Allocation</div>
             <div class="ph-stat" id="ph-review-stat"><span class="big" id="ph-review-n">10</span><span id="ph-review-txt">/ 12 requirements validated</span></div>
             <div class="ph-bar"><div id="ph-review-bar" style="width:83%;background:var(--ia)"></div></div>
           </div>
@@ -367,7 +367,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             <div class="ph-name">Expert follow-up</div>
             <div class="ph-lock" id="ph-followup-body">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-              Unlocks when review is finalized
+              Unlocks when allocation is finalized
             </div>
           </div>
           <span class="ph-badge wait" id="ph-followup-badge">Locked</span>
@@ -391,8 +391,8 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <h3>What needs you now <span class="count" id="att-count">5</span></h3>
           <div class="att p1only" data-go="revue-documentaire.html">
             <div class="att-ic warn">✓</div>
-            <div><div class="att-t"><b>Document review not finalized</b></div><div class="att-sub" id="att-review-sub">2 requirements still to validate before Follow-up unlocks</div></div>
-            <span class="att-go">Finalize review →</span>
+            <div><div class="att-t"><b>Allocation not finalized</b></div><div class="att-sub" id="att-review-sub">2 requirements still to validate before Follow-up unlocks</div></div>
+            <span class="att-go">Finalize allocation →</span>
           </div>
           <div class="att" data-go="suivi-experts-et-versions.html#versions">
             <div class="att-ic ia">⇄</div>
@@ -458,7 +458,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           </div>
 
           <div class="card locked-hint p1only">
-            Compliance, experts and response tracking appear here once the document review is finalized.
+            Compliance, experts and response tracking appear here once allocation is finalized.
           </div>
         </aside>
       </div>
@@ -471,7 +471,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="feed-item warn"><div class="feed-w"><b>EXG-005</b> flagged as answered on outdated version after v2.2</div><div class="feed-t">Today, 10:46 AM</div></div>
           <div class="feed-item ok"><div class="feed-w"><b>Claire Moreau</b> responded on EXG-009 — verdict Needs clarification</div><div class="feed-t">Jul 15, 4:20 PM</div></div>
           <div class="feed-item send"><div class="feed-w"><b>Q&amp;A batch</b> — 1 question sent to the issuer (retention period)</div><div class="feed-t">Jul 15, 2:10 PM</div></div>
-          <div class="feed-item ok"><div class="feed-w"><b>Document review</b> milestone reached — register exported, 3 experts notified</div><div class="feed-t">Jul 12, 9:30 AM</div></div>
+          <div class="feed-item ok"><div class="feed-w"><b>Allocation</b> milestone reached — register exported, 3 experts notified</div><div class="feed-t">Jul 12, 9:30 AM</div></div>
         </div>
       </div>
     </div>
@@ -507,7 +507,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <!-- Team -->
         <section class="cfg-sec" data-sec="team">
           <div class="cfg-h">Team &amp; experts</div>
-          <div class="cfg-sub">Experts available for requirement assignment during document review. Each can be assigned requirements and receives a qualification link.</div>
+          <div class="cfg-sub">Experts available for requirement assignment during allocation. Each can be assigned requirements and receives a qualification link.</div>
           <div id="exp-editor"></div>
           <div class="add-exp"><input class="inp" id="new-exp-name" placeholder="Full name"><input class="inp" id="new-exp-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="add-exp-btn">Add expert</button></div>
           <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria</div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (activity)</span><span class="chip-tog on">OBS (organization)</span><span class="chip-tog">Discipline</span></div></div></div>
@@ -638,7 +638,7 @@ function applyGating(){
   // phase 2 dependent blocks
   document.querySelectorAll(".p2only").forEach(el=>el.classList.toggle("hidden",!done));
   document.querySelectorAll(".p1only").forEach(el=>el.classList.toggle("hidden",done));
-  // review phase card
+  // allocation phase card
   const rBadge=document.getElementById("ph-review-badge"),rCard=document.getElementById("ph-review");
   if(done){
     rBadge.textContent="Done"; rBadge.className="ph-badge done";

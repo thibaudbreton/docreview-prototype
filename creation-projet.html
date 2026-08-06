@@ -136,7 +136,12 @@ header .btn-ghost{margin-left:auto}
 .doccard .fm{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
 .doccard .rm{width:26px;height:26px;border-radius:var(--radius-md);color:var(--text-3);display:grid;place-items:center}
 .doccard .rm:hover{background:var(--warn-soft);color:var(--warn)}
-.add-doc{margin-top:var(--space-3);font-size:var(--text-sm);font-weight:500;color:var(--accent);border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-4);display:inline-flex;align-items:center;gap:6px}
+.add-doc{margin-top:var(--space-3);border:1.5px dashed var(--line-2);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);text-align:center;background:var(--panel);transition:all .15s;cursor:pointer}
+.add-doc:hover{border-color:var(--accent);background:var(--panel-2)}
+.add-doc .ic{width:32px;height:32px;border-radius:var(--radius-md);background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:var(--text-base);margin:0 auto 8px}
+.add-doc .t{font-size:var(--text-sm);font-weight:600}
+.add-doc .d{font-size:var(--text-xs);color:var(--text-3);margin-top:3px}
+.add-doc .upz-browse{background:none;border:none;color:var(--accent);font-weight:600;text-decoration:underline;cursor:pointer;font:inherit;padding:0}
 .add-doc:hover{border-color:var(--accent);background:var(--accent-soft)}
 
 /* presets */
@@ -150,7 +155,6 @@ header .btn-ghost{margin-left:auto}
 .preset .pt{font-size:var(--text-base);font-weight:600;display:flex;align-items:center;gap:8px}
 .preset .pd{font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-1);line-height:1.5}
 .tagrec{font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-lg);background:var(--ok-soft);color:var(--ok);text-transform:uppercase;letter-spacing:.4px}
-.tagman{font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-lg);background:var(--human-soft);color:var(--human);text-transform:uppercase;letter-spacing:.4px}
 
 .aisteps{border:1px solid var(--line);border-radius:var(--radius-lg);margin-top:var(--space-5);overflow:hidden}
 .aisteps .ash{padding:var(--space-3) var(--space-4);background:var(--panel-2);border-bottom:1px solid var(--line);font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);display:flex;align-items:center;gap:8px}
@@ -280,7 +284,11 @@ header .btn-ghost{margin-left:auto}
             </div>
           </div>
           <div id="doclist" class="doclist"></div>
-          <button class="add-doc" id="add-doc" style="display:none">＋ Add another document</button>
+          <div class="add-doc" id="add-doc" style="display:none">
+            <div class="ic">⬆</div>
+            <div class="t">Drop another document here</div>
+            <div class="d">PDF, up to 200 MB · or <button type="button" class="upz-browse">select a file</button></div>
+          </div>
           <div class="warnbox" style="margin-top:18px">You can create the project without documents and add them later, but the review screen stays empty until at least one source document is attached.</div>
         </section>
 
@@ -300,11 +308,6 @@ header .btn-ghost{margin-left:auto}
               <div><div class="pt">AI segmentation only</div>
                 <div class="pd">The AI splits the document into blocks and detects tables. Characterization and assignment are entirely yours — no AI suggestions anywhere.</div></div>
             </div>
-            <div class="preset" data-preset="manual">
-              <div class="radio"></div>
-              <div><div class="pt">Fully manual <span class="tagman">No AI</span></div>
-                <div class="pd">No AI processing at all. You select passages in the document to create requirements, then characterize and assign them yourself.</div></div>
-            </div>
           </div>
 
           <div class="aisteps" id="aisteps">
@@ -312,7 +315,7 @@ header .btn-ghost{margin-left:auto}
             <div class="astep"><div><div class="at">Capture</div><div class="ad" data-on="Splits the document into text blocks, detects tables and flags uncertain boundaries." data-off="<span class='off'>Off — you create requirements by selecting passages in the document.</span>">Splits the document into text blocks, detects tables and flags uncertain boundaries.</div></div><span class="tog on" data-ai="seg"></span></div>
             <div class="astep"><div><div class="at">Characterizer</div><div class="ad" data-on="Proposes a type and domain for each block, and whether it is a requirement." data-off="<span class='off'>Off — every requirement starts unclassified.</span>">Proposes a type and domain for each block, and whether it is a requirement.</div></div><span class="tog on" data-ai="char"></span></div>
             <div class="astep"><div><div class="at">Compliance matrix</div><div class="ad" data-on="Pre-builds the compliance matrix and proposes an expert for each requirement." data-off="<span class='off'>Off — you assign every requirement yourself.</span>">Proposes an expert based on domain and past tenders.</div></div><span class="tog on" data-ai="alloc"></span></div>
-            <div class="astep"><div><div class="at">Typology detection</div><div class="ad" data-on="Detects whether a requirement is SIG, Mainline, Turnkey or other." data-off="<span class='off'>Off — typology is set manually.</span>">Detects whether a requirement is SIG, Mainline, Turnkey or other.</div></div><span class="tog on" data-ai="typo"></span></div>
+            <div class="astep"><div><div class="at">Allocation</div><div class="ad" data-on="Proposes a manager for each requirement, based on domain and workload." data-off="<span class='off'>Off — you assign a manager to each requirement yourself.</span>">Proposes a manager for each requirement, based on domain and workload.</div></div><span class="tog on" data-ai="mgr"></span></div>
           </div>
 
           <div class="estimate" id="estimate"><span class="eic">◷</span><span id="est-txt"></span></div>
@@ -356,7 +359,7 @@ header .btn-ghost{margin-left:auto}
 
 <script>
 const P={step:1,name:"",ref:"",line:"Signalling & Urban",system:"Mainline",region:"Europe",issuer:"",deadline:"2026-08-12",
-  file:null,preset:"ai",ai:{seg:true,char:true,alloc:true,typo:true},
+  file:null,preset:"ai",ai:{seg:true,char:true,alloc:true,mgr:true},
   experts:[{name:"Sophie Lang",team:"Monitoring Team",init:"SL",color:"#6e7bf2"},
            {name:"Karim Benali",team:"Infrastructure Team",init:"KB",color:"#3fb27f"},
            {name:"Claire Moreau",team:"Cybersecurity",init:"CM",color:"#e0a43c"}]};
@@ -432,7 +435,7 @@ function renderDocs(){
   // keep P.file in sync for existing validation/logic (first doc = primary)
   P.file = P.docs.length?P.docs[0]:null;
   if(!P.docs.length){ list.innerHTML=""; addBtn.style.display="none"; upzone.style.display="block"; return; }
-  upzone.style.display="none"; addBtn.style.display="inline-flex";
+  upzone.style.display="none"; addBtn.style.display="block";
   list.innerHTML=P.docs.map((d,i)=>`
     <div class="doccard">
       <div class="doc-order">
@@ -452,11 +455,11 @@ document.getElementById("upz").addEventListener("click",addDoc);
 document.getElementById("add-doc").addEventListener("click",addDoc);
 
 /* ---------- processing mode ---------- */
-const PRESETS={ai:{seg:1,char:1,alloc:1,typo:1},seg:{seg:1,char:0,alloc:0,typo:0},manual:{seg:0,char:0,alloc:0,typo:0}};
+const PRESETS={ai:{seg:1,char:1,alloc:1,mgr:1},seg:{seg:1,char:0,alloc:0,mgr:0}};
 function applyPreset(k){
   P.preset=k;
   const p=PRESETS[k];
-  P.ai={seg:!!p.seg,char:!!p.char,alloc:!!p.alloc,typo:!!p.typo};
+  P.ai={seg:!!p.seg,char:!!p.char,alloc:!!p.alloc,mgr:!!p.mgr};
   document.querySelectorAll(".preset").forEach(x=>x.classList.toggle("on",x.dataset.preset===k));
   document.querySelectorAll("[data-ai]").forEach(t=>t.classList.toggle("on",P.ai[t.dataset.ai]));
   document.getElementById("aisteps").classList.remove("custom");
@@ -465,7 +468,7 @@ function applyPreset(k){
 function detectPreset(){
   for(const k in PRESETS){
     const p=PRESETS[k];
-    if(!!p.seg===P.ai.seg&&!!p.char===P.ai.char&&!!p.alloc===P.ai.alloc&&!!p.typo===P.ai.typo){
+    if(!!p.seg===P.ai.seg&&!!p.char===P.ai.char&&!!p.alloc===P.ai.alloc&&!!p.mgr===P.ai.mgr){
       P.preset=k;
       document.querySelectorAll(".preset").forEach(x=>x.classList.toggle("on",x.dataset.preset===k));
       document.getElementById("aisteps").classList.remove("custom");
@@ -483,7 +486,7 @@ function syncAI(){
   });
   const on=Object.values(P.ai).filter(Boolean).length;
   const e=document.getElementById("est-txt");
-  if(!P.ai.seg&&!P.ai.char&&!P.ai.alloc&&!P.ai.typo){
+  if(!P.ai.seg&&!P.ai.char&&!P.ai.alloc&&!P.ai.mgr){
     e.innerHTML="<b>No AI processing.</b> The project opens immediately — you build every requirement by hand.";
   }else if(P.ai.seg){
     e.innerHTML=`<b>~2,400 blocks</b> estimated on a 24-page document · <b>${on} of 4</b> AI steps enabled · estimated processing <b>${on>2?"4":"2"} min</b>.`;
@@ -524,7 +527,7 @@ document.getElementById("e-add").addEventListener("click",()=>{
 
 /* ---------- summary ---------- */
 function modeLabel(){
-  if(!P.ai.seg&&!P.ai.char&&!P.ai.alloc&&!P.ai.typo)return "Fully manual — no AI";
+  if(!P.ai.seg&&!P.ai.char&&!P.ai.alloc&&!P.ai.mgr)return "Fully manual — no AI";
   if(P.preset==="ai")return "AI-assisted (all steps)";
   if(P.preset==="seg")return "AI segmentation only";
   return "Custom — "+Object.keys(P.ai).filter(k=>P.ai[k]).join(", ");

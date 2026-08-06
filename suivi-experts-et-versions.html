@@ -547,7 +547,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
           <div class="upload-ic">⬆</div>
           <div>
             <div class="upload-t">Add a new AO document version</div>
-            <div class="upload-d">Drop a PDF here — AI processing starts immediately, then the gap analysis opens in Document review (Compare mode). Works at any stage, even mid-allocation.</div>
+            <div class="upload-d">Drop a PDF here — AI processing starts immediately, then the gap analysis opens in Allocation (Compare mode). Works at any stage, even mid-allocation.</div>
           </div>
           <button class="btn-primary" id="sim-upload">Simulate upload — v2.2</button>
         </div>
@@ -1226,7 +1226,7 @@ function renderPanel2(){
     if(br.status==="awaiting_qa")items.push({k:"tl-send",who,what:`Raised a question to the issuer — assignment blocked until answered.`,time:`${br.age} d ago`});
     if(br.status==="reassignment_needed")items.push({k:"tl-warn",who:"Expert",what:`Returned the assignment — wrong allocation.`,time:`${br.age} d ago`});
     if(isOverB(br))items.push({k:"tl-warn",who:"System",what:`Overdue threshold reached (${OVERDUE_DAYS} days without response).`,time:`${Math.max(1,br.age-OVERDUE_DAYS+1)} d ago`});
-    items.push({k:"tl-send",who:"Thibaud Breton",what:`Assignment created for ${TY(br.typology).label}${e?` and sent to ${e.name}`:""}.`,time:`${br.age} d ago (export from Document review)`});
+    items.push({k:"tl-send",who:"Thibaud Breton",what:`Assignment created for ${TY(br.typology).label}${e?` and sent to ${e.name}`:""}.`,time:`${br.age} d ago (export from Allocation)`});
     b.innerHTML=`<div class="timeline">${items.map(i=>`<div class="tl-item ${i.k}"><div class="tl-who">${i.who}</div><div class="tl-what">${i.what}</div><div class="tl-time">${i.time}</div></div>`).join("")}</div>`;
   }else{
     b.innerHTML=`
@@ -1381,7 +1381,7 @@ function setScreen(n){
   // TEMP (dev/demo): the review→follow-up gate below is left in place but bypassed, so the
   // Follow-up screen stays reachable while it's being worked on. reviewDone() itself is untouched.
   // if(n===2 && !reviewDone()){
-  //   toast("Follow-up is locked — finalize the document review first","warn");
+  //   toast("Follow-up is locked — finalize allocation first","warn");
   //   n=3;
   // }
   state.screen=n;
