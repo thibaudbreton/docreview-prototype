@@ -953,6 +953,16 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .nat-menu button:hover{background:var(--panel-3);color:var(--text)}
 .nat-menu button.on{color:var(--accent);font-weight:600}
 /* ---- nav tree ---- */
+/* doc-level group — one level above sections, mirrors the table's doctitle rows */
+.nav-doc{display:flex;align-items:center;gap:var(--space-2);cursor:pointer;padding:var(--space-3) var(--space-2) var(--space-1);border-radius:var(--radius-sm);transition:background .1s}
+.nav-doc:hover{background:var(--panel-2)}
+.nav-doc .caret{transition:transform .15s;flex-shrink:0;color:var(--text-3)}
+.nav-doc.collapsed .caret{transform:rotate(-90deg)}
+.nav-doc .nd-icon{font-size:var(--text-sm);flex-shrink:0}
+.nav-doc .nd-t{font-size:var(--text-lg);font-weight:700;color:var(--text);letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.nav-doc-body{overflow:hidden;transition:max-height .2s}
+.nav-doc-body.collapsed{max-height:0!important;display:none}
+.nav-doc+.nav-doc-body+.nav-doc{border-top:1px solid var(--line);margin-top:var(--space-2);padding-top:var(--space-2)}
 .nav-h{display:flex;align-items:center;gap:var(--space-2);cursor:pointer;transition:background .1s;border-radius:var(--radius-sm)}
 .nav-h1{padding:var(--space-2) var(--space-2);font-weight:600;color:var(--text);margin-top:4px}
 .nav-h1:hover{background:var(--panel-2)}
@@ -1754,6 +1764,7 @@ const state = {
   typoOpen:false,
   selection:new Set(),
   navCollapsed:new Set(),
+  docNavCollapsed:new Set(),
   docFilter:"all",
   colCollapsed:new Set(),
   navPanelCollapsed:false,
@@ -1902,8 +1913,26 @@ function renderNav(){
   const list = document.getElementById("nav-list");
   list.innerHTML = "";
   let visible = 0, total = 0;
+  let lastDocId = null, docTarget = list;
 
   SECTIONS.forEach(sec=>{
+    // doc-level group — same document hierarchy as the table's doctitle rows,
+    // one level above sections, collapsible on its own
+    if(sec.docId!==lastDocId){
+      lastDocId = sec.docId;
+      const doc = DOC(sec.docId);
+      const docCollapsed = state.docNavCollapsed.has(doc.id);
+      const docHead = document.createElement("div");
+      docHead.className = "nav-doc"+(docCollapsed?" collapsed":"");
+      docHead.innerHTML = `<svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        <span class="nd-icon">📄</span><span class="nd-t">${doc.name}</span>`;
+      docHead.addEventListener("click",()=>{ docCollapsed?state.docNavCollapsed.delete(doc.id):state.docNavCollapsed.add(doc.id); renderNav(); });
+      list.appendChild(docHead);
+      docTarget = document.createElement("div");
+      docTarget.className = "nav-doc-body"+(docCollapsed?" collapsed":"");
+      list.appendChild(docTarget);
+    }
+
     const flat = sec.blocks.flatMap(b=>b.kind==="table"?b.rows:[b]);
     const reqCount = flat.filter(b=>blockNature(b)==="requirement").length;
     total += reqCount;
@@ -1920,7 +1949,7 @@ function renderNav(){
       <span class="nh-num">${sec.num}</span><span class="nh-t">${sec.title}</span>
       <span class="sec-changes">${add?`<span class="add">+${add}</span>`:""}${mod?`<span class="mod">~${mod}</span>`:""}${rem?`<span class="rem">-${rem}</span>`:""}<span class="nh-c">${reqCount}</span></span>`;
     head.addEventListener("click",()=>{ collapsed?state.navCollapsed.delete(sec.id):state.navCollapsed.add(sec.id); renderNav(); });
-    list.appendChild(head);
+    docTarget.appendChild(head);
 
     const wrap = document.createElement("div");
     wrap.className = "nav-body"+(collapsed?" collapsed":"");
@@ -1953,7 +1982,7 @@ function renderNav(){
       el.addEventListener("click",()=>selectBlock(b.id,{scroll:true}));
       wrap.appendChild(el);
     });
-    list.appendChild(wrap);
+    docTarget.appendChild(wrap);
   });
 
   document.getElementById("nav-count").innerHTML =
