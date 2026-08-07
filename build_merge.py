@@ -11,6 +11,15 @@ Cross-screen navigation is expressed in the sources as parent.route(...) /
 parent.routeUrl(...) / goRoute(...) JS calls (see dashboard-et-config.html's
 goRoute() for the standalone-fallback pattern) — not <a href="X.html"> tags.
 Keep new cross-screen links in that form; there is no href rewriting here.
+
+Shared JS (B5): table-engine.js holds review-table interaction behaviour used
+by more than one screen (selection, Bulk Action Bar, Filter to Selection,
+keyboard navigation, Column Visibility Menu). It is a plain JS file, not a
+standalone screen — before encoding each source, any "/* @include
+table-engine.js */" marker in that source is replaced with its contents, so
+both screens run the same code without a bundler or external <script src>
+(the deliverable stays a single self-contained file). Edit table-engine.js
+itself to change shared behaviour on every screen that includes it.
 """
 import base64
 
@@ -21,6 +30,9 @@ SOURCES = [
     ("create", "creation-projet.html"),
     ("home", "accueil.html"),
 ]
+
+INCLUDE_MARKER = "/* @include table-engine.js */"
+SHARED_JS_FILE = "table-engine.js"
 
 OUTPUT = "docreview-app.html"
 PAGES_OUTPUT = "index.html"  # GitHub Pages entry point — same bytes as OUTPUT
@@ -54,15 +66,15 @@ const frame = document.getElementById('frame');
 function seedProjects(){
   return [
     {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Signalling & Urban", days:23, deadline:1,
-     status:"requirement_review", done:10, total:12, updated:"today", primary:true},
+     status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager"},
     {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"Signalling & Urban", days:9, deadline:1,
-     status:"expert_review", done:34, total:41, updated:"2h ago"},
+     status:"expert_review", done:34, total:41, updated:"2h ago", role:"Signalling manager"},
     {id:"ao088", ref:"AO-2026-088", name:"Depot Maintenance Systems", line:"Services", days:41, deadline:1,
-     status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now"},
+     status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now", role:"Project manager"},
     {id:"stb133", ref:"STB-2026-133", name:"Regional Fleet Telemetry", line:"Rolling stock", days:5, deadline:1,
-     status:"qa_versioning", done:58, total:63, updated:"yesterday"},
+     status:"qa_versioning", done:58, total:63, updated:"yesterday", role:"Expert"},
     {id:"stb2025", ref:"STB-2025-071", name:"Metro Depot Power Supply", line:"Systems", days:-12, deadline:1,
-     status:"submitted", reqs:88, updated:"Jun 3"},
+     status:"submitted", reqs:88, updated:"Jun 3", role:"Expert"},
   ];
 }
 let PROJECTS = seedProjects();
@@ -100,7 +112,8 @@ window.addProject = function(meta){
   const id="p"+Date.now().toString(36);
   const manual = meta.mode==="manual";
   const p={ id, ref:meta.ref||("AO-"+id.slice(-4).toUpperCase()), name:meta.name||"Untitled tender",
-    line:meta.line||"—", days:meta.days!=null?meta.days:30, deadline:1, updated:"just now" };
+    line:meta.line||"—", days:meta.days!=null?meta.days:30, deadline:1, updated:"just now",
+    role:"Project manager" };  // whoever creates the tender owns it
   if(manual){ p.status="requirement_review"; p.done=0; p.total=0; }
   else { p.status="processing"; p.progress=3; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); }
   PROJECTS.unshift(p);
@@ -189,10 +202,15 @@ load(location.hash.slice(1) || 'home');
 """
 
 def main():
+    with open(SHARED_JS_FILE, encoding="utf-8") as f:
+        shared_js = f.read()
+
     blob_lines = []
     for key, filename in SOURCES:
         with open(filename, encoding="utf-8") as f:
             html = f.read()
+        if INCLUDE_MARKER in html:
+            html = html.replace(INCLUDE_MARKER, shared_js)
         b64 = base64.b64encode(html.encode("utf-8")).decode("ascii")
         blob_lines.append(f'{key}:"{b64}",')
 
