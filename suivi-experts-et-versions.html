@@ -123,6 +123,18 @@ html[data-theme="light"] .logo-mark-light{display:block}
 
 /* ---------- Left nav ---------- */
 .nav{width:272px;flex-shrink:0;display:flex;flex-direction:column;background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;padding:var(--space-3) var(--space-2) 16px}
+/* doc-level group — same document hierarchy as the table's grouping, one level
+   above sections, collapsible on its own (see revue-documentaire.html's nav-doc) */
+.nav-doc{display:flex;align-items:center;gap:var(--space-2);cursor:pointer;padding:var(--space-3) var(--space-2) var(--space-1);border-radius:var(--radius-sm);transition:background .1s}
+.nav-doc:first-child{padding-top:var(--space-1)}
+.nav-doc:hover{background:var(--panel-2)}
+.nav-doc .caret{transition:transform .15s;flex-shrink:0;color:var(--text-3)}
+.nav-doc.collapsed .caret{transform:rotate(-90deg)}
+.nav-doc .nd-icon{font-size:var(--text-sm);flex-shrink:0}
+.nav-doc .nd-t{font-size:var(--text-lg);font-weight:700;color:var(--text);letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.nav-doc-body{overflow:hidden;transition:max-height .2s}
+.nav-doc-body.collapsed{max-height:0!important;display:none}
+.nav-doc+.nav-doc-body+.nav-doc{border-top:1px solid var(--line);margin-top:var(--space-2);padding-top:var(--space-2)}
 .nav-section-head{padding:8px var(--space-2) var(--space-1);font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
 .nav-item{display:flex;align-items:center;gap:var(--space-2);padding:6px var(--space-2);margin:1px 0;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-2);font-size:var(--text-base);transition:background .12s;border-left:2px solid transparent}
 .nav-item:hover{background:var(--panel-2);color:var(--text)}
@@ -170,7 +182,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
    component, this screen's own column config + adapter, table-engine.js for
    the interaction behaviour). Copied CSS conventions, not a shared stylesheet
    (this project has no bundler — CSS is duplicated per file by convention). */
-:root{ --rrow-h:44px; --frgrid-cols:32px 84px minmax(280px,1.6fr) 90px 140px 110px 150px 140px 110px 70px; }
+:root{ --rrow-h:44px; --frgrid-cols:32px 84px minmax(280px,1.6fr) 90px 140px 110px 190px 110px 70px; }
 .rgrid{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
 .rgrid-head{display:grid;grid-template-columns:var(--frgrid-cols);align-self:flex-start;min-width:100%;background:var(--panel-2);border-bottom:1px solid var(--line);flex-shrink:0;overflow-x:hidden}
 .rgrid-head .rcell{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);padding:0 var(--space-3);height:38px;display:flex;align-items:center;border-right:1px solid var(--line)}
@@ -196,9 +208,9 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rcell.c-id{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-2);white-space:nowrap}
 /* collapsed columns (Column Visibility Menu): hide content, show a thin »
    re-expand strip — click the collapsed header cell to bring the column back */
-.rgrid[data-cc~="typo"] .c-typo>*,.rgrid[data-cc~="expert"] .c-expert>*,.rgrid[data-cc~="mgr"] .c-mgr>*,.rgrid[data-cc~="status"] .c-status>*,.rgrid[data-cc~="compliance"] .c-compliance>*,.rgrid[data-cc~="lastfu"] .c-lastfu>*,.rgrid[data-cc~="age"] .c-age>*{display:none}
-.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{padding:0;justify-content:center;cursor:pointer}
-.rgrid[data-cc~="typo"] .rgrid-head .c-typo::after,.rgrid[data-cc~="expert"] .rgrid-head .c-expert::after,.rgrid[data-cc~="mgr"] .rgrid-head .c-mgr::after,.rgrid[data-cc~="status"] .rgrid-head .c-status::after,.rgrid[data-cc~="compliance"] .rgrid-head .c-compliance::after,.rgrid[data-cc~="lastfu"] .rgrid-head .c-lastfu::after,.rgrid[data-cc~="age"] .rgrid-head .c-age::after{content:"»";color:var(--text-3);font-size:var(--text-xs)}
+.rgrid[data-cc~="typo"] .c-typo>*,.rgrid[data-cc~="expert"] .c-expert>*,.rgrid[data-cc~="mgr"] .c-mgr>*,.rgrid[data-cc~="status"] .c-status>*,.rgrid[data-cc~="lastfu"] .c-lastfu>*,.rgrid[data-cc~="age"] .c-age>*{display:none}
+.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{padding:0;justify-content:center;cursor:pointer}
+.rgrid[data-cc~="typo"] .rgrid-head .c-typo::after,.rgrid[data-cc~="expert"] .rgrid-head .c-expert::after,.rgrid[data-cc~="mgr"] .rgrid-head .c-mgr::after,.rgrid[data-cc~="status"] .rgrid-head .c-status::after,.rgrid[data-cc~="lastfu"] .rgrid-head .c-lastfu::after,.rgrid[data-cc~="age"] .rgrid-head .c-age::after{content:"»";color:var(--text-3);font-size:var(--text-xs)}
 .rgrid-head .rcell{position:relative}
 .empty-rows{padding:40px;text-align:center;color:var(--text-3);font-size:var(--text-base)}
 .multi-ph{color:var(--text-3);font-size:var(--text-xs);font-style:italic}
@@ -608,7 +620,6 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <div class="rcell c-expert" data-col="expert"><span class="cl">Expert</span></div>
               <div class="rcell c-mgr" data-col="mgr"><span class="cl">Manager</span></div>
               <div class="rcell c-status" data-col="status"><span class="cl">Status</span></div>
-              <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
               <div class="rcell c-lastfu" data-col="lastfu"><span class="cl">Last follow-up</span></div>
               <div class="rcell c-age" data-col="age"><span class="cl">Age</span></div>
             </div>
@@ -699,6 +710,18 @@ const CMP={compliant:"Compliant",compliant_rnd:"Compliant with R&D",non_complian
 const CMP_ORDER=["non_compliant","compliant_rnd","compliant"];
 /* which unfinished branch to surface as "what is holding this requirement up" */
 const BLOCK_PRIORITY=["reassignment_needed","awaiting_qa","awaiting_answer","assigned","proposed"];
+/* Same source documents as revue-documentaire.html, so the nav tells the same story
+   on both screens — section 2 comes from the main volume, sections 3/4 from annex A. */
+const DOCS=[
+  {id:"d1", name:"Tender specification — main volume", file:"EMS_tender_main.pdf"},
+  {id:"d2", name:"Technical annex A — performance & security", file:"EMS_annex_A.pdf"},
+];
+const DOC=id=>DOCS.find(d=>d.id===id);
+const SEC_DOC={
+  "2. Functional requirements":"d1",
+  "3. Performance requirements":"d2",
+  "4. Security requirements":"d2",
+};
 /* T1 — assignments live at BRANCH level: one branch per typology per requirement.
    Single-typology requirement = 1 branch; multi-typology = N branches, one expert each.
    EXG-003 (3 branches) and EXG-007 (2 branches) mirror the branches seeded in
@@ -818,6 +841,7 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
   /* B5 — shared table engine state (see table-engine.js / TE) */
   selection:new Set(),colFilters:{},filterToSelection:false,savedColFilters:null,
   activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","mgr","age"]),
+  docNavCollapsed:new Set(),
   ownTeamOnly:true};
 /* B5 — this screen has no admin/view-as switcher yet (unlike revue-documentaire.html);
    VIEWER simulates whichever branch manager is currently using their own follow-up
@@ -914,15 +938,32 @@ function renderNav2(){
   const nav=document.getElementById("nav2");nav.innerHTML="";
   if(state.navBy==="section"){
     const secs=[...new Set(REQS.map(r=>r.sec))];
+    let lastDocId=null, docTarget=nav;
     secs.forEach(sec=>{
-      const h=document.createElement("div");h.className="nav-section-head";h.textContent=sec;nav.appendChild(h);
+      // doc-level group — one level above sections, collapsible on its own
+      const docId=SEC_DOC[sec];
+      if(docId && docId!==lastDocId){
+        lastDocId=docId;
+        const doc=DOC(docId);
+        const docCollapsed=state.docNavCollapsed.has(doc.id);
+        const docHead=document.createElement("div");
+        docHead.className="nav-doc"+(docCollapsed?" collapsed":"");
+        docHead.innerHTML=`<svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+          <span class="nd-icon">📄</span><span class="nd-t">${doc.name}</span>`;
+        docHead.addEventListener("click",()=>{ docCollapsed?state.docNavCollapsed.delete(doc.id):state.docNavCollapsed.add(doc.id); renderNav2(); });
+        nav.appendChild(docHead);
+        docTarget=document.createElement("div");
+        docTarget.className="nav-doc-body"+(docCollapsed?" collapsed":"");
+        nav.appendChild(docTarget);
+      }
+      const h=document.createElement("div");h.className="nav-section-head";h.textContent=sec;docTarget.appendChild(h);
       REQS.filter(r=>r.sec===sec).forEach(r=>{
         const el=document.createElement("div");
         el.className="nav-item"+(state.sel===r.id?" active":"")+(passes(r)?"":" dimmed");
         const c=consolidate(r);
         el.innerHTML=`<span class="vdot ${c.pending?"none":c.compliance}"></span><span class="nid">${r.id}</span><span class="nlabel">${esc(r.text.slice(0,46))}…</span>${r.branches.length>1?`<span class="nav-brn">${r.branches.length}</span>`:""}`;
         el.addEventListener("click",()=>select(r.id));
-        nav.appendChild(el);
+        docTarget.appendChild(el);
       });
     });
   }else{
@@ -991,10 +1032,24 @@ function tableRows(){
   if(state.sortBy==="req") return rows.sort((a,b)=>a.id.localeCompare(b.id));
   return rows.sort((a,b)=>actionScore(a)-actionScore(b)||a.id.localeCompare(b.id));
 }
-/* consolidated verdict cell — pending must never read as a decided verdict */
-function consolidatedCellHTML(c){
-  if(c.pending) return `<span class="vpill none pending-pill">Pending${c.remaining>1?` · ${c.remaining} branches`:""}</span>`;
-  return `<span class="vpill ${c.compliance}">${CMP[c.compliance]||"—"}</span>`;
+/* One status per row (PM ask — progress and result used to be two separate columns,
+   which just duplicated the same "not answered yet" read twice). Once answered, the
+   cell shows the verdict directly; every other waiting state — proposed, assigned,
+   awaiting the expert, awaiting the issuer — collapses to a flat "Pending". A branch
+   stuck on reassignment is the one exception kept distinct, since it's an action item
+   for the manager, not just a wait. Used for the consolidated row (single branch or
+   the aggregate across several); pending must never read as a decided verdict. */
+function consolidatedStatusHTML(c){
+  if(!c.pending) return `<span class="vpill ${c.compliance}">${CMP[c.compliance]||"—"}</span>`;
+  if(c.blocking && c.blocking.status==="reassignment_needed")
+    return `<span class="blocking-chip" title="${TY(c.blocking.typology).label} needs reassignment">⛔ Reassignment needed</span>`;
+  return `<span class="vpill none pending-pill">Pending${c.remaining>1?` · ${c.remaining} branches`:""}</span>`;
+}
+/* same merge, per individual branch (multi-activity sub-rows) */
+function branchStatusHTML(b){
+  if(isAnswered(b)) return `<span class="vpill ${b.compliance}">${CMP[b.compliance]||"—"}</span>`;
+  if(b.status==="reassignment_needed") return `<span class="blocking-chip" title="Needs reassignment">⛔ Reassignment needed</span>`;
+  return `<span class="vpill none pending-pill">Pending</span>`;
 }
 function branchWhoHTML(b){
   const e=b.expert?expOf(b.expert):null;
@@ -1046,22 +1101,25 @@ function renderNeedsYou(){
 const F_RCOLS=[
   {k:"sel",w:"32px"},{k:"id",w:"84px"},{k:"req",w:"minmax(280px,1.6fr)"},
   {k:"typo",w:"90px"},{k:"expert",w:"140px"},{k:"mgr",w:"110px"},
-  {k:"status",w:"150px"},{k:"compliance",w:"140px"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
+  {k:"status",w:"190px"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
 ];
 const F_COLUMN_TOGGLE_DEFS=[
   {k:"typo",label:"Typology"},{k:"expert",label:"Expert"},{k:"mgr",label:"Manager"},
-  {k:"status",label:"Status"},{k:"compliance",label:"Compliance"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
+  {k:"status",label:"Status"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
 ];
-const F_NAV_COLS=["sel","id","req","typo","expert","mgr","status","compliance","lastfu","age"];
+const F_NAV_COLS=["sel","id","req","typo","expert","mgr","status","lastfu","age"];
 function fNavCols(){ return F_NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
 function applyFCols(){
   const grid=document.querySelector("#view-table .rgrid"); if(!grid) return;
   grid.style.setProperty("--frgrid-cols", F_RCOLS.map(c=>state.colCollapsed.has(c.k)?"24px":c.w).join(" "));
   grid.setAttribute("data-cc",[...state.colCollapsed].join(" "));
 }
-// clicking a collapsed header cell re-expands it (same convention as revue-documentaire.html)
+// clicking a header cell toggles it collapsed/expanded — retractable columns,
+// no need to open the View menu just to hide one
 document.querySelectorAll("#frgrid-head [data-col]").forEach(cell=>cell.addEventListener("click",()=>{
-  const k=cell.dataset.col; if(state.colCollapsed.has(k)){ state.colCollapsed.delete(k); applyFCols(); }
+  const k=cell.dataset.col;
+  state.colCollapsed.has(k) ? state.colCollapsed.delete(k) : state.colCollapsed.add(k);
+  applyFCols();
 }));
 // keep the header's horizontal scroll in sync with the body
 (function(){
@@ -1077,6 +1135,7 @@ function buildFVRows(){
   fVROWS=[];
   rows.forEach(r=>{
     fVROWS.push({type:"row",r});
+    if(r.branches.length<2) return; // one activity concerned — stays on a single line, no sub-row
     const branchFilterActive=(state.filter&&state.filter!=="out")||state.fExpert||state.fTypo||state.needsMe||state.ownTeamOnly;
     r.branches.forEach((b,i)=>{
       if(!passesB(b) && branchFilterActive) return;
@@ -1099,12 +1158,9 @@ function fRowInnerHTML(r){
     <div class="rcell c-typo">${single?`<span class="ptag">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} typologies</span>`}</div>
     <div class="rcell c-expert">${single?branchWhoHTML(single):`<span class="multi-ph">Multiple (${r.branches.length})</span>`}</div>
     <div class="rcell c-mgr">${single?(single.manager?`<span>${mgrOf(single.manager).name.split(" ")[0]}</span>`:'<span class="none">—</span>'):`<span class="multi-ph">Multiple</span>`}</div>
-    <div class="rcell c-status">${c.pending
-        ? `<span class="blocking-chip" title="This branch is holding consolidation up">⛔ ${TY(c.blocking.typology).label} · ${BST[c.blocking.status]}</span>`
-        : `<span class="spill answered">Consolidated</span>`}</div>
-    <div class="rcell c-compliance">${consolidatedCellHTML(c)}</div>
+    <div class="rcell c-status">${consolidatedStatusHTML(c)}</div>
     <div class="rcell c-lastfu">${fLastFollowupHTML({lastFollowup})}</div>
-    <div class="rcell c-age"></div>`;
+    <div class="rcell c-age ${single&&isOverB(single)?"over":""}">${single?(isAnswered(single)?"":single.age+" d"):""}</div>`;
 }
 function fBranchRowHTML(parent,b,idx){
   const m=b.manager?mgrOf(b.manager):null;
@@ -1115,8 +1171,7 @@ function fBranchRowHTML(parent,b,idx){
     <div class="rcell c-typo"><span class="ptag">${TY(b.typology).code}</span></div>
     <div class="rcell c-expert">${branchWhoHTML(b)}</div>
     <div class="rcell c-mgr">${m?m.name.split(" ")[0]:'<span class="none">—</span>'}</div>
-    <div class="rcell c-status"><span class="spill ${b.status}">${BST[b.status]}</span></div>
-    <div class="rcell c-compliance">${b.compliance?`<span class="vpill ${b.compliance}">${CMP[b.compliance]}</span>`:'<span class="vpill none">—</span>'}</div>
+    <div class="rcell c-status">${branchStatusHTML(b)}</div>
     <div class="rcell c-lastfu">${fLastFollowupHTML(b)}</div>
     <div class="rcell c-age ${isOverB(b)?"over":""}">${isAnswered(b)?"":b.age+" d"}</div>
   </div>`;
