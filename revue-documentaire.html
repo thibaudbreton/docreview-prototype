@@ -177,7 +177,10 @@ html[data-theme="light"] .logo-mark-light{display:block}
 }
 .tpill .n{font-weight:700;font-variant-numeric:tabular-nums}
 .tpill.p-unalloc .n{color:var(--warn)}
-.tpill.p-review .n{color:var(--ia)}
+.tpill.p-incomplete .n{color:var(--text-3)}
+.tpill.p-doubt .n{color:var(--warn)}
+.tpill.p-tovalidate .n{color:var(--ia)}
+.tpill.p-allocated .n{color:var(--ok)}
 .tpill.p-changes .n{color:var(--accent)}
 .tpill:hover{border-color:var(--line-2);background:var(--panel-2)}
 .tpill.active{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
@@ -326,14 +329,14 @@ body.mode-compare .sec-gap-chip.has-changes{display:inline-flex}
   position:absolute;top:8px;left:-58px;
   font-family:var(--font-mono);font-size:var(--text-xs);color:var(--paper-ink-2);opacity:.6;
 }
-.blk.st-suggested{border-style:dashed;border-color:rgba(200,140,30,.55)}
-.blk.st-suggested .type-chip{background:#f3e3c3;color:#8a5f10}
-.blk.st-validated{border-color:rgba(48,150,104,.45)}
-.blk.st-validated .type-chip{background:#d3ecdf;color:#1d7a4f}
-.blk.st-edited{border-color:rgba(130,85,210,.5)}
-.blk.st-edited .type-chip{background:#e6dbf7;color:#6a3fc0}
-.blk.st-toreview{border-style:dashed;border-color:rgba(200,140,30,.55)}
-.blk.st-toreview .type-chip{background:#f3e3c3;color:#8a5f10}
+.blk.st-incomplete{border-style:dashed;border-color:var(--line-2)}
+.blk.st-incomplete .type-chip{background:#e8e5da;color:#6b6455}
+.blk.st-doubt{border-style:dashed;border-color:rgba(180,60,52,.55)}
+.blk.st-doubt .type-chip{background:#f6d5d2;color:#a5342c}
+.blk.st-tovalidate{border-style:dashed;border-color:rgba(200,140,30,.55)}
+.blk.st-tovalidate .type-chip{background:#f3e3c3;color:#8a5f10}
+.blk.st-allocated{border-color:rgba(48,150,104,.45)}
+.blk.st-allocated .type-chip{background:#d3ecdf;color:#1d7a4f}
 .blk.unallocated::after{
   content:"Unassigned";
   position:absolute;bottom:-8px;right:10px;
@@ -586,10 +589,14 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 }
 .status-pill:active{transform:scale(.96)}
 .status-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.status-pill.s-suggested{background:var(--ia-soft);color:var(--ia)}
-.status-pill.s-validated{background:var(--ok-soft);color:var(--ok)}
-.status-pill.s-edited{background:var(--human-soft);color:var(--human)}
-.status-pill.s-toreview{background:var(--ia-soft);color:var(--ia)}
+/* B7 — characterisation/allocation progression: Incomplete → Doubt → To validate → Allocated.
+   "Allocated" is a deliberately distinct name from the pipeline's later "Validated" (post-
+   compliance-consolidation) — see SPEC-domain-model.md — same accent-green as a nod to "done"
+   but a different label so the two milestones are never confused in the UI. */
+.status-pill.s-incomplete{background:var(--panel-3);color:var(--text-3);border:1px dashed var(--line-2)}
+.status-pill.s-doubt{background:var(--warn-soft);color:var(--warn)}
+.status-pill.s-tovalidate{background:var(--ia-soft);color:var(--ia)}
+.status-pill.s-allocated{background:var(--ok-soft);color:var(--ok)}
 /* branch status (sub-row, display-only — not the same states as the parent status pill) */
 .status-pill.branch-status-answered{background:var(--ok-soft);color:var(--ok);cursor:default}
 .status-pill.branch-status-awaiting{background:var(--panel-3);color:var(--text-2);cursor:default}
@@ -608,6 +615,9 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .compliance-pill.c-not_compliant{background:var(--warn-soft);color:var(--warn)}
 .compliance-pill.c-pending{background:transparent;border-style:dashed;border-color:var(--line-2);color:var(--text-3);font-style:italic;font-weight:500}
 .compliance-compliant{color:var(--ok)}
+/* B3 — project-manager compliance override + lock */
+.compliance-pill.locked{border-color:var(--warn);opacity:.9}
+.lock-badge{display:inline-flex;align-items:center;gap:4px;font-size:var(--text-xs);font-weight:700;color:var(--warn);background:var(--warn-soft);padding:2px var(--space-2);border-radius:var(--radius-pill);white-space:nowrap}
 .compliance-rnd_needed{color:var(--ia)}
 .compliance-not_compliant{color:var(--warn)}
 .compliance-pending{color:var(--text-3);font-style:italic}
@@ -758,6 +768,7 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .tl-item.tl-ok::before{border-color:var(--ok)}
 .tl-item.tl-comment::before{border-color:var(--accent)}
 .tl-item.tl-human::before{border-color:var(--human)}
+.tl-item.tl-warn::before{border-color:var(--warn)}
 .tl-who{font-size:var(--text-sm);font-weight:600;color:var(--text)}
 .tl-what{font-size:var(--text-sm);color:var(--text-2);line-height:1.5;margin-top:2px}
 .tl-what .before-after{
@@ -821,6 +832,9 @@ body.seg-on .tbl-gran{display:inline-flex}
 .ptag.ai{border-style:dashed;border-color:rgba(224,164,60,.55);color:var(--ia)}
 .ptag.tky{background:#7b8794;border-color:#7b8794;color:#fff}
 .ptag.tky.ai{background:transparent;color:#93a0af;border-color:#7b8794;border-style:dashed}
+/* B1 — allocation-change proposal pending project-manager review */
+.ptag.proposed{background:var(--human-soft);border-color:var(--human);color:var(--human)}
+.ptag.tky.proposed{background:var(--human);border-color:var(--human);color:#fff}
 /* review table toolbar */
 .rtoolbar{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
 /* filter-to-selection banner — replaces the toolbar while active */
@@ -863,6 +877,31 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .branch-sec-head{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);background:var(--panel-2)}
 .branch-sec-mgr{flex:1;font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .set-sep{height:1px;background:var(--line);margin:6px 0 18px}
+/* B1 — allocation-change proposal: manager trigger + project-manager review */
+.propose-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:9px}
+.propose-actions{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.propose-form{margin-top:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2)}
+.propose-form select,.propose-form textarea{width:100%;font-family:var(--font-ui);font-size:var(--text-sm)}
+.propose-form textarea{resize:vertical;min-height:56px}
+.propose-form-actions{display:flex;justify-content:flex-end;gap:var(--space-2)}
+.propose-pending{border:1px solid var(--human);background:var(--human-soft);border-radius:var(--radius-md);padding:var(--space-3);margin-bottom:16px}
+.propose-pending-h{font-size:var(--text-sm);font-weight:700;color:var(--human);margin-bottom:4px}
+.propose-pending-t{font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
+.branch-proposal{border-top:1px solid var(--line-2);background:var(--human-soft);padding:var(--space-2) var(--space-3);font-size:var(--text-sm)}
+.branch-proposal-h{font-weight:700;color:var(--human);margin-bottom:3px}
+.branch-proposal-note{color:var(--text-2);font-style:italic;line-height:1.45;margin-bottom:var(--space-2)}
+.branch-proposal-actions{display:flex;gap:var(--space-2)}
+.branch-proposal-actions button{font-size:var(--text-xs);font-weight:700;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm)}
+.branch-proposal-actions .approve{color:var(--ok);border:1px solid rgba(63,178,127,.5)}
+.branch-proposal-actions .approve:hover{background:var(--ok);color:#fff}
+.branch-proposal-actions .reject{color:var(--warn);border:1px solid rgba(242,96,79,.5)}
+.branch-proposal-actions .reject:hover{background:var(--warn);color:#fff}
+.branch-sec-compliance{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-top:1px solid var(--line-2)}
+.compliance-override{display:flex;align-items:center;gap:var(--space-2);flex:1}
+.compliance-override select{flex:1}
+.lock-btn{font-size:var(--text-xs);font-weight:700;white-space:nowrap;color:var(--warn);border-color:rgba(242,96,79,.5)}
+.lock-btn:hover{background:var(--warn);color:#fff;border-color:var(--warn)}
+.expert-original{padding:0 var(--space-3) var(--space-2);font-size:var(--text-xs);color:var(--text-3);font-style:italic}
 /* manager block (option B) */
 .mgr-block{margin-bottom:16px}
 .mgr-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:9px}
@@ -1174,11 +1213,14 @@ body.restricted .restrict-banner{display:flex}
   <div class="triage">
     <div class="progress-wrap">
       <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-      <span class="progress-label"><b id="progress-num">0/0</b> requirements validated</span>
+      <span class="progress-label"><b id="progress-num">0/0</b> requirements allocated — sent to Expert Review</span>
     </div>
     <div class="triage-pills">
       <button class="tpill p-unalloc" data-filter="unallocated"><span class="n" id="n-unalloc">0</span> unassigned</button>
-      <button class="tpill p-review" data-filter="toreview"><span class="n" id="n-review">0</span> needs review</button>
+      <button class="tpill p-incomplete" data-filter="incomplete"><span class="n" id="n-incomplete">0</span> incomplete</button>
+      <button class="tpill p-doubt" data-filter="doubt"><span class="n" id="n-doubt">0</span> doubt</button>
+      <button class="tpill p-tovalidate" data-filter="tovalidate"><span class="n" id="n-tovalidate">0</span> to validate</button>
+      <button class="tpill p-allocated" data-filter="allocated"><span class="n" id="n-allocated">0</span> allocated</button>
       <button class="tpill p-changes" data-filter="changed"><span class="n" id="n-changes">0</span> changes v2.0 → v2.1</button>
       <button class="tpill p-seg" data-filter="uncertain"><span class="n" id="n-uncertain">0</span> uncertain segmentation</button>
     </div>
@@ -1375,6 +1417,15 @@ body.restricted .restrict-banner{display:flex}
 </div>
 
 <script>
+/* @include table-engine.js */
+/* =====================================================
+   FEATURE FLAGS
+===================================================== */
+/* S2 (was ticket 8) — hides the manual capture-correction mode (segmentation
+   split/merge/table-granularity editing). Flip to true to bring it back;
+   nothing depending on it needs to be rebuilt. */
+const FLAGS = { captureCorrection:false };
+
 /* =====================================================
    DATA — single model feeding all three views
 ===================================================== */
@@ -1405,9 +1456,9 @@ const SECTIONS = [
   {
     id:"s1", docId:"d1", num:"1", title:"Scope and purpose",
     blocks:[
-      {id:"TXT-001", kind:"text", status:"validated",
+      {id:"TXT-001", kind:"text", status:"allocated",
        text:"This technical requirements specification defines the requirements applicable to the multi-site energy monitoring system (EMS) intended for the operation of the group's production and distribution facilities."},
-      {id:"TXT-002", kind:"text", status:"validated",
+      {id:"TXT-002", kind:"text", status:"allocated",
        text:"It applies to all software and hardware lots within scope, excluding metering equipment covered in document STB-2026-CPT."},
     ]
   },
@@ -1415,7 +1466,7 @@ const SECTIONS = [
     id:"s2", docId:"d1", num:"2", title:"Functional requirements",
     blocks:[
       {id:"H-201", kind:"heading", level:2, text:"2.1 Data acquisition and visualization"},
-      {id:"INF-1", kind:"text", status:"validated",
+      {id:"INF-1", kind:"text", status:"allocated",
        text:"The requirements in this subsection apply to the acquisition and display subsystem. Threshold values are indicative and refined during detailed design."},
       // Image container demo (UI-only): the image itself is never a requirement — it holds the two
       // requirement blocks below via their sourceImage back-reference. Image & document stay read-only.
@@ -1426,18 +1477,18 @@ const SECTIONS = [
        text:"The system SHALL route telemetry from each site gateway through its regional aggregator before reaching the central monitoring platform."},
       {id:"IMG-1-R2", kind:"requirement", sourceImage:"IMG-1", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:85}, abs:{v:"Design & Engineering",c:80}, obs:{v:"Monitoring & Supervision — FR",c:82}, manager:null, type:"Functional", domain:"Architecture", status:"toreview", alloc:null, comments:0,
        text:"Each site gateway SHALL connect to exactly one regional aggregator, with automatic failover to a secondary aggregator on link loss."},
-      {id:"EXG-001", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:96}, abs:{v:"Design & Engineering",c:91}, obs:{v:"Monitoring & Supervision — FR",c:93}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"validated", alloc:"sup", comments:0,
+      {id:"EXG-001", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:96}, abs:{v:"Design & Engineering",c:91}, obs:{v:"Monitoring & Supervision — FR",c:93}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
        text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family."},
-      {id:"EXG-002", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Dashboard",c:94}, abs:{v:"Design & Engineering",c:88}, obs:{v:"Monitoring & Supervision — FR",c:90}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"validated", alloc:"sup", comments:0,
+      {id:"EXG-002", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Dashboard",c:94}, abs:{v:"Design & Engineering",c:88}, obs:{v:"Monitoring & Supervision — FR",c:90}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
        text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type."},
       {id:"EXG-003", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln","sys"], perimAI:true, pbs:{v:"Supervision / Alerting",c:89}, abs:{v:"Design & Engineering",c:74}, obs:{v:"Monitoring & Supervision — FR",c:61}, manager:"m_sig", type:"Functional", domain:"Alerting", status:"toreview", alloc:"sup", comments:0,
        // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the branches.
        branches:[
-         {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:"sup", branchStatus:"answered", compliance:"not_compliant",
+         {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:"sup", branchStatus:"answered", allocStatus:"allocated", compliance:"not_compliant",
           pbs:{v:"Supervision / Alerting",c:91}, abs:{v:"Design & Engineering",c:88}, obs:{v:"Monitoring & Supervision — FR",c:90}},
-         {typology:"mln", label:"Mainline Wayside", manager:"m_mln", expert:"infra", branchStatus:"awaiting", compliance:"pending",
+         {typology:"mln", label:"Mainline Wayside", manager:"m_mln", expert:"infra", branchStatus:"awaiting", allocStatus:"allocated", compliance:"pending",
           pbs:{v:"Platform / Wayside alerting",c:80}, abs:{v:"Performance & Validation",c:76}, obs:{v:"Infrastructure & Platform — FR",c:74}},
-         {typology:"sys", label:"Safety", manager:null, expert:null, branchStatus:"reassignment_needed", compliance:"pending",
+         {typology:"sys", label:"Safety", manager:null, expert:null, branchStatus:"reassignment_needed", allocStatus:"allocated", compliance:"pending",
           pbs:{v:"Safety / Alerting escalation",c:70}, abs:{v:"Systems Integration",c:58}, obs:{v:"Cybersecurity — Group",c:42}},
        ],
        rollupStatus:"Mixed — 1 branch blocked",
@@ -1462,7 +1513,7 @@ const SECTIONS = [
     id:"s3", docId:"d2", num:"3", title:"Performance requirements",
     blocks:[
       {id:"H-301", kind:"heading", level:2, text:"3.1 Real-time and history"},
-      {id:"EXG-005", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / Real-time",c:95}, abs:{v:"Performance & Validation",c:90}, obs:{v:"Infrastructure & Platform — FR",c:92}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"validated", alloc:"infra", comments:0,
+      {id:"EXG-005", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / Real-time",c:95}, abs:{v:"Performance & Validation",c:90}, obs:{v:"Infrastructure & Platform — FR",c:92}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"allocated", allocStatus:"allocated", alloc:"infra", comments:0,
        text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites."},
       {id:"H-3011", kind:"heading", level:3, text:"3.1.1 Historical queries"},
       {id:"EXG-006", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / History",c:93}, abs:{v:"Performance & Validation",c:87}, obs:{v:"Infrastructure & Platform — FR",c:89}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"edited", alloc:"infra", comments:2,
@@ -1471,9 +1522,9 @@ const SECTIONS = [
       {id:"EXG-007", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln"], perimAI:true, pbs:{v:"Platform / Availability",c:88}, abs:{v:"Operations",c:71}, obs:{v:"Infrastructure & Platform — FR",c:63}, manager:"m_mln", type:"Performance", domain:"Availability", status:"suggested", alloc:null, comments:0,
        // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the branches.
        branches:[
-         {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:null, branchStatus:"awaiting", compliance:"pending",
+         {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:null, branchStatus:"awaiting", allocStatus:"allocated", compliance:"pending",
           pbs:{v:"Platform / Availability",c:84}, abs:{v:"Operations",c:70}, obs:{v:"Monitoring & Supervision — FR",c:66}},
-         {typology:"mln", label:"Mainline Wayside", manager:"m_mln", expert:"infra", branchStatus:"answered", compliance:"compliant",
+         {typology:"mln", label:"Mainline Wayside", manager:"m_mln", expert:"infra", branchStatus:"answered", allocStatus:"allocated", compliance:"compliant",
           pbs:{v:"Platform / Availability",c:92}, abs:{v:"Operations",c:89}, obs:{v:"Infrastructure & Platform — FR",c:90}},
        ],
        rollupStatus:"Awaiting 1 of 2",
@@ -1490,17 +1541,28 @@ const SECTIONS = [
   {
     id:"s4", docId:"d2", num:"4", title:"Security requirements",
     blocks:[
-      {id:"EXG-008", kind:"requirement", tech:"tech", techAI:false, perim:["tky","sig","mln"], perimAI:false, pbs:{v:"Security / Access control",c:97}, abs:{v:"Design & Engineering",c:93}, obs:{v:"Cybersecurity — Group",c:95}, manager:"m_sig", type:"Security", domain:"Access", status:"validated", alloc:"cyber", comments:0,
+      {id:"EXG-008", kind:"requirement", tech:"tech", techAI:false, perim:["tky","sig","mln"], perimAI:false, pbs:{v:"Security / Access control",c:97}, abs:{v:"Design & Engineering",c:93}, obs:{v:"Cybersecurity — Group",c:95}, manager:"m_sig", type:"Security", domain:"Access", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
        text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges."},
       {id:"EXG-009", kind:"requirement", tech:"nontech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Security / Audit trail",c:92}, abs:{v:"Compliance",c:84}, obs:{v:"Cybersecurity — Group",c:88}, manager:"m_mln", type:"Security", domain:"Traceability", status:"toreview", alloc:"cyber", comments:1,
        text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years."},
-      {id:"EXG-010", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Security / Data flows",c:94}, abs:{v:"Design & Engineering",c:90}, obs:{v:"Cybersecurity — Group",c:91}, manager:"m_sig", type:"Security", domain:"Data", status:"validated", alloc:"cyber", comments:0,
+      {id:"EXG-010", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Security / Data flows",c:94}, abs:{v:"Design & Engineering",c:90}, obs:{v:"Cybersecurity — Group",c:91}, manager:"m_sig", type:"Security", domain:"Data", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
        text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review."},
     ]
   },
 ];
 
-const STATUS_LABEL = {suggested:"AI Suggestion", validated:"Validated", edited:"Edited", toreview:"Needs Review"};
+/* B7 — the characterisation/allocation progression. Replaces the old
+   suggested/edited/toreview/validated vocabulary: those conflated "AI is
+   confident" with "a human confirmed it", which is exactly the paradox this
+   ticket resolves — see SPEC-domain-model.md §8. "Allocated" is reached only
+   through an explicit human action (validate), never from AI confidence
+   alone; reaching it also sends the item on to Expert Review. */
+const STATUS_LABEL = {incomplete:"Incomplete", doubt:"Doubt", tovalidate:"To validate", allocated:"Allocated"};
+/* which field(s) carry the doubt, when status is "doubt" — same five fields
+   across both axes (Class/Typology on the requirement, ABS/PBS/OBS per
+   branch), all treated identically, per the earlier OBS-like-ABS/PBS
+   confirmation. */
+const DOUBT_FIELD_LABEL = {class:"Class", typo:"Typology", abs:"ABS", pbs:"PBS", obs:"OBS"};
 /* Multi-allocation (branches): UI-only, hand-authored demo data — see SECTIONS entries with a `branches` array.
    Nothing here is derived: rollupStatus / rollupCompliance / blockingBranch are written by hand per requirement. */
 const COMPLIANCE_DEFS=[
@@ -1521,13 +1583,12 @@ function projectMode(){ try{ return (window.parent!==window && window.parent.get
 const MODE = projectMode();
 (function applyProjectMode(){
   if(MODE==="ai") return;
-  STATUS_LABEL.toreview = "Unclassified";
   Object.keys(TYPE_SUGGEST).forEach(k=>delete TYPE_SUGGEST[k]);
   SECTIONS.forEach(s=>s.blocks.forEach(b=>{
     const arr = (b.kind==="table") ? b.rows : [b];
     arr.forEach(x=>{
       if(x.kind==="requirement"){
-        x.status="toreview";
+        x.status="incomplete"; x.allocStatus="incomplete"; // no AI ran — nothing usable yet, per definition
         x.alloc=null;
         x.perim=[]; x.perimAI=false; x.manager=null; x.tech=null; x.techAI=false;
         x.pbs=null; x.abs=null; x.obs=null;
@@ -1578,24 +1639,72 @@ function weakestLink(b){
   return w[1].c<75?{k:w[0],c:w[1].c}:null;
 }
 /* OBS is the decision-bearing link: below the threshold the proposed assignment
-   cannot be trusted, so the requirement is initialised as "needs review".
-   Threshold mirrors the project configuration setting. */
+   cannot be trusted. Threshold mirrors the project configuration setting. */
 const OBS_THRESHOLD=75;
 function derivWeak(b){ return !!(b.obs && b.obs.c < OBS_THRESHOLD); }
-(function initReviewFlags(){
+/* B7 — characterisation/allocation progression: Incomplete → Doubt → To
+   validate → Allocated. Derived once at init from the AI's own confidence/
+   unconfirmed signals — techAI/perimAI for Class/Typology (characterisation,
+   on the requirement), weakestLink() for ABS/PBS/OBS (allocation, per branch
+   — same "any of the five fields, treated identically" rule on both axes).
+   STICKY once "allocated": never recomputed after a human explicitly
+   validates, whether that requirement/branch came from Doubt (corrected) or
+   straight from To validate (a trusting click) — see SPEC-domain-model.md §8. */
+function computeCharStatus(x){
+  if(x.status==="allocated") return;
+  if(x.tech==null || !(x.perim&&x.perim.length)){ x.status="incomplete"; x.doubtField=null; x.reviewReason=null; return; }
+  if(x.techAI){ x.status="doubt"; x.doubtField="class"; x.reviewReason="Class is AI-detected, unconfirmed"; return; }
+  if(x.perimAI){ x.status="doubt"; x.doubtField="typo"; x.reviewReason="Typology is AI-detected, unconfirmed"; return; }
+  x.status="tovalidate"; x.doubtField=null; x.reviewReason=null;
+}
+function computeAllocStatus(target){
+  if(target.allocStatus==="allocated") return;
+  if(!target.pbs && !target.abs && !target.obs){ target.allocStatus="incomplete"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
+  const weak=weakestLink(target);
+  if(weak){ target.allocStatus="doubt"; target.allocDoubtField=weak.k.toLowerCase(); target.allocReviewReason=`Weak ${weak.k} derivation (${weak.c}%) — the proposed assignment may be wrong`; return; }
+  target.allocStatus="tovalidate"; target.allocDoubtField=null; target.allocReviewReason=null;
+}
+(function initProgressionStatus(){
   SECTIONS.forEach(s=>s.blocks.forEach(b=>{
     const arr = (b.kind==="table") ? b.rows : [b];
     arr.forEach(x=>{
       if(x.kind!=="requirement") return;
-      if(derivWeak(x) && x.status!=="validated" && x.status!=="edited"){
-        x.status="toreview";
-        x.reviewReason=`Weak OBS derivation (${x.obs.c}%) — the proposed assignment may be wrong`;
-      }else if(x.status==="toreview" && !x.reviewReason){
-        x.reviewReason = x.change ? "Modified in the latest document version" : "Flagged for review";
-      }
+      computeCharStatus(x);
+      if(x.branches && x.branches.length>1) x.branches.forEach(br=>computeAllocStatus(br));
+      else computeAllocStatus(x);
     });
   }));
 })();
+/* B7 — mirrors the status pill's own waterfall (characterisation → allocation
+   → already-in-review) so the Status/Doubt-field column filters, the "needs
+   review" triage pill and the finalize-review gate all agree with what the
+   row's pill actually shows, instead of re-deriving it separately. */
+function effectiveStatus(b){
+  if(b.status!=="allocated") return {val:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason};
+  if((b.branches||[]).length>1) return {val:"allocated", doubtField:null, reviewReason:null};
+  if(b.allocStatus && b.allocStatus!=="allocated") return {val:b.allocStatus, doubtField:b.allocDoubtField, reviewReason:b.allocReviewReason};
+  return {val:"allocated", doubtField:null, reviewReason:null};
+}
+/* Fully through this screen's pipeline: characterisation allocated, and
+   every branch's own allocation allocated too (B6 — each branch on its own). */
+function isFullyAllocated(b){
+  if(b.status!=="allocated") return false;
+  if((b.branches||[]).length>1) return b.branches.every(br=>br.allocStatus==="allocated");
+  return b.allocStatus==="allocated";
+}
+/* B6/B7 — the detail panel's own validate CTA. A multi-branch parent only
+   ever validates its own characterisation here; once that's allocated, each
+   branch validates its own allocation individually from its table row (B6),
+   so there is nothing left for this panel-level button to do. */
+function validateCtaHTML(b,hasBranches,es){
+  if(hasBranches){
+    if(b.status!=="allocated") return `<button class="validate-cta" id="validate-btn">✓ Validate characterisation <kbd style="font-family:var(--font-mono);font-size:var(--text-xs);opacity:.7">V</kbd></button>`;
+    return `<div class="set-hint" style="opacity:.7;font-size:var(--text-xs);padding:8px 0">Characterisation allocated — each branch below validates its own allocation individually.</div>`;
+  }
+  if(es.val==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Expert Review</button>`;
+  if(b.status!=="allocated") return `<button class="validate-cta" id="validate-btn">✓ Validate characterisation <kbd style="font-family:var(--font-mono);font-size:var(--text-xs);opacity:.7">V</kbd></button>`;
+  return `<button class="validate-cta" id="validate-btn">✓ Validate & send to Expert Review <kbd style="font-family:var(--font-mono);font-size:var(--text-xs);opacity:.7">V</kbd></button>`;
+}
 
 /* =====================================================
    AI FEEDBACK — implicit capture, explanation only on
@@ -1651,7 +1760,7 @@ const state = {
   detailPanelCollapsed:false,
   sortCol:null,
   sortDir:"asc",
-  colFilters:{class:new Set(),typo:new Set(),type:new Set(),mgr:new Set(),obs:new Set(),status:new Set()},
+  colFilters:{class:new Set(),typo:new Set(),type:new Set(),mgr:new Set(),obs:new Set(),status:new Set(),doubtfield:new Set()},
   filterToSelection:false,
   savedColFilters:null,
   activeCell:{id:null,bidx:null,col:null},
@@ -1692,7 +1801,7 @@ function reclassify(id, nature){
     else if(nature==="info"){ b.kind="text"; }
     else if(nature==="requirement"){
       b.kind="requirement";
-      b.status=b.status||"toreview"; b.type=b.type||"Functional";
+      b.status=b.status||"incomplete"; b.allocStatus=b.allocStatus||"incomplete"; b.type=b.type||"Functional";
       b.tech=b.tech||"tech"; b.perim=b.perim||[]; b.alloc=b.alloc||null; b.manager=b.manager||null;
     }
   }
@@ -1718,20 +1827,22 @@ function buildBigData(n){
     const sec=secs[i%secs.length];
     const obs=BIG_OBS[i%BIG_OBS.length];
     const conf=45+((i*37)%54);
-    const st = conf<OBS_THRESHOLD ? "toreview" : (i%5===0?"suggested":(i%7===0?"toreview":"validated"));
-    out.push({
+    const techAI=(i%5===0);
+    const row={
       id:"REQ-"+String(i+1).padStart(5,"0"), kind:"requirement", section:sec,
       text:`The system ${BIG_VERBS[i%BIG_VERBS.length]} ${BIG_OBJ[i%BIG_OBJ.length]} ${BIG_QUAL[i%BIG_QUAL.length]}.`,
+      tech:"tech", techAI,
       type:BIG_TYPES[i%BIG_TYPES.length], domain:obs[0].split(" ")[0],
       perim:BIG_PERIM[i%BIG_PERIM.length].slice(), perimAI:(i%3===0),
       manager:BIG_MGR[i%BIG_MGR.length],
-      alloc:(st==="validated"||st==="toreview")?obs[1]:null,
+      alloc:conf>=OBS_THRESHOLD?obs[1]:null,
       pbs:{v:BIG_OBJ[i%BIG_OBJ.length],c:Math.min(99,conf+10)},
       abs:{v:"Design & Engineering",c:Math.min(99,conf+4)},
-      obs:{v:obs[0],c:conf}, status:st,
-      reviewReason: conf<OBS_THRESHOLD ? `Weak OBS derivation (${conf}%) — the proposed assignment may be wrong` : null,
+      obs:{v:obs[0],c:conf},
       comments:(i%11===0)?1:0, change:null,
-    });
+    };
+    computeCharStatus(row); computeAllocStatus(row); // B7 — same derivation as the real dataset
+    out.push(row);
   }
   return out;
 }
@@ -1746,12 +1857,38 @@ function visibleTo(b){
 }
 /* the branch a given (non-admin) manager owns on a multi-allocation requirement, if any */
 function myBranchOf(b){ return (b.branches||[]).find(br=>br.manager===VIEWER)||null; }
+
+/* =====================================================
+   B1 — allocation-change proposal (branch manager → project manager)
+   Reuses the existing "Reassignment needed" branchStatus — no new status.
+   A proposal is either a reassignment of an existing branch, or a request
+   to add a typology the manager thinks was missed; both route to the same
+   reassignment_needed state and the same project-manager (admin) review.
+===================================================== */
+function escHtml(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+/* promotes a single-allocation requirement into the branches[] model the first
+   time a manager proposes something on it — the existing allocation becomes branch[0] */
+function ensureBranches(b){
+  if(!(b.branches&&b.branches.length)){
+    const t=(b.perim&&b.perim[0])||"sig";
+    b.branches=[{typology:t,label:TY(t).label,manager:b.manager||null,expert:b.alloc||null,branchStatus:b.alloc?"answered":"awaiting",compliance:"pending"}];
+    if(!b.rollupStatus) b.rollupStatus=STATUS_LABEL[b.status];
+    if(!b.rollupCompliance) b.rollupCompliance="pending";
+    if(!(b.perim&&b.perim.length)) b.perim=[t];
+  }
+  return b.branches;
+}
+function pushBranchLog(b,who,what,k){
+  b.branchLog=b.branchLog||[];
+  b.branchLog.unshift({k:k||"human",who,what,time:"Today"});
+}
 function matchesFilter(b){
   if(!visibleTo(b)) return false;
   if(state.filterToSelection) return state.selection.has(b.id);
   if(!passesColFilters(b)) return false;
   if(state.filter==="unallocated") return blockNature(b)==="requirement" && !b.alloc;
-  if(state.filter==="toreview") return blockNature(b)==="requirement" && (b.status==="toreview"||b.status==="suggested");
+  if(state.filter==="incomplete"||state.filter==="doubt"||state.filter==="tovalidate"||state.filter==="allocated")
+    return blockNature(b)==="requirement" && effectiveStatus(b).val===state.filter;
   if(state.filter==="changed") return !!b.change || b.kind==="ghost";
   if(state.filter==="uncertain") return !!b.uncertain;
   return true;
@@ -1807,7 +1944,7 @@ function renderNav(){
       el.dataset.id = b.id;
       const label = b.text.replace(/<[^>]+>/g,"").slice(0,46)+"…";
       const badges = [];
-      if(b.status==="suggested"||b.status==="toreview") badges.push('<span class="nbadge b-ia" title="AI suggestion — needs review"></span>');
+      if(b.status==="doubt") badges.push('<span class="nbadge b-ia" title="Doubt — needs review"></span>');
       if(!b.alloc) badges.push('<span class="nbadge b-unalloc" title="Unassigned"></span>');
       if(b.comments) badges.push('<span class="nbadge b-comment" title="Comments"></span>');
       if(b.uncertain) badges.push('<span class="nbadge" style="background:var(--warn)" title="Uncertain segmentation"></span>');
@@ -1826,7 +1963,7 @@ function renderNav(){
 /* =====================================================
    RENDER — DOCUMENT
 ===================================================== */
-function natureLabelChip(b){ const n=blockNature(b); return n==="requirement"?(b.type+" · "+STATUS_LABEL[b.status||"toreview"]):NATURE_LABEL[n]; }
+function natureLabelChip(b){ const n=blockNature(b); return n==="requirement"?(b.type+" · "+STATUS_LABEL[b.status||"incomplete"]):NATURE_LABEL[n]; }
 function natureTag(b){
   const n=blockNature(b);
   return `<button class="nat-pick" data-natpick="${b.id}" title="Reclassify this block">${NATURE_LABEL[n]} ▾</button>`;
@@ -1995,7 +2132,7 @@ function rowBlock(r){
   el.querySelectorAll("[data-seg]").forEach(t=>t.addEventListener("click",ev=>{ev.stopPropagation();segAction(t.dataset.seg,t.dataset.id)}));
   return el;
 }
-function flagged(x){ if(x.status==="validated"||x.status==="suggested"||x.status==="edited") x.status="toreview"; x.uncertain=false; }
+function flagged(x){ if(x.status!=="incomplete") x.status="doubt"; x.uncertain=false; }
 function segAction(op,id){
   for(const s of SECTIONS){
     for(let i=0;i<s.blocks.length;i++){
@@ -2060,26 +2197,26 @@ function bulkSetTypology(pid){
 }
 function bulkAssignExpert(aid){
   let c=0;
-  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.alloc=aid; if(aid&&f.b.status==="suggested") f.b.status="edited"; c++; } });
+  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.alloc=aid; if(aid) markAllocEdited(f.b); c++; } });
   toast(`${c} requirement${c>1?"s":""} → ${aid?ALLOCS.find(a=>a.id===aid).label.split("—")[0].trim():"Unassigned"}`,"ok");
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkSetType(t){
   let c=0;
-  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.type=t; markEdited(f.b); c++; } });
+  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.type=t; markAllocEdited(f.b); c++; } });
   toast(`Type set to ${t} for ${c} requirement${c>1?"s":""}`,"ok");
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkSetClass(cls){
   let c=0;
-  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.tech=cls; f.b.techAI=false; markEdited(f.b); c++; } });
+  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.tech=cls; f.b.techAI=false; markCharEdited(f.b); c++; } });
   toast(`Classification set to ${cls==="tech"?"Technical":"Non-technical"} for ${c} requirement${c>1?"s":""}`,"ok");
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkMarkToReview(){
   let c=0;
   state.selection.forEach(id=>{ const f=findBlock(id); if(!f)return;
-    f.b.status="toreview"; f.b.reviewReason="Flagged for review in bulk"; c++; });
+    f.b.status="doubt"; f.b.doubtField=null; f.b.reviewReason="Flagged for review in bulk"; c++; });
   toast(`${c} requirement${c>1?"s":""} marked to review`,"warn");
   state.selection.clear(); lastSel=null; refresh();
 }
@@ -2097,13 +2234,18 @@ function bulkReclassifyInfo(){
   toast(`${c} requirement${c>1?"s":""} reclassified as Information`,"warn");
   state.selection.clear(); lastSel=null; refresh();
 }
+/* B6 — bulk validate: only acts on rows currently eligible (Doubt or To
+   validate, on whichever axis — characterisation or, once that's already
+   Allocated, allocation — is next in the waterfall for that row). Everything
+   else in the selection is skipped, not blocked — the summary says how many. */
 function bulkValidate(){
-  let done=0, blocked=0;
-  state.selection.forEach(id=>{ const f=findBlock(id); if(!f)return;
-    if(!f.b.alloc){ blocked++; return; }
-    f.b.status="validated"; delete f.b.reviewReason; done++; });
-  if(done) toast(`${done} validated`+(blocked?` · ${blocked} skipped (no expert)`:""),blocked?"warn":"ok");
-  else toast(`Cannot validate — ${blocked} without an expert assigned`,"warn");
+  let done=0, skipped=0;
+  state.selection.forEach(id=>{
+    const f=findBlock(id); if(!f) return;
+    if(validateProgress(id)) done++; else skipped++;
+  });
+  if(done) toast(`${done} of ${done+skipped} validated`+(skipped?` — ${skipped} were not ready`:""),skipped?"warn":"ok");
+  else toast(`Nothing to validate — ${skipped} row${skipped>1?"s were":" was"} not ready`,"warn");
   state.selection.clear(); lastSel=null; refresh();
 }
 /* VIEW AS — restricted manager view */
@@ -2139,8 +2281,9 @@ function rowInnerHTML(b){
   const blockingBadge = hasBranches&&b.blockingBranch?`<span class="cbadge blocking-badge" title="${b.blockingBranch.replace(/"/g,'&quot;')}">⚠ Blocked</span>`:"";
   const provenanceBadge = b.sourceImage?`<button type="button" class="cbadge provenance-badge" data-gotoimg="${b.sourceImage}" title="Captured from ${b.sourceImage} — click to view in the document">📷 ${b.sourceImage}</button>`:"";
   const badges = `${branchBadge}${blockingBadge}${provenanceBadge}${b.comments?`<span class="cbadge">💬 ${b.comments}</span>`:""}${b.change?`<span class="cbadge" style="color:var(--ia)">Δ v2.1</span>`:""}`;
+  const proposedTypos = new Set((b.branches||[]).filter(br=>br.proposal).map(br=>br.typology));
   const typoTags = (b.perim||[]).length
-    ? (b.perim||[]).map(p=>`<span class="ptag${p==="tky"?" tky":""}">${TY(p).code}</span>`).join("")
+    ? (b.perim||[]).map(p=>`<span class="ptag${p==="tky"?" tky":""}${proposedTypos.has(p)?" proposed":""}" title="${proposedTypos.has(p)?"Proposed change — pending project-manager review":""}">${TY(p).code}</span>`).join("")
     : `<span class="ph">+ Set</span>`;
   const caretHTML = hasBranches
     ? `<button class="branch-caret${state.expandedBranches.has(b.id)?" open":""}" data-branchtoggle="${b.id}" title="${state.expandedBranches.has(b.id)?"Collapse allocations":"Expand allocations"}">▸</button>`
@@ -2151,7 +2294,28 @@ function rowInnerHTML(b){
   const obsCellHTML = hasBranches
     ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see experts per branch">Multiple (${b.branches.length})</span>`
     : `<select class="cell-select${!b.alloc&&TYPE_SUGGEST[b.id]?" is-ia":""}${b.alloc?"":" empty"}" data-alloc="${b.id}">${allocOptions}</select>`;
-  const statusText = hasBranches ? (b.rollupStatus||STATUS_LABEL[b.status]) : STATUS_LABEL[b.status];
+  /* B7 — status pill waterfall: characterisation (Class/Typology, on b) first,
+     then allocation (ABS/PBS/OBS) — per branch for multi-branch rows (shown on
+     the branch sub-row instead, see branchRowHTML), or on b itself for the
+     common single-branch case — then whatever the branch already shows once
+     in Expert Review. Multi-branch parents only ever show characterisation
+     here; B6 is why the allocation stage moved to each branch individually. */
+  let statusCls, statusLbl, statusTitle, statusEligible=false;
+  if(b.status!=="allocated"){
+    statusCls="s-"+b.status; statusLbl=STATUS_LABEL[b.status];
+    statusEligible = b.status!=="incomplete";
+    statusTitle=(b.reviewReason?b.reviewReason+" — ":"")+(statusEligible?"Click to validate":"Nothing to validate yet");
+  } else if(hasBranches){
+    statusCls="s-allocated"; statusLbl=b.rollupStatus||STATUS_LABEL.allocated;
+    statusTitle="Characterisation allocated — each branch below tracks its own allocation";
+  } else if(b.allocStatus && b.allocStatus!=="allocated"){
+    statusCls="s-"+b.allocStatus; statusLbl=STATUS_LABEL[b.allocStatus];
+    statusEligible = b.allocStatus!=="incomplete";
+    statusTitle=(b.allocReviewReason?b.allocReviewReason+" — ":"")+(statusEligible?"Click to validate — sends to Expert Review":"Nothing to validate yet");
+  } else {
+    statusCls="s-allocated"; statusLbl=STATUS_LABEL.allocated;
+    statusTitle="Allocated — sent to Expert Review";
+  }
   const complianceHTML = hasBranches
     ? `<span class="compliance-pill c-${b.rollupCompliance}">${complianceLabel(b.rollupCompliance)}</span>`
     : `<span class="ph">—</span>`;
@@ -2165,7 +2329,7 @@ function rowInnerHTML(b){
     <div class="rcell c-type"><select class="cell-select" data-type="${b.id}">${typeOptions}</select></div>
     <div class="rcell c-obs">${obsCellHTML}</div>
     <div class="rcell c-mgr">${mgrCellHTML}</div>
-    <div class="rcell c-status"><button class="status-pill s-${b.status}" data-cycle="${b.id}" title="${b.reviewReason?b.reviewReason.replace(/"/g,'&quot;')+' — click to validate':'Click to validate'}">${statusText}</button></div>
+    <div class="rcell c-status"><button class="status-pill ${statusCls}" data-cycle="${b.id}" title="${statusTitle.replace(/"/g,'&quot;')}">${statusLbl}</button></div>
     <div class="rcell c-compliance">${complianceHTML}</div>`;
 }
 /* one editable sub-row per branch — UI-only, no recomputation of the parent on edit */
@@ -2175,18 +2339,30 @@ function branchRowHTML(parent, branch, idx){
   const allocOptions = ['<option value="">— Unassigned —</option>']
     .concat(ALLOCS.map(a=>`<option value="${a.id}" ${branch.expert===a.id?"selected":""}>${a.label}</option>`)).join("");
   const complianceOptions = COMPLIANCE_DEFS.map(c=>`<option value="${c.k}" ${branch.compliance===c.k?"selected":""}>${c.label}</option>`).join("");
+  /* B7 — per-branch allocation status (B6: each branch progresses on its own,
+     independent of its siblings) — once allocated, falls through to whatever
+     the existing branch-tracking status already shows (Expert Review). */
+  const branchStatusHTML = (branch.allocStatus && branch.allocStatus!=="allocated")
+    ? (()=>{
+        const eligible = branch.allocStatus!=="incomplete";
+        const title=(branch.allocReviewReason?branch.allocReviewReason+" — ":"")+(eligible?"Click to validate — sends to Expert Review":"Nothing to validate yet");
+        return `<button class="status-pill s-${branch.allocStatus}" data-branchcycle="${parent.id}::${idx}" title="${title.replace(/"/g,'&quot;')}">${STATUS_LABEL[branch.allocStatus]}</button>`;
+      })()
+    : `<span class="status-pill branch-status-${branch.branchStatus}" title="In Expert Review">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>`;
   return `<div class="rrow branch-row" data-branchof="${parent.id}" data-branchidx="${idx}">
     <div class="rcell c-sel"></div>
     <div class="rcell c-id"></div>
     <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${branch.label}</span></div>
     <div class="rcell c-class"></div>
-    <div class="rcell c-typo"><span class="ptag${branch.typology==="tky"?" tky":""}">${TY(branch.typology).code}</span></div>
+    <div class="rcell c-typo"><span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending project-manager review":""}">${TY(branch.typology).code}</span></div>
     <div class="rcell c-abs"></div>
     <div class="rcell c-type"></div>
     <div class="rcell c-obs"><select class="cell-select branch-edit${branch.expert?"":" empty"}" data-branchexp="${parent.id}::${idx}">${allocOptions}</select></div>
     <div class="rcell c-mgr"><select class="cell-select branch-edit${branch.manager?"":" empty"}" data-branchmgr="${parent.id}::${idx}">${mgrOptions}</select></div>
-    <div class="rcell c-status"><span class="status-pill branch-status-${branch.branchStatus}">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span></div>
-    <div class="rcell c-compliance"><select class="cell-select branch-edit compliance-${branch.compliance}" data-branchcompl="${parent.id}::${idx}">${complianceOptions}</select></div>
+    <div class="rcell c-status">${branchStatusHTML}</div>
+    <div class="rcell c-compliance">${branch.locked
+      ? `<span class="compliance-pill locked c-${branch.compliance}" title="Locked by ${MGR(branch.lockedBy).name} — no longer editable">🔒 ${complianceLabel(branch.compliance)}</span>`
+      : `<select class="cell-select branch-edit compliance-${branch.compliance}" data-branchcompl="${parent.id}::${idx}">${complianceOptions}</select>`}</div>
   </div>`;
 }
 
@@ -2202,7 +2378,7 @@ const SORT_KEYS={
   type:b=>b.type||"",
   mgr:b=>b.manager?(MGR(b.manager)?.name||""):"",
   obs:b=>b.alloc?(ALLOCS.find(a=>a.id===b.alloc)?.label||""):"",
-  status:b=>({toreview:0,suggested:1,edited:2,validated:3}[b.status]??9),
+  status:b=>({incomplete:0,doubt:1,tovalidate:2,allocated:3}[effectiveStatus(b).val]??9),
 };
 function sortRows(rows){
   const get=SORT_KEYS[state.sortCol]; if(!get) return rows;
@@ -2219,7 +2395,8 @@ const COL_FILTER_DEFS={
   type:{label:"PBS",options:["Functional","Performance","Security","Interface","Regulatory"].map(t=>({v:t,l:t})),get:b=>[b.type||""]},
   mgr:{label:"Manager",options:[...MANAGERS.filter(m=>!m.admin).map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
   obs:{label:"OBS",options:[...ALLOCS.map(a=>({v:a.id,l:a.label})),{v:"",l:"Unassigned"}],get:b=>[b.alloc||""]},
-  status:{label:"Status",options:Object.keys(STATUS_LABEL).map(k=>({v:k,l:STATUS_LABEL[k]})),get:b=>[b.status||""]},
+  status:{label:"Status",options:Object.keys(STATUS_LABEL).map(k=>({v:k,l:STATUS_LABEL[k]})),get:b=>[effectiveStatus(b).val]},
+  doubtfield:{label:"Doubt field",options:[...Object.keys(DOUBT_FIELD_LABEL).map(k=>({v:k,l:DOUBT_FIELD_LABEL[k]})),{v:"",l:"— not in doubt —"}],get:b=>{const es=effectiveStatus(b); return [es.val==="doubt"?(es.doubtField||""):""];}},
 };
 function passesColFilters(b){
   for(const col in state.colFilters){
@@ -2352,7 +2529,9 @@ function renderReview(){
 const NAV_COLS=["sel","id","req","class","typo","abs","type","obs","mgr","status","compliance"];
 function navCols(){ return NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
 /* flat, on-screen order of data rows (parents + visible branch sub-rows) — respects
-   current sort/filter/branch-expansion, exactly what Up/Down should step through */
+   current sort/filter/branch-expansion, exactly what Up/Down should step through.
+   This stays host-specific (VROWS is revue's own row model) — everything below it
+   is generic and shared with the follow-up screen via table-engine.js (TE). */
 function visibleDataRows(){
   return VROWS.filter(it=>it.type==="row"||it.type==="branch").map(it=>
     it.type==="row" ? {id:it.b.id,bidx:null} : {id:it.parent.id,bidx:it.idx});
@@ -2364,51 +2543,18 @@ function activeCellRowEl(ac){
     ? document.querySelector(`.rrow[data-id="${ac.id}"]:not(.branch-row)`)
     : document.querySelector(`.rrow.branch-row[data-branchof="${ac.id}"][data-branchidx="${ac.bidx}"]`);
 }
-function paintActiveCell(){
-  document.querySelectorAll(".rcell.active-cell").forEach(c=>c.classList.remove("active-cell"));
-  const ac=state.activeCell; if(!ac.id||!ac.col) return;
-  const row=activeCellRowEl(ac); if(!row) return;
-  const cell=row.querySelector(`.rcell.c-${ac.col}`);
-  if(cell) cell.classList.add("active-cell");
-}
-function scrollActiveCellIntoView(){
-  const row=activeCellRowEl(); if(row) row.scrollIntoView({block:"nearest"});
-}
-/* moves the active cell by dRow rows / dCol columns; wired to arrow keys and, with
-   dRow=1/dCol=0, to Enter-after-edit ("type down a column quickly") */
-function moveActiveCellDelta(dRow,dCol){
-  const list=visibleDataRows(); if(!list.length) return;
-  let ri=list.findIndex(r=>r.id===state.activeCell.id&&r.bidx===state.activeCell.bidx);
-  if(ri===-1) ri=0; else ri=Math.max(0,Math.min(list.length-1,ri+dRow));
-  const cols=navCols();
-  let ci=cols.indexOf(state.activeCell.col);
-  if(ci===-1) ci=cols.indexOf("req");
-  ci=Math.max(0,Math.min(cols.length-1,ci+dCol));
-  state.activeCell={id:list[ri].id,bidx:list[ri].bidx,col:cols[ci]};
-  if(dRow!==0 && list[ri].bidx==null) selectBlock(list[ri].id);
-  paintActiveCell();
-  scrollActiveCellIntoView();
-}
-/* Enter-after-edit only: focuses the editable control in the new active cell (if any),
-   so typing a value down a column doesn't require re-clicking each row */
-function focusActiveCellControl(){
-  const row=activeCellRowEl(); if(!row) return;
-  const cell=row.querySelector(`.rcell.c-${state.activeCell.col}`); if(!cell) return;
-  const ctrl=cell.querySelector("input,select"); if(ctrl) ctrl.focus();
-}
-/* wires Enter (confirm + move down) / Escape (cancel + blur) on a cell's editable control */
-function bindCellEditKeys(el){
-  if(el.tagName==="INPUT") el.addEventListener("focus",()=>{ el.dataset.orig=el.value; });
-  el.addEventListener("keydown",e=>{
-    if(e.key==="Enter"){
-      e.preventDefault(); el.blur(); moveActiveCellDelta(1,0); focusActiveCellControl();
-    }else if(e.key==="Escape"){
-      e.preventDefault();
-      if(el.tagName==="INPUT" && el.dataset.orig!==undefined) el.value=el.dataset.orig;
-      el.blur();
-    }
-  });
-}
+const navAdapter={
+  getVisibleRows:visibleDataRows,
+  getNavCols:navCols,
+  activeCellRowEl,
+  onRowChange:id=>selectBlock(id),
+  onSelectionToggle:()=>{ lastSel=state.activeCell.id; renderReview(); },
+};
+function paintActiveCell(){ TE.paintActiveCell(state,navAdapter); }
+function scrollActiveCellIntoView(){ TE.scrollActiveCellIntoView(state,navAdapter); }
+function moveActiveCellDelta(dRow,dCol){ TE.moveActiveCellDelta(state,dRow,dCol,navAdapter); }
+function focusActiveCellControl(){ TE.focusActiveCellControl(state,navAdapter); }
+function bindCellEditKeys(el){ TE.bindCellEditKeys(el,state,navAdapter); }
 function bindVRows(win){
   win.querySelectorAll(".rrow:not(.branch-row)").forEach(tr=>{
     tr.addEventListener("click",e=>{ if(e.target.closest("select,button,input,.typo-cell,.sel-hit")) return; selectBlock(tr.dataset.id); });
@@ -2457,18 +2603,23 @@ function bindVRows(win){
     refresh();
   }));
   win.querySelectorAll("[data-alloc]").forEach(sel=>sel.addEventListener("change",e=>{e.stopPropagation();setAlloc(sel.dataset.alloc, sel.value||null);}));
-  win.querySelectorAll("[data-type]").forEach(sel=>sel.addEventListener("change",e=>{ e.stopPropagation(); const f=findBlock(sel.dataset.type); if(f){ f.b.type=sel.value; markEdited(f.b); refresh(); } }));
+  win.querySelectorAll("[data-type]").forEach(sel=>sel.addEventListener("change",e=>{ e.stopPropagation(); const f=findBlock(sel.dataset.type); if(f){ f.b.type=sel.value; markAllocEdited(f.b); refresh(); } }));
   win.querySelectorAll("[data-abs]").forEach(inp=>{
     inp.addEventListener("click",e=>e.stopPropagation());
-    inp.addEventListener("change",e=>{ const f=findBlock(inp.dataset.abs); if(f){ f.b.domain=inp.value.trim(); markEdited(f.b); refresh(); } });
+    inp.addEventListener("change",e=>{ const f=findBlock(inp.dataset.abs); if(f){ f.b.domain=inp.value.trim(); markAllocEdited(f.b); refresh(); } });
   });
   win.querySelectorAll("[data-mgr]").forEach(sel=>sel.addEventListener("change",e=>{ e.stopPropagation(); const f=findBlock(sel.dataset.mgr); if(f){ f.b.manager=sel.value||null; refresh(); } }));
   win.querySelectorAll("[data-cycle]").forEach(btn=>btn.addEventListener("click",e=>{ e.stopPropagation(); validateBlock(btn.dataset.cycle); }));
+  win.querySelectorAll("[data-branchcycle]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    const [id,idx]=btn.dataset.branchcycle.split("::");
+    validateBlock(id, +idx);
+  }));
   win.querySelectorAll("[data-clsflip]").forEach(btn=>btn.addEventListener("click",e=>{
     e.stopPropagation();
     const id=btn.dataset.clsflip, f=findBlock(id); if(!f)return;
     const before=f.b.tech, was=f.b.techAI;
-    f.b.tech = before==="tech" ? "nontech" : "tech"; f.b.techAI=false; markEdited(f.b);
+    f.b.tech = before==="tech" ? "nontech" : "tech"; f.b.techAI=false; markCharEdited(f.b);
     if(was) logFeedback("char", id, before==="tech"?"Technical":"Non-technical", f.b.tech==="tech"?"Technical":"Non-technical", null);
     refresh();
   }));
@@ -2545,6 +2696,108 @@ function managerViewHTML(b){
     <div class="mgr-txt"><div class="mgr-name">${m.name}${you?' <span class="mgr-you">you</span>':''}</div><div class="mgr-role">${m.role}</div></div>
     <button class="mgr-change" id="mgr-change">Change</button></div>`;
 }
+/* B1 — branch manager's "propose a change" trigger: reassignment or a missing typology,
+   both route to the existing reassignment_needed state for the project manager to review */
+function proposeBlockHTML(b, hasBranches, myBranch){
+  const branches = b.branches||[];
+  const mine = hasBranches ? myBranch : (branches[0]||null);
+  const pending = branches.filter(br=>br.proposal && br.proposal.by===VIEWER);
+  const reassignBlocked = mine && mine.branchStatus==="reassignment_needed";
+  return `<div class="set-sep"></div>
+    <div class="propose-block">
+      <label class="propose-lbl">Propose a change</label>
+      ${pending.length?`<div class="propose-pending">
+        ${pending.map(p=>`<div class="propose-pending-t">${p.proposal.kind==="add"?`✦ New typology requested — <b>${TY(p.typology).label}</b>`:`↩ Reassignment requested — <b>${TY(p.typology).label}</b>`}: "${escHtml(p.proposal.note)}" <span style="color:var(--text-3)">· awaiting project-manager review</span></div>`).join("")}
+      </div>`:""}
+      <div class="propose-actions">
+        <button class="mini-btn" id="propose-reassign-btn" ${reassignBlocked?"disabled":""} title="${reassignBlocked?"Already flagged for reassignment":"Ask the project manager to review this allocation"}">↩ Propose reassignment</button>
+        <button class="mini-btn" id="propose-add-btn" title="Ask the project manager to add a typology you think was missed">+ Missing typology</button>
+      </div>
+      <div class="propose-form" id="propose-form" style="display:none"></div>
+    </div>`;
+}
+function renderProposeForm(kind,b,body){
+  const form = body.querySelector("#propose-form");
+  const used = new Set([...(b.perim||[]), ...(b.branches||[]).map(br=>br.typology)]);
+  const options = TYPO.filter(t=>t.id!=="tky" && !used.has(t.id));
+  form.innerHTML = (kind==="add"
+    ? `<select id="propose-typo">${options.length?options.map(t=>`<option value="${t.id}">${t.code} — ${t.label}</option>`).join(""):'<option value="">No typology left to propose</option>'}</select>
+       <textarea id="propose-note" placeholder="Why do you think this typology is missing?"></textarea>`
+    : `<textarea id="propose-note" placeholder="Why should this be reassigned?"></textarea>`)
+    + `<div class="propose-form-actions"><button class="mini-btn" id="propose-cancel">Cancel</button><button class="mgr-done" id="propose-submit"${kind==="add"&&!options.length?" disabled":""}>Submit proposal</button></div>`;
+  form.style.display = "flex";
+  form.querySelector("#propose-cancel").addEventListener("click",()=>{ form.style.display="none"; form.innerHTML=""; });
+  form.querySelector("#propose-submit").addEventListener("click",()=>submitPropose(kind,b,form));
+}
+function submitPropose(kind,b,form){
+  const note = (form.querySelector("#propose-note").value||"").trim();
+  if(!note){ toast("Add a short reason before submitting","warn"); return; }
+  const mgrName = MGR(VIEWER).name;
+  if(kind==="reassign"){
+    ensureBranches(b);
+    const target = myBranchOf(b) || b.branches[0];
+    if(!target){ toast("No allocation to propose a change on","warn"); return; }
+    target.proposal = {kind:"reassign", note, by:VIEWER, at:"Today", prevManager:target.manager, prevExpert:target.expert, prevBranchStatus:target.branchStatus};
+    target.branchStatus = "reassignment_needed";
+    pushBranchLog(b, mgrName, `Proposed a reassignment for ${TY(target.typology).label} — "${note}"`);
+    toast("Reassignment proposed — sent to the project manager","ok");
+  } else {
+    const typo = form.querySelector("#propose-typo").value;
+    if(!typo){ toast("Pick a typology first","warn"); return; }
+    ensureBranches(b);
+    b.branches.push({typology:typo, label:TY(typo).label, manager:null, expert:null, branchStatus:"reassignment_needed", compliance:"pending", proposal:{kind:"add", note, by:VIEWER, at:"Today"}});
+    if(!(b.perim||[]).includes(typo)) b.perim=[...(b.perim||[]), typo];
+    pushBranchLog(b, mgrName, `Proposed adding ${TY(typo).label} as a missing typology — "${note}"`);
+    toast("New typology proposed — sent to the project manager","ok");
+  }
+  refresh();
+}
+function approveProposal(b,idx){
+  const branch=b.branches[idx]; const prop=branch.proposal; if(!prop) return;
+  branch.branchStatus = prop.kind==="add" ? "awaiting" : (prop.prevBranchStatus||"awaiting");
+  branch.proposal=null;
+  pushBranchLog(b, MGR("admin").name, prop.kind==="add"
+    ? `Approved — ${TY(branch.typology).label} added as a new activity.`
+    : `Approved — reassignment confirmed for ${TY(branch.typology).label}.`, "ok");
+  toast("Proposal approved","ok");
+  refresh();
+}
+function rejectProposal(b,idx){
+  const branch=b.branches[idx]; const prop=branch.proposal; if(!prop) return;
+  if(prop.kind==="add"){
+    b.branches.splice(idx,1);
+    if(!b.branches.some(x=>x.typology===branch.typology)) b.perim=(b.perim||[]).filter(p=>p!==branch.typology);
+    pushBranchLog(b, MGR("admin").name, `Rejected — proposed ${TY(branch.typology).label} activity removed, reverted to its prior state.`, "warn");
+  } else {
+    branch.manager=prop.prevManager; branch.expert=prop.prevExpert; branch.branchStatus=prop.prevBranchStatus||"awaiting";
+    branch.proposal=null;
+    pushBranchLog(b, MGR("admin").name, `Rejected — ${TY(branch.typology).label} reverted to its prior allocation.`, "warn");
+  }
+  toast("Proposal rejected — reverted to the prior state","warn");
+  refresh();
+}
+/* B3 — project manager overrides + locks a branch's compliance verdict. No comment
+   required. Only the project manager can lock or unlock — no other role ever sees
+   these controls (they only render inside the admin-only rmView branch list).
+   The expert's original verdict is preserved on the branch (expertCompliance) for
+   the detail panel only — never shown in the table row. The lock must eventually be
+   surfaced in the expert's own view too, once that view exists (not built yet). */
+function lockCompliance(b,idx){
+  const branch=b.branches[idx];
+  branch.locked=true; branch.lockedBy="admin"; branch.lockedAt="Today";
+  pushBranchLog(b, MGR("admin").name, branch.expertCompliance
+    ? `Locked the compliance verdict for ${TY(branch.typology).label} — overridden from ${complianceLabel(branch.expertCompliance)} to ${complianceLabel(branch.compliance)}.`
+    : `Locked the compliance verdict for ${TY(branch.typology).label} — ${complianceLabel(branch.compliance)}.`, "warn");
+  toast("Compliance verdict locked","ok");
+  refresh();
+}
+function unlockCompliance(b,idx){
+  const branch=b.branches[idx];
+  branch.locked=false; branch.lockedBy=null; branch.lockedAt=null;
+  pushBranchLog(b, MGR("admin").name, `Unlocked the compliance verdict for ${TY(branch.typology).label} — ${complianceLabel(branch.compliance)} is editable again.`, "human");
+  toast("Compliance verdict unlocked","ok");
+  refresh();
+}
 /* roles recap for the Activity tab: Admin, Manager, Expert */
 function roleRecapHTML(b){
   const admin = MANAGERS.find(m=>m.admin);
@@ -2568,11 +2821,11 @@ function roleRecapHTML(b){
 function renderSettings(){
   const panel = document.getElementById("settings-body");
   if(!state.selected){
-    const v = reqs().filter(b=>b.status==="validated").length;
+    const v = reqs().filter(b=>isFullyAllocated(b)).length;
     panel.innerHTML = `<div class="set-empty">
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
       <div class="big">No block selected</div>
-      <div>Click a block in the document or a table row to view its settings.<br><br><b style="color:var(--text-2)">${v}/${reqs().length}</b> requirements validated · <b style="color:var(--text-2)">${reqs().filter(b=>!b.alloc).length}</b> to assign.</div>
+      <div>Click a block in the document or a table row to view its settings.<br><br><b style="color:var(--text-2)">${v}/${reqs().length}</b> requirements allocated · <b style="color:var(--text-2)">${reqs().filter(b=>!b.alloc).length}</b> to assign.</div>
     </div>`;
     return;
   }
@@ -2586,16 +2839,17 @@ function renderSettings(){
   const hasBranches = isReq && (b.branches||[]).length>1;
   const rmView = hasBranches && isAdmin();
   const myBranch = hasBranches && !isAdmin() ? myBranchOf(b) : null;
+  const es = effectiveStatus(b);
   panel.innerHTML = `
     <div class="set-head">
       <div class="set-id-row">
         <span class="set-id">${isReq?b.id:"Text block"}</span>
-        <span class="status-pill s-${b.status}" style="cursor:default">${STATUS_LABEL[b.status]}</span>
+        <span class="status-pill s-${es.val}" style="cursor:default">${STATUS_LABEL[es.val]}</span>
         ${rmView?`<span class="assignments-badge" title="${b.branches.length} parallel allocations">🔀 ${b.branches.length} assignments</span>`:""}
         ${b.sourceImage?`<button class="mini-btn" id="back-to-container" style="margin-left:auto" title="Back to ${b.sourceImage}">← Container</button>`:""}
       </div>
       ${b.sourceImage?`<div class="prov-hint" style="color:var(--human);margin-bottom:4px">📷 Captured from <b>${b.sourceImage}</b></div>`:""}
-      ${b.reviewReason&&b.status==="toreview"?`<div class="review-why">⚠ ${b.reviewReason}</div>`:""}
+      ${es.reviewReason&&es.val==="doubt"?`<div class="review-why">⚠ ${es.reviewReason}</div>`:""}
       <div class="set-title" title="${b.text.replace(/<[^>]+>/g,"").replace(/"/g,'&quot;')}">${b.text.replace(/<[^>]+>/g,"")}</div>
     </div>
     <div class="set-tabs">
@@ -2616,9 +2870,9 @@ function renderSettings(){
     if(b.uncertain){
       html += `<div class="ia-suggestion" style="border-color:rgba(229,84,75,.5);background:var(--warn-soft)">
         <div class="ia-head" style="color:var(--warn)">⚠ Uncertain segmentation</div>
-        <div class="ia-text">The AI is not confident about this block's boundaries. Use <b>Edit segmentation</b> to split, merge or adjust before validating.</div></div>`;
+        <div class="ia-text">The AI is not confident about this block's boundaries.${FLAGS.captureCorrection?" Use <b>Edit segmentation</b> to split, merge or adjust before validating.":" Review the content before validating."}</div></div>`;
     }
-    if((b.status==="suggested") && suggestion){
+    if(!b.alloc && suggestion){
       html += `<div class="ia-suggestion">
         <div class="ia-head">✦ AI Suggestion — needs confirmation</div>
         <div class="ia-text">Proposed assignment: <b>${ALLOCS.find(a=>a.id===suggestion.alloc).label}</b><br><span style="font-size:var(--text-xs)">${suggestion.reason}</span></div>
@@ -2666,19 +2920,40 @@ function renderSettings(){
         ${derivSrc.obs&&weakestLink(derivSrc)?`<div class="weak-inline">⚠ Weak ${weakestLink(derivSrc).k} (${weakestLink(derivSrc).c}%) — check the derivation</div>`:""}
         <select id="f-alloc">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${(myBranch?myBranch.expert:b.alloc)===a.id?"selected":""}>${a.label}</option>`)).join("")}</select></div>`:""}
       ${complianceValue?`<div class="field"><label>Compliance</label>
-        <div class="fval"><span class="compliance-pill c-${complianceValue}">${complianceLabel(complianceValue)}</span></div>
+        <div class="fval"><span class="compliance-pill c-${complianceValue}">${complianceLabel(complianceValue)}</span>
+          ${myBranch&&myBranch.locked?`<span class="lock-badge" title="Locked by ${MGR(myBranch.lockedBy).name} — ${myBranch.lockedAt}">🔒 Locked by the project manager</span>`:""}
+        </div>
         ${complianceValue==="pending"?`<div class="tech-hint">Not every branch has answered yet — this is not a decided verdict.</div>`:""}
+        ${myBranch&&myBranch.locked?`<div class="tech-hint">You can no longer edit this verdict — the project manager overrode and locked it.${myBranch.expertCompliance?` Your original verdict was <b>${complianceLabel(myBranch.expertCompliance)}</b>.`:""}</div>`:""}
       </div>`:""}
 
       ${rmView?`<div class="set-sep"></div>
       <div class="branch-sections">
         <label class="branch-sections-lbl">Allocations (${b.branches.length})</label>
-        ${b.branches.map(branch=>`<div class="branch-sec">
+        ${b.branches.map((branch,bidx)=>`<div class="branch-sec">
             <div class="branch-sec-head">
-              <span class="ptag${branch.typology==="tky"?" tky":""}">${TY(branch.typology).code}</span>
+              <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending your review":""}">${TY(branch.typology).code}</span>
               <span class="branch-sec-mgr">${branch.manager?MGR(branch.manager).name:"— Unassigned —"}</span>
               <span class="status-pill branch-status-${branch.branchStatus}">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>
             </div>
+            ${branch.proposal?`<div class="branch-proposal">
+              <div class="branch-proposal-h">${branch.proposal.kind==="add"?"✦ Proposed — new typology":"↩ Proposed — reassignment"} by <b>${MGR(branch.proposal.by).name}</b></div>
+              <div class="branch-proposal-note">"${escHtml(branch.proposal.note)}"</div>
+              <div class="branch-proposal-actions">
+                <button class="approve" data-approve-proposal="${bidx}">✓ Approve</button>
+                <button class="reject" data-reject-proposal="${bidx}">✕ Reject</button>
+              </div>
+            </div>`:""}
+            <div class="branch-sec-compliance">
+              ${branch.locked
+                ? `<span class="lock-badge" title="Locked by ${MGR(branch.lockedBy).name} — ${branch.lockedAt}">🔒 Locked — ${complianceLabel(branch.compliance)}</span>
+                   <button class="mini-btn unlock-btn" data-unlockbtn="${bidx}" title="Unlock — only the project manager can lock or unlock a verdict">Unlock</button>`
+                : `<div class="compliance-override">
+                     <select class="cell-select" data-lockcompl="${bidx}">${COMPLIANCE_DEFS.map(c=>`<option value="${c.k}" ${branch.compliance===c.k?"selected":""}>${c.label}</option>`).join("")}</select>
+                     <button class="mini-btn lock-btn" data-lockbtn="${bidx}" title="Lock this verdict — only the project manager can unlock it again">🔒 Lock</button>
+                   </div>`}
+            </div>
+            ${branch.locked&&branch.expertCompliance?`<div class="expert-original">Expert's original verdict: <b>${complianceLabel(branch.expertCompliance)}</b></div>`:""}
           </div>`).join("")}
       </div>`:""}
 
@@ -2695,8 +2970,8 @@ function renderSettings(){
           <button class="mgr-done" id="mgr-done">Done</button>
         </div>
       </div>`:""}
-      ${isReq && b.status!=="validated" ? `<button class="validate-cta" id="validate-btn">✓ Validate this requirement <kbd style="font-family:var(--font-mono);font-size:var(--text-xs);opacity:.7">V</kbd></button>`:""}
-      ${isReq && b.status==="validated" ? `<button class="validate-cta" disabled>✓ Requirement validated</button>`:""}`;
+      ${isReq && !isAdmin() ? proposeBlockHTML(b,hasBranches,myBranch) : ""}
+      ${isReq ? validateCtaHTML(b,hasBranches,es) : ""}`;
     body.innerHTML = html;
     body.querySelector("#f-alloc")?.addEventListener("change",e=>{
       if(myBranch){ myBranch.expert=e.target.value||null; toast(`${myBranch.label}: expert ${myBranch.expert?"— "+ALLOCS.find(a=>a.id===myBranch.expert).label.split("—")[0].trim():"unassigned"}`,"ok"); refresh(); }
@@ -2713,12 +2988,24 @@ function renderSettings(){
     });
     body.querySelector("#f-tech")?.addEventListener("change",e=>{
       const before=b.tech, was=b.techAI;
-      b.tech=e.target.value; b.techAI=false; markEdited(b);
+      b.tech=e.target.value; b.techAI=false; markCharEdited(b);
       if(was) logFeedback("char", b.id, before==="tech"?"Technical":"Non-technical", b.tech==="tech"?"Technical":"Non-technical", null);
       refresh();
     });
-    body.querySelector("#f-type")?.addEventListener("change",e=>{const before=b.type;b.type=e.target.value;logFeedback("char",b.id,before,e.target.value,null);markEdited(b);refresh();toast("Type updated — status: Edited","ok")});
-    body.querySelector("#f-domain")?.addEventListener("change",e=>{b.domain=e.target.value.trim();markEdited(b);refresh();});
+    body.querySelector("#f-type")?.addEventListener("change",e=>{const before=b.type;b.type=e.target.value;logFeedback("char",b.id,before,e.target.value,null);markAllocEdited(b);refresh();toast("Type updated","ok")});
+    body.querySelector("#f-domain")?.addEventListener("change",e=>{b.domain=e.target.value.trim();markAllocEdited(b);refresh();});
+    body.querySelector("#propose-reassign-btn")?.addEventListener("click",()=>renderProposeForm("reassign",b,body));
+    body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
+    body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
+    body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
+    body.querySelectorAll("[data-lockcompl]").forEach(sel=>sel.addEventListener("change",e=>{
+      const branch=b.branches[+sel.dataset.lockcompl];
+      if(branch.expertCompliance===undefined) branch.expertCompliance=branch.compliance; // preserve the expert's original verdict the first time the PM overrides it
+      branch.compliance=e.target.value;
+      refresh();
+    }));
+    body.querySelectorAll("[data-lockbtn]").forEach(btn=>btn.addEventListener("click",()=>lockCompliance(b,+btn.dataset.lockbtn)));
+    body.querySelectorAll("[data-unlockbtn]").forEach(btn=>btn.addEventListener("click",()=>unlockCompliance(b,+btn.dataset.unlockbtn)));
     body.querySelector("#validate-btn")?.addEventListener("click",()=>validateBlock(b.id));
     body.querySelector("#ia-accept")?.addEventListener("click",()=>{setAlloc(b.id,suggestion.alloc);toast("AI assignment accepted","ok")});
     body.querySelector("#ia-reject")?.addEventListener("click",()=>{logFeedback("alloc",b.id,"AI suggestion","rejected",null);delete TYPE_SUGGEST[b.id];refresh();toast("Suggestion rejected — manual assignment required","ok")});
@@ -2730,7 +3017,7 @@ function renderSettings(){
       b.perim = b.perim || [];
       if(b.perim.includes(p)) b.perim = b.perim.filter(x=>x!==p);
       else b.perim = [...b.perim,p].sort((x,y)=>TYPO.findIndex(t=>t.id===x)-TYPO.findIndex(t=>t.id===y));
-      b.perimAI=false; markEdited(b);
+      b.perimAI=false; markCharEdited(b);
       if(wasAI) logFeedback("typo", b.id, prevPerim.map(x=>TY(x).code).join("+")||"none", b.perim.map(x=>TY(x).code).join("+")||"none", null);
       state.typoOpen=true;
       refresh();
@@ -2739,7 +3026,7 @@ function renderSettings(){
       e.stopPropagation(); state.typoOpen=!state.typoOpen; renderSettings();
     });
     body.querySelector("#perim-confirm")?.addEventListener("click",()=>{
-      b.perimAI=false; refresh(); toast(`Typology confirmed for ${b.id}`,"ok");
+      b.perimAI=false; markCharEdited(b); refresh(); toast(`Typology confirmed for ${b.id}`,"ok");
     });
   } else if(state.tab==="rex"){
     const rex = rexFor(b);
@@ -2823,13 +3110,14 @@ function activityFor(b){
   const base = [
     {k:"ia",who:"Segmentation AI",what:`Block detected and typed as "${b.type||"Text"}" during v2.1 processing.`,time:"Jul 16, 2026, 9:14 AM"},
   ];
+  if(b.branchLog&&b.branchLog.length) base.unshift(...b.branchLog);
   if(b.id==="EXG-006"){
     base.unshift(
       {k:"comment",who:"Karim Benali",what:'"The 2s threshold seems optimistic over a one-year depth. Are we targeting P95 or P99?" <b>@Thibaud</b>',time:"25 min ago"},
       {k:"human",who:"Thibaud Breton",what:'Criterion text clarified.<span class="before-after"><span class="ba-del">under 2 seconds</span> → <span class="ba-ins">under 2 seconds … at the 95th percentile</span></span>',time:"Yesterday, 5:40 PM"},
     );
   }
-  if(b.status==="validated") base.unshift({k:"ok",who:"Thibaud Breton",what:"Requirement validated — characterization and assignment confirmed.",time:"Jul 15, 2026, 11:02 AM"});
+  if(isFullyAllocated(b)) base.unshift({k:"ok",who:"Thibaud Breton",what:"Requirement allocated — characterisation and assignment confirmed, sent to Expert Review.",time:"Jul 15, 2026, 11:02 AM"});
   if(b.id==="EXG-009") base.unshift({k:"comment",who:"Claire Moreau",what:'"Is the 3-year retention period aligned with group policy (5 years)?"',time:"Jul 14, 2026, 4:20 PM"});
   return base;
 }
@@ -2845,8 +3133,9 @@ function addRelatedRequirement(containerId,text){
   const newBlock={
     id:nextRelReqId(containerId), kind:"requirement", sourceImage:containerId,
     tech:"tech", techAI:false, perim:[], perimAI:false, manager:null, type:"Functional",
-    domain:f.b.domain||"", status:"toreview", alloc:null, comments:0, text,
+    domain:f.b.domain||"", alloc:null, comments:0, text,
   };
+  computeCharStatus(newBlock); computeAllocStatus(newBlock);
   let insertAt=sec.blocks.indexOf(f.b)+1;
   while(insertAt<sec.blocks.length && sec.blocks[insertAt].sourceImage===containerId) insertAt++;
   sec.blocks.splice(insertAt,0,newBlock);
@@ -2946,7 +3235,7 @@ function renderChangePanel(b,s,panel){
   panel.innerHTML = `
     <div class="set-head">
       <div class="set-id-row"><span class="set-id">${b.id.startsWith("GHOST")?"EXG-00X":b.id}</span>
-        <span class="status-pill s-toreview" style="cursor:default">Change v2.0 → v2.1</span></div>
+        <span class="status-pill s-doubt" style="cursor:default">Change v2.0 → v2.1</span></div>
       <div class="set-title">${s.num}. ${s.title}</div>
     </div>
     <div class="set-body">
@@ -2999,7 +3288,7 @@ function setAlloc(id,alloc){
   const before = f.b.alloc;
   const wasSuggested = !!(f.b.obs);
   f.b.alloc = alloc;
-  if(alloc && f.b.status==="suggested") f.b.status="edited";
+  if(alloc) markAllocEdited(f.b);
   refresh();
   if(alloc){
     if(wasSuggested && before!==alloc){
@@ -3012,16 +3301,64 @@ function setAlloc(id,alloc){
     toast(`${id} assigned to ${ALLOCS.find(a=>a.id===alloc).label.split("—")[0].trim()}`,"ok",()=>{f.b.alloc=before;refresh()});
   }
 }
-function markEdited(b){ if(b.status!=="validated") b.status="edited"; }
-function validateBlock(id){
+/* B7 — Class/Typology (characterisation) and ABS/PBS/OBS (allocation) are two
+   separate axes now; a manual correction on one never touches the other, and
+   neither ever downgrades an item that already reached Allocated. */
+function markCharEdited(b){ if(b.status!=="allocated") b.status="tovalidate"; }
+function markAllocEdited(target){ if(target && target.allocStatus && target.allocStatus!=="allocated") target.allocStatus="tovalidate"; }
+/* B6/B7 — the one validate action: the row's status-pill click, each branch's
+   own status-pill click, and the Bulk Action Bar all route through this.
+   Advances characterisation first (requirement-level), then — once that's
+   already Allocated — this row's/branch's own allocation, individually (B6:
+   a multi-branch parent has nothing left to validate here once its
+   characterisation is done; each branch validates on its own). Returns which
+   stage advanced ("char"/"alloc"), or null if nothing was eligible
+   (Incomplete, or already Allocated) — the caller decides what to say. */
+function validateAllocTarget(target, isRealBranch){
+  if(!target || target.allocStatus==="allocated" || target.allocStatus==="incomplete") return false;
+  target.allocStatus="allocated"; target.allocDoubtField=null; delete target.allocReviewReason;
+  if(isRealBranch && !target.branchStatus) target.branchStatus="awaiting"; // sent to Expert Review
+  return true;
+}
+function validateProgress(id, branchIdx){
+  const f=findBlock(id); if(!f) return null;
+  const b=f.b;
+  if(branchIdx==null){
+    if(b.status!=="allocated"){
+      if(b.status==="incomplete") return null;
+      b.status="allocated"; b.doubtField=null; delete b.reviewReason;
+      return "char";
+    }
+    if((b.branches||[]).length>1) return null; // each branch validates its own allocation individually
+    return validateAllocTarget(b,false) ? "alloc" : null;
+  }
+  return validateAllocTarget((b.branches||[])[branchIdx],true) ? "alloc" : null;
+}
+/* Individual validate — always a real human gesture (B7): this is the only
+   way anything reaches Allocated, whether it came from Doubt (corrected) or
+   straight from To validate (a quick, trusting click). Reaching Allocated on
+   the allocation axis is what sends the branch on to Expert Review — the UI
+   says so plainly rather than burying it as a silent side effect. */
+function validateBlock(id, branchIdx){
   const f = findBlock(id); if(!f) return;
-  if(!f.b.alloc){ toast("Cannot validate: requirement is unassigned","warn"); return; }
-  const prev = f.b.status, prevWhy = f.b.reviewReason;
-  const wasWeak = derivWeak(f.b);
-  f.b.status = "validated"; delete f.b.reviewReason;
+  const b = f.b;
+  const target = branchIdx!=null ? (b.branches||[])[branchIdx] : b;
+  if(!target) return;
+  const snap = {status:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason,
+    allocStatus:target.allocStatus, allocDoubtField:target.allocDoubtField, allocReviewReason:target.allocReviewReason,
+    branchStatus:target.branchStatus};
+  const wasWeak = derivWeak(target);
+  const stage = validateProgress(id, branchIdx);
+  if(!stage){ toast("Nothing to validate yet — fill this in first","warn"); return; }
   refresh();
-  if(wasWeak){ logFeedback("deriv", id, `weak OBS ${f.b.obs.c}%`, "validated as-is", f.b.obs.c); setTimeout(()=>toast("Weak derivation confirmed by you — recorded as AI feedback","ok"),700); }
-  toast(`${id} validated`,"ok",()=>{f.b.status=prev;if(prevWhy)f.b.reviewReason=prevWhy;refresh()});
+  if(wasWeak && stage==="alloc"){ logFeedback("deriv", id, `weak OBS ${target.obs.c}%`, "validated as-is", target.obs.c); setTimeout(()=>toast("Weak derivation confirmed by you — recorded as AI feedback","ok"),700); }
+  const label = branchIdx!=null ? `${id} · ${TY(target.typology).label}` : id;
+  const msg = stage==="alloc" ? `${label} allocated — sent to Expert Review` : `${label} characterisation validated`;
+  toast(msg,"ok",()=>{
+    b.status=snap.status; b.doubtField=snap.doubtField; b.reviewReason=snap.reviewReason;
+    target.allocStatus=snap.allocStatus; target.allocDoubtField=snap.allocDoubtField; target.allocReviewReason=snap.allocReviewReason; target.branchStatus=snap.branchStatus;
+    refresh();
+  });
 }
 function setMode(mode){
   const enteringReview = mode==="review" && state.mode!=="review";
@@ -3059,11 +3396,14 @@ function setFilter(f){
 ===================================================== */
 function renderTriage(){
   const r = reqs();
-  const v = r.filter(b=>b.status==="validated").length;
+  const v = r.filter(b=>isFullyAllocated(b)).length;
   document.getElementById("progress-num").textContent = `${v}/${r.length}`;
   document.getElementById("progress-fill").style.width = (v/r.length*100)+"%";
   document.getElementById("n-unalloc").textContent = r.filter(b=>!b.alloc).length;
-  document.getElementById("n-review").textContent = r.filter(b=>b.status==="toreview"||b.status==="suggested").length;
+  document.getElementById("n-incomplete").textContent = r.filter(b=>effectiveStatus(b).val==="incomplete").length;
+  document.getElementById("n-doubt").textContent = r.filter(b=>effectiveStatus(b).val==="doubt").length;
+  document.getElementById("n-tovalidate").textContent = r.filter(b=>effectiveStatus(b).val==="tovalidate").length;
+  document.getElementById("n-allocated").textContent = r.filter(b=>effectiveStatus(b).val==="allocated").length;
   document.getElementById("n-changes").textContent = allBlocks().filter(b=>b.change||b.kind==="ghost").length + 1;
   document.getElementById("n-uncertain").textContent = allBlocks().filter(b=>b.uncertain).length;
 }
@@ -3118,55 +3458,20 @@ document.getElementById("sel-filter").addEventListener("click",()=>{
 });
 /* Filter to Selection — narrows the table to just the checked rows. Suspends (not loses) the
    toolbar's own filtering (Excel-style column filters + search) while active, since that whole
-   toolbar is hidden behind the banner; restored on "Show all". */
-document.getElementById("sel-show-only").addEventListener("click",()=>{
-  if(state.filterToSelection) return;
-  state.filterToSelection=true;
-  state.savedColFilters=state.colFilters;
-  state.colFilters={class:new Set(),typo:new Set(),type:new Set(),mgr:new Set(),obs:new Set(),status:new Set()};
-  renderReview();
-});
-document.getElementById("fsb-show-all").addEventListener("click",()=>{
-  state.filterToSelection=false;
-  if(state.savedColFilters){ state.colFilters=state.savedColFilters; state.savedColFilters=null; }
-  renderReview();
-});
+   toolbar is hidden behind the banner; restored on "Show all". Shared engine (TE), see
+   table-engine.js — also used by the follow-up screen's tracking table. */
+const emptyColFilters=()=>({class:new Set(),typo:new Set(),type:new Set(),mgr:new Set(),obs:new Set(),status:new Set()});
+document.getElementById("sel-show-only").addEventListener("click",()=>{ TE.enterFilterToSelection(state,emptyColFilters); renderReview(); });
+document.getElementById("fsb-show-all").addEventListener("click",()=>{ TE.exitFilterToSelection(state); renderReview(); });
 /* drag-select: mousedown on the selection gutter, drag across rows to extend a contiguous range.
    Rows outside the live [anchor, cursor] range fall back to their pre-drag state, Excel-style. */
-let dragSel=null, dragTick=false;
-document.getElementById("rgrid-body").addEventListener("mousedown",e=>{
-  const cell=e.target.closest(".c-sel"); if(!cell) return;
-  const row=cell.closest(".rrow"); if(!row) return;
-  e.preventDefault();
-  const id=row.dataset.id, anchorIdx=currentVisIds.indexOf(id); if(anchorIdx<0) return;
-  const before=new Set(state.selection);
-  const willSelect=!state.selection.has(id);
-  willSelect?state.selection.add(id):state.selection.delete(id);
-  lastSel=id; dragSel={anchorIdx,willSelect,before};
-  document.body.classList.add("no-select");
-  renderReview();
+TE.bindDragSelect({
+  scroller:document.getElementById("rgrid-body"),
+  selCellSelector:".c-sel", rowSelector:".rrow",
+  getIdsInOrder:()=>currentVisIds,
+  selection:state.selection,
+  onChange:id=>{ if(id!=null) lastSel=id; renderReview(); },
 });
-document.addEventListener("mousemove",e=>{
-  if(!dragSel||dragTick) return;
-  if(!(e.buttons&1)){ dragSel=null; document.body.classList.remove("no-select"); return; } // button released outside our mouseup (e.g. over another frame) — abort instead of extending a phantom drag
-  dragTick=true;
-  requestAnimationFrame(()=>{
-    dragTick=false;
-    if(!dragSel) return;
-    const el=document.elementFromPoint(e.clientX,e.clientY);
-    const row=el&&el.closest(".rrow"); if(!row) return;
-    const idx=currentVisIds.indexOf(row.dataset.id); if(idx<0) return;
-    const [lo,hi]=[Math.min(dragSel.anchorIdx,idx),Math.max(dragSel.anchorIdx,idx)];
-    state.selection=new Set(dragSel.before);
-    for(let i=lo;i<=hi;i++){
-      const rid=currentVisIds[i]; if(rid==null) continue;
-      dragSel.willSelect?state.selection.add(rid):state.selection.delete(rid);
-    }
-    lastSel=currentVisIds[idx];
-    renderReview();
-  });
-});
-document.addEventListener("mouseup",()=>{ if(dragSel){ dragSel=null; document.body.classList.remove("no-select"); } });
 document.getElementById("sel-validate").addEventListener("click",bulkValidate);
 document.getElementById("sel-toreview").addEventListener("click",bulkMarkToReview);
 document.getElementById("sel-reclass-info").addEventListener("click",bulkReclassifyInfo);
@@ -3345,14 +3650,10 @@ function renderColumnsPanel(){
     <div class="view-sep"></div>
     <div class="view-sec">
       <div class="view-sec-head">Table columns</div>
-      ${COLUMN_TOGGLE_DEFS.map(c=>`<label class="colf-opt"><input type="checkbox" data-colvis="${c.k}" ${state.colCollapsed.has(c.k)?"":"checked"}>${c.label}</label>`).join("")}
+      ${TE.columnChecklistHTML(COLUMN_TOGGLE_DEFS,state.colCollapsed)}
     </div>`;
   p.querySelector("#colvis-wrap").addEventListener("change",e=>{ state.wrapText=e.target.checked; renderReview(); });
-  p.querySelectorAll("[data-colvis]").forEach(cb=>cb.addEventListener("change",()=>{
-    const k=cb.dataset.colvis;
-    cb.checked?state.colCollapsed.delete(k):state.colCollapsed.add(k);
-    applyCols();
-  }));
+  TE.bindColumnChecklist(p,state.colCollapsed,()=>applyCols());
 }
 document.getElementById("cols-btn")?.addEventListener("click",e=>{ e.stopPropagation(); colsPanelState.open=!colsPanelState.open; renderColumnsPanel(); });
 document.addEventListener("click",e=>{ if(colsPanelState.open && !e.target.closest("#cols-panel") && !e.target.closest("#cols-btn")){ colsPanelState.open=false; renderColumnsPanel(); } });
@@ -3416,8 +3717,11 @@ document.addEventListener("click",e=>{
   if(state.typoOpen && !e.target.closest("#typo-msel")){ state.typoOpen=false; renderSettings(); }
 });
 
-/* Segmentation mode */
+/* Segmentation mode — manual correction of the Capture step's output.
+   Hidden behind FLAGS.captureCorrection (S2 / ticket 8); flip the flag
+   to bring the control and this behaviour back. */
 document.getElementById("seg-btn").addEventListener("click",()=>{
+  if(!FLAGS.captureCorrection) return;
   state.seg=!state.seg;
   if(state.seg&&state.mode!=="document"){ setMode("document"); }
   document.body.classList.toggle("seg-on",state.seg);
@@ -3454,10 +3758,9 @@ notifDrop.querySelectorAll(".nd-item").forEach(i=>i.addEventListener("click",()=
 const overlay = document.getElementById("export-overlay");
 document.getElementById("finalize-btn").addEventListener("click",()=>{
   const r = reqs();
-  const notDone = r.filter(b=>b.status!=="validated").length;
+  const notDone = r.filter(b=>!isFullyAllocated(b)).length;
   if(notDone>0){
-    toast(`Review milestone not reached — ${notDone} requirement${notDone>1?"s":""} not validated. All requirements must be assigned and validated before export.`,"warn");
-    if(state.filter!=="toreview") setFilter("toreview");
+    toast(`Review milestone not reached — ${notDone} requirement${notDone>1?"s":""} not yet allocated. All requirements must be assigned and validated before export.`,"warn");
     return;
   }
   overlay.classList.add("open");
@@ -3479,17 +3782,9 @@ document.getElementById("opt-xls").addEventListener("click",()=>toast("Preview: 
 document.addEventListener("keydown",e=>{
   if(e.target.matches("input,select,textarea")) return;
   if(state.mode!=="review") return;
-  if(e.key==="ArrowDown"||e.key==="j"||e.key==="J"){ e.preventDefault(); moveActiveCellDelta(1,0); }
-  else if(e.key==="ArrowUp"||e.key==="k"||e.key==="K"){ e.preventDefault(); moveActiveCellDelta(-1,0); }
-  else if(e.key==="ArrowRight"){ e.preventDefault(); moveActiveCellDelta(0,1); }
-  else if(e.key==="ArrowLeft"){ e.preventDefault(); moveActiveCellDelta(0,-1); }
-  else if(e.key===" " && state.activeCell.col==="sel" && state.activeCell.id && state.activeCell.bidx==null){
-    e.preventDefault();
-    const id=state.activeCell.id;
-    state.selection.has(id)?state.selection.delete(id):state.selection.add(id);
-    lastSel=id; renderReview();
-  }
-  else if((e.key==="v"||e.key==="V") && state.selected){ validateBlock(state.selected); }
+  const navKey=(e.key==="j"||e.key==="J")?"ArrowDown":(e.key==="k"||e.key==="K")?"ArrowUp":e.key;
+  if(TE.handleNavKeydown({key:navKey},state,navAdapter)){ e.preventDefault(); return; }
+  if((e.key==="v"||e.key==="V") && state.selected){ validateBlock(state.selected); }
   else if((e.key==="a"||e.key==="A") && state.selected){
     const sel = document.querySelector(`.rrow[data-id="${state.selected}"] select`);
     if(sel){ sel.focus(); e.preventDefault(); }
@@ -3497,6 +3792,7 @@ document.addEventListener("keydown",e=>{
 });
 
 /* Init */
+if(!FLAGS.captureCorrection) document.getElementById("seg-btn").style.display="none";
 if(MODE!=="ai"){
   const tp=document.querySelector(".triage-pills");
   const tag=document.createElement("span");

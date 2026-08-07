@@ -166,12 +166,72 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .view-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:14px}
 .view-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
 .view-head .sub{font-size:var(--text-sm);color:var(--text-3)}
-table.grid{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;font-size:var(--text-base)}
-table.grid th{text-align:left;font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);padding:var(--space-3) var(--space-3);background:var(--panel-2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
-table.grid td{padding:var(--space-3) var(--space-3);border-bottom:1px solid var(--line);vertical-align:middle}
-table.grid tr.rrow{cursor:pointer;transition:background .12s}
-table.grid tr.rrow:hover{background:var(--panel-2)}
-table.grid tr.rrow.active{background:var(--accent-soft);box-shadow:inset 2px 0 0 var(--accent)}
+/* ---------- B5: shared review-table grid (see revue-documentaire.html — same
+   component, this screen's own column config + adapter, table-engine.js for
+   the interaction behaviour). Copied CSS conventions, not a shared stylesheet
+   (this project has no bundler — CSS is duplicated per file by convention). */
+:root{ --rrow-h:44px; --frgrid-cols:32px 84px minmax(280px,1.6fr) 90px 140px 110px 150px 140px 110px 70px; }
+.rgrid{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.rgrid-head{display:grid;grid-template-columns:var(--frgrid-cols);align-self:flex-start;min-width:100%;background:var(--panel-2);border-bottom:1px solid var(--line);flex-shrink:0;overflow-x:hidden}
+.rgrid-head .rcell{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);padding:0 var(--space-3);height:38px;display:flex;align-items:center;border-right:1px solid var(--line)}
+.rgrid-head .rcell:last-child{border-right:none}
+.rgrid-head .c-sel{padding:0}
+.rgrid-body{flex:1;overflow-y:auto;position:relative;min-height:0}
+.rrow{display:grid;grid-template-columns:var(--frgrid-cols);height:var(--rrow-h);border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;box-sizing:border-box}
+.rrow:hover{background:var(--panel-2)}
+.rrow.bulk-sel{background:var(--panel-3)}
+.rrow.bulk-sel:hover{background:var(--panel-3)}
+.rrow.active{background:var(--accent-soft);box-shadow:inset 2px 0 0 var(--accent)}
+.rrow .rcell{padding:0 var(--space-3);display:flex;align-items:center;min-width:0;overflow:hidden;border-right:1px solid var(--line)}
+.rrow .rcell:last-child{border-right:none}
+.rrow .c-sel{padding:0}
+.rrow .c-req{gap:8px}
+.rrow .c-req .excerpt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.45}
+.rrow.branch-row{background:var(--panel-2);cursor:pointer}
+.rrow.branch-row:hover{background:var(--panel-3)}
+.rrow.branch-row .c-req{padding-left:var(--space-6);gap:6px}
+.sel-hit{display:flex;align-items:center;justify-content:center;width:100%;height:100%;cursor:pointer}
+.rowsel{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+.rcell.active-cell{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius-xs);position:relative;z-index:1}
+.rcell.c-id{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-2);white-space:nowrap}
+/* collapsed columns (Column Visibility Menu): hide content, show a thin »
+   re-expand strip — click the collapsed header cell to bring the column back */
+.rgrid[data-cc~="typo"] .c-typo>*,.rgrid[data-cc~="expert"] .c-expert>*,.rgrid[data-cc~="mgr"] .c-mgr>*,.rgrid[data-cc~="status"] .c-status>*,.rgrid[data-cc~="compliance"] .c-compliance>*,.rgrid[data-cc~="lastfu"] .c-lastfu>*,.rgrid[data-cc~="age"] .c-age>*{display:none}
+.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{padding:0;justify-content:center;cursor:pointer}
+.rgrid[data-cc~="typo"] .rgrid-head .c-typo::after,.rgrid[data-cc~="expert"] .rgrid-head .c-expert::after,.rgrid[data-cc~="mgr"] .rgrid-head .c-mgr::after,.rgrid[data-cc~="status"] .rgrid-head .c-status::after,.rgrid[data-cc~="compliance"] .rgrid-head .c-compliance::after,.rgrid[data-cc~="lastfu"] .rgrid-head .c-lastfu::after,.rgrid[data-cc~="age"] .rgrid-head .c-age::after{content:"»";color:var(--text-3);font-size:var(--text-xs)}
+.rgrid-head .rcell{position:relative}
+.empty-rows{padding:40px;text-align:center;color:var(--text-3);font-size:var(--text-base)}
+.multi-ph{color:var(--text-3);font-size:var(--text-xs);font-style:italic}
+.lastfu-date{font-size:var(--text-xs);color:var(--text-2);font-variant-numeric:tabular-nums}
+/* Bulk Action Bar + Filter to Selection banner (TE, shared with revue-documentaire.html) */
+.rtoolbar{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+.filter-sel-banner{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-lg);font-size:var(--text-sm);color:var(--text)}
+.filter-sel-banner b{font-variant-numeric:tabular-nums}
+.sel-bar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(24px);z-index:55;display:none;align-items:center;gap:var(--space-4);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);box-shadow:0 16px 48px rgba(0,0,0,.6);opacity:0;transition:opacity .25s ease;max-width:calc(100vw - 48px);flex-wrap:wrap;justify-content:center}
+.sel-bar.on{display:flex;opacity:1}
+.sel-n{font-size:var(--text-base);color:var(--text-2)}
+.sel-n b{color:var(--text);font-variant-numeric:tabular-nums}
+.sel-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);padding:var(--space-1) 6px;border-left:1px solid var(--line-2)}
+.sel-btn{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);font-size:var(--text-sm);font-weight:500;color:var(--text-2);transition:all .13s}
+.sel-btn:hover{border-color:var(--accent);color:var(--text)}
+.sel-btn.ok{border-color:rgba(63,178,127,.5);color:var(--ok)}
+.sel-btn.ok:hover{background:var(--ok);color:#fff}
+/* Column Visibility Menu */
+.view-wrap{position:relative}
+.view-panel{position:absolute;top:calc(100% + 6px);right:0;z-index:60;width:260px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);padding:var(--space-3);display:none}
+.view-panel.on{display:block}
+.view-panel-head{display:flex;align-items:center;justify-content:space-between;font-size:var(--text-base);font-weight:700;margin-bottom:8px}
+.view-sec{padding:8px 0}
+.view-sec-head{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);padding:2px 2px 6px}
+.colf-opt{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-sm);color:var(--text-2);cursor:pointer}
+.colf-opt:hover{background:var(--panel-3);color:var(--text)}
+.colf-opt input{accent-color:var(--accent)}
+/* own-team default scope (B5 OPEN, resolved: liftable UI filter) */
+.team-scope{display:flex;align-items:center;gap:6px}
+.team-scope select{font-size:var(--text-sm);padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2)}
+.team-chip{font-size:var(--text-sm);font-weight:600;padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.team-chip .x{margin-left:6px;opacity:.7}
+.team-chip .x:hover{opacity:1}
 .rid{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-2);white-space:nowrap}
 .rtext{max-width:360px;color:var(--text);line-height:1.45}
 .rtext .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -508,7 +568,13 @@ textarea.resp-in:focus{border-color:var(--accent)}
       <aside class="nav" id="nav2"></aside>
       <section class="center">
         <div class="view view-pad on" id="view-table">
-          <div class="view-head"><h2>Expert qualification tracking</h2><span class="sub" id="table-sub"></span></div>
+          <div class="view-head"><h2>Expert qualification tracking</h2><span class="sub" id="table-sub"></span>
+            <div class="team-scope" style="margin-left:auto">
+              <span>Viewing as</span>
+              <select id="f-viewer"></select>
+              <span class="team-chip" id="team-chip" style="display:none">My team only<span class="x" id="team-chip-x" title="Show every team">✕</span></span>
+            </div>
+          </div>
           <div class="export-ready" id="export-ready"></div>
           <div class="needs-you" id="needs-you"></div>
           <div class="f10-tools">
@@ -523,16 +589,47 @@ textarea.resp-in:focus{border-color:var(--accent)}
             </select>
             <button class="f10-needsme" id="f10-needsme">⚡ Needs my action</button>
           </div>
-          <table class="grid"><thead><tr>
-            <th style="width:70px">ID</th><th>Requirement / assignment</th><th style="width:160px">Expert</th>
-            <th style="width:190px">Status</th><th style="width:160px">Compliance</th><th style="width:70px">Age</th>
-          </tr></thead><tbody id="table2-body"></tbody></table>
+          <div class="filter-sel-banner" id="filter-sel-banner" style="display:none">
+            <span>Showing <b id="fsb-n">0</b> of <b id="fsb-total">0</b> requirements — selected</span>
+            <button class="btn-ghost" id="fsb-show-all" style="font-size:var(--text-sm)">Show all</button>
+          </div>
+          <div class="rtoolbar" id="rtoolbar">
+            <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+              <div class="view-wrap"><button class="btn-ghost" id="f-cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
+                <div class="view-panel" id="f-cols-panel"></div></div>
+            </div>
+          </div>
+          <div class="rgrid">
+            <div class="rgrid-head" id="frgrid-head">
+              <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" id="f-sel-all" title="Select all in view"></label></div>
+              <div class="rcell c-id"><span class="cl">ID</span></div>
+              <div class="rcell c-req"><span class="cl">Requirement / assignment</span></div>
+              <div class="rcell c-typo" data-col="typo"><span class="cl">Typology</span></div>
+              <div class="rcell c-expert" data-col="expert"><span class="cl">Expert</span></div>
+              <div class="rcell c-mgr" data-col="mgr"><span class="cl">Manager</span></div>
+              <div class="rcell c-status" data-col="status"><span class="cl">Status</span></div>
+              <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
+              <div class="rcell c-lastfu" data-col="lastfu"><span class="cl">Last follow-up</span></div>
+              <div class="rcell c-age" data-col="age"><span class="cl">Age</span></div>
+            </div>
+            <div class="rgrid-body" id="frgrid-body"><div class="rgrid-window" id="frgrid-window"></div></div>
+          </div>
         </div>
         <div class="view doc-scroll" id="view-doc"></div>
         <div class="view view-pad" id="view-qa"></div>
       </section>
       <aside class="settings" id="settings2"></aside>
     </main>
+    <!-- Bulk action bar (B5, shared with revue-documentaire.html's table) -->
+    <div id="f-sel-bar" class="sel-bar">
+      <span class="sel-n"><b id="f-sel-count">0</b> selected</span>
+      <button class="sel-btn" id="f-sel-show-only" title="Narrow the table to just the selected rows">👁 Show only selected</button>
+      <div class="sel-actions">
+        <button class="sel-btn ok" id="f-sel-remind">🔔 Send reminder</button>
+        <button class="sel-btn" id="f-sel-reassign">↪ Reassign expert</button>
+      </div>
+      <button class="sel-clear" id="f-sel-clear">Clear</button>
+    </div>
   </div>
 
   <!-- ============ SCREEN 3 ============ -->
@@ -571,6 +668,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
 <div id="toast-zone"></div>
 
 <script>
+/* @include table-engine.js */
 /* =====================================================
    SHARED DATA
 ===================================================== */
@@ -624,7 +722,7 @@ const REQS=[
    branches:[
      {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"non_compliant",age:8,
       resp:{note:"The 5-minute alerting threshold is achievable, but integrating the issuer's escalation matrix falls outside the proposed scope and budget envelope. Not compliant as specified.",att:0,date:"Jul 13"}},
-     {typology:"mln",manager:"m_mln",expert:"infra",status:"awaiting_answer",compliance:null,age:4},
+     {typology:"mln",manager:"m_mln",expert:"infra",status:"awaiting_answer",compliance:null,age:4,lastFollowup:"Jul 14"},
      {typology:"sys",manager:null,expert:null,status:"reassignment_needed",compliance:null,age:3,
       reassignComment:"Alerting escalation is a safety-critical chain — this should sit with the Safety authority, not with my perimeter. Please reallocate."},
    ]},
@@ -716,7 +814,18 @@ const VERSIONS=[
   {num:"v1.0",state:"integrated",date:"Mar 3, 2026",note:"Initial AO release",gap:null},
 ];
 const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:null,tab:"response",htab:"versions",selQ:null,uploaded:false,
-  search:"",sortBy:"action",fExpert:"",fTypo:"",needsMe:false};
+  search:"",sortBy:"action",fExpert:"",fTypo:"",needsMe:false,
+  /* B5 — shared table engine state (see table-engine.js / TE) */
+  selection:new Set(),colFilters:{},filterToSelection:false,savedColFilters:null,
+  activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","mgr","age"]),
+  ownTeamOnly:true};
+/* B5 — this screen has no admin/view-as switcher yet (unlike revue-documentaire.html);
+   VIEWER simulates whichever branch manager is currently using their own follow-up
+   view. "My team only" (state.ownTeamOnly) is the OPEN question's resolution: a
+   liftable UI filter on top of the same passesB() mechanism, not a real access
+   restriction — clearing it shows every team, same as picking a different column
+   filter would. Defaults to the first manager so the screen opens pre-scoped. */
+let VIEWER=MANAGERS[0].id;
 
 const expOf=id=>EXPERTS.find(e=>e.id===id);
 const mgrOf=id=>MANAGERS.find(m=>m.id===id);
@@ -770,6 +879,7 @@ function toast(msg,kind="ok"){
    or an assignment the issuer just unblocked that's now waiting on the expert again) */
 const needsMyAction=b=>needsReassign(b)||!!(b.unblockedAt&&b.status==="awaiting_answer");
 function passesB(b){
+  if(state.ownTeamOnly&&b.manager!==VIEWER)return false;
   if(state.filter==="answered")return isAnswered(b);
   if(state.filter==="await")return isAwaitingAnswer(b);
   if(state.filter==="qa")return isAwaitingQA(b);
@@ -791,6 +901,7 @@ function matchesSearch(r){
    passes the status/expert/typology/needs-me filters (the "out" filter is requirement-level:
    the whole requirement was answered against a superseded version) */
 function passes(r){
+  if(state.filterToSelection) return state.selection.has(r.id);
   if(!matchesSearch(r))return false;
   if(state.filter==="out")return !!r.outdated;
   return (r.branches||[]).some(passesB);
@@ -926,62 +1037,169 @@ function renderNeedsYou(){
   el.querySelector("#ny-tosend")?.addEventListener("click",()=>{setView("qa");});
   el.querySelector("#ny-unblocked")?.addEventListener("click",()=>{state.filter=null;state.needsMe=true;refreshAll();});
 }
-function renderTable2(){
-  const body=document.getElementById("table2-body");body.innerHTML="";
+/* =====================================================
+   B5 — shared review-table grid (config, not a different component: same
+   selection/Bulk-Action-Bar/Filter-to-Selection/keyboard-nav/Column-Visibility-
+   Menu behaviour as revue-documentaire.html, via table-engine.js / TE). This
+   screen supplies its own columns, row source and cell rendering below.
+===================================================== */
+const F_RCOLS=[
+  {k:"sel",w:"32px"},{k:"id",w:"84px"},{k:"req",w:"minmax(280px,1.6fr)"},
+  {k:"typo",w:"90px"},{k:"expert",w:"140px"},{k:"mgr",w:"110px"},
+  {k:"status",w:"150px"},{k:"compliance",w:"140px"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
+];
+const F_COLUMN_TOGGLE_DEFS=[
+  {k:"typo",label:"Typology"},{k:"expert",label:"Expert"},{k:"mgr",label:"Manager"},
+  {k:"status",label:"Status"},{k:"compliance",label:"Compliance"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
+];
+const F_NAV_COLS=["sel","id","req","typo","expert","mgr","status","compliance","lastfu","age"];
+function fNavCols(){ return F_NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
+function applyFCols(){
+  const grid=document.querySelector("#view-table .rgrid"); if(!grid) return;
+  grid.style.setProperty("--frgrid-cols", F_RCOLS.map(c=>state.colCollapsed.has(c.k)?"24px":c.w).join(" "));
+  grid.setAttribute("data-cc",[...state.colCollapsed].join(" "));
+}
+// clicking a collapsed header cell re-expands it (same convention as revue-documentaire.html)
+document.querySelectorAll("#frgrid-head [data-col]").forEach(cell=>cell.addEventListener("click",()=>{
+  const k=cell.dataset.col; if(state.colCollapsed.has(k)){ state.colCollapsed.delete(k); applyFCols(); }
+}));
+// keep the header's horizontal scroll in sync with the body
+(function(){
+  const body=document.getElementById("frgrid-body"), head=document.getElementById("frgrid-head");
+  if(!body||!head) return;
+  body.addEventListener("scroll",()=>{ head.scrollLeft = body.scrollLeft; });
+})();
+let currentVisIds=[];
+let fVROWS=[];
+function buildFVRows(){
   const rows=tableRows();
-  const shownBranches=rows.reduce((n,r)=>n+r.branches.filter(passesB).length,0);
-  document.getElementById("table-sub").textContent=
-    `${rows.length} requirement${rows.length>1?"s":""} · ${shownBranches} assignment${shownBranches>1?"s":""} — action items first (reassignments, Q&A blocks, overdue)`;
+  currentVisIds=rows.map(r=>r.id);
+  fVROWS=[];
   rows.forEach(r=>{
-    const c=consolidate(r);
-    // ---- parent row: the requirement, with its consolidated verdict ----
-    const tr=document.createElement("tr");
-    tr.className="rrow req-row"+(state.sel===r.id?" active":"");
-    tr.dataset.id=r.id;
-    tr.innerHTML=`
-      <td class="rid">${r.id}</td>
-      <td class="rtext"><div class="excerpt">${esc(r.text)}</div>
-        <button class="peek-btn" data-peek="${r.id}">↳ View source passage</button></td>
-      <td><span class="branch-n">${r.branches.length} assignment${r.branches.length>1?"s":""}</span></td>
-      <td>${c.pending
-            ? `<span class="blocking-chip" title="This branch is holding consolidation up">⛔ ${TY(c.blocking.typology).label} · ${BST[c.blocking.status]}</span>`
-            : `<span class="spill answered">Consolidated</span>`}${r.outdated?'<span class="flag-out">Δ outdated version</span>':""}</td>
-      <td>${consolidatedCellHTML(c)}</td>
-      <td class="age"></td>`;
-    tr.addEventListener("click",ev=>{ if(ev.target.closest("button"))return; select(r.id); });
-    body.appendChild(tr);
-    // ---- child rows: one per branch ----
+    fVROWS.push({type:"row",r});
+    const branchFilterActive=(state.filter&&state.filter!=="out")||state.fExpert||state.fTypo||state.needsMe||state.ownTeamOnly;
     r.branches.forEach((b,i)=>{
-      const branchFilterActive=(state.filter&&state.filter!=="out")||state.fExpert||state.fTypo||state.needsMe;
       if(!passesB(b) && branchFilterActive) return;
-      const m=b.manager?mgrOf(b.manager):null;
-      const br=document.createElement("tr");
-      br.className="rrow branch-row"+(state.sel===r.id&&state.selBranch===i?" active":"");
-      br.dataset.id=r.id; br.dataset.branch=i;
-      br.innerHTML=`
-        <td class="rid branch-ind">↳</td>
-        <td class="branch-cell">
-          <span class="ptag">${TY(b.typology).code}</span>
-          <span class="branch-label">${TY(b.typology).label}</span>
-          <span class="branch-mgr">${m?`mgr ${m.name.split(" ")[0]}`:"<span class='none'>no manager</span>"}</span></td>
-        <td>${branchWhoHTML(b)}</td>
-        <td><span class="spill ${b.status}">${BST[b.status]}</span></td>
-        <td>${b.compliance?`<span class="vpill ${b.compliance}">${CMP[b.compliance]}</span>`:'<span class="vpill none">—</span>'}</td>
-        <td class="age ${isOverB(b)?"over":""}">${isAnswered(b)?"":b.age+" d"}</td>`;
-      br.addEventListener("click",ev=>{ if(ev.target.closest("button"))return; select(r.id,i); });
-      body.appendChild(br);
+      fVROWS.push({type:"branch",parent:r,branch:b,idx:i});
     });
   });
-  body.querySelectorAll("[data-peek]").forEach(b=>b.addEventListener("click",ev=>{
-    ev.stopPropagation();
-    const tr=b.closest("tr"),nx=tr.nextElementSibling;
-    if(nx&&nx.classList.contains("peek-row")){nx.remove();return;}
-    document.querySelectorAll(".peek-row").forEach(x=>x.remove());
-    const r=findR(b.dataset.peek);
-    const p=document.createElement("tr");p.className="peek-row";
-    p.innerHTML=`<td colspan="6"><div class="peek-paper"><div class="peek-ctx">Source passage (read-only) — ${r.sec} · ${r.id}</div>${esc(r.text)}</div></td>`;
-    tr.after(p);
+  return rows;
+}
+function fLastFollowupHTML(entity){
+  return entity.lastFollowup ? `<span class="lastfu-date">${entity.lastFollowup}</span>` : `<span class="none">—</span>`;
+}
+function fRowInnerHTML(r){
+  const c=consolidate(r);
+  const single=r.branches.length===1?r.branches[0]:null;
+  const lastFollowup=r.branches.reduce((latest,b)=>b.lastFollowup?b.lastFollowup:latest,null);
+  return `
+    <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${r.id}" ${state.selection.has(r.id)?"checked":""}></label></div>
+    <div class="rcell c-id">${r.id}</div>
+    <div class="rcell c-req"><div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div>${r.outdated?'<span class="flag-out">Δ outdated</span>':""}</div>
+    <div class="rcell c-typo">${single?`<span class="ptag">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} typologies</span>`}</div>
+    <div class="rcell c-expert">${single?branchWhoHTML(single):`<span class="multi-ph">Multiple (${r.branches.length})</span>`}</div>
+    <div class="rcell c-mgr">${single?(single.manager?`<span>${mgrOf(single.manager).name.split(" ")[0]}</span>`:'<span class="none">—</span>'):`<span class="multi-ph">Multiple</span>`}</div>
+    <div class="rcell c-status">${c.pending
+        ? `<span class="blocking-chip" title="This branch is holding consolidation up">⛔ ${TY(c.blocking.typology).label} · ${BST[c.blocking.status]}</span>`
+        : `<span class="spill answered">Consolidated</span>`}</div>
+    <div class="rcell c-compliance">${consolidatedCellHTML(c)}</div>
+    <div class="rcell c-lastfu">${fLastFollowupHTML({lastFollowup})}</div>
+    <div class="rcell c-age"></div>`;
+}
+function fBranchRowHTML(parent,b,idx){
+  const m=b.manager?mgrOf(b.manager):null;
+  return `<div class="rrow branch-row" data-branchof="${parent.id}" data-branchidx="${idx}">
+    <div class="rcell c-sel"></div>
+    <div class="rcell c-id"></div>
+    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${TY(b.typology).label}</span></div>
+    <div class="rcell c-typo"><span class="ptag">${TY(b.typology).code}</span></div>
+    <div class="rcell c-expert">${branchWhoHTML(b)}</div>
+    <div class="rcell c-mgr">${m?m.name.split(" ")[0]:'<span class="none">—</span>'}</div>
+    <div class="rcell c-status"><span class="spill ${b.status}">${BST[b.status]}</span></div>
+    <div class="rcell c-compliance">${b.compliance?`<span class="vpill ${b.compliance}">${CMP[b.compliance]}</span>`:'<span class="vpill none">—</span>'}</div>
+    <div class="rcell c-lastfu">${fLastFollowupHTML(b)}</div>
+    <div class="rcell c-age ${isOverB(b)?"over":""}">${isAnswered(b)?"":b.age+" d"}</div>
+  </div>`;
+}
+const fNavAdapter={
+  getVisibleRows:()=>fVROWS.filter(it=>it.type==="row"||it.type==="branch").map(it=>
+    it.type==="row"?{id:it.r.id,bidx:null}:{id:it.parent.id,bidx:it.idx}),
+  getNavCols:fNavCols,
+  activeCellRowEl:ac=>{
+    ac=ac||state.activeCell; if(!ac.id) return null;
+    return ac.bidx==null
+      ? document.querySelector(`#frgrid-window .rrow[data-id="${ac.id}"]:not(.branch-row)`)
+      : document.querySelector(`#frgrid-window .rrow.branch-row[data-branchof="${ac.id}"][data-branchidx="${ac.bidx}"]`);
+  },
+  onRowChange:id=>select(id),
+  onSelectionToggle:()=>renderTable2(),
+};
+function bindFRows(win){
+  win.querySelectorAll(".rrow:not(.branch-row)").forEach(tr=>{
+    tr.addEventListener("click",e=>{ if(e.target.closest("input")) return; select(tr.dataset.id); });
+  });
+  win.querySelectorAll(".rrow.branch-row").forEach(tr=>{
+    tr.addEventListener("click",()=>select(tr.dataset.branchof,+tr.dataset.branchidx));
+  });
+  win.querySelectorAll(".rowsel").forEach(cb=>cb.addEventListener("click",e=>{
+    e.stopPropagation();
+    TE.toggleSelect(state.selection,cb.dataset.sel);
+    renderTable2();
   }));
+  win.querySelectorAll(".rrow").forEach(tr=>{
+    tr.addEventListener("click",e=>{
+      const cell=e.target.closest(".rcell"); if(!cell) return;
+      const colClass=[...cell.classList].find(c=>c.startsWith("c-")); if(!colClass) return;
+      const isBranch=tr.classList.contains("branch-row");
+      state.activeCell={id:isBranch?tr.dataset.branchof:tr.dataset.id, bidx:isBranch?+tr.dataset.branchidx:null, col:colClass.slice(2)};
+      TE.paintActiveCell(state,fNavAdapter);
+    });
+  });
+}
+function renderTable2(){
+  const win=document.getElementById("frgrid-window"); if(!win) return;
+  document.getElementById("rtoolbar").style.display=state.filterToSelection?"none":"flex";
+  document.getElementById("filter-sel-banner").style.display=state.filterToSelection?"flex":"none";
+  const rows=buildFVRows();
+  const shownBranches=rows.reduce((n,r)=>n+r.branches.filter(passesB).length,0);
+  if(state.filterToSelection){
+    document.getElementById("fsb-n").textContent=rows.length;
+    document.getElementById("fsb-total").textContent=REQS.length;
+  }
+  document.getElementById("table-sub").textContent=
+    `${rows.length} requirement${rows.length>1?"s":""} · ${shownBranches} assignment${shownBranches>1?"s":""} — action items first (reassignments, Q&A blocks, overdue)`;
+  if(!fVROWS.length){
+    win.innerHTML=`<div class="empty-rows">No assignment matches the current view.</div>`;
+  } else {
+    win.innerHTML=fVROWS.map(it=>{
+      if(it.type==="branch") return fBranchRowHTML(it.parent,it.branch,it.idx);
+      const r=it.r;
+      return `<div class="rrow${state.sel===r.id?" active":""}${state.selection.has(r.id)?" bulk-sel":""}" data-id="${r.id}">${fRowInnerHTML(r)}</div>`;
+    }).join("");
+    bindFRows(win);
+  }
+  applyFCols();
+  renderFSelBar();
+  TE.paintActiveCell(state,fNavAdapter);
+}
+function renderFSelBar(){
+  const bar=document.getElementById("f-sel-bar"); if(!bar) return;
+  const n=state.selection.size;
+  bar.classList.toggle("on",n>0);
+  document.getElementById("f-sel-count").textContent=n;
+}
+/* B5 — new for this screen: sending a reminder updates "Last follow-up" on every
+   awaiting-answer branch of each selected requirement (the branches a reminder
+   actually makes sense for) and logs it, mirroring T5/T7's existing branch log. */
+function sendReminderToSelection(){
+  const ids=[...state.selection]; if(!ids.length) return;
+  let touched=0;
+  ids.forEach(id=>{
+    const r=findR(id); if(!r) return;
+    r.branches.forEach(b=>{ if(isAwaitingAnswer(b)){ b.lastFollowup="Today"; touched++; } });
+  });
+  toast(touched?`Reminder sent — ${touched} pending assignment${touched>1?"s":""} across ${ids.length} requirement${ids.length>1?"s":""}`:"No pending assignment to remind in this selection","ok");
+  refreshAll();
 }
 
 /* =====================================================
@@ -1458,17 +1676,17 @@ document.querySelectorAll(".hub-tabs button").forEach(b=>b.addEventListener("cli
   document.getElementById("htab-issuer").style.display=state.htab==="issuer"?"block":"none";
   refreshAll();
 }));
-/* Keyboard — table view */
+/* Keyboard — table view (B5: shared active-cell row×column nav via TE, see
+   revue-documentaire.html for the same behaviour). j/k alias arrows; r/q stay
+   this screen's own shortcuts, same pattern as v/a on the review table. */
 document.addEventListener("keydown",e=>{
   if(e.target.matches("input,select,textarea"))return;
   if(state.screen!==2||state.view!=="table")return;
-  const rows=tableRows();if(!rows.length)return;
-  let i=rows.findIndex(r=>r.id===state.sel);
-  if(e.key==="j"||e.key==="J"||e.key==="ArrowDown"){e.preventDefault();select(rows[Math.min(i+1,rows.length-1)].id);}
-  if(e.key==="k"||e.key==="K"||e.key==="ArrowUp"){e.preventDefault();select(rows[Math.max(i-1,0)].id);}
+  const navKey=(e.key==="j"||e.key==="J")?"ArrowDown":(e.key==="k"||e.key==="K")?"ArrowUp":e.key;
+  if(TE.handleNavKeydown({key:navKey},state,fNavAdapter)){ e.preventDefault(); return; }
   if((e.key==="r"||e.key==="R")&&state.sel){
     const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
-    if(br&&br.expert) toast(`Reminder sent to ${expOf(br.expert).name} for ${r.id} · ${TY(br.typology).label}`,"ok");
+    if(br&&br.expert){ br.lastFollowup="Today"; toast(`Reminder sent to ${expOf(br.expert).name} for ${r.id} · ${TY(br.typology).label}`,"ok"); refreshAll(); }
     else toast(`No expert assigned yet on this branch`,"warn");
   }
   if((e.key==="q"||e.key==="Q")&&state.sel){
@@ -1476,6 +1694,58 @@ document.addEventListener("keydown",e=>{
     escalate(r,br);
   }
 });
+/* B5 — Filter to Selection, Bulk Action Bar actions, Column Visibility Menu,
+   drag-select and "my team only" scope. Shared mechanics live in table-engine.js. */
+document.getElementById("f-sel-show-only").addEventListener("click",()=>{ TE.enterFilterToSelection(state,()=>({})); renderTable2(); });
+document.getElementById("fsb-show-all").addEventListener("click",()=>{ TE.exitFilterToSelection(state); renderTable2(); });
+document.getElementById("f-sel-clear").addEventListener("click",()=>{ state.selection.clear(); renderTable2(); });
+document.getElementById("f-sel-remind").addEventListener("click",sendReminderToSelection);
+document.getElementById("f-sel-reassign").addEventListener("click",()=>{
+  if(!state.selection.size) return;
+  const id=[...state.selection][0];
+  select(id);
+  setView("table");
+  toast("Jump to the branch below to reassign its expert/manager","ok");
+});
+document.getElementById("f-sel-all").addEventListener("change",e=>{
+  const ids=tableRows().map(r=>r.id);
+  if(e.target.checked) ids.forEach(id=>state.selection.add(id));
+  else ids.forEach(id=>state.selection.delete(id));
+  renderTable2();
+});
+TE.bindDragSelect({
+  scroller:document.getElementById("frgrid-body"),
+  selCellSelector:".c-sel", rowSelector:".rrow",
+  getIdsInOrder:()=>currentVisIds,
+  selection:state.selection,
+  onChange:()=>renderTable2(),
+});
+const fColsPanelState={open:false};
+function renderFColumnsPanel(){
+  const p=document.getElementById("f-cols-panel"); if(!p) return;
+  p.classList.toggle("on",fColsPanelState.open);
+  if(!fColsPanelState.open){ p.innerHTML=""; return; }
+  p.innerHTML=`<div class="view-panel-head">View</div>
+    <div class="view-sec">
+      <div class="view-sec-head">Table columns</div>
+      ${TE.columnChecklistHTML(F_COLUMN_TOGGLE_DEFS,state.colCollapsed)}
+    </div>`;
+  TE.bindColumnChecklist(p,state.colCollapsed,()=>applyFCols());
+}
+document.getElementById("f-cols-btn").addEventListener("click",e=>{ e.stopPropagation(); fColsPanelState.open=!fColsPanelState.open; renderFColumnsPanel(); });
+document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.closest("#f-cols-panel") && !e.target.closest("#f-cols-btn")){ fColsPanelState.open=false; renderFColumnsPanel(); } });
+(function initViewer(){
+  const sel=document.getElementById("f-viewer");
+  MANAGERS.forEach(m=>sel.insertAdjacentHTML("beforeend",`<option value="${m.id}">${m.name} — ${m.role}</option>`));
+  sel.value=VIEWER;
+  const chip=document.getElementById("team-chip");
+  const syncChip=()=>chip.style.display=state.ownTeamOnly?"inline-flex":"none";
+  syncChip();
+  sel.addEventListener("change",e=>{ VIEWER=e.target.value; state.ownTeamOnly=true; syncChip(); refreshAll(); });
+  document.getElementById("team-chip-x").addEventListener("click",e=>{
+    e.stopPropagation(); state.ownTeamOnly=false; syncChip(); refreshAll();
+  });
+})();
 /* Init — default to Follow-up. TEMP (dev/demo): was gated on reviewDone(), now always accessible; see setScreen(). */
 if(location.hash==="#versions"){setScreen(3);}else{setScreen(2);}
 </script>
