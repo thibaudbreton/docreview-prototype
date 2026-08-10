@@ -415,6 +415,20 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <span class="ph-open-btn">Open →</span>
       </div>
 
+      <!-- Expert Space — a persona's own screen (verdict/REX/Q&A/reassignment),
+           not a pipeline phase, so it sits alongside Team casting rather than
+           in the phase-rail above. -->
+      <div class="phase" id="ph-expert" style="margin-bottom:26px;cursor:pointer">
+        <div class="ph-num transversal">👤</div>
+        <div class="ph-info">
+          <div class="ph-name">Expert Space</div>
+          <div class="ph-stat"><span class="big">4</span><span>requirements awaiting a verdict</span></div>
+          <div class="ph-sub">Preview what an assigned expert sees — verdict, REX, Q&amp;A and reassignment</div>
+        </div>
+        <span class="ph-badge current">Open</span>
+        <span class="ph-open-btn">Open →</span>
+      </div>
+
       <!-- main: attention (primary) + health (secondary) -->
       <div class="dash-main">
         <div class="card att-card">
@@ -720,6 +734,7 @@ document.querySelectorAll(".att[data-go]").forEach(a=>a.addEventListener("click"
 /* Phase cards routing through shell */
 document.getElementById("ph-review").addEventListener("click",e=>{e.preventDefault();goRoute("revue-documentaire.html");});
 document.getElementById("ph-versions").addEventListener("click",e=>{e.preventDefault();goRoute("suivi-experts-et-versions.html#versions");});
+document.getElementById("ph-expert").addEventListener("click",()=>goRoute("expert-space.html"));
 document.getElementById("new-proj").addEventListener("click",e=>{e.preventDefault();goRoute("creation-projet.html");});
 
 /* Config nav */

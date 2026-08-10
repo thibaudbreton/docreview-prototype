@@ -164,11 +164,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
   height:42px;padding:0 var(--space-4);
   background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0;
 }
-.progress-wrap{display:flex;align-items:center;gap:var(--space-3);min-width:220px}
-.progress-track{width:130px;height:5px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
-.progress-fill{height:100%;border-radius:var(--radius-xs);background:linear-gradient(90deg,var(--ok),#5ccf99);transition:width .5s cubic-bezier(.4,0,.2,1)}
-.progress-label{font-size:var(--text-sm);color:var(--text-2)}
-.progress-label b{color:var(--text);font-variant-numeric:tabular-nums}
+.total-count{font-size:var(--text-sm);color:var(--text-2);white-space:nowrap;font-variant-numeric:tabular-nums}
 .triage-pills{display:flex;gap:6px}
 .tpill{
   display:inline-flex;align-items:center;gap:6px;
@@ -176,10 +172,9 @@ html[data-theme="light"] .logo-mark-light{display:block}
   font-size:var(--text-sm);color:var(--text-2);transition:all .15s;cursor:pointer;
 }
 .tpill .n{font-weight:700;font-variant-numeric:tabular-nums}
-.tpill.p-unalloc .n{color:var(--warn)}
-.tpill.p-incomplete .n{color:var(--text-3)}
-.tpill.p-doubt .n{color:var(--warn)}
-.tpill.p-tovalidate .n{color:var(--ia)}
+.tpill.p-incomplete .n{color:var(--warn)}
+.tpill.p-doubt .n{color:var(--ia)}
+.tpill.p-tovalidate .n{color:var(--human)}
 .tpill.p-allocated .n{color:var(--ok)}
 .tpill.p-changes .n{color:var(--accent)}
 .tpill:hover{border-color:var(--line-2);background:var(--panel-2)}
@@ -329,12 +324,12 @@ body.mode-compare .sec-gap-chip.has-changes{display:inline-flex}
   position:absolute;top:8px;left:-58px;
   font-family:var(--font-mono);font-size:var(--text-xs);color:var(--paper-ink-2);opacity:.6;
 }
-.blk.st-incomplete{border-style:dashed;border-color:var(--line-2)}
-.blk.st-incomplete .type-chip{background:#e8e5da;color:#6b6455}
-.blk.st-doubt{border-style:dashed;border-color:rgba(180,60,52,.55)}
-.blk.st-doubt .type-chip{background:#f6d5d2;color:#a5342c}
-.blk.st-tovalidate{border-style:dashed;border-color:rgba(200,140,30,.55)}
-.blk.st-tovalidate .type-chip{background:#f3e3c3;color:#8a5f10}
+.blk.st-incomplete{border-style:dashed;border-color:rgba(180,60,52,.55)}
+.blk.st-incomplete .type-chip{background:#f6d5d2;color:#a5342c}
+.blk.st-doubt{border-style:dashed;border-color:rgba(200,140,30,.55)}
+.blk.st-doubt .type-chip{background:#f3e3c3;color:#8a5f10}
+.blk.st-tovalidate{border-style:dashed;border-color:rgba(130,80,220,.5)}
+.blk.st-tovalidate .type-chip{background:#ead9f9;color:#6c3fa8}
 .blk.st-allocated{border-color:rgba(48,150,104,.45)}
 .blk.st-allocated .type-chip{background:#d3ecdf;color:#1d7a4f}
 .blk.unallocated::after{
@@ -589,14 +584,17 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 }
 .status-pill:active{transform:scale(.96)}
 .status-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-/* B7 — characterisation/allocation progression: Incomplete → Doubt → To validate → Allocated.
+/* B7 — characterisation/allocation progression: Incomplete → To review → To validate → Allocated.
    "Allocated" is a deliberately distinct name from the pipeline's later "Validated" (post-
    compliance-consolidation) — see SPEC-domain-model.md — same accent-green as a nod to "done"
-   but a different label so the two milestones are never confused in the UI. */
-.status-pill.s-incomplete{background:var(--panel-3);color:var(--text-3);border:1px dashed var(--line-2)}
-.status-pill.s-doubt{background:var(--warn-soft);color:var(--warn)}
-.status-pill.s-tovalidate{background:var(--ia-soft);color:var(--ia)}
+   but a different label so the two milestones are never confused in the UI. Colors: red = data
+   is missing outright, amber = AI filled it but under-confident, purple = AI is confident but
+   no human has acted yet, green = a human validated it. */
+.status-pill.s-incomplete{background:var(--warn-soft);color:var(--warn)}
+.status-pill.s-doubt{background:var(--ia-soft);color:var(--ia)}
+.status-pill.s-tovalidate{background:var(--human-soft);color:var(--human)}
 .status-pill.s-allocated{background:var(--ok-soft);color:var(--ok)}
+.status-pill.s-changed{background:var(--accent-soft);color:var(--accent)}
 /* branch status (sub-row, display-only — not the same states as the parent status pill) */
 .status-pill.branch-status-answered{background:var(--ok-soft);color:var(--ok);cursor:default}
 .status-pill.branch-status-awaiting{background:var(--panel-3);color:var(--text-2);cursor:default}
@@ -824,7 +822,6 @@ body.seg-on .tbl-gran{display:inline-flex}
 .tbl-r>span:last-child{border-right:none}
 .tbl-h{background:#efece3;font-family:var(--font-ui);font-size:var(--text-xs);font-weight:700;color:#6b6455}
 .doc-tbl .blk{margin:0;border-radius:0}
-.tpill.p-seg .n{color:var(--human)}
 
 /* ---------- Typology / perimeters ---------- */
 .perim{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
@@ -881,7 +878,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .propose-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:9px}
 .propose-actions{display:flex;gap:var(--space-2);flex-wrap:wrap}
 .propose-form{margin-top:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2)}
-.propose-form select,.propose-form textarea{width:100%;font-family:var(--font-ui);font-size:var(--text-sm)}
+.propose-form select,.propose-form textarea{width:100%;font-family:var(--font-ui);font-size:var(--text-sm);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none}
 .propose-form textarea{resize:vertical;min-height:56px}
 .propose-form-actions{display:flex;justify-content:flex-end;gap:var(--space-2)}
 .propose-pending{border:1px solid var(--human);background:var(--human-soft);border-radius:var(--radius-md);padding:var(--space-3);margin-bottom:16px}
@@ -919,7 +916,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .mgr-cta{font-size:var(--text-sm);font-weight:600;color:var(--accent);border:1px solid var(--accent);border-radius:var(--radius-md);padding:var(--space-1) var(--space-3);white-space:nowrap}
 .mgr-cta:hover{background:var(--accent);color:#fff}
 .mgr-edit{display:flex;gap:var(--space-2);align-items:center}
-.mgr-edit select{flex:1}
+.mgr-edit select{flex:1;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base)}
 .mgr-done{font-size:var(--text-sm);font-weight:600;color:var(--ok);border:1px solid rgba(63,178,127,.5);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);white-space:nowrap}
 .mgr-done:hover{background:var(--ok);color:#fff}
 /* role recap (Activity) */
@@ -1221,18 +1218,13 @@ body.restricted .restrict-banner{display:flex}
 
   <!-- ===================== TRIAGE BAR ===================== -->
   <div class="triage">
-    <div class="progress-wrap">
-      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-      <span class="progress-label"><b id="progress-num">0/0</b> requirements allocated — sent to Expert Review</span>
-    </div>
+    <span class="total-count" id="total-count">0 requirements</span>
     <div class="triage-pills">
-      <button class="tpill p-unalloc" data-filter="unallocated"><span class="n" id="n-unalloc">0</span> unassigned</button>
       <button class="tpill p-incomplete" data-filter="incomplete"><span class="n" id="n-incomplete">0</span> incomplete</button>
-      <button class="tpill p-doubt" data-filter="doubt"><span class="n" id="n-doubt">0</span> doubt</button>
+      <button class="tpill p-doubt" data-filter="doubt"><span class="n" id="n-doubt">0</span> to review</button>
       <button class="tpill p-tovalidate" data-filter="tovalidate"><span class="n" id="n-tovalidate">0</span> to validate</button>
       <button class="tpill p-allocated" data-filter="allocated"><span class="n" id="n-allocated">0</span> allocated</button>
       <button class="tpill p-changes" data-filter="changed"><span class="n" id="n-changes">0</span> changes v2.0 → v2.1</button>
-      <button class="tpill p-seg" data-filter="uncertain"><span class="n" id="n-uncertain">0</span> uncertain segmentation</button>
     </div>
     <button class="clear-filter" id="clear-filter">✕ Clear filter</button>
     <button class="btn-ghost" id="seg-btn" style="margin-left:auto">✂ Edit segmentation</button>
@@ -1567,7 +1559,7 @@ const SECTIONS = [
    ticket resolves — see SPEC-domain-model.md §8. "Allocated" is reached only
    through an explicit human action (validate), never from AI confidence
    alone; reaching it also sends the item on to Expert Review. */
-const STATUS_LABEL = {incomplete:"Incomplete", doubt:"Doubt", tovalidate:"To validate", allocated:"Allocated"};
+const STATUS_LABEL = {incomplete:"Incomplete", doubt:"To review", tovalidate:"To validate", allocated:"Allocated"};
 /* which field(s) carry the doubt, when status is "doubt" — same five fields
    across both axes (Class/Typology on the requirement, ABS/PBS/OBS per
    branch), all treated identically, per the earlier OBS-like-ABS/PBS
@@ -1652,14 +1644,16 @@ function weakestLink(b){
    cannot be trusted. Threshold mirrors the project configuration setting. */
 const OBS_THRESHOLD=75;
 function derivWeak(b){ return !!(b.obs && b.obs.c < OBS_THRESHOLD); }
-/* B7 — characterisation/allocation progression: Incomplete → Doubt → To
+/* B7 — characterisation/allocation progression: Incomplete → To review → To
    validate → Allocated. Derived once at init from the AI's own confidence/
    unconfirmed signals — techAI/perimAI for Class/Typology (characterisation,
    on the requirement), weakestLink() for ABS/PBS/OBS (allocation, per branch
    — same "any of the five fields, treated identically" rule on both axes).
    STICKY once "allocated": never recomputed after a human explicitly
-   validates, whether that requirement/branch came from Doubt (corrected) or
-   straight from To validate (a trusting click) — see SPEC-domain-model.md §8. */
+   validates, whether that requirement/branch came from To review (corrected)
+   or straight from To validate (a trusting click) — see SPEC-domain-model.md §8.
+   Internal field/status names keep the shorter "doubt" spelling (doubtField,
+   allocDoubtField, status:"doubt") — only the label shown to users changed. */
 function computeCharStatus(x){
   if(x.status==="allocated") return;
   if(x.tech==null || !(x.perim&&x.perim.length)){ x.status="incomplete"; x.doubtField=null; x.reviewReason=null; return; }
@@ -1669,7 +1663,13 @@ function computeCharStatus(x){
 }
 function computeAllocStatus(target){
   if(target.allocStatus==="allocated") return;
-  if(!target.pbs && !target.abs && !target.obs){ target.allocStatus="incomplete"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
+  /* An unassigned OBS (target.alloc for a single-branch block, target.expert
+     for a real branch) is missing data — full stop. It can never read as
+     "To review" or "To validate" no matter how confident the AI's OBS
+     *suggestion* is, because a suggestion nobody accepted isn't a completed
+     field — it's still Incomplete. */
+  const assignedTo = target.alloc!==undefined ? target.alloc : target.expert;
+  if(!assignedTo || (!target.pbs && !target.abs && !target.obs)){ target.allocStatus="incomplete"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
   const weak=weakestLink(target);
   if(weak){ target.allocStatus="doubt"; target.allocDoubtField=weak.k.toLowerCase(); target.allocReviewReason=`Weak ${weak.k} derivation (${weak.c}%) — the proposed assignment may be wrong`; return; }
   target.allocStatus="tovalidate"; target.allocDoubtField=null; target.allocReviewReason=null;
@@ -1685,15 +1685,28 @@ function computeAllocStatus(target){
     });
   }));
 })();
-/* B7 — mirrors the status pill's own waterfall (characterisation → allocation
-   → already-in-review) so the Status/Doubt-field column filters, the "needs
-   review" triage pill and the finalize-review gate all agree with what the
-   row's pill actually shows, instead of re-deriving it separately. */
+const STATUS_RANK = {incomplete:0, doubt:1, tovalidate:2, allocated:3};
+/* B7 — combines characterisation and allocation into the ONE status a row's
+   pill shows, "most restrictive wins" (same principle as compliance
+   consolidation, §4): whichever axis is LESS far along is what's displayed,
+   never the more advanced one. An unassigned OBS makes allocStatus
+   "incomplete" (see computeAllocStatus) regardless of how confident the AI
+   was on Class/Typology — so a row can never read "To validate"/"To review"
+   while its actual OBS assignment is still empty. Multi-branch parents are
+   the one exception: once characterisation is allocated, each branch tracks
+   its own allocation individually (B6), so the parent row just hands off to
+   the per-branch rollup instead of combining with a single branch's numbers.
+   The Status/Review-field column filters, the triage pills, the finalize-
+   review gate and the detail panel all read through this so none of them can
+   drift from what the pill itself shows. */
 function effectiveStatus(b){
-  if(b.status!=="allocated") return {val:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason};
-  if((b.branches||[]).length>1) return {val:"allocated", doubtField:null, reviewReason:null};
-  if(b.allocStatus && b.allocStatus!=="allocated") return {val:b.allocStatus, doubtField:b.allocDoubtField, reviewReason:b.allocReviewReason};
-  return {val:"allocated", doubtField:null, reviewReason:null};
+  if((b.branches||[]).length>1){
+    if(b.status!=="allocated") return {val:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason};
+    return {val:"allocated", doubtField:null, reviewReason:null};
+  }
+  const allocVal = b.allocStatus||"incomplete";
+  if(STATUS_RANK[b.status] <= STATUS_RANK[allocVal]) return {val:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason};
+  return {val:allocVal, doubtField:b.allocDoubtField, reviewReason:b.allocReviewReason};
 }
 /* Fully through this screen's pipeline: characterisation allocated, and
    every branch's own allocation allocated too (B6 — each branch on its own). */
@@ -1897,11 +1910,9 @@ function matchesFilter(b){
   if(!visibleTo(b)) return false;
   if(state.filterToSelection) return state.selection.has(b.id);
   if(!passesColFilters(b)) return false;
-  if(state.filter==="unallocated") return blockNature(b)==="requirement" && !b.alloc;
   if(state.filter==="incomplete"||state.filter==="doubt"||state.filter==="tovalidate"||state.filter==="allocated")
     return blockNature(b)==="requirement" && effectiveStatus(b).val===state.filter;
   if(state.filter==="changed") return !!b.change || b.kind==="ghost";
-  if(state.filter==="uncertain") return !!b.uncertain;
   return true;
 }
 function matchesSearch(b){
@@ -1973,7 +1984,7 @@ function renderNav(){
       el.dataset.id = b.id;
       const label = b.text.replace(/<[^>]+>/g,"").slice(0,46)+"…";
       const badges = [];
-      if(b.status==="doubt") badges.push('<span class="nbadge b-ia" title="Doubt — needs review"></span>');
+      if(b.status==="doubt") badges.push('<span class="nbadge b-ia" title="To review — AI confidence is low"></span>');
       if(!b.alloc) badges.push('<span class="nbadge b-unalloc" title="Unassigned"></span>');
       if(b.comments) badges.push('<span class="nbadge b-comment" title="Comments"></span>');
       if(b.uncertain) badges.push('<span class="nbadge" style="background:var(--warn)" title="Uncertain segmentation"></span>');
@@ -2226,7 +2237,7 @@ function bulkSetTypology(pid){
 }
 function bulkAssignExpert(aid){
   let c=0;
-  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.alloc=aid; if(aid) markAllocEdited(f.b); c++; } });
+  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.alloc=aid; markAllocEdited(f.b); c++; } });
   toast(`${c} requirement${c>1?"s":""} → ${aid?ALLOCS.find(a=>a.id===aid).label.split("—")[0].trim():"Unassigned"}`,"ok");
   state.selection.clear(); lastSel=null; refresh();
 }
@@ -2263,7 +2274,7 @@ function bulkReclassifyInfo(){
   toast(`${c} requirement${c>1?"s":""} reclassified as Information`,"warn");
   state.selection.clear(); lastSel=null; refresh();
 }
-/* B6 — bulk validate: only acts on rows currently eligible (Doubt or To
+/* B6 — bulk validate: only acts on rows currently eligible (To review or To
    validate, on whichever axis — characterisation or, once that's already
    Allocated, allocation — is next in the waterfall for that row). Everything
    else in the selection is skipped, not blocked — the summary says how many. */
@@ -2323,27 +2334,33 @@ function rowInnerHTML(b){
   const obsCellHTML = hasBranches
     ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see experts per branch">Multiple (${b.branches.length})</span>`
     : `<select class="cell-select${!b.alloc&&TYPE_SUGGEST[b.id]?" is-ia":""}${b.alloc?"":" empty"}" data-alloc="${b.id}">${allocOptions}</select>`;
-  /* B7 — status pill waterfall: characterisation (Class/Typology, on b) first,
-     then allocation (ABS/PBS/OBS) — per branch for multi-branch rows (shown on
-     the branch sub-row instead, see branchRowHTML), or on b itself for the
-     common single-branch case — then whatever the branch already shows once
-     in Expert Review. Multi-branch parents only ever show characterisation
-     here; B6 is why the allocation stage moved to each branch individually. */
+  /* B7 — status pill: characterisation (Class/Typology, on b) and allocation
+     (ABS/PBS/OBS) combine "most restrictive wins" via effectiveStatus() — per
+     branch for multi-branch rows (shown on the branch sub-row instead, see
+     branchRowHTML), or on b itself for the common single-branch case — then
+     whatever the branch already shows once in Expert Review. Multi-branch
+     parents only ever show characterisation here; B6 is why the allocation
+     stage moved to each branch individually. */
   let statusCls, statusLbl, statusTitle, statusEligible=false;
-  if(b.status!=="allocated"){
-    statusCls="s-"+b.status; statusLbl=STATUS_LABEL[b.status];
-    statusEligible = b.status!=="incomplete";
-    statusTitle=(b.reviewReason?b.reviewReason+" — ":"")+(statusEligible?"Click to validate":"Nothing to validate yet");
-  } else if(hasBranches){
-    statusCls="s-allocated"; statusLbl=b.rollupStatus||STATUS_LABEL.allocated;
-    statusTitle="Characterisation allocated — each branch below tracks its own allocation";
-  } else if(b.allocStatus && b.allocStatus!=="allocated"){
-    statusCls="s-"+b.allocStatus; statusLbl=STATUS_LABEL[b.allocStatus];
-    statusEligible = b.allocStatus!=="incomplete";
-    statusTitle=(b.allocReviewReason?b.allocReviewReason+" — ":"")+(statusEligible?"Click to validate — sends to Expert Review":"Nothing to validate yet");
+  if(hasBranches){
+    if(b.status!=="allocated"){
+      statusCls="s-"+b.status; statusLbl=STATUS_LABEL[b.status];
+      statusEligible = b.status!=="incomplete";
+      statusTitle=(b.reviewReason?b.reviewReason+" — ":"")+(statusEligible?"Click to validate":"Nothing to validate yet");
+    } else {
+      statusCls="s-allocated"; statusLbl=b.rollupStatus||STATUS_LABEL.allocated;
+      statusTitle="Characterisation allocated — each branch below tracks its own allocation";
+    }
   } else {
-    statusCls="s-allocated"; statusLbl=STATUS_LABEL.allocated;
-    statusTitle="Allocated — sent to Expert Review";
+    const es = effectiveStatus(b);
+    statusCls="s-"+es.val; statusLbl=STATUS_LABEL[es.val];
+    statusEligible = es.val!=="incomplete";
+    if(es.val==="allocated"){
+      statusTitle="Allocated — sent to Expert Review";
+    } else {
+      const nextIsAlloc = b.status==="allocated"; // characterisation already done — the next click acts on allocation
+      statusTitle=(es.reviewReason?es.reviewReason+" — ":"")+(statusEligible?("Click to validate"+(nextIsAlloc?" — sends to Expert Review":"")):"Nothing to validate yet");
+    }
   }
   const complianceHTML = hasBranches
     ? `<span class="compliance-pill c-${b.rollupCompliance}">${complianceLabel(b.rollupCompliance)}</span>`
@@ -2425,7 +2442,7 @@ const COL_FILTER_DEFS={
   mgr:{label:"Manager",options:[...MANAGERS.filter(m=>!m.admin).map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
   obs:{label:"OBS",options:[...ALLOCS.map(a=>({v:a.id,l:a.label})),{v:"",l:"Unassigned"}],get:b=>[b.alloc||""]},
   status:{label:"Status",options:Object.keys(STATUS_LABEL).map(k=>({v:k,l:STATUS_LABEL[k]})),get:b=>[effectiveStatus(b).val]},
-  doubtfield:{label:"Doubt field",options:[...Object.keys(DOUBT_FIELD_LABEL).map(k=>({v:k,l:DOUBT_FIELD_LABEL[k]})),{v:"",l:"— not in doubt —"}],get:b=>{const es=effectiveStatus(b); return [es.val==="doubt"?(es.doubtField||""):""];}},
+  doubtfield:{label:"Review field",options:[...Object.keys(DOUBT_FIELD_LABEL).map(k=>({v:k,l:DOUBT_FIELD_LABEL[k]})),{v:"",l:"— nothing to review —"}],get:b=>{const es=effectiveStatus(b); return [es.val==="doubt"?(es.doubtField||""):""];}},
 };
 function passesColFilters(b){
   for(const col in state.colFilters){
@@ -2620,6 +2637,7 @@ function bindVRows(win){
     e.stopPropagation();
     const [id,idx]=sel.dataset.branchexp.split("::"); const f=findBlock(id); if(!f)return;
     const branch=f.b.branches[+idx]; branch.expert=sel.value||null;
+    markAllocEdited(branch);
     toast(`${branch.label}: expert ${branch.expert?"— "+ALLOCS.find(a=>a.id===branch.expert).label.split("—")[0].trim():"unassigned"}`,"ok");
     refresh();
   }));
@@ -3264,7 +3282,7 @@ function renderChangePanel(b,s,panel){
   panel.innerHTML = `
     <div class="set-head">
       <div class="set-id-row"><span class="set-id">${b.id.startsWith("GHOST")?"EXG-00X":b.id}</span>
-        <span class="status-pill s-doubt" style="cursor:default">Change v2.0 → v2.1</span></div>
+        <span class="status-pill s-changed" style="cursor:default">Change v2.0 → v2.1</span></div>
       <div class="set-title">${s.num}. ${s.title}</div>
     </div>
     <div class="set-body">
@@ -3317,7 +3335,7 @@ function setAlloc(id,alloc){
   const before = f.b.alloc;
   const wasSuggested = !!(f.b.obs);
   f.b.alloc = alloc;
-  if(alloc) markAllocEdited(f.b);
+  markAllocEdited(f.b);
   refresh();
   if(alloc){
     if(wasSuggested && before!==alloc){
@@ -3334,7 +3352,17 @@ function setAlloc(id,alloc){
    separate axes now; a manual correction on one never touches the other, and
    neither ever downgrades an item that already reached Allocated. */
 function markCharEdited(b){ if(b.status!=="allocated") b.status="tovalidate"; }
-function markAllocEdited(target){ if(target && target.allocStatus && target.allocStatus!=="allocated") target.allocStatus="tovalidate"; }
+/* An unassigned OBS is an absolute floor: no edit to PBS/ABS/OBS can move the
+   row past Incomplete while the actual assignment (target.alloc / .expert)
+   is still empty — a confident AI suggestion nobody has accepted isn't a
+   completed field. Only once something is actually assigned does a manual
+   edit count as "a human touched this, it's ready to validate". */
+function markAllocEdited(target){
+  if(!target || target.allocStatus==="allocated") return;
+  const assignedTo = target.alloc!==undefined ? target.alloc : target.expert;
+  target.allocStatus = assignedTo ? "tovalidate" : "incomplete";
+  target.allocDoubtField=null; target.allocReviewReason=null;
+}
 /* B6/B7 — the one validate action: the row's status-pill click, each branch's
    own status-pill click, and the Bulk Action Bar all route through this.
    Advances characterisation first (requirement-level), then — once that's
@@ -3364,8 +3392,8 @@ function validateProgress(id, branchIdx){
   return validateAllocTarget((b.branches||[])[branchIdx],true) ? "alloc" : null;
 }
 /* Individual validate — always a real human gesture (B7): this is the only
-   way anything reaches Allocated, whether it came from Doubt (corrected) or
-   straight from To validate (a quick, trusting click). Reaching Allocated on
+   way anything reaches Allocated, whether it came from To review (corrected)
+   or straight from To validate (a quick, trusting click). Reaching Allocated on
    the allocation axis is what sends the branch on to Expert Review — the UI
    says so plainly rather than burying it as a silent side effect. */
 function validateBlock(id, branchIdx){
@@ -3425,16 +3453,12 @@ function setFilter(f){
 ===================================================== */
 function renderTriage(){
   const r = reqs();
-  const v = r.filter(b=>isFullyAllocated(b)).length;
-  document.getElementById("progress-num").textContent = `${v}/${r.length}`;
-  document.getElementById("progress-fill").style.width = (v/r.length*100)+"%";
-  document.getElementById("n-unalloc").textContent = r.filter(b=>!b.alloc).length;
+  document.getElementById("total-count").textContent = `${r.length} requirement${r.length>1?"s":""}`;
   document.getElementById("n-incomplete").textContent = r.filter(b=>effectiveStatus(b).val==="incomplete").length;
   document.getElementById("n-doubt").textContent = r.filter(b=>effectiveStatus(b).val==="doubt").length;
   document.getElementById("n-tovalidate").textContent = r.filter(b=>effectiveStatus(b).val==="tovalidate").length;
   document.getElementById("n-allocated").textContent = r.filter(b=>effectiveStatus(b).val==="allocated").length;
   document.getElementById("n-changes").textContent = allBlocks().filter(b=>b.change||b.kind==="ghost").length + 1;
-  document.getElementById("n-uncertain").textContent = allBlocks().filter(b=>b.uncertain).length;
 }
 
 /* =====================================================
