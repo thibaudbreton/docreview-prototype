@@ -29,6 +29,7 @@ SOURCES = [
     ("followup", "suivi-experts-et-versions.html"),
     ("create", "creation-projet.html"),
     ("home", "accueil.html"),
+    ("expert", "expert-space.html"),
 ]
 
 INCLUDE_MARKER = "/* @include table-engine.js */"
@@ -58,7 +59,7 @@ const BLOBS = {
 
 FOOTER = """
 };
-const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "review": ["review", null], "followup": ["followup", "followup"], "versions": ["followup", "versions"], "new": ["create", null]};
+const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "review": ["review", null], "followup": ["followup", "followup"], "versions": ["followup", "versions"], "new": ["create", null], "expert": ["expert", null]};
 function b64utf8(s){return decodeURIComponent(Array.prototype.map.call(atob(s),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));}
 const frame = document.getElementById('frame');
 
@@ -185,7 +186,8 @@ const URLMAP = {
   'suivi-experts-et-versions.html#versions':'versions',
   'dashboard-et-config.html':'dashboard',
   'dashboard-et-config.html#config':'config',
-  'creation-projet.html':'new'
+  'creation-projet.html':'new',
+  'expert-space.html':'expert'
 };
 window.routeUrl = function(u){ window.route(URLMAP[u] || 'dashboard'); };
 // moderator shortcut: Ctrl+Shift+R resets the demo

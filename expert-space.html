@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Requirement Manager — STB-2026 · Expert Space</title>
+<link rel="icon" type="image/svg+xml" media="(prefers-color-scheme: light)" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIyIDIwIDg0IDQ4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMy4wNzAzMSA0NC4yMTczQzMuMDcwMzEgMzEuMzI4NiAxMy41MTg2IDIwLjg4MDMgMjYuNDA3MyAyMC44ODAzSDYxLjE5MDVDNjEuMzEzMiAyMC44ODAzIDYxLjQxMjcgMjAuOTc5OCA2MS40MTI3IDIxLjEwMjVWNjcuMzMyMUM2MS40MTI3IDY3LjQ1NDggNjEuMzEzMiA2Ny41NTQyIDYxLjE5MDUgNjcuNTU0MkgyNi40MDczQzEzLjUxODYgNjcuNTU0MiAzLjA3MDMxIDU3LjEwNTkgMy4wNzAzMSA0NC4yMTczVjQ0LjIxNzNaIiBmaWxsPSJ1cmwoI2ZsYSkiIGZpbGwtb3BhY2l0eT0iLjU0Ii8+CjxwYXRoIGQ9Ik0xOC40MjM4IDQ0LjIxNzNDMTguNDIzOCAzMS4zMjg2IDI4Ljg3MjEgMjAuODgwMyA0MS43NjA4IDIwLjg4MDNINjMuMDg0NkM2My4xNzg5IDIwLjg4MDMgNjMuMjU1MyAyMC45NTY4IDYzLjI1NTMgMjEuMDUxVjY3LjM4MzVDNjMuMjU1MyA2Ny40Nzc4IDYzLjE3ODkgNjcuNTU0MiA2My4wODQ2IDY3LjU1NDJINDEuNzYwOEMyOC44NzIxIDY3LjU1NDIgMTguNDIzOCA1Ny4xMDU5IDE4LjQyMzggNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmbGIpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8cGF0aCBkPSJNMzUuMDA1NCA0NC4yMTczQzM1LjAwNTQgMzEuMzI4NiA0NS40NTM3IDIwLjg4MDMgNTguMzQyMyAyMC44ODAzSDYxLjQxM0M3NC4zMDE2IDIwLjg4MDMgODQuNzQ5OSAzMS4zMjg2IDg0Ljc0OTkgNDQuMjE3M1Y0NC4yMTczQzg0Ljc0OTkgNTcuMTA1OSA3NC4zMDE2IDY3LjU1NDIgNjEuNDEzIDY3LjU1NDJINTguMzQyM0M0NS40NTM3IDY3LjU1NDIgMzUuMDA1NCA1Ny4xMDU5IDM1LjAwNTQgNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmbGMpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8Y2lyY2xlIGN4PSI2MC4zMTA1IiBjeT0iNDQuMzQzMSIgcj0iMTguNTQ5NyIgZmlsbD0iI2ZmZiIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJmbGEiIHgxPSIzLjA3IiB5MT0iNDQuMjIiIHgyPSI2MS40MSIgeTI9IjQ0LjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iIzFFMzI0NiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzFFMzI0NiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJmbGIiIHgxPSIxOC40MiIgeTE9IjQ0LjIyIiB4Mj0iNjMuMjYiIHkyPSI0NC4yMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiMxRTMyNDYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxRTMyNDYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZmxjIiB4MT0iMzUuMDEiIHkxPSI0NC4yMiIgeDI9Ijg0Ljc1IiB5Mj0iNDQuMjIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjMUUzMjQ2Ii8+PHN0b3Agb2Zmc2V0PSIuMTY4IiBzdG9wLWNvbG9yPSIjMUUzMjQ2Ii8+PC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=">
+<link rel="icon" type="image/svg+xml" media="(prefers-color-scheme: dark)" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIyIDIwIDg0IDQ4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMy4wNzAzMSA0NC4yMTczQzMuMDcwMzEgMzEuMzI4NiAxMy41MTg2IDIwLjg4MDMgMjYuNDA3MyAyMC44ODAzSDYxLjE5MDVDNjEuMzEzMiAyMC44ODAzIDYxLjQxMjcgMjAuOTc5OCA2MS40MTI3IDIxLjEwMjVWNjcuMzMyMUM2MS40MTI3IDY3LjQ1NDggNjEuMzEzMiA2Ny41NTQyIDYxLjE5MDUgNjcuNTU0MkgyNi40MDczQzEzLjUxODYgNjcuNTU0MiAzLjA3MDMxIDU3LjEwNTkgMy4wNzAzMSA0NC4yMTczVjQ0LjIxNzNaIiBmaWxsPSJ1cmwoI2ZkYSkiIGZpbGwtb3BhY2l0eT0iLjU0Ii8+CjxwYXRoIGQ9Ik0xOC40MjM4IDQ0LjIxNzNDMTguNDIzOCAzMS4zMjg2IDI4Ljg3MjEgMjAuODgwMyA0MS43NjA4IDIwLjg4MDNINjMuMDg0NkM2My4xNzg5IDIwLjg4MDMgNjMuMjU1MyAyMC45NTY4IDYzLjI1NTMgMjEuMDUxVjY3LjM4MzVDNjMuMjU1MyA2Ny40Nzc4IDYzLjE3ODkgNjcuNTU0MiA2My4wODQ2IDY3LjU1NDJINDEuNzYwOEMyOC44NzIxIDY3LjU1NDIgMTguNDIzOCA1Ny4xMDU5IDE4LjQyMzggNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmZGIpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8cGF0aCBkPSJNMzUuMDA1NCA0NC4yMTczQzM1LjAwNTQgMzEuMzI4NiA0NS40NTM3IDIwLjg4MDMgNTguMzQyMyAyMC44ODAzSDYxLjQxM0M3NC4zMDE2IDIwLjg4MDMgODQuNzQ5OSAzMS4zMjg2IDg0Ljc0OTkgNDQuMjE3M1Y0NC4yMTczQzg0Ljc0OTkgNTcuMTA1OSA3NC4zMDE2IDY3LjU1NDIgNjEuNDEzIDY3LjU1NDJINTguMzQyM0M0NS40NTM3IDY3LjU1NDIgMzUuMDA1NCA1Ny4xMDU5IDM1LjAwNTQgNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmZGMpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8Y2lyY2xlIGN4PSI2MC4zMTA1IiBjeT0iNDQuMzQzMSIgcj0iMTguNTQ5NyIgZmlsbD0iI2ZmZiIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJmZGEiIHgxPSIzLjA3IiB5MT0iNDQuMjIiIHgyPSI2MS40MSIgeTI9IjQ0LjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJmZGIiIHgxPSIxOC40MiIgeTE9IjQ0LjIyIiB4Mj0iNjMuMjYiIHkyPSI0NC4yMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZmRjIiB4MT0iMzUuMDEiIHkxPSI0NC4yMiIgeDI9Ijg0Ljc1IiB5Mj0iNDQuMjIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjZmZmIi8+PHN0b3Agb2Zmc2V0PSIuMTY4IiBzdG9wLWNvbG9yPSIjZmZmIi8+PC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=">
+<style>
+:root{
+  --bg:#141F2B;
+  --panel:#1E3246;
+  --panel-2:#26374C;
+  --panel-3:#2F4257;
+  --line:#2C3E52;
+  --line-2:#3A4E66;
+  --text:#EEF1F8;
+  --text-2:#AAB6C6;
+  --text-3:#8B9AAD;
+  --accent:#4C82FF;
+  --accent-soft:#1E3A63;
+  --ia:#E3A64B;
+  --ia-soft:rgba(227,166,75,.12);
+  --ok:#3FBE86;
+  --ok-soft:rgba(63,190,134,.12);
+  --human:#a06ef2;
+  --human-soft:rgba(160,110,242,.12);
+  --warn:#F2604F;
+  --warn-soft:rgba(242,96,79,.12);
+  --paper:#fbfaf6;
+  --paper-ink:#1d2129;
+  --paper-ink-2:#4a5162;
+  --text-xs:11px; --text-sm:12px; --text-base:13px; --text-lg:16px; --text-xl:21px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
+  --radius-xs:4px; --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-pill:999px;
+  --font-ui:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-doc:Georgia,"Times New Roman",serif;
+  --font-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+}
+html[data-theme="light"]{
+  --bg:#F4F5FA;
+  --panel:#FFFFFF;
+  --panel-2:#F4F5FA;
+  --panel-3:#E6E6F0;
+  --line:#E1E3EE;
+  --line-2:#CDD2E3;
+  --text:#1E3246;
+  --text-2:#4A5A6E;
+  --text-3:#637187;
+  --accent:#0050E3;
+  --accent-soft:#E9EFFD;
+  --ia:#C67A16;
+  --ia-soft:rgba(198,122,22,.12);
+  --ok:#1E8E5A;
+  --ok-soft:rgba(30,142,90,.12);
+  --human:#8250dc;
+  --human-soft:rgba(130,80,220,.12);
+  --warn:#DC3223;
+  --warn-soft:rgba(220,50,35,.10);
+  --paper:#ffffff;
+  --paper-ink:#1d2129;
+  --paper-ink-2:#4a5162;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);font-size:var(--text-base);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:var(--radius-sm);border:2px solid var(--bg)}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius-xs)}
+
+#app{display:flex;flex-direction:column;height:100vh}
+main{display:flex;flex:1;min-height:0}
+
+/* ---------- Header ---------- */
+header{display:flex;align-items:center;gap:var(--space-4);height:52px;padding:0 var(--space-4);background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+.logo{display:flex;align-items:center;gap:var(--space-2);font-weight:700;font-size:var(--text-base);letter-spacing:-.2px;flex-shrink:0}
+.logo-mark{height:22px;width:auto;flex-shrink:0;display:block}
+.logo-mark-light{display:none}
+html[data-theme="light"] .logo-mark-dark{display:none}
+html[data-theme="light"] .logo-mark-light{display:block}
+.crumb{display:flex;align-items:center;gap:var(--space-2);color:var(--text-2);min-width:0}
+.crumb .sep{color:var(--text-3)}
+.crumb .project{color:var(--text);font-weight:600;white-space:nowrap;text-decoration:none;cursor:pointer;border-radius:var(--radius-xs);transition:color .15s}
+.crumb .project:hover{color:var(--accent)}
+.crumb .screen{color:var(--text-2);white-space:nowrap}
+.hdr-actions{display:flex;align-items:center;gap:var(--space-2);margin-left:auto}
+.exp-badge{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);background:var(--panel-2);border:1px solid var(--line-2);font-size:var(--text-sm);color:var(--text-2)}
+.exp-avatar{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:var(--text-xs);font-weight:700;color:#fff;flex-shrink:0}
+.btn-ghost{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+
+/* ---------- Triage bar ---------- */
+.triage{display:flex;align-items:center;gap:var(--space-4);height:42px;padding:0 var(--space-4);background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+.total-count{font-size:var(--text-sm);color:var(--text-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.triage-pills{display:flex;gap:6px}
+.tpill{display:inline-flex;align-items:center;gap:6px;padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);border:1px solid var(--line);font-size:var(--text-sm);color:var(--text-2);transition:all .15s;cursor:pointer}
+.tpill .n{font-weight:700;font-variant-numeric:tabular-nums}
+.tpill.p-awaiting .n{color:var(--ia)}
+.tpill.p-qa .n{color:var(--accent)}
+.tpill.p-reassign .n{color:var(--warn)}
+.tpill.p-answered .n{color:var(--ok)}
+.tpill:hover{border-color:var(--line-2);background:var(--panel-2)}
+.tpill.active{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
+.triage .clear-filter{margin-left:auto;font-size:var(--text-sm);color:var(--accent);display:none;align-items:center;gap:6px}
+.triage .clear-filter.visible{display:inline-flex}
+.search-box{display:flex;align-items:center;gap:var(--space-2);padding:5px var(--space-3);border-radius:var(--radius-md);background:var(--panel-2);border:1px solid var(--line);transition:border-color .15s;width:220px}
+.search-box:focus-within{border-color:var(--accent)}
+.search-box input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:var(--text-sm)}
+.search-box input::placeholder{color:var(--text-3)}
+
+/* ---------- Restriction note ---------- */
+.restrict-note{display:flex;align-items:center;gap:var(--space-2);padding:6px var(--space-4);background:var(--ia-soft);border-bottom:1px solid var(--line);font-size:var(--text-xs);color:var(--ia);flex-shrink:0}
+
+/* ---------- Table ---------- */
+.center{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg);padding:var(--space-4);overflow:hidden}
+:root{ --rrow-h:46px; --egrid-cols:32px 88px minmax(300px,1.7fr) 200px 150px 190px; }
+.egrid{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.egrid-head{display:grid;grid-template-columns:var(--egrid-cols);align-self:flex-start;min-width:100%;background:var(--panel-2);border-bottom:1px solid var(--line);flex-shrink:0}
+.egrid-head .ecell{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);padding:0 var(--space-3);height:36px;display:flex;align-items:center;border-right:1px solid var(--line)}
+.egrid-head .ecell:last-child{border-right:none}
+.egrid-head .c-sel{padding:0}
+.egrid-body{flex:1;overflow-y:auto;min-height:0}
+.erow{display:grid;grid-template-columns:var(--egrid-cols);height:var(--rrow-h);border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;box-sizing:border-box}
+.erow:hover{background:var(--panel-2)}
+.erow.bulk-sel{background:var(--panel-3)}
+.erow.active{background:var(--accent-soft);box-shadow:inset 2px 0 0 var(--accent)}
+.erow .ecell{padding:0 var(--space-3);display:flex;align-items:center;min-width:0;overflow:hidden;border-right:1px solid var(--line);gap:6px}
+.erow .ecell:last-child{border-right:none}
+.erow .c-sel{padding:0;justify-content:center}
+.erow .c-req{gap:8px}
+.erow .c-req .excerpt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.4}
+.rowsel{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+.sel-hit{display:flex;align-items:center;justify-content:center;width:100%;height:100%;cursor:pointer}
+.rcell-id{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-2);white-space:nowrap}
+.typo-path{font-size:var(--text-sm);color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.typo-path .seg-parent{color:var(--text-3)}
+.rex-badge{display:inline-flex;align-items:center;gap:3px;font-size:var(--text-xs);font-weight:700;color:var(--accent);background:var(--accent-soft);padding:1px 6px;border-radius:var(--radius-pill);flex-shrink:0}
+.gap-chip{display:inline-flex;align-items:center;font-size:var(--text-xs);font-weight:700;padding:1px 6px;border-radius:var(--radius-pill);flex-shrink:0}
+.gap-chip.added{color:var(--ok);background:var(--ok-soft)}
+.gap-chip.modified{color:var(--ia);background:var(--ia-soft)}
+.empty-rows{padding:40px;text-align:center;color:var(--text-3);font-size:var(--text-base)}
+
+/* status / compliance pills — this screen's own vocabulary (not the review table's) */
+.status-pill{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-2);border-radius:var(--radius-xs);font-size:var(--text-xs);font-weight:600;white-space:nowrap;cursor:default}
+.status-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.status-pill.st-awaiting_answer{background:var(--ia-soft);color:var(--ia)}
+.status-pill.st-answered{background:var(--ok-soft);color:var(--ok)}
+.status-pill.st-awaiting_qa{background:var(--accent-soft);color:var(--accent)}
+.status-pill.st-reassignment_needed{background:var(--warn-soft);color:var(--warn)}
+.compliance-pill{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-2);border-radius:var(--radius-xs);font-size:var(--text-xs);font-weight:600;white-space:nowrap;border:1px solid transparent}
+.compliance-pill.c-compliant{background:var(--ok-soft);color:var(--ok)}
+.compliance-pill.c-not_compliant{background:var(--warn-soft);color:var(--warn)}
+.compliance-pill.c-pending{background:transparent;border-style:dashed;border-color:var(--line-2);color:var(--text-3);font-style:italic;font-weight:500}
+
+/* ---------- Bulk Action Bar ---------- */
+.sel-bar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(24px);z-index:55;display:none;align-items:center;gap:var(--space-4);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);box-shadow:0 16px 48px rgba(0,0,0,.6);opacity:0;transition:opacity .25s ease;max-width:calc(100vw - 48px);flex-wrap:wrap;justify-content:center}
+.sel-bar.on{display:flex;opacity:1}
+.sel-n{font-size:var(--text-base);color:var(--text-2)}
+.sel-n b{color:var(--text);font-variant-numeric:tabular-nums}
+.sel-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);padding:var(--space-1) 6px;border-left:1px solid var(--line-2);border-right:1px solid var(--line-2)}
+.sel-btn{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);font-size:var(--text-sm);font-weight:500;color:var(--text-2);transition:all .13s}
+.sel-btn:hover{border-color:var(--accent);color:var(--text)}
+.sel-btn.ok{border-color:rgba(63,178,127,.5);color:var(--ok)}
+.sel-btn.ok:hover{background:var(--ok);color:#fff}
+.sel-clear{font-size:var(--text-sm);color:var(--text-3)}
+.sel-clear:hover{color:var(--text)}
+
+/* ---------- Detail panel ---------- */
+.settings{width:400px;flex-shrink:0;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line)}
+.settings-body{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column}
+.set-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-3);padding:var(--space-8);text-align:center;color:var(--text-3)}
+.set-empty .big{font-size:var(--text-base);color:var(--text-2);font-weight:500}
+.set-head{padding:var(--space-4) var(--space-4) var(--space-3);border-bottom:1px solid var(--line)}
+.set-id-row{display:flex;align-items:center;gap:var(--space-2);margin-bottom:6px;flex-wrap:wrap}
+.set-id{font-family:var(--font-mono);font-size:var(--text-sm);color:var(--accent);font-weight:600}
+.set-title{font-size:var(--text-base);font-weight:600;line-height:1.4;margin-bottom:8px;color:var(--text)}
+.set-pills{display:flex;gap:6px;flex-wrap:wrap}
+.set-body{padding:var(--space-4)}
+.sec-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin:0 0 var(--space-2)}
+.ro-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-4)}
+.ro-field label{display:block;font-size:var(--text-xs);color:var(--text-3);margin-bottom:3px}
+.ro-field .fval{font-size:var(--text-sm);color:var(--text);line-height:1.4}
+.ro-note{font-size:var(--text-xs);color:var(--text-3);line-height:1.5;margin-bottom:var(--space-4);padding:var(--space-2) var(--space-3);border:1px dashed var(--line-2);border-radius:var(--radius-md)}
+.set-sep{height:1px;background:var(--line);margin:var(--space-4) 0}
+.rex-list{display:flex;flex-direction:column;gap:8px;margin-bottom:var(--space-4)}
+.rex-item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);cursor:pointer;transition:all .13s}
+.rex-item:hover{border-color:var(--accent);background:var(--panel-2)}
+.rex-match{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:var(--text-xs);font-weight:700;color:var(--text-2);font-variant-numeric:tabular-nums;flex-shrink:0;width:30px}
+.rex-ring{width:22px;height:22px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--panel-3) 0);mask:radial-gradient(circle 7px at center,transparent 98%,#000 100%);-webkit-mask:radial-gradient(circle 7px at center,transparent 98%,#000 100%)}
+.rex-main{flex:1;min-width:0}
+.rex-title{font-size:var(--text-sm);color:var(--text);line-height:1.4}
+.rex-meta{display:flex;gap:var(--space-2);align-items:center;margin-top:4px}
+.rex-src{font-size:var(--text-xs);font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:1px var(--space-2);border-radius:var(--radius-lg)}
+.rex-id{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3)}
+.doc-link{width:100%;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-size:var(--text-sm);font-weight:500;display:flex;align-items:center;gap:var(--space-2);transition:all .15s;margin-bottom:var(--space-4)}
+.doc-link:hover{border-color:var(--accent);color:var(--text)}
+.state-banner{display:flex;flex-direction:column;gap:4px;padding:var(--space-3);border-radius:var(--radius-md);margin-bottom:var(--space-4);font-size:var(--text-sm);line-height:1.5}
+.state-banner.b-qa{background:var(--accent-soft);color:var(--text)}
+.state-banner.b-reassign{background:var(--warn-soft);color:var(--text)}
+.state-banner.b-answered{background:var(--ok-soft);color:var(--text)}
+.state-banner .bt{font-weight:700;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.4px}
+.state-banner.b-qa .bt{color:var(--accent)}
+.state-banner.b-reassign .bt{color:var(--warn)}
+.state-banner.b-answered .bt{color:var(--ok)}
+.actions-card{border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-4);margin-bottom:var(--space-4);background:var(--panel-2);box-shadow:0 4px 18px rgba(0,0,0,.18)}
+.actions-card .sec-label{font-size:var(--text-sm);color:var(--text-2);margin-bottom:var(--space-3)}
+.actions-row{display:flex;flex-direction:column;gap:10px}
+.act-btn{display:flex;align-items:center;gap:var(--space-3);width:100%;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);border:1.5px solid var(--line-2);background:var(--panel);font-size:var(--text-base);font-weight:700;color:var(--text);transition:all .15s;text-align:left}
+.act-btn .ic{font-size:var(--text-xl);flex-shrink:0}
+.act-btn .lbl{flex:1}
+.act-btn:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateX(2px)}
+.act-btn.open{border-color:var(--accent);background:var(--accent-soft)}
+.act-btn.a-verdict:hover,.act-btn.a-verdict.open{border-color:var(--ok);background:var(--ok-soft)}
+.act-btn.a-reassign:hover,.act-btn.a-reassign.open{border-color:var(--warn);background:var(--warn-soft)}
+.act-btn:disabled{opacity:.5;cursor:default;transform:none}
+.act-btn:disabled:hover{border-color:var(--line-2);background:var(--panel)}
+.inline-form{border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-3);margin-bottom:var(--space-4);background:var(--panel-2)}
+.inline-form .if-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-2)}
+.verdict-toggle{display:flex;gap:6px;margin-bottom:var(--space-3)}
+.verdict-toggle button{flex:1;padding:var(--space-2);border-radius:var(--radius-md);border:1px solid var(--line-2);font-size:var(--text-sm);font-weight:600;color:var(--text-2);transition:all .15s}
+.verdict-toggle button:hover{border-color:var(--line-2);background:var(--panel-3)}
+.verdict-toggle button.on.v-compliant{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.verdict-toggle button.on.v-not_compliant{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.field{margin-bottom:var(--space-3)}
+.field label{display:block;font-size:var(--text-xs);color:var(--text-3);margin-bottom:4px}
+.field select,.field input[type=text],.field textarea{width:100%;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-sm);transition:border-color .15s;resize:vertical}
+.field select:focus,.field input:focus,.field textarea:focus{border-color:var(--accent)}
+.field-hint{font-size:var(--text-xs);color:var(--text-3);margin-top:4px;line-height:1.4}
+.form-actions{display:flex;gap:8px;justify-content:flex-end}
+.btn-submit{padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-sm);transition:all .15s}
+.btn-submit:hover{filter:brightness(1.1)}
+.btn-submit.ok{background:var(--ok)}
+.btn-submit.warn{background:var(--warn)}
+.btn-cancel{padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-size:var(--text-sm)}
+.btn-cancel:hover{color:var(--text)}
+.recorded-verdict{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);margin-bottom:var(--space-4)}
+.recorded-verdict .rv-row{display:flex;align-items:center;gap:var(--space-2);margin-bottom:6px}
+.recorded-verdict .rv-text{font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
+.recorded-verdict .rv-text b{color:var(--text)}
+.edit-link{font-size:var(--text-xs);color:var(--accent);margin-left:auto}
+.edit-link:hover{text-decoration:underline}
+
+/* ---------- Full RFP document pane — persistent, like the Document view in
+   the review table screen: stays open across row selections (not a modal
+   you reopen each time), the whole document is there, and whichever
+   requirement is currently selected is highlighted in place. ---------- */
+.doc-panel{width:440px;flex-shrink:0;display:none;flex-direction:column;background:var(--paper);color:var(--paper-ink);border-left:1px solid var(--line)}
+.doc-panel.open{display:flex}
+.doc-panel-head{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-4);border-bottom:1px solid rgba(0,0,0,.12);flex-shrink:0}
+.doc-panel-head .dph-t{font-family:var(--font-doc);font-weight:700;font-size:var(--text-base);flex:1}
+.doc-panel-head .dph-sub{font-family:var(--font-ui);font-size:var(--text-xs);color:var(--paper-ink-2)}
+.doc-panel-close{width:24px;height:24px;border-radius:var(--radius-sm);color:var(--paper-ink-2);display:grid;place-items:center;flex-shrink:0}
+.doc-panel-close:hover{background:rgba(0,0,0,.08);color:var(--paper-ink)}
+.doc-panel-body{flex:1;overflow-y:auto;padding:var(--space-4) var(--space-5);font-family:var(--font-doc);font-size:var(--text-base);line-height:1.75}
+.doc-sec{margin-bottom:var(--space-5)}
+.doc-sec h4{font-size:var(--text-lg);font-weight:700;margin-bottom:var(--space-2);color:var(--paper-ink)}
+.doc-sec p{margin-bottom:var(--space-3)}
+.doc-req-para{scroll-margin-top:16px;transition:background .3s;border-radius:var(--radius-xs)}
+.doc-req-para.hl{background:rgba(76,130,255,.14);border-left:3px solid var(--accent);padding:6px var(--space-3);margin-left:calc(-1 * var(--space-3) - 3px)}
+.doc-req-para mark{background:rgba(76,130,255,.35);color:var(--paper-ink);padding:0 2px;border-radius:2px;font-weight:700}
+
+/* ---------- Toast ---------- */
+#toast-zone{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:var(--space-2);align-items:center}
+.toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.34,1.3,.64,1)}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.toast .t-ok{color:var(--ok)}
+</style>
+<script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===================== HEADER ===================== -->
+  <header>
+    <div class="logo"><a href="javascript:parent.route('dashboard')" style="display:flex;align-items:center;gap:var(--space-2);color:inherit;text-decoration:none"><svg class="logo-mark logo-mark-dark" viewBox="2 20 84 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M3.07031 44.2173C3.07031 31.3286 13.5186 20.8803 26.4073 20.8803H61.1905C61.3132 20.8803 61.4127 20.9798 61.4127 21.1025V67.3321C61.4127 67.4548 61.3132 67.5542 61.1905 67.5542H26.4073C13.5186 67.5542 3.07031 57.1059 3.07031 44.2173V44.2173Z" fill="url(#srmDa)" fill-opacity=".54"/>
+    <path d="M18.4238 44.2173C18.4238 31.3286 28.8721 20.8803 41.7608 20.8803H63.0846C63.1789 20.8803 63.2553 20.9568 63.2553 21.051V67.3835C63.2553 67.4778 63.1789 67.5542 63.0846 67.5542H41.7608C28.8721 67.5542 18.4238 57.1059 18.4238 44.2173V44.2173Z" fill="url(#srmDb)" fill-opacity=".54"/>
+    <path d="M35.0054 44.2173C35.0054 31.3286 45.4537 20.8803 58.3423 20.8803H61.413C74.3016 20.8803 84.7499 31.3286 84.7499 44.2173V44.2173C84.7499 57.1059 74.3016 67.5542 61.413 67.5542H58.3423C45.4537 67.5542 35.0054 57.1059 35.0054 44.2173V44.2173Z" fill="url(#srmDc)" fill-opacity=".54"/>
+    <circle cx="60.3105" cy="44.3431" r="18.5497" fill="#fff"/>
+    <defs>
+    <linearGradient id="srmDa" x1="3.07" y1="44.22" x2="61.41" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <linearGradient id="srmDb" x1="18.42" y1="44.22" x2="63.26" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <linearGradient id="srmDc" x1="35.01" y1="44.22" x2="84.75" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset=".168" stop-color="#fff"/></linearGradient>
+    </defs>
+    </svg>
+    <svg class="logo-mark logo-mark-light" viewBox="2 20 84 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M3.07031 44.2173C3.07031 31.3286 13.5186 20.8803 26.4073 20.8803H61.1905C61.3132 20.8803 61.4127 20.9798 61.4127 21.1025V67.3321C61.4127 67.4548 61.3132 67.5542 61.1905 67.5542H26.4073C13.5186 67.5542 3.07031 57.1059 3.07031 44.2173V44.2173Z" fill="url(#srmLa)" fill-opacity=".54"/>
+    <path d="M18.4238 44.2173C18.4238 31.3286 28.8721 20.8803 41.7608 20.8803H63.0846C63.1789 20.8803 63.2553 20.9568 63.2553 21.051V67.3835C63.2553 67.4778 63.1789 67.5542 63.0846 67.5542H41.7608C28.8721 67.5542 18.4238 57.1059 18.4238 44.2173V44.2173Z" fill="url(#srmLb)" fill-opacity=".54"/>
+    <path d="M35.0054 44.2173C35.0054 31.3286 45.4537 20.8803 58.3423 20.8803H61.413C74.3016 20.8803 84.7499 31.3286 84.7499 44.2173V44.2173C84.7499 57.1059 74.3016 67.5542 61.413 67.5542H58.3423C45.4537 67.5542 35.0054 57.1059 35.0054 44.2173V44.2173Z" fill="url(#srmLc)" fill-opacity=".54"/>
+    <circle cx="60.3105" cy="44.3431" r="18.5497" fill="#fff"/>
+    <defs>
+    <linearGradient id="srmLa" x1="3.07" y1="44.22" x2="61.41" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset="1" stop-color="#1E3246" stop-opacity="0"/></linearGradient>
+    <linearGradient id="srmLb" x1="18.42" y1="44.22" x2="63.26" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset="1" stop-color="#1E3246" stop-opacity="0"/></linearGradient>
+    <linearGradient id="srmLc" x1="35.01" y1="44.22" x2="84.75" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset=".168" stop-color="#1E3246"/></linearGradient>
+    </defs>
+    </svg>SRM</a></div>
+    <div class="crumb">
+      <span class="sep">/</span>
+      <a class="project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a>
+      <span class="sep">/</span>
+      <span class="screen">Expert Space</span>
+    </div>
+    <div class="hdr-actions">
+      <div class="exp-badge"><div class="exp-avatar" id="viewer-avatar"></div><span id="viewer-name"></span></div>
+      <a class="btn-ghost" href="javascript:parent.route('dashboard')">← Dashboard</a>
+    </div>
+  </header>
+
+  <div class="restrict-note">🔒 Showing only requirements assigned to your activity (and its sub-typologies). This is a restriction, not a filter — there is no view to see beyond it.</div>
+
+  <!-- ===================== TRIAGE BAR ===================== -->
+  <div class="triage">
+    <span class="total-count" id="total-count">0 requirements</span>
+    <div class="triage-pills">
+      <button class="tpill p-awaiting" data-filter="awaiting_answer"><span class="n" id="n-awaiting">0</span> awaiting your verdict</button>
+      <button class="tpill p-qa" data-filter="awaiting_qa"><span class="n" id="n-qa">0</span> Q&amp;A pending</button>
+      <button class="tpill p-reassign" data-filter="reassignment_needed"><span class="n" id="n-reassign">0</span> reassignment requested</button>
+      <button class="tpill p-answered" data-filter="answered"><span class="n" id="n-answered">0</span> answered</button>
+    </div>
+    <div class="search-box">
+      <input type="text" id="search-in" placeholder="Search requirement, ID…">
+    </div>
+    <button class="clear-filter" id="clear-filter">✕ Clear filter</button>
+  </div>
+
+  <!-- ===================== MAIN ===================== -->
+  <main>
+    <div class="center">
+      <div class="egrid" id="egrid">
+        <div class="egrid-head">
+          <div class="ecell c-sel"><input type="checkbox" id="sel-all"></div>
+          <div class="ecell">ID</div>
+          <div class="ecell">Requirement</div>
+          <div class="ecell">Typology</div>
+          <div class="ecell">Compliance</div>
+          <div class="ecell">Status</div>
+        </div>
+        <div class="egrid-body" id="egrid-body"></div>
+      </div>
+    </div>
+
+    <!-- ===================== FULL RFP DOCUMENT — persistent pane, not a
+         modal: stays open across row selections, whichever requirement is
+         selected is highlighted in place (same idea as the Document view
+         in the requirements review screen). ===================== -->
+    <aside class="doc-panel" id="doc-panel">
+      <div class="doc-panel-head">
+        <div><div class="dph-t">EMS_tender_main.pdf</div><div class="dph-sub">Full RFP document</div></div>
+        <button class="doc-panel-close" id="doc-panel-close" title="Close">✕</button>
+      </div>
+      <div class="doc-panel-body" id="doc-panel-body"></div>
+    </aside>
+
+    <!-- ===================== DETAIL PANEL ===================== -->
+    <aside class="settings">
+      <div class="settings-body" id="settings-body"></div>
+    </aside>
+  </main>
+
+  <!-- ===================== BULK ACTION BAR ===================== -->
+  <div id="sel-bar" class="sel-bar">
+    <span class="sel-n"><b id="sel-count">0</b> selected</span>
+    <div class="sel-actions">
+      <button class="sel-btn ok" id="sel-bulk-compliant">✓ Batch verdict: Compliant</button>
+    </div>
+    <span class="sel-clear" id="sel-clear">Clear selection</span>
+  </div>
+
+
+</div>
+
+<div id="toast-zone"></div>
+
+<script>
+/* =====================================================
+   DATA MODEL
+===================================================== */
+/* Typology hierarchy — permissions-only, arbitrary depth (SPEC-expert-space.md).
+   Nesting has no effect on characterisation/allocation/compliance logic — a
+   requirement's typology tag doesn't inherit or cascade anything from the
+   hierarchy for those purposes. It only ever widens WHO can see/act on a
+   requirement: a manager or expert assigned to a parent typology gets view+
+   modify rights on every descendant typology's requirements, additively (a
+   child can still carry its own directly-assigned expert on top). */
+const TYPO = [
+  {id:"sig", code:"SIG", label:"Signalling", parent:null},
+  {id:"sig_cbtc", code:"CBTC", label:"CBTC Subsystem", parent:"sig"},
+  {id:"sig_ixl", code:"IXL", label:"Interlocking", parent:"sig"},
+  {id:"mln", code:"MLN", label:"Mainline", parent:null},
+  {id:"tlc", code:"TLC", label:"Telecom", parent:null},
+];
+function TY(id){ return TYPO.find(t=>t.id===id) || {id,code:id,label:id,parent:null}; }
+function typoChain(id){
+  const chain=[]; let cur=TY(id);
+  while(cur){ chain.unshift(cur); cur = cur.parent ? TY(cur.parent) : null; }
+  return chain;
+}
+function typoPathLabel(id){
+  return typoChain(id).map(t=>t.label).join(" › ");
+}
+function descendantsOf(id){
+  const kids = TYPO.filter(t=>t.parent===id).map(t=>t.id);
+  return kids.reduce((acc,k)=>acc.concat(k, descendantsOf(k)), []);
+}
+
+const EXPERTS = [
+  {id:"exp_slang", name:"Sophie Lang", team:"Monitoring Team", init:"SL", color:"#6e7bf2", typologies:["sig"]},
+  {id:"exp_kbenali", name:"Karim Benali", team:"Infrastructure Team", init:"KB", color:"#3fb27f", typologies:["mln"]},
+];
+const VIEWER = "exp_slang"; // the logged-in expert for this demo
+function currentExpert(){ return EXPERTS.find(e=>e.id===VIEWER); }
+/* the strict restriction: own typologies + every descendant, additively.
+   No toggle anywhere lifts this — it's read at render, count and search time,
+   never bypassed (SPEC-expert-space.md: "ne peut pas voir les autres"). */
+function visibleTypologyIds(){
+  const exp = currentExpert(); if(!exp) return new Set();
+  const set = new Set();
+  (exp.typologies||[]).forEach(id=>{ set.add(id); descendantsOf(id).forEach(d=>set.add(d)); });
+  return set;
+}
+
+const CATEGORY_LIST = ["Design & Engineering","Operations","Compliance","Integration","Performance & Validation","Other"];
+const STATUS_LABELS = {awaiting_answer:"Awaiting your verdict", answered:"Answered", awaiting_qa:"Q&A pending", reassignment_needed:"Reassignment requested"};
+const COMPLIANCE_LABELS = {pending:"Pending", compliant:"Compliant", not_compliant:"Not compliant"};
+
+const REX_BASE = {
+  "EXG-003": [
+    {id:"REX-2211", title:"Alerting latency spec — Lyon depot rollout", src:"REX360", match:88},
+    {id:"REX-2078", title:"Site telemetry loss handling", src:"Rexbook", match:74},
+  ],
+  "IXL-201": [
+    {id:"REX-1987", title:"Route conflict detection — Marseille interlocking", src:"REX360", match:81},
+  ],
+};
+function rexFor(id){ return REX_BASE[id] || []; }
+
+const QA = [
+  {id:"QA-101", st:"sent", q:"Should degraded-mode reporting go through the redundant OCC link or the primary only?", reqId:"CBT-102", by:"Sophie Lang", date:"Jul 15"},
+];
+function qaFor(id){ return QA.find(q=>q.reqId===id) || null; }
+
+/* "Full RFP document accessible — the whole document, not just an excerpt"
+   (SPEC-expert-space.md). Whole document = every section in order, in a
+   persistent pane (same idea as the review table screen's Document view) —
+   not a modal you reopen per requirement. Selecting a different row updates
+   which paragraph is highlighted/scrolled to; the pane itself stays open. */
+const REQ_PARAS = {
+  "EXG-001": [
+    "All connected sites communicate operational data to the central monitoring platform through standardized site gateways. Data exchange must be resilient to short network interruptions and resume automatically without operator intervention.",
+    "<mark>The system SHALL continuously collect consumption, production and energy data from all connected sites and site gateways.</mark> Sampling intervals are configurable per site type, with a default of 60 seconds for consumption/production metrics.",
+    "Collected data is timestamped at the source and stored in the central historian for the retention period defined in the regulatory requirements section.",
+  ],
+  "EXG-002": [
+    "Operators overseeing multiple sites require a unified view rather than switching between per-site dashboards.",
+    "<mark>The system SHALL provide consolidated multi-site data visualization on a single dashboard.</mark> The dashboard SHALL support filtering by site, region, and equipment type.",
+    "Performance targets for dashboard refresh are addressed separately in the performance requirements section.",
+  ],
+  "EXG-003": [
+    "Loss of telemetry from a site is treated as a potential safety-relevant event and must be surfaced to operators without delay.",
+    "<mark>The system SHALL generate an alert within 5 seconds when a site's telemetry stream is interrupted.</mark> The alert SHALL identify the affected site and the last known state before interruption.",
+    "Alert acknowledgement and escalation rules are defined in the operations manual referenced in Annex C.",
+  ],
+  "EXG-011": [
+    "Third-party tools operated by the client's IT department require read access to site telemetry for reporting purposes outside this system.",
+    "<mark>The system SHALL expose site telemetry to third-party tools through a documented API.</mark> The API SHALL use token-based authentication and rate limiting.",
+    "Interface requirements affecting telecom transport are further detailed in the telecom annex.",
+  ],
+  "CBT-101": [
+    "Movement authorities issued by the CBTC subsystem are safety-critical and must be traceable to a validated interlocking state.",
+    "<mark>The CBTC subsystem SHALL confirm failsafe interlock state before releasing a movement authority.</mark> Confirmation SHALL be logged with a timestamp and interlock identifier.",
+    "This requirement is subject to EN 50129 safety case validation prior to commissioning.",
+  ],
+  "CBT-102": [
+    "Degraded-mode operation reduces automation and requires closer supervision from the Operations Control Centre (OCC).",
+    "<mark>The CBTC subsystem SHALL report degraded-mode operation to the central OCC within 2 seconds.</mark> The report SHALL include the cause of degradation where determinable.",
+    "Redundant communication links are described in the systems architecture document.",
+  ],
+  "IXL-201": [
+    "Route conflicts between converging or crossing movements are the primary hazard the interlocking is designed to prevent.",
+    "<mark>The interlocking SHALL enforce route conflict detection for all converging movements.</mark> Conflicting route requests SHALL be rejected and logged.",
+    "This requirement was modified in version v2.1 to explicitly cover converging (not only crossing) movements — see the version comparison for the prior wording.",
+  ],
+  "IXL-202": [
+    "Traceability of route commands supports both operational review and post-incident investigation.",
+    "<mark>The interlocking SHALL log every route command with a timestamp accurate to 10ms.</mark> Logs SHALL be retained per the data retention policy.",
+    "Timestamp accuracy is validated against the site's synchronized time source during commissioning.",
+  ],
+  "EXG-014": [
+    "Regulatory obligations require a minimum retention period for operational data, independent of the system's own operational needs.",
+    "<mark>The system SHALL retain telemetry history for a minimum of 3 years.</mark> Data older than the retention period SHALL be archived, not deleted, unless explicitly authorized.",
+    "This requirement was added in version v2.1 following updated national retention guidance.",
+  ],
+};
+const INTRO_PARAS = [
+  "This technical requirements specification defines the requirements applicable to the multi-site energy monitoring system (EMS) intended for the operation of the group's production and distribution facilities.",
+  "It applies to all software and hardware lots within scope, including the signalling subsystems (CBTC, interlocking) integrated with the EMS platform.",
+];
+const DOCUMENT = [
+  {num:"1", title:"Scope and purpose", reqs:[]},
+  {num:"2.1", title:"Data acquisition and monitoring", reqs:["EXG-001","EXG-002"]},
+  {num:"2.2", title:"Alerting", reqs:["EXG-003"]},
+  {num:"2.3", title:"External interfaces", reqs:["EXG-011"]},
+  {num:"4.1", title:"CBTC — Movement authority", reqs:["CBT-101"]},
+  {num:"4.2", title:"CBTC — Degraded mode", reqs:["CBT-102"]},
+  {num:"4.3", title:"Interlocking — Route management", reqs:["IXL-201","IXL-202"]},
+  {num:"5.1", title:"Regulatory — Data retention", reqs:["EXG-014"]},
+];
+function renderDocPanel(){
+  const body = document.getElementById("doc-panel-body");
+  body.innerHTML = DOCUMENT.map(sec=>{
+    const heading = `<h4>${sec.num}. ${sec.title}</h4>`;
+    if(!sec.reqs.length) return `<div class="doc-sec">${heading}${INTRO_PARAS.map(p=>`<p>${p}</p>`).join("")}</div>`;
+    const paras = sec.reqs.flatMap(id=>(REQ_PARAS[id]||[]).map(p=>{
+      const isMarked = p.indexOf("<mark>")!==-1;
+      const hl = (isMarked && state.selected===id) ? " hl" : "";
+      const idAttr = isMarked ? ` id="docp-${id}"` : "";
+      return `<p class="doc-req-para${hl}"${idAttr}>${p}</p>`;
+    }));
+    return `<div class="doc-sec">${heading}${paras.join("")}</div>`;
+  }).join("");
+}
+function scrollDocToSelected(){
+  if(!state.selected) return;
+  const el = document.getElementById(`docp-${state.selected}`);
+  if(el) el.scrollIntoView({block:"center", behavior:"smooth"});
+}
+function showDocPanel(){
+  state.docOpen = true;
+  document.getElementById("doc-panel").classList.add("open");
+  renderDocPanel();
+  scrollDocToSelected();
+}
+function hideDocPanel(){
+  state.docOpen = false;
+  document.getElementById("doc-panel").classList.remove("open");
+}
+
+let REQUIREMENTS = [
+  {id:"EXG-001", typology:"sig", tech:"tech",
+   text:"The system SHALL continuously collect consumption, production and energy data from all connected sites and site gateways.",
+   abs:"Design & Engineering", pbs:"Functional", obs:"Monitoring Team — S. Lang",
+   status:"answered", compliance:"compliant", comment:"Matches existing telemetry pipeline, no issues.", gap:null},
+  {id:"EXG-002", typology:"sig", tech:"tech",
+   text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard.",
+   abs:"Design & Engineering", pbs:"Functional", obs:"Monitoring Team — S. Lang",
+   status:"answered", compliance:"compliant", comment:"R&D Needed — multi-site aggregation needs a scalability spike before sign-off.", gap:null},
+  {id:"EXG-003", typology:"sig", tech:"tech",
+   text:"The system SHALL generate an alert within 5 seconds when a site's telemetry stream is interrupted.",
+   abs:"Design & Engineering", pbs:"Functional", obs:"Monitoring Team — S. Lang",
+   status:"awaiting_answer", compliance:"pending", gap:null},
+  {id:"EXG-011", typology:"sig", tech:"tech",
+   text:"The system SHALL expose site telemetry to third-party tools through a documented API.",
+   abs:"Integration", pbs:"Interface", obs:"Monitoring Team — S. Lang",
+   status:"reassignment_needed", compliance:"pending",
+   reassignComment:"This is a telecom interface exposure, not signalling — please reassign to the TLC team.", gap:null},
+  {id:"CBT-101", typology:"sig_cbtc", tech:"tech",
+   text:"The CBTC subsystem SHALL confirm failsafe interlock state before releasing a movement authority.",
+   abs:"Compliance", pbs:"Security", obs:"Monitoring Team — S. Lang",
+   status:"answered", compliance:"not_compliant", category:"Compliance",
+   topic:"Missing failsafe interlock confirmation per EN 50129.", gap:null},
+  {id:"CBT-102", typology:"sig_cbtc", tech:"tech",
+   text:"The CBTC subsystem SHALL report degraded-mode operation to the central OCC within 2 seconds.",
+   abs:"Operations", pbs:"Performance", obs:"Monitoring Team — S. Lang",
+   status:"awaiting_qa", compliance:"pending", qaRef:"QA-101", gap:null},
+  {id:"IXL-201", typology:"sig_ixl", tech:"tech",
+   text:"The interlocking SHALL enforce route conflict detection for all converging movements.",
+   abs:"Design & Engineering", pbs:"Security", obs:"Monitoring Team — S. Lang",
+   status:"awaiting_answer", compliance:"pending", gap:"modified"},
+  {id:"IXL-202", typology:"sig_ixl", tech:"nontech",
+   text:"The interlocking SHALL log every route command with a timestamp accurate to 10ms.",
+   abs:"Performance & Validation", pbs:"Performance", obs:"Monitoring Team — S. Lang",
+   status:"answered", compliance:"not_compliant", category:"Performance & Validation",
+   topic:"Logging granularity tested at 25ms — exceeds the 10ms requirement.", gap:null},
+  {id:"EXG-014", typology:"sig", tech:"tech",
+   text:"The system SHALL retain telemetry history for a minimum of 3 years.",
+   abs:"Compliance", pbs:"Regulatory", obs:"Monitoring Team — S. Lang",
+   status:"answered", compliance:"compliant", comment:"Retention policy already covers 5 years — compliant with margin.", gap:"added"},
+  {id:"MLN-301", typology:"mln", tech:"tech",
+   text:"The mainline system SHALL synchronise timetable data with the national scheduling authority.",
+   abs:"Integration", pbs:"Functional", obs:"Infrastructure Team — K. Benali",
+   status:"answered", compliance:"compliant", comment:"Out of this expert's scope.", gap:null},
+];
+function reqById(id){ return REQUIREMENTS.find(r=>r.id===id); }
+/* the restriction, applied at the data layer — every render/count/search path
+   reads through this, there is no separate "show all" path to fall back to */
+function visibleReqs(){
+  const vis = visibleTypologyIds();
+  return REQUIREMENTS.filter(r=>vis.has(r.typology));
+}
+
+/* =====================================================
+   STATE
+===================================================== */
+const state = { selected:null, selection:new Set(), filter:null, search:"", openForm:null, verdictPick:null, docOpen:false };
+
+function matchesFilter(r){
+  if(!state.filter) return true;
+  return r.status===state.filter;
+}
+function matchesSearch(r){
+  if(!state.search) return true;
+  const q=state.search.toLowerCase();
+  return r.id.toLowerCase().includes(q) || r.text.toLowerCase().includes(q);
+}
+function visibleRows(){ return visibleReqs().filter(r=>matchesFilter(r)&&matchesSearch(r)); }
+
+/* =====================================================
+   RENDER — table
+===================================================== */
+function rowHTML(r){
+  const plain = r.text.replace(/"/g,"&quot;");
+  const rex = rexFor(r.id);
+  const badges = [];
+  if(rex.length) badges.push(`<span class="rex-badge" title="${rex.length} REX match${rex.length>1?"es":""}">⟲ ${rex.length}</span>`);
+  if(r.gap) badges.push(`<span class="gap-chip ${r.gap}">${r.gap==="added"?"+ new":"~ changed"}</span>`);
+  const chain = typoChain(r.typology);
+  const typoHTML = chain.length>1
+    ? `<span class="seg-parent">${chain.slice(0,-1).map(t=>t.label).join(" › ")} › </span>${chain[chain.length-1].label}`
+    : chain[0].label;
+  return `
+    <div class="ecell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${r.id}" ${state.selection.has(r.id)?"checked":""}></label></div>
+    <div class="ecell rcell-id">${r.id}</div>
+    <div class="ecell c-req"><span class="excerpt" title="${plain}">${plain}</span>${badges.join("")}</div>
+    <div class="ecell typo-path" title="${typoPathLabel(r.typology)}">${typoHTML}</div>
+    <div class="ecell"><span class="compliance-pill c-${r.compliance}">${COMPLIANCE_LABELS[r.compliance]}</span></div>
+    <div class="ecell"><span class="status-pill st-${r.status}">${STATUS_LABELS[r.status]}</span></div>`;
+}
+function renderTable(){
+  const body = document.getElementById("egrid-body");
+  const rows = visibleRows();
+  if(!rows.length){ body.innerHTML = `<div class="empty-rows">No requirements match this filter.</div>`; return; }
+  body.innerHTML = rows.map(r=>`<div class="erow${state.selected===r.id?" active":""}${state.selection.has(r.id)?" bulk-sel":""}" data-id="${r.id}">${rowHTML(r)}</div>`).join("");
+  body.querySelectorAll(".erow").forEach(el=>el.addEventListener("click",e=>{
+    if(e.target.closest(".sel-hit")) return;
+    selectRow(el.dataset.id);
+  }));
+  body.querySelectorAll("[data-sel]").forEach(cb=>cb.addEventListener("click",e=>{
+    e.stopPropagation();
+    const id=cb.dataset.sel;
+    cb.checked ? state.selection.add(id) : state.selection.delete(id);
+    renderSelBar(); renderTable();
+  }));
+}
+function selectRow(id){
+  state.selected=id; renderTable(); renderPanel();
+  if(state.docOpen){ renderDocPanel(); scrollDocToSelected(); }
+}
+
+/* =====================================================
+   RENDER — triage bar
+===================================================== */
+function setFilter(f){
+  state.filter = state.filter===f ? null : f;
+  document.querySelectorAll(".tpill").forEach(p=>p.classList.toggle("active", p.dataset.filter===state.filter));
+  document.getElementById("clear-filter").classList.toggle("visible", !!state.filter);
+  renderTable();
+}
+function renderTriage(){
+  const r = visibleReqs();
+  document.getElementById("total-count").textContent = `${r.length} requirement${r.length>1?"s":""}`;
+  document.getElementById("n-awaiting").textContent = r.filter(x=>x.status==="awaiting_answer").length;
+  document.getElementById("n-qa").textContent = r.filter(x=>x.status==="awaiting_qa").length;
+  document.getElementById("n-reassign").textContent = r.filter(x=>x.status==="reassignment_needed").length;
+  document.getElementById("n-answered").textContent = r.filter(x=>x.status==="answered").length;
+}
+
+/* =====================================================
+   RENDER — Bulk Action Bar
+===================================================== */
+function renderSelBar(){
+  const bar = document.getElementById("sel-bar");
+  const n = state.selection.size;
+  bar.classList.toggle("on", n>0);
+  document.getElementById("sel-count").textContent = n;
+}
+function bulkCompliant(){
+  let c=0;
+  state.selection.forEach(id=>{
+    const r=reqById(id);
+    if(r && r.status==="awaiting_answer"){ r.status="answered"; r.compliance="compliant"; r.comment="Batch-approved — no issues found."; c++; }
+  });
+  const skipped = state.selection.size - c;
+  toast(`${c} of ${state.selection.size} validated`+(skipped?` — ${skipped} were not ready`:""), skipped?"warn":"ok");
+  state.selection.clear();
+  renderSelBar(); renderTable(); renderTriage();
+  if(state.selected) renderPanel();
+}
+
+/* =====================================================
+   RENDER — detail panel
+===================================================== */
+function renderPanel(){
+  const panel = document.getElementById("settings-body");
+  const r = state.selected ? reqById(state.selected) : null;
+  if(!r){
+    const rows = visibleReqs();
+    panel.innerHTML = `<div class="set-empty">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
+      <div class="big">No requirement selected</div>
+      <div>Click a row to render a verdict, ask a question, or return the allocation.<br><br><b style="color:var(--text-2)">${rows.filter(x=>x.status==="awaiting_answer").length}</b> awaiting your verdict.</div>
+    </div>`;
+    return;
+  }
+  const rex = rexFor(r.id);
+  const qa = r.status==="awaiting_qa" ? (qaFor(r.id) || {q:"(question sent)"}) : null;
+
+  let bannerHTML = "";
+  if(r.status==="awaiting_qa"){
+    bannerHTML = `<div class="state-banner b-qa"><span class="bt">Q&amp;A pending</span><span>${(qa.q||"").replace(/</g,"&lt;")}</span><span style="color:var(--text-3)">Sent — verdict is blocked until this is answered.</span></div>`;
+  } else if(r.status==="reassignment_needed"){
+    bannerHTML = `<div class="state-banner b-reassign"><span class="bt">Returned to manager</span><span>${(r.reassignComment||"").replace(/</g,"&lt;")}</span><span style="color:var(--text-3)">Awaiting reassignment — no further action needed here.</span></div>`;
+  } else if(r.status==="answered"){
+    const verdictText = r.compliance==="compliant"
+      ? `<b>Compliant</b> — ${(r.comment||"").replace(/</g,"&lt;")}`
+      : `<b>Not compliant</b> — ${r.category}: ${(r.topic||"").replace(/</g,"&lt;")}`;
+    bannerHTML = `<div class="recorded-verdict">
+      <div class="rv-row"><span class="compliance-pill c-${r.compliance}">${COMPLIANCE_LABELS[r.compliance]}</span><span class="edit-link" id="edit-verdict">Edit verdict</span></div>
+      <div class="rv-text">${verdictText}</div>
+    </div>`;
+  }
+
+  const actionsDisabled = r.status==="reassignment_needed";
+  const actionsHTML = actionsDisabled ? "" : `
+    <div class="actions-card">
+      <div class="sec-label">Actions</div>
+      <div class="actions-row">
+        <button class="act-btn a-verdict${state.openForm==="verdict"?" open":""}" id="btn-verdict"><span class="ic">✓</span><span class="lbl">Render a verdict</span></button>
+        <button class="act-btn a-qa${state.openForm==="qa"?" open":""}" id="btn-qa" ${r.status==="awaiting_qa"?'disabled title="A question is already pending"':""}><span class="ic">💬</span><span class="lbl">Ask a question</span></button>
+        <button class="act-btn a-reassign${state.openForm==="reassign"?" open":""}" id="btn-reassign"><span class="ic">↩</span><span class="lbl">Return the allocation</span></button>
+      </div>
+    </div>`;
+
+  let formHTML = "";
+  if(state.openForm==="verdict"){
+    const pick = state.verdictPick;
+    formHTML = `<div class="inline-form" id="verdict-form">
+      <div class="if-label">Render a verdict</div>
+      <div class="verdict-toggle">
+        <button class="v-compliant${pick==="compliant"?" on":""}" data-pick="compliant">Compliant</button>
+        <button class="v-not_compliant${pick==="not_compliant"?" on":""}" data-pick="not_compliant">Not compliant</button>
+      </div>
+      ${pick==="compliant" ? `
+        <div class="field"><label>Comment</label><textarea id="v-comment" rows="3" placeholder="Free comment — write &quot;R&D Needed&quot; here as plain text if it applies, there is no dedicated field for it.">${r.status==="answered"&&r.compliance==="compliant"?(r.comment||""):""}</textarea></div>
+        <div class="form-actions"><button class="btn-cancel" id="v-cancel">Cancel</button><button class="btn-submit ok" id="v-submit-compliant">Save verdict — sends to Expert Review</button></div>
+      ` : pick==="not_compliant" ? `
+        <div class="field"><label>Category</label><select id="v-category">${CATEGORY_LIST.map(c=>`<option ${r.category===c?"selected":""}>${c}</option>`).join("")}</select></div>
+        <div class="field"><label>Topic</label><input type="text" id="v-topic" placeholder="Free text — what specifically fails" value="${r.status==="answered"&&r.compliance==="not_compliant"?(r.topic||"").replace(/"/g,"&quot;"):""}"></div>
+        <div class="form-actions"><button class="btn-cancel" id="v-cancel">Cancel</button><button class="btn-submit warn" id="v-submit-notcompliant">Save verdict — sends to Expert Review</button></div>
+      ` : `<div class="field-hint">Pick Compliant or Not compliant to continue.</div>`}
+    </div>`;
+  } else if(state.openForm==="qa"){
+    formHTML = `<div class="inline-form" id="qa-form">
+      <div class="if-label">Ask a question</div>
+      <div class="field"><textarea id="qa-text" rows="3" placeholder="Internal review before it's sent to the client…"></textarea></div>
+      <div class="field-hint">This is the existing Q&amp;A flow — the requirement moves to "Q&amp;A pending" until answered, which blocks the verdict.</div>
+      <div class="form-actions"><button class="btn-cancel" id="qa-cancel">Cancel</button><button class="btn-submit" id="qa-submit">Send question</button></div>
+    </div>`;
+  } else if(state.openForm==="reassign"){
+    formHTML = `<div class="inline-form" id="reassign-form">
+      <div class="if-label">Return the allocation</div>
+      <div class="field"><textarea id="reassign-text" rows="3" placeholder="Required — why doesn't this belong to your activity?"></textarea></div>
+      <div class="form-actions"><button class="btn-cancel" id="reassign-cancel">Cancel</button><button class="btn-submit warn" id="reassign-submit">Return to manager</button></div>
+    </div>`;
+  }
+
+  panel.innerHTML = `
+    <div class="set-head">
+      <div class="set-id-row"><span class="set-id">${r.id}</span><span class="typo-path">${typoPathLabel(r.typology)}</span></div>
+      <div class="set-title">${r.text}</div>
+      <div class="set-pills"><span class="compliance-pill c-${r.compliance}">${COMPLIANCE_LABELS[r.compliance]}</span><span class="status-pill st-${r.status}">${STATUS_LABELS[r.status]}</span></div>
+    </div>
+    <div class="set-body">
+      ${bannerHTML}
+      ${actionsHTML}
+      ${formHTML}
+      <div class="set-sep"></div>
+      <div class="sec-label">Characterisation &amp; allocation — read-only</div>
+      <div class="ro-grid">
+        <div class="ro-field"><label>Class</label><div class="fval">${r.tech==="tech"?"Technical":"Non-technical"}</div></div>
+        <div class="ro-field"><label>Typology</label><div class="fval">${typoPathLabel(r.typology)}</div></div>
+        <div class="ro-field"><label>ABS</label><div class="fval">${r.abs}</div></div>
+        <div class="ro-field"><label>PBS</label><div class="fval">${r.pbs}</div></div>
+        <div class="ro-field"><label>OBS</label><div class="fval">${r.obs}</div></div>
+      </div>
+      <div class="ro-note">Changing an allocation is the manager's job — use "Return the allocation" above if this shouldn't be assigned to your activity.</div>
+      ${rex.length ? `
+        <div class="sec-label">REX — related past answers</div>
+        <div class="rex-list">${rex.map(x=>`<div class="rex-item"><div class="rex-match"><span class="rex-ring" style="--p:${x.match}"></span>${x.match}%</div><div class="rex-main"><div class="rex-title">${x.title}</div><div class="rex-meta"><span class="rex-src">${x.src}</span><span class="rex-id">${x.id}</span></div></div></div>`).join("")}</div>
+      ` : ""}
+      <button class="doc-link" id="open-doc">📄 Open full RFP document</button>
+    </div>`;
+
+  document.getElementById("open-doc")?.addEventListener("click",showDocPanel);
+  document.getElementById("edit-verdict")?.addEventListener("click",()=>{ state.openForm="verdict"; state.verdictPick=r.compliance==="not_compliant"?"not_compliant":"compliant"; renderPanel(); });
+  document.getElementById("btn-verdict")?.addEventListener("click",()=>{ state.openForm = state.openForm==="verdict"?null:"verdict"; state.verdictPick = r.compliance!=="pending" ? r.compliance : null; renderPanel(); });
+  document.getElementById("btn-qa")?.addEventListener("click",()=>{ state.openForm = state.openForm==="qa"?null:"qa"; renderPanel(); });
+  document.getElementById("btn-reassign")?.addEventListener("click",()=>{ state.openForm = state.openForm==="reassign"?null:"reassign"; renderPanel(); });
+
+  panel.querySelectorAll("[data-pick]").forEach(b=>b.addEventListener("click",()=>{ state.verdictPick=b.dataset.pick; renderPanel(); }));
+  document.getElementById("v-cancel")?.addEventListener("click",()=>{ state.openForm=null; state.verdictPick=null; renderPanel(); });
+  document.getElementById("v-submit-compliant")?.addEventListener("click",()=>{
+    r.status="answered"; r.compliance="compliant"; r.comment=document.getElementById("v-comment").value.trim();
+    delete r.category; delete r.topic;
+    state.openForm=null; state.verdictPick=null;
+    toast(`${r.id} — verdict recorded, sent to Expert Review`,"ok");
+    renderTable(); renderTriage(); renderPanel();
+  });
+  document.getElementById("v-submit-notcompliant")?.addEventListener("click",()=>{
+    r.status="answered"; r.compliance="not_compliant";
+    r.category=document.getElementById("v-category").value; r.topic=document.getElementById("v-topic").value.trim();
+    delete r.comment;
+    state.openForm=null; state.verdictPick=null;
+    toast(`${r.id} — verdict recorded, sent to Expert Review`,"ok");
+    renderTable(); renderTriage(); renderPanel();
+  });
+  document.getElementById("qa-cancel")?.addEventListener("click",()=>{ state.openForm=null; renderPanel(); });
+  document.getElementById("qa-submit")?.addEventListener("click",()=>{
+    const q = document.getElementById("qa-text").value.trim();
+    if(!q){ toast("Write a question first","warn"); return; }
+    const qid = "QA-"+(100+QA.length+1);
+    QA.unshift({id:qid, st:"sent", q, reqId:r.id, by:currentExpert().name, date:"Today"});
+    r.status="awaiting_qa"; r.qaRef=qid;
+    state.openForm=null;
+    toast(`Question sent — ${r.id} is now Q&A pending`,"ok");
+    renderTable(); renderTriage(); renderPanel();
+  });
+  document.getElementById("reassign-cancel")?.addEventListener("click",()=>{ state.openForm=null; renderPanel(); });
+  document.getElementById("reassign-submit")?.addEventListener("click",()=>{
+    const c = document.getElementById("reassign-text").value.trim();
+    if(!c){ toast("A comment is required to return an allocation","warn"); return; }
+    r.status="reassignment_needed"; r.reassignComment=c;
+    state.openForm=null;
+    toast(`${r.id} returned to manager`,"warn");
+    renderTable(); renderTriage(); renderPanel();
+  });
+}
+
+/* =====================================================
+   TOAST
+===================================================== */
+function toast(msg,kind="ok"){
+  const zone = document.getElementById("toast-zone");
+  const t = document.createElement("div");
+  t.className="toast";
+  t.innerHTML = `<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>`;
+  zone.appendChild(t);
+  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3400);
+}
+
+/* =====================================================
+   GLOBAL EVENTS + INIT
+===================================================== */
+function refresh(){ renderTable(); renderTriage(); renderPanel(); renderSelBar(); }
+
+document.querySelectorAll(".tpill").forEach(p=>p.addEventListener("click",()=>setFilter(p.dataset.filter)));
+document.getElementById("clear-filter").addEventListener("click",()=>setFilter(state.filter));
+document.getElementById("search-in").addEventListener("input",e=>{ state.search=e.target.value; renderTable(); });
+document.getElementById("sel-all").addEventListener("change",e=>{
+  const rows = visibleRows();
+  if(e.target.checked) rows.forEach(r=>state.selection.add(r.id));
+  else state.selection.clear();
+  renderSelBar(); renderTable();
+});
+document.getElementById("sel-clear").addEventListener("click",()=>{ state.selection.clear(); renderSelBar(); renderTable(); });
+document.getElementById("sel-bulk-compliant").addEventListener("click",bulkCompliant);
+document.getElementById("doc-panel-close").addEventListener("click",hideDocPanel);
+
+(function initViewerBadge(){
+  const exp = currentExpert();
+  const av = document.getElementById("viewer-avatar");
+  av.textContent = exp.init; av.style.background = exp.color;
+  document.getElementById("viewer-name").textContent = `${exp.name} — ${exp.team}`;
+})();
+
+refresh();
+</script>
+</body>
+</html>
