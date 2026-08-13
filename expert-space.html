@@ -391,7 +391,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 /* =====================================================
    DATA MODEL
 ===================================================== */
-/* Typology hierarchy — permissions-only, arbitrary depth (SPEC-expert-space.md).
+/* Typology hierarchy — permissions-only, arbitrary depth (see SPEC-domain-model.md §9).
    Nesting has no effect on characterisation/allocation/compliance logic — a
    requirement's typology tag doesn't inherit or cascade anything from the
    hierarchy for those purposes. It only ever widens WHO can see/act on a
@@ -428,7 +428,7 @@ const VIEWER = "exp_slang"; // the logged-in expert for this demo
 function currentExpert(){ return EXPERTS.find(e=>e.id===VIEWER); }
 /* the strict restriction: own typologies + every descendant, additively.
    No toggle anywhere lifts this — it's read at render, count and search time,
-   never bypassed (SPEC-expert-space.md: "ne peut pas voir les autres"). */
+   never bypassed (confirmed directly: "ne peut pas voir les autres" — see SPEC-domain-model.md §9.1). */
 function visibleTypologyIds(){
   const exp = currentExpert(); if(!exp) return new Set();
   const set = new Set();
@@ -463,8 +463,8 @@ const QA = [
 ];
 function qaFor(id){ return QA.find(q=>q.reqId===id) || null; }
 
-/* "Full RFP document accessible — the whole document, not just an excerpt"
-   (SPEC-expert-space.md). Whole document = every section in order, in a
+/* "Full RFP document accessible — the whole document, not just an excerpt."
+   Whole document = every section in order, in a
    persistent pane (same idea as the review table screen's Document view) —
    not a modal you reopen per requirement. Selecting a different row updates
    which paragraph is highlighted/scrolled to; the pane itself stays open. */

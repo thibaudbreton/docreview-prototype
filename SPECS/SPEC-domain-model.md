@@ -117,7 +117,7 @@ Reaching `Allocated` on the allocation axis is not a status change followed by a
 
 ## 9. Typology hierarchy — a permissions-only concept (Expert Space)
 
-Surfaced while designing the expert's own screen (`SPEC-expert-space.md`), and applicable wherever typology-scoped access is checked:
+Surfaced while designing the expert's own screen, and applicable wherever typology-scoped access is checked:
 
 - Typologies can **nest**, to **arbitrary depth** — a typology's `parent` field points to another typology, or is `null` at the root.
 - The nesting affects **permissions only**. It has **no effect** on characterisation, allocation, or compliance consolidation (§4) — a requirement's typology tag doesn't inherit or cascade anything from the hierarchy for those purposes. A child typology's requirements are characterised/allocated/consolidated exactly as if the hierarchy didn't exist; only *who can see and act on them* changes.
@@ -131,7 +131,9 @@ Only `expert-space.html`'s `TYPO` carries a `parent` field and cascade logic (`d
 
 ### 9.1 The expert's restriction is enforced, not a UI default
 
-For the expert's own screen specifically (as opposed to the manager follow-up view, where filter-vs-restriction is still open — see `SPEC-expert-space.md`'s open points): access is a **strict restriction**, confirmed directly ("ne peut pas voir les autres"). An expert's visible-requirement set is *their own typologies' union with every descendant typology*, computed once and applied at every read path (row list, counts, search) — there is no "show all" toggle, admin override, or filter that widens it back out. This mirrors §12 of `SPEC-backend-requirements.md`'s restricted-view intent, now confirmed concretely for the expert case.
+For the expert's own screen specifically: access is a **strict restriction**, confirmed directly ("ne peut pas voir les autres"). An expert's visible-requirement set is *their own typologies' union with every descendant typology*, computed once and applied at every read path (row list, counts, search) — there is no "show all" toggle, admin override, or filter that widens it back out. The manager follow-up view's own restricted-view behavior (`suivi-experts-et-versions.html`, redact vs. hide, configured in §7's Team & experts screen) is a **separate, already-implemented mechanism** — it predates this section and isn't unified with it; whether the two should eventually share one restriction model is open, but nothing here is blocked on deciding that.
+
+_(TG2 — this subsection used to cite `SPEC-expert-space.md` and `SPEC-backend-requirements.md` §12 for the "filter-vs-restriction... still open" framing and the restricted-view precedent; neither file exists in this repo, and no record of their content survived. Rather than leave a dangling citation, the paragraph above states plainly what's actually known/decided and flags what's genuinely still open, without attributing it to a source that can't be checked.)_
 
 ### 9.2 R&D Needed stays a countable verdict (TF3 — resolved, was self-contradictory)
 
@@ -139,7 +141,7 @@ This section previously asserted the expert verdict form was "already final at t
 
 **Decision:** R&D Needed stays a first-class, countable compliance value all the way through, including at the point of expert entry — not text folded into a Compliant comment. This is the option consistent with §3/§3.1's canonical 3-value scale (`compliant`/`rnd_needed`/`not_compliant`), which `revue-documentaire.html` and `suivi-experts-et-versions.html` already implement structurally (rollup, `CMP_ORDER`, consolidation). Letting the expert's own entry point silently drop it to free text would have made those two screens' structured handling pointless downstream — a rail-tender compliance matrix commercially needs to distinguish "compliant as-is" from "compliant pending R&D investment," which is exactly the kind of figure a countable value serves and free text doesn't.
 
-`expert-space.html`'s verdict form now has a third **R&D Needed** button alongside Compliant/Not compliant, with its own comment field ("what R&D work is needed for compliance?"); `COMPLIANCE_LABELS` carries the `rnd_needed` key. The dangling citation to `SPEC-backend-requirements.md` §11 (a file that doesn't exist in this repo) is addressed separately — see TG2.
+`expert-space.html`'s verdict form now has a third **R&D Needed** button alongside Compliant/Not compliant, with its own comment field ("what R&D work is needed for compliance?"); `COMPLIANCE_LABELS` carries the `rnd_needed` key. (This subsection used to also cite `SPEC-backend-requirements.md` §11 for the compliance-matrix export's needs — that file doesn't exist in this repo; see TG2's note in §9.1 for how the missing-file citations across this spec were handled.)
 
 ---
 

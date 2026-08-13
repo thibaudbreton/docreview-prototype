@@ -154,7 +154,12 @@ Original ticket text, for reference:
 **Update `HANDOVER.md` and `README.md`'s file manifests and route tables**
 Both still list only five screens/seven routes; neither mentions `expert-space.html` or the `expert` route, even though `build_merge.py` has correctly wired both (`SOURCES`, `ROUTES`, `URLMAP` all include it). `HANDOVER.md` bills itself as "the single source of truth for picking the project back up" (line 3) and currently predates three shipped features (B2 casting, B4 team management, B6/B7 status workflow) with no mention of any of their ticket codes.
 
-- [ ] **TG2 — Recover or strip dangling references to `SPEC-expert-space.md` / `SPEC-backend-requirements.md`**
+- [x] **TG2 — DONE.** No trace of either file (or its content) exists anywhere in the repo's history reachable from this checkout, so nothing was recoverable — stripped and inlined instead. `SPEC-domain-model.md` §9/§9.1/§9.2: removed the three citations, kept the substantive claims but rewrote the "filter-vs-restriction... still open" framing (§9.1) to state plainly what's actually known (the manager follow-up view's restricted-view mechanism is separate and already-implemented, not unified with Expert Space's) rather than pointing at an unrecoverable source, and left an inline `_(TG2 — ...)_` note explaining the change for anyone who goes looking for the old citation. Also found and fixed 3 more dangling citations in `expert-space.html`'s own code comments (not caught by grepping `SPECS/` alone) — repointed them to `SPEC-domain-model.md` §9/§9.1 or dropped the filename where the comment stood fine on its own. Verified: zero remaining `SPEC-expert-space.md`/`SPEC-backend-requirements.md` references anywhere in the repo outside this ticket's own record. `node --check` and `build_merge.py` clean.
+
+**All tickets in this file (TA1–TG2) are now resolved.**
+
+Original ticket text, for reference:
+**Recover or strip dangling references to `SPEC-expert-space.md` / `SPEC-backend-requirements.md`**
 `SPEC-domain-model.md` §9/§9.1/§9.2 cite both files by name and section number (e.g. "§12 of `SPEC-backend-requirements.md`") as load-bearing context — neither file exists anywhere in the repo. Either the content was lost, or it was discussed but never written down. Recover it if it still exists somewhere, otherwise inline whatever's still relevant and drop the dangling citations.
 
 ---
