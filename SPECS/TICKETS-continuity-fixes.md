@@ -94,7 +94,10 @@ Original ticket text, for reference:
 **Bring `revue-documentaire.html`'s branch status up to the spec's six-value set, or document why not**
 It currently only uses `{answered, awaiting, reassignment_needed}` — a real collapse of `proposed`/`assigned`/`awaiting_answer`/`awaiting_qa` into one bucket, not a shorthand. Concretely this means a Q&A-blocked branch (`awaiting_qa`) has no representation in the review table at all. `suivi-experts-et-versions.html` already implements the full spec set correctly — use it as the reference.
 
-- [ ] **TD3 — Sync `IMG-1-R1`/`IMG-1-R2` into Follow-up's `REQS`**
+- [x] **TD3 — DONE.** Added `IMG-1-R1`/`IMG-1-R2` to `suivi-experts-et-versions.html`'s `REQS` (at the top, matching their real document position ahead of `EXG-001`), mirroring their `revue-documentaire.html` data: `IMG-1-R1` is assigned (`sig`/`m_sig`/`sup`, `awaiting_answer`), `IMG-1-R2` has no manager/expert yet (`proposed`, matching `manager:null` there too). Also updated `dashboard-et-config.html`'s `FOLLOWUP_REQS` mirror (TB1) so it doesn't silently drift out of sync again now that the real `REQS` has 14 entries instead of 12 — recomputed dashboard KPIs shift accordingly: response rate 6/17 = 35.3% (was 6/15 = 40%), compliance breakdown 3/0/1/10 (pending +2), Follow-up phase card "4/14 answered · 1 overdue" (overdue count unchanged — neither new branch qualifies under `isOverB()`). Verified with jsdom: `REQS.length===14`, both new entries `consolidate()` to `pending` as expected, no runtime errors loading the full screen (table-engine.js inlined to mirror the build step); dashboard values re-verified against the new totals by hand. `node --check` and `build_merge.py` clean on both files.
+
+Original ticket text, for reference:
+**Sync `IMG-1-R1`/`IMG-1-R2` into Follow-up's `REQS`**
 These image-sourced requirements exist and are validatable in `revue-documentaire.html` but have no entry in `suivi-experts-et-versions.html` — validate and allocate them today, and they vanish before Follow-up. Any demo scenario touching the image-container feature (`Figure 1`, called out in `README.md` as "worth a look") currently can't be walked end-to-end.
 
 ---

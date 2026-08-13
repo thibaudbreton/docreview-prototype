@@ -761,6 +761,21 @@ const SEC_DOC={
    revue-documentaire.html so both screens tell the same story.
    All values hand-authored — nothing here is computed. */
 const REQS=[
+  // TD3 — IMG-1-R1/IMG-1-R2: image-sourced requirements (Figure 1, section 2.1) validatable
+  // in revue-documentaire.html but previously absent here, so validating/allocating them
+  // there had nowhere to land — any demo scenario touching the image-container feature
+  // couldn't be walked end-to-end. Mirrors that screen's alloc: IMG-1-R1 is assigned
+  // (sig/m_sig/sup); IMG-1-R2 has no manager/expert yet (manager:null there too).
+  {id:"IMG-1-R1",sec:"2. Functional requirements",type:"Functional",
+   text:"The system SHALL route telemetry from each site gateway through its regional aggregator before reaching the central monitoring platform.",
+   branches:[
+     {typology:"sig",manager:"m_sig",expert:"sup",status:"awaiting_answer",compliance:null,age:3},
+   ]},
+  {id:"IMG-1-R2",sec:"2. Functional requirements",type:"Functional",
+   text:"Each site gateway SHALL connect to exactly one regional aggregator, with automatic failover to a secondary aggregator on link loss.",
+   branches:[
+     {typology:"sig",manager:null,expert:null,status:"proposed",compliance:null,age:3},
+   ]},
   {id:"EXG-001",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family.",
    branches:[
