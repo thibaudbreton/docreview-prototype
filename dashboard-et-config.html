@@ -973,7 +973,7 @@ const FOLLOWUP_REQS=[
   {id:"EXG-002",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
   {id:"EXG-003",compliance:null,branchesAnswered:1,branchesTotal:3},
   {id:"EXG-004",compliance:null,branchesAnswered:0,branchesTotal:1,overdueBranches:1},
-  {id:"EXG-011",compliance:"non_compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"EXG-011",compliance:"not_compliant",branchesAnswered:1,branchesTotal:1},
   {id:"EXG-012",compliance:null,branchesAnswered:0,branchesTotal:1},
   {id:"EXG-005",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
   {id:"EXG-006",compliance:null,branchesAnswered:0,branchesTotal:1},
@@ -996,8 +996,9 @@ function renderReviewKPIs(){
 function renderComplianceKPIs(){
   const total=FOLLOWUP_REQS.length;
   const compliant=FOLLOWUP_REQS.filter(r=>r.compliance==="compliant").length;
-  const partial=FOLLOWUP_REQS.filter(r=>r.compliance==="compliant_rnd").length;
-  const non=FOLLOWUP_REQS.filter(r=>r.compliance==="non_compliant").length;
+  // TD1 — keys reconciled to canonical rnd_needed/not_compliant (were compliant_rnd/non_compliant).
+  const partial=FOLLOWUP_REQS.filter(r=>r.compliance==="rnd_needed").length;
+  const non=FOLLOWUP_REQS.filter(r=>r.compliance==="not_compliant").length;
   const pending=total-compliant-partial-non;
   const pct=n=>total?Math.round(n/total*1000)/10+"%":"0%";
   [["compliant",compliant],["partial",partial],["non",non],["pending",pending]].forEach(([k,n])=>{

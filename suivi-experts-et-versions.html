@@ -283,8 +283,8 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 /* compliance (T2 — result axis) */
 .vpill{display:inline-flex;align-items:center;gap:6px;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:700;white-space:nowrap}
 .vpill.compliant{background:var(--ok-soft);color:var(--ok)}
-.vpill.compliant_rnd{background:var(--ia-soft);color:var(--ia)}
-.vpill.non_compliant{background:var(--warn-soft);color:var(--warn)}
+.vpill.rnd_needed{background:var(--ia-soft);color:var(--ia)}
+.vpill.not_compliant{background:var(--warn-soft);color:var(--warn)}
 .vpill.none{color:var(--text-3)}
 /* pending is NOT a verdict — dashed outline, muted, italic, never reads as decided */
 .vpill.pending-pill{border:1px dashed var(--line-2);color:var(--text-3);font-style:italic;font-weight:500;background:transparent}
@@ -734,9 +734,13 @@ const TYPOS={
    BST = progress (where the assignment stands). CMP = result (only meaningful once answered).
    `awaiting_qa` is a progress status, never a verdict, and it blocks consolidation. */
 const BST={proposed:"Proposed",assigned:"Assigned",awaiting_answer:"Awaiting answer",awaiting_qa:"Awaiting Q&A",reassignment_needed:"Reassignment needed",answered:"Answered"};
-const CMP={compliant:"Compliant",compliant_rnd:"Compliant with R&D",non_compliant:"Non compliant"};
+/* TD1 — canonical verdict keys/labels: SPEC-domain-model.md §3 (Compliant/R&D Needed/
+   Not Compliant), matching revue-documentaire.html's COMPLIANCE_DEFS and expert-space.html's
+   COMPLIANCE_LABELS. Was rnd_needed/non_compliant with "Compliant with R&D"/"Non compliant"
+   wording — reconciled to the shared vocabulary. */
+const CMP={compliant:"Compliant",rnd_needed:"R&D Needed",not_compliant:"Not Compliant"};
 /* most restrictive first — drives requirement-level consolidation */
-const CMP_ORDER=["non_compliant","compliant_rnd","compliant"];
+const CMP_ORDER=["not_compliant","rnd_needed","compliant"];
 /* which unfinished branch to surface as "what is holding this requirement up" */
 const BLOCK_PRIORITY=["reassignment_needed","awaiting_qa","awaiting_answer","assigned","proposed"];
 /* Same source documents as revue-documentaire.html, so the nav tells the same story
@@ -772,7 +776,7 @@ const REQS=[
   {id:"EXG-003",sec:"2. Functional requirements",type:"Functional",outdated:true,
    text:"The system SHALL generate an alert when a site's consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"non_compliant",age:8,
+     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"not_compliant",age:8,
       resp:{note:"The 5-minute alerting threshold is achievable, but integrating the issuer's escalation matrix falls outside the proposed scope and budget envelope. Not compliant as specified.",att:0,date:"Jul 13"}},
      {typology:"mln",manager:"m_mln",expert:"infra",status:"awaiting_answer",compliance:null,age:4,lastFollowup:"Jul 14"},
      {typology:"sys",manager:null,expert:null,status:"reassignment_needed",compliance:null,age:3,
@@ -786,7 +790,7 @@ const REQS=[
   {id:"EXG-011",sec:"2. Functional requirements",type:"Interface",
    text:"The system SHALL expose site telemetry to third-party tools through a documented REST API.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"infra",status:"answered",compliance:"non_compliant",age:7,
+     {typology:"sig",manager:"m_sig",expert:"infra",status:"answered",compliance:"not_compliant",age:7,
       resp:{note:"Current API rate limits are below the implied third-party load. Meeting the requirement would need a gateway rework — not feasible within the proposed budget envelope.",att:1,date:"Jul 14"}},
    ]},
   {id:"EXG-012",sec:"2. Functional requirements",type:"Interface",
@@ -1783,7 +1787,7 @@ document.getElementById("remind-all").addEventListener("click",()=>{
   toast(`Reminders sent to ${exps.join(" and ")} — ${over.length} overdue assignment${over.length>1?"s":""}`,"ok");
 });
 document.getElementById("export2-btn").addEventListener("click",()=>{
-  const non=REQS.filter(r=>consolidate(r).compliance==="non_compliant").length;
+  const non=REQS.filter(r=>consolidate(r).compliance==="not_compliant").length;
   const pend=REQS.filter(r=>consolidate(r).pending).length;
   toast("Compliance register STB-2026_qualification.xlsx generated","ok");
   setTimeout(()=>toast(`Risk summary included: ${non} non-compliant · ${pend} still pending consolidation`,"warn"),800);

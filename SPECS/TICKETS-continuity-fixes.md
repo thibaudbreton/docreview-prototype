@@ -81,7 +81,10 @@ This is a genuine architecture choice, not a bug to silently pick a side on. Tod
 
 ## Group D — Reconcile status/compliance vocabulary
 
-- [ ] **TD1 — Pick one canonical compliance-verdict key set and label wording**
+- [x] **TD1 — DONE.** Picked `revue-documentaire.html`'s existing keys/wording (`compliant`/`rnd_needed`/`not_compliant`, "Compliant"/"R&D Needed"/"Not Compliant") as canonical — it already matched `expert-space.html`'s `COMPLIANCE_LABELS` and `SPEC-domain-model.md`'s prose, so 2 of 3 screens and the spec were already aligned; `suivi-experts-et-versions.html` was the outlier. Renamed its `compliant_rnd`→`rnd_needed` and `non_compliant`→`not_compliant` (CSS classes, `CMP`/`CMP_ORDER`, `REQS` seed data, the one inline filter) and its `CMP` labels to match. Also fixed `dashboard-et-config.html`'s `FOLLOWUP_REQS` mirror (added in TB1, explicitly documented as mirroring this file's `REQS`) to the same keys, so it doesn't silently reintroduce the divergence. Added `SPEC-domain-model.md` §3.1 stating the canonical keys explicitly and marked `TICKETS-followup-workflow.md` T2's wording superseded, pointing back to it. `node --check` and `build_merge.py` clean on both changed screens.
+
+Original ticket text, for reference:
+**Pick one canonical compliance-verdict key set and label wording**
 `SPEC-domain-model.md` §3 ("R&D Needed") and `TICKETS-followup-workflow.md` T2 ("Compliant with R&D") never agreed, and neither marks the other as superseding — `revue-documentaire.html` (`not_compliant`/`rnd_needed`) and `suivi-experts-et-versions.html` (`non_compliant`/`compliant_rnd`) each faithfully implement a different one of the two. Pick one, mark the other document's wording superseded, reconcile both screens.
 
 - [ ] **TD2 — Bring `revue-documentaire.html`'s branch status up to the spec's six-value set, or document why not**

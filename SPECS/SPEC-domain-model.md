@@ -30,6 +30,10 @@ Resolving in one screen calls `updateReassignRequest` so the mailbox entry stops
 
 Only meaningful once the branch is `answered`. Scale: **Compliant** / **R&D Needed** / **Not Compliant**. Null/`pending` = not yet answered.
 
+### 3.1 Canonical keys and wording (TD1)
+
+The code-level keys are `compliant` / `rnd_needed` / `not_compliant` (optionally `pending`), with exactly the labels above. This is the canonical set — `revue-documentaire.html`'s `COMPLIANCE_DEFS` and `expert-space.html`'s `COMPLIANCE_LABELS` already used it; `suivi-experts-et-versions.html` used to diverge (`compliant_rnd`/`non_compliant`, "Compliant with R&D"/"Non compliant") and has been reconciled to match. `TICKETS-followup-workflow.md`'s T2 wording ("Compliant with R&D" / "Non compliant") is **superseded** by this section — treat this spec as the source of truth for compliance vocabulary going forward.
+
 ## 4. Consolidation — "most restrictive wins"
 
 The requirement-level verdict is **derived**, not stored: most restrictive across its branches, and **pending until every branch is `answered`**. For a single-branch requirement, the sole branch's verdict is the requirement's verdict. Order of restrictiveness (most → least): Not Compliant > R&D Needed > Compliant.

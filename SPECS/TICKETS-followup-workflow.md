@@ -11,7 +11,7 @@ Seed the follow-up data at the **branch** level: one assignment per typology per
 
 **T2 — Status set and compliance scale**
 - Branch status: `proposed` / `assigned` / `awaiting_answer` / `awaiting_qa` / `reassignment_needed` / `answered`.
-- Compliance verdict (only meaningful once `answered`): **Compliant** / **Compliant with R&D** / **Non compliant**. Null = pending.
+- Compliance verdict (only meaningful once `answered`): ~~**Compliant** / **Compliant with R&D** / **Non compliant**~~ — **superseded (TD1):** the canonical wording and keys (`compliant`/`rnd_needed`/`not_compliant`) are now `SPEC-domain-model.md` §3.1. Null = pending.
 - Keep status and compliance as **two separate axes** (status = progress, compliance = result). `awaiting_qa` is a progress status, never a verdict.
 
 ---
