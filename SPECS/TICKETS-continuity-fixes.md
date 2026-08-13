@@ -116,7 +116,10 @@ Original ticket text, for reference:
 **Wire or clearly mark inert Config controls**
 Outside of theme and redact-mode, essentially nothing in Config has a downstream effect (overdue threshold, reminder cadence, AI/segmentation settings, Q&A/Submission/Versions/Language sections, Save/Discard). For each: either connect it to real behavior, or mark it visually as non-functional in this build so testers don't waste a task step assuming it did something.
 
-- [ ] **TE3 — Make the redact-mode toggle reflect actual state on load**
+- [x] **TE3 — DONE.** Added `applyRedactUI(mode)` (mirrors the existing `applyThemeUI` pattern) and an IIFE that reads `getRedactMode()` on load and applies it, instead of relying on the static markup's hardcoded `class="on"` on "Redacted". The click handler now also calls `applyRedactUI()` directly rather than depending on the generic `.segc` click-toggler running first. Verified with jsdom (mocked `window.parent.getRedactMode` returning `"hide"`): the Hidden button correctly gets `.on` and Redacted loses it. `node --check` and `build_merge.py` clean. Group E (TE1–TE3) fully resolved.
+
+Original ticket text, for reference:
+**Make the redact-mode toggle reflect actual state on load**
 It only *writes* `setRedactMode()`; it never initializes its selected option from `getRedactMode()`, so it always shows "Redacted" regardless of the real current mode. Harmless while both default to the same value, but it's a one-way control masquerading as a two-way one.
 
 ---

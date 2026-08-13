@@ -963,8 +963,18 @@ document.querySelectorAll(".theme-opt").forEach(b=>b.addEventListener("click",()
   toast(`${t.charAt(0).toUpperCase()+t.slice(1)} theme applied`,"ok");
 }));
 
-/* redact mode -> shell shared state */
+/* redact mode <-> shell shared state (TE3 — was write-only: it set setRedactMode() on click
+   but never read getRedactMode() on load, so the toggle always showed "Redacted" regardless
+   of the real current mode). */
+function applyRedactUI(mode){
+  document.querySelectorAll('[data-redact]').forEach(b=>b.classList.toggle("on", b.dataset.redact===mode));
+}
+(function(){
+  let m="redact"; try{ if(window.parent!==window && window.parent.getRedactMode) m=window.parent.getRedactMode(); }catch(e){}
+  applyRedactUI(m);
+})();
 document.querySelectorAll('[data-redact]').forEach(b=>b.addEventListener("click",()=>{
+  applyRedactUI(b.dataset.redact);
   try{ if(window.parent!==window && window.parent.setRedactMode) window.parent.setRedactMode(b.dataset.redact); }catch(e){}
 }));
 
