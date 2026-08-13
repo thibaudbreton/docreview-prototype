@@ -64,24 +64,37 @@ function b64utf8(s){return decodeURIComponent(Array.prototype.map.call(atob(s),c
 const frame = document.getElementById('frame');
 
 /* ============ WORKSPACE — project list + background processing ============ */
+/* builtOut:true = the project's Dashboard/Review/Follow-up/Expert Space screens show
+   real, hand-authored content for this project specifically. Only "stb2026" qualifies —
+   see HANDOVER.md ("Only one project is fully navigable... steer test participants to
+   the EMS project for task scenarios"). The other four seeds exist only to illustrate
+   the tender list, status badges and background processing — opening one is blocked
+   in accueil.html with an explanatory toast instead of silently substituting stb2026's
+   content (TA1). Projects created via the wizard (addProject) don't set this flag at
+   all — they're intentionally exempt from the block, see addProject below. */
 function seedProjects(){
   return [
     {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Signalling & Urban", days:23, deadline:1,
-     status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager"},
+     status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager", builtOut:true},
     {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"Signalling & Urban", days:9, deadline:1,
-     status:"expert_review", done:34, total:41, updated:"2h ago", role:"Signalling manager"},
+     status:"expert_review", done:34, total:41, updated:"2h ago", role:"Signalling manager", builtOut:false},
     {id:"ao088", ref:"AO-2026-088", name:"Depot Maintenance Systems", line:"Services", days:41, deadline:1,
-     status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now", role:"Project manager"},
+     status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now", role:"Project manager", builtOut:false},
     {id:"stb133", ref:"STB-2026-133", name:"Regional Fleet Telemetry", line:"Rolling stock", days:5, deadline:1,
-     status:"qa_versioning", done:58, total:63, updated:"yesterday", role:"Expert"},
+     status:"qa_versioning", done:58, total:63, updated:"yesterday", role:"Expert", builtOut:false},
     {id:"stb2025", ref:"STB-2025-071", name:"Metro Depot Power Supply", line:"Systems", days:-12, deadline:1,
-     status:"submitted", reqs:88, updated:"Jun 3", role:"Expert"},
+     status:"submitted", reqs:88, updated:"Jun 3", role:"Expert", builtOut:false},
   ];
 }
 let PROJECTS = seedProjects();
 let currentProjectId = "stb2026";
 window.getProjects = ()=>PROJECTS;
 window.getCurrentProject = ()=>PROJECTS.find(p=>p.id===currentProjectId)||null;
+// manual-mode project creation routes straight to "review", skipping the
+// workspace click that would normally call openProject() — this is the
+// direct way to make a just-created project "current" without also
+// navigating (openProject both sets it AND routes to the dashboard).
+window.setCurrentProject = function(id){ if(PROJECTS.some(p=>p.id===id)) currentProjectId=id; };
 
 /* background processing loop — runs in the shell, survives navigation */
 let procTimer=null;
@@ -114,7 +127,17 @@ window.addProject = function(meta){
   const manual = meta.mode==="manual";
   const p={ id, ref:meta.ref||("AO-"+id.slice(-4).toUpperCase()), name:meta.name||"Untitled tender",
     line:meta.line||"—", days:meta.days!=null?meta.days:30, deadline:1, updated:"just now",
-    role:"Project manager" };  // whoever creates the tender owns it
+    role:"Project manager",
+    // TA2 — casting captured in the creation wizard (step 4) now survives past project
+    // creation instead of being discarded: `casting` is the raw per-activity {activityId,
+    // managerId,expertId} list, `experts` is the roster dashboard-et-config.html's Team
+    // screen renders for this project (only the activities the wizard's admin cast
+    // *themselves* on carry a real expert yet — every delegated activity is filled in
+    // later by its own branch manager on that screen, per SPEC-domain-model.md §6; that's
+    // intentional, not a gap this ticket closes). No `builtOut` flag is set here on
+    // purpose — wizard-created projects are exempt from TA1's demo-only block.
+    casting: Array.isArray(meta.casting) ? meta.casting : [],
+    experts: Array.isArray(meta.experts) ? meta.experts : [] };  // whoever creates the tender owns it
   if(manual){ p.status="requirement_review"; p.done=0; p.total=0; }
   else { p.status="processing"; p.progress=3; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); }
   PROJECTS.unshift(p);
@@ -131,7 +154,8 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact';
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false;
+  reassignRequests.length=0;
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
   window.route("home");
@@ -141,6 +165,12 @@ window.resetDemo = function(){
 let reviewValidated = false;
 window.isReviewValidated = ()=>reviewValidated;
 window.setReviewValidated = (v)=>{ reviewValidated = !!v; };
+// TB5 — has v2.2's gap analysis actually run? The dashboard narrates it as
+// already-arrived; this flag lets it gate that on the real trigger (Follow-up's
+// "Simulate upload — v2.2" button) instead of asserting it as fact on load.
+let v22Uploaded = false;
+window.isV22Uploaded = ()=>v22Uploaded;
+window.setV22Uploaded = (v)=>{ v22Uploaded = !!v; };
 let projectMode = 'ai';
 window.getProjectMode = ()=>projectMode;
 window.setProjectMode = (m)=>{ projectMode = m || 'ai'; };
@@ -151,6 +181,24 @@ window.setProjectMeta = (m)=>{ projectMeta = m; };
 const aiFeedback = [];
 window.pushAIFeedback = (f)=>{ aiFeedback.push(Object.assign({at:Date.now()},f)); };
 window.getAIFeedback = ()=>aiFeedback;
+// B10 — reassignment requests, shared across screens so a request raised by an
+// Expert (expert-space.html) is visible to the project manager's approval queue
+// (revue-documentaire.html) and vice versa; each screen owns its own requirement
+// data, this is only the cross-screen mailbox.
+const reassignRequests = [];
+window.pushReassignRequest = function(req){
+  req.id = req.id || ('RR-'+(reassignRequests.length+1));
+  req.at = req.at || 'Today';
+  req.requestStatus = 'pending';
+  reassignRequests.push(req);
+  return req;
+};
+window.getReassignRequests = ()=>reassignRequests;
+window.updateReassignRequest = function(id, patch){
+  const r = reassignRequests.find(x=>x.id===id);
+  if(r) Object.assign(r, patch);
+  return r;
+};
 let redactMode = 'redact';
 window.getRedactMode = ()=>redactMode;
 window.setRedactMode = (m)=>{ redactMode = m || 'redact'; };

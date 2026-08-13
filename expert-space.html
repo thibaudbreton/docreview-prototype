@@ -205,6 +205,10 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .state-banner.b-qa .bt{color:var(--accent)}
 .state-banner.b-reassign .bt{color:var(--warn)}
 .state-banner.b-answered .bt{color:var(--ok)}
+/* demo-only: simulates the tender issuer's answer arriving, since there's no
+   separate issuer/manager persona view in this screen to actually author one */
+.sim-answer-btn{align-self:flex-start;margin-top:4px;padding:4px 10px;border-radius:var(--radius-sm);border:1px dashed var(--accent);color:var(--accent);font-size:var(--text-xs);font-weight:600;background:transparent;transition:all .15s}
+.sim-answer-btn:hover{background:var(--accent);color:#fff;border-style:solid}
 .actions-card{border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-4);margin-bottom:var(--space-4);background:var(--panel-2);box-shadow:0 4px 18px rgba(0,0,0,.18)}
 .actions-card .sec-label{font-size:var(--text-sm);color:var(--text-2);margin-bottom:var(--space-3)}
 .actions-row{display:flex;flex-direction:column;gap:10px}
@@ -229,6 +233,10 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .field select,.field input[type=text],.field textarea{width:100%;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-sm);transition:border-color .15s;resize:vertical}
 .field select:focus,.field input:focus,.field textarea:focus{border-color:var(--accent)}
 .field-hint{font-size:var(--text-xs);color:var(--text-3);margin-top:4px;line-height:1.4}
+/* B10 — three reassignment reasons, radio-select */
+.reassign-reasons{display:flex;flex-direction:column;gap:6px;margin-bottom:var(--space-3)}
+.reassign-reason{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2);cursor:pointer}
+.reassign-reason input{accent-color:var(--accent)}
 .form-actions{display:flex;gap:8px;justify-content:flex-end}
 .btn-submit{padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-sm);transition:all .15s}
 .btn-submit:hover{filter:brightness(1.1)}
@@ -408,6 +416,7 @@ function descendantsOf(id){
 
 const EXPERTS = [
   {id:"exp_slang", name:"Sophie Lang", team:"Monitoring Team", init:"SL", color:"#6e7bf2", typologies:["sig"]},
+  {id:"exp_lmartin", name:"Léa Martin", team:"Monitoring Team", init:"LM", color:"#c76b9e", typologies:["sig"]},
   {id:"exp_kbenali", name:"Karim Benali", team:"Infrastructure Team", init:"KB", color:"#3fb27f", typologies:["mln"]},
 ];
 const VIEWER = "exp_slang"; // the logged-in expert for this demo
@@ -424,6 +433,9 @@ function visibleTypologyIds(){
 
 const CATEGORY_LIST = ["Design & Engineering","Operations","Compliance","Integration","Performance & Validation","Other"];
 const STATUS_LABELS = {awaiting_answer:"Awaiting your verdict", answered:"Answered", awaiting_qa:"Q&A pending", reassignment_needed:"Reassignment requested"};
+/* B10 — three reassignment reasons; always resolved by the project manager, never
+   immediate — raising a request only marks this row pending, it doesn't reassign it. */
+const REASON_LABEL = {wrong_person:"Right typology, wrong person", wrong_typology:"Wrong typology", not_applicable:"This activity doesn't apply here"};
 const COMPLIANCE_LABELS = {pending:"Pending", compliant:"Compliant", not_compliant:"Not compliant"};
 
 const REX_BASE = {
@@ -709,9 +721,10 @@ function renderPanel(){
 
   let bannerHTML = "";
   if(r.status==="awaiting_qa"){
-    bannerHTML = `<div class="state-banner b-qa"><span class="bt">Q&amp;A pending</span><span>${(qa.q||"").replace(/</g,"&lt;")}</span><span style="color:var(--text-3)">Sent — verdict is blocked until this is answered.</span></div>`;
+    bannerHTML = `<div class="state-banner b-qa"><span class="bt">Q&amp;A pending</span><span>${(qa.q||"").replace(/</g,"&lt;")}</span><span style="color:var(--text-3)">Sent — verdict is blocked until this is answered.</span><button class="sim-answer-btn" id="sim-qa-answer">🎭 Simulate answer received</button></div>`;
   } else if(r.status==="reassignment_needed"){
-    bannerHTML = `<div class="state-banner b-reassign"><span class="bt">Returned to manager</span><span>${(r.reassignComment||"").replace(/</g,"&lt;")}</span><span style="color:var(--text-3)">Awaiting reassignment — no further action needed here.</span></div>`;
+    const rr = r.reassignRequest;
+    bannerHTML = `<div class="state-banner b-reassign"><span class="bt">Reassignment requested</span><span>${rr?`${REASON_LABEL[rr.reason]} — ${(rr.note||"").replace(/</g,"&lt;")}`:(r.reassignComment||"").replace(/</g,"&lt;")}</span><span style="color:var(--text-3)">Awaiting project-manager approval — no further action needed here.</span></div>`;
   } else if(r.status==="answered"){
     const verdictText = r.compliance==="compliant"
       ? `<b>Compliant</b> — ${(r.comment||"").replace(/</g,"&lt;")}`
@@ -729,7 +742,7 @@ function renderPanel(){
       <div class="actions-row">
         <button class="act-btn a-verdict${state.openForm==="verdict"?" open":""}" id="btn-verdict"><span class="ic">✓</span><span class="lbl">Render a verdict</span></button>
         <button class="act-btn a-qa${state.openForm==="qa"?" open":""}" id="btn-qa" ${r.status==="awaiting_qa"?'disabled title="A question is already pending"':""}><span class="ic">💬</span><span class="lbl">Ask a question</span></button>
-        <button class="act-btn a-reassign${state.openForm==="reassign"?" open":""}" id="btn-reassign"><span class="ic">↩</span><span class="lbl">Return the allocation</span></button>
+        <button class="act-btn a-reassign${state.openForm==="reassign"?" open":""}" id="btn-reassign"><span class="ic">↩</span><span class="lbl">Request reassignment</span></button>
       </div>
     </div>`;
 
@@ -759,10 +772,17 @@ function renderPanel(){
       <div class="form-actions"><button class="btn-cancel" id="qa-cancel">Cancel</button><button class="btn-submit" id="qa-submit">Send question</button></div>
     </div>`;
   } else if(state.openForm==="reassign"){
+    const teammates = EXPERTS.filter(e=>e.team===currentExpert().team && e.id!==VIEWER);
+    const typoOptions = TYPO.filter(t=>t.id!==r.typology);
     formHTML = `<div class="inline-form" id="reassign-form">
-      <div class="if-label">Return the allocation</div>
-      <div class="field"><textarea id="reassign-text" rows="3" placeholder="Required — why doesn't this belong to your activity?"></textarea></div>
-      <div class="form-actions"><button class="btn-cancel" id="reassign-cancel">Cancel</button><button class="btn-submit warn" id="reassign-submit">Return to manager</button></div>
+      <div class="if-label">Request reassignment</div>
+      <div class="reassign-reasons">
+        ${Object.entries(REASON_LABEL).map(([k,label])=>`<label class="reassign-reason"><input type="radio" name="reassign-reason" value="${k}" ${k==="wrong_person"?"checked":""}> ${label}</label>`).join("")}
+      </div>
+      <div class="field" id="reassign-expert-field" style="display:${teammates.length?"block":"none"}"><select id="reassign-expert">${teammates.length?teammates.map(e=>`<option value="${e.id}">${e.name} — ${e.team}</option>`).join(""):'<option value="">No other expert on your team</option>'}</select></div>
+      <div class="field" id="reassign-typo-field" style="display:none"><select id="reassign-typo">${typoOptions.map(t=>`<option value="${t.id}">${t.code} — ${t.label}</option>`).join("")}</select></div>
+      <div class="field"><textarea id="reassign-text" rows="3" placeholder="Required — why should this be reassigned?"></textarea></div>
+      <div class="form-actions"><button class="btn-cancel" id="reassign-cancel">Cancel</button><button class="btn-submit warn" id="reassign-submit">Send request</button></div>
     </div>`;
   }
 
@@ -798,6 +818,13 @@ function renderPanel(){
   document.getElementById("btn-verdict")?.addEventListener("click",()=>{ state.openForm = state.openForm==="verdict"?null:"verdict"; state.verdictPick = r.compliance!=="pending" ? r.compliance : null; renderPanel(); });
   document.getElementById("btn-qa")?.addEventListener("click",()=>{ state.openForm = state.openForm==="qa"?null:"qa"; renderPanel(); });
   document.getElementById("btn-reassign")?.addEventListener("click",()=>{ state.openForm = state.openForm==="reassign"?null:"reassign"; renderPanel(); });
+  document.getElementById("sim-qa-answer")?.addEventListener("click",()=>{
+    const q = qaFor(r.id);
+    if(q){ q.st="answered"; q.ans="Confirmed by the tender issuer — see the clarification note attached to this question."; q.ansDate="Today"; }
+    r.status="awaiting_answer"; delete r.qaRef;
+    toast(`Answer received${q?" for "+q.id:""} — ${r.id} is ready for your verdict`,"ok");
+    renderTable(); renderTriage(); renderPanel();
+  });
 
   panel.querySelectorAll("[data-pick]").forEach(b=>b.addEventListener("click",()=>{ state.verdictPick=b.dataset.pick; renderPanel(); }));
   document.getElementById("v-cancel")?.addEventListener("click",()=>{ state.openForm=null; state.verdictPick=null; renderPanel(); });
@@ -828,12 +855,32 @@ function renderPanel(){
     renderTable(); renderTriage(); renderPanel();
   });
   document.getElementById("reassign-cancel")?.addEventListener("click",()=>{ state.openForm=null; renderPanel(); });
+  panel.querySelectorAll('input[name="reassign-reason"]').forEach(radio=>radio.addEventListener("change",()=>{
+    const isPerson = panel.querySelector('input[name="reassign-reason"]:checked').value==="wrong_person";
+    document.getElementById("reassign-expert-field").style.display = isPerson?"block":"none";
+    document.getElementById("reassign-typo-field").style.display = isPerson?"none":"block";
+  }));
   document.getElementById("reassign-submit")?.addEventListener("click",()=>{
-    const c = document.getElementById("reassign-text").value.trim();
-    if(!c){ toast("A comment is required to return an allocation","warn"); return; }
-    r.status="reassignment_needed"; r.reassignComment=c;
+    const note = document.getElementById("reassign-text").value.trim();
+    if(!note){ toast("A reason is required to request a reassignment","warn"); return; }
+    const reason = panel.querySelector('input[name="reassign-reason"]:checked').value;
+    if(reason==="wrong_person" && !document.getElementById("reassign-expert").value){ toast("No teammate available to reassign to","warn"); return; }
+    const replacementExpert = reason==="wrong_person" ? document.getElementById("reassign-expert").value : null;
+    const replacementTypology = reason!=="wrong_person" ? document.getElementById("reassign-typo").value : null;
+    const replacementExpertLabel = replacementExpert ? (EXPERTS.find(e=>e.id===replacementExpert)||{}).name : null;
+    const replacementTypologyLabel = replacementTypology ? TY(replacementTypology).label : null;
+    const req = {
+      reqId:r.id, typology:r.typology, reason, note,
+      by:VIEWER, byName:currentExpert().name, byRole:"expert", at:"Today",
+      replacementExpert, replacementTypology, replacementExpertLabel, replacementTypologyLabel,
+      prevStatus:r.status,
+    };
+    let shared=null;
+    try{ if(window.parent!==window && window.parent.pushReassignRequest) shared = window.parent.pushReassignRequest(Object.assign({},req)); }catch(e){}
+    r.reassignRequest = Object.assign({requestId: shared?shared.id:null}, req);
+    r.status="reassignment_needed";
     state.openForm=null;
-    toast(`${r.id} returned to manager`,"warn");
+    toast(`${r.id} — reassignment requested, sent to the project manager`,"warn");
     renderTable(); renderTriage(); renderPanel();
   });
 }

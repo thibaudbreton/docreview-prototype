@@ -229,8 +229,8 @@ function cardHTML(p){
     <div class="pc-name">${p.name}</div>
     <div class="pc-meta">${roleBadge(p.role)}<span><b>${p.line}</b></span>${p.deadline!=null?"<span>"+deadlineChip(p.days)+"</span>":""}</div>
     <div class="pc-body">${body}</div>
-    <div class="pc-foot"><span>${p.status==="processing"?'<span class="pc-processing-note">Opens when processing completes</span>':"Updated "+(p.updated||"recently")}</span>
-      ${p.status!=="processing"?'<span class="open">Open →</span>':""}</div>
+    <div class="pc-foot"><span>${p.status==="processing"?'<span class="pc-processing-note">Opens when processing completes</span>':(p.builtOut===false?'<span class="pc-processing-note">Demo project — list &amp; status only</span>':"Updated "+(p.updated||"recently"))}</span>
+      ${(p.status!=="processing"&&p.builtOut!==false)?'<span class="open">Open →</span>':""}</div>
   </div>`;
 }
 function render(){
@@ -254,6 +254,10 @@ function render(){
     const p=projects.find(x=>x.id===c.dataset.id);
     if(!p) return;
     if(p.status==="processing"){ toast("Still processing — it will open when the models finish","warn"); return; }
+    // TA1 — only "stb2026" has real, built-out screens (see build_merge.py's seedProjects
+    // comment). The other seeds exist to illustrate the list/status/processing only —
+    // say so explicitly instead of silently opening into stb2026's content.
+    if(p.builtOut===false){ toast("This is a demo-only project in this prototype — open Energy Monitoring System (STB-2026) for the full, navigable build","warn"); return; }
     try{ if(window.parent!==window && window.parent.openProject) window.parent.openProject(p.id); }catch(e){}
   }));
 }

@@ -742,7 +742,18 @@ function createProject(){
       if(window.parent.setProjectMeta)window.parent.setProjectMeta({name:P.name,ref:P.ref,line:P.line,deadline:P.deadline,experts:P.experts.length});
       // register the project in the workspace; AI mode processes in the background
       let days=30; try{ days=Math.max(0,Math.round((new Date(P.deadline)-new Date())/86400000)); }catch(e){}
-      if(window.parent.addProject) window.parent.addProject({name:P.name,ref:P.ref,line:P.line,system:P.system,region:P.region,mode,days});
+      // TA2 — carry the casting roster through instead of discarding it: only the
+      // activities the PM cast *themselves* on (managerId==="admin") have a chosen
+      // expert yet, deduped by expert index (the same person can be cast on several
+      // activities). Delegated activities intentionally arrive with no expert — their
+      // branch manager fills that in later on the Team screen (SPEC-domain-model.md §6).
+      const castExpertIdx=[...new Set(P.casting.filter(c=>c.managerId==="admin"&&c.expertId!=null).map(c=>c.expertId))];
+      const castExperts=castExpertIdx.map(i=>Object.assign({manager:"admin",count:0},P.experts[i]));
+      const newId = window.parent.addProject ? window.parent.addProject({name:P.name,ref:P.ref,line:P.line,system:P.system,region:P.region,mode,days,
+        casting:P.casting, experts:castExperts}) : null;
+      // manual mode routes straight to Review below, skipping the workspace
+      // click that would normally make a project "current" — do it here instead.
+      if(mode==="manual" && newId && window.parent.setCurrentProject) window.parent.setCurrentProject(newId);
     }
   }catch(e){}
   if(mode==="manual"){

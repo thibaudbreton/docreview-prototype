@@ -177,6 +177,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .tpill.p-tovalidate .n{color:var(--human)}
 .tpill.p-allocated .n{color:var(--ok)}
 .tpill.p-changes .n{color:var(--accent)}
+.tpill.p-reassign .n{color:var(--warn)}
 .tpill:hover{border-color:var(--line-2);background:var(--panel-2)}
 .tpill.active{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
 .triage .clear-filter{
@@ -351,7 +352,7 @@ body.mode-compare .sec-gap-chip.has-changes{display:inline-flex}
   background:var(--accent);color:#fff;font-family:var(--font-ui);font-size:var(--text-xs);font-weight:700;
   display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.25);
 }
-/* provenance — requirement captured from an image container */
+/* provenance — requirement captured from an image */
 .prov-marker{display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-ui);font-size:var(--text-xs);font-weight:700;color:var(--human);background:var(--human-soft);padding:2px var(--space-2);border-radius:var(--radius-lg);margin-right:var(--space-2);vertical-align:middle}
 .img-lock{position:absolute;top:8px;left:-30px;font-size:var(--text-sm);color:var(--paper-ink-2);opacity:.6}
 body.mode-compare .blk.ch-added{background:rgba(63,178,127,.1);border-color:rgba(48,150,104,.6)}
@@ -424,6 +425,16 @@ body.mode-review .doc-scroll{display:none}
 .rrow .c-req{gap:8px;position:relative}
 .rrow .c-req .excerpt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.45}
 .req-badges{display:inline-flex;gap:var(--space-1);flex-shrink:0}
+/* B8 — table-row reclassify control: subtle, revealed on row hover, dark-theme
+   variant of the Document view's .nat-pick (that one's tuned for the paper background) */
+.rrow .row-natpick{font-size:var(--text-xs);font-weight:600;color:var(--text-3);background:var(--panel-3);border-radius:var(--radius-sm);padding:1px 6px;opacity:0;transition:opacity .12s;flex-shrink:0}
+.rrow:hover .row-natpick,.rrow .row-natpick:focus-visible{opacity:1}
+.rrow .row-natpick:hover{color:var(--text);background:var(--line-2)}
+/* B8 — information rows: no typology/allocation/compliance/status, just id+text+category */
+.rrow.info-row{cursor:default}
+.rrow.info-row .c-req{gap:var(--space-2)}
+.info-row-pill{font-size:var(--text-xs);font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--text-3);background:var(--panel-3);padding:1px var(--space-2);border-radius:var(--radius-sm);flex-shrink:0}
+.rrow.info-row .excerpt{color:var(--text-2);font-style:italic}
 /* wrap mode (View menu): full requirement text, rows hug content */
 .rgrid-full.wrap-text .rrow{height:auto;min-height:var(--rrow-h)}
 .rgrid-full.wrap-text .rrow .rcell{align-items:flex-start;padding-top:var(--space-2);padding-bottom:8px}
@@ -632,10 +643,17 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .rrow.branch-row .c-req{padding-left:var(--space-6);gap:6px}
 .branch-connector{color:var(--text-3);flex-shrink:0}
 .cbadge.container-count-badge{color:var(--human);background:var(--human-soft);font-weight:600;flex-shrink:0}
-/* provenance badge is a real button (jumps to the image in the document) — reset button chrome
-   so it keeps reading as a plain chip, only with a pointer + hover cue */
-.cbadge.provenance-badge{color:var(--human);background:var(--human-soft);border:none;font:inherit;cursor:pointer}
-.cbadge.provenance-badge:hover{background:var(--human);color:#fff}
+/* B9 — image-sourced row: the text cell's main content is a jump-to-image button
+   (never typed text), plus Duplicate / Delete-duplicate actions alongside it */
+.img-src-btn{
+  display:inline-flex;align-items:center;gap:var(--space-1);flex-shrink:0;
+  font-size:var(--text-sm);font-weight:600;color:var(--human);background:var(--human-soft);
+  border:none;font-family:inherit;cursor:pointer;padding:4px var(--space-2);border-radius:var(--radius-sm);
+}
+.img-src-btn:hover{background:var(--human);color:#fff}
+.img-dup-tag{font-size:var(--text-xs);font-weight:500;opacity:.75;font-style:italic}
+.rrow .row-dup,.rrow .row-deldup{flex-shrink:0}
+.rrow .row-deldup:hover{border-color:var(--warn);color:var(--warn)}
 .branch-label{font-size:var(--text-sm);color:var(--text-2)}
 
 /* ---------- Right panel ---------- */
@@ -656,30 +674,6 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
   font-size:var(--text-xs);color:var(--text-2);transition:all .15s;display:inline-flex;gap:var(--space-1);align-items:center;
 }
 .mini-btn:hover{border-color:var(--accent);color:var(--text)}
-/* image container detail panel — summary + creation hub */
-.container-type-pill{display:inline-flex;align-items:center;gap:var(--space-1);font-size:var(--text-xs);font-weight:700;color:var(--human);background:var(--human-soft);padding:var(--space-1) var(--space-2);border-radius:var(--radius-pill)}
-.container-lock-note{font-size:var(--text-xs);color:var(--text-3);line-height:1.5;padding:var(--space-2) var(--space-3);border:1px dashed var(--line-2);border-radius:var(--radius-md);margin-bottom:12px}
-.container-summary-line{font-size:var(--text-base);color:var(--text-2);margin-bottom:4px}
-.container-summary-line b{color:var(--text)}
-.container-related-list{display:flex;flex-direction:column;gap:8px}
-.container-empty{font-size:var(--text-sm);color:var(--text-3);padding:var(--space-3) 0}
-.container-rel-item{border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-3) var(--space-3);cursor:pointer;transition:border-color .15s;position:relative}
-.container-rel-item:hover{border-color:var(--accent)}
-.container-rel-item.editing{cursor:default}
-.container-rel-main{display:flex;align-items:center;gap:var(--space-2);margin-bottom:5px}
-.container-rel-text{font-size:var(--text-sm);color:var(--text-2);line-height:1.45}
-.container-rel-actions{display:flex;gap:6px;margin-top:8px}
-.container-rel-del:hover{border-color:var(--warn);color:var(--warn)}
-.container-rel-go{position:absolute;top:10px;right:11px;font-size:var(--text-xs);color:var(--accent);opacity:0;transition:opacity .15s}
-.container-rel-item:hover .container-rel-go{opacity:1}
-.container-rel-item textarea{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:var(--space-2);font-size:var(--text-sm);color:var(--text);resize:vertical;outline:none}
-.container-rel-item textarea:focus{border-color:var(--accent)}
-.container-add-box{margin-top:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--line)}
-.container-add-box label{display:block;font-size:var(--text-xs);color:var(--text-3);margin-bottom:6px}
-.container-add-box textarea{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:var(--space-2);font-size:var(--text-sm);color:var(--text);resize:vertical;outline:none;margin-bottom:8px}
-.container-add-box textarea:focus{border-color:var(--accent)}
-.container-add-btn{border-color:var(--accent);color:var(--accent)}
-.container-add-btn:hover{background:var(--accent);color:#fff}
 .set-title{font-size:var(--text-base);font-weight:600;line-height:1.4;margin-bottom:var(--space-3);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px}
 .set-tabs button{
@@ -882,6 +876,10 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .propose-form textarea{resize:vertical;min-height:56px}
 .propose-form-actions{display:flex;justify-content:flex-end;gap:var(--space-2)}
 .propose-pending{border:1px solid var(--human);background:var(--human-soft);border-radius:var(--radius-md);padding:var(--space-3);margin-bottom:16px}
+/* B10 — three reassignment reasons, radio-select */
+.reassign-reasons{display:flex;flex-direction:column;gap:6px}
+.reassign-reason{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2);cursor:pointer}
+.reassign-reason input{accent-color:var(--accent)}
 .propose-pending-h{font-size:var(--text-sm);font-weight:700;color:var(--human);margin-bottom:4px}
 .propose-pending-t{font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
 .branch-proposal{border-top:1px solid var(--line-2);background:var(--human-soft);padding:var(--space-2) var(--space-3);font-size:var(--text-sm)}
@@ -1225,6 +1223,7 @@ body.restricted .restrict-banner{display:flex}
       <button class="tpill p-tovalidate" data-filter="tovalidate"><span class="n" id="n-tovalidate">0</span> to validate</button>
       <button class="tpill p-allocated" data-filter="allocated"><span class="n" id="n-allocated">0</span> allocated</button>
       <button class="tpill p-changes" data-filter="changed"><span class="n" id="n-changes">0</span> changes v2.0 → v2.1</button>
+      <button class="tpill p-reassign" data-filter="reassign" id="pill-reassign" style="display:none"><span class="n" id="n-reassign">0</span> pending reassignment</button>
     </div>
     <button class="clear-filter" id="clear-filter">✕ Clear filter</button>
     <button class="btn-ghost" id="seg-btn" style="margin-left:auto">✂ Edit segmentation</button>
@@ -1338,7 +1337,7 @@ body.restricted .restrict-banner{display:flex}
         <div class="eo-icon xls">⬇</div>
         <div>
           <div class="eo-title">Export requirements register (.xlsx)</div>
-          <div class="eo-desc">12 requirements · characterization, assignment, status, source section, traceability ID and link to original passage.</div>
+          <div class="eo-desc">14 requirements · characterization, assignment, status, source section, traceability ID and link to original passage.</div>
         </div>
       </div>
       <div class="export-opt" id="opt-send">
@@ -1350,12 +1349,12 @@ body.restricted .restrict-banner{display:flex}
             <div class="expert-row">
               <div class="exp-avatar" style="background:#6e7bf2">SL</div>
               <span class="exp-name">Sophie Lang</span><span style="color:var(--text-3);font-size:var(--text-xs)">Monitoring Team</span>
-              <span class="exp-count">4 requirements</span>
+              <span class="exp-count">3 requirements</span>
             </div>
             <div class="expert-row">
               <div class="exp-avatar" style="background:#3fb27f">KB</div>
               <span class="exp-name">Karim Benali</span><span style="color:var(--text-3);font-size:var(--text-xs)">Infrastructure Team</span>
-              <span class="exp-count">3 requirements</span>
+              <span class="exp-count">2 requirements</span>
             </div>
             <div class="expert-row">
               <div class="exp-avatar" style="background:#e0a43c">CM</div>
@@ -1470,14 +1469,17 @@ const SECTIONS = [
       {id:"H-201", kind:"heading", level:2, text:"2.1 Data acquisition and visualization"},
       {id:"INF-1", kind:"text", status:"allocated",
        text:"The requirements in this subsection apply to the acquisition and display subsystem. Threshold values are indicative and refined during detailed design."},
-      // Image container demo (UI-only): the image itself is never a requirement — it holds the two
-      // requirement blocks below via their sourceImage back-reference. Image & document stay read-only.
-      {id:"IMG-1", kind:"image", isContainer:true,
+      // B9 — new image model (UI-only demo): the image itself is never a requirement — detecting
+      // it auto-creates exactly one requirement row (IMG-1-R1), attached via sourceImage. IMG-1-R2
+      // demonstrates the "duplicate" action — a second requirement captured from the same figure
+      // (this image happens to be a table of two related rules, not a single diagram). Image &
+      // document stay read-only either way; no container, no nesting.
+      {id:"IMG-1", kind:"image",
        caption:"Figure 1 — System architecture: site gateways feeding the central monitoring platform.",
        text:"Figure 1 — System architecture: site gateways feeding the central monitoring platform."},
       {id:"IMG-1-R1", kind:"requirement", sourceImage:"IMG-1", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:90}, abs:{v:"Design & Engineering",c:86}, obs:{v:"Monitoring & Supervision — FR",c:88}, manager:"m_sig", type:"Functional", domain:"Architecture", status:"toreview", alloc:"sup", comments:0,
        text:"The system SHALL route telemetry from each site gateway through its regional aggregator before reaching the central monitoring platform."},
-      {id:"IMG-1-R2", kind:"requirement", sourceImage:"IMG-1", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:85}, abs:{v:"Design & Engineering",c:80}, obs:{v:"Monitoring & Supervision — FR",c:82}, manager:null, type:"Functional", domain:"Architecture", status:"toreview", alloc:null, comments:0,
+      {id:"IMG-1-R2", kind:"requirement", sourceImage:"IMG-1", duplicatedFrom:"IMG-1-R1", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:85}, abs:{v:"Design & Engineering",c:80}, obs:{v:"Monitoring & Supervision — FR",c:82}, manager:null, type:"Functional", domain:"Architecture", status:"toreview", alloc:null, comments:0,
        text:"Each site gateway SHALL connect to exactly one regional aggregator, with automatic failover to a secondary aggregator on link loss."},
       {id:"EXG-001", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:96}, abs:{v:"Design & Engineering",c:91}, obs:{v:"Monitoring & Supervision — FR",c:93}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
        text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family."},
@@ -1575,6 +1577,12 @@ const COMPLIANCE_DEFS=[
 ];
 const complianceLabel = k => (COMPLIANCE_DEFS.find(c=>c.k===k)||{}).label || k || "—";
 const BRANCH_STATUS_LABEL = {answered:"Answered", awaiting:"Awaiting", reassignment_needed:"Reassignment needed"};
+/* B10 — three reassignment reasons, raised by Expert or Branch Manager, always
+   resolved by the project manager. Reallocation is always a replacement (a
+   requirement can never end up with zero activities) — reason 3 still names a
+   replacement typology, it doesn't just remove the branch. */
+const REASON_LABEL = {wrong_person:"Right typology, wrong person", wrong_typology:"Wrong typology", not_applicable:"This activity doesn't apply here"};
+function hasPendingReassign(b){ return !!b.reassignRequest || (b.branches||[]).some(br=>br.reassignRequest); }
 const TYPE_SUGGEST = {"EXG-004":{type:"Functional", alloc:"sup", reason:'"Reporting" domain historically owned by the Monitoring team; source passage detected in section 2.'},
                       "EXG-007":{type:"Performance", alloc:"infra", reason:"Monthly availability requirement; Infrastructure team owns platform SLAs."}};
 
@@ -1583,6 +1591,18 @@ const TYPE_SUGGEST = {"EXG-004":{type:"Functional", alloc:"sup", reason:'"Report
 ===================================================== */
 function projectMode(){ try{ return (window.parent!==window && window.parent.getProjectMode) ? window.parent.getProjectMode() : "ai"; }catch(e){ return "ai"; } }
 const MODE = projectMode();
+/* A project created through the creation wizard gets a "p<timestamp>" id
+   (see build_merge.py's addProject) — none of the pre-seeded demo projects
+   (stb2026, rfp114, …) match that shape, so this reliably tells "the AI just
+   finished its first pass on this tender" apart from "we're several days
+   into reviewing the STB-2026 demo", without needing a dedicated flag. */
+function isFreshProject(){
+  try{
+    if(window.parent===window || !window.parent.getCurrentProject) return false;
+    const p = window.parent.getCurrentProject();
+    return !!(p && /^p[a-z0-9]+$/i.test(p.id));
+  }catch(e){ return false; }
+}
 (function applyProjectMode(){
   if(MODE==="ai") return;
   Object.keys(TYPE_SUGGEST).forEach(k=>delete TYPE_SUGGEST[k]);
@@ -1685,6 +1705,62 @@ function computeAllocStatus(target){
     });
   }));
 })();
+/* Fresh-project story (called once, from Init, only when isFreshProject()):
+   a project the user just created has just had its first AI pass — nobody
+   has validated anything yet, so nothing can read "Allocated". Overrides
+   the STB-2026 demo's own AI-confidence-derived distribution (built for a
+   "several days into review" story) with a plausible fixed one instead of
+   hand-tuning confidence numbers meant for a different story: no item
+   already allocated, 2 with no OBS assignment at all ("Incomplete"), a
+   couple more in "To review" for two different underlying reasons, and the
+   rest — the bulk of a confident first AI pass — sitting in "To validate". */
+function applyFreshProjectStatuses(){
+  /* Mutate the real SECTIONS block/row objects directly, the same way
+     initProgressionStatus() above does — reqs()/allBlocks() spread-copy
+     every block on each call ({...b}), so writes through them are silently
+     thrown away instead of reaching the data actually rendered. */
+  const items = [];
+  SECTIONS.forEach(s=>s.blocks.forEach(b=>{
+    const arr = (b.kind==="table") ? b.rows : [b];
+    arr.forEach(x=>{ if(x.kind==="requirement") items.push(x); });
+  }));
+  if(!items.length) return;
+  items.forEach(x=>{
+    if(x.status==="allocated") x.status="tovalidate";
+    if(x.allocStatus==="allocated") x.allocStatus="tovalidate";
+    (x.branches||[]).forEach(br=>{ if(br.allocStatus==="allocated") br.allocStatus="tovalidate"; });
+  });
+  const singleBranch = items.filter(x=>!(x.branches&&x.branches.length>1));
+  const unassignedIds = singleBranch.filter((x,i)=>i===2||i===7).map(x=>x.id);
+  const reviewFields = [
+    ["class","Class is AI-detected, unconfirmed"],
+    ["obs","Weak OBS derivation (61%) — the proposed assignment may be wrong"],
+  ];
+  const reviewCandidates = singleBranch.filter(x=>!unassignedIds.includes(x.id));
+  const reviewPicks = [reviewCandidates[0], reviewCandidates[Math.floor(reviewCandidates.length/2)]].filter(Boolean);
+  items.forEach(x=>{
+    if(unassignedIds.includes(x.id)){
+      x.alloc=null; x.techAI=false; x.perimAI=false;
+      x.status="incomplete"; x.doubtField=null; x.reviewReason=null;
+      x.allocStatus="incomplete"; x.allocDoubtField=null; x.allocReviewReason=null;
+      return;
+    }
+    // every other bucket needs a real OBS assignment — an unassigned OBS is
+    // an absolute floor to Incomplete (§8.2.1), and only the 2 picks above
+    // are meant to read Incomplete in this story.
+    if(!x.alloc && ALLOCS[0]) x.alloc = ALLOCS[0].id;
+    const pickIdx = reviewPicks.findIndex(p=>p&&p.id===x.id);
+    if(pickIdx>=0){
+      const [field,reason]=reviewFields[pickIdx];
+      x.status="doubt"; x.doubtField=field; x.reviewReason=reason;
+      x.techAI = field==="class"; x.perimAI = field==="typo"; // keep the Class/Typology cell's own "AI-detected" cue in sync
+      x.allocStatus="tovalidate"; x.allocDoubtField=null; x.allocReviewReason=null;
+      return;
+    }
+    x.status="tovalidate"; x.doubtField=null; x.reviewReason=null; x.techAI=false; x.perimAI=false;
+    x.allocStatus="tovalidate"; x.allocDoubtField=null; x.allocReviewReason=null;
+  });
+}
 const STATUS_RANK = {incomplete:0, doubt:1, tovalidate:2, allocated:3};
 /* B7 — combines characterisation and allocation into the ONE status a row's
    pill shows, "most restrictive wins" (same principle as compliance
@@ -1790,8 +1866,6 @@ const state = {
   activeCell:{id:null,bidx:null,col:null},
   wrapText:false,
   expandedBranches:new Set(),
-  containerEditing:false,
-  editingRelReq:null,
   redactMode:(function(){try{return (window.parent!==window&&window.parent.getRedactMode)?window.parent.getRedactMode():"redact";}catch(e){return "redact";}})(),
 };
 const changesOrder = ["EXG-003","EXG-007","GHOST-1"];
@@ -1801,31 +1875,55 @@ const findBlock = id => {
   if(BIG.on){ const r=BIG.rows.find(x=>x.id===id); if(r) return {b:r,s:r.section}; }
   for(const s of SECTIONS){ for(const b of s.blocks){ if(b.id===id) return {b,s}; if(b.kind==="table"){ const r=b.rows.find(x=>x.id===id); if(r) return {b:r,s}; } } } return null;
 };
-/* --- block nature: heading / info / requirement / image / container --- */
+/* --- block nature: heading / info / requirement / image --- */
 function blockNature(b){
   if(b.kind==="heading") return "heading";
-  if(b.kind==="image") return b.isContainer ? "container" : "image";
+  if(b.kind==="image") return "image";
   if(b.kind==="requirement") return "requirement";
   if(b.kind==="text") return "info";
   return b.kind;
 }
-const NATURE_LABEL = {heading:"Title", info:"Information", requirement:"Requirement", image:"Image", container:"Container"};
-/* related requirements captured from an image container — UI-only back-reference via b.sourceImage, nothing computed */
-const containerChildren = containerId => allBlocks().filter(b=>b.kind==="requirement" && b.sourceImage===containerId);
+const NATURE_LABEL = {heading:"Heading", info:"Information", requirement:"Requirement", image:"Image"};
+/* B9 — requirement rows captured from an image: a flat back-reference via
+   b.sourceImage, nothing nested. No container concept anymore — an image
+   auto-creates exactly one requirement row, and duplicating that row is how
+   a second (or third…) requirement gets attached to the same figure. */
+const sourceImageChildren = imgId => allBlocks().filter(b=>b.kind==="requirement" && b.sourceImage===imgId);
+/* B8 — requirement → information deletes any allocation already made,
+   destructively and irreversibly. Shared by the single-row reclassify (which
+   confirms first if an expert has already answered on a branch) and the bulk
+   "mark as Information" action (which doesn't prompt per item — same as
+   every other bulk action in this table). */
+function hasAnsweredWork(b){ return b.branchStatus==="answered" || (b.branches||[]).some(br=>br.branchStatus==="answered"); }
+function deleteAllocationData(b){
+  b.kind="text";
+  delete b.status; delete b.allocStatus; delete b.doubtField; delete b.allocDoubtField;
+  delete b.reviewReason; delete b.allocReviewReason;
+  delete b.type; delete b.tech; delete b.techAI; delete b.perim; delete b.perimAI;
+  delete b.alloc; delete b.manager; delete b.branches; delete b.branchStatus;
+  delete b.rollupCompliance; delete b.rollupStatus; delete b.blockingBranch;
+  delete b.pbs; delete b.abs; delete b.obs; delete b.domain;
+}
 /* reclassify a block between natures (AI mis-detection correction) */
 function reclassify(id, nature){
   const f=findBlock(id); if(!f) return;
   const b=f.b, before=blockNature(b);
   if(before===nature){ return; }
   if(b.kind==="image"){
-    // images toggle between Information and Container only — the image itself is never a requirement
-    b.isContainer = (nature==="container");
+    // B9 — one-way door: a mis-detected figure can be demoted to plain Information.
+    // There's no way back (and no "Container" nature anymore — an image just
+    // auto-creates its one requirement row now, see duplicateSourceRow).
+    if(nature==="info") b.kind="text";
   } else {
     if(nature==="heading"){ b.kind="heading"; b.level=b.level||2; }
-    else if(nature==="info"){ b.kind="text"; }
+    else if(nature==="info"){
+      if(before==="requirement" && hasAnsweredWork(b) && !confirm(`${id} already has an expert's answer recorded. Switching it to Information permanently deletes that work — this can't be undone. Continue?`)) return;
+      deleteAllocationData(b);
+    }
     else if(nature==="requirement"){
       b.kind="requirement";
-      b.status=b.status||"incomplete"; b.allocStatus=b.allocStatus||"incomplete"; b.type=b.type||"Functional";
+      // B8 — information → requirement always lands on Incomplete: nothing is filled in yet.
+      b.status="incomplete"; b.allocStatus="incomplete"; b.type=b.type||"Functional";
       b.tech=b.tech||"tech"; b.perim=b.perim||[]; b.alloc=b.alloc||null; b.manager=b.manager||null;
     }
   }
@@ -1876,6 +1974,7 @@ function buildBigData(n){
 ===================================================== */
 function visibleTo(b){
   if(isAdmin()) return true;
+  if(blockNature(b)==="info") return true; // nobody's requirement — not owned by any manager, never restricted
   if(b.manager===VIEWER) return true;
   return (b.branches||[]).some(br=>br.manager===VIEWER);
 }
@@ -1909,10 +2008,15 @@ function pushBranchLog(b,who,what,k){
 function matchesFilter(b){
   if(!visibleTo(b)) return false;
   if(state.filterToSelection) return state.selection.has(b.id);
+  // B8 — an information row carries none of the fields any quick/column filter
+  // describes (no typology, no status…), so it only ever shows in the
+  // unfiltered view — never claim a match against a filter it structurally can't satisfy.
+  if(blockNature(b)==="info") return !state.filter;
   if(!passesColFilters(b)) return false;
   if(state.filter==="incomplete"||state.filter==="doubt"||state.filter==="tovalidate"||state.filter==="allocated")
     return blockNature(b)==="requirement" && effectiveStatus(b).val===state.filter;
   if(state.filter==="changed") return !!b.change || b.kind==="ghost";
+  if(state.filter==="reassign") return blockNature(b)==="requirement" && hasPendingReassign(b);
   return true;
 }
 function matchesSearch(b){
@@ -2009,8 +2113,9 @@ function natureTag(b){
   return `<button class="nat-pick" data-natpick="${b.id}" title="Reclassify this block">${NATURE_LABEL[n]} ▾</button>`;
 }
 function natureOptions(b){
-  // images: Information / Container (an image never IS a requirement, it can only hold some) ; text & headings: Title / Information / Requirement
-  return b.kind==="image" ? ["info","container"] : ["heading","info","requirement"];
+  // B9 — an image can only be demoted to Information (mis-detected figure);
+  // headings/info/requirement blocks can freely become any of the three.
+  return b.kind==="image" ? ["info"] : ["heading","info","requirement"];
 }
 function attachReclassify(el,b){
   const btn=el.querySelector(".nat-pick"); if(!btn) return;
@@ -2088,17 +2193,18 @@ function renderDoc(){
           return;
         }
         if(b.kind==="image"){
-          const kids = b.isContainer ? containerChildren(b.id) : [];
+          // B9 — no container: just the figure, plus however many requirement
+          // rows are attached to it (one auto-created, more via Duplicate).
+          const kids = sourceImageChildren(b.id);
           el.innerHTML = `<div class="doc-fig">
               <div class="fig-frame"><svg width="100%" height="120" viewBox="0 0 400 120" fill="none"><rect x="1" y="1" width="398" height="118" rx="6" stroke="var(--paper-ink-2)" stroke-dasharray="4 4" opacity=".4"/><rect x="30" y="35" width="70" height="34" rx="4" stroke="var(--paper-ink-2)" opacity=".6"/><rect x="165" y="35" width="70" height="34" rx="4" stroke="var(--paper-ink-2)" opacity=".6"/><rect x="300" y="35" width="70" height="34" rx="4" stroke="var(--paper-ink-2)" opacity=".6"/><path d="M100 52h65M235 52h65" stroke="var(--paper-ink-2)" opacity=".5"/><text x="200" y="95" text-anchor="middle" font-size="9" fill="var(--paper-ink-2)" opacity=".6">gateways → aggregator → platform</text></svg></div>
               <div class="fig-cap">${b.caption||b.text}</div>
             </div>
             <span class="type-chip">${natureLabelChip(b)}</span>${natureTag(b)}
             <span class="img-lock" title="Source image — never edited or deleted here">🔒</span>
-            ${b.isContainer?`<span class="cbadge container-count-badge" style="position:absolute;top:-9px;left:10px">${kids.length} requirement${kids.length===1?"":"s"} captured</span>`:""}
+            ${kids.length?`<span class="cbadge container-count-badge" style="position:absolute;top:-9px;left:10px">${kids.length} requirement${kids.length===1?"":"s"} captured</span>`:""}
             ${b.id?`<span class="blk-id">${b.id}</span>`:""}`;
           attachReclassify(el,b);
-          el.addEventListener("click",e=>{ if(e.target.closest(".nat-pick"))return; if(b.isContainer) selectBlock(b.id); });
           paper.appendChild(el);
           return;
         }
@@ -2266,7 +2372,7 @@ function bulkReclassifyInfo(){
     const f=findBlock(id); if(!f) return;
     const b=f.b, before=blockNature(b);
     if(before==="info") return;
-    if(b.kind==="image"){ b.isContainer=false; } else { b.kind="text"; }
+    if(b.kind==="image"){ b.kind="text"; } else { deleteAllocationData(b); }
     logFeedback("char", id, NATURE_LABEL[before], NATURE_LABEL["info"], null);
     c++;
   });
@@ -2319,8 +2425,12 @@ function rowInnerHTML(b){
   const hasBranches = (b.branches||[]).length>1;
   const branchBadge = hasBranches?`<span class="cbadge branch-count-badge" title="${b.branches.length} parallel allocations">⑂ ${b.branches.length}</span>`:"";
   const blockingBadge = hasBranches&&b.blockingBranch?`<span class="cbadge blocking-badge" title="${b.blockingBranch.replace(/"/g,'&quot;')}">⚠ Blocked</span>`:"";
-  const provenanceBadge = b.sourceImage?`<button type="button" class="cbadge provenance-badge" data-gotoimg="${b.sourceImage}" title="Captured from ${b.sourceImage} — click to view in the document">📷 ${b.sourceImage}</button>`:"";
-  const badges = `${branchBadge}${blockingBadge}${provenanceBadge}${b.comments?`<span class="cbadge">💬 ${b.comments}</span>`:""}${b.change?`<span class="cbadge" style="color:var(--ia)">Δ v2.1</span>`:""}`;
+  // B9 — image-sourced rows never carry typed text; the text cell shows the same
+  // small image-jump button as before, just promoted to the row's main content
+  // (see below), plus Duplicate / Delete-duplicate actions instead of an excerpt.
+  const imgSrcBtn = b.sourceImage?`<button type="button" class="img-src-btn" data-gotoimg="${b.sourceImage}" title="Captured from ${b.sourceImage} — click to view in the document">📷 ${b.sourceImage}${b.duplicatedFrom?` <span class="img-dup-tag">duplicate</span>`:""}</button>`:"";
+  const imgRowActions = b.sourceImage?`<button class="mini-btn row-dup" data-dup="${b.id}" title="Duplicate — attach another requirement to ${b.sourceImage}">⎘ Duplicate</button>${b.duplicatedFrom?`<button class="mini-btn row-deldup" data-deldup="${b.id}" title="Delete this duplicate">🗑 Delete</button>`:""}`:"";
+  const badges = `${branchBadge}${blockingBadge}${b.comments?`<span class="cbadge">💬 ${b.comments}</span>`:""}${b.change?`<span class="cbadge" style="color:var(--ia)">Δ v2.1</span>`:""}`;
   const proposedTypos = new Set((b.branches||[]).filter(br=>br.proposal).map(br=>br.typology));
   const typoTags = (b.perim||[]).length
     ? (b.perim||[]).map(p=>`<span class="ptag${p==="tky"?" tky":""}${proposedTypos.has(p)?" proposed":""}" title="${proposedTypos.has(p)?"Proposed change — pending project-manager review":""}">${TY(p).code}</span>`).join("")
@@ -2368,7 +2478,7 @@ function rowInnerHTML(b){
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
     <div class="rcell c-id">${caretHTML}${b.id}</div>
-    <div class="rcell c-req"><div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div>${badges?`<div class="req-badges">${badges}</div>`:""}</div>
+    <div class="rcell c-req">${b.sourceImage?imgSrcBtn:`<div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div>`}<div class="req-badges">${imgRowActions}${badges}</div><button class="nat-pick row-natpick" data-natpick="${b.id}" title="Reclassify this block">▾</button></div>
     <div class="rcell c-class"><button class="cls-flip ${b.techAI?"ia":""}" data-clsflip="${b.id}" title="${b.techAI?"AI-detected, unconfirmed — ":""}Click to switch classification">${b.tech==="tech"?"Tech":"Non-tech"}</button></div>
     <div class="rcell c-typo"><button class="typo-cell" data-typocell="${b.id}">${typoTags}</button></div>
     <div class="rcell c-abs"><input type="text" class="cell-text" data-abs="${b.id}" value="${(b.domain||"").replace(/"/g,'&quot;')}" placeholder="—"></div>
@@ -2377,6 +2487,25 @@ function rowInnerHTML(b){
     <div class="rcell c-mgr">${mgrCellHTML}</div>
     <div class="rcell c-status"><button class="status-pill ${statusCls}" data-cycle="${b.id}" title="${statusTitle.replace(/"/g,'&quot;')}">${statusLbl}</button></div>
     <div class="rcell c-compliance">${complianceHTML}</div>`;
+}
+/* B8 — an information row: no typology, no allocation, no compliance, no
+   status — the category is its only attribute. Same 11-column grid as a
+   requirement row so the header stays aligned, everything past the text
+   cell is just a placeholder. */
+function infoRowHTML(b){
+  const plain = (b.text||"").replace(/<[^>]+>/g,"");
+  return `
+    <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
+    <div class="rcell c-id">${b.id}</div>
+    <div class="rcell c-req"><span class="info-row-pill">Information</span><div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div><button class="nat-pick row-natpick" data-natpick="${b.id}" title="Reclassify this block">▾</button></div>
+    <div class="rcell c-class"><span class="ph">—</span></div>
+    <div class="rcell c-typo"><span class="ph">—</span></div>
+    <div class="rcell c-abs"><span class="ph">—</span></div>
+    <div class="rcell c-type"><span class="ph">—</span></div>
+    <div class="rcell c-obs"><span class="ph">—</span></div>
+    <div class="rcell c-mgr"><span class="ph">—</span></div>
+    <div class="rcell c-status"><span class="ph">—</span></div>
+    <div class="rcell c-compliance"><span class="ph">—</span></div>`;
 }
 /* one editable sub-row per branch — UI-only, no recomputation of the parent on edit */
 function branchRowHTML(parent, branch, idx){
@@ -2491,7 +2620,10 @@ function buildVRows(){
       if(state.docFilter!=="all" && sec.docId!==state.docFilter) return;
       const flat = sec.blocks.flatMap(b=>b.kind==="table"?b.rows.map(r=>({...r,section:sec})):[b]);
       const secReqs = flat.filter(b=>blockNature(b)==="requirement" && pass(b));
-      if(!secReqs.length) return;
+      // B8 — information rows now get a row of their own too, so a section
+      // holding only information (no requirements yet) must still render.
+      const secInfo = flat.filter(b=>blockNature(b)==="info" && pass(b));
+      if(!secReqs.length && !secInfo.length) return;
       if(sec.docId!==lastDocId){ VROWS.push({type:"doctitle",doc:DOC(sec.docId)}); lastDocId=sec.docId; }
       VROWS.push({type:"sec",sec,n:secReqs.length});
       flat.forEach(b=>{
@@ -2501,6 +2633,7 @@ function buildVRows(){
         // are listed, at their normal document position, whether captured from an image or not
         // (the IMG chip on the row links back to the image in the Document view)
         if(nat==="requirement" && pass(b)) pushRow(b);
+        if(nat==="info" && pass(b)) VROWS.push({type:"info",b});
       });
     });
   }
@@ -2533,6 +2666,7 @@ function renderReview(){
     if(it.type==="sec")   return `<div class="rgrid-sec"><span class="rs-num">${it.sec.num}</span><span class="rs-t">${it.sec.title}</span><span class="gn" style="margin-left:auto;color:var(--text-3)">${it.n}</span></div>`;
     if(it.type==="head")  return `<div class="rgrid-sub lvl-${it.b.level||2}"><span class="rh-t">${it.b.text}</span></div>`;
     if(it.type==="branch") return branchRowHTML(it.parent,it.branch,it.idx);
+    if(it.type==="info")  return `<div class="rrow info-row${state.selected===it.b.id?" active":""}" data-id="${it.b.id}">${infoRowHTML(it.b)}</div>`;
     const b=it.b;
     return `<div class="rrow${state.selected===b.id?" active":""}${state.selection.has(b.id)?" bulk-sel":""}" data-id="${b.id}">${rowInnerHTML(b)}</div>`;
   }
@@ -2671,6 +2805,30 @@ function bindVRows(win){
     refresh();
   }));
   win.querySelectorAll("[data-typocell]").forEach(btn=>btn.addEventListener("click",e=>{ e.stopPropagation(); openTypoPopover(btn, btn.dataset.typocell); }));
+  /* B8 — table-row nature correction (heading/information/requirement), reusing
+     the same picker the Document view already has (natureOptions/reclassify) —
+     just bound generically here since table rows are rebuilt from HTML strings
+     rather than held as persistent per-block elements like Document view's are. */
+  win.querySelectorAll("[data-natpick]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    document.querySelectorAll(".nat-menu").forEach(m=>m.remove());
+    const id=btn.dataset.natpick, f=findBlock(id); if(!f) return;
+    const b=f.b, cur=blockNature(b);
+    const menu=document.createElement("div"); menu.className="nat-menu";
+    menu.innerHTML=natureOptions(b).map(n=>`<button data-n="${n}" class="${n===cur?"on":""}">${NATURE_LABEL[n]}</button>`).join("");
+    const r=btn.getBoundingClientRect();
+    menu.style.top=(r.bottom+4)+"px"; menu.style.left=r.left+"px";
+    document.body.appendChild(menu);
+    menu.querySelectorAll("[data-n]").forEach(o=>o.addEventListener("click",ev=>{ ev.stopPropagation(); menu.remove(); reclassify(id,o.dataset.n); }));
+    const close=ev=>{ if(!ev.target.closest(".nat-menu")){ menu.remove(); document.removeEventListener("click",close); } };
+    setTimeout(()=>document.addEventListener("click",close),0);
+  }));
+  win.querySelectorAll("[data-dup]").forEach(btn=>btn.addEventListener("click",e=>{ e.stopPropagation(); duplicateSourceRow(btn.dataset.dup); }));
+  win.querySelectorAll("[data-deldup]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    const id=btn.dataset.deldup;
+    if(confirm(`Delete ${id}? This duplicate row will be removed — the original image and its first captured requirement are never deleted.`)) deleteDuplicateRow(id);
+  }));
   const visIds=VROWS.filter(x=>x.type==="row").map(x=>x.b.id);
   currentVisIds=visIds;
   win.querySelectorAll(".rowsel").forEach(cb=>cb.addEventListener("click",e=>{
@@ -2743,21 +2901,24 @@ function managerViewHTML(b){
     <div class="mgr-txt"><div class="mgr-name">${m.name}${you?' <span class="mgr-you">you</span>':''}</div><div class="mgr-role">${m.role}</div></div>
     <button class="mgr-change" id="mgr-change">Change</button></div>`;
 }
-/* B1 — branch manager's "propose a change" trigger: reassignment or a missing typology,
-   both route to the existing reassignment_needed state for the project manager to review */
+/* B1/B10 — branch manager's "propose a change" trigger: a reassignment request
+   (one of three reasons, B10) or a missing typology, both route to the existing
+   reassignment_needed state for the project manager to review */
 function proposeBlockHTML(b, hasBranches, myBranch){
   const branches = b.branches||[];
   const mine = hasBranches ? myBranch : (branches[0]||null);
-  const pending = branches.filter(br=>br.proposal && br.proposal.by===VIEWER);
+  const addPending = branches.filter(br=>br.proposal && br.proposal.by===VIEWER);
+  const reassignPending = branches.filter(br=>br.reassignRequest && br.reassignRequest.by===VIEWER);
   const reassignBlocked = mine && mine.branchStatus==="reassignment_needed";
   return `<div class="set-sep"></div>
     <div class="propose-block">
       <label class="propose-lbl">Propose a change</label>
-      ${pending.length?`<div class="propose-pending">
-        ${pending.map(p=>`<div class="propose-pending-t">${p.proposal.kind==="add"?`✦ New typology requested — <b>${TY(p.typology).label}</b>`:`↩ Reassignment requested — <b>${TY(p.typology).label}</b>`}: "${escHtml(p.proposal.note)}" <span style="color:var(--text-3)">· awaiting project-manager review</span></div>`).join("")}
+      ${addPending.length||reassignPending.length?`<div class="propose-pending">
+        ${addPending.map(p=>`<div class="propose-pending-t">✦ New typology requested — <b>${TY(p.typology).label}</b>: "${escHtml(p.proposal.note)}" <span style="color:var(--text-3)">· awaiting project-manager review</span></div>`).join("")}
+        ${reassignPending.map(p=>`<div class="propose-pending-t">↩ Reassignment requested — <b>${TY(p.typology).label}</b> · ${REASON_LABEL[p.reassignRequest.reason]}: "${escHtml(p.reassignRequest.note)}" <span style="color:var(--text-3)">· awaiting project-manager review</span></div>`).join("")}
       </div>`:""}
       <div class="propose-actions">
-        <button class="mini-btn" id="propose-reassign-btn" ${reassignBlocked?"disabled":""} title="${reassignBlocked?"Already flagged for reassignment":"Ask the project manager to review this allocation"}">↩ Propose reassignment</button>
+        <button class="mini-btn" id="propose-reassign-btn" ${reassignBlocked?"disabled":""} title="${reassignBlocked?"Already flagged for reassignment":"Ask the project manager to reassign this allocation"}">↩ Request reassignment</button>
         <button class="mini-btn" id="propose-add-btn" title="Ask the project manager to add a typology you think was missed">+ Missing typology</button>
       </div>
       <div class="propose-form" id="propose-form" style="display:none"></div>
@@ -2767,11 +2928,9 @@ function renderProposeForm(kind,b,body){
   const form = body.querySelector("#propose-form");
   const used = new Set([...(b.perim||[]), ...(b.branches||[]).map(br=>br.typology)]);
   const options = TYPO.filter(t=>t.id!=="tky" && !used.has(t.id));
-  form.innerHTML = (kind==="add"
-    ? `<select id="propose-typo">${options.length?options.map(t=>`<option value="${t.id}">${t.code} — ${t.label}</option>`).join(""):'<option value="">No typology left to propose</option>'}</select>
+  form.innerHTML = `<select id="propose-typo">${options.length?options.map(t=>`<option value="${t.id}">${t.code} — ${t.label}</option>`).join(""):'<option value="">No typology left to propose</option>'}</select>
        <textarea id="propose-note" placeholder="Why do you think this typology is missing?"></textarea>`
-    : `<textarea id="propose-note" placeholder="Why should this be reassigned?"></textarea>`)
-    + `<div class="propose-form-actions"><button class="mini-btn" id="propose-cancel">Cancel</button><button class="mgr-done" id="propose-submit"${kind==="add"&&!options.length?" disabled":""}>Submit proposal</button></div>`;
+    + `<div class="propose-form-actions"><button class="mini-btn" id="propose-cancel">Cancel</button><button class="mgr-done" id="propose-submit"${!options.length?" disabled":""}>Submit proposal</button></div>`;
   form.style.display = "flex";
   form.querySelector("#propose-cancel").addEventListener("click",()=>{ form.style.display="none"; form.innerHTML=""; });
   form.querySelector("#propose-submit").addEventListener("click",()=>submitPropose(kind,b,form));
@@ -2780,48 +2939,149 @@ function submitPropose(kind,b,form){
   const note = (form.querySelector("#propose-note").value||"").trim();
   if(!note){ toast("Add a short reason before submitting","warn"); return; }
   const mgrName = MGR(VIEWER).name;
-  if(kind==="reassign"){
-    ensureBranches(b);
-    const target = myBranchOf(b) || b.branches[0];
-    if(!target){ toast("No allocation to propose a change on","warn"); return; }
-    target.proposal = {kind:"reassign", note, by:VIEWER, at:"Today", prevManager:target.manager, prevExpert:target.expert, prevBranchStatus:target.branchStatus};
-    target.branchStatus = "reassignment_needed";
-    pushBranchLog(b, mgrName, `Proposed a reassignment for ${TY(target.typology).label} — "${note}"`);
-    toast("Reassignment proposed — sent to the project manager","ok");
-  } else {
-    const typo = form.querySelector("#propose-typo").value;
-    if(!typo){ toast("Pick a typology first","warn"); return; }
-    ensureBranches(b);
-    b.branches.push({typology:typo, label:TY(typo).label, manager:null, expert:null, branchStatus:"reassignment_needed", compliance:"pending", proposal:{kind:"add", note, by:VIEWER, at:"Today"}});
-    if(!(b.perim||[]).includes(typo)) b.perim=[...(b.perim||[]), typo];
-    pushBranchLog(b, mgrName, `Proposed adding ${TY(typo).label} as a missing typology — "${note}"`);
-    toast("New typology proposed — sent to the project manager","ok");
-  }
+  const typo = form.querySelector("#propose-typo").value;
+  if(!typo){ toast("Pick a typology first","warn"); return; }
+  ensureBranches(b);
+  b.branches.push({typology:typo, label:TY(typo).label, manager:null, expert:null, branchStatus:"reassignment_needed", compliance:"pending", proposal:{kind:"add", note, by:VIEWER, at:"Today"}});
+  if(!(b.perim||[]).includes(typo)) b.perim=[...(b.perim||[]), typo];
+  pushBranchLog(b, mgrName, `Proposed adding ${TY(typo).label} as a missing typology — "${note}"`);
+  toast("New typology proposed — sent to the project manager","ok");
+  refresh();
+}
+/* B10 — reassignment request form: pick one of the three reasons, name the
+   replacement (expert for "wrong person", typology for the other two — reallocation
+   is always a replacement, so both of those cases require a destination typology
+   right away rather than just flagging the branch), then a short note. */
+function renderReassignForm(b,body){
+  const form = body.querySelector("#propose-form");
+  ensureBranches(b);
+  const target = myBranchOf(b) || b.branches[0];
+  if(!target){ toast("No allocation to request a reassignment on","warn"); return; }
+  const expertOptions = ALLOCS.filter(a=>a.id!==target.expert);
+  const typoOptions = TYPO.filter(t=>t.id!=="tky" && t.id!==target.typology);
+  form.dataset.branchTypology = target.typology;
+  form.innerHTML = `
+    <div class="reassign-reasons">
+      ${Object.entries(REASON_LABEL).map(([k,label])=>`<label class="reassign-reason"><input type="radio" name="reassign-reason" value="${k}" ${k==="wrong_person"?"checked":""}> ${label}</label>`).join("")}
+    </div>
+    <select id="reassign-expert" style="display:block">${expertOptions.map(a=>`<option value="${a.id}">${a.label}</option>`).join("")}</select>
+    <select id="reassign-typo" style="display:none">${typoOptions.map(t=>`<option value="${t.id}">${t.code} — ${t.label}</option>`).join("")}</select>
+    <textarea id="propose-note" placeholder="Why should this be reassigned?"></textarea>
+    <div class="propose-form-actions"><button class="mini-btn" id="propose-cancel">Cancel</button><button class="mgr-done" id="propose-submit">Submit request</button></div>`;
+  form.style.display = "flex";
+  const expertSel = form.querySelector("#reassign-expert"), typoSel = form.querySelector("#reassign-typo");
+  form.querySelectorAll('input[name="reassign-reason"]').forEach(r=>r.addEventListener("change",()=>{
+    const isPerson = form.querySelector('input[name="reassign-reason"]:checked').value==="wrong_person";
+    expertSel.style.display = isPerson?"block":"none";
+    typoSel.style.display = isPerson?"none":"block";
+  }));
+  form.querySelector("#propose-cancel").addEventListener("click",()=>{ form.style.display="none"; form.innerHTML=""; });
+  form.querySelector("#propose-submit").addEventListener("click",()=>submitReassignRequest(b,target,form));
+}
+function submitReassignRequest(b,target,form){
+  const note = (form.querySelector("#propose-note").value||"").trim();
+  if(!note){ toast("Add a short reason before submitting","warn"); return; }
+  const reason = form.querySelector('input[name="reassign-reason"]:checked').value;
+  const replacementExpert = reason==="wrong_person" ? form.querySelector("#reassign-expert").value : null;
+  const replacementTypology = reason!=="wrong_person" ? form.querySelector("#reassign-typo").value : null;
+  const replacementExpertLabel = replacementExpert ? (ALLOCS.find(a=>a.id===replacementExpert)||{}).label : null;
+  const replacementTypologyLabel = replacementTypology ? TY(replacementTypology).label : null;
+  const mgrName = MGR(VIEWER).name;
+  const req = {
+    reqId:b.id, typology:target.typology, reason, note,
+    by:VIEWER, byName:mgrName, byRole:"manager", at:"Today",
+    replacementExpert, replacementTypology, replacementExpertLabel, replacementTypologyLabel,
+    prevBranchStatus:target.branchStatus,
+  };
+  let shared = null;
+  try{ if(window.parent!==window && window.parent.pushReassignRequest) shared = window.parent.pushReassignRequest(Object.assign({},req)); }catch(e){}
+  target.reassignRequest = Object.assign({requestId: shared?shared.id:null}, req);
+  target.branchStatus = "reassignment_needed";
+  pushBranchLog(b, mgrName, `Requested reassignment for ${TY(target.typology).label} — ${REASON_LABEL[reason]}: "${note}"`);
+  toast("Reassignment requested — sent to the project manager","ok");
   refresh();
 }
 function approveProposal(b,idx){
   const branch=b.branches[idx]; const prop=branch.proposal; if(!prop) return;
-  branch.branchStatus = prop.kind==="add" ? "awaiting" : (prop.prevBranchStatus||"awaiting");
+  branch.branchStatus = "awaiting";
   branch.proposal=null;
-  pushBranchLog(b, MGR("admin").name, prop.kind==="add"
-    ? `Approved — ${TY(branch.typology).label} added as a new activity.`
-    : `Approved — reassignment confirmed for ${TY(branch.typology).label}.`, "ok");
+  pushBranchLog(b, MGR("admin").name, `Approved — ${TY(branch.typology).label} added as a new activity.`, "ok");
   toast("Proposal approved","ok");
   refresh();
 }
 function rejectProposal(b,idx){
   const branch=b.branches[idx]; const prop=branch.proposal; if(!prop) return;
-  if(prop.kind==="add"){
-    b.branches.splice(idx,1);
-    if(!b.branches.some(x=>x.typology===branch.typology)) b.perim=(b.perim||[]).filter(p=>p!==branch.typology);
-    pushBranchLog(b, MGR("admin").name, `Rejected — proposed ${TY(branch.typology).label} activity removed, reverted to its prior state.`, "warn");
-  } else {
-    branch.manager=prop.prevManager; branch.expert=prop.prevExpert; branch.branchStatus=prop.prevBranchStatus||"awaiting";
-    branch.proposal=null;
-    pushBranchLog(b, MGR("admin").name, `Rejected — ${TY(branch.typology).label} reverted to its prior allocation.`, "warn");
-  }
+  b.branches.splice(idx,1);
+  if(!b.branches.some(x=>x.typology===branch.typology)) b.perim=(b.perim||[]).filter(p=>p!==branch.typology);
+  pushBranchLog(b, MGR("admin").name, `Rejected — proposed ${TY(branch.typology).label} activity removed, reverted to its prior state.`, "warn");
   toast("Proposal rejected — reverted to the prior state","warn");
   refresh();
+}
+/* B10 — reassignment request approve/reject. Approve always replaces, never
+   just removes: "wrong person" keeps the same typology and swaps the expert;
+   "wrong typology" / "activity doesn't apply" swap the branch's typology itself
+   for the one the requester named — the branch never disappears outright, so a
+   requirement can never end up with zero activities. */
+function approveReassign(b,idx){
+  const branch=b.branches[idx]; const req=branch.reassignRequest; if(!req) return;
+  const actor = MGR(VIEWER).name;
+  if(req.reason==="wrong_person"){
+    // the replacement may have been named from Expert Space, whose expert ids
+    // (individual people) live in a different namespace than this screen's ALLOCS
+    // (team-level OBS) — only apply it to the OBS field when it actually resolves
+    // locally; otherwise the team-level OBS was already correct, so just clear the request.
+    const localMatch = ALLOCS.find(a=>a.id===req.replacementExpert);
+    const newExpertLabel = req.replacementExpertLabel || (localMatch||{}).label || "—";
+    if(localMatch) branch.expert = req.replacementExpert;
+    branch.branchStatus = "awaiting";
+    branch.reassignRequest = null;
+    pushBranchLog(b, actor, `Approved — ${TY(branch.typology).label} reassigned to ${newExpertLabel.split("—")[0].trim()}.`, "ok");
+  } else {
+    const oldLabel = TY(branch.typology).label, newTypo = req.replacementTypology;
+    const newLabel = req.replacementTypologyLabel || TY(newTypo).label;
+    const newBranch = {typology:newTypo, label:newLabel, manager:null, expert:null, branchStatus:"awaiting", compliance:"pending"};
+    b.branches.splice(idx,1,newBranch);
+    if(!b.branches.some(x=>x.typology===branch.typology)) b.perim=(b.perim||[]).filter(p=>p!==branch.typology);
+    if(!(b.perim||[]).includes(newTypo)) b.perim=[...(b.perim||[]), newTypo];
+    pushBranchLog(b, actor, `Approved — ${oldLabel} replaced with ${newLabel} (${req.reason==="not_applicable"?"activity didn't apply":"wrong typology"}).`, "ok");
+  }
+  try{ if(window.parent!==window && window.parent.updateReassignRequest && req.requestId) window.parent.updateReassignRequest(req.requestId, {requestStatus:"approved"}); }catch(e){}
+  toast("Reassignment approved","ok");
+  refresh();
+}
+function rejectReassign(b,idx){
+  const branch=b.branches[idx]; const req=branch.reassignRequest; if(!req) return;
+  branch.branchStatus = req.prevBranchStatus||"awaiting";
+  branch.reassignRequest = null;
+  pushBranchLog(b, MGR(VIEWER).name, `Rejected — reassignment request for ${TY(branch.typology).label} declined, reverted to its prior state.`, "warn");
+  try{ if(window.parent!==window && window.parent.updateReassignRequest && req.requestId) window.parent.updateReassignRequest(req.requestId, {requestStatus:"rejected"}); }catch(e){}
+  toast("Reassignment rejected — reverted to the prior state","warn");
+  refresh();
+}
+/* B10 — pulls in reassignment requests raised elsewhere (Expert Space) via the
+   shared shell-level mailbox. Manager-raised requests are skipped here — they're
+   already applied locally the moment they're submitted, so re-processing them
+   from the shared store would double them up. */
+function syncReassignRequestsFromShell(){
+  let shared;
+  try{ shared = (window.parent!==window && window.parent.getReassignRequests) ? window.parent.getReassignRequests() : null; }catch(e){ shared=null; }
+  if(!shared) return;
+  shared.forEach(req=>{
+    if(req.requestStatus!=="pending" || req.byRole!=="expert") return;
+    const f=findBlock(req.reqId); if(!f) return;
+    const b=f.b; if(blockNature(b)!=="requirement") return;
+    ensureBranches(b);
+    let target = b.branches.find(br=>br.typology===req.typology);
+    if(!target){
+      target = {typology:req.typology, label:TY(req.typology).label, manager:b.manager||null, expert:null, branchStatus:"awaiting", compliance:"pending"};
+      b.branches.push(target);
+      if(!(b.perim||[]).includes(req.typology)) b.perim=[...(b.perim||[]), req.typology];
+    }
+    if(target.reassignRequest && target.reassignRequest.requestId===req.id) return;
+    target.reassignRequest = Object.assign({}, req, {requestId:req.id});
+    target.branchStatus = "reassignment_needed";
+    pushBranchLog(b, req.byName, `Requested reassignment for ${TY(req.typology).label} — ${REASON_LABEL[req.reason]}: "${req.note}"`);
+  });
 }
 /* B3 — project manager overrides + locks a branch's compliance verdict. No comment
    required. Only the project manager can lock or unlock — no other role ever sees
@@ -2879,13 +3139,24 @@ function renderSettings(){
   const {b,s} = findBlock(state.selected);
   if(b.kind==="ghost"){ renderChangePanel(b,s,panel); return; }
   if(state.mode==="compare" && b.change){ renderChangePanel(b,s,panel); return; }
-  if(blockNature(b)==="container"){ renderContainerPanel(b,s,panel); return; }
 
   const suggestion = TYPE_SUGGEST[b.id];
   const isReq = blockNature(b)==="requirement";
   const hasBranches = isReq && (b.branches||[]).length>1;
   const rmView = hasBranches && isAdmin();
   const myBranch = hasBranches && !isAdmin() ? myBranchOf(b) : null;
+  // B10 — a reassignment request (or a B1 add-typology proposal) needs the project
+  // manager's approve/reject card even when the requirement still has only one
+  // branch; hasBranches/rmView alone would hide it until a second branch exists.
+  const showBranchPanel = isReq && isAdmin() && ((b.branches||[]).length>1 || (b.branches||[]).some(br=>br.proposal||br.reassignRequest));
+  // TC1 — a request raised by the EXPERT belongs to that branch's own manager to
+  // resolve, not the admin (a byRole:"manager" request is a B1 escalation and stays
+  // admin-only, handled above by showBranchPanel). Looked up independently of
+  // myBranch/hasBranches so it still surfaces on a requirement with only one branch.
+  const myReassignBranch = isReq && !isAdmin()
+    ? (b.branches||[]).find(br=>br.manager===VIEWER && br.reassignRequest && br.reassignRequest.byRole==="expert")
+    : null;
+  const myReassignIdx = myReassignBranch ? b.branches.indexOf(myReassignBranch) : -1;
   const es = effectiveStatus(b);
   panel.innerHTML = `
     <div class="set-head">
@@ -2893,9 +3164,13 @@ function renderSettings(){
         <span class="set-id">${isReq?b.id:"Text block"}</span>
         <span class="status-pill s-${es.val}" style="cursor:default">${STATUS_LABEL[es.val]}</span>
         ${rmView?`<span class="assignments-badge" title="${b.branches.length} parallel allocations">🔀 ${b.branches.length} assignments</span>`:""}
-        ${b.sourceImage?`<button class="mini-btn" id="back-to-container" style="margin-left:auto" title="Back to ${b.sourceImage}">← Container</button>`:""}
+        ${b.sourceImage?`<button class="mini-btn" id="back-to-container" style="margin-left:auto" title="Back to ${b.sourceImage}">← Image</button>`:""}
       </div>
-      ${b.sourceImage?`<div class="prov-hint" style="color:var(--human);margin-bottom:4px">📷 Captured from <b>${b.sourceImage}</b></div>`:""}
+      ${b.sourceImage?`<div class="prov-hint" style="color:var(--human);margin-bottom:4px;display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap">
+        <span>📷 Captured from <b>${b.sourceImage}</b>${b.duplicatedFrom?` — duplicate of <b>${b.duplicatedFrom}</b>`:""}</span>
+        <button class="mini-btn" id="panel-dup" title="Duplicate — attach another requirement to ${b.sourceImage}">⎘ Duplicate</button>
+        ${b.duplicatedFrom?`<button class="mini-btn" id="panel-deldup" title="Delete this duplicate">🗑 Delete</button>`:""}
+      </div>`:""}
       ${es.reviewReason&&es.val==="doubt"?`<div class="review-why">⚠ ${es.reviewReason}</div>`:""}
       <div class="set-title" title="${b.text.replace(/<[^>]+>/g,"").replace(/"/g,'&quot;')}">${b.text.replace(/<[^>]+>/g,"")}</div>
     </div>
@@ -2908,7 +3183,11 @@ function renderSettings(){
     <div class="set-body" id="set-body"></div>`;
 
   panel.querySelectorAll("[data-tab]").forEach(t=>t.addEventListener("click",()=>{state.tab=t.dataset.tab;renderSettings()}));
-  panel.querySelector("#back-to-container")?.addEventListener("click",()=>selectBlock(b.sourceImage));
+  panel.querySelector("#back-to-container")?.addEventListener("click",()=>{ setMode("document"); selectBlock(b.sourceImage,{scroll:true}); });
+  panel.querySelector("#panel-dup")?.addEventListener("click",()=>{ const dup=duplicateSourceRow(b.id); if(dup) selectBlock(dup.id); });
+  panel.querySelector("#panel-deldup")?.addEventListener("click",()=>{
+    if(confirm(`Delete ${b.id}? This duplicate row will be removed — the original image and its first captured requirement are never deleted.`)) deleteDuplicateRow(b.id);
+  });
 
   const body = panel.querySelector("#set-body");
   if(state.tab==="rex" && !(isReq && rexFor(b).length)) state.tab="details";
@@ -2974,21 +3253,45 @@ function renderSettings(){
         ${myBranch&&myBranch.locked?`<div class="tech-hint">You can no longer edit this verdict — the project manager overrode and locked it.${myBranch.expertCompliance?` Your original verdict was <b>${complianceLabel(myBranch.expertCompliance)}</b>.`:""}</div>`:""}
       </div>`:""}
 
-      ${rmView?`<div class="set-sep"></div>
+      ${myReassignBranch?`<div class="set-sep"></div>
+      <div class="branch-proposal">
+        <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(expert)</span></div>
+        <div class="branch-proposal-note">${REASON_LABEL[myReassignBranch.reassignRequest.reason]} — "${escHtml(myReassignBranch.reassignRequest.note)}"</div>
+        <div class="branch-proposal-note" style="font-style:normal">${myReassignBranch.reassignRequest.reason==="wrong_person"
+          ? `Proposed: reassign to <b>${(myReassignBranch.reassignRequest.replacementExpertLabel||"—").split("—")[0].trim()}</b>`
+          : `Proposed: replace with <b>${myReassignBranch.reassignRequest.replacementTypologyLabel||TY(myReassignBranch.reassignRequest.replacementTypology).label}</b>`}</div>
+        <div class="branch-proposal-actions">
+          <button class="approve" data-approve-reassign="${myReassignIdx}">✓ Approve</button>
+          <button class="reject" data-reject-reassign="${myReassignIdx}">✕ Reject</button>
+        </div>
+      </div>`:""}
+
+      ${showBranchPanel?`<div class="set-sep"></div>
       <div class="branch-sections">
         <label class="branch-sections-lbl">Allocations (${b.branches.length})</label>
         ${b.branches.map((branch,bidx)=>`<div class="branch-sec">
             <div class="branch-sec-head">
-              <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending your review":""}">${TY(branch.typology).code}</span>
+              <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}" title="${branch.proposal||branch.reassignRequest?"Proposed change — pending your review":""}">${TY(branch.typology).code}</span>
               <span class="branch-sec-mgr">${branch.manager?MGR(branch.manager).name:"— Unassigned —"}</span>
               <span class="status-pill branch-status-${branch.branchStatus}">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>
             </div>
             ${branch.proposal?`<div class="branch-proposal">
-              <div class="branch-proposal-h">${branch.proposal.kind==="add"?"✦ Proposed — new typology":"↩ Proposed — reassignment"} by <b>${MGR(branch.proposal.by).name}</b></div>
+              <div class="branch-proposal-h">✦ Proposed — new typology by <b>${MGR(branch.proposal.by).name}</b></div>
               <div class="branch-proposal-note">"${escHtml(branch.proposal.note)}"</div>
               <div class="branch-proposal-actions">
                 <button class="approve" data-approve-proposal="${bidx}">✓ Approve</button>
                 <button class="reject" data-reject-proposal="${bidx}">✕ Reject</button>
+              </div>
+            </div>`:""}
+            ${branch.reassignRequest?`<div class="branch-proposal">
+              <div class="branch-proposal-h">↩ Reassignment requested by <b>${branch.reassignRequest.byName}</b>${branch.reassignRequest.byRole==="expert"?' <span style="font-weight:400;color:var(--text-3)">(expert)</span>':""}</div>
+              <div class="branch-proposal-note">${REASON_LABEL[branch.reassignRequest.reason]} — "${escHtml(branch.reassignRequest.note)}"</div>
+              <div class="branch-proposal-note" style="font-style:normal">${branch.reassignRequest.reason==="wrong_person"
+                ? `Proposed: reassign to <b>${(branch.reassignRequest.replacementExpertLabel||"—").split("—")[0].trim()}</b>`
+                : `Proposed: replace with <b>${branch.reassignRequest.replacementTypologyLabel||TY(branch.reassignRequest.replacementTypology).label}</b>`}</div>
+              <div class="branch-proposal-actions">
+                <button class="approve" data-approve-reassign="${bidx}">✓ Approve</button>
+                <button class="reject" data-reject-reassign="${bidx}">✕ Reject</button>
               </div>
             </div>`:""}
             <div class="branch-sec-compliance">
@@ -3041,10 +3344,12 @@ function renderSettings(){
     });
     body.querySelector("#f-type")?.addEventListener("change",e=>{const before=b.type;b.type=e.target.value;logFeedback("char",b.id,before,e.target.value,null);markAllocEdited(b);refresh();toast("Type updated","ok")});
     body.querySelector("#f-domain")?.addEventListener("change",e=>{b.domain=e.target.value.trim();markAllocEdited(b);refresh();});
-    body.querySelector("#propose-reassign-btn")?.addEventListener("click",()=>renderProposeForm("reassign",b,body));
+    body.querySelector("#propose-reassign-btn")?.addEventListener("click",()=>renderReassignForm(b,body));
     body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
     body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
+    body.querySelectorAll("[data-approve-reassign]").forEach(btn=>btn.addEventListener("click",()=>approveReassign(b,+btn.dataset.approveReassign)));
+    body.querySelectorAll("[data-reject-reassign]").forEach(btn=>btn.addEventListener("click",()=>rejectReassign(b,+btn.dataset.rejectReassign)));
     body.querySelectorAll("[data-lockcompl]").forEach(sel=>sel.addEventListener("change",e=>{
       const branch=b.branches[+sel.dataset.lockcompl];
       if(branch.expertCompliance===undefined) branch.expertCompliance=branch.compliance; // preserve the expert's original verdict the first time the PM overrides it
@@ -3168,113 +3473,33 @@ function activityFor(b){
   if(b.id==="EXG-009") base.unshift({k:"comment",who:"Claire Moreau",what:'"Is the 3-year retention period aligned with group policy (5 years)?"',time:"Jul 14, 2026, 4:20 PM"});
   return base;
 }
-/* ---------- image container: summary + creation hub for its related requirements ---------- */
-function nextRelReqId(containerId){
-  const nums = containerChildren(containerId).map(c=>parseInt((c.id.split("-R")[1]||""),10)).filter(n=>!isNaN(n));
-  return `${containerId}-R${nums.length?Math.max(...nums)+1:1}`;
+/* ---------- image-sourced requirements: duplicate / delete ---------- */
+function nextRelReqId(sourceImageId){
+  const nums = sourceImageChildren(sourceImageId).map(c=>parseInt((c.id.split("-R")[1]||""),10)).filter(n=>!isNaN(n));
+  return `${sourceImageId}-R${nums.length?Math.max(...nums)+1:1}`;
 }
-function addRelatedRequirement(containerId,text){
-  text=(text||"").trim(); if(!text) return null;
-  const f=findBlock(containerId); if(!f) return null;
-  const sec=f.s;
-  const newBlock={
-    id:nextRelReqId(containerId), kind:"requirement", sourceImage:containerId,
-    tech:"tech", techAI:false, perim:[], perimAI:false, manager:null, type:"Functional",
-    domain:f.b.domain||"", alloc:null, comments:0, text,
-  };
-  computeCharStatus(newBlock); computeAllocStatus(newBlock);
-  let insertAt=sec.blocks.indexOf(f.b)+1;
-  while(insertAt<sec.blocks.length && sec.blocks[insertAt].sourceImage===containerId) insertAt++;
-  sec.blocks.splice(insertAt,0,newBlock);
-  return newBlock;
+function duplicateSourceRow(id){
+  const f=findBlock(id); if(!f) return null;
+  const b=f.b, sec=f.s;
+  const newId = nextRelReqId(b.sourceImage);
+  const dup = {...b, id:newId, duplicatedFrom:id};
+  if(dup.branches) dup.branches = dup.branches.map(br=>({...br}));
+  const insertAt = sec.blocks.indexOf(b)+1;
+  sec.blocks.splice(insertAt,0,dup);
+  toast(`${newId} added — duplicate of ${id}, still attached to ${b.sourceImage}`,"ok");
+  refresh();
+  return dup;
 }
-function deleteRelatedRequirement(id){
+function deleteDuplicateRow(id){
   const f=findBlock(id); if(!f) return;
-  const idx=f.s.blocks.indexOf(f.b); if(idx<0) return;
+  const b=f.b;
+  if(!b.duplicatedFrom) return; // source fidelity: only duplicated rows can be removed
+  const idx=f.s.blocks.indexOf(b); if(idx<0) return;
   f.s.blocks.splice(idx,1);
   state.selection.delete(id);
-  if(state.selected===id) state.selected=f.b.sourceImage;
-}
-function renderContainerPanel(b,s,panel){
-  const kids = containerChildren(b.id);
-  const editing = state.containerEditing;
-  panel.innerHTML = `
-    <div class="set-head">
-      <div class="set-id-row">
-        <span class="set-id">${b.id}</span>
-        <span class="container-type-pill">🗂 Container</span>
-      </div>
-      <div class="set-title" title="${(b.caption||b.text).replace(/"/g,'&quot;')}">${b.caption||b.text}</div>
-    </div>
-    <div class="set-body" style="padding:var(--space-4) 16px">
-      <div class="container-lock-note">🔒 This image and its source document are never edited or deleted here — only the requirements captured from it can be.</div>
-      <div class="container-summary-line"><b>${kids.length}</b> requirement${kids.length===1?"":"s"} captured from this figure</div>
-      <button class="mini-btn" id="container-edit-toggle" style="margin:10px 0 14px">${editing?"✓ Done editing":"✎ Edit related requirements"}</button>
-      <div class="container-related-list">
-        ${kids.length?kids.map(k=>containerRelItemHTML(k,editing)).join(""):`<div class="container-empty">No requirements captured yet.${editing?"":' Click "Edit related requirements" to add one.'}</div>`}
-      </div>
-      ${editing?`<div class="container-add-box">
-        <label>Type the requirement text you read in the image…</label>
-        <textarea id="rel-add-text" placeholder="e.g. The system SHALL…" rows="3"></textarea>
-        <button class="mini-btn container-add-btn" id="rel-add-btn">＋ Add a requirement</button>
-      </div>`:""}
-    </div>`;
-  panel.querySelector("#container-edit-toggle").addEventListener("click",()=>{
-    state.containerEditing=!state.containerEditing; state.editingRelReq=null; renderSettings();
-  });
-  panel.querySelector("#rel-add-btn")?.addEventListener("click",()=>{
-    const ta=panel.querySelector("#rel-add-text");
-    const created=addRelatedRequirement(b.id,ta.value);
-    if(created){ toast(`${created.id} added — captured from ${b.id}`,"ok"); refresh(); }
-    else toast("Type the requirement text first","warn");
-  });
-  panel.querySelectorAll("[data-relopen]").forEach(el=>el.addEventListener("click",e=>{
-    if(e.target.closest("[data-reledit],[data-reldelete]")) return;
-    selectBlock(el.dataset.relopen);
-  }));
-  panel.querySelectorAll("[data-reledit]").forEach(btn=>btn.addEventListener("click",e=>{
-    e.stopPropagation(); state.editingRelReq=btn.dataset.reledit; renderSettings();
-  }));
-  panel.querySelectorAll("[data-relsave]").forEach(btn=>btn.addEventListener("click",e=>{
-    e.stopPropagation();
-    const id=btn.dataset.relsave, f=findBlock(id);
-    const ta=panel.querySelector(`textarea[data-relta="${id}"]`);
-    if(f && ta && ta.value.trim()){ f.b.text=ta.value.trim(); toast(`${id} updated`,"ok"); }
-    state.editingRelReq=null; refresh();
-  }));
-  panel.querySelectorAll("[data-relcancel]").forEach(btn=>btn.addEventListener("click",e=>{
-    e.stopPropagation(); state.editingRelReq=null; renderSettings();
-  }));
-  panel.querySelectorAll("[data-reldelete]").forEach(btn=>btn.addEventListener("click",e=>{
-    e.stopPropagation();
-    const id=btn.dataset.reldelete;
-    deleteRelatedRequirement(id);
-    toast(`${id} deleted`,"warn");
-    refresh();
-  }));
-}
-function containerRelItemHTML(k,editing){
-  const plain=(k.text||"").replace(/<[^>]+>/g,"");
-  if(editing && state.editingRelReq===k.id){
-    return `<div class="container-rel-item editing">
-      <textarea data-relta="${k.id}" rows="3">${plain}</textarea>
-      <div class="container-rel-actions">
-        <button class="mini-btn" data-relsave="${k.id}">Save</button>
-        <button class="mini-btn" data-relcancel="${k.id}">Cancel</button>
-      </div>
-    </div>`;
-  }
-  return `<div class="container-rel-item" data-relopen="${k.id}">
-    <div class="container-rel-main">
-      <span class="set-id" style="font-size:var(--text-xs)">${k.id}</span>
-      <span class="status-pill s-${k.status}" style="cursor:default">${STATUS_LABEL[k.status]}</span>
-    </div>
-    <div class="container-rel-text">${plain}</div>
-    ${editing?`<div class="container-rel-actions">
-      <button class="mini-btn" data-reledit="${k.id}" title="Edit text">✎ Edit</button>
-      <button class="mini-btn container-rel-del" data-reldelete="${k.id}" title="Delete">🗑 Delete</button>
-    </div>`:`<span class="container-rel-go">Open →</span>`}
-  </div>`;
+  if(state.selected===id) state.selected=null;
+  toast(`${id} deleted`,"warn");
+  refresh();
 }
 function renderChangePanel(b,s,panel){
   const type = b.kind==="ghost"?"rem":(b.change==="added"?"add":"mod");
@@ -3313,8 +3538,8 @@ function renderChangePanel(b,s,panel){
 function selectBlock(id,{scroll=false}={}){
   const f=findBlock(id);
   const nat = f?blockNature(f.b):null;
-  if(nat && nat!=="requirement" && nat!=="container"){
-    // headings, information and non-container images have no detail panel — just scroll to them
+  if(nat && nat!=="requirement"){
+    // headings, information and images have no detail panel — just scroll to them
     if(state.mode!=="review"){
       const el=document.querySelector(`.blk[data-id="${id}"],.doc-heading[data-id="${id}"]`);
       if(el) el.scrollIntoView({block:"center",behavior:"smooth"});
@@ -3459,6 +3684,15 @@ function renderTriage(){
   document.getElementById("n-tovalidate").textContent = r.filter(b=>effectiveStatus(b).val==="tovalidate").length;
   document.getElementById("n-allocated").textContent = r.filter(b=>effectiveStatus(b).val==="allocated").length;
   document.getElementById("n-changes").textContent = allBlocks().filter(b=>b.change||b.kind==="ghost").length + 1;
+  // B10 — the pending-reassignment pill only ever occupies space in the triage
+  // bar when at least one request exists; it's not a permanent filter slot.
+  const pendingReassign = r.filter(hasPendingReassign).length;
+  const reassignPill = document.getElementById("pill-reassign");
+  if(reassignPill){
+    reassignPill.style.display = pendingReassign ? "" : "none";
+    document.getElementById("n-reassign").textContent = pendingReassign;
+    if(!pendingReassign && state.filter==="reassign") setFilter("reassign");
+  }
 }
 
 /* =====================================================
@@ -3478,6 +3712,7 @@ function toast(msg,kind="ok",undo){
    GLOBAL REFRESH
 ===================================================== */
 function refresh(){
+  syncReassignRequestsFromShell();
   renderNav(); renderDoc(); renderReview(); renderSettings(); renderTriage();
 }
 
@@ -3828,6 +4063,7 @@ document.getElementById("modal-confirm").addEventListener("click",()=>{
   setTimeout(()=>{ try{ if(window.parent!==window && window.parent.route) window.parent.route("dashboard"); }catch(e){} },1900);
 });
 document.getElementById("opt-xls").addEventListener("click",()=>toast("Preview: 10 rows · 8 columns · traceability links included","ok"));
+document.getElementById("opt-send").addEventListener("click",()=>toast("Preview: 3 experts will be notified with their requirement links","ok"));
 
 /* Keyboard — Review: active-cell navigation (row × column, spreadsheet-style).
    Arrows/space are ignored while any input/select has focus — that's "editing state",
@@ -3853,6 +4089,11 @@ if(MODE!=="ai"){
   tag.textContent = MODE==="manual" ? "Manual mode — no AI" : "AI segmentation only";
   tp.parentNode.insertBefore(tag,tp.nextSibling);
 }
+// A project the user just created (AI mode — manual mode already means
+// "nothing characterised at all", a different, already-correct story) gets
+// the fresh, nothing-validated-yet distribution instead of the STB-2026
+// demo's own "several days into review" one.
+if(MODE==="ai" && isFreshProject()) applyFreshProjectStatuses();
 // Review is the default working view — setMode also collapses the nav panel and shows the kbd hints
 setMode("review");
 </script>
