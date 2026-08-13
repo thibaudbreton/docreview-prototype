@@ -36,7 +36,10 @@ Original ticket text, for reference:
 **Fix the "who's overdue" activity feed**
 Dashboard names "Karim Benali — silent 7 days on EXG-007," but Karim's actual branch on EXG-007 is `answered`. A false overdue alert on a follow-up tool undermines every other alert it shows afterward. Derive this list from the same overdue logic `suivi-experts-et-versions.html`'s `isOverB()` already implements correctly.
 
-- [ ] **TB3 — Compute the "Finalize allocation" modal from `SECTIONS`**
+- [x] **TB3 — DONE.** As with TB1/TB2, the displayed numbers (14 total, 3/2/3) had already drifted to match the real data by the time this was picked up, but were still hand-typed. Added `EXPORT_EXPERTS` (id→name/team/avatar, mirroring `ALLOCS`' id→label mapping already in the file) and `renderExportModal()`, called right before the modal opens (`finalize-btn`'s click handler), which computes the register total from `reqs()` and the per-expert send breakdown by grouping non-image-sourced requirements (`!b.sourceImage`) by `alloc` — image-sourced ones are excluded because they don't sync into the expert-facing Follow-up screen yet (TD3). Since it's computed live from `reqs()` rather than a frozen snapshot, it now stays correct if the underlying allocation changes during a session, not just at the current seed state. Verified with jsdom (table-engine.js inlined to mirror the build step): outputs "14 requirements" and Sophie 3 / Karim 2 / Claire 3, matching real `alloc` counts; `node --check` and `build_merge.py` clean.
+
+Original ticket text, for reference:
+**Compute the "Finalize allocation" modal from `SECTIONS`**
 The modal's total ("12 requirements") and per-expert breakdown (Sophie 4 / Karim 3 / Claire 3) are static HTML, not derived — real totals are 14 requirements and 3/2/3. This is the confirmation screen right before an action with real downstream effect (§8.5: validating allocation *is* the send to Expert Review) — it's the worst place in the app for stale numbers.
 
 - [ ] **TB4 — Wire "Send to assigned experts" in the Finalize modal**
