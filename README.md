@@ -31,23 +31,24 @@ Worth a look:
 
 ## Build
 
-The app is authored as five standalone screens, each self-contained (own `<style>`, own
+The app is authored as six standalone screens, each self-contained (own `<style>`, own
 `<script>`, no shared runtime). A merge step inlines them into one hostable file.
 
 ```bash
 python3 build_merge.py
 ```
 
-Reads the five sources, base64-encodes each, and writes `docreview-app.html` and an identical
+Reads the six sources, base64-encodes each, and writes `docreview-app.html` and an identical
 `index.html`. **Always edit the sources — never the merged files.**
 
 | Source | Screen |
 |---|---|
 | `accueil.html` | Home — tender list |
-| `dashboard-et-config.html` | Project dashboard + configuration |
+| `dashboard-et-config.html` | Project dashboard + configuration + team management |
 | `revue-documentaire.html` | Document review (largest screen) |
 | `suivi-experts-et-versions.html` | Expert follow-up + Versions & Q&A |
 | `creation-projet.html` | New-tender wizard |
+| `expert-space.html` | Expert Space — the individual expert's own screen |
 
 Cross-screen navigation goes through `parent.route(...)` / `parent.routeUrl(...)` rather than
 `<a href="…">`, so each screen also opens standalone during development.

@@ -148,7 +148,10 @@ Original ticket text, for reference:
 
 ## Group G — Documentation hygiene
 
-- [ ] **TG1 — Update `HANDOVER.md` and `README.md`'s file manifests and route tables**
+- [x] **TG1 — DONE.** Updated both files' manifests/route tables to the real six-screen, eight-route (`home`/`dashboard`/`config`/`review`/`followup`/`versions`/`new`/`expert`) state, and added `import_capture.py` (new since this doc's first draft) to `HANDOVER.md`'s manifest. Added `HANDOVER.md` §3 bullets for the three previously-unmentioned shipped features with their ticket codes: **B2** casting (async, per-activity), **B4** Team management screen, **B6/B7** characterisation/allocation progression vocabulary, plus a new bullet for **Expert Space** itself (verdict form, typology-hierarchy permissions) and a note that most Config sections are now marked demo-only (TE2). Also corrected the stale "~456 KB" merged-file-size claim.
+
+Original ticket text, for reference:
+**Update `HANDOVER.md` and `README.md`'s file manifests and route tables**
 Both still list only five screens/seven routes; neither mentions `expert-space.html` or the `expert` route, even though `build_merge.py` has correctly wired both (`SOURCES`, `ROUTES`, `URLMAP` all include it). `HANDOVER.md` bills itself as "the single source of truth for picking the project back up" (line 3) and currently predates three shipped features (B2 casting, B4 team management, B6/B7 status workflow) with no mention of any of their ticket codes.
 
 - [ ] **TG2 — Recover or strip dangling references to `SPEC-expert-space.md` / `SPEC-backend-requirements.md`**

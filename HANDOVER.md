@@ -19,20 +19,21 @@
 
 ## 2. Architecture and technical decisions (with rationale)
 
-### 2.1 Five source screens + a Python merge
-The app is authored as **five standalone HTML files**, each a self-contained screen (own `<style>` and `<script>`, no shared runtime, no external dependencies):
+### 2.1 Six source screens + a Python merge
+The app is authored as **six standalone HTML files**, each a self-contained screen (own `<style>` and `<script>`, no shared runtime, no external dependencies):
 
 | Source file | Screen |
 |---|---|
 | `accueil.html` | **Home / "My tenders"** — entry point, project list |
-| `dashboard-et-config.html` | **Project dashboard** (hub) + **Configuration** |
+| `dashboard-et-config.html` | **Project dashboard** (hub) + **Configuration** + **Team management** (B4) |
 | `revue-documentaire.html` | **Document review** (largest/most complex screen) |
 | `suivi-experts-et-versions.html` | **Expert follow-up** + **Versions & Q&A** |
 | `creation-projet.html` | **New-project wizard** |
+| `expert-space.html` | **Expert Space** — the individual expert's own qualification screen (committed Aug 12, after this doc's first draft — see §2.1's note below and TG1) |
 
-`build_merge.py` reads the five files, rewrites inter-file `href="X.html"` links into `parent.routeUrl(...)`, base64-encodes each screen (UTF-8), and emits a **single** `docreview-app.html`. A thin shell hosts a full-screen `<iframe>` and swaps its `srcdoc` on hash-routed navigation.
+`build_merge.py` reads the six files, rewrites inter-file `href="X.html"` links into `parent.routeUrl(...)`, base64-encodes each screen (UTF-8), and emits a **single** `docreview-app.html`. A thin shell hosts a full-screen `<iframe>` and swaps its `srcdoc` on hash-routed navigation.
 
-- **Why separate sources + merge:** each screen stays isolated and easy to edit; the single merged file is trivial to host on **GitHub Pages** for testing (rename to `index.html`, public repo). For development, **always work in the five sources** — the merged file is only the deliverable.
+- **Why separate sources + merge:** each screen stays isolated and easy to edit; the single merged file is trivial to host on **GitHub Pages** for testing (rename to `index.html`, public repo). For development, **always work in the six sources** — the merged file is only the deliverable.
 - **Why vanilla HTML/CSS/JS, no framework:** fast iteration, zero build tooling, statically hostable, disposable. This is deliberate for a throwaway prototype.
 
 ### 2.2 Cross-screen state lives in the shell
@@ -65,20 +66,22 @@ All colours are **design tokens** (`--bg`, `--panel`, `--text`, `--accent`, `--i
 ## 3. Current state (what is built and working)
 
 - **Home / workspace** with 5 seed projects, statuses (`Processing`, `Requirement review`, `Expert review`, `Q&A & Versioning`, `Submitted`), non-blocking background processing with live progress bars, and **Reset demo** (button + `Ctrl+Shift+R`).
-- **New-project wizard**: fields incl. Product line / System / Region; **multi-document upload** with up/down reordering; processing mode (AI-assisted / segmentation-only / fully manual) via 4 toggles now labelled **Capture / Characterizer / Compliance matrix / Typology**.
-- **Dashboard**: reworked layout — phase rail (where am I) + "what needs you now" (primary) + "project health" (secondary) + activity feed. Gating: follow-up locked until review finalized.
+- **New-project wizard**: fields incl. Product line / System / Region; **multi-document upload** with up/down reordering; processing mode (AI-assisted / segmentation-only / fully manual) via 4 toggles now labelled **Capture / Characterizer / Compliance matrix / Typology**. **Casting (B2)**: the project manager assigns one branch manager per activity at creation; casting is **asynchronous** — the PM only fills in experts directly for activities attached to themselves, everyone else's experts are filled in later by that branch manager on the Team screen, at their own pace (see §6 of `SPEC-domain-model.md`).
+- **Dashboard**: reworked layout — phase rail (where am I) + "what needs you now" (primary) + "project health" (secondary) + activity feed. Gating: follow-up locked until review finalized. **Team management (B4)**: a dedicated Team screen (no global nav entry, reachable via the dashboard header) where each branch manager fills in their own experts against the activities cast to them; a project-manager view aggregates casting-completion progress across the whole team.
 - **Document review** (3 modes: Document / Review / Compare):
   - Collapsible **heading hierarchy** in the left nav.
   - Three **block natures** with inline reclassification; images displayed and characterisable.
   - **Excel-like table**: full-text readable rows, section+heading rows inline, inline editing of all fields, collapsible columns, multi-select + bulk bar (Manager / Typology / Validate).
   - **Classification** Technical / Non-technical (routes PBS vs ABS).
+  - **Characterisation/allocation progression (B6/B7)**: `suggested` → `edited`/`toreview` → `allocated`, replacing an older vocabulary that conflated "AI is confident" with "a human confirmed it" — an item only reaches `allocated` through an explicit human validation action (see §8 of `SPEC-domain-model.md`).
   - **REX tab** in the detail panel (badge count, titles only, opens in source system) — mocked.
   - **Modular Export** panel: pick steps (Capture / Characterization / Allocation) × format (Excel / CSV / ReqIF / DOORS 9 / DOORS Next) — mocked (toast).
   - **Multi-document**: doc banners in the flow + document filter; 2 seed documents.
   - **Scale test** toggle (12,000 rows, virtualised).
 - **Expert follow-up** (locked until review finalized) and **Versions & Q&A** (always open).
-- **Configuration**: Appearance (dark/light), AI feedback loop, Team & experts (restricted view: redact/hide).
-- **Deliverable:** `docreview-app.html` (merged, ~456 KB). Language rule enforced: **all UI copy in English**.
+- **Expert Space** (`expert-space.html`, added after this document's first draft): the individual expert's own screen — triage by status, render a compliance verdict (Compliant / R&D Needed / Not compliant), ask a Q&A question, request reassignment. Enforces a **typology-parent hierarchy** for permissions (a manager/expert on a parent typology automatically sees descendant typologies too) — implemented in this screen only, see §9 of `SPEC-domain-model.md`.
+- **Configuration**: Appearance (dark/light), AI feedback loop, Team & experts (restricted view: redact/hide). Most other Config sections (Workflow, AI & segmentation, Q&A, Versions, Language) are marked demo-only in the UI — not wired to real behavior in this build.
+- **Deliverable:** `docreview-app.html` (merged, ~930 KB — grows as content/features are added; don't treat the figure as load-bearing). Language rule enforced: **all UI copy in English**.
 
 ---
 
@@ -125,13 +128,15 @@ All colours are **design tokens** (`--bg`, `--panel`, `--text`, `--accent`, `--i
 
 ```
 accueil.html                     # Home / My tenders (entry point)
-dashboard-et-config.html         # Dashboard hub + Configuration
+dashboard-et-config.html         # Dashboard hub + Configuration + Team management (B4)
 revue-documentaire.html          # Document review (largest)
 suivi-experts-et-versions.html   # Expert follow-up + Versions & Q&A
 creation-projet.html             # New-project wizard
-build_merge.py                   # Merges the 5 sources -> docreview-app.html (shell + state live here)
+expert-space.html                # Expert Space — the individual expert's own screen
+build_merge.py                   # Merges the 6 sources -> docreview-app.html (shell + state live here)
+import_capture.py                # Converts real .xlsx AO captures (kept out of the repo) into data.js
 docreview-app.html               # MERGED deliverable (host this; rename to index.html for GitHub Pages)
 ```
 
-**Routes:** `home` (default), `dashboard`, `config`, `review`, `followup`, `versions`, `new`.
+**Routes:** `home` (default), `dashboard`, `config`, `review`, `followup`, `versions`, `new`, `expert`.
 **Reset demo:** `Ctrl+Shift+R` (anywhere) or the button on Home.
