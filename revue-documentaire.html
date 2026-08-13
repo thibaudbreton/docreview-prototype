@@ -1418,6 +1418,7 @@ body.restricted .restrict-banner{display:flex}
 </div>
 
 <script>
+/* @include data.js */
 /* @include table-engine.js */
 /* =====================================================
    FEATURE FLAGS
@@ -1448,12 +1449,62 @@ const MGR = id => MANAGERS.find(m=>m.id===id);
 let VIEWER = "admin";
 function isAdmin(){ return (MGR(VIEWER)||{}).admin; }
 
-const DOCS = [
-  {id:"d1", name:"Tender specification — main volume", file:"EMS_tender_main.pdf"},
-  {id:"d2", name:"Technical annex A — performance & security", file:"EMS_annex_A.pdf"},
-];
+/* Wire real RFP capture data — see build_merge.py's data.js include marker.
+   window.SRM_DATA (produced by import_capture.py, never hand-edited) is one
+   continuous tender: its documents replace DOCS, its rows replace the
+   hand-authored SECTIONS below, when present. Falls back to the STB-2026 demo
+   content when nobody has run the import script yet. */
+function seedDemoDocs(){
+  return [
+    {id:"d1", name:"Tender specification — main volume", file:"EMS_tender_main.pdf"},
+    {id:"d2", name:"Technical annex A — performance & security", file:"EMS_annex_A.pdf"},
+  ];
+}
+const DOCS = (window.SRM_DATA && Array.isArray(window.SRM_DATA.documents) && window.SRM_DATA.documents.length)
+  ? window.SRM_DATA.documents.map(d=>({id:d.id, name:d.name, file:""}))
+  : seedDemoDocs();
 const DOC = id => DOCS.find(d=>d.id===id);
-const SECTIONS = [
+/* A capture section string usually already carries its own number
+   ("3 OVERHAUL WORKSHOP") — split the leading digits/dots off into `num` and
+   keep the rest as `title`, matching the demo SECTIONS' own {num,title} shape.
+   No leading number -> leave num empty rather than inventing one. */
+function splitSectionNumTitle(section){
+  const m = /^([\d.]+)\s+(.*)$/.exec(section||"");
+  return m ? {num:m[1], title:m[2]} : {num:"", title:section||""};
+}
+/* Maps window.SRM_DATA.rows into the same {num,title,blocks:[...]} shape as
+   the demo SECTIONS. No per-row type/domain/manager/alloc/status/confidence
+   is invented here — a requirement block comes through with none of those
+   fields set, so computeCharStatus()/computeAllocStatus() below (unmodified)
+   read it as Incomplete, same as any other block missing that data. */
+function buildDataFromCapture(){
+  const data = window.SRM_DATA;
+  if(!data || !Array.isArray(data.rows) || !data.rows.length) return null;
+  const sections = [];
+  let cur = null;
+  data.rows.forEach(row=>{
+    const secKey = row.section || "";
+    const isNewSection = !cur || cur._key!==secKey;
+    if(isNewSection){
+      const {num,title} = splitSectionNumTitle(secKey);
+      cur = {id:"cs-"+sections.length, docId:row.docId, num, title:title||"(untitled)", blocks:[], _key:secKey};
+      sections.push(cur);
+    }
+    if(row.category==="heading"){
+      // the heading that opens a new section is already represented by this
+      // section's own num/title — only push heading blocks for sub-headings
+      if(!isNewSection) cur.blocks.push({id:row.id, kind:"heading", text:row.text});
+    } else if(row.category==="information"){
+      cur.blocks.push({id:row.id, kind:"text", text:row.text});
+    } else {
+      cur.blocks.push({id:row.id, kind:"requirement", comments:0, text:row.text});
+    }
+  });
+  sections.forEach(s=>delete s._key);
+  return sections;
+}
+function seedDemoSections(){
+  return [
   {
     id:"s1", docId:"d1", num:"1", title:"Scope and purpose",
     blocks:[
@@ -1553,7 +1604,9 @@ const SECTIONS = [
        text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review."},
     ]
   },
-];
+  ];
+}
+const SECTIONS = buildDataFromCapture() || seedDemoSections();
 
 /* B7 — the characterisation/allocation progression. Replaces the old
    suggested/edited/toreview/validated vocabulary: those conflated "AI is
@@ -1694,6 +1747,56 @@ function computeAllocStatus(target){
   if(weak){ target.allocStatus="doubt"; target.allocDoubtField=weak.k.toLowerCase(); target.allocReviewReason=`Weak ${weak.k} derivation (${weak.c}%) — the proposed assignment may be wrong`; return; }
   target.allocStatus="tovalidate"; target.allocDoubtField=null; target.allocReviewReason=null;
 }
+/* Demo-only: gives the imported capture data a plausible assignment/allocation
+   spread — otherwise every real requirement sits at Incomplete forever, which
+   is honest but not demoable. 80% To validate (AI confident — tech/typology
+   confirmed, PBS/ABS/OBS all >=75%), 18% To review (one weak OBS-chain link),
+   2% Incomplete (no OBS assignment — the absolute floor, same rule as
+   everywhere else in this app). Deterministic from the requirement's own id
+   so reruns/rebuilds don't reshuffle who's in which bucket. Only runs against
+   real capture data — the hand-authored STB-2026 demo already has its own
+   carefully-set distribution and is left untouched. */
+function hashId(id){
+  let h = 0;
+  for(let i=0;i<id.length;i++) h = (h*31 + id.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+function applyCaptureDemoStatuses(){
+  const items = [];
+  SECTIONS.forEach(s=>s.blocks.forEach(b=>{ if(b.kind==="requirement") items.push(b); }));
+  if(!items.length) return;
+  const DOMAINS = ["Civil design","Rolling stock","Depot operations","Track & infrastructure","Workshop equipment"];
+  const TYPOS = ["rst","dpt","cvl","inf","srv"];
+  const PBS_TYPES = ["Functional","Performance","Interface","Regulatory"];
+  const mgrList = MANAGERS.filter(m=>!m.admin);
+  items.forEach(x=>{
+    const h = hashId(x.id);
+    const bucket = h % 100;
+    x.tech = (h%3===0) ? "nontech" : "tech";
+    x.techAI = false; x.perimAI = false;
+    x.perim = [TYPOS[h % TYPOS.length]];
+    x.domain = DOMAINS[h % DOMAINS.length];
+    x.type = PBS_TYPES[h % PBS_TYPES.length];
+    x.manager = mgrList[h % mgrList.length].id;
+    if(bucket < 2){
+      // Incomplete — 2%: characterised, but never got an OBS assignment
+      x.alloc = null; x.pbs = null; x.abs = null; x.obs = null;
+    } else if(bucket < 20){
+      // To review — 18%: one weak link in the OBS derivation chain
+      x.alloc = ALLOCS[h % ALLOCS.length].id;
+      x.pbs = {v:"", c: 82 + (h%9)};
+      x.abs = {v:"", c: 76 + (h%8)};
+      x.obs = {v:"", c: 55 + (h%16)};
+    } else {
+      // To validate — 80%: consistently high AI confidence, nothing to flag
+      x.alloc = ALLOCS[h % ALLOCS.length].id;
+      x.pbs = {v:"", c: 90 + (h%9)};
+      x.abs = {v:"", c: 88 + (h%10)};
+      x.obs = {v:"", c: 90 + (h%9)};
+    }
+  });
+}
+if(window.SRM_DATA) applyCaptureDemoStatuses();
 (function initProgressionStatus(){
   SECTIONS.forEach(s=>s.blocks.forEach(b=>{
     const arr = (b.kind==="table") ? b.rows : [b];
@@ -4044,6 +4147,23 @@ notifDrop.querySelectorAll(".nd-item").forEach(i=>i.addEventListener("click",()=
 
 /* Finalize review (milestone) */
 const overlay = document.getElementById("export-overlay");
+/* TB3 — computed from the live requirement set (not static markup), so this stays
+   correct whether the table is showing the STB-2026 demo or an imported capture. */
+function renderFinalizeModal(r){
+  const desc = document.querySelector("#opt-xls .eo-desc");
+  if(desc) desc.textContent = `${r.length} requirements · characterization, assignment, status, source section, traceability ID and link to original passage.`;
+  const counts = {};
+  ALLOCS.forEach(a=>counts[a.id]=0);
+  r.forEach(b=>{
+    if((b.branches||[]).length>1) return; // multi-branch parents split across experts per branch, not one single assignee
+    if(b.alloc!=null && counts[b.alloc]!==undefined) counts[b.alloc]++;
+  });
+  const rows = document.querySelectorAll("#opt-send .expert-row");
+  ALLOCS.forEach((a,i)=>{
+    const cnt = rows[i] && rows[i].querySelector(".exp-count");
+    if(cnt) cnt.textContent = `${counts[a.id]} requirement${counts[a.id]!==1?"s":""}`;
+  });
+}
 document.getElementById("finalize-btn").addEventListener("click",()=>{
   const r = reqs();
   const notDone = r.filter(b=>!isFullyAllocated(b)).length;
@@ -4051,6 +4171,7 @@ document.getElementById("finalize-btn").addEventListener("click",()=>{
     toast(`Review milestone not reached — ${notDone} requirement${notDone>1?"s":""} not yet allocated. All requirements must be assigned and validated before export.`,"warn");
     return;
   }
+  renderFinalizeModal(r);
   overlay.classList.add("open");
 });
 document.getElementById("modal-cancel").addEventListener("click",()=>overlay.classList.remove("open"));

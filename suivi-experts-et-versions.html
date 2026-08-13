@@ -122,7 +122,25 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .kbd-hint kbd{font-family:var(--font-mono);font-size:var(--text-xs);padding:1px var(--space-1);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:var(--radius-xs);background:var(--panel-2)}
 
 /* ---------- Left nav ---------- */
-.nav{width:272px;flex-shrink:0;display:flex;flex-direction:column;background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;padding:var(--space-3) var(--space-2) 16px}
+.nav{width:272px;flex-shrink:0;display:flex;flex-direction:column;position:relative;background:var(--panel);border-right:1px solid var(--line);transition:width .15s ease}
+.nav.collapsed{width:22px}
+.nav.collapsed>*:not(.panel-toggle){display:none}
+.nav-body{flex:1;min-height:0;overflow-y:auto;padding:var(--space-3) var(--space-2) 16px}
+/* nav/detail panel collapse — same pattern as revue-documentaire.html, renamed to
+   avoid colliding with this screen's own .nav-toggle (the By section/By expert pill) */
+.panel-toggle{
+  position:absolute;top:8px;z-index:5;width:20px;height:20px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);background:var(--panel-2);border:1px solid var(--line-2);
+  font-size:var(--text-xs);transition:all .15s;
+}
+.panel-toggle:hover{color:var(--text);border-color:var(--accent)}
+.panel-nav-toggle{right:6px}
+.panel-settings-toggle{left:6px}
+.nav.collapsed .panel-toggle,.settings.collapsed .panel-toggle{
+  position:static;flex:1;width:100%;border-radius:0;border:none;background:none;
+}
+.nav.collapsed .panel-toggle:hover,.settings.collapsed .panel-toggle:hover{background:var(--panel-2)}
 /* doc-level group — same document hierarchy as the table's grouping, one level
    above sections, collapsible on its own (see revue-documentaire.html's nav-doc) */
 .nav-doc{display:flex;align-items:center;gap:var(--space-2);cursor:pointer;padding:var(--space-3) var(--space-2) var(--space-1);border-radius:var(--radius-sm);transition:background .1s}
@@ -401,7 +419,10 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .xr-pending .xr-t{color:var(--text-3)}
 
 /* ---------- Right panel ---------- */
-.settings{width:330px;flex-shrink:0;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line)}
+.settings{width:330px;flex-shrink:0;display:flex;flex-direction:column;position:relative;background:var(--panel);border-left:1px solid var(--line);transition:width .15s ease}
+.settings.collapsed{width:22px}
+.settings.collapsed>*:not(.panel-toggle){display:none}
+.settings-body2{flex:1;min-height:0;display:flex;flex-direction:column}
 .set-head{padding:var(--space-4) var(--space-4) 0}
 .set-id-row{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-1);flex-wrap:wrap}
 .set-id{font-family:var(--font-mono);font-size:var(--text-sm);color:var(--accent);font-weight:600}
@@ -579,7 +600,10 @@ textarea.resp-in:focus{border-color:var(--accent)}
       </div>
     </div>
     <main>
-      <aside class="nav" id="nav2"></aside>
+      <aside class="nav" id="nav2-outer">
+        <button class="panel-toggle panel-nav-toggle" id="nav2-toggle" title="Collapse navigation">‹</button>
+        <div class="nav-body" id="nav2"></div>
+      </aside>
       <section class="center">
         <div class="view view-pad on" id="view-table">
           <div class="view-head"><h2>Expert qualification tracking</h2><span class="sub" id="table-sub"></span>
@@ -631,7 +655,10 @@ textarea.resp-in:focus{border-color:var(--accent)}
         <div class="view doc-scroll" id="view-doc"></div>
         <div class="view view-pad" id="view-qa"></div>
       </section>
-      <aside class="settings" id="settings2"></aside>
+      <aside class="settings" id="settings2-outer">
+        <button class="panel-toggle panel-settings-toggle" id="settings2-toggle" title="Collapse details">›</button>
+        <div class="settings-body2" id="settings2"></div>
+      </aside>
     </main>
     <!-- Bulk action bar (B5, shared with revue-documentaire.html's table) -->
     <div id="f-sel-bar" class="sel-bar">
@@ -844,6 +871,7 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
   selection:new Set(),colFilters:{},filterToSelection:false,savedColFilters:null,
   activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","mgr","age"]),
   docNavCollapsed:new Set(),
+  navPanelCollapsed:false,detailPanelCollapsed:false,
   ownTeamOnly:true};
 /* B5 — this screen has no admin/view-as switcher yet (unlike revue-documentaire.html);
    VIEWER simulates whichever branch manager is currently using their own follow-up
@@ -1700,6 +1728,17 @@ function syncReassignRequestsFromShell(){
     br.status = "reassignment_needed";
   });
 }
+/* nav / detail panel collapse — same pattern as revue-documentaire.html's applyPanels() */
+function applyFPanels(){
+  const navEl=document.getElementById("nav2-outer"), setEl=document.getElementById("settings2-outer");
+  const navBtn=document.getElementById("nav2-toggle"), setBtn=document.getElementById("settings2-toggle");
+  if(navEl) navEl.classList.toggle("collapsed", state.navPanelCollapsed);
+  if(navBtn){ navBtn.textContent = state.navPanelCollapsed?"›":"‹"; navBtn.title = state.navPanelCollapsed?"Expand navigation":"Collapse navigation"; }
+  if(setEl) setEl.classList.toggle("collapsed", state.detailPanelCollapsed);
+  if(setBtn){ setBtn.textContent = state.detailPanelCollapsed?"‹":"›"; setBtn.title = state.detailPanelCollapsed?"Expand details":"Collapse details"; }
+}
+document.getElementById("nav2-toggle")?.addEventListener("click",()=>{ state.navPanelCollapsed=!state.navPanelCollapsed; applyFPanels(); });
+document.getElementById("settings2-toggle")?.addEventListener("click",()=>{ state.detailPanelCollapsed=!state.detailPanelCollapsed; applyFPanels(); });
 function refreshAll(){
   syncReassignRequestsFromShell();
   renderNav2();renderTable2();renderDoc2();renderQA();renderPanel2();renderTriage2();renderNeedsYou();renderExportReady();
@@ -1828,6 +1867,7 @@ document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.clos
 })();
 /* Init — default to Follow-up. TEMP (dev/demo): was gated on reviewDone(), now always accessible; see setScreen(). */
 if(location.hash==="#versions"){setScreen(3);}else{setScreen(2);}
+applyFPanels();
 </script>
 </body>
 </html>
