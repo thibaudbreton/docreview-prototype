@@ -64,11 +64,17 @@ Original ticket text, for reference:
 **Give the branch manager an actual path to resolve their own expert's reassignment request**
 `approveReassign()`/`rejectReassign()` in `revue-documentaire.html` only render inside the admin-gated branch panel (`isAdmin()`). A branch manager who isn't the project manager — the role `TICKETS-followup-workflow.md` T5 explicitly assigns this action to ("The manager can reassign... this stays inside the company") — has no UI path to it at all. Walked in character as a branch manager (see journey-experience-audit, Parcours C), this is a silent dead end: no error, no message, nothing to act on. Scope resolution to the branch's own manager for `byRole:"expert"` requests, reserving admin-only handling for `byRole:"manager"` (B1) escalations.
 
-- [ ] **TC2 — Make `suivi-experts-et-versions.html` read the shared reassignment mailbox**
+- [x] **TC2 — DONE (already implemented).** Found already resolved, self-flagged with a `// TC2` comment: `syncReassignRequestsFromShell()` in `suivi-experts-et-versions.html` mirrors `revue-documentaire.html`'s function of the same name — pulls pending `byRole:"expert"` requests from `getReassignRequests()`, matches them to the branch by `reqId`+`typology`, and sets `br.reassignRequest`/`br.reassignComment`/`br.status="reassignment_needed"` so a live Expert Space request now surfaces as "Returned by the expert" instead of only the seeded comment. It's called at the top of `refreshAll()`, so it runs on every render, not just once on load. `byRole:"manager"` requests are correctly skipped (stay a B1/admin escalation, per TC1's resolution). Verified by reading the function and its call site; no gap found, nothing to change.
+
+Original ticket text, for reference:
+**Make `suivi-experts-et-versions.html` read the shared reassignment mailbox**
 The Follow-up screen — the branch manager's actual pilot seat per the tickets file — never calls `getReassignRequests()`; its "Returned by the expert" view only shows static seed data (`REQS[...].reassignComment`), never a live request an expert just raised in Expert Space. `TICKETS-followup-workflow.md`'s framing that Expert Space actions could be "represented as already-arrived states" is now stale — that separate build exists (`expert-space.html`) and pushes real requests via `pushReassignRequest`, but nothing wires Follow-up to consume them.
 *Depends on:* TC1 (decide the resolution owner first, so this doesn't duplicate a fix in two places).
 
-- [ ] **TC3 — Decide and document: does an Expert Space reassignment route to Review, Follow-up, or both?**
+- [x] **TC3 — DONE (already documented).** Found already resolved: `SPEC-domain-model.md` §2.1 "Where an Expert Space reassignment lands (TC1–TC3)" states the decision — an expert-raised request routes to **both** screens, each independently pulling it off the shared mailbox and resolving against its own data (no shared data layer, per this project's convention), with the branch's own manager as resolution owner in whichever screen they're in. It also documents the accepted staleness window (resolving in one screen doesn't retract an already-synced card in the other) and that a demo walkthrough should resolve a given request from one screen only. Matches what TC1/TC2 verification found in the code. Nothing to change.
+
+Original ticket text, for reference:
+**Decide and document: does an Expert Space reassignment route to Review, Follow-up, or both?**
 This is a genuine architecture choice, not a bug to silently pick a side on. Today it only reaches Review's admin view. Write the answer into `SPEC-domain-model.md` §2 once decided.
 
 ---
