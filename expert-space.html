@@ -152,6 +152,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .status-pill.st-reassignment_needed{background:var(--warn-soft);color:var(--warn)}
 .compliance-pill{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-2);border-radius:var(--radius-xs);font-size:var(--text-xs);font-weight:600;white-space:nowrap;border:1px solid transparent}
 .compliance-pill.c-compliant{background:var(--ok-soft);color:var(--ok)}
+.compliance-pill.c-rnd_needed{background:var(--ia-soft);color:var(--ia)}
 .compliance-pill.c-not_compliant{background:var(--warn-soft);color:var(--warn)}
 .compliance-pill.c-pending{background:transparent;border-style:dashed;border-color:var(--line-2);color:var(--text-3);font-style:italic;font-weight:500}
 
@@ -228,6 +229,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .verdict-toggle button:hover{border-color:var(--line-2);background:var(--panel-3)}
 .verdict-toggle button.on.v-compliant{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
 .verdict-toggle button.on.v-not_compliant{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.verdict-toggle button.on.v-rnd_needed{border-color:var(--ia);background:var(--ia-soft);color:var(--ia)}
 /* TF1 — lock state (SPEC-domain-model.md §5), mirrors revue-documentaire.html's lock-badge/locked pill */
 .compliance-pill.locked{border-color:var(--warn);opacity:.9}
 .lock-badge{display:inline-flex;align-items:center;gap:4px;font-size:var(--text-xs);font-weight:700;color:var(--warn);background:var(--warn-soft);padding:2px var(--space-2);border-radius:var(--radius-pill);white-space:nowrap}
@@ -439,7 +441,11 @@ const STATUS_LABELS = {awaiting_answer:"Awaiting your verdict", answered:"Answer
 /* B10 — three reassignment reasons; always resolved by the project manager, never
    immediate — raising a request only marks this row pending, it doesn't reassign it. */
 const REASON_LABEL = {wrong_person:"Right typology, wrong person", wrong_typology:"Wrong typology", not_applicable:"This activity doesn't apply here"};
-const COMPLIANCE_LABELS = {pending:"Pending", compliant:"Compliant", not_compliant:"Not compliant"};
+// TF3 — R&D Needed restored as a first-class, countable verdict (was text-only inside a
+// Compliant comment). Decision: it stays countable downstream (e.g. a compliance-matrix
+// export), consistent with SPEC-domain-model.md §3/§3.1's canonical 3-value scale, which
+// revue-documentaire.html and suivi-experts-et-versions.html already implement structurally.
+const COMPLIANCE_LABELS = {pending:"Pending", compliant:"Compliant", rnd_needed:"R&D Needed", not_compliant:"Not compliant"};
 
 const REX_BASE = {
   "EXG-003": [
@@ -733,8 +739,11 @@ function renderPanel(){
     const rr = r.reassignRequest;
     bannerHTML = `<div class="state-banner b-reassign"><span class="bt">Reassignment requested</span><span>${rr?`${REASON_LABEL[rr.reason]} — ${(rr.note||"").replace(/</g,"&lt;")}`:(r.reassignComment||"").replace(/</g,"&lt;")}</span><span style="color:var(--text-3)">Awaiting project-manager approval — no further action needed here.</span></div>`;
   } else if(r.status==="answered"){
+    // TF3 — three-way now that R&D Needed is a first-class verdict, not text-in-comment.
     const verdictText = r.compliance==="compliant"
       ? `<b>Compliant</b> — ${(r.comment||"").replace(/</g,"&lt;")}`
+      : r.compliance==="rnd_needed"
+      ? `<b>R&amp;D Needed</b> — ${(r.comment||"").replace(/</g,"&lt;")}`
       : `<b>Not compliant</b> — ${r.category}: ${(r.topic||"").replace(/</g,"&lt;")}`;
     // TF1 — locked verdicts show the lock badge instead of "Edit verdict" (mirrors
     // revue-documentaire.html's lock-badge wording exactly).
@@ -766,16 +775,20 @@ function renderPanel(){
       <div class="if-label">Render a verdict</div>
       <div class="verdict-toggle">
         <button class="v-compliant${pick==="compliant"?" on":""}" data-pick="compliant">Compliant</button>
+        <button class="v-rnd_needed${pick==="rnd_needed"?" on":""}" data-pick="rnd_needed">R&amp;D Needed</button>
         <button class="v-not_compliant${pick==="not_compliant"?" on":""}" data-pick="not_compliant">Not compliant</button>
       </div>
       ${pick==="compliant" ? `
-        <div class="field"><label>Comment</label><textarea id="v-comment" rows="3" placeholder="Free comment — write &quot;R&D Needed&quot; here as plain text if it applies, there is no dedicated field for it.">${r.status==="answered"&&r.compliance==="compliant"?(r.comment||""):""}</textarea></div>
+        <div class="field"><label>Comment</label><textarea id="v-comment" rows="3" placeholder="Free comment, optional.">${r.status==="answered"&&r.compliance==="compliant"?(r.comment||""):""}</textarea></div>
         <div class="form-actions"><button class="btn-cancel" id="v-cancel">Cancel</button><button class="btn-submit ok" id="v-submit-compliant">Save verdict — sends to Expert Review</button></div>
+      ` : pick==="rnd_needed" ? `
+        <div class="field"><label>Comment</label><textarea id="v-comment" rows="3" placeholder="What R&D work is needed for compliance?">${r.status==="answered"&&r.compliance==="rnd_needed"?(r.comment||""):""}</textarea></div>
+        <div class="form-actions"><button class="btn-cancel" id="v-cancel">Cancel</button><button class="btn-submit" id="v-submit-rnd">Save verdict — sends to Expert Review</button></div>
       ` : pick==="not_compliant" ? `
         <div class="field"><label>Category</label><select id="v-category">${CATEGORY_LIST.map(c=>`<option ${r.category===c?"selected":""}>${c}</option>`).join("")}</select></div>
         <div class="field"><label>Topic</label><input type="text" id="v-topic" placeholder="Free text — what specifically fails" value="${r.status==="answered"&&r.compliance==="not_compliant"?(r.topic||"").replace(/"/g,"&quot;"):""}"></div>
         <div class="form-actions"><button class="btn-cancel" id="v-cancel">Cancel</button><button class="btn-submit warn" id="v-submit-notcompliant">Save verdict — sends to Expert Review</button></div>
-      ` : `<div class="field-hint">Pick Compliant or Not compliant to continue.</div>`}
+      ` : `<div class="field-hint">Pick Compliant, R&amp;D Needed or Not compliant to continue.</div>`}
     </div>`;
   } else if(state.openForm==="qa"){
     formHTML = `<div class="inline-form" id="qa-form">
@@ -827,7 +840,7 @@ function renderPanel(){
     </div>`;
 
   document.getElementById("open-doc")?.addEventListener("click",showDocPanel);
-  document.getElementById("edit-verdict")?.addEventListener("click",()=>{ state.openForm="verdict"; state.verdictPick=r.compliance==="not_compliant"?"not_compliant":"compliant"; renderPanel(); });
+  document.getElementById("edit-verdict")?.addEventListener("click",()=>{ state.openForm="verdict"; state.verdictPick=r.compliance; renderPanel(); });
   document.getElementById("btn-verdict")?.addEventListener("click",()=>{ state.openForm = state.openForm==="verdict"?null:"verdict"; state.verdictPick = r.compliance!=="pending" ? r.compliance : null; renderPanel(); });
   document.getElementById("btn-qa")?.addEventListener("click",()=>{ state.openForm = state.openForm==="qa"?null:"qa"; renderPanel(); });
   document.getElementById("btn-reassign")?.addEventListener("click",()=>{ state.openForm = state.openForm==="reassign"?null:"reassign"; renderPanel(); });
@@ -843,6 +856,13 @@ function renderPanel(){
   document.getElementById("v-cancel")?.addEventListener("click",()=>{ state.openForm=null; state.verdictPick=null; renderPanel(); });
   document.getElementById("v-submit-compliant")?.addEventListener("click",()=>{
     r.status="answered"; r.compliance="compliant"; r.comment=document.getElementById("v-comment").value.trim();
+    delete r.category; delete r.topic;
+    state.openForm=null; state.verdictPick=null;
+    toast(`${r.id} — verdict recorded, sent to Expert Review`,"ok");
+    renderTable(); renderTriage(); renderPanel();
+  });
+  document.getElementById("v-submit-rnd")?.addEventListener("click",()=>{
+    r.status="answered"; r.compliance="rnd_needed"; r.comment=document.getElementById("v-comment").value.trim();
     delete r.category; delete r.topic;
     state.openForm=null; state.verdictPick=null;
     toast(`${r.id} — verdict recorded, sent to Expert Review`,"ok");

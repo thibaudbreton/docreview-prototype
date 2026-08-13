@@ -133,9 +133,13 @@ Only `expert-space.html`'s `TYPO` carries a `parent` field and cascade logic (`d
 
 For the expert's own screen specifically (as opposed to the manager follow-up view, where filter-vs-restriction is still open — see `SPEC-expert-space.md`'s open points): access is a **strict restriction**, confirmed directly ("ne peut pas voir les autres"). An expert's visible-requirement set is *their own typologies' union with every descendant typology*, computed once and applied at every read path (row list, counts, search) — there is no "show all" toggle, admin override, or filter that widens it back out. This mirrors §12 of `SPEC-backend-requirements.md`'s restricted-view intent, now confirmed concretely for the expert case.
 
-### 9.2 Still open — do not treat as settled
+### 9.2 R&D Needed stays a countable verdict (TF3 — resolved, was self-contradictory)
 
-`SPEC-expert-space.md` flags one point this domain model doesn't resolve either: whether losing "R&D Needed" as a structured, countable compliance value (now just plain text inside a Compliant comment, per the expert verdict form) is an acceptable trade-off for the compliance matrix export (`SPEC-backend-requirements.md` §11), or whether a real "how many requirements are R&D needed" figure will eventually be needed. This is a reporting-layer question, independent of the UI form (already final at two values: Compliant / Not compliant) — do not guess an answer into either spec.
+This section previously asserted the expert verdict form was "already final at two values: Compliant / Not compliant" while in the same breath calling R&D Needed's status "still open — do not guess an answer into either spec." Both couldn't be true at once, and `expert-space.html` had already shipped the two-value form the caution was warning against committing to.
+
+**Decision:** R&D Needed stays a first-class, countable compliance value all the way through, including at the point of expert entry — not text folded into a Compliant comment. This is the option consistent with §3/§3.1's canonical 3-value scale (`compliant`/`rnd_needed`/`not_compliant`), which `revue-documentaire.html` and `suivi-experts-et-versions.html` already implement structurally (rollup, `CMP_ORDER`, consolidation). Letting the expert's own entry point silently drop it to free text would have made those two screens' structured handling pointless downstream — a rail-tender compliance matrix commercially needs to distinguish "compliant as-is" from "compliant pending R&D investment," which is exactly the kind of figure a countable value serves and free text doesn't.
+
+`expert-space.html`'s verdict form now has a third **R&D Needed** button alongside Compliant/Not compliant, with its own comment field ("what R&D work is needed for compliance?"); `COMPLIANCE_LABELS` carries the `rnd_needed` key. The dangling citation to `SPEC-backend-requirements.md` §11 (a file that doesn't exist in this repo) is addressed separately — see TG2.
 
 ---
 
