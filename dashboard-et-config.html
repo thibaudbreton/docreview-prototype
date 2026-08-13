@@ -744,10 +744,11 @@ function applyGating(){
     document.getElementById("ph-review-bar").style.background="var(--ok)";
   }
   // follow-up phase card
-  // TEMP (dev/demo): unlocked unconditionally so the screen stays reachable while it's being worked on.
-  // The real gate logic (reviewDone()) is untouched above/below — only this card ignores it for now.
+  // TE1 — real gate restored: was unconditionally unlocked ("TEMP (dev/demo)") while the
+  // copy right below still read "Unlocks when allocation is finalized", which is exactly
+  // the kind of stale-copy confusion this ticket batch exists to close before user testing.
   const f=document.getElementById("ph-followup"),fb=document.getElementById("ph-followup-badge"),fbody=document.getElementById("ph-followup-body");
-  {
+  if(done){
     f.className="phase active-phase"; f.style.cursor="pointer";
     fb.textContent="Current"; fb.className="ph-badge current";
     // TB1 — computed from the FOLLOWUP_REQS mirror instead of a fixed string.
@@ -757,6 +758,12 @@ function applyGating(){
     const fPct=Math.round(fAnswered/fTotal*1000)/10;
     fbody.outerHTML=`<div class="ph-stat" id="ph-followup-body"><span class="big">${fAnswered}</span><span>/ ${fTotal} answered${fOverdue?` · ${fOverdue} overdue`:""}</span></div><div class="ph-bar"><div style="width:${fPct}%;background:var(--ia)"></div></div>`;
     f.onclick=()=>goRoute("suivi-experts-et-versions.html");
+  } else {
+    // stays on the default "locked" markup (lock icon, "Unlocks when allocation is
+    // finalized", Locked badge) already in the HTML — just give the click a response
+    // instead of leaving it silently inert.
+    f.style.cursor="pointer";
+    f.onclick=()=>toast("Follow-up is locked — finalize allocation first","warn");
   }
   // attention count
   const visibleAtt=[...document.querySelectorAll(".att")].filter(a=>a.offsetParent!==null||!a.classList.contains("hidden"));

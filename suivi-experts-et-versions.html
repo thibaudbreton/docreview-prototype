@@ -1703,12 +1703,14 @@ function select(id,branchIdx){
 }
 function reviewDone(){ try{ return !!(window.parent!==window && window.parent.isReviewValidated && window.parent.isReviewValidated()); }catch(e){ return false; } }
 function setScreen(n){
-  // TEMP (dev/demo): the review→follow-up gate below is left in place but bypassed, so the
-  // Follow-up screen stays reachable while it's being worked on. reviewDone() itself is untouched.
-  // if(n===2 && !reviewDone()){
-  //   toast("Follow-up is locked — finalize allocation first","warn");
-  //   n=3;
-  // }
+  // TE1 — real gate restored (was bypassed with the comment below, while dashboard-et-config.html's
+  // phase-card copy still claimed "Unlocks when allocation is finalized" — misleading during a
+  // moderated session). Versions & Q&A (screen 3) stays always-open per HANDOVER.md; only Follow-up
+  // (screen 2) is gated.
+  if(n===2 && !reviewDone()){
+    toast("Follow-up is locked — finalize allocation first","warn");
+    n=3;
+  }
   state.screen=n;
   document.getElementById("screen2").style.display=n===2?"flex":"none";
   document.getElementById("screen3").classList.toggle("on",n===3);
@@ -1884,8 +1886,10 @@ document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.clos
     e.stopPropagation(); state.ownTeamOnly=false; syncChip(); refreshAll();
   });
 })();
-/* Init — default to Follow-up. TEMP (dev/demo): was gated on reviewDone(), now always accessible; see setScreen(). */
-if(location.hash==="#versions"){setScreen(3);}else{setScreen(2);}
+/* Init — default to Follow-up once unlocked, Versions & Q&A otherwise (TE1). Decided directly
+   here rather than via setScreen(2)'s redirect so a plain page load doesn't fire the "locked"
+   toast — that's reserved for an explicit attempt to open Follow-up. */
+if(location.hash==="#versions"||!reviewDone()){setScreen(3);}else{setScreen(2);}
 applyFPanels();
 </script>
 </body>

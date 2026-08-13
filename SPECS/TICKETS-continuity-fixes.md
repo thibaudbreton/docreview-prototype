@@ -104,7 +104,10 @@ These image-sourced requirements exist and are validatable in `revue-documentair
 
 ## Group E — Follow-up gate & Config screen honesty
 
-- [ ] **TE1 — Resolve the `// TEMP (dev/demo)` Follow-up unlock bypass before user testing**
+- [x] **TE1 — DONE.** Chose "make the gate real again" over rewriting the copy — `HANDOVER.md`'s own "Current state" section documents Follow-up as "(locked until review finalized)", and both bypasses were self-labeled `TEMP (dev/demo)`, i.e. explicitly meant to be reverted, not a design decision to relitigate. `suivi-experts-et-versions.html`'s `setScreen()` now runs its real `reviewDone()` check again (was commented out) — attempting screen 2 while locked toasts "Follow-up is locked — finalize allocation first" and redirects to screen 3 (Versions & Q&A, correctly always-open per `HANDOVER.md`); the init call was changed to decide the initial screen directly rather than via that redirect, so a plain page load doesn't fire the toast. `dashboard-et-config.html`'s `applyGating()` now only unlocks the phase card's "Current" state when `done` — the `else` branch leaves the existing "locked" markup (lock icon, "Unlocks when allocation is finalized" copy, "Locked" badge) in place instead of overriding it, and wires a toast so the click isn't silently inert either way. Verified with jsdom: `reviewDone()` false by default → initial screen is 3, `setScreen(2)` redirects with the toast. `node --check` and `build_merge.py` clean on both files.
+
+Original ticket text, for reference:
+**Resolve the `// TEMP (dev/demo)` Follow-up unlock bypass before user testing**
 Both `dashboard-et-config.html` and `suivi-experts-et-versions.html` hardcode Follow-up as unlocked regardless of `reviewDone()`, while the UI copy right next to the phase card still reads "Unlocks when allocation is finalized." Either make the gate real again, or replace the misleading copy with something that matches the demo's actual (open) behavior — a participant reaching Follow-up with allocation unfinished and reading "should be locked" copy is a specific, avoidable confusion during a moderated session.
 
 - [ ] **TE2 — Wire or clearly mark inert Config controls**
