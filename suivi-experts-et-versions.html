@@ -1482,8 +1482,10 @@ function renderPanel2(){
       b.querySelector("#a-reassign").addEventListener("click",()=>{
         const nm=b.querySelector("#ra-mgr").value||null, nx=b.querySelector("#ra-exp").value||null;
         if(!nx){ toast("Pick an expert before reassigning","warn"); return; }
+        const requestId=br.reassignRequest&&br.reassignRequest.requestId;
         br.manager=nm; br.expert=nx; br.status="awaiting_answer"; br.age=0;
-        br.reassignComment=null; br.reassignedAt="Today";
+        br.reassignComment=null; br.reassignRequest=null; br.reassignedAt="Today";
+        try{ if(window.parent!==window && window.parent.updateReassignRequest && requestId) window.parent.updateReassignRequest(requestId, {requestStatus:"approved"}); }catch(e){}
         toast(`${r.id} · ${TY(br.typology).label} reassigned to ${expOf(nx).name} — awaiting answer`,"ok");
         refreshAll();
       });
@@ -1578,6 +1580,7 @@ document.getElementById("sim-upload").addEventListener("click",()=>{
       impact:"EXG-005 was modified and already has an expert response → flagged as <b>answered on outdated version</b> in Expert follow-up. Unchanged requirements keep their characterization, assignment and status."};
     const r5=findR("EXG-005");r5.outdated=true;
     renderVersions();refreshAll();
+    try{ if(window.parent!==window && window.parent.setV22Uploaded) window.parent.setV22Uploaded(true); }catch(e){}
     toast("Gap analysis ready: +2 ~1 −0 — the active review switches to v2.2","ok");
     setTimeout(()=>toast("1 expert response flagged as answered on outdated version (EXG-005)","warn"),1000);
   },2400);
@@ -1678,7 +1681,27 @@ function setView(v){
   document.getElementById("view-doc").classList.toggle("on",v==="doc");
   document.getElementById("view-qa").classList.toggle("on",v==="qa");
 }
+/* TC2 — pull in reassignment requests raised in Expert Space via the shared shell
+   mailbox (mirrors revue-documentaire.html's syncReassignRequestsFromShell), so a
+   live request an expert just raised shows up here as "Returned by the expert"
+   instead of only the hand-authored seed comment. Manager-raised (byRole:"manager")
+   requests are a B1 escalation to the admin and stay out of scope here. */
+function syncReassignRequestsFromShell(){
+  let shared;
+  try{ shared = (window.parent!==window && window.parent.getReassignRequests) ? window.parent.getReassignRequests() : null; }catch(e){ shared=null; }
+  if(!shared) return;
+  shared.forEach(req=>{
+    if(req.requestStatus!=="pending" || req.byRole!=="expert") return;
+    const r=findR(req.reqId); if(!r) return;
+    const br=(r.branches||[]).find(b=>b.typology===req.typology); if(!br) return;
+    if(br.reassignRequest && br.reassignRequest.requestId===req.id) return;
+    br.reassignRequest = Object.assign({}, req, {requestId:req.id});
+    br.reassignComment = req.note;
+    br.status = "reassignment_needed";
+  });
+}
 function refreshAll(){
+  syncReassignRequestsFromShell();
   renderNav2();renderTable2();renderDoc2();renderQA();renderPanel2();renderTriage2();renderNeedsYou();renderExportReady();
   if(state.screen===3){renderVersions();renderIssuer();}
 }
