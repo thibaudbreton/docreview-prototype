@@ -48,7 +48,10 @@ Original ticket text, for reference:
 **Wire "Send to assigned experts" in the Finalize modal**
 Its sibling button ("Export .xlsx") has a handler and shows a toast; this one does nothing on click, silently. A user who clicks it believes experts were notified. At minimum, give it the same toast-confirmation treatment as its sibling.
 
-- [ ] **TB5 — Stop narrating v2.2 as already-arrived**
+- [x] **TB5 — DONE (no code change needed).** Already implemented end-to-end when this ticket was picked up: `build_merge.py` holds shared shell state `v22Uploaded` (defaults `false`, reset by `resetDemo()`) with `isV22Uploaded()`/`setV22Uploaded()`; `suivi-experts-et-versions.html`'s "Simulate upload — v2.2" button (`#sim-upload`) is the only caller of `setV22Uploaded(true)`; `dashboard-et-config.html`'s `v22Done()` reads `isV22Uploaded()` and `applyGating()` toggles every `.v22only` element (the "Version v2.2 uploaded..." feed item, the attention card, etc.) on that flag — all hidden by default. Verified by reading the chain in all three files; no gap found, nothing to change.
+
+Original ticket text, for reference:
+**Stop narrating v2.2 as already-arrived**
 Dashboard states "Version v2.2 uploaded and processed — gap analysis ready (+2 ~1 −0)" as fact; the Versions screen only reaches that state after the user manually clicks "Simulate upload — v2.2." Either gate the dashboard text on the same trigger, or make it clear this is a rehearsed demo beat the moderator triggers on cue.
 
 ---
