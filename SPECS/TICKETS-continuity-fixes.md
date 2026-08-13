@@ -132,7 +132,10 @@ Original ticket text, for reference:
 **Surface compliance lock state in Expert Space**
 `SPEC-domain-model.md` §5 explicitly deferred this ("when the expert's own view is built, it must surface the same lock state...") — that trigger has now fired (`expert-space.html` exists, committed Aug 12) but the deferred work wasn't picked up: zero occurrences of `locked`/`lockedBy` in the file. Source from the same fields `revue-documentaire.html` already uses for its lock badge.
 
-- [ ] **TF2 — Decide the scope of the typology-parent hierarchy (§9) beyond Expert Space**
+- [x] **TF2 — DONE.** Chose "scope §9 to Expert Space only" over extending the hierarchy — doing the latter for real (parent-aware typology data in three more independently-authored files, plus recursive-cascade logic in `dashboard-et-config.html`'s `expertsOf()`) is a genuine feature addition, not a consistency fix, and risks regressing Team management's existing flat-match behavior for a scenario not yet validated as needed. Added `SPEC-domain-model.md` §9.0 stating explicitly that the parent/cascade hierarchy is Expert-Space-only for this build, and that elsewhere §7's "own team" scope means exact-typology match — so this now reads as a documented scoping decision, not a silently unmet requirement.
+
+Original ticket text, for reference:
+**Decide the scope of the typology-parent hierarchy (§9) beyond Expert Space**
 Only `expert-space.html`'s `TYPO` carries a `parent` field and cascade logic (`descendantsOf()`); the other three independently-held typology vocabularies (`revue-documentaire.html`, `suivi-experts-et-versions.html`, `creation-projet.html`) are flat. §9 explicitly says this should refine §7's Team management scope ("a manager's own team scope must include their child typologies' requirements") but `dashboard-et-config.html`'s `expertsOf()` does a flat match only. Either extend the hierarchy to the shared vocabulary and Team management, or scope §9 to "Expert Space only, for now" explicitly in the spec so it stops reading as an unmet requirement elsewhere.
 
 - [ ] **TF3 — Resolve the R&D-Needed reporting question, then remove the spec's self-contradiction**
