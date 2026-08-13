@@ -552,6 +552,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec on" data-sec="general">
           <div class="cfg-h">General</div>
           <div class="cfg-sub">Project identity and key dates. The submission deadline drives the countdown and the overdue calculations.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: these fields aren't wired to the rest of the app in this build. The Dashboard/Review/Follow-up screens keep their own hand-authored project identity, and the deadline shown here doesn't drive any real countdown or overdue calculation.</div>
           <div class="frow"><div class="fl"><div class="flt">Project name</div><div class="fld">Displayed across all screens.</div></div><div class="fc"><input class="inp" value="Energy Monitoring System"></div></div>
           <div class="frow"><div class="fl"><div class="flt">Tender reference</div></div><div class="fc"><input class="inp" value="STB-2026"></div></div>
           <div class="frow"><div class="fl"><div class="flt">Product line</div></div><div class="fc"><select class="sel"><option>Signalling &amp; Urban</option><option>Rolling stock</option><option>Services</option><option>Systems</option></select></div></div>
@@ -565,7 +566,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="cfg-sub">Experts available for requirement assignment during allocation. Each can be assigned requirements and receives a qualification link.</div>
           <div id="exp-editor"></div>
           <div class="add-exp"><input class="inp" id="new-exp-name" placeholder="Full name"><input class="inp" id="new-exp-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="add-exp-btn">Add expert</button></div>
-          <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria</div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (activity)</span><span class="chip-tog on">OBS (organization)</span><span class="chip-tog">Discipline</span></div></div></div>
+          <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria <span style="font-weight:400;color:var(--text-3);font-size:var(--text-xs)">(TE2 — demo only, doesn't change what the review table actually offers)</span></div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (activity)</span><span class="chip-tog on">OBS (organization)</span><span class="chip-tog">Discipline</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Restricted view</div><div class="fld">What a manager sees for requirements outside their assignments (the admin/project lead always sees everything).</div></div><div class="fc"><div class="segc" data-seg="redact"><button class="on" data-redact="redact">Redacted</button><button data-redact="hide">Hidden</button></div><div class="opt-desc"><b>Redacted:</b> the manager sees blacked-out passages — they perceive the volume and context but not the content. <b>Hidden:</b> out-of-scope passages disappear entirely.</div></div></div>
         </section>
 
@@ -573,6 +574,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="workflow">
           <div class="cfg-h">Workflow &amp; milestones</div>
           <div class="cfg-sub">Rules that govern phase transitions, reminders and the review gate.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls change real behavior in this build. Follow-up's lock (see the phase card on the Dashboard) is driven by whether allocation is actually finalized, not by the toggle below; the overdue threshold used by Follow-up's own overdue logic is a fixed constant, not this slider.</div>
           <div class="frow"><div class="fl"><div class="flt">Review milestone gate</div><div class="fld">Requires 100% of requirements assigned and validated before export to the follow-up phase.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="gate"></span><span class="tl">Enforce full validation before export</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Overdue threshold</div><div class="fld">Days without an expert response before a request is flagged overdue.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="1" max="14" value="5" id="over-range"><span class="range-val" id="over-val">5 days</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Maximum reminder cadence</div><div class="fld">Prevents reminder spam to experts.</div></div><div class="fc"><select class="sel"><option>Once every 2 days</option><option>Daily</option><option>Once every 3 days</option><option>Manual only</option></select></div></div>
@@ -583,6 +585,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="ai">
           <div class="cfg-h">AI &amp; segmentation</div>
           <div class="cfg-sub">How the document is processed into blocks, and how the AI surfaces its uncertainty.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how the document is actually segmented or characterised in this build — the review screen's blocks are hand-authored seed data.</div>
           <div class="frow"><div class="fl"><div class="flt">Document rendering</div><div class="fld">The core technical trade-off — affects fidelity, overlays and performance on large documents.</div></div><div class="fc"><div class="segc" data-seg="render"><button class="on">Faithful PDF</button><button>Reconstructed HTML</button></div><div class="opt-desc"><b>Faithful PDF:</b> pixel-perfect to the source, block overlays sit on top. <b>Reconstructed HTML:</b> easier overlays and reflow, approximate fidelity. Decision pending — test on a real tender.</div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Uncertainty threshold</div><div class="fld">Below this confidence, a block is flagged "uncertain segmentation" for manual review. Tables are almost always flagged.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="50" max="95" value="80" id="conf-range"><span class="range-val" id="conf-val">80%</span></div><div class="hintbox">⚠ Confidence is used internally to prioritize, never shown to users as a score.</div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Default table granularity</div><div class="fld">How table rows map to requirements on first pass.</div></div><div class="fc"><div class="segc" data-seg="gran"><button class="on">One requirement per row</button><button>Whole table</button></div></div></div>
@@ -594,6 +597,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="qa">
           <div class="cfg-h">Q&amp;A &amp; submission</div>
           <div class="cfg-sub">How clarification questions are consolidated and transmitted to the tender issuer.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect Q&amp;A behavior in the Follow-up screen in this build.</div>
           <div class="frow"><div class="fl"><div class="flt">Issuer channel</div><div class="fld">Determines whether the batch is a simple export or a formatted submission.</div></div><div class="fc"><div class="segc" data-seg="channel"><button class="on">Buyer portal</button><button>Standard form</button><button>Free document</button></div><div class="opt-desc"><b>Buyer portal:</b> the batch is exported to the issuer's imposed format/template. <b>Free document:</b> a plain export you attach yourself.</div></div></div>
           <div class="frow"><div class="fl"><div class="flt">AI duplicate detection</div><div class="fld">Proposes merging near-identical questions raised by different experts, keeping all requirement links.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="dedup"></span><span class="tl">Suggest merges before submission</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Internal review before sending</div><div class="fld">Questions pass through an internal-review stage before leaving the team.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="review"></span><span class="tl">Require internal review stage</span></div></div></div>
@@ -603,6 +607,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="versions">
           <div class="cfg-h">Versions</div>
           <div class="cfg-sub">How incoming AO document versions are numbered and handled.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how version handling actually works in the Follow-up screen in this build — that's driven by the "Simulate upload — v2.2" button there.</div>
           <div class="frow"><div class="fl"><div class="flt">Numbering</div><div class="fld">Auto-increment with an optional free alias is recommended.</div></div><div class="fc"><div class="segc" data-seg="numbering"><button class="on">Auto-increment + alias</button><button>Free entry</button></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Detect addendum-as-answer</div><div class="fld">When an issuer response actually amends the document, propose treating it as a new version.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="addendum"></span><span class="tl">AI suggests requalifying as a version</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Expert notification on version switch</div><div class="fld">When the active review switches to a newer version.</div></div><div class="fc"><div class="segc" data-seg="notif"><button>Immediate</button><button class="on">Grouped at change-review validation</button></div></div></div>
@@ -612,6 +617,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="lang">
           <div class="cfg-h">Language</div>
           <div class="cfg-sub">Interface and translation defaults. Source text always remains authoritative.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: the UI stays English throughout regardless of these selects (a hard rule for this build — see <code>HANDOVER.md</code>). Not wired.</div>
           <div class="frow"><div class="fl"><div class="flt">Source document language</div></div><div class="fc"><select class="sel"><option>English</option><option>French</option><option>German</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Default translation target</div><div class="fld">Used by the Translate tab in the review panel.</div></div><div class="fc"><select class="sel"><option>French (FR)</option><option>German (DE)</option><option>Spanish (ES)</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Interface language</div></div><div class="fc"><select class="sel"><option>English</option><option>French</option></select></div></div>
@@ -932,8 +938,11 @@ document.getElementById("ph-team").addEventListener("click",()=>showScreen("team
 renderCastingProgress();
 
 /* Save */
-document.getElementById("cfg-save").addEventListener("click",()=>toast("Project configuration saved","ok"));
-document.getElementById("cfg-reset").addEventListener("click",()=>toast("Changes discarded","ok"));
+// TE2 — theme and restricted-view mode are the only settings with real effect, and both
+// already apply immediately on click (setTheme/setRedactMode) — nothing here actually
+// waits on Save. Toast wording matches that instead of implying a persisted save.
+document.getElementById("cfg-save").addEventListener("click",()=>toast("Theme and restricted-view mode apply immediately — other settings on this page aren't wired in this build","ok"));
+document.getElementById("cfg-reset").addEventListener("click",()=>toast("Nothing to discard — most fields on this page aren't wired in this build","ok"));
 
 /* deep link #config */
 if(location.hash==="#config"){showConfig(true);}
