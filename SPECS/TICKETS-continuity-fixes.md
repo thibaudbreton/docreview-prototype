@@ -1,5 +1,7 @@
 # Tickets — Continuity & consistency fixes
 
+> **Note (automated queue routine, 2026-08-13):** this file has no `- [ ]` / `- [x]` checkboxes — tickets are marked with prose (`**TA1 — DONE.**`, `**TB1 — ...**`) instead. The queue needs checkbox formatting (`- [ ] ticket text`) before the automated routine can pick up the next ticket. No ticket was implemented this run.
+
 > Consolidated from three audit passes (ad-hoc functional audit, `workflow-continuity-audit`, `journey-experience-audit`) run on 2026-08-13. Prototype / UI-only: fixes are about making the demo internally consistent and trustworthy for moderated user testing, not about production hardening. Build in order within each group; groups themselves are roughly ordered by how much they block a credible test session. Aligns with `SPEC-domain-model.md`, `SPEC-review-table.md`, `TICKETS-followup-workflow.md`.
 
 ---
