@@ -4142,6 +4142,7 @@ const EXPORT_EXPERTS = {
    requirements (b.sourceImage) — they don't sync into the expert-facing Follow-up
    screen yet (see TD3), so counting them here would overstate what experts actually
    receive. */
+let EXPORT_STATS = {total:0, expertCount:0};
 function renderExportModal(){
   const all = reqs();
   document.getElementById("eo-xls-desc").textContent =
@@ -4159,6 +4160,7 @@ function renderExportModal(){
       <span class="exp-count">${n} requirement${n>1?"s":""}</span>
     </div>`;
   }).join("");
+  EXPORT_STATS = {total:all.length, expertCount:Object.keys(counts).length};
 }
 
 /* Finalize review (milestone) */
@@ -4179,11 +4181,17 @@ document.getElementById("modal-confirm").addEventListener("click",()=>{
   overlay.classList.remove("open");
   toast("Review finalized — register STB-2026_requirements.xlsx generated","ok");
   try{ if(window.parent!==window && window.parent.setReviewValidated) window.parent.setReviewValidated(true); }catch(e){}
-  setTimeout(()=>toast("3 experts notified — Follow-up phase unlocked","ok"),900);
+  const n=EXPORT_STATS.expertCount;
+  setTimeout(()=>toast(`${n} expert${n>1?"s":""} notified — Follow-up phase unlocked`,"ok"),900);
   setTimeout(()=>{ try{ if(window.parent!==window && window.parent.route) window.parent.route("dashboard"); }catch(e){} },1900);
 });
-document.getElementById("opt-xls").addEventListener("click",()=>toast("Preview: 10 rows · 8 columns · traceability links included","ok"));
-document.getElementById("opt-send").addEventListener("click",()=>toast("Preview: 3 experts will be notified with their requirement links","ok"));
+document.getElementById("opt-xls").addEventListener("click",()=>toast(`Preview: ${EXPORT_STATS.total} rows · 8 columns · traceability links included`,"ok"));
+// TB4 — this row's click already showed a confirmation toast (nothing to "wire" that wasn't
+// there); made it match the live count computed by renderExportModal() instead of a fixed "3".
+document.getElementById("opt-send").addEventListener("click",()=>{
+  const n=EXPORT_STATS.expertCount;
+  toast(`Preview: ${n} expert${n>1?"s":""} will be notified with their requirement links`,"ok");
+});
 
 /* Keyboard — Review: active-cell navigation (row × column, spreadsheet-style).
    Arrows/space are ignored while any input/select has focus — that's "editing state",

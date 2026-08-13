@@ -42,7 +42,10 @@ Original ticket text, for reference:
 **Compute the "Finalize allocation" modal from `SECTIONS`**
 The modal's total ("12 requirements") and per-expert breakdown (Sophie 4 / Karim 3 / Claire 3) are static HTML, not derived — real totals are 14 requirements and 3/2/3. This is the confirmation screen right before an action with real downstream effect (§8.5: validating allocation *is* the send to Expert Review) — it's the worst place in the app for stale numbers.
 
-- [ ] **TB4 — Wire "Send to assigned experts" in the Finalize modal**
+- [x] **TB4 — DONE.** Both `opt-xls` and `opt-send` already had click handlers with toast confirmation by the time this was picked up (checked git history — present since the file's first commit), so there was nothing silently unwired. What remained: both toasts, and the `modal-confirm` "N experts notified" toast, still hand-typed their counts ("10 rows", "3 experts") independently of TB3's `renderExportModal()`. Wired all three to `EXPORT_STATS` (a `{total, expertCount}` snapshot `renderExportModal()` now records each time it runs), so the preview toasts and the post-finalize toast can't drift from the modal body's own numbers. `node --check` and `build_merge.py` clean.
+
+Original ticket text, for reference:
+**Wire "Send to assigned experts" in the Finalize modal**
 Its sibling button ("Export .xlsx") has a handler and shows a toast; this one does nothing on click, silently. A user who clicks it believes experts were notified. At minimum, give it the same toast-confirmation treatment as its sibling.
 
 - [ ] **TB5 — Stop narrating v2.2 as already-arrived**
