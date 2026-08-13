@@ -608,7 +608,12 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .status-pill.s-changed{background:var(--accent-soft);color:var(--accent)}
 /* branch status (sub-row, display-only — not the same states as the parent status pill) */
 .status-pill.branch-status-answered{background:var(--ok-soft);color:var(--ok);cursor:default}
-.status-pill.branch-status-awaiting{background:var(--panel-3);color:var(--text-2);cursor:default}
+/* TD2 — full six-value branch-status set (was answered/awaiting/reassignment_needed only,
+   collapsing proposed/assigned/awaiting_answer/awaiting_qa into one bucket). Styling mirrors
+   suivi-experts-et-versions.html's .spill rules: proposed/assigned/awaiting_answer stay neutral,
+   awaiting_qa gets the accent highlight since it's blocked on something external. */
+.status-pill.branch-status-proposed,.status-pill.branch-status-assigned,.status-pill.branch-status-awaiting_answer{background:var(--panel-3);color:var(--text-2);cursor:default}
+.status-pill.branch-status-awaiting_qa{background:var(--accent-soft);color:var(--accent);cursor:default}
 .status-pill.branch-status-reassignment_needed{background:var(--warn-soft);color:var(--warn);cursor:default}
 .collab-badges{display:flex;gap:6px}
 .cbadge{
@@ -1525,7 +1530,7 @@ function seedDemoSections(){
        branches:[
          {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:"sup", branchStatus:"answered", allocStatus:"allocated", compliance:"not_compliant",
           pbs:{v:"Supervision / Alerting",c:91}, abs:{v:"Design & Engineering",c:88}, obs:{v:"Monitoring & Supervision — FR",c:90}},
-         {typology:"mln", label:"Mainline Wayside", manager:"m_mln", expert:"infra", branchStatus:"awaiting", allocStatus:"allocated", compliance:"pending",
+         {typology:"mln", label:"Mainline Wayside", manager:"m_mln", expert:"infra", branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
           pbs:{v:"Platform / Wayside alerting",c:80}, abs:{v:"Performance & Validation",c:76}, obs:{v:"Infrastructure & Platform — FR",c:74}},
          {typology:"sys", label:"Safety", manager:null, expert:null, branchStatus:"reassignment_needed", allocStatus:"allocated", compliance:"pending",
           pbs:{v:"Safety / Alerting escalation",c:70}, abs:{v:"Systems Integration",c:58}, obs:{v:"Cybersecurity — Group",c:42}},
@@ -1561,7 +1566,7 @@ function seedDemoSections(){
       {id:"EXG-007", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln"], perimAI:true, pbs:{v:"Platform / Availability",c:88}, abs:{v:"Operations",c:71}, obs:{v:"Infrastructure & Platform — FR",c:63}, manager:"m_mln", type:"Performance", domain:"Availability", status:"suggested", alloc:null, comments:0,
        // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the branches.
        branches:[
-         {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:null, branchStatus:"awaiting", allocStatus:"allocated", compliance:"pending",
+         {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:null, branchStatus:"proposed", allocStatus:"allocated", compliance:"pending",
           pbs:{v:"Platform / Availability",c:84}, abs:{v:"Operations",c:70}, obs:{v:"Monitoring & Supervision — FR",c:66}},
          {typology:"mln", label:"Mainline Wayside", manager:"m_mln", expert:"infra", branchStatus:"answered", allocStatus:"allocated", compliance:"compliant",
           pbs:{v:"Platform / Availability",c:92}, abs:{v:"Operations",c:89}, obs:{v:"Infrastructure & Platform — FR",c:90}},
@@ -1613,7 +1618,10 @@ const COMPLIANCE_DEFS=[
   {k:"pending",label:"Pending"},
 ];
 const complianceLabel = k => (COMPLIANCE_DEFS.find(c=>c.k===k)||{}).label || k || "—";
-const BRANCH_STATUS_LABEL = {answered:"Answered", awaiting:"Awaiting", reassignment_needed:"Reassignment needed"};
+/* TD2 — full six-value set, matching SPEC-domain-model.md §2 / suivi-experts-et-versions.html's
+   BST (reference implementation). Was {answered, awaiting, reassignment_needed} — a real
+   collapse of proposed/assigned/awaiting_answer/awaiting_qa into "awaiting", not a shorthand. */
+const BRANCH_STATUS_LABEL = {proposed:"Proposed", assigned:"Assigned", awaiting_answer:"Awaiting answer", awaiting_qa:"Awaiting Q&A", reassignment_needed:"Reassignment needed", answered:"Answered"};
 /* B10 — three reassignment reasons, raised by Expert or Branch Manager, always
    resolved by the project manager. Reallocation is always a replacement (a
    requirement can never end up with zero activities) — reason 3 still names a
@@ -2081,7 +2089,7 @@ function escHtml(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&am
 function ensureBranches(b){
   if(!(b.branches&&b.branches.length)){
     const t=(b.perim&&b.perim[0])||"sig";
-    b.branches=[{typology:t,label:TY(t).label,manager:b.manager||null,expert:b.alloc||null,branchStatus:b.alloc?"answered":"awaiting",compliance:"pending"}];
+    b.branches=[{typology:t,label:TY(t).label,manager:b.manager||null,expert:b.alloc||null,branchStatus:b.alloc?"answered":"proposed",compliance:"pending"}]; // TD2 — no expert yet when b.alloc is null
     if(!b.rollupStatus) b.rollupStatus=STATUS_LABEL[b.status];
     if(!b.rollupCompliance) b.rollupCompliance="pending";
     if(!(b.perim&&b.perim.length)) b.perim=[t];
@@ -3090,7 +3098,7 @@ function submitReassignRequest(b,target,form){
 }
 function approveProposal(b,idx){
   const branch=b.branches[idx]; const prop=branch.proposal; if(!prop) return;
-  branch.branchStatus = "awaiting";
+  branch.branchStatus = "proposed"; // TD2 — no expert assigned yet at approval time
   branch.proposal=null;
   pushBranchLog(b, MGR("admin").name, `Approved — ${TY(branch.typology).label} added as a new activity.`, "ok");
   toast("Proposal approved","ok");
@@ -3120,13 +3128,13 @@ function approveReassign(b,idx){
     const localMatch = ALLOCS.find(a=>a.id===req.replacementExpert);
     const newExpertLabel = req.replacementExpertLabel || (localMatch||{}).label || "—";
     if(localMatch) branch.expert = req.replacementExpert;
-    branch.branchStatus = "awaiting";
+    branch.branchStatus = "awaiting_answer"; // TD2 — sent back to (the possibly reassigned) expert
     branch.reassignRequest = null;
     pushBranchLog(b, actor, `Approved — ${TY(branch.typology).label} reassigned to ${newExpertLabel.split("—")[0].trim()}.`, "ok");
   } else {
     const oldLabel = TY(branch.typology).label, newTypo = req.replacementTypology;
     const newLabel = req.replacementTypologyLabel || TY(newTypo).label;
-    const newBranch = {typology:newTypo, label:newLabel, manager:null, expert:null, branchStatus:"awaiting", compliance:"pending"};
+    const newBranch = {typology:newTypo, label:newLabel, manager:null, expert:null, branchStatus:"proposed", compliance:"pending"}; // TD2 — no expert yet
     b.branches.splice(idx,1,newBranch);
     if(!b.branches.some(x=>x.typology===branch.typology)) b.perim=(b.perim||[]).filter(p=>p!==branch.typology);
     if(!(b.perim||[]).includes(newTypo)) b.perim=[...(b.perim||[]), newTypo];
@@ -3138,7 +3146,7 @@ function approveReassign(b,idx){
 }
 function rejectReassign(b,idx){
   const branch=b.branches[idx]; const req=branch.reassignRequest; if(!req) return;
-  branch.branchStatus = req.prevBranchStatus||"awaiting";
+  branch.branchStatus = req.prevBranchStatus||"awaiting_answer"; // TD2
   branch.reassignRequest = null;
   pushBranchLog(b, MGR(VIEWER).name, `Rejected — reassignment request for ${TY(branch.typology).label} declined, reverted to its prior state.`, "warn");
   try{ if(window.parent!==window && window.parent.updateReassignRequest && req.requestId) window.parent.updateReassignRequest(req.requestId, {requestStatus:"rejected"}); }catch(e){}
@@ -3160,7 +3168,7 @@ function syncReassignRequestsFromShell(){
     ensureBranches(b);
     let target = b.branches.find(br=>br.typology===req.typology);
     if(!target){
-      target = {typology:req.typology, label:TY(req.typology).label, manager:b.manager||null, expert:null, branchStatus:"awaiting", compliance:"pending"};
+      target = {typology:req.typology, label:TY(req.typology).label, manager:b.manager||null, expert:null, branchStatus:"proposed", compliance:"pending"}; // TD2 — no expert yet
       b.branches.push(target);
       if(!(b.perim||[]).includes(req.typology)) b.perim=[...(b.perim||[]), req.typology];
     }
@@ -3686,7 +3694,7 @@ function markAllocEdited(target){
 function validateAllocTarget(target, isRealBranch){
   if(!target || target.allocStatus==="allocated" || target.allocStatus==="incomplete") return false;
   target.allocStatus="allocated"; target.allocDoubtField=null; delete target.allocReviewReason;
-  if(isRealBranch && !target.branchStatus) target.branchStatus="awaiting"; // sent to Expert Review
+  if(isRealBranch && !target.branchStatus) target.branchStatus="awaiting_answer"; // TD2 — sent to Expert Review, expert already assigned (allocStatus just became "allocated")
   return true;
 }
 function validateProgress(id, branchIdx){
