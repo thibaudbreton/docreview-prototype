@@ -58,7 +58,10 @@ Dashboard states "Version v2.2 uploaded and processed — gap analysis ready (+2
 
 ## Group C — Reconnect the reassignment loop (T5) end-to-end
 
-- [ ] **TC1 — Give the branch manager an actual path to resolve their own expert's reassignment request**
+- [x] **TC1 — DONE (already implemented).** Found already resolved in `revue-documentaire.html`, self-flagged with a `// TC1` comment in the code: `myReassignBranch`/`myReassignIdx` (computed independently of `isAdmin()`/`hasBranches`, so it surfaces even on a single-branch requirement) find the viewer's own branch with a pending `byRole:"expert"` request and render an Approve/Reject card for it in the detail panel — `admin`-only `byRole:"manager"` escalations stay behind `showBranchPanel`'s `isAdmin()` gate as intended. `approveReassign()`/`rejectReassign()` themselves carry no `isAdmin()` guard, so the rendered buttons are fully functional for a non-admin branch manager. Verified by reading the render path and the two handler functions; no gap found, nothing to change.
+
+Original ticket text, for reference:
+**Give the branch manager an actual path to resolve their own expert's reassignment request**
 `approveReassign()`/`rejectReassign()` in `revue-documentaire.html` only render inside the admin-gated branch panel (`isAdmin()`). A branch manager who isn't the project manager — the role `TICKETS-followup-workflow.md` T5 explicitly assigns this action to ("The manager can reassign... this stays inside the company") — has no UI path to it at all. Walked in character as a branch manager (see journey-experience-audit, Parcours C), this is a silent dead end: no error, no message, nothing to act on. Scope resolution to the branch's own manager for `byRole:"expert"` requests, reserving admin-only handling for `byRole:"manager"` (B1) escalations.
 
 - [ ] **TC2 — Make `suivi-experts-et-versions.html` read the shared reassignment mailbox**
