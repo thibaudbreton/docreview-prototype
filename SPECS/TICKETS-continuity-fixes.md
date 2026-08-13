@@ -126,7 +126,10 @@ It only *writes* `setRedactMode()`; it never initializes its selected option fro
 
 ## Group F — Expert Space catch-up
 
-- [ ] **TF1 — Surface compliance lock state in Expert Space**
+- [x] **TF1 — DONE.** Added `locked`/`lockedBy`/`lockedAt` support to `expert-space.html`, mirroring `revue-documentaire.html`'s exact lock-badge wording and behavior: the recorded-verdict banner shows "🔒 Locked by the project manager" (title has who/when) instead of the "Edit verdict" link, the compliance pill gets the `.locked` style + lock icon everywhere it appears (header pills, table row), and "Render a verdict" is disabled with an explanatory title. No requirement is locked in *any* screen's seed data — locking is a runtime-only admin action in Review, never pre-seeded — so this couldn't be a cross-screen sync; marked `CBT-101` (an already-answered, not-compliant, safety-relevant item) as locked as a self-contained example so a tester can actually see the state. Verified with jsdom: lock badge renders, `btn-verdict` is disabled, pill shows the lock icon. `node --check` and `build_merge.py` clean.
+
+Original ticket text, for reference:
+**Surface compliance lock state in Expert Space**
 `SPEC-domain-model.md` §5 explicitly deferred this ("when the expert's own view is built, it must surface the same lock state...") — that trigger has now fired (`expert-space.html` exists, committed Aug 12) but the deferred work wasn't picked up: zero occurrences of `locked`/`lockedBy` in the file. Source from the same fields `revue-documentaire.html` already uses for its lock badge.
 
 - [ ] **TF2 — Decide the scope of the typology-parent hierarchy (§9) beyond Expert Space**
