@@ -24,7 +24,10 @@ Original ticket text, for reference:
 
 ## Group B — Numbers the user is asked to trust
 
-- [ ] **TB1 — Compute Dashboard KPIs from real data, not hardcoded markup**
+- [x] **TB1 — DONE.** `dashboard-et-config.html` now carries two hand-authored local mirrors — `REVIEW_REQS` (14 requirement statuses, mirroring `revue-documentaire.html`'s `SECTIONS`) and `FOLLOWUP_REQS` (per-requirement compliance verdict + branch answered/total counts, mirroring `suivi-experts-et-versions.html`'s `REQS`/`consolidate()`) — same independently-hand-authored-per-screen convention already used for `MANAGERS`/`EXPERTS`. `renderReviewKPIs()`/`renderComplianceKPIs()` compute the Allocation phase card, the "Requirements validated" and "Response rate" health stats, the Compliance breakdown bar/legend, and the Follow-up phase card's "answered/overdue" stat from these mirrors on load, instead of typed-in markup. Verified with jsdom: computed values now read 5/14 validated (36% bar), compliance 3 compliant / 0 partial / 1 non-compliant / 8 awaiting (matches `consolidate()` over the real `REQS`), and a response rate of **40%** (6 of 15 branches answered) — catching that the old hand-typed "37.5%" was itself wrong (15 branches total, not 16). `node --check` clean on all six screens' scripts post `build_merge.py`; 6/6 base64 blobs still decode as UTF-8; 0 dead `href="*.html"` links in the merged output.
+
+Original ticket text, for reference:
+**Compute Dashboard KPIs from real data, not hardcoded markup**
 "10/12 requirements validated," the 5/1/1/5 compliance breakdown, and the 75% response rate in `dashboard-et-config.html` don't match what's computable from `revue-documentaire.html`'s `SECTIONS` (real: ~5/14 fully allocated) or `suivi-experts-et-versions.html`'s `REQS`/`consolidate()` (real: 3/1/0/8, ~37.5%). This is the first data screen a user sees after opening a project — it sets the trust level for everything after it.
 
 - [ ] **TB2 — Fix the "who's overdue" activity feed**
