@@ -1337,7 +1337,7 @@ body.restricted .restrict-banner{display:flex}
         <div class="eo-icon xls">⬇</div>
         <div>
           <div class="eo-title">Export requirements register (.xlsx)</div>
-          <div class="eo-desc">14 requirements · characterization, assignment, status, source section, traceability ID and link to original passage.</div>
+          <div class="eo-desc" id="eo-xls-desc">14 requirements · characterization, assignment, status, source section, traceability ID and link to original passage.</div>
         </div>
       </div>
       <div class="export-opt" id="opt-send">
@@ -1345,23 +1345,7 @@ body.restricted .restrict-banner{display:flex}
         <div style="flex:1">
           <div class="eo-title">Send to assigned experts</div>
           <div class="eo-desc">Each expert receives their requirements with a link to the qualification screen.</div>
-          <div class="expert-list">
-            <div class="expert-row">
-              <div class="exp-avatar" style="background:#6e7bf2">SL</div>
-              <span class="exp-name">Sophie Lang</span><span style="color:var(--text-3);font-size:var(--text-xs)">Monitoring Team</span>
-              <span class="exp-count">3 requirements</span>
-            </div>
-            <div class="expert-row">
-              <div class="exp-avatar" style="background:#3fb27f">KB</div>
-              <span class="exp-name">Karim Benali</span><span style="color:var(--text-3);font-size:var(--text-xs)">Infrastructure Team</span>
-              <span class="exp-count">2 requirements</span>
-            </div>
-            <div class="expert-row">
-              <div class="exp-avatar" style="background:#e0a43c">CM</div>
-              <span class="exp-name">Claire Moreau</span><span style="color:var(--text-3);font-size:var(--text-xs)">Cybersecurity</span>
-              <span class="exp-count">3 requirements</span>
-            </div>
-          </div>
+          <div class="expert-list" id="eo-expert-list"></div>
         </div>
       </div>
     </div>
@@ -4145,25 +4129,40 @@ notifDrop.querySelectorAll(".nd-item").forEach(i=>i.addEventListener("click",()=
   state.tab="activity"; renderSettings();
 }));
 
+/* TB3 — expert display metadata for the Finalize modal's per-expert breakdown.
+   Mirrors ALLOCS' id->name mapping above with the avatar init/color already used
+   elsewhere on this screen; kept separate since ALLOCS is label-only. */
+const EXPORT_EXPERTS = {
+  sup:{name:"Sophie Lang",team:"Monitoring Team",init:"SL",color:"#6e7bf2"},
+  infra:{name:"Karim Benali",team:"Infrastructure Team",init:"KB",color:"#3fb27f"},
+  cyber:{name:"Claire Moreau",team:"Cybersecurity",init:"CM",color:"#e0a43c"},
+};
+/* TB3 — compute the Finalize modal's totals from the live requirement set instead
+   of typing them into the markup. The per-expert breakdown excludes image-sourced
+   requirements (b.sourceImage) — they don't sync into the expert-facing Follow-up
+   screen yet (see TD3), so counting them here would overstate what experts actually
+   receive. */
+function renderExportModal(){
+  const all = reqs();
+  document.getElementById("eo-xls-desc").textContent =
+    `${all.length} requirement${all.length>1?"s":""} · characterization, assignment, status, source section, traceability ID and link to original passage.`;
+  const sendable = all.filter(b=>!b.sourceImage);
+  const counts = {};
+  sendable.forEach(b=>{ if(b.alloc) counts[b.alloc]=(counts[b.alloc]||0)+1; });
+  const list = document.getElementById("eo-expert-list");
+  list.innerHTML = Object.keys(counts).map(id=>{
+    const e = EXPORT_EXPERTS[id]; if(!e) return "";
+    const n = counts[id];
+    return `<div class="expert-row">
+      <div class="exp-avatar" style="background:${e.color}">${e.init}</div>
+      <span class="exp-name">${e.name}</span><span style="color:var(--text-3);font-size:var(--text-xs)">${e.team}</span>
+      <span class="exp-count">${n} requirement${n>1?"s":""}</span>
+    </div>`;
+  }).join("");
+}
+
 /* Finalize review (milestone) */
 const overlay = document.getElementById("export-overlay");
-/* TB3 — computed from the live requirement set (not static markup), so this stays
-   correct whether the table is showing the STB-2026 demo or an imported capture. */
-function renderFinalizeModal(r){
-  const desc = document.querySelector("#opt-xls .eo-desc");
-  if(desc) desc.textContent = `${r.length} requirements · characterization, assignment, status, source section, traceability ID and link to original passage.`;
-  const counts = {};
-  ALLOCS.forEach(a=>counts[a.id]=0);
-  r.forEach(b=>{
-    if((b.branches||[]).length>1) return; // multi-branch parents split across experts per branch, not one single assignee
-    if(b.alloc!=null && counts[b.alloc]!==undefined) counts[b.alloc]++;
-  });
-  const rows = document.querySelectorAll("#opt-send .expert-row");
-  ALLOCS.forEach((a,i)=>{
-    const cnt = rows[i] && rows[i].querySelector(".exp-count");
-    if(cnt) cnt.textContent = `${counts[a.id]} requirement${counts[a.id]!==1?"s":""}`;
-  });
-}
 document.getElementById("finalize-btn").addEventListener("click",()=>{
   const r = reqs();
   const notDone = r.filter(b=>!isFullyAllocated(b)).length;
@@ -4171,7 +4170,7 @@ document.getElementById("finalize-btn").addEventListener("click",()=>{
     toast(`Review milestone not reached — ${notDone} requirement${notDone>1?"s":""} not yet allocated. All requirements must be assigned and validated before export.`,"warn");
     return;
   }
-  renderFinalizeModal(r);
+  renderExportModal();
   overlay.classList.add("open");
 });
 document.getElementById("modal-cancel").addEventListener("click",()=>overlay.classList.remove("open"));

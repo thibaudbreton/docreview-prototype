@@ -459,9 +459,9 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             <div><div class="att-t"><b>2 uncertain segmentations</b></div><div class="att-sub">Table rows in section 2 flagged by the AI — confirm boundaries before validating</div></div>
             <span class="att-go">Fix in review →</span>
           </div>
-          <div class="att p2only" data-go="suivi-experts-et-versions.html">
+          <div class="att p2only" id="att-overdue" data-go="suivi-experts-et-versions.html">
             <div class="att-ic warn">🔔</div>
-            <div><div class="att-t"><b>1 expert response overdue</b></div><div class="att-sub">Sophie Lang — EXG-004 unopened for 6 days</div></div>
+            <div><div class="att-t"><b id="att-overdue-t">1 expert response overdue</b></div><div class="att-sub" id="att-overdue-sub">Sophie Lang — EXG-004 unopened for 6 days</div></div>
             <span class="att-go">Remind →</span>
           </div>
           <div class="att p2only" data-go="suivi-experts-et-versions.html">
@@ -480,26 +480,26 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="card">
             <h3>Project health</h3>
             <div class="health-stats">
-              <div class="hstat"><div class="hs-num">14</div><div class="hs-lbl">Requirements</div></div>
+              <div class="hstat"><div class="hs-num" id="hs-total-reqs">14</div><div class="hs-lbl">Requirements</div></div>
               <div class="hstat"><div class="hs-num">100%</div><div class="hs-lbl">Managers assigned</div></div>
-              <div class="hstat p1only"><div class="hs-num">5<span class="hs-slash">/14</span></div><div class="hs-lbl">Validated</div></div>
-              <div class="hstat p2only"><div class="hs-num">37.5%</div><div class="hs-lbl">Response rate</div></div>
+              <div class="hstat p1only"><div class="hs-num" id="hs-validated">5<span class="hs-slash">/14</span></div><div class="hs-lbl">Validated</div></div>
+              <div class="hstat p2only"><div class="hs-num" id="hs-response-rate">37.5%</div><div class="hs-lbl">Response rate</div></div>
             </div>
           </div>
 
           <div class="card p2only">
             <h3>Compliance</h3>
             <div class="comp-bar">
-              <div class="comp-seg compliant" style="width:25%">3</div>
-              <div class="comp-seg partial" style="width:0%"></div>
-              <div class="comp-seg non" style="width:8.3%">1</div>
-              <div class="comp-seg pending" style="width:66.7%">8</div>
+              <div class="comp-seg compliant" id="compseg-compliant" style="width:25%">3</div>
+              <div class="comp-seg partial" id="compseg-partial" style="width:0%"></div>
+              <div class="comp-seg non" id="compseg-non" style="width:8.3%">1</div>
+              <div class="comp-seg pending" id="compseg-pending" style="width:66.7%">8</div>
             </div>
             <div class="comp-legend">
-              <span><span class="dot compliant"></span>Compliant · 3</span>
-              <span><span class="dot partial"></span>Partial · 0</span>
-              <span><span class="dot non"></span>Non-compliant · 1</span>
-              <span><span class="dot pending"></span>Awaiting · 8</span>
+              <span><span class="dot compliant"></span>Compliant · <span id="compleg-compliant">3</span></span>
+              <span><span class="dot partial"></span>Partial · <span id="compleg-partial">0</span></span>
+              <span><span class="dot non"></span>Non-compliant · <span id="compleg-non">1</span></span>
+              <span><span class="dot pending"></span>Awaiting · <span id="compleg-pending">8</span></span>
             </div>
           </div>
 
@@ -750,7 +750,12 @@ function applyGating(){
   {
     f.className="phase active-phase"; f.style.cursor="pointer";
     fb.textContent="Current"; fb.className="ph-badge current";
-    fbody.outerHTML=`<div class="ph-stat" id="ph-followup-body"><span class="big">4</span><span>/ 12 answered · 1 overdue</span></div><div class="ph-bar"><div style="width:33.3%;background:var(--ia)"></div></div>`;
+    // TB1 — computed from the FOLLOWUP_REQS mirror instead of a fixed string.
+    const fTotal=FOLLOWUP_REQS.length;
+    const fAnswered=FOLLOWUP_REQS.filter(r=>r.compliance!==null).length;
+    const fOverdue=FOLLOWUP_REQS.reduce((s,r)=>s+(r.overdueBranches||0),0);
+    const fPct=Math.round(fAnswered/fTotal*1000)/10;
+    fbody.outerHTML=`<div class="ph-stat" id="ph-followup-body"><span class="big">${fAnswered}</span><span>/ ${fTotal} answered${fOverdue?` · ${fOverdue} overdue`:""}</span></div><div class="ph-bar"><div style="width:${fPct}%;background:var(--ia)"></div></div>`;
     f.onclick=()=>goRoute("suivi-experts-et-versions.html");
   }
   // attention count
@@ -946,6 +951,86 @@ document.querySelectorAll(".theme-opt").forEach(b=>b.addEventListener("click",()
 document.querySelectorAll('[data-redact]').forEach(b=>b.addEventListener("click",()=>{
   try{ if(window.parent!==window && window.parent.setRedactMode) window.parent.setRedactMode(b.dataset.redact); }catch(e){}
 }));
+
+/* TB1 — mirrors revue-documentaire.html's SECTIONS requirement statuses (review/
+   allocation phase) and suivi-experts-et-versions.html's REQS/consolidate() (follow-up
+   phase's compliance verdicts + branch answer counts). Independently hand-authored per
+   this project's convention (see the MANAGERS mirror above) — used to compute the
+   Allocation phase card, the "Requirements validated" health stat, the Compliance
+   breakdown and the Response rate instead of typing the resulting numbers into the
+   markup, so they can't silently drift from the screens that own that data. */
+const REVIEW_REQS=[
+  {id:"IMG-1-R1",status:"toreview"},{id:"IMG-1-R2",status:"toreview"},
+  {id:"EXG-001",status:"allocated"},{id:"EXG-002",status:"allocated"},
+  {id:"EXG-003",status:"toreview"},{id:"EXG-004",status:"suggested"},
+  {id:"EXG-011",status:"suggested"},{id:"EXG-012",status:"suggested"},
+  {id:"EXG-005",status:"allocated"},{id:"EXG-006",status:"edited"},
+  {id:"EXG-007",status:"suggested"},{id:"EXG-008",status:"allocated"},
+  {id:"EXG-009",status:"toreview"},{id:"EXG-010",status:"allocated"},
+];
+const FOLLOWUP_REQS=[
+  {id:"EXG-001",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"EXG-002",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"EXG-003",compliance:null,branchesAnswered:1,branchesTotal:3},
+  {id:"EXG-004",compliance:null,branchesAnswered:0,branchesTotal:1,overdueBranches:1},
+  {id:"EXG-011",compliance:"non_compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"EXG-012",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"EXG-005",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"EXG-006",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"EXG-007",compliance:null,branchesAnswered:1,branchesTotal:2},
+  {id:"EXG-008",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"EXG-009",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"EXG-010",compliance:null,branchesAnswered:0,branchesTotal:1},
+];
+function renderReviewKPIs(){
+  const total=REVIEW_REQS.length;
+  const validated=REVIEW_REQS.filter(r=>r.status==="allocated").length;
+  const pct=Math.round(validated/total*100);
+  document.getElementById("hs-total-reqs").textContent=total;
+  document.getElementById("ph-review-n").textContent=validated;
+  document.getElementById("ph-review-txt").textContent=`/ ${total} requirements validated`;
+  document.getElementById("ph-review-bar").style.width=pct+"%";
+  document.getElementById("att-review-sub").textContent=`${total-validated} requirements still to validate before Follow-up unlocks`;
+  document.getElementById("hs-validated").innerHTML=`${validated}<span class="hs-slash">/${total}</span>`;
+}
+function renderComplianceKPIs(){
+  const total=FOLLOWUP_REQS.length;
+  const compliant=FOLLOWUP_REQS.filter(r=>r.compliance==="compliant").length;
+  const partial=FOLLOWUP_REQS.filter(r=>r.compliance==="compliant_rnd").length;
+  const non=FOLLOWUP_REQS.filter(r=>r.compliance==="non_compliant").length;
+  const pending=total-compliant-partial-non;
+  const pct=n=>total?Math.round(n/total*1000)/10+"%":"0%";
+  [["compliant",compliant],["partial",partial],["non",non],["pending",pending]].forEach(([k,n])=>{
+    document.getElementById(`compseg-${k}`).style.width=pct(n);
+    document.getElementById(`compseg-${k}`).textContent=n||"";
+    document.getElementById(`compleg-${k}`).textContent=n;
+  });
+  const branchesAnswered=FOLLOWUP_REQS.reduce((s,r)=>s+r.branchesAnswered,0);
+  const branchesTotal=FOLLOWUP_REQS.reduce((s,r)=>s+r.branchesTotal,0);
+  document.getElementById("hs-response-rate").textContent=(Math.round(branchesAnswered/branchesTotal*1000)/10)+"%";
+}
+/* TB2 — mirrors the branch-level detail behind suivi-experts-et-versions.html's
+   isOverB() (awaiting_answer && age >= OVERDUE_DAYS): only a branch actually waiting
+   on its expert can be overdue, not one blocked on the issuer or bounced back to the
+   manager. Drives the "expert response overdue" attention card instead of a hand-typed
+   name/id/day-count that can silently point at the wrong person. */
+const OVERDUE_BRANCHES=[
+  {reqId:"EXG-004",expert:"Sophie Lang",days:6},
+];
+function renderOverdueCard(){
+  const card=document.getElementById("att-overdue");
+  if(!OVERDUE_BRANCHES.length){ card.classList.add("hidden"); return; }
+  const n=OVERDUE_BRANCHES.length;
+  document.getElementById("att-overdue-t").textContent=`${n} expert response${n>1?"s":""} overdue`;
+  const first=OVERDUE_BRANCHES[0];
+  const sub=n>1
+    ? `${first.expert} — ${first.reqId} unopened for ${first.days} days, +${n-1} more`
+    : `${first.expert} — ${first.reqId} unopened for ${first.days} days`;
+  document.getElementById("att-overdue-sub").textContent=sub;
+}
+renderReviewKPIs();
+renderComplianceKPIs();
+renderOverdueCard();
 
 /* apply phase gating on load */
 applyGating();
