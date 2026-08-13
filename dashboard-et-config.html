@@ -459,9 +459,9 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             <div><div class="att-t"><b>2 uncertain segmentations</b></div><div class="att-sub">Table rows in section 2 flagged by the AI — confirm boundaries before validating</div></div>
             <span class="att-go">Fix in review →</span>
           </div>
-          <div class="att p2only" data-go="suivi-experts-et-versions.html">
+          <div class="att p2only" id="att-overdue" data-go="suivi-experts-et-versions.html">
             <div class="att-ic warn">🔔</div>
-            <div><div class="att-t"><b>1 expert response overdue</b></div><div class="att-sub">Sophie Lang — EXG-004 unopened for 6 days</div></div>
+            <div><div class="att-t"><b id="att-overdue-t">1 expert response overdue</b></div><div class="att-sub" id="att-overdue-sub">Sophie Lang — EXG-004 unopened for 6 days</div></div>
             <span class="att-go">Remind →</span>
           </div>
           <div class="att p2only" data-go="suivi-experts-et-versions.html">
@@ -1009,8 +1009,28 @@ function renderComplianceKPIs(){
   const branchesTotal=FOLLOWUP_REQS.reduce((s,r)=>s+r.branchesTotal,0);
   document.getElementById("hs-response-rate").textContent=(Math.round(branchesAnswered/branchesTotal*1000)/10)+"%";
 }
+/* TB2 — mirrors the branch-level detail behind suivi-experts-et-versions.html's
+   isOverB() (awaiting_answer && age >= OVERDUE_DAYS): only a branch actually waiting
+   on its expert can be overdue, not one blocked on the issuer or bounced back to the
+   manager. Drives the "expert response overdue" attention card instead of a hand-typed
+   name/id/day-count that can silently point at the wrong person. */
+const OVERDUE_BRANCHES=[
+  {reqId:"EXG-004",expert:"Sophie Lang",days:6},
+];
+function renderOverdueCard(){
+  const card=document.getElementById("att-overdue");
+  if(!OVERDUE_BRANCHES.length){ card.classList.add("hidden"); return; }
+  const n=OVERDUE_BRANCHES.length;
+  document.getElementById("att-overdue-t").textContent=`${n} expert response${n>1?"s":""} overdue`;
+  const first=OVERDUE_BRANCHES[0];
+  const sub=n>1
+    ? `${first.expert} — ${first.reqId} unopened for ${first.days} days, +${n-1} more`
+    : `${first.expert} — ${first.reqId} unopened for ${first.days} days`;
+  document.getElementById("att-overdue-sub").textContent=sub;
+}
 renderReviewKPIs();
 renderComplianceKPIs();
+renderOverdueCard();
 
 /* apply phase gating on load */
 applyGating();

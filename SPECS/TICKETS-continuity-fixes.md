@@ -30,7 +30,10 @@ Original ticket text, for reference:
 **Compute Dashboard KPIs from real data, not hardcoded markup**
 "10/12 requirements validated," the 5/1/1/5 compliance breakdown, and the 75% response rate in `dashboard-et-config.html` don't match what's computable from `revue-documentaire.html`'s `SECTIONS` (real: ~5/14 fully allocated) or `suivi-experts-et-versions.html`'s `REQS`/`consolidate()` (real: 3/1/0/8, ~37.5%). This is the first data screen a user sees after opening a project — it sets the trust level for everything after it.
 
-- [ ] **TB2 — Fix the "who's overdue" activity feed**
+- [x] **TB2 — DONE.** The card text itself had already drifted to the correct case (Sophie Lang / EXG-004 / 6 days) by the time this ticket was picked up, but it was still hand-typed markup with no link to the real overdue logic. Added an `OVERDUE_BRANCHES` mirror to `dashboard-et-config.html` (subset of the branch-level detail behind `suivi-experts-et-versions.html`'s `isOverB()`: `awaiting_answer` status + `age >= OVERDUE_DAYS`) and `renderOverdueCard()`, which builds the "N expert response(s) overdue" card text from it and hides the card entirely if the list is empty. Verified: only EXG-004/Sophie Lang/age 6 qualifies against the real `REQS` branch data (EXG-003's `mln` branch is age 4, EXG-012's is age 2 — both under the 5-day threshold); `node --check` clean; `build_merge.py` re-run clean.
+
+Original ticket text, for reference:
+**Fix the "who's overdue" activity feed**
 Dashboard names "Karim Benali — silent 7 days on EXG-007," but Karim's actual branch on EXG-007 is `answered`. A false overdue alert on a follow-up tool undermines every other alert it shows afterward. Derive this list from the same overdue logic `suivi-experts-et-versions.html`'s `isOverB()` already implements correctly.
 
 - [ ] **TB3 — Compute the "Finalize allocation" modal from `SECTIONS`**
