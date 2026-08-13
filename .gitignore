@@ -4,8 +4,9 @@
 # Local tooling config
 .claude/
 
-# Internal working documents — deliberately NOT published.
-# They describe product strategy, user-testing protocol and client workflow.
-# Remove these two lines if you decide the public repo should carry them.
-HANDOVER.md
-SPECS/
+# Real RFP capture data — actual client tender content (requirement text,
+# source files). Never publish to the public repo. Regenerate data.js locally
+# via import_capture.py; see its own docstring.
+data.js
+Turnkey RFP Example/
+
