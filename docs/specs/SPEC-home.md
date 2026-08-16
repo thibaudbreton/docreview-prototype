@@ -67,7 +67,7 @@ Nothing scale-related applies to this screen — the seed list is 5 items, and n
 
 ## 10. Placeholders & gaps
 
-None found. Every visible control (tabs, both "New tender" buttons, Reset demo, card click) is wired to real prototype behaviour.
+- **The header avatar** ("TB" initials) has no click handler anywhere in the source — it's a static badge, not a menu trigger. The same unwired avatar recurs on most other screens (see `SPEC-dashboard.md` §10) — noted as a cross-screen pattern in `docs/CLEANUP-REPORT.md`'s companion report rather than repeated in full on every spec.
 
 ## 11. Open points
 
