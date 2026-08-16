@@ -91,5 +91,6 @@ Table rendering, filtering, and the active-cell keyboard navigation reuse `table
 
 ## 11. Open points
 
-- Whether the **Q&A-register "send batch to issuer"** action is meant to eventually trigger something Screen 3 reacts to automatically (e.g. auto-populating the Issuer-responses list), or whether the two screens' Q&A-related data are deliberately kept as separate hand-seeded arrays for this prototype phase, isn't stated — see `SPEC-versions-qa.md` §11 for the mirror of this question from the other screen's side.
 - The **duplicate-question AI-detection** is always the same fixed pair in this build; there's no way to tell from the code alone whether a real implementation would detect duplicates continuously (as new questions are raised) or only in a batch pass — not specified anywhere in the corpus.
+
+Note: an earlier draft of this section asked whether "send batch to issuer" is meant to connect to Screen 3's Issuer-responses list — it does. Both this screen's Q&A register and `SPEC-versions-qa.md`'s Issuer-responses list read and write the same in-memory `QA` array; a question sent from here genuinely appears there, and recording an issuer answer there genuinely unblocks the branch here. See `SPEC-versions-qa.md` §8.
