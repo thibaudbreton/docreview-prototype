@@ -43,9 +43,9 @@ The table is used at **several points** in the process, by the same person, with
 - Select all in the current filtered view.
 
 ### Editing
-- **Inline editing** of every editable field directly in the cell (Class, Typology, Type, Manager, Expert, Status), without going through the detail panel.
+- **Inline editing** of every editable field directly in the cell (Class, Activity, Type, Manager, Expert, Status), without going through the detail panel.
 - **Inline reclassification** Information / Requirement directly in the table (a requirement reclassified as Information disappears cleanly from the table, which lists requirements only).
-- **Bulk actions** on the selection: apply one value (expert, manager, typology, status, classification) to all selected rows at once.
+- **Bulk actions** on the selection: apply one value (expert, manager, activity, status, classification) to all selected rows at once.
 
 ### Filtering
 - **Exhaustive per-column filters** (Excel-style) on every field, in addition to global filters — to quickly find the rows that need action.

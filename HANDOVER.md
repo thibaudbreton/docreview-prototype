@@ -50,14 +50,14 @@ All colours are **design tokens** (`--bg`, `--panel`, `--text`, `--accent`, `--i
 
 ### 2.4 The review table (the heart of the tool)
 - **Two render paths.** Normal data (hundreds of requirements) → **full render**, all rows, variable height, wrapped/readable text, inline editing. The **scale test** (12,000 synthetic rows) → **windowed/virtualised** render (fixed 44px rows, no inline edit). **Why:** real AOs are hundreds of requirements, where full render enables Excel-like inline editing and full-text reading; windowing is only needed to prove volume handling.
-- **Excel-like intent** (driven by repeated stakeholder feedback that users are fastest/most familiar in Excel): inline per-cell editing of every editable field (Class, Typology, Type, Manager, Expert, Status), fast multi-select (click / shift-range / select-all), collapsible columns, and document structure (section + heading rows) shown inline so you follow the document thread.
+- **Excel-like intent** (driven by repeated stakeholder feedback that users are fastest/most familiar in Excel): inline per-cell editing of every editable field (Class, Activity, Type, Manager, Expert, Status), fast multi-select (click / shift-range / select-all), collapsible columns, and document structure (section + heading rows) shown inline so you follow the document thread.
 
 ### 2.5 Data model decisions
 - **Block natures:** `heading` / `info` (Information) / `requirement` / `image`. Titles build the collapsible nav hierarchy (H1›H2›H3); Information is context with no detail panel; Requirements get the full panel; Images render in the document and can be **characterised** as Information or Requirement. Reclassification is inline. **The detail panel keys off `blockNature(b)`, not raw `kind`**, so an image classified as a requirement gets the full panel and joins the table.
 - **HITL is a pattern, not a role:** the AI proposes, a human validates before an object advances. The review→follow-up gate enforces this.
 - **Manager vs Expert are distinct:** *Manager* = who handles the requirement (delegation, one per requirement, admin sees all); *Expert* = the OBS-derived assignment. Both are separate columns/fields.
 - **OBS drives assignment** via a PBS→ABS→OBS chain with confidence; weak OBS (<75%) auto-flags "to review" but never locks (human validation always wins).
-- **Typology** is a multi-select of 12 values; **Turnkey (TKY)** is a first-class selectable value (the most complex/variable case).
+- **Activity** is a multi-select of 12 values; **Turnkey (TKY)** is a first-class selectable value (the most complex/variable case).
 - **Multi-document:** a tender = several documents the user uploads and **orders**; they are **concatenated** (not interleaved) into one tender. Provenance is preserved (doc banner in the flow + a document filter). No per-document role.
 - **AI feedback** is captured implicitly on every correction (future-training signal); an explicit "why" is requested only on high-confidence overrides.
 
@@ -66,12 +66,12 @@ All colours are **design tokens** (`--bg`, `--panel`, `--text`, `--accent`, `--i
 ## 3. Current state (what is built and working)
 
 - **Home / workspace** with 5 seed projects, statuses (`Processing`, `Requirement review`, `Expert review`, `Q&A & Versioning`, `Submitted`), non-blocking background processing with live progress bars, and **Reset demo** (button + `Ctrl+Shift+R`).
-- **New-project wizard**: fields incl. Product line / System / Region; **multi-document upload** with up/down reordering; processing mode (AI-assisted / segmentation-only / fully manual) via 4 toggles now labelled **Capture / Characterizer / Compliance matrix / Typology**. **Casting (B2)**: the project manager assigns one branch manager per activity at creation; casting is **asynchronous** — the PM only fills in experts directly for activities attached to themselves, everyone else's experts are filled in later by that branch manager on the Team screen, at their own pace (see §6 of `SPEC-domain-model.md`).
-- **Dashboard**: reworked layout — phase rail (where am I) + "what needs you now" (primary) + "project health" (secondary) + activity feed. Gating: follow-up locked until review finalized. **Team management (B4)**: a dedicated Team screen (no global nav entry, reachable via the dashboard header) where each branch manager fills in their own experts against the activities cast to them; a project-manager view aggregates casting-completion progress across the whole team.
+- **New-project wizard**: fields incl. Product line / System / Region; **multi-document upload** with up/down reordering; processing mode (AI-assisted / segmentation-only / fully manual) via 4 toggles now labelled **Capture / Characterizer / Compliance matrix / Activity**. **Casting (B2)**: the project manager assigns one activity manager per activity at creation; casting is **asynchronous** — the PM only fills in experts directly for activities attached to themselves, everyone else's experts are filled in later by that activity manager on the Team screen, at their own pace (see §6 of `SPEC-domain-model.md`).
+- **Dashboard**: reworked layout — phase rail (where am I) + "what needs you now" (primary) + "project health" (secondary) + activity feed. Gating: follow-up locked until review finalized. **Team management (B4)**: a dedicated Team screen (no global nav entry, reachable via the dashboard header) where each activity manager fills in their own experts against the activities cast to them; a project-manager view aggregates casting-completion progress across the whole team.
 - **Document review** (3 modes: Document / Review / Compare):
   - Collapsible **heading hierarchy** in the left nav.
   - Three **block natures** with inline reclassification; images displayed and characterisable.
-  - **Excel-like table**: full-text readable rows, section+heading rows inline, inline editing of all fields, collapsible columns, multi-select + bulk bar (Manager / Typology / Validate).
+  - **Excel-like table**: full-text readable rows, section+heading rows inline, inline editing of all fields, collapsible columns, multi-select + bulk bar (Manager / Activity / Validate).
   - **Classification** Technical / Non-technical (routes PBS vs ABS).
   - **Characterisation/allocation progression (B6/B7)**: `suggested` → `edited`/`toreview` → `allocated`, replacing an older vocabulary that conflated "AI is confident" with "a human confirmed it" — an item only reaches `allocated` through an explicit human validation action (see §8 of `SPEC-domain-model.md`).
   - **REX tab** in the detail panel (badge count, titles only, opens in source system) — mocked.
@@ -79,7 +79,7 @@ All colours are **design tokens** (`--bg`, `--panel`, `--text`, `--accent`, `--i
   - **Multi-document**: doc banners in the flow + document filter; 2 seed documents.
   - **Scale test** toggle (12,000 rows, virtualised).
 - **Expert follow-up** (locked until review finalized) and **Versions & Q&A** (always open).
-- **Expert Space** (`expert-space.html`, added after this document's first draft): the individual expert's own screen — triage by status, render a compliance verdict (Compliant / R&D Needed / Not compliant), ask a Q&A question, request reassignment. Enforces a **typology-parent hierarchy** for permissions (a manager/expert on a parent typology automatically sees descendant typologies too) — implemented in this screen only, see §9 of `SPEC-domain-model.md`.
+- **Expert Space** (`expert-space.html`, added after this document's first draft): the individual expert's own screen — triage by status, render a compliance verdict (Compliant / R&D Needed / Not compliant), ask a Q&A question, request reassignment. Enforces a **activity-parent hierarchy** for permissions (a manager/expert on a parent activity automatically sees descendant activities too) — implemented in this screen only, see §9 of `SPEC-domain-model.md`.
 - **Configuration**: Appearance (dark/light), AI feedback loop, Team & experts (restricted view: redact/hide). Most other Config sections (Workflow, AI & segmentation, Q&A, Versions, Language) are marked demo-only in the UI — not wired to real behavior in this build.
 - **Deliverable:** `docreview-app.html` (merged, ~930 KB — grows as content/features are added; don't treat the figure as load-bearing). Language rule enforced: **all UI copy in English**.
 
@@ -89,7 +89,7 @@ All colours are **design tokens** (`--bg`, `--panel`, `--text`, `--accent`, `--i
 
 **Immediate / prototype phase**
 - **Replace the demo dataset with realistic, anonymised AO content** — this is the single biggest lever for credibility in user tests (real requirement wording, real section structure, tables, hundreds of items, their vocabulary and ID conventions). Content is being sourced. Everything else is secondary to this.
-- Extend the **bulk bar** to cover Expert / Type / Class (currently Manager / Typology / Validate). Inline per-row editing already covers all fields.
+- Extend the **bulk bar** to cover Expert / Type / Class (currently Manager / Activity / Validate). Inline per-row editing already covers all fields.
 - Optional: **chatbot** (discussed, not built) — read-only "chat with the captured tender", as a floating button + an "Ask about this" action from a requirement's detail that pre-loads context. Keep it read-only (do not let it act — that conflicts with HITL).
 
 **Deferred / conditional**

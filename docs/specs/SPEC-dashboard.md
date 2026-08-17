@@ -8,7 +8,7 @@ The per-project status hub: where a project stands (phase rail), what needs the 
 
 ## 2. Actors
 
-The project manager / branch manager working this specific tender. The screen shows the same content to anyone who opens it — there is no role-conditional rendering on the dashboard hub itself (contrast the Team management screen, `SPEC-team-management.md`, which does adapt by viewer).
+The project manager / activity manager working this specific tender. The screen shows the same content to anyone who opens it — there is no role-conditional rendering on the dashboard hub itself (contrast the Team management screen, `SPEC-team-management.md`, which does adapt by viewer).
 
 ## 3. Entry points
 

@@ -24,9 +24,9 @@ One activity allocated to a specific requirement — not a new concept distinct 
 *Replaces: Branch Manager.*
 The person responsible for a given allocated activity: assigning or reassigning its expert, tracking the response, and being the first stop when an expert raises a reassignment request. Already the term used naturally when describing the AS-IS workflow.
 
-### Type
-*Replaces: Nature (the title/information/requirement attribute).*
-The category assigned to a captured block — **Heading**, **Information**, or **Requirement** — either by the AI or corrected by a human. Matches the column name used in the real capture files; "Nature" was never a term anyone outside the team used.
+### ⚠ Nature → Type — BLOCKED, not renamed (collision discovered)
+*Ticket says: Nature (the title/information/requirement attribute) → Type.*
+**Not applied anywhere in Phase 2, and should not be applied in Phase 3 either without a human decision.** The prototype already has a real, live, user-facing field called **Type** — `suivi-experts-et-versions.html`'s Follow-up detail panel (Requirement tab) shows a `Type` label bound to `r.type`, whose values are `Functional` / `Interface` / `Performance` / `Security` (a per-requirement category, separate from ABS/PBS/OBS and separate from Class). Renaming Nature to "Type" would make the app use one word for two different things — exactly the kind of collision the ticket's own risk warning (about "type" being a reserved-ish word) was guarding against, just not the specific collision it anticipated. Nature is still called **Nature** everywhere in the corpus and in the prototype (`blockNature(b)`, per `HANDOVER.md` §2.5 and `SPEC-review-table.md`) until a human either renames the *other* "Type" field first, or picks a different replacement word for Nature (e.g. "Category"). Recorded as an open finding, not resolved here.
 
 ### Heading
 *Replaces: title (as a Type value).*

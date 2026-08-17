@@ -23,7 +23,7 @@ Worth a look:
   drag across the selection gutter), per-column sort and filters, bulk actions, collapsible columns.
 - **Multi-allocation requirements** (`EXG-003`, `EXG-007`) — one requirement, several parallel
   allocations. Expand the caret in the table; the detail panel adapts to who is looking
-  (use the eye icon in the header to preview a branch manager's view).
+  (use the eye icon in the header to preview an activity manager's view).
 - **Image containers** (`Figure 1`) — the AI does not read images, so a human captures the
   requirements an image holds. The folder row expands into real, fully editable requirements.
 - **Scale test** — View menu → loads 12,000 synthetic rows to check the table stays usable.

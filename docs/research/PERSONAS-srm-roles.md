@@ -57,7 +57,7 @@ DOORS (version varies by activity) [A], Excel [A], Salesforce as CRM [B, unvalid
 - Wants less time lost to manual clean-up — a confirmed AS-IS finding is that roughly two-thirds of rows in a DOORS export are non-requirement titles needing a manually retyped fix [A, though this specific data point comes from the V&V track — attributing it to the Activity Manager specifically is **[I]**, not confirmed to be his task precisely].
 
 ### Pain points
-- Classification and typology tagging is entirely manual, and entirely on him — there's no equivalent of a doubt signal today, even to flag a tricky case to himself for later [A].
+- Classification and activity tagging is entirely manual, and entirely on him — there's no equivalent of a doubt signal today, even to flag a tricky case to himself for later [A].
 - No visibility into where each of his own experts stands on their assignments until he actively chases them [I — no AS-IS confirmation either way on this specific point].
 
 ### Tools today

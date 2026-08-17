@@ -11,13 +11,13 @@
 **What to build:**
 - The allocation/document-review table must display **information** rows alongside requirements, not just requirements.
 - The user can **correct the AI's categorisation** on any row, switching it between the three categories.
-- **Information rows carry no other fields at all** — no typology, no allocation, no compliance, no status. The category is the only attribute they have.
+- **Information rows carry no other fields at all** — no activity, no allocation, no compliance, no status. The category is the only attribute they have.
 
 **Transitions between categories — confirmed rules:**
 - `information` → `requirement`: the row lands on status **Incomplete** automatically (nothing is filled in yet).
 - `requirement` → `information`: any allocation already made on that requirement is **deleted**. This is destructive and irreversible for that allocation data.
 
-**Worth flagging, not a blocker:** if an expert has already answered on a branch, switching the requirement to `information` deletes that work too. Consider a confirmation step for that specific case — the rule itself is confirmed, this is only about how abruptly it happens in the UI.
+**Worth flagging, not a blocker:** if an expert has already answered on an allocated activity, switching the requirement to `information` deletes that work too. Consider a confirmation step for that specific case — the rule itself is confirmed, this is only about how abruptly it happens in the UI.
 
 ---
 
@@ -38,12 +38,12 @@
 
 ## B10 — Three reassignment reasons, with project-manager approval
 
-**Reassignment is a request, not a direct action.** It can be raised by **either the Expert or the Branch Manager**, and in all cases it must be **approved by the Project Manager** before taking effect. This aligns the expert-side loop with B1 (which already routed manager-raised proposals to the PM) — both now follow the same approval path.
+**Reassignment is a request, not a direct action.** It can be raised by **either the Expert or the Activity Manager**, and in all cases it must be **approved by the Project Manager** before taking effect. This aligns the expert-side loop with B1 (which already routed manager-raised proposals to the PM) — both now follow the same approval path.
 
 **Three reasons the requester picks from:**
-1. **Right typology, wrong person** — the activity is correct, but this isn't the right expert for it. Resolution stays within the activity: another expert from the same team takes it.
-2. **Wrong typology** — this requirement doesn't belong to this activity at all. Resolution reallocates it to a different typology.
-3. **This activity doesn't apply here** — the branch shouldn't exist on this requirement at all. The requester is saying "nothing for us to do here."
+1. **Right activity, wrong person** — the activity is correct, but this isn't the right expert for it. Resolution stays within the activity: another expert from the same team takes it.
+2. **Wrong activity** — this requirement doesn't belong to this activity at all. Resolution reallocates it to a different activity.
+3. **This activity doesn't apply here** — the allocated activity shouldn't exist on this requirement at all. The requester is saying "nothing for us to do here."
 
 **Also required:**
 - Reassignment requests must be **tracked in the Activity feed** (the existing Activity tab / Activity Item molecule), like any other action.
@@ -60,12 +60,12 @@
 
 **Two different surfaces, two different rules.** This is the key distinction — it is not "full access" vs "restricted access", it's a **decision surface** and a **context surface**:
 
-- **The table = only your own requirements.** For an Expert: their own activity plus its sub-activities (child typologies), nothing else. This is the **decision surface** — an expert can only act on what appears here.
+- **The table = only your own requirements.** For an Expert: their own activity plus its sub-activities (child activities), nothing else. This is the **decision surface** — an expert can only act on what appears here.
 - **The document = readable in full.** The whole tender document is available to read, so the expert has complete context. But they **cannot click on other requirements** and **cannot make decisions on them**. Reading only.
 
 **This clarifies rather than reverses `SPEC-expert-space.md`.** The strict restriction stated there wasn't wrong — it correctly described the **table**. What was missing is that full document reading sits alongside it. Update the spec to state both surfaces explicitly rather than removing the restriction.
 
-**For Branch Managers:** currently they only see their assigned requirements. Same model applies — their own requirements in the table, with the full document readable for context.
+**For Activity Managers:** currently they only see their assigned requirements. Same model applies — their own requirements in the table, with the full document readable for context.
 
 **Consequence for the specs:** `SPEC-expert-space.md` needs the two-surface distinction made explicit. `SPEC-backend-requirements.md` §12 (restricted view) should state that the restriction applies to the actionable table scope, not to document readability.
 

@@ -21,10 +21,10 @@ Concretely: the verdict field and the research material (REX, document) must coe
 
 ## List side (table)
 
-Reuses the same building blocks as the other two table instances: **Requirement Row**, **Branch Sub-row**, **Bulk Action Bar** (for batch status change), **Column Visibility Menu**, the existing filtering mechanism (confirmed scale: up to several hundred rows for one expert).
+Reuses the same building blocks as the other two table instances: **Requirement Row**, **Allocated-activity sub-row**, **Bulk Action Bar** (for batch status change), **Column Visibility Menu**, the existing filtering mechanism (confirmed scale: up to several hundred rows for one expert).
 
 - **Access is a strict restriction, not a liftable filter.** An expert only ever sees requirements belonging to their activity — confirmed directly ("ne peut pas voir les autres"). This is unlike the manager follow-up view (B5), where filter-vs-restriction is still an open question — here it's settled. **This restriction applies to the table specifically — see "Two surfaces" below for how document reading differs.**
-- The restriction scope includes **all descendant typologies** in the hierarchy (see below), not just the expert's own typology.
+- The restriction scope includes **all descendant activities** in the hierarchy (see below), not just the expert's own activity.
 - **New for this screen only:** a **Gap Chip shown directly in the row** — the expert needs to spot version changes without leaving the list. (Contrast: the manager follow-up view explicitly does *not* need this — the existing Versions tab is enough there. Same component, different placement, because the two audiences use it differently.)
 - Batch status change on selected rows is already covered by reusing the Bulk Action Bar as-is.
 
@@ -34,12 +34,12 @@ Reuses the same building blocks as the other two table instances: **Requirement 
 
 Two different surfaces, two different rules — this is a decision surface vs. a context surface, not "full access" vs. "restricted access":
 
-- **The table = only the expert's own requirements** (their own activity plus its descendant typologies, per the restriction above). This is the **decision surface** — an expert can only act on what appears here.
+- **The table = only the expert's own requirements** (their own activity plus its descendant activities, per the restriction above). This is the **decision surface** — an expert can only act on what appears here.
 - **The document = readable in full.** The whole tender document is available to read, so the expert has complete context. But they **cannot click into other requirements** and **cannot make decisions on them** from there. Reading only.
 
 This clarifies rather than reverses the restriction stated above — the restriction was never wrong, it correctly described the table. What was missing is that full document reading sits alongside it, unrestricted.
 
-The same model applies to Branch Managers on their own screen: their own requirements in the table, full document readable for context.
+The same model applies to Activity Managers on their own screen: their own requirements in the table, full document readable for context.
 
 ## Detail panel side — where the judgment actually happens
 
@@ -61,15 +61,15 @@ The compliance model is **three values: Compliant / R&D Needed / Not compliant**
 
 The verdict form has a dedicated button per value — Compliant / R&D Needed / Not compliant — matching `expert-space.html`'s shipped `COMPLIANCE_LABELS`.
 
-## Typology hierarchy — a permissions-only concept
+## Activity hierarchy — a permissions-only concept
 
 A new piece of the domain model surfaced during this session:
 
-- Typologies can **nest**, to **arbitrary depth**.
-- The nesting affects **permissions only** — it has **no effect** on characterisation, allocation, or compliance consolidation logic. A requirement's typology tag doesn't inherit or cascade anything from the hierarchy for those purposes.
-- A manager **or** expert assigned to a **parent** typology automatically gets **view + modify** rights on every **descendant** typology's requirements.
-- This is **additive**: a child typology can still carry its own directly-assigned manager/expert; the inherited parent access stacks on top of that, it doesn't replace it.
-- This also refines ticket B5: whatever the filter-vs-restriction answer turns out to be there, a manager's "own team" scope must include their child typologies, not just their own.
+- Activities can **nest**, to **arbitrary depth**.
+- The nesting affects **permissions only** — it has **no effect** on characterisation, allocation, or compliance consolidation logic. A requirement's activity tag doesn't inherit or cascade anything from the hierarchy for those purposes.
+- A manager **or** expert assigned to a **parent** activity automatically gets **view + modify** rights on every **descendant** activity's requirements.
+- This is **additive**: a child activity can still carry its own directly-assigned manager/expert; the inherited parent access stacks on top of that, it doesn't replace it.
+- This also refines ticket B5: whatever the filter-vs-restriction answer turns out to be there, a manager's "own team" scope must include their child activities, not just their own.
 - Implementation scope: this hierarchy is implemented in `expert-space.html` only for the current prototype phase — see `SPEC-domain-model.md` §9.0.
 
 ## Resolved since this spec was first written
@@ -85,5 +85,5 @@ An earlier revision of this spec noted: *"The Compliance atom in Figma had 3 var
 
 ## Follow-up — now current
 
-- `SPEC-domain-model.md` has been updated with the typology hierarchy (permissions-only, arbitrary depth) — see its §9.
+- `SPEC-domain-model.md` has been updated with the activity hierarchy (permissions-only, arbitrary depth) — see its §9.
 - `SPEC-backend-requirements.md` §12 (Access Control) should still be checked against the two-surface model (B11) once that UI is built — not yet done, tracked as open work in `docs/tickets/TICKETS-review-expert-batch4.md`.

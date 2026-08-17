@@ -10,7 +10,7 @@
 - **Bid Manager** [A] — reports to the Head of Tendering; owns the QCDP commitment from nomination to TTM [B].
 - **Requirement Manager** [A].
 - **Bid Director / Tender Leader** [A/B].
-- **[?] Who plays the "per-activity owner" role today** — the closest equivalent to what we've been calling Branch Manager? Does that granularity (one owner per typology/activity) even exist today, or is allocation coarser?
+- **[?] Who plays the "per-activity owner" role today** — the closest equivalent to what we've been calling Activity Manager? Does that granularity (one owner per activity) even exist today, or is allocation coarser?
 - **[?] Who plays "Expert" today**, and how do they get pulled into a given tender's review — the same subsystem-expert population as elsewhere in the bid process, or a distinct pool?
 
 ## Team & casting, today
@@ -27,7 +27,7 @@
 
 ## Characterisation & Allocation, today
 
-- **[?] Is there a current equivalent of "Typology" tagging?** If so, manual, and by whom?
+- **[?] Is there a current equivalent of "Activity" tagging?** If so, manual, and by whom?
 - **[?] Is there a current equivalent of confidence/doubt flagging** — or does everything get the same level of scrutiny regardless of how clear-cut it is?
 - One concrete data point from the V&V track [A]: the **Basic/Derived attribute already exists** in DOORS exports, and roughly **two-thirds of rows in an export are non-requirement titles**, handled today via a manually retyped phrase — suggesting there's already a real manual clean-up step happening. Worth understanding in more depth.
 

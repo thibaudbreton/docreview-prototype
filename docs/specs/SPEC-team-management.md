@@ -4,14 +4,14 @@
 
 ## 1. Purpose
 
-The per-project roster screen: where each branch manager fills in their own experts (asynchronously, at their own pace, per the casting model), and where the project manager can see completion across every branch manager at a glance. Reachable only from within a project — there is no cross-project roster view.
+The per-project roster screen: where each activity manager fills in their own experts (asynchronously, at their own pace, per the casting model), and where the project manager can see completion across every activity manager at a glance. Reachable only from within a project — there is no cross-project roster view.
 
 ## 2. Actors
 
 Two distinct views of the same screen, switched via a "Viewing as" selector that simulates whichever person is currently using it:
 
-- **A branch manager** sees and edits **their own team only** — the actual roster-management surface.
-- **The project manager** (`"admin"`) sees a **read-only aggregate**: every branch manager, with the experts each has attached so far.
+- **An activity manager** sees and edits **their own team only** — the actual roster-management surface.
+- **The project manager** (`"admin"`) sees a **read-only aggregate**: every activity manager, with the experts each has attached so far.
 
 Both roles are drawn from `SPEC-domain-model.md` §7's per-project, role-scoped roster model.
 
@@ -27,7 +27,7 @@ No other screen links here.
 - **Header** — shared with Dashboard/Configuration.
 - **Title** — "Team management."
 - **Viewing-as selector** — one dropdown, every manager (including the project manager) as an option.
-- **Body** — either the admin's read-only list of manager groups, or the selected branch manager's own editable roster, one "manager group" card per manager: avatar, name, role, a completion badge, and their expert rows.
+- **Body** — either the admin's read-only list of manager groups, or the selected activity manager's own editable roster, one "manager group" card per manager: avatar, name, role, a completion badge, and their expert rows.
 
 ## 5. Data displayed
 
@@ -38,8 +38,8 @@ No other screen links here.
 ## 6. Interactions
 
 - **Switch "Viewing as"** — re-renders the body scoped to the newly selected manager (or the admin aggregate, if the project manager is selected). *Implemented.* **Represented / backend-dependent**: this simulates identity/permission switching for demo purposes; a real build would derive the viewer from an authenticated session (`SPEC-backend-requirements.md` FR24–26), not a dropdown anyone can set to anyone.
-- **Add an expert** (branch-manager view only) — name + team/domain, appended to the shared roster tagged with the current viewer as `manager`. *Implemented*, immediately reflected in the admin aggregate view, the Dashboard's Team-casting progress, and Configuration's expert editor.
-- **Remove an expert** (branch-manager view only) — blocked with a toast if that expert has any assigned requirements (`count>0`); otherwise removed immediately. *Implemented*, same rule as Configuration's expert editor.
+- **Add an expert** (activity-manager view only) — name + team/domain, appended to the shared roster tagged with the current viewer as `manager`. *Implemented*, immediately reflected in the admin aggregate view, the Dashboard's Team-casting progress, and Configuration's expert editor.
+- **Remove an expert** (activity-manager view only) — blocked with a toast if that expert has any assigned requirements (`count>0`); otherwise removed immediately. *Implemented*, same rule as Configuration's expert editor.
 - **Admin view has no add/remove controls at all** — it is read-only by design, not merely read-only because nothing is wired.
 
 ## 7. States
@@ -51,7 +51,7 @@ No other screen links here.
 ## 8. Business rules
 
 - **"Completed their team" means "has at least one expert attached,"** with no further threshold — this is the exact rule the Dashboard's Team-casting progress card also uses (`renderCastingProgress`, shared computation logic, though a separately-written function).
-- **Casting is asynchronous** — a branch manager can add or remove experts at any time after project creation, not only during a fixed casting step (`SPEC-domain-model.md` §6, decision D5 in `docs/decisions/DECISIONS.md`).
+- **Casting is asynchronous** — an activity manager can add or remove experts at any time after project creation, not only during a fixed casting step (`SPEC-domain-model.md` §6, decision D5 in `docs/decisions/DECISIONS.md`).
 - **The project manager's own aggregate view excludes themselves** from the list of manager groups shown (`MANAGERS.filter(m=>!m.admin)`) — the PM sees every *other* manager's progress, not a group for their own casting (their own directly-managed activities were already fully cast at project creation, per `SPEC-project-creation.md` §6).
 
 ## 9. Non-functional
