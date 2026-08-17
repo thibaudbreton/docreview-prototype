@@ -1205,7 +1205,9 @@ function castPerimeterHTML(a,perim,label){
 /* ---------- one activity group ---------- */
 function castGroupHTML(a,viewerIsAdmin){
   const mgr=a.managerId?MGR(a.managerId):null;
-  const editable=!viewerIsAdmin && a.managerId===TEAM_VIEWER;
+  // the PM (admin) can staff any activity that already has a manager cast to it;
+  // a regular manager can only staff their own activity.
+  const editable=!!a.managerId && (viewerIsAdmin || a.managerId===TEAM_VIEWER);
   const perims=perimetersOf(a.id);
   const directRows=rosterFor(a.id,null);
   const cov=a.managerId?activityCoverage(a):{kind:"noperm",staffed:0,total:0};
