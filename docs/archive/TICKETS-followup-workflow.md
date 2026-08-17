@@ -1,5 +1,7 @@
 # Tickets — Expert follow-up workflow (manager side)
 
+> **COMPLETED — all tickets (T1–T12) built.** Kept for historical reference; decisions that changed a spec are indexed in `docs/decisions/DECISIONS.md`. Do not treat anything below as open work. (A near-duplicate, one edit older, was also found outside the repo — see `docs/INVENTORY.md`.)
+
 > Sequenced tickets for Claude Code to fit the agreed expert workflow into the existing follow-up screen (`suivi-experts-et-versions.html`), which has not changed since we moved to Claude Code. This is the MANAGER's view — receiving and tracking expert responses. The expert's own answering space is a separate, later build. Prototype / UI-only: statuses and data are hand-authored, the Q&A matching is simulated, no backend. Aligns with `SPEC-domain-model.md` (branches, statuses, compliance). Build in order — later tickets depend on earlier ones.
 
 ---

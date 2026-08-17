@@ -322,7 +322,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
     </div>
   </header>
 
-  <div class="restrict-note">🔒 Showing only requirements assigned to your activity (and its sub-typologies). This is a restriction, not a filter — there is no view to see beyond it.</div>
+  <div class="restrict-note">🔒 Showing only requirements assigned to your activity (and its sub-activities). This is a restriction, not a filter — there is no view to see beyond it.</div>
 
   <!-- ===================== TRIAGE BAR ===================== -->
   <div class="triage">
@@ -347,7 +347,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
           <div class="ecell c-sel"><input type="checkbox" id="sel-all"></div>
           <div class="ecell">ID</div>
           <div class="ecell">Requirement</div>
-          <div class="ecell">Typology</div>
+          <div class="ecell">Activity</div>
           <div class="ecell">Compliance</div>
           <div class="ecell">Status</div>
         </div>
@@ -391,7 +391,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 /* =====================================================
    DATA MODEL
 ===================================================== */
-/* Typology hierarchy — permissions-only, arbitrary depth (see SPEC-domain-model.md §9).
+/* Activity hierarchy — permissions-only, arbitrary depth (see SPEC-domain-model.md §9).
    Nesting has no effect on characterisation/allocation/compliance logic — a
    requirement's typology tag doesn't inherit or cascade anything from the
    hierarchy for those purposes. It only ever widens WHO can see/act on a
@@ -426,7 +426,7 @@ const EXPERTS = [
 ];
 const VIEWER = "exp_slang"; // the logged-in expert for this demo
 function currentExpert(){ return EXPERTS.find(e=>e.id===VIEWER); }
-/* the strict restriction: own typologies + every descendant, additively.
+/* the strict restriction: own activities + every descendant, additively.
    No toggle anywhere lifts this — it's read at render, count and search time,
    never bypassed (confirmed directly: "ne peut pas voir les autres" — see SPEC-domain-model.md §9.1). */
 function visibleTypologyIds(){
@@ -826,7 +826,7 @@ function renderPanel(){
       <div class="sec-label">Characterisation &amp; allocation — read-only</div>
       <div class="ro-grid">
         <div class="ro-field"><label>Class</label><div class="fval">${r.tech==="tech"?"Technical":"Non-technical"}</div></div>
-        <div class="ro-field"><label>Typology</label><div class="fval">${typoPathLabel(r.typology)}</div></div>
+        <div class="ro-field"><label>Activity</label><div class="fval">${typoPathLabel(r.typology)}</div></div>
         <div class="ro-field"><label>ABS</label><div class="fval">${r.abs}</div></div>
         <div class="ro-field"><label>PBS</label><div class="fval">${r.pbs}</div></div>
         <div class="ro-field"><label>OBS</label><div class="fval">${r.obs}</div></div>

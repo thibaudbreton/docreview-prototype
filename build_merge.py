@@ -70,7 +70,7 @@ const BLOBS = {
 
 FOOTER = """
 };
-const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "review": ["review", null], "followup": ["followup", "followup"], "versions": ["followup", "versions"], "new": ["create", null], "expert": ["expert", null]};
+const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "followup": ["followup", "followup"], "versions": ["followup", "versions"], "new": ["create", null], "expert": ["expert", null]};
 function b64utf8(s){return decodeURIComponent(Array.prototype.map.call(atob(s),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));}
 const frame = document.getElementById('frame');
 
@@ -227,6 +227,7 @@ function load(routeKey){
       const cw = frame.contentWindow;
       if(_sub === 'config' && cw.showConfig) cw.showConfig(true);
       else if(_sub === 'dashboard' && cw.showConfig) cw.showConfig(false);
+      else if(_sub === 'team' && cw.showScreen) cw.showScreen('team');
       else if(_sub === 'versions' && cw.setScreen) cw.setScreen(3);
       else if(_sub === 'followup' && cw.setScreen) cw.setScreen(2);
     }catch(e){}

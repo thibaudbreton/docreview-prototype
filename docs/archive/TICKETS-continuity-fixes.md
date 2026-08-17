@@ -1,5 +1,7 @@
 # Tickets — Continuity & consistency fixes
 
+> **COMPLETED — all tickets done as of 2026-08-13.** Kept for historical reference; decisions that changed a spec are indexed in `docs/decisions/DECISIONS.md`. Do not treat anything below as open work.
+
 > **Note (automated queue routine, 2026-08-13):** added `- [ ]`/`- [x]` checkboxes to each ticket below so this queue can drive the automated routine. Checked state mirrors the existing "DONE" markers; nothing about ticket content changed.
 
 > Consolidated from three audit passes (ad-hoc functional audit, `workflow-continuity-audit`, `journey-experience-audit`) run on 2026-08-13. Prototype / UI-only: fixes are about making the demo internally consistent and trustworthy for moderated user testing, not about production hardening. Build in order within each group; groups themselves are roughly ordered by how much they block a credible test session. Aligns with `SPEC-domain-model.md`, `SPEC-review-table.md`, `TICKETS-followup-workflow.md`.
