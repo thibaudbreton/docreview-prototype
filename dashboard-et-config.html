@@ -269,6 +269,68 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .team-roster{padding:var(--space-3) var(--space-4)}
 .team-roster .exp-edit-row:last-child{margin-bottom:0}
 .team-roster-empty{font-size:var(--text-sm);color:var(--text-3);font-style:italic;padding:var(--space-2) 0}
+/* ===== Casting redesign (TICKET-casting-screen-redesign) ===== */
+.cast-head-row{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap}
+.cast-search-wrap{position:relative;flex:1;min-width:240px}
+.cast-search-wrap input{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:9px var(--space-3) 9px 34px;color:var(--text);outline:none;font-size:var(--text-base)}
+.cast-search-wrap input:focus{border-color:var(--accent)}
+.cast-search-wrap .ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:var(--text-sm);pointer-events:none}
+.cast-unstaffed-toggle{display:flex;align-items:center;gap:8px;font-size:var(--text-sm);color:var(--text-2);cursor:pointer;padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);white-space:nowrap}
+.cast-unstaffed-toggle.on{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.cast-coverage-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-2);margin-bottom:var(--space-5)}
+.cast-cov-card{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);background:var(--panel);cursor:pointer;transition:border-color .15s}
+.cast-cov-card:hover{border-color:var(--line-2)}
+.cast-cov-card.complete{border-color:rgba(63,178,127,.4)}
+.cast-cov-card.unstaffed{border-color:rgba(242,96,79,.5);background:var(--warn-soft)}
+.cast-cov-code{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-2)}
+.cast-cov-label{font-size:var(--text-sm);font-weight:600;margin:2px 0 6px;line-height:1.3}
+.cast-cov-stat{font-size:var(--text-xs);color:var(--text-3)}
+.cast-cov-stat.warn{color:var(--warn);font-weight:600}
+.cast-cov-stat.ok{color:var(--ok);font-weight:600}
+.cast-group{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);margin-bottom:var(--space-3);overflow:hidden}
+.cast-group.is-unstaffed{border-color:rgba(242,96,79,.35)}
+.cast-group-head{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--panel-2);cursor:pointer;user-select:none}
+.cast-group-head:hover{background:var(--panel-3)}
+.cast-caret{transition:transform .15s;flex-shrink:0;color:var(--text-3);font-size:var(--text-xs)}
+.cast-group.collapsed .cast-caret{transform:rotate(-90deg)}
+.cast-group.collapsed .cast-body{display:none}
+.cast-ptag{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;padding:2px 7px;border:1px solid var(--line-2);border-radius:var(--radius-xs);color:var(--text-2);flex-shrink:0}
+.cast-group-title{font-weight:600;font-size:var(--text-base)}
+.cast-group-mgr{font-size:var(--text-xs);color:var(--text-3)}
+.cast-group-badge{margin-left:auto;font-size:var(--text-xs);font-weight:700;padding:3px 10px;border-radius:var(--radius-pill);white-space:nowrap;flex-shrink:0}
+.cast-group-badge.staffed{background:var(--ok-soft);color:var(--ok)}
+.cast-group-badge.unstaffed{background:var(--warn-soft);color:var(--warn)}
+.cast-group-badge.partial{background:var(--ia-soft);color:var(--ia)}
+.cast-group-badge.noperm{background:var(--panel-3);color:var(--text-3)}
+.cast-body{padding:var(--space-3) var(--space-4)}
+.cast-perim{border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:var(--space-2)}
+.cast-perim:last-child{margin-bottom:0}
+.cast-perim.is-unstaffed{border-color:rgba(242,96,79,.4);background:var(--warn-soft)}
+.cast-perim-head{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);cursor:pointer;user-select:none}
+.cast-perim-title{font-size:var(--text-sm);font-weight:600}
+.cast-perim-flag{font-size:var(--text-xs);color:var(--warn);font-weight:600;margin-left:auto}
+.cast-perim-body{padding:0 var(--space-3) var(--space-3)}
+.cast-perim.collapsed .cast-perim-body{display:none}
+.cast-perim.collapsed .cast-caret{transform:rotate(-90deg)}
+.cast-person-row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) 0;border-top:1px solid var(--line)}
+.cast-person-row:first-child{border-top:none}
+.cast-person-name{font-size:var(--text-sm);font-weight:600}
+.cast-person-meta{font-size:var(--text-xs);color:var(--text-3)}
+.cast-person-rm{margin-left:auto;width:24px;height:24px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center;flex-shrink:0}
+.cast-person-rm:hover{background:var(--warn-soft);color:var(--warn)}
+.cast-empty-note{font-size:var(--text-xs);color:var(--text-3);font-style:italic;padding:var(--space-2) 0}
+.cast-add-row{margin-top:var(--space-2);position:relative}
+.cast-add-input{width:100%;background:var(--panel-2);border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:7px var(--space-3);color:var(--text);outline:none;font-size:var(--text-sm)}
+.cast-add-input:focus{border-style:solid;border-color:var(--accent)}
+.cast-add-results{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:30;max-height:220px;overflow-y:auto;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);box-shadow:0 12px 34px rgba(0,0,0,.5);display:none}
+.cast-add-results.open{display:block}
+.cast-add-opt{display:flex;align-items:center;gap:var(--space-2);padding:7px var(--space-3);cursor:pointer;font-size:var(--text-sm)}
+.cast-add-opt.active,.cast-add-opt:hover{background:var(--panel-3)}
+.cast-add-opt .exp-av{width:22px;height:22px;font-size:10px}
+.cast-add-empty{padding:var(--space-3);font-size:var(--text-sm);color:var(--text-3);font-style:italic}
+.cast-noperm{padding:var(--space-4);text-align:center;color:var(--text-3);font-size:var(--text-sm);line-height:1.5}
+.cast-noperm b{color:var(--text-2)}
+.cast-readonly-note{font-size:var(--text-xs);color:var(--text-3);padding:var(--space-2) var(--space-3);background:var(--panel-2);border-radius:var(--radius-sm);margin-bottom:var(--space-2)}
 .range-wrap{display:flex;align-items:center;gap:14px}
 .range-wrap input[type=range]{flex:1;accent-color:var(--accent)}
 .range-val{font-family:var(--font-mono);font-size:var(--text-base);font-weight:700;color:var(--accent);min-width:52px;text-align:right}
@@ -665,16 +727,22 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
     </div>
   </div>
 
-  <!-- ===================== TEAM MANAGEMENT (B4) ===================== -->
+  <!-- ===================== TEAM MANAGEMENT / CASTING ===================== -->
   <div class="scroll" id="team-screen" style="display:none">
     <div class="wrap">
-      <div class="view-head" style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:14px">
-        <h1 style="font-size:var(--text-xl);font-weight:600;letter-spacing:-.2px">Team management</h1>
+      <div class="view-head" style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:6px">
+        <h1 style="font-size:var(--text-xl);font-weight:600;letter-spacing:-.2px" id="team-h1">Team casting</h1>
       </div>
+      <div class="cfg-sub" id="team-sub" style="margin-bottom:16px">Every expert is staffed against an activity and, where the activity uses one, a perimeter within it — the perimeter is optional, not a required step.</div>
       <div class="team-scope">
         <span style="font-size:var(--text-sm);color:var(--text-3)">Viewing as</span>
         <select id="team-viewer"></select>
       </div>
+      <div class="cast-head-row">
+        <div class="cast-search-wrap"><span class="ic">⌕</span><input id="cast-roster-search" placeholder="Search the roster — is this person already staffed, and where?" autocomplete="off"></div>
+        <button class="cast-unstaffed-toggle" id="cast-unstaffed-toggle">⚠ Unstaffed only</button>
+      </div>
+      <div id="cast-coverage"></div>
       <div id="team-body"></div>
     </div>
   </div>
@@ -809,16 +877,23 @@ cR.addEventListener("input",()=>cV.textContent=cR.value+"%");
    suivi-experts-et-versions.html — same names/ids/roles across screens for a
    coherent demo, though each file's data stays independently hand-authored,
    per this project's convention). Casting is now asynchronous (B2): the
-   project manager casts one branch manager per activity at creation, but
+   project manager casts one activity manager per activity at creation, but
    only fills in experts directly for activities attached to themselves —
-   everyone else's experts are filled in later by that branch manager on the
-   Team screen (B4), at their own pace. "Completed their team" = has ≥1
-   expert attached. */
+   everyone else's experts are filled in later by that activity manager on the
+   Team screen (B4), at their own pace.
+   TICKET-casting-screen-redesign — a "perimeter manager" is not a new,
+   separate role: it's the existing activity manager, acting within the
+   perimeters nested under their one activity. Extended from 3 to 6 cast
+   activities (plus one, cvl, deliberately left with no manager yet) for a
+   richer coverage demo — see CAST_ACTIVITIES below. */
 const MANAGERS=[
   {id:"admin",name:"Thibaud Breton",role:"Project lead (admin)",init:"TB",color:"#6e7bf2",admin:true},
   {id:"m_sig",name:"Louis Renaud",role:"SIG manager",init:"LR",color:"#3fb27f"},
   {id:"m_mln",name:"Amina Cherif",role:"Mainline manager",init:"AC",color:"#e0a43c"},
   {id:"m_inf",name:"Paolo Ferri",role:"Infrastructure manager",init:"PF",color:"#a06ef2"},
+  {id:"m_pwr",name:"Nadia Haddad",role:"Power Supply manager",init:"NH",color:"#e5544b"},
+  {id:"m_tlc",name:"Julien Roche",role:"Telecom manager",init:"JR",color:"#3fa9b2"},
+  {id:"m_sys",name:"Elena Popescu",role:"Systems Integration manager",init:"EP",color:"#c46bd6"},
 ];
 const MGR=id=>MANAGERS.find(m=>m.id===id);
 /* Experts editor — TA2: for a project created via the wizard, this is the real roster
@@ -858,76 +933,294 @@ document.getElementById("add-exp-btn").addEventListener("click",()=>{
 renderExperts();
 
 /* =====================================================
-   B4 — Team management screen. Reuses Avatar (.exp-av), Role Recap Row's
-   idea (tag + avatar + name/sub) and the Assignment molecule's "person +
-   role" shape from the review/follow-up screens — assembled into a roster,
-   not new atoms, per the ticket. No global nav entry: reachable only via
-   #team-btn in this project's own header.
+   TICKET-casting-screen-redesign — replaces the old flat "one manager,
+   one expert list" B4 screen. Real chain: Activity -> Perimeter (optional)
+   -> Expert. An expert can sit directly on an activity (no perimeter) or
+   on one of its perimeters — both are valid, ordinary end states, not a
+   skipped step. Kept independent of the Config screen's own EXPERTS/
+   renderExperts (a separate, simpler global list), per this project's
+   no-shared-data-layer convention.
+
+   No real perimeter reference list was available for this build (see the
+   ticket's own "Open" section) — the values below are illustrative, not
+   invented-as-fact; INF and TLC are modelled with no perimeter breakdown
+   at all, which is itself a real, intended case, not a gap.
 ===================================================== */
+const CAST_ACTIVITIES=[
+  {id:"sig",code:"SIG",label:"Signalling & Urban",managerId:"m_sig"},
+  {id:"mln",code:"MLN",label:"Mainline",managerId:"m_mln"},
+  {id:"inf",code:"INF",label:"Infrastructure",managerId:"m_inf"},
+  {id:"pwr",code:"PWR",label:"Power Supply",managerId:"m_pwr"},
+  {id:"tlc",code:"TLC",label:"Telecom",managerId:"m_tlc"},
+  {id:"cvl",code:"CVL",label:"Civil Works",managerId:null}, // not yet cast to a manager — a real, distinct empty state
+  {id:"sys",code:"SYS",label:"Systems Integration",managerId:"m_sys"},
+];
+const CAST_ACT=id=>CAST_ACTIVITIES.find(a=>a.id===id);
+/* perimeter = [] means this activity is staffed directly, no breakdown — a
+   valid, ordinary outcome per the ticket, not a placeholder for a missing list */
+const PERIMETERS={
+  sig:[{id:"sig-ilk",label:"Interlocking"},{id:"sig-atp",label:"ATP / ATC"},{id:"sig-trk",label:"Trackside equipment"},{id:"sig-sca",label:"SCADA / Supervision"}],
+  mln:[{id:"mln-civ",label:"Civil interfaces"},{id:"mln-rst",label:"Rolling stock interfaces"}],
+  inf:[],
+  pwr:[{id:"pwr-tr",label:"Traction power"},{id:"pwr-aux",label:"Auxiliary power"}],
+  tlc:[],
+  cvl:[{id:"cvl-str",label:"Structures"},{id:"cvl-trk",label:"Trackworks"},{id:"cvl-sta",label:"Stations"}],
+  sys:[{id:"sys-saf",label:"Safety case"},{id:"sys-vv",label:"V&V"}],
+};
+const perimetersOf=activityId=>PERIMETERS[activityId]||[];
+const perimeterLabel=(activityId,perimeterId)=>{ const p=perimetersOf(activityId).find(x=>x.id===perimeterId); return p?p.label:null; };
+
+/* Simulated SSO company directory — the searchable pool for "search a person
+   via SSO"; distinct from ROSTER below, which is who's actually staffed on
+   THIS project. Nothing about a person is typed by hand once picked here —
+   identity/contact would come from SSO in a real build (represented, not
+   implemented — there is no real directory service in this prototype). */
+const CAST_COLORS=["#6e7bf2","#3fb27f","#e0a43c","#a06ef2","#e5544b","#3fa9b2","#c46bd6","#5c9ee0"];
+const DIRECTORY_NAMES=["Sophie Lang","Karim Benali","Claire Moreau","Marc Dubois","Fatima Zahra","Thomas Weber","Léa Girard","Omar Saidi","Anaïs Petit","Hugo Bernard","Ines Kaya","Nicolas Roux","Camille Fontaine","Youssef Amrani","Elodie Simon","Pierre Lefevre","Sara Nasri","Antoine Girardin","Meryem El Idrissi","Julien Marchal","Chloé Rousseau","Rachid Benjelloun","Manon Faure","Adrien Blanc","Yasmine Chraibi","Vincent Perrin","Aicha Bouzid","Baptiste Colin","Noor Haidar","Gabriel Renard","Lucie Vasseur","Samir Tahiri","Emma Lambert","Karim Ziani","Justine Michel"];
+const DIRECTORY=DIRECTORY_NAMES.map((name,i)=>{
+  const init=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  return {id:"p"+i,name,init,color:CAST_COLORS[i%CAST_COLORS.length]};
+});
+const personById=id=>DIRECTORY.find(p=>p.id===id);
+const personByName=name=>DIRECTORY.find(p=>p.name===name);
+
+/* ROSTER — who is actually staffed on this project. count>0 means they
+   already hold answered/assigned work (mirrors the EXPERTS.count convention
+   used elsewhere), which is what makes removal require reassignment instead
+   of a plain delete. addedBy/addedAt is the attribution the ticket asks for. */
+let ROSTER=[
+  {personId:personByName("Sophie Lang").id,activityId:"sig",perimeterId:"sig-ilk",addedBy:"Louis Renaud",addedAt:"Jul 14",count:3},
+  {personId:personByName("Karim Benali").id,activityId:"sig",perimeterId:"sig-atp",addedBy:"Louis Renaud",addedAt:"Jul 14",count:0},
+  {personId:personByName("Claire Moreau").id,activityId:"sig",perimeterId:"sig-sca",addedBy:"Louis Renaud",addedAt:"Jul 15",count:0},
+  {personId:personByName("Marc Dubois").id,activityId:"mln",perimeterId:"mln-civ",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
+  {personId:personByName("Fatima Zahra").id,activityId:"mln",perimeterId:"mln-rst",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
+  {personId:personByName("Thomas Weber").id,activityId:"inf",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 13",count:1},
+  {personId:personByName("Léa Girard").id,activityId:"inf",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 16",count:0},
+  {personId:personByName("Omar Saidi").id,activityId:"pwr",perimeterId:"pwr-tr",addedBy:"Nadia Haddad",addedAt:"Jul 15",count:0},
+  {personId:personByName("Anaïs Petit").id,activityId:"sys",perimeterId:"sys-saf",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
+  {personId:personByName("Hugo Bernard").id,activityId:"sys",perimeterId:"sys-saf",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
+  {personId:personByName("Ines Kaya").id,activityId:"sys",perimeterId:"sys-vv",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
+];
+const rosterFor=(activityId,perimeterId)=>ROSTER.filter(r=>r.activityId===activityId && r.perimeterId===(perimeterId===undefined?null:perimeterId));
+const rosterOfActivity=activityId=>ROSTER.filter(r=>r.activityId===activityId);
+
+function activityCoverage(a){
+  const perims=perimetersOf(a.id);
+  if(perims.length){
+    const staffed=perims.filter(p=>rosterFor(a.id,p.id).length>0).length;
+    return {kind:staffed===0?"unstaffed":(staffed===perims.length?"staffed":"partial"),staffed,total:perims.length};
+  }
+  const direct=rosterFor(a.id,null);
+  return {kind:direct.length?"staffed":"unstaffed",staffed:direct.length?1:0,total:1};
+}
+
 let TEAM_VIEWER="admin";
-const expertsOf=mgrId=>EXPERTS.filter(e=>e.manager===mgrId);
+let CAST_UNSTAFFED_ONLY=false;
+let CAST_ROSTER_SEARCH="";
+let CAST_LAST_ADDED=null; // {personId, label} — powers "add to another perimeter"
+const castExpanded=new Set(); // activity ids expanded in the current view
+
 function initTeamViewer(){
   const sel=document.getElementById("team-viewer");
+  sel.innerHTML="";
   MANAGERS.forEach(m=>sel.insertAdjacentHTML("beforeend",`<option value="${m.id}">${m.name} — ${m.role}</option>`));
   sel.value=TEAM_VIEWER;
-  sel.addEventListener("change",e=>{ TEAM_VIEWER=e.target.value; renderTeamScreen(); });
-}
-function expertRowHTML(e,i,editable){
-  return `<div class="exp-edit-row">
-    <div class="exp-av" style="background:${e.color}">${e.init}</div>
-    <div><div class="een">${e.name}</div><div class="eet">${e.team}</div></div>
-    <span class="eec">${e.count} requirement${e.count!==1?"s":""} assigned</span>
-    ${editable?`<button class="del" title="Remove" data-rm-exp="${i}">✕</button>`:""}
-  </div>`;
-}
-function managerGroupHTML(m,editable){
-  const mine=expertsOf(m.id);
-  const done=mine.length>0;
-  return `<div class="team-mgr-group" data-mgr="${m.id}">
-    <div class="team-mgr-head">
-      <div class="exp-av" style="background:${m.color}">${m.init}</div>
-      <div><div class="team-mgr-name">${m.name}</div><div class="team-mgr-role">${m.role}</div></div>
-      <span class="team-mgr-status ${done?"done":"pending"}">${done?`${mine.length} expert${mine.length>1?"s":""}`:"Team not complete yet"}</span>
-    </div>
-    <div class="team-roster">
-      ${mine.length?mine.map((e,i)=>expertRowHTML(e,EXPERTS.indexOf(e),editable)).join(""):`<div class="team-roster-empty">No expert added yet${editable?" — add the first one below.":"."}</div>`}
-      ${editable?`<div class="add-exp"><input class="inp" id="team-add-name" placeholder="Full name"><input class="inp" id="team-add-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="team-add-btn">Add expert</button></div>`:""}
-    </div>
-  </div>`;
-}
-function renderTeamScreen(){
-  const body=document.getElementById("team-body");
-  const viewer=MGR(TEAM_VIEWER);
-  if(viewer.admin){
-    body.innerHTML=`<div class="cfg-sub" style="margin-bottom:16px">Every activity manager on this project, with the experts they've attached so far. Casting is asynchronous (B2) — a manager can still be filling in their team after project creation.</div>`
-      +MANAGERS.filter(m=>!m.admin).map(m=>managerGroupHTML(m,false)).join("");
-    return;
-  }
-  body.innerHTML=`<div class="cfg-sub" style="margin-bottom:16px">Your own team — add or remove experts at any time, not just during casting.</div>`
-    +managerGroupHTML(viewer,true);
-  document.getElementById("team-add-btn")?.addEventListener("click",()=>{
-    const n=document.getElementById("team-add-name"),t=document.getElementById("team-add-team");
-    if(!n.value.trim()){toast("Enter a name","warn");return;}
-    const init=n.value.trim().split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
-    EXPERTS.push({name:n.value.trim(),team:t.value.trim()||"—",init,color:COLORS[EXPERTS.length%COLORS.length],count:0,manager:TEAM_VIEWER});
-    renderTeamScreen();renderCastingProgress();toast("Expert added to your team","ok");
+  sel.addEventListener("change",e=>{
+    TEAM_VIEWER=e.target.value;
+    // arriving as a manager = landing directly on their own scope, expanded —
+    // not a 7-activity list they have to navigate first.
+    castExpanded.clear();
+    const viewer=MGR(TEAM_VIEWER);
+    if(!viewer.admin){ const own=CAST_ACTIVITIES.find(a=>a.managerId===TEAM_VIEWER); if(own) castExpanded.add(own.id); }
+    renderTeamScreen();
   });
-  body.querySelectorAll("[data-rm-exp]").forEach(btn=>btn.addEventListener("click",()=>{
-    const i=+btn.dataset.rmExp, e=EXPERTS[i];
-    if(e.count>0){toast(`Cannot remove ${e.name} — ${e.count} requirements still assigned`,"warn");return;}
-    EXPERTS.splice(i,1);renderTeamScreen();renderCastingProgress();
+}
+
+/* ---------- coverage overview strip (PM's "are we there yet") ---------- */
+function renderCoverageStrip(){
+  const el=document.getElementById("cast-coverage");
+  const viewer=MGR(TEAM_VIEWER);
+  if(!viewer.admin){ el.innerHTML=""; return; }
+  el.innerHTML=`<div class="cast-coverage-strip">${CAST_ACTIVITIES.map(a=>{
+    const cov=a.managerId?activityCoverage(a):{kind:"unstaffed",staffed:0,total:perimetersOf(a.id).length||1};
+    const cls=!a.managerId?"unstaffed":(cov.kind==="staffed"?"complete":(cov.kind==="unstaffed"?"unstaffed":""));
+    const stat=!a.managerId?`<span class="cast-cov-stat warn">No manager cast yet</span>`
+      :cov.kind==="staffed"?`<span class="cast-cov-stat ok">✓ Fully staffed</span>`
+      :cov.kind==="unstaffed"?`<span class="cast-cov-stat warn">Nothing staffed</span>`
+      :`<span class="cast-cov-stat">${cov.staffed}/${cov.total} staffed</span>`;
+    return `<div class="cast-cov-card ${cls}" data-goto="${a.id}"><div class="cast-cov-code">${a.code}</div><div class="cast-cov-label">${a.label}</div>${stat}</div>`;
+  }).join("")}</div>`;
+  el.querySelectorAll("[data-goto]").forEach(c=>c.addEventListener("click",()=>{
+    castExpanded.add(c.dataset.goto); renderTeamScreen();
+    document.querySelector(`.cast-group[data-act="${c.dataset.goto}"]`)?.scrollIntoView({block:"center",behavior:"smooth"});
   }));
 }
-initTeamViewer();
 
-/* B2 — casting progress indicator (dashboard) */
+/* ---------- roster-wide search + unstaffed filter (top bar) ---------- */
+function matchesRosterSearch(personId){
+  if(!CAST_ROSTER_SEARCH) return true;
+  const p=personById(personId); if(!p) return false;
+  return p.name.toLowerCase().includes(CAST_ROSTER_SEARCH.toLowerCase());
+}
+
+/* ---------- one person row ---------- */
+function castPersonRowHTML(r,editable){
+  const p=personById(r.personId); if(!p) return "";
+  return `<div class="cast-person-row" data-roster-person="${r.personId}" data-roster-act="${r.activityId}" data-roster-perim="${r.perimeterId||""}">
+    <div class="exp-av" style="width:26px;height:26px;font-size:11px;background:${p.color}">${p.init}</div>
+    <div><div class="cast-person-name">${p.name}</div><div class="cast-person-meta">Added by ${r.addedBy} · ${r.addedAt}${r.count?` · ${r.count} requirement${r.count>1?"s":""} assigned`:""}</div></div>
+    ${editable?`<button class="cast-person-rm" title="Remove" data-rm-roster="${r.personId}|${r.activityId}|${r.perimeterId||""}">✕</button>`:""}
+  </div>`;
+}
+
+/* ---------- add row: SSO-style typeahead, scoped to one activity+perimeter ---------- */
+function castAddRowHTML(activityId,perimeterId){
+  const key=`${activityId}__${perimeterId||"none"}`;
+  return `<div class="cast-add-row" data-add-key="${key}">
+    <input class="cast-add-input" placeholder="Search a person via SSO…" autocomplete="off" data-add-input="${key}">
+    <div class="cast-add-results" data-add-results="${key}"></div>
+  </div>`;
+}
+function bindCastAddRow(container,activityId,perimeterId){
+  const key=`${activityId}__${perimeterId||"none"}`;
+  const input=container.querySelector(`[data-add-input="${key}"]`);
+  const results=container.querySelector(`[data-add-results="${key}"]`);
+  if(!input) return;
+  let active=0,matches=[];
+  function draw(q){
+    const ql=(q||"").toLowerCase().trim();
+    matches=ql?DIRECTORY.filter(p=>p.name.toLowerCase().includes(ql)).slice(0,8):[];
+    active=0;
+    if(!ql){ results.classList.remove("open"); results.innerHTML=""; return; }
+    results.innerHTML=matches.length?matches.map((p,i)=>`<div class="cast-add-opt${i===0?" active":""}" data-pick="${p.id}"><div class="exp-av" style="background:${p.color}">${p.init}</div>${p.name}</div>`).join(""):`<div class="cast-add-empty">No match in the directory.</div>`;
+    results.classList.add("open");
+    results.querySelectorAll("[data-pick]").forEach(o=>o.addEventListener("mousedown",e=>{ e.preventDefault(); confirmAdd(o.dataset.pick); }));
+  }
+  function confirmAdd(personId){
+    const dup=ROSTER.find(r=>r.personId===personId && r.activityId===activityId && r.perimeterId===perimeterId);
+    const p=personById(personId);
+    if(dup){ toast(`${p.name} is already staffed here — pick a different perimeter, or search someone else`,"warn"); return; }
+    ROSTER.push({personId,activityId,perimeterId,addedBy:MGR(TEAM_VIEWER).name,addedAt:"Today",count:0});
+    CAST_LAST_ADDED={personId,label:p.name};
+    toast(`${p.name} added${perimeterId?` — ${perimeterLabel(activityId,perimeterId)}`:""}`,"ok");
+    renderTeamScreen();
+    // stay put: refocus the same slot's input, empty, ready for the next search
+    requestAnimationFrame(()=>{
+      const again=document.querySelector(`[data-add-input="${key}"]`);
+      if(again) again.focus();
+    });
+  }
+  input.addEventListener("input",()=>draw(input.value));
+  input.addEventListener("focus",()=>{ if(input.value) draw(input.value); });
+  input.addEventListener("keydown",e=>{
+    if(!results.classList.contains("open")) return;
+    if(e.key==="ArrowDown"){ e.preventDefault(); active=Math.min(active+1,matches.length-1); results.querySelectorAll(".cast-add-opt").forEach((o,i)=>o.classList.toggle("active",i===active)); }
+    else if(e.key==="ArrowUp"){ e.preventDefault(); active=Math.max(active-1,0); results.querySelectorAll(".cast-add-opt").forEach((o,i)=>o.classList.toggle("active",i===active)); }
+    else if(e.key==="Enter"){ e.preventDefault(); if(matches[active]) confirmAdd(matches[active].id); }
+    else if(e.key==="Escape"){ input.value=""; results.classList.remove("open"); results.innerHTML=""; }
+  });
+  document.addEventListener("click",e=>{ if(!e.target.closest(`[data-add-key="${key}"]`)) { results.classList.remove("open"); } },{once:false});
+}
+
+/* ---------- one perimeter (or the direct-activity "no perimeter" slot) ---------- */
+function castPerimeterHTML(a,perim,editable){
+  const pid=perim?perim.id:null;
+  const rows=rosterFor(a.id,pid).filter(r=>matchesRosterSearch(r.personId));
+  const isUnstaffed=rosterFor(a.id,pid).length===0;
+  if(CAST_UNSTAFFED_ONLY && !isUnstaffed) return "";
+  const label=perim?perim.label:"Staffed directly (no perimeter)";
+  return `<div class="cast-perim${isUnstaffed?" is-unstaffed":""}">
+    <div class="cast-perim-head">
+      <span class="cast-perim-title">${label}</span>
+      ${isUnstaffed?`<span class="cast-perim-flag">⚠ Unstaffed</span>`:""}
+    </div>
+    <div class="cast-perim-body">
+      ${rows.length?rows.map(r=>castPersonRowHTML(r,editable)).join(""):`<div class="cast-empty-note">Nobody staffed here yet.</div>`}
+      ${editable?castAddRowHTML(a.id,pid):""}
+    </div>
+  </div>`;
+}
+
+/* ---------- one activity group ---------- */
+function castGroupHTML(a,viewerIsAdmin){
+  const mgr=a.managerId?MGR(a.managerId):null;
+  const editable=!viewerIsAdmin && a.managerId===TEAM_VIEWER;
+  const perims=perimetersOf(a.id);
+  const cov=a.managerId?activityCoverage(a):{kind:"noperm",staffed:0,total:0};
+  const badgeCls=!a.managerId?"noperm":(cov.kind==="staffed"?"staffed":(cov.kind==="unstaffed"?"unstaffed":"partial"));
+  const badgeTxt=!a.managerId?"No manager cast":(cov.kind==="staffed"?"Fully staffed":(cov.kind==="unstaffed"?"Nothing staffed":`${cov.staffed}/${cov.total} staffed`));
+  const collapsed=!castExpanded.has(a.id);
+  let bodyInner;
+  if(!a.managerId){
+    bodyInner=`<div class="cast-noperm">This activity hasn't been cast to a manager yet — nobody can staff it until it is.<br><b>Assign an activity manager in the project wizard or from here once that flow is wired.</b></div>`;
+  } else if(!editable && !viewerIsAdmin){
+    bodyInner=`<div class="cast-readonly-note">🔒 Read-only — ${mgr.name} manages this activity, not you.</div>`
+      + (perims.length?perims.map(p=>castPerimeterHTML(a,p,false)).join(""):castPerimeterHTML(a,null,false));
+  } else {
+    bodyInner=perims.length?perims.map(p=>castPerimeterHTML(a,p,editable)).join(""):castPerimeterHTML(a,null,editable);
+  }
+  return `<div class="cast-group${collapsed?" collapsed":""}${cov.kind==="unstaffed"?" is-unstaffed":""}" data-act="${a.id}">
+    <div class="cast-group-head" data-toggle-act="${a.id}">
+      <span class="cast-caret">▾</span>
+      <span class="cast-ptag">${a.code}</span>
+      <div><div class="cast-group-title">${a.label}</div><div class="cast-group-mgr">${mgr?mgr.name:"Unassigned"}</div></div>
+      <span class="cast-group-badge ${badgeCls}">${badgeTxt}</span>
+    </div>
+    <div class="cast-body">${bodyInner}</div>
+  </div>`;
+}
+
+function renderTeamScreen(){
+  renderCoverageStrip();
+  const body=document.getElementById("team-body");
+  const h1=document.getElementById("team-h1"),sub=document.getElementById("team-sub");
+  const viewer=MGR(TEAM_VIEWER);
+  h1.textContent=viewer.admin?"Team casting — overview":"Team casting — your scope";
+  sub.textContent=viewer.admin
+    ? "Which activities and perimeters still need someone, at a glance — click a card above to jump to it."
+    : "Your own activity, expanded and ready to staff. Everything else stays visible for context, read-only.";
+  const lastAddedChip=CAST_LAST_ADDED?`<div class="cast-readonly-note" style="margin-bottom:12px">↻ Just added <b>${CAST_LAST_ADDED.label}</b> — staffing them on another perimeter too? Search their name again in the right spot below. <button class="btn-ghost" style="font-size:var(--text-xs);padding:2px 8px;margin-left:8px" id="cast-clear-last">Dismiss</button></div>`:"";
+  body.innerHTML=lastAddedChip + CAST_ACTIVITIES.map(a=>castGroupHTML(a,viewer.admin)).join("");
+  document.getElementById("cast-clear-last")?.addEventListener("click",()=>{ CAST_LAST_ADDED=null; renderTeamScreen(); });
+  body.querySelectorAll("[data-toggle-act]").forEach(h=>h.addEventListener("click",()=>{
+    const id=h.dataset.toggleAct;
+    castExpanded.has(id)?castExpanded.delete(id):castExpanded.add(id);
+    renderTeamScreen();
+  }));
+  body.querySelectorAll("[data-rm-roster]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    const [personId,activityId,perimeterId]=btn.dataset.rmRoster.split("|");
+    const idx=ROSTER.findIndex(r=>r.personId===personId&&r.activityId===activityId&&r.perimeterId===(perimeterId||null));
+    if(idx<0) return;
+    const r=ROSTER[idx],p=personById(personId);
+    if(r.count>0){ toast(`${p.name} already holds ${r.count} requirement${r.count>1?"s":""} here — reassign their work before removing them, they can't be deleted out from under it`,"warn"); return; }
+    ROSTER.splice(idx,1);
+    toast(`${p.name} removed`,"ok");
+    renderTeamScreen();
+  }));
+  body.querySelectorAll("[data-add-key]").forEach(row=>{
+    const [activityId,perimRaw]=row.dataset.addKey.split("__");
+    bindCastAddRow(body,activityId,perimRaw==="none"?null:perimRaw);
+  });
+}
+initTeamViewer();
+document.getElementById("cast-roster-search").addEventListener("input",e=>{ CAST_ROSTER_SEARCH=e.target.value; renderTeamScreen(); });
+document.getElementById("cast-unstaffed-toggle").addEventListener("click",function(){
+  CAST_UNSTAFFED_ONLY=!CAST_UNSTAFFED_ONLY;
+  this.classList.toggle("on",CAST_UNSTAFFED_ONLY);
+  renderTeamScreen();
+});
+
+/* B2 — casting progress indicator (dashboard phase card). Reflects the same
+   ROSTER/coverage model as the Team screen above, not the separate Config
+   EXPERTS list, so the two surfaces never tell a different story. */
 function renderCastingProgress(){
-  const nonAdmin=MANAGERS.filter(m=>!m.admin);
-  const done=nonAdmin.filter(m=>expertsOf(m.id).length>0).length;
-  const total=nonAdmin.length;
+  const castable=CAST_ACTIVITIES.filter(a=>a.managerId);
+  const done=castable.filter(a=>activityCoverage(a).kind==="staffed").length;
+  const total=CAST_ACTIVITIES.length;
   const pct=total?Math.round(done/total*100):100;
   document.getElementById("ph-team-n").textContent=done;
-  document.getElementById("ph-team-txt").textContent=`/ ${total} manager${total>1?"s":""} have completed their team`;
+  document.getElementById("ph-team-txt").textContent=`/ ${total} activities fully staffed`;
   document.getElementById("ph-team-bar").style.width=pct+"%";
   const badge=document.getElementById("ph-team-badge");
   const pending=total-done;
