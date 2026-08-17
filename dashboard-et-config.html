@@ -805,7 +805,7 @@ oR.addEventListener("input",()=>oV.textContent=oR.value+(oR.value==="1"?" day":"
 const cR=document.getElementById("conf-range"),cV=document.getElementById("conf-val");
 cR.addEventListener("input",()=>cV.textContent=cR.value+"%");
 
-/* B2/B4 — branch managers (mirrors MANAGERS in revue-documentaire.html /
+/* B2/B4 — activity managers (mirrors MANAGERS in revue-documentaire.html /
    suivi-experts-et-versions.html — same names/ids/roles across screens for a
    coherent demo, though each file's data stays independently hand-authored,
    per this project's convention). Casting is now asynchronous (B2): the
@@ -899,7 +899,7 @@ function renderTeamScreen(){
   const body=document.getElementById("team-body");
   const viewer=MGR(TEAM_VIEWER);
   if(viewer.admin){
-    body.innerHTML=`<div class="cfg-sub" style="margin-bottom:16px">Every branch manager on this project, with the experts they've attached so far. Casting is asynchronous (B2) — a manager can still be filling in their team after project creation.</div>`
+    body.innerHTML=`<div class="cfg-sub" style="margin-bottom:16px">Every activity manager on this project, with the experts they've attached so far. Casting is asynchronous (B2) — a manager can still be filling in their team after project creation.</div>`
       +MANAGERS.filter(m=>!m.admin).map(m=>managerGroupHTML(m,false)).join("");
     return;
   }
@@ -1039,7 +1039,7 @@ function renderComplianceKPIs(){
   const branchesTotal=FOLLOWUP_REQS.reduce((s,r)=>s+r.branchesTotal,0);
   document.getElementById("hs-response-rate").textContent=(Math.round(branchesAnswered/branchesTotal*1000)/10)+"%";
 }
-/* TB2 — mirrors the branch-level detail behind suivi-experts-et-versions.html's
+/* TB2 — mirrors the activity-level detail behind suivi-experts-et-versions.html's
    isOverB() (awaiting_answer && age >= OVERDUE_DAYS): only a branch actually waiting
    on its expert can be overdue, not one blocked on the issuer or bounced back to the
    manager. Drives the "expert response overdue" attention card instead of a hand-typed
@@ -1068,7 +1068,7 @@ applyGating();
 /* ---------- AI feedback panel ---------- */
 const FB_RATES=[
   {k:"Segmentation",v:94,c:"var(--ok)"},
-  {k:"Typology",v:82,c:"var(--ia)"},
+  {k:"Activity",v:82,c:"var(--ia)"},
   {k:"Characterization",v:88,c:"var(--ok)"},
   {k:"Assignment (OBS)",v:71,c:"var(--warn)"},
 ];
@@ -1088,7 +1088,7 @@ function renderFeedback(){
   let items=[]; try{ if(window.parent!==window&&window.parent.getAIFeedback) items=window.parent.getAIFeedback(); }catch(e){}
   if(live){
     if(!items.length){
-      live.innerHTML=`<div class="fb-empty">No correction captured yet in this session. Reassign a requirement or change a typology in the review screen — it will appear here instantly, silently logged.</div>`;
+      live.innerHTML=`<div class="fb-empty">No correction captured yet in this session. Reassign a requirement or change an activity in the review screen — it will appear here instantly, silently logged.</div>`;
     }else{
       live.innerHTML=items.slice(-8).reverse().map(f=>`<div class="fb-live-row">
         <span class="fs">${SURF_LABEL[f.surface]||f.surface}</span>

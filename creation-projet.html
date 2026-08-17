@@ -344,7 +344,7 @@ header .btn-ghost{margin-left:auto}
         <!-- STEP 4 -->
         <section class="step-pane" data-pane="4">
           <div class="h1">Team &amp; review</div>
-          <div class="sub">Assign a branch manager to each activity. You can directly pick an expert only for activities you manage yourself — every other branch manager fills in their own experts later, at their own pace, on the Team management screen. This is expected to delay the start of analysis for those activities; it is not a defect to work around.</div>
+          <div class="sub">Assign an activity manager to each activity. You can directly pick an expert only for activities you manage yourself — every other activity manager fills in their own experts later, at their own pace, on the Team management screen. This is expected to delay the start of analysis for those activities; it is not a defect to work around.</div>
           <div class="cast-add-combo">
             <input type="text" class="inp" id="cast-search" placeholder="Search a typology to add as an activity (e.g. Power Supply, Civil Works)…" autocomplete="off">
             <div class="cast-add-list" id="cast-add-list"></div>
@@ -383,7 +383,7 @@ header .btn-ghost{margin-left:auto}
 <div id="toast-zone"></div>
 
 <script>
-/* B2 — branch managers (mirrors MANAGERS in the other screens — same names/
+/* B2 — activity managers (mirrors MANAGERS in the other screens — same names/
    ids/roles for a coherent demo, independently hand-authored per file per
    this project's convention). "admin" is the project manager creating this
    project — they can cast themselves as an activity's manager and assign
@@ -396,7 +396,7 @@ const MANAGERS=[
   {id:"m_inf",name:"Paolo Ferri",role:"Infrastructure manager",init:"PF",color:"#a06ef2"},
 ];
 const MGR=id=>MANAGERS.find(m=>m.id===id);
-/* Typology vocabulary an activity can be cast against — mirrors TYPO in
+/* Activity vocabulary an activity can be cast against — mirrors TYPO in
    revue-documentaire.html (same ids/codes/labels, independently held per
    this project's convention). No predefined subset is offered here: the PM
    searches/picks freely from the full vocabulary to build their own activity
@@ -586,7 +586,7 @@ function renderCastAddList(query){
   const used=new Set(P.casting.map(c=>c.activityId));
   const matches=TYPO.filter(t=>!used.has(t.id)&&(!q||t.code.toLowerCase().includes(q)||t.label.toLowerCase().includes(q)));
   if(!matches.length){
-    list.innerHTML=`<div class="cast-add-empty">${used.size>=TYPO.length?"Every typology has been added.":"No match."}</div>`;
+    list.innerHTML=`<div class="cast-add-empty">${used.size>=TYPO.length?"Every activity has been added.":"No match."}</div>`;
     list.classList.add("open");
     return;
   }
@@ -621,7 +621,7 @@ function renderCasting(){
     } else if(cast.managerId){
       rightHTML=`<span class="cast-defer">Expert to be filled in by ${MGR(cast.managerId).name} after project creation.</span>`;
     } else {
-      rightHTML=`<span class="cast-defer">Assign a branch manager first.</span>`;
+      rightHTML=`<span class="cast-defer">Assign an activity manager first.</span>`;
     }
     return `<div class="cast-row" data-act="${cast.activityId}">
       <div class="cast-act"><span class="ptag">${t.code}</span></div>
@@ -692,7 +692,7 @@ function modeLabel(){
 function castingSummaryLabel(){
   if(!P.casting.length) return "<span class='miss'>No activity added yet</span>";
   const withMgr=P.casting.filter(c=>c.managerId);
-  if(!withMgr.length) return "<span class='miss'>No branch manager assigned yet</span>";
+  if(!withMgr.length) return "<span class='miss'>No activity manager assigned yet</span>";
   const delegated=withMgr.filter(c=>c.managerId!=="admin");
   return `${withMgr.length}/${P.casting.length} activities have a manager`+(delegated.length?` · ${delegated.length} to be notified for their own expert`:"");
 }
@@ -720,7 +720,7 @@ function computedMode(){
   if(!P.ai.char)return "segmentation";
   return "ai";
 }
-/* B2 — simulated email notification: every branch manager cast on an activity
+/* B2 — simulated email notification: every activity manager cast on an activity
    they don't directly manage (i.e. not the PM) gets notified to fill in their
    own expert later, asynchronously. Matches the toast+setTimeout convention
    used elsewhere for simulated async round-trips (see e.g. the review
@@ -746,7 +746,7 @@ function createProject(){
       // activities the PM cast *themselves* on (managerId==="admin") have a chosen
       // expert yet, deduped by expert index (the same person can be cast on several
       // activities). Delegated activities intentionally arrive with no expert — their
-      // branch manager fills that in later on the Team screen (SPEC-domain-model.md §6).
+      // activity manager fills that in later on the Team screen (SPEC-domain-model.md §6).
       const castExpertIdx=[...new Set(P.casting.filter(c=>c.managerId==="admin"&&c.expertId!=null).map(c=>c.expertId))];
       const castExperts=castExpertIdx.map(i=>Object.assign({manager:"admin",count:0},P.experts[i]));
       const newId = window.parent.addProject ? window.parent.addProject({name:P.name,ref:P.ref,line:P.line,system:P.system,region:P.region,mode,days,
