@@ -319,7 +319,8 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .cast-person-rm{margin-left:auto;width:24px;height:24px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center;flex-shrink:0}
 .cast-person-rm:hover{background:var(--warn-soft);color:var(--warn)}
 .cast-empty-note{font-size:var(--text-xs);color:var(--text-3);font-style:italic;padding:var(--space-2) 0}
-.cast-add-flow{margin-top:var(--space-3);border-top:1px solid var(--line);padding-top:var(--space-3)}
+.cast-add-flow{margin-bottom:var(--space-3);background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-md);padding:var(--space-3)}
+.cast-add-flow-title{font-size:var(--text-sm);font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .cast-add-picked{display:flex;align-items:center;gap:8px;font-size:var(--text-sm);margin-bottom:8px;background:var(--panel-2);border-radius:var(--radius-md);padding:6px 10px}
 .cast-add-picked .x{margin-left:auto;color:var(--text-3);cursor:pointer;font-size:var(--text-xs)}
 .cast-add-picked .x:hover{color:var(--warn)}
@@ -1111,6 +1112,7 @@ function castPersonRowHTML(r,editable){
    first time it's typed, so it's usable from then on for this activity. */
 function castAddFlowHTML(activityId){
   return `<div class="cast-add-flow" data-add-act="${activityId}">
+    <div class="cast-add-flow-title">+ Add someone</div>
     <div data-add-slot="${activityId}">
       <input class="cast-add-input" placeholder="Search a person via SSO…" autocomplete="off" data-add-input="${activityId}">
       <div class="cast-add-results" data-add-results="${activityId}"></div>
@@ -1220,7 +1222,7 @@ function castGroupHTML(a,viewerIsAdmin){
   } else if(!editable && !viewerIsAdmin){
     bodyInner=`<div class="cast-readonly-note">🔒 Read-only — ${mgr.name} manages this activity, not you.</div>` + groups.join("");
   } else {
-    bodyInner=groups.join("") + (editable?castAddFlowHTML(a.id):"");
+    bodyInner=(editable?castAddFlowHTML(a.id):"") + groups.join("");
   }
   return `<div class="cast-group${collapsed?" collapsed":""}${cov.kind==="unstaffed"?" is-unstaffed":""}" data-act="${a.id}">
     <div class="cast-group-head" data-toggle-act="${a.id}">
