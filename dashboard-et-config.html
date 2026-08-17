@@ -319,6 +319,16 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .cast-person-rm{margin-left:auto;width:24px;height:24px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center;flex-shrink:0}
 .cast-person-rm:hover{background:var(--warn-soft);color:var(--warn)}
 .cast-empty-note{font-size:var(--text-xs);color:var(--text-3);font-style:italic;padding:var(--space-2) 0}
+.cast-add-flow{margin-top:var(--space-3);border-top:1px solid var(--line);padding-top:var(--space-3)}
+.cast-add-picked{display:flex;align-items:center;gap:8px;font-size:var(--text-sm);margin-bottom:8px;background:var(--panel-2);border-radius:var(--radius-md);padding:6px 10px}
+.cast-add-picked .x{margin-left:auto;color:var(--text-3);cursor:pointer;font-size:var(--text-xs)}
+.cast-add-picked .x:hover{color:var(--warn)}
+.cast-add-step2{display:flex;gap:8px;align-items:flex-start}
+.cast-add-perim-input{flex:1;background:var(--panel-2);border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:7px var(--space-3);color:var(--text);outline:none;font-size:var(--text-sm)}
+.cast-add-perim-input:focus{border-style:solid;border-color:var(--accent)}
+.cast-add-confirm{padding:7px 14px;border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-sm);white-space:nowrap;flex-shrink:0}
+.cast-add-confirm:hover{background:#7d89ff}
+.cast-add-hint{font-size:var(--text-xs);color:var(--text-3);margin-top:6px;line-height:1.4}
 .cast-add-row{margin-top:var(--space-2);position:relative}
 .cast-add-input{width:100%;background:var(--panel-2);border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:7px var(--space-3);color:var(--text);outline:none;font-size:var(--text-sm)}
 .cast-add-input:focus{border-style:solid;border-color:var(--accent)}
@@ -967,8 +977,27 @@ const PERIMETERS={
   cvl:[{id:"cvl-str",label:"Structures"},{id:"cvl-trk",label:"Trackworks"},{id:"cvl-sta",label:"Stations"}],
   sys:[{id:"sys-saf",label:"Safety case"},{id:"sys-vv",label:"V&V"}],
 };
-const perimetersOf=activityId=>PERIMETERS[activityId]||[];
+/* TICKET-casting-screen-redesign follow-up: the perimeter list is a starting
+   point, not a closed vocabulary — PERIMETERS[activityId] can grow at add
+   time (see resolvePerimeter below). If it's empty, the array itself is
+   still created lazily so pushes have somewhere to land. */
+const perimetersOf=activityId=>{ if(!PERIMETERS[activityId]) PERIMETERS[activityId]=[]; return PERIMETERS[activityId]; };
 const perimeterLabel=(activityId,perimeterId)=>{ const p=perimetersOf(activityId).find(x=>x.id===perimeterId); return p?p.label:null; };
+/* Resolves whatever the user typed/picked for perimeter into a real
+   perimeter id: reuse an existing one on a case-insensitive label match
+   (so "interlocking" finds "Interlocking" instead of creating a near-
+   duplicate), otherwise create a new one on the fly. Blank input is a
+   deliberate, valid outcome — direct activity staffing, not an error. */
+function resolvePerimeter(activityId,typed){
+  const label=(typed||"").trim();
+  if(!label) return null;
+  const list=perimetersOf(activityId);
+  const existing=list.find(p=>p.label.toLowerCase()===label.toLowerCase());
+  if(existing) return existing.id;
+  const id=activityId+"-custom-"+Math.random().toString(36).slice(2,7);
+  list.push({id,label,custom:true});
+  return id;
+}
 
 /* Simulated SSO company directory — the searchable pool for "search a person
    via SSO"; distinct from ROSTER below, which is who's actually staffed on
@@ -1074,69 +1103,99 @@ function castPersonRowHTML(r,editable){
 }
 
 /* ---------- add row: SSO-style typeahead, scoped to one activity+perimeter ---------- */
-function castAddRowHTML(activityId,perimeterId){
-  const key=`${activityId}__${perimeterId||"none"}`;
-  return `<div class="cast-add-row" data-add-key="${key}">
-    <input class="cast-add-input" placeholder="Search a person via SSO…" autocomplete="off" data-add-input="${key}">
-    <div class="cast-add-results" data-add-results="${key}"></div>
+/* Single combined add-flow per activity (not per perimeter): search the
+   person first, THEN say where — pick an existing perimeter, type a new
+   one freely, or leave it blank for direct-activity staffing. The
+   perimeter list was never meant to be a closed vocabulary someone else
+   imposes; resolvePerimeter() (above) creates a new one on the fly the
+   first time it's typed, so it's usable from then on for this activity. */
+function castAddFlowHTML(activityId){
+  return `<div class="cast-add-flow" data-add-act="${activityId}">
+    <div data-add-slot="${activityId}">
+      <input class="cast-add-input" placeholder="Search a person via SSO…" autocomplete="off" data-add-input="${activityId}">
+      <div class="cast-add-results" data-add-results="${activityId}"></div>
+    </div>
   </div>`;
 }
-function bindCastAddRow(container,activityId,perimeterId){
-  const key=`${activityId}__${perimeterId||"none"}`;
-  const input=container.querySelector(`[data-add-input="${key}"]`);
-  const results=container.querySelector(`[data-add-results="${key}"]`);
-  if(!input) return;
+function bindCastAddFlow(container,activityId){
+  const flow=container.querySelector(`[data-add-act="${activityId}"]`);
+  if(!flow) return;
+  const slot=flow.querySelector(`[data-add-slot="${activityId}"]`);
   let active=0,matches=[];
-  function draw(q){
-    const ql=(q||"").toLowerCase().trim();
-    matches=ql?DIRECTORY.filter(p=>p.name.toLowerCase().includes(ql)).slice(0,8):[];
-    active=0;
-    if(!ql){ results.classList.remove("open"); results.innerHTML=""; return; }
-    results.innerHTML=matches.length?matches.map((p,i)=>`<div class="cast-add-opt${i===0?" active":""}" data-pick="${p.id}"><div class="exp-av" style="background:${p.color}">${p.init}</div>${p.name}</div>`).join(""):`<div class="cast-add-empty">No match in the directory.</div>`;
-    results.classList.add("open");
-    results.querySelectorAll("[data-pick]").forEach(o=>o.addEventListener("mousedown",e=>{ e.preventDefault(); confirmAdd(o.dataset.pick); }));
+
+  function toPersonStep(){
+    slot.innerHTML=`<input class="cast-add-input" placeholder="Search a person via SSO…" autocomplete="off" data-add-input="${activityId}">
+      <div class="cast-add-results" data-add-results="${activityId}"></div>`;
+    bindPersonInput();
+    slot.querySelector("input").focus();
   }
-  function confirmAdd(personId){
-    const dup=ROSTER.find(r=>r.personId===personId && r.activityId===activityId && r.perimeterId===perimeterId);
-    const p=personById(personId);
-    if(dup){ toast(`${p.name} is already staffed here — pick a different perimeter, or search someone else`,"warn"); return; }
-    ROSTER.push({personId,activityId,perimeterId,addedBy:MGR(TEAM_VIEWER).name,addedAt:"Today",count:0});
-    CAST_LAST_ADDED={personId,label:p.name};
-    toast(`${p.name} added${perimeterId?` — ${perimeterLabel(activityId,perimeterId)}`:""}`,"ok");
-    renderTeamScreen();
-    // stay put: refocus the same slot's input, empty, ready for the next search
-    requestAnimationFrame(()=>{
-      const again=document.querySelector(`[data-add-input="${key}"]`);
-      if(again) again.focus();
+  function toPerimStep(p){
+    const dlId=`castdl-${activityId}`;
+    const opts=perimetersOf(activityId).map(x=>`<option value="${x.label.replace(/"/g,"&quot;")}">`).join("");
+    slot.innerHTML=`<div class="cast-add-picked"><div class="exp-av" style="width:22px;height:22px;font-size:10px;background:${p.color}">${p.init}</div>${p.name}<span class="x" data-cancel-pick>✕ change</span></div>
+      <div class="cast-add-step2">
+        <input class="cast-add-perim-input" list="${dlId}" placeholder="Perimeter — pick existing, type a new one, or leave blank" data-add-perim>
+        <datalist id="${dlId}">${opts}</datalist>
+        <button class="cast-add-confirm" type="button" data-add-confirm>Add</button>
+      </div>
+      <div class="cast-add-hint">Leave blank to staff ${CAST_ACT(activityId).label} directly, with no perimeter — that's a valid, ordinary choice, not a skipped step.</div>`;
+    const perimInput=slot.querySelector("[data-add-perim]");
+    slot.querySelector("[data-cancel-pick]").addEventListener("click",toPersonStep);
+    function doConfirm(){
+      const perimeterId=resolvePerimeter(activityId,perimInput.value);
+      const dup=ROSTER.find(r=>r.personId===p.id && r.activityId===activityId && r.perimeterId===perimeterId);
+      if(dup){ toast(`${p.name} is already staffed here — pick a different perimeter, or search someone else`,"warn"); return; }
+      ROSTER.push({personId:p.id,activityId,perimeterId,addedBy:MGR(TEAM_VIEWER).name,addedAt:"Today",count:0});
+      CAST_LAST_ADDED={personId:p.id,label:p.name};
+      toast(`${p.name} added${perimeterId?` — ${perimeterLabel(activityId,perimeterId)}`:" — staffed directly"}`,"ok");
+      renderTeamScreen();
+      // stay put: back to a fresh person search for the same activity, ready for the next one
+      requestAnimationFrame(()=>{ document.querySelector(`[data-add-input="${activityId}"]`)?.focus(); });
+    }
+    slot.querySelector("[data-add-confirm]").addEventListener("click",doConfirm);
+    perimInput.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doConfirm(); } });
+    perimInput.focus();
+  }
+  function bindPersonInput(){
+    const input=slot.querySelector(`[data-add-input="${activityId}"]`);
+    const results=slot.querySelector(`[data-add-results="${activityId}"]`);
+    function draw(q){
+      const ql=(q||"").toLowerCase().trim();
+      matches=ql?DIRECTORY.filter(p=>p.name.toLowerCase().includes(ql)).slice(0,8):[];
+      active=0;
+      if(!ql){ results.classList.remove("open"); results.innerHTML=""; return; }
+      results.innerHTML=matches.length?matches.map((p,i)=>`<div class="cast-add-opt${i===0?" active":""}" data-pick="${p.id}"><div class="exp-av" style="background:${p.color}">${p.init}</div>${p.name}</div>`).join(""):`<div class="cast-add-empty">No match in the directory.</div>`;
+      results.classList.add("open");
+      results.querySelectorAll("[data-pick]").forEach(o=>o.addEventListener("mousedown",e=>{ e.preventDefault(); toPerimStep(personById(o.dataset.pick)); }));
+    }
+    input.addEventListener("input",()=>draw(input.value));
+    input.addEventListener("focus",()=>{ if(input.value) draw(input.value); });
+    input.addEventListener("keydown",e=>{
+      if(!results.classList.contains("open")) return;
+      if(e.key==="ArrowDown"){ e.preventDefault(); active=Math.min(active+1,matches.length-1); results.querySelectorAll(".cast-add-opt").forEach((o,i)=>o.classList.toggle("active",i===active)); }
+      else if(e.key==="ArrowUp"){ e.preventDefault(); active=Math.max(active-1,0); results.querySelectorAll(".cast-add-opt").forEach((o,i)=>o.classList.toggle("active",i===active)); }
+      else if(e.key==="Enter"){ e.preventDefault(); if(matches[active]) toPerimStep(matches[active]); }
+      else if(e.key==="Escape"){ input.value=""; results.classList.remove("open"); results.innerHTML=""; }
     });
+    document.addEventListener("click",e=>{ if(!e.target.closest(`[data-add-act="${activityId}"]`)) results.classList.remove("open"); });
   }
-  input.addEventListener("input",()=>draw(input.value));
-  input.addEventListener("focus",()=>{ if(input.value) draw(input.value); });
-  input.addEventListener("keydown",e=>{
-    if(!results.classList.contains("open")) return;
-    if(e.key==="ArrowDown"){ e.preventDefault(); active=Math.min(active+1,matches.length-1); results.querySelectorAll(".cast-add-opt").forEach((o,i)=>o.classList.toggle("active",i===active)); }
-    else if(e.key==="ArrowUp"){ e.preventDefault(); active=Math.max(active-1,0); results.querySelectorAll(".cast-add-opt").forEach((o,i)=>o.classList.toggle("active",i===active)); }
-    else if(e.key==="Enter"){ e.preventDefault(); if(matches[active]) confirmAdd(matches[active].id); }
-    else if(e.key==="Escape"){ input.value=""; results.classList.remove("open"); results.innerHTML=""; }
-  });
-  document.addEventListener("click",e=>{ if(!e.target.closest(`[data-add-key="${key}"]`)) { results.classList.remove("open"); } },{once:false});
+  bindPersonInput();
 }
 
-/* ---------- one perimeter (or the direct-activity "no perimeter" slot) ---------- */
-function castPerimeterHTML(a,perim,editable){
+/* ---------- one perimeter group (display only — adding happens once per
+   activity via castAddFlowHTML above, not per perimeter) ---------- */
+function castPerimeterHTML(a,perim,label){
   const pid=perim?perim.id:null;
   const rows=rosterFor(a.id,pid).filter(r=>matchesRosterSearch(r.personId));
   const isUnstaffed=rosterFor(a.id,pid).length===0;
   if(CAST_UNSTAFFED_ONLY && !isUnstaffed) return "";
-  const label=perim?perim.label:"Staffed directly (no perimeter)";
   return `<div class="cast-perim${isUnstaffed?" is-unstaffed":""}">
     <div class="cast-perim-head">
       <span class="cast-perim-title">${label}</span>
       ${isUnstaffed?`<span class="cast-perim-flag">⚠ Unstaffed</span>`:""}
     </div>
     <div class="cast-perim-body">
-      ${rows.length?rows.map(r=>castPersonRowHTML(r,editable)).join(""):`<div class="cast-empty-note">Nobody staffed here yet.</div>`}
-      ${editable?castAddRowHTML(a.id,pid):""}
+      ${rows.length?rows.map(r=>castPersonRowHTML(r,true)).join(""):`<div class="cast-empty-note">Nobody staffed here yet.</div>`}
     </div>
   </div>`;
 }
@@ -1146,18 +1205,22 @@ function castGroupHTML(a,viewerIsAdmin){
   const mgr=a.managerId?MGR(a.managerId):null;
   const editable=!viewerIsAdmin && a.managerId===TEAM_VIEWER;
   const perims=perimetersOf(a.id);
+  const directRows=rosterFor(a.id,null);
   const cov=a.managerId?activityCoverage(a):{kind:"noperm",staffed:0,total:0};
   const badgeCls=!a.managerId?"noperm":(cov.kind==="staffed"?"staffed":(cov.kind==="unstaffed"?"unstaffed":"partial"));
   const badgeTxt=!a.managerId?"No manager cast":(cov.kind==="staffed"?"Fully staffed":(cov.kind==="unstaffed"?"Nothing staffed":`${cov.staffed}/${cov.total} staffed`));
   const collapsed=!castExpanded.has(a.id);
+  // show every known perimeter, plus a "staffed directly" group whenever
+  // there are no perimeters yet OR someone is already staffed with none
+  const groups=[...perims.map(p=>castPerimeterHTML(a,p,p.label))];
+  if(!perims.length || directRows.length) groups.push(castPerimeterHTML(a,null,"Staffed directly (no perimeter)"));
   let bodyInner;
   if(!a.managerId){
     bodyInner=`<div class="cast-noperm">This activity hasn't been cast to a manager yet — nobody can staff it until it is.<br><b>Assign an activity manager in the project wizard or from here once that flow is wired.</b></div>`;
   } else if(!editable && !viewerIsAdmin){
-    bodyInner=`<div class="cast-readonly-note">🔒 Read-only — ${mgr.name} manages this activity, not you.</div>`
-      + (perims.length?perims.map(p=>castPerimeterHTML(a,p,false)).join(""):castPerimeterHTML(a,null,false));
+    bodyInner=`<div class="cast-readonly-note">🔒 Read-only — ${mgr.name} manages this activity, not you.</div>` + groups.join("");
   } else {
-    bodyInner=perims.length?perims.map(p=>castPerimeterHTML(a,p,editable)).join(""):castPerimeterHTML(a,null,editable);
+    bodyInner=groups.join("") + (editable?castAddFlowHTML(a.id):"");
   }
   return `<div class="cast-group${collapsed?" collapsed":""}${cov.kind==="unstaffed"?" is-unstaffed":""}" data-act="${a.id}">
     <div class="cast-group-head" data-toggle-act="${a.id}">
@@ -1198,10 +1261,7 @@ function renderTeamScreen(){
     toast(`${p.name} removed`,"ok");
     renderTeamScreen();
   }));
-  body.querySelectorAll("[data-add-key]").forEach(row=>{
-    const [activityId,perimRaw]=row.dataset.addKey.split("__");
-    bindCastAddRow(body,activityId,perimRaw==="none"?null:perimRaw);
-  });
+  body.querySelectorAll("[data-add-act]").forEach(flow=>bindCastAddFlow(body,flow.dataset.addAct));
 }
 initTeamViewer();
 document.getElementById("cast-roster-search").addEventListener("input",e=>{ CAST_ROSTER_SEARCH=e.target.value; renderTeamScreen(); });
