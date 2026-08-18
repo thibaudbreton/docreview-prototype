@@ -880,8 +880,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .branch-sections-lbl{display:block;margin-bottom:var(--space-3);font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
 .branch-sections-lbl span{text-transform:none;font-weight:500;letter-spacing:0;color:var(--text-3)}
 .branch-sec{border:1px solid var(--line-2);border-radius:var(--radius-md);margin-bottom:var(--space-2);overflow:hidden}
-.branch-sec-head{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);background:var(--panel-2)}
-.branch-sec-mgr{flex:1;font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.branch-sec-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-2) var(--space-3);background:var(--panel-2)}
 .set-sep{height:1px;background:var(--line);margin:6px 0 18px}
 /* B1 — allocation-change proposal: manager trigger + project-manager review */
 .propose-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:9px}
@@ -906,9 +905,17 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .branch-proposal-actions .approve:hover{background:var(--ok);color:#fff}
 .branch-proposal-actions .reject{color:var(--warn);border:1px solid rgba(242,96,79,.5)}
 .branch-proposal-actions .reject:hover{background:var(--warn);color:#fff}
-.branch-sec-expert{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-top:1px solid var(--line-2)}
-.branch-sec-expert label{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);flex-shrink:0}
-.branch-sec-expert select{flex:1}
+/* TH-followup2 — was a single line cramming activity tag + manager select +
+   status pill together, with the select truncated to whatever room was
+   left. One field per row, full width, matches how ABS/PBS/OBS already
+   read in this same panel. */
+.branch-sec-body{border-top:1px solid var(--line-2);padding:var(--space-3)}
+.branch-sec-field{margin-bottom:var(--space-3)}
+.branch-sec-field:last-child{margin-bottom:0}
+.branch-sec-field label{display:block;font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+.branch-sec-select{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base);cursor:pointer;transition:border-color .15s}
+.branch-sec-select:focus{border-color:var(--accent)}
+.branch-sec-select.empty{color:var(--text-3)}
 /* manager block (option B) */
 .mgr-block{margin-bottom:16px}
 .mgr-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:9px}
@@ -3393,7 +3400,6 @@ function renderSettings(){
         ${b.branches.map((branch,bidx)=>`<div class="branch-sec">
             <div class="branch-sec-head">
               <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}" title="${branch.proposal||branch.reassignRequest?"Proposed change — pending your review":""}">${TY(branch.typology).code}</span>
-              <select class="cell-select branch-sec-mgr${branch.manager?"":" empty"}" data-panelbranchmgr="${bidx}">${['<option value="">— Unassigned —</option>'].concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${branch.manager===m.id?"selected":""}>${m.name} — ${m.role}</option>`)).join("")}</select>
               <span class="status-pill branch-status-${branch.branchStatus}">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>
             </div>
             ${branch.proposal?`<div class="branch-proposal">
@@ -3415,9 +3421,15 @@ function renderSettings(){
                 <button class="reject" data-reject-reassign="${bidx}">✕ Reject</button>
               </div>
             </div>`:""}
-            <div class="branch-sec-expert">
-              <label>Expert</label>
-              <select class="cell-select branch-sec-exp${branch.expert?"":" empty"}" data-panelbranchexp="${bidx}">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${branch.expert===a.id?"selected":""}>${a.label}</option>`)).join("")}</select>
+            <div class="branch-sec-body">
+              <div class="branch-sec-field">
+                <label>Manager</label>
+                <select class="branch-sec-select${branch.manager?"":" empty"}" data-panelbranchmgr="${bidx}">${['<option value="">— Unassigned —</option>'].concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${branch.manager===m.id?"selected":""}>${m.name} — ${m.role}</option>`)).join("")}</select>
+              </div>
+              <div class="branch-sec-field">
+                <label>Expert</label>
+                <select class="branch-sec-select${branch.expert?"":" empty"}" data-panelbranchexp="${bidx}">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${branch.expert===a.id?"selected":""}>${a.label}</option>`)).join("")}</select>
+              </div>
             </div>
           </div>`).join("")}
       </div>`:""}
