@@ -1020,14 +1020,21 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .mgr-chip .exp-avatar{width:22px;height:22px;font-size:var(--text-xs)}
 .mgr-none{font-size:var(--text-sm);color:var(--warn);font-weight:600}
 table.review td .rowsel,#sel-all{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
-/* bulk selection bar */
+/* bulk selection bar — grouped by intent (Assign / Classify / Status) instead
+   of one flat row of buttons, each group carrying its own small caption so
+   the verb ("Assign", "Classify"...) isn't repeated on every button inside
+   it (was "Assign manager", "Assign OBS"... now just "Manager", "OBS"
+   under one "Assign" label). */
 .sel-bar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(24px);z-index:55;display:none;align-items:center;gap:var(--space-4);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);box-shadow:0 16px 48px rgba(0,0,0,.6);opacity:0;transition:opacity .25s ease;max-width:calc(100vw - 48px);flex-wrap:wrap;justify-content:center}
 .sel-bar.on{display:flex;opacity:1}
+.sel-meta{display:flex;align-items:center;gap:var(--space-3)}
 .sel-n{font-size:var(--text-base);color:var(--text-2)}
 .sel-n b{color:var(--text);font-variant-numeric:tabular-nums}
 .sel-link{font-size:var(--text-sm);color:var(--accent)}
 .sel-link:hover{text-decoration:underline}
-.sel-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);padding:var(--space-1) 6px;border-left:1px solid var(--line-2);border-right:1px solid var(--line-2)}
+.sel-group{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:0 var(--space-3);border-left:1px solid var(--line-2)}
+.sel-group-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
+.sel-group-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2)}
 .sel-drop{position:relative}
 .sel-btn{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);font-size:var(--text-sm);font-weight:500;color:var(--text-2);transition:all .13s}
 .sel-btn:hover{border-color:var(--accent);color:var(--text)}
@@ -1044,7 +1051,7 @@ table.review td .rowsel,#sel-all{width:15px;height:15px;accent-color:var(--accen
 .sel-mopt:hover{background:var(--panel-3);color:var(--text)}
 .sel-mopt .exp-avatar{width:22px;height:22px;font-size:var(--text-xs)}
 .sel-mopt .code{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-3);width:30px}
-.sel-clear{font-size:var(--text-sm);color:var(--text-3)}
+.sel-clear{font-size:var(--text-sm);color:var(--text-3);padding-left:var(--space-3);border-left:1px solid var(--line-2)}
 .sel-clear:hover{color:var(--text)}
 /* view-as — demo-only manager preview, collapsed to a small icon like the other header icon-buttons */
 .viewas{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border-radius:var(--radius-md);border:1px solid transparent;background:none;color:var(--text-2);cursor:pointer;transition:all .15s;position:relative}
@@ -1393,34 +1400,53 @@ body.restricted .restrict-banner{display:flex}
 
 <!-- Bulk action bar -->
 <div id="sel-bar" class="sel-bar">
-  <span class="sel-n"><b id="sel-count">0</b> selected</span>
-  <button class="sel-link" id="sel-filter">Select all <span id="sel-fcount"></span> in filter</button>
-  <button class="sel-btn" id="sel-show-only" title="Narrow the table to just the selected rows">👁 Show only selected</button>
-  <div class="sel-actions">
-    <div class="sel-drop">
-      <button class="sel-btn" id="sel-mgr-btn">Assign manager ▾</button>
-      <div class="sel-menu" id="sel-mgr-menu"></div>
-    </div>
-    <div class="sel-drop">
-      <button class="sel-btn" id="sel-exp-btn">Assign OBS ▾</button>
-      <div class="sel-menu" id="sel-exp-menu"></div>
-    </div>
-    <div class="sel-drop">
-      <button class="sel-btn" id="sel-typo-btn">Set activity ▾</button>
-      <div class="sel-menu" id="sel-typo-menu"></div>
-    </div>
-    <div class="sel-drop">
-      <button class="sel-btn" id="sel-type-btn">Set PBS ▾</button>
-      <div class="sel-menu" id="sel-type-menu"></div>
-    </div>
-    <div class="sel-class-grp">
-      <button data-selcls="tech" id="sel-class-tech">Tech</button>
-      <button data-selcls="nontech" id="sel-class-nontech">Non-tech</button>
-    </div>
-    <button class="sel-btn warn" id="sel-toreview">Mark to review</button>
-    <button class="sel-btn warn" id="sel-reclass-info" title="Reclassify the selected rows as Information — they disappear from this table, which lists requirements only">Reclassify → Info</button>
-    <button class="sel-btn ok" id="sel-validate">Validate</button>
+  <div class="sel-meta">
+    <span class="sel-n"><b id="sel-count">0</b> selected</span>
+    <button class="sel-link" id="sel-filter">Select all <span id="sel-fcount"></span> in filter</button>
+    <button class="sel-btn" id="sel-show-only" title="Narrow the table to just the selected rows">👁 Show only selected</button>
   </div>
+
+  <div class="sel-group">
+    <div class="sel-group-lbl">Assign</div>
+    <div class="sel-group-row">
+      <div class="sel-drop">
+        <button class="sel-btn" id="sel-mgr-btn">Manager ▾</button>
+        <div class="sel-menu" id="sel-mgr-menu"></div>
+      </div>
+      <div class="sel-drop">
+        <button class="sel-btn" id="sel-exp-btn">OBS ▾</button>
+        <div class="sel-menu" id="sel-exp-menu"></div>
+      </div>
+      <div class="sel-drop">
+        <button class="sel-btn" id="sel-typo-btn">Activity ▾</button>
+        <div class="sel-menu" id="sel-typo-menu"></div>
+      </div>
+      <div class="sel-drop">
+        <button class="sel-btn" id="sel-type-btn">PBS ▾</button>
+        <div class="sel-menu" id="sel-type-menu"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sel-group">
+    <div class="sel-group-lbl">Classify</div>
+    <div class="sel-group-row">
+      <div class="sel-class-grp">
+        <button data-selcls="tech" id="sel-class-tech">Tech</button>
+        <button data-selcls="nontech" id="sel-class-nontech">Non-tech</button>
+      </div>
+      <button class="sel-btn warn" id="sel-reclass-info" title="Reclassify the selected rows as Information — they disappear from this table, which lists requirements only">Reclassify → Info</button>
+    </div>
+  </div>
+
+  <div class="sel-group">
+    <div class="sel-group-lbl">Status</div>
+    <div class="sel-group-row">
+      <button class="sel-btn warn" id="sel-toreview">Mark to review</button>
+      <button class="sel-btn ok" id="sel-validate">Validate</button>
+    </div>
+  </div>
+
   <button class="sel-clear" id="sel-clear">Clear</button>
 </div>
 
