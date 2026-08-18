@@ -202,11 +202,28 @@ html[data-theme="light"] .logo-mark-light{display:block}
    (this project has no bundler — CSS is duplicated per file by convention). */
 :root{ --rrow-h:44px; --frgrid-cols:32px 84px minmax(280px,1.6fr) 90px 140px 110px 190px 110px 70px; }
 .rgrid{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
-.rgrid-head{display:grid;grid-template-columns:var(--frgrid-cols);align-self:flex-start;min-width:100%;background:var(--panel-2);border-bottom:1px solid var(--line);flex-shrink:0;overflow-x:hidden}
-.rgrid-head .rcell{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);padding:0 var(--space-3);height:38px;display:flex;align-items:center;border-right:1px solid var(--line)}
+/* TH2 — align-self:flex-start (mirrors the original intent in
+   revue-documentaire.html: let the header's box grow to fit its columns so
+   its background wouldn't stop short once scrolled) also left it exactly as
+   wide as its own content — nothing left to scroll, so #frgrid-head's
+   scroll-sync JS (head.scrollLeft = body.scrollLeft, below) was setting
+   scrollLeft on a box that was never actually scrollable. Back to the flex
+   default stretch (capped at the visible width, real internal overflow,
+   overflow-x:auto so it can be driven programmatically) restores real
+   scrolling; the background moved from this box onto each .rcell below so
+   it still paints seamlessly across columns scrolled off-screen. */
+.rgrid-head{display:grid;grid-template-columns:var(--frgrid-cols);min-width:100%;border-bottom:1px solid var(--line);flex-shrink:0;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.rgrid-head::-webkit-scrollbar{display:none}
+.rgrid-head .rcell{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);padding:0 var(--space-3);height:38px;display:flex;align-items:center;background:var(--panel-2);border-right:1px solid var(--line)}
 .rgrid-head .rcell:last-child{border-right:none}
 .rgrid-head .c-sel{padding:0}
 .rgrid-body{flex:1;overflow-y:auto;position:relative;min-height:0}
+/* TH3 — this rule was never ported over when revue-documentaire.html got it
+   (see that file's own comment on the same selector): without it #frgrid-window
+   is a plain block box capped at the body's visible clientWidth, so the last
+   column — and the row backgrounds behind it — never become fully reachable
+   by scrolling. min-width:100% is just the floor for narrower content. */
+.rgrid-window{position:absolute;top:0;left:0;min-width:100%}
 .rrow{display:grid;grid-template-columns:var(--frgrid-cols);height:var(--rrow-h);border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;box-sizing:border-box}
 .rrow:hover{background:var(--panel-2)}
 .rrow.bulk-sel{background:var(--panel-3)}
@@ -559,9 +576,12 @@ textarea.resp-in:focus{border-color:var(--accent)}
       </defs>
       </svg>SRM</a></div>
     <div class="crumb"><span class="sep">/</span><span class="project">STB-2026 · Energy Monitoring System</span></div>
+    <!-- TH6 — Versions & Q&A used to sit here as a co-equal tab, reading as a
+         sub-panel of Follow-up rather than its own space. It's reached from
+         Follow-up via the button in .hdr-actions below instead now; this nav
+         only carries Follow-up itself. -->
     <nav class="screen-nav" id="phase-nav">
       <button class="sn" data-screen="2" id="tab-followup">Follow-up</button>
-      <button class="sn" data-screen="3" id="tab-versions">Versions &amp; Q&amp;A</button>
     </nav>
     <div class="mode-switch" id="s2-views">
       <button data-view="table" class="active">Table</button>
@@ -570,6 +590,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
     </div>
     <div class="hdr-actions">
       <a class="btn-ghost" href="javascript:parent.route('dashboard')" title="Back to dashboard">← Dashboard</a>
+      <a class="btn-ghost" href="javascript:parent.route('versions')" title="Versions &amp; Q&amp;A has moved to its own screen">Versions &amp; Q&amp;A →</a>
       <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span></button>
       <button class="btn-primary" id="export2-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Export</button>
       <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
@@ -675,6 +696,10 @@ textarea.resp-in:focus{border-color:var(--accent)}
   <!-- ============ SCREEN 3 ============ -->
   <div class="hub" id="screen3">
     <div class="hub-inner">
+      <!-- TH6 — this used to rely on the (now-removed) "Versions & Q&A" tab
+           itself to say where you were; needs its own heading now that it's
+           reached via a button from Follow-up rather than a sibling tab. -->
+      <div class="view-head" style="margin-bottom:22px"><h2>Versions &amp; Q&amp;A</h2><span class="sub">Document versions, change history, and the issuer's official Q&amp;A responses</span></div>
       <div class="hub-tabs">
         <button data-htab="versions" class="active">Document versions</button>
         <button data-htab="issuer">Issuer responses <span class="tcount" id="iss-count">1</span></button>
@@ -694,7 +719,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
         <div class="iss-layout">
           <div>
             <div class="qa-toolbar" style="margin-bottom:12px">
-              <span style="font-size:var(--text-sm);color:var(--text-3)">Q&amp;A batch sent to the issuer — record official answers below.</span>
+              <span style="font-size:var(--text-sm);color:var(--text-3)">Q&amp;A batch exported for the issuer — record official answers below.</span>
               <button class="btn-ghost" id="bulk-import" style="margin-left:auto">⇪ Import response document</button>
             </div>
             <div id="iss-list"></div>
@@ -1134,7 +1159,7 @@ function renderNeedsYou(){
   if(!total){ el.innerHTML=`<div class="ny-empty">✓ Nothing needs you right now — every open item is with an expert or the issuer.</div>`; return; }
   el.innerHTML=`<div class="ny-head">⚡ What needs you now</div><div class="ny-row">
     ${reassign.length?`<button class="ny-pill ny-warn" id="ny-reassign">${reassign.length} reassignment${reassign.length>1?"s":""} to handle</button>`:""}
-    ${toSend.length?`<button class="ny-pill ny-accent" id="ny-tosend">${toSend.length} question${toSend.length>1?"s":""} ready to send</button>`:""}
+    ${toSend.length?`<button class="ny-pill ny-accent" id="ny-tosend">${toSend.length} question${toSend.length>1?"s":""} ready to export</button>`:""}
     ${justUnblocked.length?`<button class="ny-pill ny-ok" id="ny-unblocked">${justUnblocked.length} just unblocked by the issuer</button>`:""}
   </div>`;
   el.querySelector("#ny-reassign")?.addEventListener("click",()=>{state.filter="reassign";state.fExpert="";state.fTypo="";state.needsMe=false;refreshAll();});
@@ -1337,16 +1362,20 @@ function renderDoc2(){
 /* =====================================================
    Q&A REGISTER (screen 2)
 ===================================================== */
-function qaGroups(){ return [["draft","Draft"],["internal","Internal review"],["sent","Sent to issuer"],["answered","Answered by issuer"]]; }
+function qaGroups(){ return [["draft","Draft"],["internal","Internal review"],["sent","Exported for issuer"],["answered","Answered by issuer"]]; }
 function renderQA(){
   const v=document.getElementById("view-qa");
   const dupPair=QA.filter(q=>q.dup&&QA.find(x=>x.id===q.dup));
   const toSend=questionsToSend(), sent=questionsSent();
+  // TH5 — this used to be a "Send" action that claimed to transmit the batch
+  // straight to the issuer. The tool has no channel to the issuer — it can
+  // only produce something a human then forwards themselves — so this is an
+  // export (a structured file), not a send, and says so.
   let html=`<div class="view-head"><h2>Q&amp;A register</h2><span class="sub">${QA.length} questions · one question blocks exactly one assignment</span>
-    <button class="btn-primary" style="margin-left:auto" id="send-batch">Send batch to issuer${toSend.length?` (${toSend.length})`:""}</button></div>`;
-  // T7 — the manager's batch: everything raised by experts and not yet with the issuer
+    <button class="btn-primary" style="margin-left:auto" id="send-batch">⬇ Export batch for issuer${toSend.length?` (${toSend.length})`:""}</button></div>`;
+  // T7 — the manager's batch: everything raised by experts and not yet exported for the issuer
   html+=`<div class="qa-batch">
-    <div class="qa-batch-h">📤 Questions to send <span class="qa-batch-n">${toSend.length}</span></div>
+    <div class="qa-batch-h">⬇ Questions to export <span class="qa-batch-n">${toSend.length}</span></div>
     ${toSend.length
       ? `<div class="qa-batch-list">${toSend.map(q=>{
           const brs=branchesOfQ(q), e=q.expert?expOf(q.expert):null;
@@ -1407,9 +1436,9 @@ function renderQA(){
   v.querySelector("#merge-no")?.addEventListener("click",()=>{QA.forEach(q=>delete q.dup);toast("Kept as separate questions","ok");refreshAll();});
   v.querySelector("#send-batch")?.addEventListener("click",()=>{
     const batch=questionsToSend();
-    if(!batch.length){toast("Nothing waiting — every raised question is already with the issuer","warn");return;}
+    if(!batch.length){toast("Nothing waiting — every raised question is already exported","warn");return;}
     batch.forEach(q=>{q.st="sent";q.sentDate="Today";});
-    toast(`Batch of ${batch.length} question${batch.length>1?"s":""} sent to the issuer`,"ok");refreshAll();
+    toast(`Exported ${batch.length} question${batch.length>1?"s":""} as CSV — forward it to the issuer yourself`,"ok");refreshAll();
   });
   /* T8 — one dossier in, answers matched onto the blocked allocated activities.
      Matching is SIMULATED: every question already with the issuer is treated as answered.

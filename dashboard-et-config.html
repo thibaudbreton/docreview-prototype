@@ -78,6 +78,14 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .screen-nav .sn:hover{color:var(--text)}
 .screen-nav .sn.on{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
 .hdr-actions{display:flex;align-items:center;gap:var(--space-2);margin-left:auto}
+/* TH1 — demo-only entry point, same muted "moderator control" formula as
+   accueil.html's .reset-btn: visibly not a real product affordance. An
+   expert reaches their own space via an email/notification link in real
+   life, never through the manager's dashboard — this exists only so a
+   moderated walkthrough can still jump there on cue. */
+.demo-link{font-size:var(--text-xs);color:var(--text-3);padding:var(--space-1) var(--space-3);border-radius:var(--radius-md);border:1px dashed var(--line-2);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.demo-link:hover{border-color:var(--human);color:var(--human)}
+.demo-link b{font-weight:700;letter-spacing:.3px}
 .icon-btn{position:relative;width:32px;height:32px;border-radius:var(--radius-md);display:grid;place-items:center;color:var(--text-2);transition:all .15s}
 .icon-btn:hover{background:var(--panel-3);color:var(--text)}
 .icon-btn.on{background:var(--accent-soft);color:var(--accent)}
@@ -419,6 +427,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
     <div class="crumb"><a class="crumb-home" href="javascript:parent.route('home')">My tenders</a><span class="sep">/</span><span class="project" id="crumb-project">STB-2026 · Energy Monitoring System</span></div>
     <div style="margin-left:auto"></div>
     <div class="hdr-actions">
+      <a class="demo-link" id="demo-expert-link" href="javascript:void(0)" title="An expert normally arrives here from their own email/notification link, never through this dashboard — this exists only for a moderated walkthrough."><b>DEMO</b> Expert Space →</a>
       <a class="btn-ghost" id="new-proj" href="javascript:parent.route('new')">＋ New project</a>
       <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span></button>
       <button class="icon-btn" id="team-btn" title="Team management"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
@@ -499,19 +508,11 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <span class="ph-open-btn">Open →</span>
       </div>
 
-      <!-- Expert Space — a persona's own screen (verdict/REX/Q&A/reassignment),
-           not a pipeline phase, so it sits alongside Team casting rather than
-           in the phase-rail above. -->
-      <div class="phase" id="ph-expert" style="margin-bottom:26px;cursor:pointer">
-        <div class="ph-num transversal">👤</div>
-        <div class="ph-info">
-          <div class="ph-name">Expert Space</div>
-          <div class="ph-stat"><span class="big">4</span><span>requirements awaiting a verdict</span></div>
-          <div class="ph-sub">Preview what an assigned expert sees — verdict, REX, Q&amp;A and reassignment</div>
-        </div>
-        <span class="ph-badge current">Open</span>
-        <span class="ph-open-btn">Open →</span>
-      </div>
+      <!-- TH1 — Expert Space no longer gets a phase-rail card: an expert would
+           never reach their own view through the manager's dashboard in real
+           life (they arrive from an email/notification link). The entry
+           point for a moderated walkthrough is now the small "DEMO" link in
+           the header instead — see #demo-expert-link. -->
 
       <!-- main: attention (primary) + health (secondary) -->
       <div class="dash-main">
@@ -860,7 +861,7 @@ document.querySelectorAll(".att[data-go]").forEach(a=>a.addEventListener("click"
 /* Phase cards routing through shell */
 document.getElementById("ph-review").addEventListener("click",e=>{e.preventDefault();goRoute("revue-documentaire.html");});
 document.getElementById("ph-versions").addEventListener("click",e=>{e.preventDefault();goRoute("suivi-experts-et-versions.html#versions");});
-document.getElementById("ph-expert").addEventListener("click",()=>goRoute("expert-space.html"));
+document.getElementById("demo-expert-link").addEventListener("click",()=>goRoute("expert-space.html"));
 document.getElementById("new-proj").addEventListener("click",e=>{e.preventDefault();goRoute("creation-projet.html");});
 
 /* Config nav */
