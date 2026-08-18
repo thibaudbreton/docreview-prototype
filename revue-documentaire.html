@@ -1465,7 +1465,14 @@ function splitSectionNumTitle(section){
    the demo SECTIONS. No per-row type/domain/manager/alloc/status/confidence
    is invented here — a requirement block comes through with none of those
    fields set, so computeCharStatus()/computeAllocStatus() below (unmodified)
-   read it as Incomplete, same as any other block missing that data. */
+   read it as Incomplete, same as any other block missing that data.
+   `perim` is the one exception: the DOORS capture's "Responsible Entity"
+   column already carries real activity codes (see import_capture_doors.py),
+   so a requirement arrives pre-allocated rather than blank — that's captured
+   data, not an invented characterisation. Older .xlsx-schema captures
+   (import_capture.py) don't have row.perim; it's just absent there, same
+   net effect as today. `level` similarly comes through only when the
+   capture's own Num Heading depth says so — never defaulted here. */
 function buildDataFromCapture(){
   const data = window.SRM_DATA;
   if(!data || !Array.isArray(data.rows) || !data.rows.length) return null;
@@ -1482,11 +1489,11 @@ function buildDataFromCapture(){
     if(row.category==="heading"){
       // the heading that opens a new section is already represented by this
       // section's own num/title — only push heading blocks for sub-headings
-      if(!isNewSection) cur.blocks.push({id:row.id, kind:"heading", text:row.text});
+      if(!isNewSection) cur.blocks.push({id:row.id, kind:"heading", level:row.level||2, text:row.text});
     } else if(row.category==="information"){
       cur.blocks.push({id:row.id, kind:"text", text:row.text});
     } else {
-      cur.blocks.push({id:row.id, kind:"requirement", comments:0, text:row.text});
+      cur.blocks.push({id:row.id, kind:"requirement", comments:0, text:row.text, perim:row.perim&&row.perim.length?row.perim:[]});
     }
   });
   sections.forEach(s=>delete s._key);
@@ -1666,25 +1673,38 @@ function isFreshProject(){
 })();
 
 /* =====================================================
-   TYPOLOGY — extended vocabulary + explicit Turnkey
+   TYPOLOGY — the real "Responsible Entity" codes found in the Riyadh L7
+   capture (Vol.2.2 Project Overview + Vol.2.3 WPS 1.06/4.01), replacing the
+   earlier invented mockup list. label intentionally equals code: the source
+   capture never spells these acronyms out, and guessing full names for
+   unfamiliar domain codes (what is "CJV" versus "DEQ"?) would be inventing
+   data, not importing it. If a real legend for these codes turns up, swap
+   the labels in — do not guess in the meantime.
 ===================================================== */
 const TYPO=[
- {id:"tky",code:"TKY",label:"Turnkey"},
- {id:"sig",code:"SIG",label:"Signalling"},
- {id:"mln",code:"MLN",label:"Mainline"},
- {id:"urb",code:"URB",label:"Urban"},
- {id:"rst",code:"RST",label:"Rolling Stock"},
- {id:"inf",code:"INF",label:"Infrastructure"},
- {id:"pwr",code:"PWR",label:"Power Supply"},
- {id:"tlc",code:"TLC",label:"Telecom"},
- {id:"cvl",code:"CVL",label:"Civil Works"},
- {id:"dpt",code:"DPT",label:"Depot & Workshop"},
- {id:"sys",code:"SYS",label:"Systems Integration"},
- {id:"srv",code:"SRV",label:"Services & Maintenance"},
- {id:"oth",code:"OTH",label:"Other"},
+ {id:"afc",code:"AFC",label:"AFC"},
+ {id:"cjv",code:"CJV",label:"CJV"},
+ {id:"com",code:"COM",label:"COM"},
+ {id:"cyb",code:"CYB",label:"CYB"},
+ {id:"deq",code:"DEQ",label:"DEQ"},
+ {id:"ils",code:"ILS",label:"ILS"},
+ {id:"ocs",code:"OCS",label:"OCS"},
+ {id:"pos",code:"POS",label:"POS"},
+ {id:"psd",code:"PSD",label:"PSD"},
+ {id:"rams",code:"RAMS",label:"RAMS"},
+ {id:"rst",code:"RST",label:"RST"},
+ {id:"scada",code:"SCADA",label:"SCADA"},
+ {id:"sen",code:"SEN",label:"SEN"},
+ {id:"sig",code:"SIG",label:"SIG"},
+ {id:"spm",code:"SPM",label:"SPM"},
+ {id:"trk",code:"TRK",label:"TRK"},
 ];
 const TY=id=>TYPO.find(t=>t.id===id)||{code:id.toUpperCase(),label:id};
-const GROUP_COLOR={tky:"#7d6b8a",sig:"#4a7c8c",mln:"#8a7d5c",none:"#5f6675"};
+// Cycled the same way creation-projet.html cycles expert-avatar colors
+// (COLORS[i % COLORS.length]) — 16 real codes, 6 base colors, some repeats.
+const GROUP_PALETTE=["#4a7c8c","#8a7d5c","#7d6b8a","#5c8a6e","#8c5c4a","#5c6e8a"];
+const GROUP_COLOR={none:"#5f6675"};
+TYPO.forEach((t,i)=>{ GROUP_COLOR[t.id]=GROUP_PALETTE[i%GROUP_PALETTE.length]; });
 function isTurnkey(b){ return (b.perim||[]).includes("tky"); }
 function perimHTML(b){
   const per=b.perim||[];
@@ -1766,7 +1786,11 @@ function applyCaptureDemoStatuses(){
     const bucket = h % 100;
     x.tech = (h%3===0) ? "nontech" : "tech";
     x.techAI = false; x.perimAI = false;
-    x.perim = [TYPOS[h % TYPOS.length]];
+    // Real capture data (import_capture_doors.py) already seeds x.perim from
+    // the source's own "Responsible Entity" column — never overwrite that
+    // with the invented TYPOS spread below. Only fabricate perim when the
+    // capture genuinely had no allocation data (the older .xlsx schema).
+    if(!x.perim || !x.perim.length) x.perim = [TYPOS[h % TYPOS.length]];
     x.domain = DOMAINS[h % DOMAINS.length];
     x.type = PBS_TYPES[h % PBS_TYPES.length];
     x.manager = mgrList[h % mgrList.length].id;
