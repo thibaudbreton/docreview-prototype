@@ -235,7 +235,11 @@ body.mode-compare .nav-section-head .sec-changes{display:inline-flex}
 }
 .nav-item:hover{background:var(--panel-2);color:var(--text)}
 .nav-item.active{background:var(--accent-soft);color:var(--text);border-left-color:var(--accent)}
-.nav-item .nid{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3);flex-shrink:0;width:56px}
+/* was a fixed 56px column — real capture IDs vary a lot in length, so a rigid
+   width either wasted space on short ones or overflowed on long ones. Sizes
+   to its own content now; the row's existing gap keeps the label a
+   consistent distance away regardless of how long the ID is. */
+.nav-item .nid{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3);flex-shrink:0;white-space:nowrap}
 .nav-item .nlabel{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nav-item .nbadges{display:flex;gap:var(--space-1);align-items:center;flex-shrink:0}
 .nbadge{width:7px;height:7px;border-radius:50%}
@@ -985,7 +989,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .nav-h1 .nh-num{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3);width:14px}
 .nav-h1 .nh-t{font-size:var(--text-base);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nav-h1 .sec-changes{display:flex;gap:var(--space-1);align-items:center;font-size:var(--text-xs)}
-.nav-h1 .nh-c{font-size:var(--text-xs);color:var(--text-3);background:var(--panel-3);border-radius:var(--radius-md);padding:1px 6px;font-variant-numeric:tabular-nums}
+.nav-h1 .nh-c,.nav-doc .nh-c{font-size:var(--text-xs);color:var(--text-3);background:var(--panel-3);border-radius:var(--radius-md);padding:1px 6px;font-variant-numeric:tabular-nums;margin-left:auto;flex-shrink:0}
 .nav-h2,.nav-h3{padding:var(--space-1) var(--space-2);color:var(--text-2)}
 .nav-h2{margin-left:var(--space-5);font-size:var(--text-sm);font-weight:600}
 .nav-h3{margin-left:var(--space-8);font-size:var(--text-xs);font-weight:500;color:var(--text-3)}
@@ -2010,6 +2014,12 @@ const state = {
   expandedBranches:new Set(),
   redactMode:(function(){try{return (window.parent!==window&&window.parent.getRedactMode)?window.parent.getRedactMode():"redact";}catch(e){return "redact";}})(),
 };
+// TH-followup3 — nav starts fully collapsed (state.selected is still null at
+// this point, so nothing needs to stay open yet); selectBlock() re-opens the
+// path to whatever gets picked next. Real capture data runs to dozens of
+// sections across a handful of documents — a wide-open tree by default was
+// unusable at that scale.
+SECTIONS.forEach(s=>{ state.navCollapsed.add(s.id); state.docNavCollapsed.add(s.docId); });
 const changesOrder = ["EXG-003","EXG-007","GHOST-1"];
 const allBlocks = () => SECTIONS.flatMap(s=>s.blocks.flatMap(b=>b.kind==="table"?b.rows.map(r=>({...r,section:s})):[{...b,section:s}]));
 const reqs = () => BIG.on ? BIG.rows : allBlocks().filter(b=>b.kind==="requirement");
@@ -2186,6 +2196,20 @@ function renderNav(){
   const list = document.getElementById("nav-list");
   list.innerHTML = "";
   let visible = 0, total = 0;
+  // TH-followup3 — an active search/filter always shows its full results,
+  // regardless of what's collapsed; collapse is only for the calm/browse
+  // state. Same "is a filter active" signal the count line at the bottom
+  // already uses.
+  const searching = !!(state.filter||state.search);
+
+  // pre-pass: total requirements per document, so a collapsed doc head still
+  // says how much is inside it instead of just a bare name
+  const docReqCounts = {};
+  SECTIONS.forEach(sec=>{
+    const flat = sec.blocks.flatMap(b=>b.kind==="table"?b.rows:[b]);
+    docReqCounts[sec.docId] = (docReqCounts[sec.docId]||0) + flat.filter(b=>blockNature(b)==="requirement").length;
+  });
+
   let lastDocId = null, docTarget = list;
 
   SECTIONS.forEach(sec=>{
@@ -2194,11 +2218,11 @@ function renderNav(){
     if(sec.docId!==lastDocId){
       lastDocId = sec.docId;
       const doc = DOC(sec.docId);
-      const docCollapsed = state.docNavCollapsed.has(doc.id);
+      const docCollapsed = !searching && state.docNavCollapsed.has(doc.id);
       const docHead = document.createElement("div");
       docHead.className = "nav-doc"+(docCollapsed?" collapsed":"");
       docHead.innerHTML = `<svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
-        <span class="nd-icon">📄</span><span class="nd-t">${doc.name}</span>`;
+        <span class="nd-icon">📄</span><span class="nd-t">${doc.name}</span><span class="nh-c">${docReqCounts[doc.id]||0}</span>`;
       docHead.addEventListener("click",()=>{ docCollapsed?state.docNavCollapsed.delete(doc.id):state.docNavCollapsed.add(doc.id); renderNav(); });
       list.appendChild(docHead);
       docTarget = document.createElement("div");
@@ -2215,7 +2239,7 @@ function renderNav(){
     const rem = changes.filter(b=>b.kind==="ghost").length;
 
     // H1 (section) header — collapsible
-    const collapsed = state.navCollapsed.has(sec.id);
+    const collapsed = !searching && state.navCollapsed.has(sec.id);
     const head = document.createElement("div");
     head.className = "nav-h nav-h1"+(collapsed?" collapsed":"");
     head.innerHTML = `<svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
@@ -2224,8 +2248,12 @@ function renderNav(){
     head.addEventListener("click",()=>{ collapsed?state.navCollapsed.delete(sec.id):state.navCollapsed.add(sec.id); renderNav(); });
     docTarget.appendChild(head);
 
+    // collapsed sections don't need their items built at all — real capture
+    // data runs to dozens of sections, most collapsed at any given time
+    if(collapsed) return;
+
     const wrap = document.createElement("div");
-    wrap.className = "nav-body"+(collapsed?" collapsed":"");
+    wrap.className = "nav-body";
 
     // walk blocks in order; headings create sub-nodes, requirements are leaves
     flat.forEach(b=>{
@@ -2244,7 +2272,9 @@ function renderNav(){
       const el = document.createElement("div");
       el.className = "nav-item"+(state.selected===b.id?" active":"")+(pass?"":" dimmed");
       el.dataset.id = b.id;
-      const label = b.text.replace(/<[^>]+>/g,"").slice(0,46)+"…";
+      // captured text sometimes carries leading/trailing whitespace — left in
+      // untrimmed, it reads as an oversized gap before the excerpt even starts
+      const label = b.text.replace(/<[^>]+>/g,"").trim().slice(0,46)+"…";
       const badges = [];
       if(b.status==="doubt") badges.push('<span class="nbadge b-ia" title="To review — AI confidence is low"></span>');
       if(!b.alloc) badges.push('<span class="nbadge b-unalloc" title="Unassigned"></span>');
@@ -3679,6 +3709,9 @@ function selectBlock(id,{scroll=false}={}){
     return;
   }
   state.selected = id;
+  // TH-followup3 — nav starts collapsed; re-open the path to whatever just
+  // got selected so it's never hidden behind its own collapsed section/doc.
+  if(f && f.s){ state.navCollapsed.delete(f.s.id); state.docNavCollapsed.delete(f.s.docId); }
   refresh();
   if(scroll||state.mode!=="review"){
     const el = document.querySelector(`.blk[data-id="${id}"],.ghost-block[data-id="${id}"]`);
