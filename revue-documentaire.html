@@ -1710,6 +1710,15 @@ const TYPO=[
  {id:"trk",code:"TRK",label:"TRK"},
 ];
 const TY=id=>TYPO.find(t=>t.id===id)||{code:id.toUpperCase(),label:id};
+/* a requirement can already arrive with 2+ activities — real capture data,
+   not just something a user grows one click at a time via the perimeter
+   pickers further down. Run the same sync once up front so those rows get
+   real branches (and therefore an editable manager per activity) too,
+   instead of only ever syncing on the next manual perim toggle. */
+SECTIONS.forEach(s=>s.blocks.forEach(b=>{
+  const arr=(b.kind==="table")?b.rows:[b];
+  arr.forEach(r=>{ if(r.kind==="requirement") syncBranchesFromPerim(r); });
+}));
 // Cycled the same way creation-projet.html cycles expert-avatar colors
 // (COLORS[i % COLORS.length]) — 16 real codes, 6 base colors, some repeats.
 const GROUP_PALETTE=["#4a7c8c","#8a7d5c","#7d6b8a","#5c8a6e","#8c5c4a","#5c6e8a"];
