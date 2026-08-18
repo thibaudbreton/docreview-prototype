@@ -2130,6 +2130,22 @@ function ensureBranches(b){
   }
   return b.branches;
 }
+/* keeps b.branches in step with b.perim whenever a manager toggles activities
+   directly (the propose/reassign review flow manages branches itself and
+   doesn't need this). Without it, adding a 2nd+ activity grew b.perim but
+   left b.branches untouched, so the new activity had no branch — and
+   therefore nowhere to assign a manager. ensureBranches() seeds branch[0]
+   from the existing single allocation exactly as it always did; this only
+   adds what's missing beyond that, one fresh (unassigned) branch per newly
+   added activity. */
+function syncBranchesFromPerim(b){
+  if(!b.perim || b.perim.length<2) return;
+  ensureBranches(b);
+  const have=new Set(b.branches.map(br=>br.typology));
+  b.perim.forEach(t=>{
+    if(!have.has(t)) b.branches.push({typology:t, label:TY(t).label, manager:null, expert:null, branchStatus:"proposed", compliance:"pending"});
+  });
+}
 function pushBranchLog(b,who,what,k){
   b.branchLog=b.branchLog||[];
   b.branchLog.unshift({k:k||"human",who,what,time:"Today"});
@@ -2986,6 +3002,7 @@ function openTypoPopover(anchor, id){
     if(b.perim.includes(tid)) b.perim=b.perim.filter(x=>x!==tid);
     else b.perim=[...b.perim,tid].sort((x,y)=>TYPO.findIndex(t=>t.id===x)-TYPO.findIndex(t=>t.id===y));
     b.perimAI=false; o.classList.toggle("on");
+    syncBranchesFromPerim(b);
     renderReview();
     const na=document.querySelector(`[data-typocell="${id}"]`); if(na){ const nr=na.getBoundingClientRect(); pop.style.top=(nr.bottom+4)+"px"; pop.style.left=nr.left+"px"; }
   }));
@@ -3401,7 +3418,7 @@ function renderSettings(){
         ${b.branches.map((branch,bidx)=>`<div class="branch-sec">
             <div class="branch-sec-head">
               <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}" title="${branch.proposal||branch.reassignRequest?"Proposed change — pending your review":""}">${TY(branch.typology).code}</span>
-              <span class="branch-sec-mgr">${branch.manager?MGR(branch.manager).name:"— Unassigned —"}</span>
+              <select class="cell-select branch-sec-mgr${branch.manager?"":" empty"}" data-panelbranchmgr="${bidx}">${['<option value="">— Unassigned —</option>'].concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${branch.manager===m.id?"selected":""}>${m.name} — ${m.role}</option>`)).join("")}</select>
               <span class="status-pill branch-status-${branch.branchStatus}">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>
             </div>
             ${branch.proposal?`<div class="branch-proposal">
@@ -3486,6 +3503,12 @@ function renderSettings(){
       refresh();
     }));
     body.querySelectorAll("[data-lockbtn]").forEach(btn=>btn.addEventListener("click",()=>lockCompliance(b,+btn.dataset.lockbtn)));
+    body.querySelectorAll("[data-panelbranchmgr]").forEach(sel=>sel.addEventListener("change",e=>{
+      const branch=b.branches[+sel.dataset.panelbranchmgr];
+      branch.manager=e.target.value||null;
+      toast(branch.manager?`${branch.label}: manager — ${MGR(branch.manager).name}`:`${branch.label}: manager unassigned`,"ok");
+      refresh();
+    }));
     body.querySelectorAll("[data-unlockbtn]").forEach(btn=>btn.addEventListener("click",()=>unlockCompliance(b,+btn.dataset.unlockbtn)));
     body.querySelector("#validate-btn")?.addEventListener("click",()=>validateBlock(b.id));
     body.querySelector("#ia-accept")?.addEventListener("click",()=>{setAlloc(b.id,suggestion.alloc);toast("AI assignment accepted","ok")});
@@ -3500,6 +3523,7 @@ function renderSettings(){
       else b.perim = [...b.perim,p].sort((x,y)=>TYPO.findIndex(t=>t.id===x)-TYPO.findIndex(t=>t.id===y));
       b.perimAI=false; markCharEdited(b);
       if(wasAI) logFeedback("typo", b.id, prevPerim.map(x=>TY(x).code).join("+")||"none", b.perim.map(x=>TY(x).code).join("+")||"none", null);
+      syncBranchesFromPerim(b);
       state.typoOpen=true;
       refresh();
     }));
