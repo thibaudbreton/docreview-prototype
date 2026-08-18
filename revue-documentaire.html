@@ -235,6 +235,18 @@ body.mode-compare .nav-section-head .sec-changes{display:inline-flex}
 }
 .nav-item:hover{background:var(--panel-2);color:var(--text)}
 .nav-item.active{background:var(--accent-soft);color:var(--text);border-left-color:var(--accent)}
+/* fills the gutter that would otherwise sit empty to the left of an item —
+   section/doc headers have a caret there, leaves didn't have anything,
+   which also left leaf text starting less indented than header text above
+   it. A small dot both closes that gap and gives at-a-glance status —
+   characterisation/allocation progress, the same states as the status pill
+   in the table (not compliance: this screen doesn't surface compliance
+   anywhere outside that one table column). */
+.nav-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--line-2)}
+.nav-status-dot.incomplete{background:var(--warn)}
+.nav-status-dot.doubt{background:var(--ia)}
+.nav-status-dot.tovalidate{background:var(--human)}
+.nav-status-dot.allocated{background:var(--ok)}
 /* was a fixed 56px column — real capture IDs vary a lot in length, so a rigid
    width either wasted space on short ones or overflowed on long ones. Sizes
    to its own content now; the row's existing gap keeps the label a
@@ -2281,7 +2293,13 @@ function renderNav(){
       if(b.comments) badges.push('<span class="nbadge b-comment" title="Comments"></span>');
       if(b.uncertain) badges.push('<span class="nbadge" style="background:var(--warn)" title="Uncertain segmentation"></span>');
       if(b.change) badges.push('<span class="nbadge b-change" title="Changed in v2.1"></span>');
-      el.innerHTML = `<span class="nid">${b.kind==="image"?"IMG":b.id}</span><span class="nlabel">${label}</span><span class="nbadges">${badges.join("")}</span>`;
+      // status dot fills the gutter that lines items up under the section
+      // caret above them — characterisation/allocation progress, same
+      // vocabulary as the status pill in the table, not compliance (this
+      // screen doesn't surface compliance anywhere but the table column).
+      const dotVal = b.kind==="image"?null:effectiveStatus(b).val;
+      const dot = dotVal?`<span class="nav-status-dot ${dotVal}" title="${STATUS_LABEL[dotVal]}"></span>`:`<span class="nav-status-dot"></span>`;
+      el.innerHTML = `${dot}<span class="nid">${b.kind==="image"?"IMG":b.id}</span><span class="nlabel">${label}</span><span class="nbadges">${badges.join("")}</span>`;
       el.addEventListener("click",()=>selectBlock(b.id,{scroll:true}));
       wrap.appendChild(el);
     });
