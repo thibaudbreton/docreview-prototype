@@ -906,12 +906,9 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .branch-proposal-actions .approve:hover{background:var(--ok);color:#fff}
 .branch-proposal-actions .reject{color:var(--warn);border:1px solid rgba(242,96,79,.5)}
 .branch-proposal-actions .reject:hover{background:var(--warn);color:#fff}
-.branch-sec-compliance{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-top:1px solid var(--line-2)}
-.compliance-override{display:flex;align-items:center;gap:var(--space-2);flex:1}
-.compliance-override select{flex:1}
-.lock-btn{font-size:var(--text-xs);font-weight:700;white-space:nowrap;color:var(--warn);border-color:rgba(242,96,79,.5)}
-.lock-btn:hover{background:var(--warn);color:#fff;border-color:var(--warn)}
-.expert-original{padding:0 var(--space-3) var(--space-2);font-size:var(--text-xs);color:var(--text-3);font-style:italic}
+.branch-sec-expert{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-top:1px solid var(--line-2)}
+.branch-sec-expert label{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);flex-shrink:0}
+.branch-sec-expert select{flex:1}
 /* manager block (option B) */
 .mgr-block{margin-bottom:16px}
 .mgr-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:9px}
@@ -3238,28 +3235,6 @@ function syncReassignRequestsFromShell(){
     pushBranchLog(b, req.byName, `Requested reassignment for ${TY(req.typology).label} — ${REASON_LABEL[req.reason]}: "${req.note}"`);
   });
 }
-/* B3 — project manager overrides + locks an allocated activity's compliance verdict. No comment
-   required. Only the project manager can lock or unlock — no other role ever sees
-   these controls (they only render inside the admin-only rmView branch list).
-   The expert's original verdict is preserved on the branch (expertCompliance) for
-   the detail panel only — never shown in the table row. The lock must eventually be
-   surfaced in the expert's own view too, once that view exists (not built yet). */
-function lockCompliance(b,idx){
-  const branch=b.branches[idx];
-  branch.locked=true; branch.lockedBy="admin"; branch.lockedAt="Today";
-  pushBranchLog(b, MGR("admin").name, branch.expertCompliance
-    ? `Locked the compliance verdict for ${TY(branch.typology).label} — overridden from ${complianceLabel(branch.expertCompliance)} to ${complianceLabel(branch.compliance)}.`
-    : `Locked the compliance verdict for ${TY(branch.typology).label} — ${complianceLabel(branch.compliance)}.`, "warn");
-  toast("Compliance verdict locked","ok");
-  refresh();
-}
-function unlockCompliance(b,idx){
-  const branch=b.branches[idx];
-  branch.locked=false; branch.lockedBy=null; branch.lockedAt=null;
-  pushBranchLog(b, MGR("admin").name, `Unlocked the compliance verdict for ${TY(branch.typology).label} — ${complianceLabel(branch.compliance)} is editable again.`, "human");
-  toast("Compliance verdict unlocked","ok");
-  refresh();
-}
 /* roles recap for the Activity tab: Admin, Manager, Expert */
 function roleRecapHTML(b){
   const admin = MANAGERS.find(m=>m.admin);
@@ -3364,7 +3339,6 @@ function renderSettings(){
       </div>`;
     }
     const derivSrc = myBranch || b; // whose OBS confidence the weak-derivation warning checks
-    const complianceValue = rmView ? b.rollupCompliance : (myBranch ? myBranch.compliance : null);
     html += `
       ${isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <select id="f-tech">
@@ -3400,14 +3374,6 @@ function renderSettings(){
       ${!rmView&&isReq?`<div class="field"><label>OBS${myBranch?` <span style="font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-3)">· your allocated activity</span>`:""}</label>
         ${derivSrc.obs&&weakestLink(derivSrc)?`<div class="weak-inline">⚠ Weak ${weakestLink(derivSrc).k} (${weakestLink(derivSrc).c}%) — check the derivation</div>`:""}
         <select id="f-alloc">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${(myBranch?myBranch.expert:b.alloc)===a.id?"selected":""}>${a.label}</option>`)).join("")}</select></div>`:""}
-      ${complianceValue?`<div class="field"><label>Compliance</label>
-        <div class="fval"><span class="compliance-pill c-${complianceValue}">${complianceLabel(complianceValue)}</span>
-          ${myBranch&&myBranch.locked?`<span class="lock-badge" title="Locked by ${MGR(myBranch.lockedBy).name} — ${myBranch.lockedAt}">🔒 Locked by the project manager</span>`:""}
-        </div>
-        ${complianceValue==="pending"?`<div class="tech-hint">Not every allocated activity has answered yet — this is not a decided verdict.</div>`:""}
-        ${myBranch&&myBranch.locked?`<div class="tech-hint">You can no longer edit this verdict — the project manager overrode and locked it.${myBranch.expertCompliance?` Your original verdict was <b>${complianceLabel(myBranch.expertCompliance)}</b>.`:""}</div>`:""}
-      </div>`:""}
-
       ${myReassignBranch?`<div class="set-sep"></div>
       <div class="branch-proposal">
         <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(expert)</span></div>
@@ -3449,16 +3415,10 @@ function renderSettings(){
                 <button class="reject" data-reject-reassign="${bidx}">✕ Reject</button>
               </div>
             </div>`:""}
-            <div class="branch-sec-compliance">
-              ${branch.locked
-                ? `<span class="lock-badge" title="Locked by ${MGR(branch.lockedBy).name} — ${branch.lockedAt}">🔒 Locked — ${complianceLabel(branch.compliance)}</span>
-                   <button class="mini-btn unlock-btn" data-unlockbtn="${bidx}" title="Unlock — only the project manager can lock or unlock a verdict">Unlock</button>`
-                : `<div class="compliance-override">
-                     <select class="cell-select" data-lockcompl="${bidx}">${COMPLIANCE_DEFS.map(c=>`<option value="${c.k}" ${branch.compliance===c.k?"selected":""}>${c.label}</option>`).join("")}</select>
-                     <button class="mini-btn lock-btn" data-lockbtn="${bidx}" title="Lock this verdict — only the project manager can unlock it again">🔒 Lock</button>
-                   </div>`}
+            <div class="branch-sec-expert">
+              <label>Expert</label>
+              <select class="cell-select branch-sec-exp${branch.expert?"":" empty"}" data-panelbranchexp="${bidx}">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${branch.expert===a.id?"selected":""}>${a.label}</option>`)).join("")}</select>
             </div>
-            ${branch.locked&&branch.expertCompliance?`<div class="expert-original">Expert's original verdict: <b>${complianceLabel(branch.expertCompliance)}</b></div>`:""}
           </div>`).join("")}
       </div>`:""}
 
@@ -3505,20 +3465,18 @@ function renderSettings(){
     body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
     body.querySelectorAll("[data-approve-reassign]").forEach(btn=>btn.addEventListener("click",()=>approveReassign(b,+btn.dataset.approveReassign)));
     body.querySelectorAll("[data-reject-reassign]").forEach(btn=>btn.addEventListener("click",()=>rejectReassign(b,+btn.dataset.rejectReassign)));
-    body.querySelectorAll("[data-lockcompl]").forEach(sel=>sel.addEventListener("change",e=>{
-      const branch=b.branches[+sel.dataset.lockcompl];
-      if(branch.expertCompliance===undefined) branch.expertCompliance=branch.compliance; // preserve the expert's original verdict the first time the PM overrides it
-      branch.compliance=e.target.value;
-      refresh();
-    }));
-    body.querySelectorAll("[data-lockbtn]").forEach(btn=>btn.addEventListener("click",()=>lockCompliance(b,+btn.dataset.lockbtn)));
     body.querySelectorAll("[data-panelbranchmgr]").forEach(sel=>sel.addEventListener("change",e=>{
       const branch=b.branches[+sel.dataset.panelbranchmgr];
       branch.manager=e.target.value||null;
       toast(branch.manager?`${branch.label}: manager — ${MGR(branch.manager).name}`:`${branch.label}: manager unassigned`,"ok");
       refresh();
     }));
-    body.querySelectorAll("[data-unlockbtn]").forEach(btn=>btn.addEventListener("click",()=>unlockCompliance(b,+btn.dataset.unlockbtn)));
+    body.querySelectorAll("[data-panelbranchexp]").forEach(sel=>sel.addEventListener("change",e=>{
+      const branch=b.branches[+sel.dataset.panelbranchexp];
+      branch.expert=e.target.value||null;
+      toast(branch.expert?`${branch.label}: expert — ${ALLOCS.find(a=>a.id===branch.expert).label.split("—")[0].trim()}`:`${branch.label}: expert unassigned`,"ok");
+      refresh();
+    }));
     body.querySelector("#validate-btn")?.addEventListener("click",()=>validateBlock(b.id));
     body.querySelector("#ia-accept")?.addEventListener("click",()=>{setAlloc(b.id,suggestion.alloc);toast("AI assignment accepted","ok")});
     body.querySelector("#ia-reject")?.addEventListener("click",()=>{logFeedback("alloc",b.id,"AI suggestion","rejected",null);delete TYPE_SUGGEST[b.id];refresh();toast("Suggestion rejected — manual assignment required","ok")});
