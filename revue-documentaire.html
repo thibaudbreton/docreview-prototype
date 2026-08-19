@@ -859,6 +859,17 @@ body.seg-on .tbl-gran{display:inline-flex}
 .ptag.tky.proposed{background:var(--human);border-color:var(--human);color:#fff}
 /* review table toolbar */
 .rtoolbar{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
+/* wrap-text switch — moved out of the View menu and next to the toolbar's own
+   filter controls, at the user's request, since it changes how the currently
+   visible rows are displayed rather than which rows are visible. */
+.wrap-switch{display:flex;align-items:center;gap:var(--space-2);cursor:pointer;user-select:none}
+.wrap-switch input{position:absolute;opacity:0;width:0;height:0}
+.wrap-switch-track{position:relative;width:30px;height:17px;flex-shrink:0;background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-pill);transition:background .15s,border-color .15s}
+.wrap-switch-knob{position:absolute;top:1px;left:1px;width:13px;height:13px;border-radius:50%;background:var(--text-3);transition:transform .15s,background .15s}
+.wrap-switch input:checked+.wrap-switch-track{background:var(--accent-soft);border-color:var(--accent)}
+.wrap-switch input:checked+.wrap-switch-track .wrap-switch-knob{transform:translateX(13px);background:var(--accent)}
+.wrap-switch:hover .wrap-switch-track{border-color:var(--accent)}
+.wrap-switch-label{font-size:var(--text-sm);color:var(--text-2);white-space:nowrap}
 /* filter-to-selection banner — replaces the toolbar while active */
 .filter-sel-banner{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-lg);font-size:var(--text-sm);color:var(--text)}
 .filter-sel-banner b{font-variant-numeric:tabular-nums}
@@ -1335,6 +1346,11 @@ body.restricted .restrict-banner{display:flex}
           </div>
           <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
             <button class="btn-ghost" id="sort-reset" style="font-size:var(--text-xs);display:none" title="Clear the column sort and go back to document order">↺ Document order</button>
+            <label class="wrap-switch" title="Show the full requirement text instead of a single-line excerpt">
+              <input type="checkbox" id="wrap-toggle">
+              <span class="wrap-switch-track"><span class="wrap-switch-knob"></span></span>
+              <span class="wrap-switch-label">Wrap text</span>
+            </label>
             <div class="view-wrap" style="position:relative">
               <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)">⏷ Filter <span class="view-badge" id="view-badge" style="display:none"></span> ▾</button>
               <div class="view-panel" id="filter-panel"></div>
@@ -4120,6 +4136,7 @@ function toggleScaleTest(on){
   if(state.mode!=="review") setMode("review");
   refresh();
 }
+document.getElementById("wrap-toggle")?.addEventListener("change",e=>{ state.wrapText=e.target.checked; renderReview(); });
 document.getElementById("filter-btn")?.addEventListener("click",e=>{ e.stopPropagation(); filterPanelState.open=!filterPanelState.open; renderFilterPanel(); });
 document.addEventListener("click",e=>{ if(filterPanelState.open && !e.target.closest("#filter-panel") && !e.target.closest("#filter-btn")){ filterPanelState.open=false; renderFilterPanel(); } });
 
@@ -4136,15 +4153,9 @@ function renderColumnsPanel(){
   p.innerHTML=`
     <div class="view-panel-head">View</div>
     <div class="view-sec">
-      <div class="view-sec-head">Row height</div>
-      <label class="colf-opt"><input type="checkbox" id="colvis-wrap" ${state.wrapText?"checked":""}>Show full requirement text (wrap rows)</label>
-    </div>
-    <div class="view-sep"></div>
-    <div class="view-sec">
       <div class="view-sec-head">Table columns</div>
       ${TE.columnChecklistHTML(COLUMN_TOGGLE_DEFS,state.colCollapsed)}
     </div>`;
-  p.querySelector("#colvis-wrap").addEventListener("change",e=>{ state.wrapText=e.target.checked; renderReview(); });
   TE.bindColumnChecklist(p,state.colCollapsed,()=>applyCols());
 }
 document.getElementById("cols-btn")?.addEventListener("click",e=>{ e.stopPropagation(); colsPanelState.open=!colsPanelState.open; renderColumnsPanel(); });
