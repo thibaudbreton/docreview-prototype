@@ -191,6 +191,15 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .center{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
 .view{flex:1;overflow:auto;display:none}
 .view.on{display:block}
+/* #view-table's .rgrid relies on flex:1 to fill the remaining height below
+   its toolbar rows; .view.on{display:block} breaks that chain, so .rgrid-body
+   (also flex:1) never gets a real height and its absolutely-positioned
+   .rgrid-window — the actual rows — collapses to 0px and renders invisible
+   even though every row is correctly in the DOM. Scoped to this one view via
+   the id (wins over .view.on's two-class specificity) rather than changing
+   .view.on generally, since #view-doc/#view-qa's block-flow content don't
+   need or want to become flex columns. */
+#view-table.on{display:flex;flex-direction:column}
 .view-pad{padding:20px}
 .view-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:14px}
 .view-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
