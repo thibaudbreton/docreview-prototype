@@ -77,7 +77,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .screen-nav .sn{padding:5px var(--space-3);border-radius:var(--radius-sm);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;cursor:pointer;white-space:nowrap}
 .screen-nav .sn:hover{color:var(--text)}
 .screen-nav .sn.on{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
-.screen-nav .sn.locked{opacity:.5;cursor:not-allowed}
 .mode-switch{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-1);margin-left:auto}
 .mode-switch button{padding:5px var(--space-4);border-radius:var(--radius-sm);color:var(--text-2);font-weight:500;font-size:var(--text-base);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
 .mode-switch button.active{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
@@ -1730,25 +1729,16 @@ function select(id,branchIdx){
   const el=document.querySelector(`.dblk[data-id="${id}"]`);
   if(state.view==="doc"&&el)el.scrollIntoView({block:"center",behavior:"smooth"});
 }
-function reviewDone(){ try{ return !!(window.parent!==window && window.parent.isReviewValidated && window.parent.isReviewValidated()); }catch(e){ return false; } }
+// TE2 — gate removed: Follow-up and Allocation now run side by side instead of
+// Follow-up unlocking only once Allocation is finalized (was TE1's reinstated
+// review→follow-up gate). Both screen 2 (Follow-up) and screen 3 (Versions &
+// Q&A) are always open.
 function setScreen(n){
-  // TE1 — real gate restored (was bypassed with the comment below, while dashboard-et-config.html's
-  // phase-card copy still claimed "Unlocks when allocation is finalized" — misleading during a
-  // moderated session). Versions & Q&A (screen 3) stays always-open per HANDOVER.md; only Follow-up
-  // (screen 2) is gated.
-  if(n===2 && !reviewDone()){
-    toast("Follow-up is locked — finalize allocation first","warn");
-    n=3;
-  }
   state.screen=n;
   document.getElementById("screen2").style.display=n===2?"flex":"none";
   document.getElementById("screen3").classList.toggle("on",n===3);
   document.getElementById("s2-views").style.display=n===2?"flex":"none";
   document.getElementById("export2-btn").style.display=n===2?"inline-flex":"none";
-  const locked=false; // TEMP: see note above
-  const tf=document.getElementById("tab-followup");
-  tf.classList.toggle("locked",locked);
-  tf.innerHTML = locked ? "🔒 Follow-up" : "Follow-up";
   document.querySelectorAll("#phase-nav .sn").forEach(s=>s.classList.toggle("on",s.dataset.screen==String(n)));
   refreshAll();
 }
@@ -1915,10 +1905,8 @@ document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.clos
     e.stopPropagation(); state.ownTeamOnly=false; syncChip(); refreshAll();
   });
 })();
-/* Init — default to Follow-up once unlocked, Versions & Q&A otherwise (TE1). Decided directly
-   here rather than via setScreen(2)'s redirect so a plain page load doesn't fire the "locked"
-   toast — that's reserved for an explicit attempt to open Follow-up. */
-if(location.hash==="#versions"||!reviewDone()){setScreen(3);}else{setScreen(2);}
+/* Init — default to Follow-up, unless the link explicitly asked for Versions & Q&A. */
+if(location.hash==="#versions"){setScreen(3);}else{setScreen(2);}
 applyFPanels();
 </script>
 </body>

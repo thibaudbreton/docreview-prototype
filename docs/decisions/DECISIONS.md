@@ -97,6 +97,13 @@ Ordered chronologically, oldest first, by apparent build order (not always exact
 **Why:** user testing should run on genuine tender content, not generated placeholder text; the demo status distribution was requested separately to make the workflow's status filters demonstrable without overstating what the (real, but uncharacterised) capture data actually contains.
 **Source:** `TICKET-wire-capture-data.md`; applied via `buildDataFromCapture()` / `applyCaptureDemoStatuses()` in `revue-documentaire.html`.
 
+### D15 — Follow-up no longer gated on Allocation being finalized (TE2)
+**What:** Expert follow-up is always reachable from the dashboard and the shared screen-nav, regardless of `isReviewValidated()`. Allocation and Follow-up run side by side.
+**Replaced:** TE1 ("restore the real review-to-follow-up gate"), which had itself replaced an earlier unconditional-unlock state, citing `HANDOVER.md`'s "locked until review finalized" as the documented intended behavior. That documentation is what this decision now supersedes.
+**Why:** stated directly by the user — the real workflow this prototype tracks has changed since `HANDOVER.md` was written; the two-phase gate is no longer how it works. `isReviewValidated()`/`setReviewValidated()` still exist and still drive Allocation's own phase-card "Current"/"Done" state — only the cross-phase gate was removed.
+**Source:** direct user correction in-session, no ticket file.
+**Note for future agents:** this is the second reversal of this exact behavior (unlocked → TE1 locked it → TE2 unlocked it again). Don't re-lock it on the strength of `HANDOVER.md`'s history or an old ticket file alone — this decision is the current source of truth.
+
 ---
 
 ## Discrepancies noted but not resolved here (need a human)

@@ -41,7 +41,7 @@ Because each screen is an isolated iframe that reloads on navigation, anything t
 - `getTheme/setTheme` (dark/light), `getRedactMode/setRedactMode`
 - `getProjects/addProject/openProject/getCurrentProject/resetDemo`
 - background **processing loop** (`startProcLoop`, `setInterval` in the shell) — so a project keeps "processing" while you navigate elsewhere
-- `isReviewValidated/setReviewValidated` (the review→follow-up gate), `getProjectMode/setProjectMode`, `getProjectMeta/setProjectMeta`
+- `isReviewValidated/setReviewValidated` (drives Allocation's own "Done" phase-card state; no longer gates Follow-up — see TE2), `getProjectMode/setProjectMode`, `getProjectMeta/setProjectMeta`
 - `pushAIFeedback/getAIFeedback`
 - **Why:** non-blocking background processing and shared flags cannot live inside a single iframe that gets torn down on navigation.
 
@@ -54,7 +54,7 @@ All colours are **design tokens** (`--bg`, `--panel`, `--text`, `--accent`, `--i
 
 ### 2.5 Data model decisions
 - **Block natures:** `heading` / `info` (Information) / `requirement` / `image`. Titles build the collapsible nav hierarchy (H1›H2›H3); Information is context with no detail panel; Requirements get the full panel; Images render in the document and can be **characterised** as Information or Requirement. Reclassification is inline. **The detail panel keys off `blockNature(b)`, not raw `kind`**, so an image classified as a requirement gets the full panel and joins the table.
-- **HITL is a pattern, not a role:** the AI proposes, a human validates before an object advances. The review→follow-up gate enforces this.
+- **HITL is a pattern, not a role:** the AI proposes, a human validates before an object advances — enforced per-item (a requirement only reaches `allocated` through an explicit validation action, see §8 of `SPEC-domain-model.md`), not by gating access to a whole phase: Allocation and Follow-up run side by side (TE2 — see 3).
 - **Manager vs Expert are distinct:** *Manager* = who handles the requirement (delegation, one per requirement, admin sees all); *Expert* = the OBS-derived assignment. Both are separate columns/fields.
 - **OBS drives assignment** via a PBS→ABS→OBS chain with confidence; weak OBS (<75%) auto-flags "to review" but never locks (human validation always wins).
 - **Activity** is a multi-select of 12 values; **Turnkey (TKY)** is a first-class selectable value (the most complex/variable case).
@@ -67,7 +67,7 @@ All colours are **design tokens** (`--bg`, `--panel`, `--text`, `--accent`, `--i
 
 - **Home / workspace** with 5 seed projects, statuses (`Processing`, `Requirement review`, `Expert review`, `Q&A & Versioning`, `Submitted`), non-blocking background processing with live progress bars, and **Reset demo** (button + `Ctrl+Shift+R`).
 - **New-project wizard**: fields incl. Product line / System / Region; **multi-document upload** with up/down reordering; processing mode (AI-assisted / segmentation-only / fully manual) via 4 toggles now labelled **Capture / Characterizer / Compliance matrix / Activity**. **Casting (B2)**: the project manager assigns one activity manager per activity at creation; casting is **asynchronous** — the PM only fills in experts directly for activities attached to themselves, everyone else's experts are filled in later by that activity manager on the Team screen, at their own pace (see §6 of `SPEC-domain-model.md`).
-- **Dashboard**: reworked layout — phase rail (where am I) + "what needs you now" (primary) + "project health" (secondary) + activity feed. Gating: follow-up locked until review finalized. **Team management (B4)**: a dedicated Team screen (no global nav entry, reachable via the dashboard header) where each activity manager fills in their own experts against the activities cast to them; a project-manager view aggregates casting-completion progress across the whole team.
+- **Dashboard**: reworked layout — phase rail (where am I) + "what needs you now" (primary) + "project health" (secondary) + activity feed. **No cross-phase gating (TE2):** Allocation and Follow-up are both always open and run side by side — an earlier version locked Follow-up until Allocation was finalized (TE1), reverted because the real workflow no longer works that way. **Team management (B4)**: a dedicated Team screen (no global nav entry, reachable via the dashboard header) where each activity manager fills in their own experts against the activities cast to them; a project-manager view aggregates casting-completion progress across the whole team.
 - **Document review** (3 modes: Document / Review / Compare):
   - Collapsible **heading hierarchy** in the left nav.
   - Three **block natures** with inline reclassification; images displayed and characterisable.
@@ -78,7 +78,7 @@ All colours are **design tokens** (`--bg`, `--panel`, `--text`, `--accent`, `--i
   - **Modular Export** panel: pick steps (Capture / Characterization / Allocation) × format (Excel / CSV / ReqIF / DOORS 9 / DOORS Next) — mocked (toast).
   - **Multi-document**: doc banners in the flow + document filter; 2 seed documents.
   - **Scale test** toggle (12,000 rows, virtualised).
-- **Expert follow-up** (locked until review finalized) and **Versions & Q&A** (always open).
+- **Expert follow-up** and **Versions & Q&A** — both always open (TE2; no longer gated on Allocation being finalized).
 - **Expert Space** (`expert-space.html`, added after this document's first draft): the individual expert's own screen — triage by status, render a compliance verdict (Compliant / R&D Needed / Not compliant), ask a Q&A question, request reassignment. Enforces a **activity-parent hierarchy** for permissions (a manager/expert on a parent activity automatically sees descendant activities too) — implemented in this screen only, see §9 of `SPEC-domain-model.md`.
 - **Configuration**: Appearance (dark/light), AI feedback loop, Team & experts (restricted view: redact/hide). Most other Config sections (Workflow, AI & segmentation, Q&A, Versions, Language) are marked demo-only in the UI — not wired to real behavior in this build.
 - **Deliverable:** `docreview-app.html` (merged, ~930 KB — grows as content/features are added; don't treat the figure as load-bearing). Language rule enforced: **all UI copy in English**.

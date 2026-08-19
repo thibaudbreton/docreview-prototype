@@ -122,8 +122,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .phase.active-phase .ph-num{background:var(--accent);color:#fff}
 .phase.done-phase{border-color:rgba(63,178,127,.45)}
 .phase.done-phase .ph-num{background:var(--ok);color:#fff}
-.phase.locked{cursor:not-allowed;opacity:.6}
-.phase.locked:hover{transform:none;border-color:var(--line)}
 .ph-info{flex:1;min-width:0}
 .ph-name{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
 .ph-stat{font-size:var(--text-sm);color:var(--text-2);margin-top:var(--space-2);display:flex;align-items:baseline;gap:6px}
@@ -131,8 +129,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .ph-bar{height:5px;border-radius:var(--radius-xs);background:var(--panel-3);margin-top:var(--space-2);overflow:hidden}
 .ph-bar>div{height:100%;border-radius:var(--radius-xs)}
 .ph-sub{font-size:var(--text-xs);color:var(--text-3);margin-top:var(--space-2);line-height:1.4}
-.ph-lock{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-3);line-height:1.4}
-.ph-lock svg{flex-shrink:0}
 .ph-badge{position:absolute;top:13px;right:14px;font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-pill);letter-spacing:.3px}
 .ph-badge.current{background:var(--accent-soft);color:var(--accent)}
 .ph-badge.done{background:var(--ok-soft);color:var(--ok)}
@@ -141,7 +137,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
   display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);border:1px solid var(--line-2);
   background:var(--panel-2);transition:all .15s;pointer-events:none}
 .phase:hover .ph-open-btn{border-color:var(--accent);background:var(--accent-soft)}
-.phase.locked .ph-open-btn{display:none}
 .p2only.hidden,.p1only.hidden,.v22only.hidden{display:none}
 
 /* main columns */
@@ -470,16 +465,14 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <span class="ph-badge current" id="ph-review-badge">Current</span>
           <span class="ph-open-btn">Open →</span>
         </a>
-        <div class="phase locked" id="ph-followup">
+        <div class="phase active-phase" id="ph-followup" style="cursor:pointer">
           <div class="ph-num">2</div>
           <div class="ph-info">
             <div class="ph-name">Expert follow-up</div>
-            <div class="ph-lock" id="ph-followup-body">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-              Unlocks when allocation is finalized
-            </div>
+            <div class="ph-stat" id="ph-followup-body"><span class="big">0</span><span>/ 0 answered</span></div>
+            <div class="ph-bar"><div style="width:0%;background:var(--ia)"></div></div>
           </div>
-          <span class="ph-badge wait" id="ph-followup-badge">Locked</span>
+          <span class="ph-badge current" id="ph-followup-badge">Open</span>
           <span class="ph-open-btn" id="ph-followup-open">Open →</span>
         </div>
         <a class="phase" id="ph-versions" href="javascript:parent.route('versions')">
@@ -520,7 +513,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <h3>What needs you now <span class="count" id="att-count">5</span></h3>
           <div class="att p1only" data-go="revue-documentaire.html">
             <div class="att-ic warn">✓</div>
-            <div><div class="att-t"><b>Allocation not finalized</b></div><div class="att-sub" id="att-review-sub">9 requirements still to validate before Follow-up unlocks</div></div>
+            <div><div class="att-t"><b>Allocation not finalized</b></div><div class="att-sub" id="att-review-sub">9 requirements still to validate</div></div>
             <span class="att-go">Finalize allocation →</span>
           </div>
           <div class="att v22only hidden" data-go="suivi-experts-et-versions.html#versions">
@@ -829,28 +822,20 @@ function applyGating(){
     document.getElementById("ph-review-bar").style.width="100%";
     document.getElementById("ph-review-bar").style.background="var(--ok)";
   }
-  // follow-up phase card
-  // TE1 — real gate restored: was unconditionally unlocked ("TEMP (dev/demo)") while the
-  // copy right below still read "Unlocks when allocation is finalized", which is exactly
-  // the kind of stale-copy confusion this ticket batch exists to close before user testing.
+  // follow-up phase card — TE2: gate removed. The workflow no longer requires
+  // Allocation to be finalized before Follow-up is reachable; the two run
+  // side by side now, so this always renders the live-progress state (used
+  // to be gated on `done`, see TE1 for the now-reverted version of this).
   const f=document.getElementById("ph-followup"),fb=document.getElementById("ph-followup-badge"),fbody=document.getElementById("ph-followup-body");
-  if(done){
-    f.className="phase active-phase"; f.style.cursor="pointer";
-    fb.textContent="Current"; fb.className="ph-badge current";
-    // TB1 — computed from the FOLLOWUP_REQS mirror instead of a fixed string.
-    const fTotal=FOLLOWUP_REQS.length;
-    const fAnswered=FOLLOWUP_REQS.filter(r=>r.compliance!==null).length;
-    const fOverdue=FOLLOWUP_REQS.reduce((s,r)=>s+(r.overdueBranches||0),0);
-    const fPct=Math.round(fAnswered/fTotal*1000)/10;
-    fbody.outerHTML=`<div class="ph-stat" id="ph-followup-body"><span class="big">${fAnswered}</span><span>/ ${fTotal} answered${fOverdue?` · ${fOverdue} overdue`:""}</span></div><div class="ph-bar"><div style="width:${fPct}%;background:var(--ia)"></div></div>`;
-    f.onclick=()=>goRoute("suivi-experts-et-versions.html");
-  } else {
-    // stays on the default "locked" markup (lock icon, "Unlocks when allocation is
-    // finalized", Locked badge) already in the HTML — just give the click a response
-    // instead of leaving it silently inert.
-    f.style.cursor="pointer";
-    f.onclick=()=>toast("Follow-up is locked — finalize allocation first","warn");
-  }
+  f.className="phase active-phase"; f.style.cursor="pointer";
+  fb.textContent="Open"; fb.className="ph-badge current";
+  // TB1 — computed from the FOLLOWUP_REQS mirror instead of a fixed string.
+  const fTotal=FOLLOWUP_REQS.length;
+  const fAnswered=FOLLOWUP_REQS.filter(r=>r.compliance!==null).length;
+  const fOverdue=FOLLOWUP_REQS.reduce((s,r)=>s+(r.overdueBranches||0),0);
+  const fPct=Math.round(fAnswered/fTotal*1000)/10;
+  fbody.outerHTML=`<div class="ph-stat" id="ph-followup-body"><span class="big">${fAnswered}</span><span>/ ${fTotal} answered${fOverdue?` · ${fOverdue} overdue`:""}</span></div><div class="ph-bar"><div style="width:${fPct}%;background:var(--ia)"></div></div>`;
+  f.onclick=()=>goRoute("suivi-experts-et-versions.html");
   // attention count
   const visibleAtt=[...document.querySelectorAll(".att")].filter(a=>a.offsetParent!==null||!a.classList.contains("hidden"));
   document.getElementById("att-count").textContent=document.querySelectorAll(".att:not(.hidden)").length;
@@ -1377,7 +1362,7 @@ function renderReviewKPIs(){
   document.getElementById("ph-review-n").textContent=validated;
   document.getElementById("ph-review-txt").textContent=`/ ${total} requirements validated`;
   document.getElementById("ph-review-bar").style.width=pct+"%";
-  document.getElementById("att-review-sub").textContent=`${total-validated} requirements still to validate before Follow-up unlocks`;
+  document.getElementById("att-review-sub").textContent=`${total-validated} requirements still to validate`;
   document.getElementById("hs-validated").innerHTML=`${validated}<span class="hs-slash">/${total}</span>`;
 }
 function renderComplianceKPIs(){

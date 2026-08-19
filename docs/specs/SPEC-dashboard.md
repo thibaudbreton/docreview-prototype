@@ -21,7 +21,7 @@ The project manager / activity manager working this specific tender. The screen 
 - **Header** (shared with Configuration/Team management on this file) — logo (routes to Home), breadcrumb ("My tenders / {project ref · name}"), "＋ New project," notification bell, Team-management icon, Configuration icon, avatar.
 - **Hero** — kicker ("Tender project"), title, meta line (ref, system, product line, "Bid Director: {name}" — see §11 for the same role-label inconsistency noted in `SPEC-home.md`), and a large deadline countdown.
 - **Prototype-scope banner** — conditional, see §8.
-- **Phase rail** — three cards: Allocation, Expert follow-up (locked until Allocation is finalized), Versions & Q&A (always open).
+- **Phase rail** — three cards, all always open: Allocation, Expert follow-up, Versions & Q&A (TE2 — Follow-up no longer gates on Allocation being finalized).
 - **Team casting card** and **Expert Space card** — each styled like a phase-rail item but not part of the sequential phase-rail grid, since both run alongside the phases rather than gating or being gated by them.
 - **Main two-column area** — "What needs you now" (primary, left) and a stacked "Project health" / "Compliance" / "Experts" column (secondary, right).
 - **Recent activity** — a chronological feed, full width, below the two-column area.
@@ -29,7 +29,7 @@ The project manager / activity manager working this specific tender. The screen 
 ## 5. Data displayed
 
 - **Phase rail — Allocation**: validated-count / total, a progress bar, and a "Current" or "Done" badge — computed live from `REVIEW_REQS` (a hand-authored mirror of the Allocation screen's own requirement statuses; see §8).
-- **Phase rail — Expert follow-up**: while locked, a static "Unlocks when allocation is finalized" message; once unlocked, answered-count / total plus an overdue count, computed from `FOLLOWUP_REQS` and `OVERDUE_BRANCHES` (mirrors of the Follow-up screen's own data).
+- **Phase rail — Expert follow-up**: answered-count / total plus an overdue count, computed from `FOLLOWUP_REQS` and `OVERDUE_BRANCHES` (mirrors of the Follow-up screen's own data).
 - **Phase rail — Versions & Q&A**: a **hand-typed, static** "5 questions · 1 answered" stat — not computed from any mirrored data, unlike the other two phase cards (see §11).
 - **Team casting card**: managers-completed / total, a progress bar, and a pending-count badge — computed from the same `MANAGERS`/`EXPERTS` roster the Team management screen owns (`SPEC-team-management.md`).
 - **Expert Space card**: a **hand-typed, static** "4 requirements awaiting a verdict" stat — likewise not computed from any live source (see §11).
@@ -41,7 +41,7 @@ The project manager / activity manager working this specific tender. The screen 
 
 ## 6. Interactions
 
-- **Click a phase card** — Allocation and Versions & Q&A always navigate; Expert follow-up navigates once unlocked, otherwise shows a "Follow-up is locked — finalize allocation first" toast. *Implemented.*
+- **Click a phase card** — all three (Allocation, Expert follow-up, Versions & Q&A) always navigate. *Implemented.*
 - **Click the Team-casting card** → opens Team management (`SPEC-team-management.md`) on this same screen. *Implemented.*
 - **Click the Expert-Space card** → routes to `expert-space.html`. *Implemented* (that screen itself is out of scope for this cleanup — see `docs/specs/SPEC-expert-space.md`, already reconciled separately).
 - **Click a "What needs you now" item** → routes to the relevant screen (Allocation, or Follow-up with its Versions anchor for the version item). *Implemented.*
@@ -52,7 +52,6 @@ The project manager / activity manager working this specific tender. The screen 
 
 ## 7. States
 
-- **Locked** (Expert follow-up phase card) — present and implemented: distinct lock iconography, "Locked" badge, click yields an explanatory toast rather than being visually disabled.
 - **Pre- vs. post-finalization** — a genuine two-state screen, not just a loading state: `.p1only` elements (the Allocation-not-finalized attention item, the "Validated" health stat, a "Compliance/experts appear once finalized" hint card) show only before finalization; `.p2only` elements (four of the six attention items, response-rate stat, Compliance card, Experts card, overdue attention item) show only after. Both states are fully designed, not a stub.
 - **Prototype-scope banner** — a distinct state for any project that isn't the one fully-built reference project (`SPEC-home.md` §8); see §8 below.
 - **Empty / loading / error** — not present; nothing on this screen depends on a request that could be empty, loading, or fail.
@@ -62,7 +61,7 @@ The project manager / activity manager working this specific tender. The screen 
 - **This screen, Configuration, and Team management are three logically separate screens sharing one file and one `showScreen()` toggle** (`dash` / `cfg` / `team`), not three independently routable pages — the merged app's router only ever targets `dashboard-et-config.html` as a whole, and this file's own JS decides which of the three is visible.
 - **The Allocation and Follow-up phase-card numbers are computed from data mirrors, not hand-typed** — `REVIEW_REQS`, `FOLLOWUP_REQS`, and `OVERDUE_BRANCHES` are hand-authored *here*, independently of the Allocation/Follow-up screens' own seed data, per this project's no-shared-data-layer convention (every screen owns its own copy of the demo story). This is a deliberate prototype architecture choice, not an oversight — but it does mean the two sets of data can drift out of sync if one screen's seed is edited without updating the other (this already happened once and was fixed — see `docs/decisions/DECISIONS.md` D12).
 - **A project that isn't the one fully-built reference project** (`builtOut !== true`, see `SPEC-home.md` §8) gets its hero title/ref/line overwritten from the real project object and a scope banner explaining that everything below the hero (phase rail, attention list, health) is reused `stb2026` reference content — except Team casting, which *is* that project's own, since it comes from the creation wizard. This banner is the dashboard's own acknowledgment of the same demo-scope limitation `SPEC-home.md` describes.
-- **Follow-up unlocks exactly when `isReviewValidated()` is true** — a single shared boolean read from the shell, set only by the Allocation screen's own finalize action (out of scope here; see that screen's spec once written).
+- **Follow-up is always open, independent of Allocation's own finalize state** (TE2 — reverted the earlier TE1 gate now that the real workflow runs the two phases side by side). `isReviewValidated()` still exists and still drives the Allocation phase card's own "Current"/"Done" badge and the `.p1only`/`.p2only` attention-item split — set only by the Allocation screen's own finalize action (out of scope here; see that screen's spec once written) — it just no longer gates navigation to Follow-up.
 
 ## 9. Non-functional
 

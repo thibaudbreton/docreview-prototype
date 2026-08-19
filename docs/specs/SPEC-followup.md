@@ -14,8 +14,8 @@ The activity manager's/project manager's tracking view for expert responses: whi
 
 ## 3. Entry points
 
-- The "Follow-up" tab in the shared screen-nav, present in this file's own header — gated: attempting to open it before Allocation is finalized shows a toast and redirects to Screen 3 instead (§7).
-- The Dashboard's "Expert follow-up" phase card, once unlocked (`SPEC-dashboard.md` §6).
+- The "Follow-up" tab in the shared screen-nav, present in this file's own header — always open (TE2; no longer gated on Allocation being finalized).
+- The Dashboard's "Expert follow-up" phase card (`SPEC-dashboard.md` §6).
 - The Dashboard's overdue-response attention item and Q&A-related attention items route here directly.
 
 From here: the "Versions & Q&A" tab (`SPEC-versions-qa.md`); "↪ Reassign" jumps within this same screen; "⇗ Escalate to client Q&A" moves an allocated activity into this screen's own Q&A-register view (not into Screen 3 — see §6).
@@ -64,7 +64,6 @@ All from `REQS`, a **allocated-activity-level** array (`SPEC-domain-model.md` §
 
 ## 7. States
 
-- **Locked** — attempting to open Follow-up before Allocation is finalized (`isReviewValidated()` false) shows a toast and redirects to Versions & Q&A instead; a plain page load (no explicit tab click) does the same silently, without the toast, so a moderator refreshing mid-session doesn't get spuriously warned.
 - **Empty table** — "No assignment matches the current view." when every allocated activity is filtered out.
 - **Empty nav groups** — implicit; a section with a fully-filtered-out requirement list still shows its dimmed entries rather than disappearing (dimming, not hiding, is deliberate — see §8).
 - **No selection** (right panel) — an icon, "No assignment selected," plus the same consolidated/overdue counts shown in the triage bar.

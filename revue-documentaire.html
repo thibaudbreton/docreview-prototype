@@ -1383,7 +1383,7 @@ body.restricted .restrict-banner{display:flex}
   <div class="modal">
     <div class="modal-head">
       <h3>Finalize allocation</h3>
-      <p>This closes the allocation phase: generates the register, notifies assigned experts, and unlocks the Follow-up phase on the dashboard.</p>
+      <p>This closes the allocation phase: generates the register and notifies assigned experts.</p>
     </div>
     <div class="modal-body">
       <div class="export-opt" id="opt-xls">
@@ -1404,7 +1404,7 @@ body.restricted .restrict-banner{display:flex}
     </div>
     <div class="modal-foot">
       <button class="btn-ghost" id="modal-cancel">Cancel</button>
-      <button class="btn-primary" id="modal-confirm" style="background:var(--ok)">✓ Finalize &amp; unlock Follow-up</button>
+      <button class="btn-primary" id="modal-confirm" style="background:var(--ok)">✓ Finalize allocation</button>
     </div>
   </div>
 </div>
@@ -4299,7 +4299,7 @@ document.getElementById("modal-confirm").addEventListener("click",()=>{
   toast("Review finalized — register STB-2026_requirements.xlsx generated","ok");
   try{ if(window.parent!==window && window.parent.setReviewValidated) window.parent.setReviewValidated(true); }catch(e){}
   const n=EXPORT_STATS.expertCount;
-  setTimeout(()=>toast(`${n} expert${n>1?"s":""} notified — Follow-up phase unlocked`,"ok"),900);
+  setTimeout(()=>toast(`${n} expert${n>1?"s":""} notified`,"ok"),900);
   setTimeout(()=>{ try{ if(window.parent!==window && window.parent.route) window.parent.route("dashboard"); }catch(e){} },1900);
 });
 document.getElementById("opt-xls").addEventListener("click",()=>toast(`Preview: ${EXPORT_STATS.total} rows · 8 columns · traceability links included`,"ok"));
