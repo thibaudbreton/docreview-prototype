@@ -213,7 +213,7 @@ window.updateReassignRequest = function(id, patch){
 let redactMode = 'redact';
 window.getRedactMode = ()=>redactMode;
 window.setRedactMode = (m)=>{ redactMode = m || 'redact'; };
-let theme = 'dark';
+let theme = 'light';
 window.getTheme = ()=>theme;
 window.setTheme = (t)=>{ theme = (t==='light')?'light':'dark';
   try{ const fr=document.getElementById('frame'); if(fr&&fr.contentDocument) fr.contentDocument.documentElement.setAttribute('data-theme',theme); }catch(e){}

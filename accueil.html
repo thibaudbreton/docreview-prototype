@@ -272,7 +272,7 @@ document.getElementById("reset-btn").addEventListener("click",()=>{
 render();
 setInterval(()=>{ if(getProjects().some(p=>p.status==="processing")) render(); }, 700);
 // apply theme
-try{ var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"dark"; document.documentElement.setAttribute("data-theme",t);}catch(e){}
+try{ var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light"; document.documentElement.setAttribute("data-theme",t);}catch(e){}
 </script>
 </body>
 </html>

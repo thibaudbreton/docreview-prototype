@@ -392,7 +392,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 @media(max-width:960px){.grid2{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}.pipeline{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
-<script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 </head>
 <body>
 <div id="app">
@@ -694,7 +694,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="appearance">
           <div class="cfg-h">Appearance</div>
           <div class="cfg-sub">Applies across the whole application. Useful to match the room and screen when running user tests.</div>
-          <div class="frow"><div class="fl"><div class="flt">Theme</div><div class="fld">Dark is the default. Light improves readability on shared screens and in recordings.</div></div>
+          <div class="frow"><div class="fl"><div class="flt">Theme</div><div class="fld">Light is the default. Dark reduces glare in low-light settings.</div></div>
             <div class="fc"><div class="theme-pick" id="theme-pick">
               <button class="theme-opt" data-theme="dark"><span class="sw sw-dark"></span>Dark</button>
               <button class="theme-opt" data-theme="light"><span class="sw sw-light"></span>Light</button>
@@ -1296,7 +1296,7 @@ function applyThemeUI(t){
   document.querySelectorAll(".theme-opt").forEach(b=>b.classList.toggle("on",b.dataset.theme===t));
 }
 (function(){
-  let t="dark"; try{ if(window.parent!==window&&window.parent.getTheme) t=window.parent.getTheme(); }catch(e){}
+  let t="light"; try{ if(window.parent!==window&&window.parent.getTheme) t=window.parent.getTheme(); }catch(e){}
   applyThemeUI(t);
 })();
 document.querySelectorAll(".theme-opt").forEach(b=>b.addEventListener("click",()=>{
