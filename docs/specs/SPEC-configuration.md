@@ -12,7 +12,7 @@ Whoever is managing the project — no role-gated content exists on this screen;
 
 ## 3. Entry points
 
-- The Configuration icon button in the header, present on the Dashboard, Allocation, and Follow-up screens.
+- The Configuration icon button in the header, present on the Dashboard, Allocation, Follow-up, and Expert Space screens. Deliberately absent from the Home screen (lists all tenders, no project open yet) and the project-creation wizard (mid-wizard, no project to configure).
 - A direct `#config` hash deep-link, handled on load.
 
 There is no "back" affordance specific to this screen beyond the shared header's Dashboard/Team-management icons and the logo.
