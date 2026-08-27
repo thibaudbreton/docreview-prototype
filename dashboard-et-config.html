@@ -138,6 +138,56 @@ html[data-theme="light"] .logo-mark-light{display:block}
   background:var(--panel-2);transition:all .15s;pointer-events:none}
 .phase:hover .ph-open-btn{border-color:var(--accent);background:var(--accent-soft)}
 .p2only.hidden,.p1only.hidden,.v22only.hidden{display:none}
+.hidden{display:none}
+
+/* SPEC-dashboard-statistics.md — statistics panel */
+.stats-panel{margin-bottom:var(--space-4)}
+.stats-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.stats-head h3{font-size:var(--text-base)}
+.stats-tabs{display:flex;gap:2px;padding:2px;border:1px solid var(--line-2);border-radius:var(--radius-md);background:var(--panel-2)}
+.stats-tab{padding:5px var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-sm);font-weight:500;color:var(--text-2);transition:all .13s}
+.stats-tab:hover{color:var(--text)}
+.stats-tab.on{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.stats-sec{display:none}
+.stats-sec.on{display:block}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4)}
+.stat-block{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4)}
+.stat-block.stat-trajectory,.stat-block.stat-bottlenecks{grid-column:1/-1}
+.stat-h{font-size:var(--text-sm);font-weight:600;margin-bottom:4px}
+.stat-sub{font-size:var(--text-xs);color:var(--text-3);margin-bottom:12px}
+
+.bn-list{display:flex;flex-direction:column;gap:1px}
+.bn-row{display:grid;grid-template-columns:44px 1fr auto auto;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-2);border-radius:var(--radius-sm);cursor:pointer;transition:background .12s}
+.bn-row:hover{background:var(--panel-3)}
+.bn-code{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-3)}
+.bn-label{font-size:var(--text-sm);color:var(--text-2)}
+.bn-count{font-size:var(--text-xs);color:var(--text-3);white-space:nowrap}
+.bn-age{font-size:var(--text-xs);font-weight:600;color:var(--text-2);white-space:nowrap;padding:2px var(--space-2);border-radius:var(--radius-pill);background:var(--panel-3)}
+.bn-age.warn{color:var(--warn);background:var(--warn-soft)}
+
+.qa-blocked-count{font-size:var(--text-xs);color:var(--text-3);margin-bottom:8px}
+.qa-blocked-row{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2);border-radius:var(--radius-sm);cursor:pointer;font-size:var(--text-sm);transition:background .12s}
+.qa-blocked-row:hover{background:var(--panel-3)}
+.qa-blocked-row b{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3);flex-shrink:0}
+.qa-blocked-row span:nth-child(2){flex:1;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qa-blocked-days{font-size:var(--text-xs);color:var(--accent);flex-shrink:0}
+.qa-blocked-empty{font-size:var(--text-sm);color:var(--text-3)}
+
+.casting-ok{font-size:var(--text-sm);color:var(--ok)}
+.casting-warn{font-size:var(--text-sm);color:var(--warn);cursor:pointer}
+.casting-warn:hover{text-decoration:underline}
+
+.invalidated-row{font-size:var(--text-sm);color:var(--ia);cursor:pointer}
+.invalidated-row:hover{text-decoration:underline}
+
+.progress-deadline-stat{font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
+.progress-deadline-stat .big{font-size:var(--text-xl);font-weight:700;color:var(--text)}
+
+.ai-rel-row{display:grid;grid-template-columns:80px 1fr 34px;align-items:center;gap:var(--space-3);margin-bottom:var(--space-2)}
+.ai-rel-field{font-size:var(--text-sm);color:var(--text-2)}
+.ai-rel-bar{height:8px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
+.ai-rel-bar span{display:block;height:100%;background:var(--accent);border-radius:var(--radius-xs)}
+.ai-rel-pct{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
 
 /* main columns */
 .dash-main{display:grid;grid-template-columns:1.55fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);align-items:start}
@@ -583,6 +633,79 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             Compliance, experts and response tracking appear here once allocation is finalized.
           </div>
         </aside>
+      </div>
+
+      <!-- SPEC-dashboard-statistics.md — statistics panel. Two tabs for the two audiences
+           the spec splits on: the PM's operational "what's blocking me" and the
+           stakeholder's comparative "is this healthy". Always visible regardless of
+           allocation state, per the spec's "always show the unknown" principle — pending
+           is the honest majority early in a tender, not a state to hide. -->
+      <div class="card stats-panel">
+        <div class="stats-head">
+          <h3>Statistics</h3>
+          <div class="stats-tabs">
+            <button class="stats-tab on" data-stab="pm">For you</button>
+            <button class="stats-tab" data-stab="stake">For stakeholders</button>
+          </div>
+        </div>
+
+        <div class="stats-sec on" data-stab="pm">
+          <div class="stats-grid">
+            <div class="stat-block stat-bottlenecks">
+              <div class="stat-h">Bottlenecks by perimeter</div>
+              <div class="stat-sub">Awaiting an expert answer — ranked by age of the oldest, not by count</div>
+              <div id="stats-bottlenecks" class="bn-list"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Compliance profile</div>
+              <div class="comp-bar" id="stats-comp-bar"></div>
+              <div class="comp-legend" id="stats-comp-legend"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Blocked on the client</div>
+              <div class="stat-sub">Awaiting Q&amp;A — not people to chase, a client to wait for</div>
+              <div id="stats-qa-blocked" class="qa-blocked-list"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Casting gaps</div>
+              <div id="stats-casting"></div>
+            </div>
+
+            <div class="stat-block stat-invalidated hidden" id="stats-invalidated-block">
+              <div class="stat-h">Work invalidated by a new version</div>
+              <div id="stats-invalidated"></div>
+            </div>
+
+            <div class="stat-block stat-trajectory">
+              <div class="stat-h">Trajectory to deadline</div>
+              <div id="stats-trajectory"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-sec" data-stab="stake">
+          <div class="stats-grid">
+            <div class="stat-block">
+              <div class="stat-h">Compliance profile</div>
+              <div class="comp-bar" id="stats-comp-bar2"></div>
+              <div class="comp-legend" id="stats-comp-legend2"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Progress against deadline</div>
+              <div id="stats-progress-deadline"></div>
+            </div>
+
+            <div class="stat-block stat-ai-reliability">
+              <div class="stat-h">AI reliability — correction rate by field</div>
+              <div class="stat-sub">Share of AI-proposed values a human subsequently changed</div>
+              <div id="stats-ai-reliability"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- activity -->
@@ -1404,6 +1527,174 @@ function renderOverdueCard(){
 renderReviewKPIs();
 renderComplianceKPIs();
 renderOverdueCard();
+
+/* =====================================================
+   SPEC-dashboard-statistics.md — statistics panel
+   Metrics 1.2/2.2 (compliance), 1.4 (casting gaps) and 1.5 (invalidated by a new
+   version) are derived from data this screen already has (FOLLOWUP_REQS, CAST_ACTIVITIES,
+   the real v2.2 upload flow). The spec itself flags 1.1's per-perimeter age, 1.6/2.3's
+   trajectory history and 2.4's AI correction rate as needing tracking the backend doesn't
+   do yet ("Data gaps" section) — those are hand-authored here, in the same spirit as the
+   rest of this file's seed content (FOLLOWUP_REQS, CAST_ACTIVITIES, OVERDUE_BRANCHES):
+   illustrative, not computed, not persisted.
+===================================================== */
+document.querySelectorAll(".stats-tab").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".stats-tab").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll(".stats-sec").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+  document.querySelector(`.stats-sec[data-stab="${b.dataset.stab}"]`).classList.add("on");
+}));
+
+// 1.1 — bottlenecks by perimeter (data gap: real age-in-status needs a status-transition
+// history the backend doesn't track yet)
+const STATS_BOTTLENECKS=[
+  {code:"MLN",label:"Mainline Wayside",count:3,oldestDays:14},
+  {code:"SIG",label:"SIG & Urban",count:2,oldestDays:9},
+  {code:"INF",label:"Infrastructure",count:2,oldestDays:6},
+  {code:"TLC",label:"Telecom",count:1,oldestDays:2},
+];
+function renderStatsBottlenecks(){
+  const el=document.getElementById("stats-bottlenecks"); if(!el) return;
+  const rows=[...STATS_BOTTLENECKS].sort((a,b)=>b.oldestDays-a.oldestDays);
+  el.innerHTML = rows.map(r=>`
+    <div class="bn-row" data-go="revue-documentaire.html">
+      <span class="bn-code">${r.code}</span>
+      <span class="bn-label">${r.label}</span>
+      <span class="bn-count">${r.count} awaiting</span>
+      <span class="bn-age ${r.oldestDays>=10?"warn":""}">${r.oldestDays}d oldest</span>
+    </div>`).join("");
+  el.querySelectorAll("[data-go]").forEach(row=>row.addEventListener("click",()=>goRoute(row.dataset.go)));
+}
+
+// 1.2/2.2 — compliance profile: real data (same source as the Project-health sidebar
+// card above), just always visible per the spec's "always show the unknown" principle
+// instead of gated behind allocation finalization like that card is.
+function complianceCounts(){
+  const total=FOLLOWUP_REQS.length;
+  const compliant=FOLLOWUP_REQS.filter(r=>r.compliance==="compliant").length;
+  const partial=FOLLOWUP_REQS.filter(r=>r.compliance==="rnd_needed").length;
+  const non=FOLLOWUP_REQS.filter(r=>r.compliance==="not_compliant").length;
+  const pending=total-compliant-partial-non;
+  return {total,compliant,partial,non,pending};
+}
+function renderStatsComplianceBar(barId,legendId){
+  const bar=document.getElementById(barId), legend=document.getElementById(legendId);
+  if(!bar||!legend) return;
+  const {total,compliant,partial,non,pending}=complianceCounts();
+  const pct=n=>total?(Math.round(n/total*1000)/10)+"%":"0%";
+  const segs=[["compliant",compliant,"Compliant"],["partial",partial,"R&D needed"],["non",non,"Not compliant"],["pending",pending,"Pending"]];
+  bar.innerHTML=segs.map(([k,n])=>`<div class="comp-seg ${k}" style="width:${pct(n)}" title="${n} · ${pct(n)}">${n||""}</div>`).join("");
+  legend.innerHTML=segs.map(([k,n,l])=>`<span><span class="dot ${k}"></span>${l} · ${n}</span>`).join("");
+}
+
+// 1.3 — blocked on the client (data gap: qa-raised dates aren't tracked at branch level
+// in this screen's own mirror; hand-authored, req ids match suivi-experts-et-versions.html's
+// real awaiting_qa branches for narrative consistency across screens)
+const STATS_QA_BLOCKED=[
+  {reqId:"EXG-006",note:"One-year depth: rolling or calendar year?",days:6},
+  {reqId:"EXG-008",note:"Is TLS 1.3 mandatory on already-deployed gateways?",days:5},
+  {reqId:"EXG-009",note:"3-year vs 5-year retention conflict",days:5},
+  {reqId:"EXG-010",note:"Which TLS version applies to legacy gateways?",days:4},
+];
+function renderStatsQABlocked(){
+  const el=document.getElementById("stats-qa-blocked"); if(!el) return;
+  if(!STATS_QA_BLOCKED.length){ el.innerHTML=`<div class="qa-blocked-empty">Nothing blocked on the client right now.</div>`; return; }
+  el.innerHTML=`<div class="qa-blocked-count">${STATS_QA_BLOCKED.length} question${STATS_QA_BLOCKED.length>1?"s":""} raised, oldest ${Math.max(...STATS_QA_BLOCKED.map(q=>q.days))} days ago</div>`
+    + STATS_QA_BLOCKED.map(q=>`<div class="qa-blocked-row" data-go="suivi-experts-et-versions.html"><b>${q.reqId}</b><span>${q.note}</span><span class="qa-blocked-days">${q.days}d</span></div>`).join("");
+  el.querySelectorAll("[data-go]").forEach(row=>row.addEventListener("click",()=>goRoute(row.dataset.go)));
+}
+
+// 1.4 — casting gaps: real data (CAST_ACTIVITIES with no manager cast at all — a
+// stricter condition than the Team casting phase card's own "not fully staffed" count)
+function renderStatsCasting(){
+  const el=document.getElementById("stats-casting"); if(!el) return;
+  const gaps=CAST_ACTIVITIES.filter(a=>!a.managerId);
+  if(!gaps.length){ el.innerHTML=`<div class="casting-ok">✓ Every perimeter has a manager cast</div>`; return; }
+  el.innerHTML=`<div class="casting-warn" id="stats-casting-link">⚠ ${gaps.length} perimeter${gaps.length>1?"s":""} unstaffed — ${gaps.map(g=>g.label).join(", ")}</div>`;
+  document.getElementById("stats-casting-link")?.addEventListener("click",()=>showScreen("team"));
+}
+
+// 1.5 — invalidated by a new version: real data, reusing the v2.2 simulate-upload flow's
+// own outdated-answer flag. Appears only when non-zero, per the spec.
+function renderStatsInvalidated(){
+  const block=document.getElementById("stats-invalidated-block");
+  const el=document.getElementById("stats-invalidated");
+  if(!block||!el) return;
+  const stale=FOLLOWUP_REQS.filter(r=>r.id==="EXG-005"&&v22Done());
+  if(!stale.length){ block.classList.add("hidden"); return; }
+  block.classList.remove("hidden");
+  el.innerHTML=`<div class="invalidated-row" id="stats-invalidated-link">⇄ ${stale.length} expert answer${stale.length>1?"s":""} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
+  document.getElementById("stats-invalidated-link")?.addEventListener("click",()=>goRoute("suivi-experts-et-versions.html#versions"));
+}
+
+// 1.6/2.3 — trajectory to deadline (data gap: needs periodic snapshots of remaining
+// work, which nothing currently stores; hand-authored weekly history ending at today's
+// real "5/14 validated" state)
+const STATS_TRAJECTORY=[
+  {label:"Jul 1",remaining:14},
+  {label:"Jul 5",remaining:13},
+  {label:"Jul 8",remaining:12},
+  {label:"Jul 12",remaining:10},
+  {label:"Jul 15",remaining:9},
+];
+const STATS_DEADLINE_LABEL="Aug 12";
+function renderStatsTrajectory(){
+  const el=document.getElementById("stats-trajectory"); if(!el) return;
+  const pts=STATS_TRAJECTORY;
+  const w=460,h=120,pad=28;
+  const maxY=Math.max(...pts.map(p=>p.remaining),1);
+  const stepX=(w-pad*2)/pts.length;
+  const x=i=>pad+i*stepX;
+  const y=v=>h-pad-(v/maxY)*(h-pad*2-16);
+  const path=pts.map((p,i)=>`${i===0?"M":"L"}${x(i)},${y(p.remaining)}`).join(" ");
+  const deadlineX=x(pts.length);
+  const dots=pts.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.remaining)}" r="3" fill="var(--accent)"><title>${p.label} · ${p.remaining} remaining</title></circle>`).join("");
+  const labels=pts.map((p,i)=>`<text x="${x(i)}" y="${h-8}" font-size="9" fill="var(--text-3)" text-anchor="middle">${p.label}</text>`).join("");
+  el.innerHTML=`<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}">
+    <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="var(--line-2)" stroke-width="1"/>
+    <line x1="${deadlineX}" y1="8" x2="${deadlineX}" y2="${h-pad}" stroke="var(--warn)" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="${deadlineX}" y="14" font-size="9" fill="var(--warn)" text-anchor="middle">Deadline ${STATS_DEADLINE_LABEL}</text>
+    <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    ${dots}
+    ${labels}
+  </svg>`;
+}
+function renderStatsProgressDeadline(){
+  const el=document.getElementById("stats-progress-deadline"); if(!el) return;
+  const first=STATS_TRAJECTORY[0], last=STATS_TRAJECTORY[STATS_TRAJECTORY.length-1];
+  el.innerHTML=`<div class="progress-deadline-stat"><span class="big">${last.remaining}</span> requirements remaining, down from ${first.remaining} at the start — <b>on pace</b> for the ${STATS_DEADLINE_LABEL} deadline.</div>`;
+}
+
+// 2.4 — AI reliability by field (data gap: the AI feedback loop is specified but has no
+// queryable consumer yet; hand-authored illustrative rates)
+const STATS_AI_RELIABILITY=[
+  {field:"Type",rate:8},
+  {field:"Class",rate:5},
+  {field:"Activity",rate:14},
+  {field:"Allocation",rate:22},
+];
+function renderStatsAIReliability(){
+  const el=document.getElementById("stats-ai-reliability"); if(!el) return;
+  el.innerHTML = STATS_AI_RELIABILITY.map(f=>`
+    <div class="ai-rel-row">
+      <span class="ai-rel-field">${f.field}</span>
+      <span class="ai-rel-bar"><span style="width:${f.rate}%"></span></span>
+      <span class="ai-rel-pct">${f.rate}%</span>
+    </div>`).join("");
+}
+
+function renderStatsPanel(){
+  renderStatsBottlenecks();
+  renderStatsComplianceBar("stats-comp-bar","stats-comp-legend");
+  renderStatsComplianceBar("stats-comp-bar2","stats-comp-legend2");
+  renderStatsQABlocked();
+  renderStatsCasting();
+  renderStatsInvalidated();
+  renderStatsTrajectory();
+  renderStatsProgressDeadline();
+  renderStatsAIReliability();
+}
+renderStatsPanel();
 
 /* apply phase gating on load */
 applyGating();

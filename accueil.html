@@ -89,6 +89,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .pc-name{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px;line-height:1.3}
 .pc-meta{font-size:var(--text-sm);color:var(--text-3);display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-1) 12px}
 .pc-meta b{color:var(--text-2);font-weight:600}
+.pc-health{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-3);margin-top:6px}
+.pc-health .hdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--text-3)}
+.pc-health .hdot.on_track{background:var(--ok)}
+.pc-health .hdot.at_risk{background:var(--ia)}
+.pc-health .hdot.behind{background:var(--warn)}
 .pc-body{margin-top:auto}
 .pc-prog{display:flex;flex-direction:column;gap:7px}
 .pc-prog-top{display:flex;justify-content:space-between;font-size:var(--text-xs);color:var(--text-2)}
@@ -178,6 +183,10 @@ const STATUS={
   qa_versioning:{label:"Q&A & Versioning", cls:"b-qa"},
   submitted:    {label:"Submitted",        cls:"b-sub"},
 };
+// SPEC-dashboard-statistics.md §2.1 — the "one compact indicator per project" for the
+// stakeholder list view; see seedProjects()'s health/healthNote comment for why these
+// are hand-set rather than computed.
+const HEALTH_LABEL={on_track:"On track",at_risk:"At risk",behind:"Behind"};
 const TAB_DEFS=[
   {id:"all",label:"All"},
   {id:"processing",label:"Processing"},
@@ -224,10 +233,12 @@ function cardHTML(p){
       : `${p.done}/${p.total} resolved`;
     body=`<div class="pc-stat"><span>${lbl}</span><span class="mini-bar"><div style="width:${pctv}%"></div></span></div>`;
   }
+  const health = p.health ? `<div class="pc-health" title="${p.healthNote||""}"><span class="hdot ${p.health}"></span>${HEALTH_LABEL[p.health]||p.health}${p.healthNote?" — "+p.healthNote:""}</div>` : "";
   return `<div class="pcard ${p.status}" data-id="${p.id}">
     <div class="pc-top"><span class="pc-ref">${p.ref}</span><span class="pc-badge push ${s.cls}"><span class="bdot"></span>${s.label}</span></div>
     <div class="pc-name">${p.name}</div>
     <div class="pc-meta">${roleBadge(p.role)}<span><b>${p.line}</b></span>${p.deadline!=null?"<span>"+deadlineChip(p.days)+"</span>":""}</div>
+    ${health}
     <div class="pc-body">${body}</div>
     <div class="pc-foot"><span>${p.status==="processing"?'<span class="pc-processing-note">Opens when processing completes</span>':(p.builtOut===false?'<span class="pc-processing-note">Demo project — list &amp; status only</span>':"Updated "+(p.updated||"recently"))}</span>
       ${(p.status!=="processing"&&p.builtOut!==false)?'<span class="open">Open →</span>':""}</div>

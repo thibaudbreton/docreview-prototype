@@ -85,14 +85,24 @@ const frame = document.getElementById('frame');
    all — they're intentionally exempt from the block, see addProject below. */
 function seedProjects(){
   return [
+    // SPEC-dashboard-statistics.md §2.1 — `health`/`healthNote` are the "one compact
+    // indicator per project" for the stakeholder list view. The spec explicitly leaves
+    // the composite's exact formula an open decision ("needs a real decision rather than
+    // a formula picked for convenience"), so these are hand-set per project like the rest
+    // of this seed data, not computed — and only set on projects with enough real progress
+    // data to assess (skipped for `processing`, which has nothing yet, and `submitted`,
+    // which is already closed rather than "on track/at risk").
     {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Signalling & Urban", days:23, deadline:1,
-     status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager", builtOut:true},
+     status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager", builtOut:true,
+     health:"on_track", healthNote:"On pace — 2 items need attention"},
     {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"Signalling & Urban", days:9, deadline:1,
-     status:"expert_review", done:34, total:41, updated:"2h ago", role:"Signalling manager", builtOut:false},
+     status:"expert_review", done:34, total:41, updated:"2h ago", role:"Signalling manager", builtOut:false,
+     health:"at_risk", healthNote:"9 days left, 7 requirements still open"},
     {id:"ao088", ref:"AO-2026-088", name:"Depot Maintenance Systems", line:"Services", days:41, deadline:1,
      status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now", role:"Project manager", builtOut:false},
     {id:"stb133", ref:"STB-2026-133", name:"Regional Fleet Telemetry", line:"Rolling stock", days:5, deadline:1,
-     status:"qa_versioning", done:58, total:63, updated:"yesterday", role:"Expert", builtOut:false},
+     status:"qa_versioning", done:58, total:63, updated:"yesterday", role:"Expert", builtOut:false,
+     health:"on_track", healthNote:"92% resolved, on pace for the deadline"},
     {id:"stb2025", ref:"STB-2025-071", name:"Metro Depot Power Supply", line:"Systems", days:-12, deadline:1,
      status:"submitted", reqs:88, updated:"Jun 3", role:"Expert", builtOut:false},
   ];
