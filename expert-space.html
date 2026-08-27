@@ -19,6 +19,7 @@
   --text-3:#8B9AAD;
   --accent:#4C82FF;
   --accent-soft:#1E3A63;
+  --accent-hover:color-mix(in srgb, var(--accent) 75%, white);
   --ia:#E3A64B;
   --ia-soft:rgba(227,166,75,.12);
   --ok:#3FBE86;
@@ -159,17 +160,17 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .compliance-pill.c-pending{background:transparent;border-style:dashed;border-color:var(--line-2);color:var(--text-3);font-style:italic;font-weight:500}
 
 /* ---------- Bulk Action Bar ---------- */
-.sel-bar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(24px);z-index:55;display:none;align-items:center;gap:var(--space-4);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);box-shadow:0 16px 48px rgba(0,0,0,.6);opacity:0;transition:opacity .25s ease;max-width:calc(100vw - 48px);flex-wrap:wrap;justify-content:center}
+.sel-bar{position:fixed;left:0;right:0;bottom:24px;margin-inline:auto;width:max-content;z-index:55;display:none;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 48px rgba(0,0,0,.6);opacity:0;transition:opacity .25s ease;max-width:calc(100vw - 48px);flex-wrap:wrap;justify-content:center}
 .sel-bar.on{display:flex;opacity:1}
-.sel-n{font-size:var(--text-base);color:var(--text-2)}
-.sel-n b{color:var(--text);font-variant-numeric:tabular-nums}
-.sel-actions{display:flex;flex-wrap:wrap;gap:var(--space-2);padding:var(--space-1) 6px;border-left:1px solid var(--line-2);border-right:1px solid var(--line-2)}
-.sel-btn{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);font-size:var(--text-sm);font-weight:500;color:var(--text-2);transition:all .13s}
+.sel-n{font-size:var(--text-sm);color:var(--text-3);white-space:nowrap;padding-left:var(--space-2)}
+.sel-n b{color:var(--text);font-size:var(--text-base);font-weight:600;font-variant-numeric:tabular-nums}
+.sel-clear{width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);font-size:var(--text-base);line-height:1;color:var(--text-3);transition:all .13s}
+.sel-clear:hover{background:var(--panel-2);color:var(--text)}
+.sel-sep{width:1px;height:20px;flex-shrink:0;background:var(--line-2);margin:0 var(--space-1)}
+.sel-btn{padding:7px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);font-size:var(--text-base);font-weight:500;color:var(--text-2);white-space:nowrap;transition:all .13s}
 .sel-btn:hover{border-color:var(--accent);color:var(--text)}
-.sel-btn.ok{border-color:rgba(63,178,127,.5);color:var(--ok)}
-.sel-btn.ok:hover{background:var(--ok);color:#fff}
-.sel-clear{font-size:var(--text-sm);color:var(--text-3)}
-.sel-clear:hover{color:var(--text)}
+.sel-btn.primary{background:var(--ok);border-color:var(--ok);color:#fff;font-weight:600}
+.sel-btn.primary:hover{filter:brightness(1.1)}
 
 /* ---------- Detail panel ---------- */
 .settings{width:400px;flex-shrink:0;display:flex;flex-direction:column;background:var(--panel);border-left:1px solid var(--line)}
@@ -379,10 +380,9 @@ html[data-theme="light"] .logo-mark-light{display:block}
   <!-- ===================== BULK ACTION BAR ===================== -->
   <div id="sel-bar" class="sel-bar">
     <span class="sel-n"><b id="sel-count">0</b> selected</span>
-    <div class="sel-actions">
-      <button class="sel-btn ok" id="sel-bulk-compliant">✓ Batch verdict: Compliant</button>
-    </div>
-    <span class="sel-clear" id="sel-clear">Clear selection</span>
+    <span class="sel-sep"></span>
+    <button class="sel-btn primary" id="sel-bulk-compliant">✓ Batch verdict: Compliant</button>
+    <button class="sel-clear" id="sel-clear" title="Clear selection" aria-label="Clear selection">✕</button>
   </div>
 
 
