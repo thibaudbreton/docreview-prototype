@@ -5,17 +5,28 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-08-20T14:00Z (covered commits from 2026-08-20T08:31Z through
-  `feaff8a`)
+- Last run: 2026-08-27T12:00Z (covered commits from `6bfb87c` through
+  `f95ef53`)
 - Findings this run:
-  - `d31a51c` ("add the Project configuration gear to Expert Space") put
-    `SPEC-configuration.md` §3 Entry points out of sync — it listed only
-    Dashboard/Allocation/Follow-up. Low-risk, unambiguous: updated directly
-    to add Expert Space and note why Home/project-creation are excluded.
-  - `feaff8a` ("make Light the default color mode") checked against every
-    spec mentioning theme/dark/light (`SPEC-configuration.md` §6 Theme
-    picker) — no spec asserted a specific default, so no drift found, no
-    edit made.
-  - No open GitHub issues or PRs since the previous run; no ticket/decision
-    files under `docs/tickets/` or `docs/decisions/` changed in this window.
-- Baseline for the next run: commits after `feaff8a` (2026-08-20T15:42Z).
+  - `fd5d084` ("implement SPEC-dashboard-statistics.md") added the spec and
+    its implementation in the same commit — self-consistent, no drift to
+    reconcile. Its hand-authored metrics (1.1, 1.6/2.3, 2.4) match the
+    spec's own "Data gaps" section, which already flags them as not yet
+    backed by real tracking.
+  - `9e10bca`/`e4b9835` (`TICKET-ai-uncertainty-display.md`, per-field AI
+    confidence driving row status) resolves the ticket's one open question
+    — "To review" is the existing `doubt` status, not a new fifth state —
+    but `SPEC-domain-model.md` §8.2 already documented exactly this
+    (vocabulary, rename, per-field doubt) from an earlier session
+    (`9ebda8f`, predates this window). Checked line by line against the
+    implementation commit's description: no drift, no edit needed.
+  - `e278a2a`/`70a6f3a`/`f95ef53` (accent-colour token cleanup, bulk-action-bar
+    redesign propagated to Expert Space and Follow-up) is a pure visual/CSS
+    fix — no spec asserts a specific bulk-bar layout or accent literal, only
+    that the shared Bulk Action Bar component is reused. No drift.
+  - No open GitHub issues or PRs since the previous run (checked
+    `list_issues`/`list_pull_requests`); no Linear access configured for
+    this repo. No `docs/decisions/` changes in this window.
+  - No spec edits made, no GitHub issues opened — nothing ambiguous or
+    out of sync was found.
+- Baseline for the next run: commits after `f95ef53` (2026-08-27T11:46Z).
