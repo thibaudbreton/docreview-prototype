@@ -263,6 +263,9 @@ body.mode-compare .nav-section-head .sec-changes{display:inline-flex}
 body.mode-compare .nbadge.b-change{display:block}
 .nav-item.dimmed{opacity:.28;pointer-events:none}
 .nav-count{padding:var(--space-2) var(--space-3);font-size:var(--text-xs);color:var(--text-3);border-top:1px solid var(--line)}
+/* USER-TEST-session-3.md §1.4 — the project isn't sealed at creation, a document
+   can be added any time and gets the same AI pass a fresh project would. */
+.nav-add-doc{margin:0 var(--space-3) var(--space-2);justify-content:center;flex-shrink:0}
 .nav-count b{color:var(--text-2)}
 
 /* ---------- Center ---------- */
@@ -529,11 +532,29 @@ body.mode-review .doc-scroll{display:none}
 .view-scale-row{display:flex;align-items:flex-start;gap:var(--space-2);padding:6px 2px;cursor:pointer;font-size:var(--text-sm);color:var(--text-2)}
 .view-scale-row input{margin-top:2px}
 .view-scale-note{display:block;font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
-/* column collapse */
+/* column visibility + order — USER-TEST-session-3.md §1.4. A hidden column disappears
+   entirely (no sliver); its cell just isn't in the grid flow. Position comes from
+   --ord-* custom properties set once on .rgrid by applyCols() and inherited by every
+   .rcell, current rows and future ones alike — the row-render code never needs to
+   know the current order. */
 .rgrid-head .rcell{position:relative}
-.rgrid[data-cc~="class"] .c-class>*,.rgrid[data-cc~="typo"] .c-typo>*,.rgrid[data-cc~="abs"] .c-abs>*,.rgrid[data-cc~="type"] .c-type>*,.rgrid[data-cc~="obs"] .c-obs>*,.rgrid[data-cc~="mgr"] .c-mgr>*,.rgrid[data-cc~="status"] .c-status>*,.rgrid[data-cc~="compliance"] .c-compliance>*{display:none}
-.rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="type"] .c-type,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{padding:0;justify-content:center;cursor:pointer}
-.rgrid[data-cc~="class"] .rgrid-head .c-class::after,.rgrid[data-cc~="typo"] .rgrid-head .c-typo::after,.rgrid[data-cc~="abs"] .rgrid-head .c-abs::after,.rgrid[data-cc~="type"] .rgrid-head .c-type::after,.rgrid[data-cc~="obs"] .rgrid-head .c-obs::after,.rgrid[data-cc~="mgr"] .rgrid-head .c-mgr::after,.rgrid[data-cc~="status"] .rgrid-head .c-status::after,.rgrid[data-cc~="compliance"] .rgrid-head .c-compliance::after{content:"»";color:var(--text-3);font-size:var(--text-xs)}
+.rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="type"] .c-type,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{display:none}
+.rcell.c-sel{order:var(--ord-sel,0)}
+.rcell.c-id{order:var(--ord-id,1)}
+.rcell.c-req{order:var(--ord-req,2)}
+.rcell.c-class{order:var(--ord-class,3)}
+.rcell.c-typo{order:var(--ord-typo,4)}
+.rcell.c-abs{order:var(--ord-abs,5)}
+.rcell.c-type{order:var(--ord-type,6)}
+.rcell.c-obs{order:var(--ord-obs,7)}
+.rcell.c-mgr{order:var(--ord-mgr,8)}
+.rcell.c-status{order:var(--ord-status,9)}
+.rcell.c-compliance{order:var(--ord-compliance,10)}
+/* column menu — drag-to-reorder rows */
+.colf-row{display:flex;align-items:center;gap:4px}
+.colf-row .colf-opt{flex:1}
+.colf-handle{cursor:grab;color:var(--text-3);font-size:var(--text-sm);flex-shrink:0;line-height:1;padding:0 4px}
+.colf-row.dragging{opacity:.4}
 /* nav / detail panel collapse */
 .panel-toggle{
   position:absolute;top:8px;z-index:5;width:20px;height:20px;border-radius:var(--radius-sm);
@@ -1309,6 +1330,7 @@ body.restricted .restrict-banner{display:flex}
         </div>
       </div>
       <div class="nav-list" id="nav-list"></div>
+      <button class="btn-ghost nav-add-doc" id="add-doc-btn">⬆ Add a document</button>
       <div class="nav-count" id="nav-count"></div>
     </aside>
 
@@ -2116,6 +2138,7 @@ const state = {
   docNavCollapsed:new Set(),
   docFilter:"all",
   colCollapsed:new Set(),
+  colOrder:["class","typo","abs","type","obs","mgr","status","compliance"],
   navPanelCollapsed:false,
   detailPanelCollapsed:false,
   sortCol:null,
@@ -4161,15 +4184,25 @@ function renderSortIndicators(){
   if(resetLink) resetLink.style.display=state.sortCol?"inline":"none";
 }
 
-/* ---------- column collapse (Excel-like) ---------- */
+/* ---------- column visibility + order ---------- */
+/* USER-TEST-session-3.md §1.4 — a column can now disappear entirely (not just collapse
+   to a sliver) and be reordered. sel/id/req stay pinned first, in that order; everything
+   else follows state.colOrder. Width and CSS `order` are both driven off colOrder, so a
+   hidden column's track drops out of --rgrid-cols and every current+future .rcell (rows
+   included, via the --ord-* custom properties inherited from .rgrid) repaints in the
+   right visual position without the row-render code needing to know about ordering. */
 const RCOLS=[
   {k:"sel",w:"32px"},{k:"id",w:"98px"},{k:"req",w:"minmax(325px,1.82fr)"},
   {k:"class",w:"78px"},{k:"typo",w:"112px"},{k:"abs",w:"120px"},{k:"type",w:"100px"},
   {k:"obs",w:"140px"},{k:"mgr",w:"118px"},{k:"status",w:"92px"},{k:"compliance",w:"108px"},
 ];
+const RCOLS_BY_KEY=Object.fromEntries(RCOLS.map(c=>[c.k,c]));
 function applyCols(){
   const grid=document.querySelector(".rgrid"); if(!grid) return;
-  grid.style.setProperty("--rgrid-cols", RCOLS.map(c=>state.colCollapsed.has(c.k)?"24px":c.w).join(" "));
+  const fullOrder=["sel","id","req",...state.colOrder];
+  const visible=fullOrder.filter(k=>!state.colCollapsed.has(k));
+  grid.style.setProperty("--rgrid-cols", visible.map(k=>RCOLS_BY_KEY[k].w).join(" "));
+  fullOrder.forEach((k,i)=>grid.style.setProperty(`--ord-${k}`, i));
   grid.setAttribute("data-cc",[...state.colCollapsed].join(" "));
 }
 // keep the header's horizontal scroll in sync with the body — otherwise columns beyond the
@@ -4179,10 +4212,6 @@ function applyCols(){
   if(!body||!head) return;
   body.addEventListener("scroll",()=>{ head.scrollLeft = body.scrollLeft; });
 })();
-// clicking a collapsed header cell re-expands it
-document.querySelectorAll(".rgrid-head [data-col]").forEach(cell=>cell.addEventListener("click",e=>{
-  const k=cell.dataset.col; if(state.colCollapsed.has(k)){ state.colCollapsed.delete(k); applyCols(); }
-}));
 function renderColFilterIndicators(){
   const n=colFilterActiveCount();
   const badge=document.getElementById("view-badge");
@@ -4247,6 +4276,35 @@ function toggleScaleTest(on){
   if(state.mode!=="review") setMode("review");
   refresh();
 }
+/* USER-TEST-session-3.md §1.4 — the project isn't sealed at creation: a document can
+   be added any time, gets its own AI pass, and its requirements land the same way a
+   fresh project's do — uncharacterized, Incomplete, ready to review. Mirrors
+   reclassify()'s info→requirement field set rather than inventing a new shape. */
+let addedDocsCount=0;
+function simulateAddDocument(){
+  const btn=document.getElementById("add-doc-btn");
+  if(btn){ btn.disabled=true; btn.textContent="Processing…"; }
+  toast("Uploading document…","ok");
+  setTimeout(()=>{
+    addedDocsCount++;
+    const docId="d-new"+addedDocsCount, docName="Addendum "+addedDocsCount+" — new scope";
+    DOCS.push({id:docId, name:docName, file:""});
+    const n=3+(addedDocsCount%3);
+    const blocks=[];
+    for(let i=0;i<n;i++){
+      const id="NEW-"+addedDocsCount+"-"+String(i+1).padStart(3,"0");
+      const text=`The system ${BIG_VERBS[(i+addedDocsCount)%BIG_VERBS.length]} ${BIG_OBJ[(i*3+addedDocsCount)%BIG_OBJ.length]} ${BIG_QUAL[(i*5+addedDocsCount)%BIG_QUAL.length]}.`;
+      const b={id, kind:"requirement", text, type:"Functional", tech:"tech", perim:[], alloc:null, manager:null, allocStatus:"incomplete"};
+      computeCharStatus(b);
+      blocks.push(b);
+    }
+    SECTIONS.push({id:"s-new"+addedDocsCount, docId, num:"", title:"New scope", blocks});
+    if(btn){ btn.disabled=false; btn.textContent="⬆ Add a document"; }
+    refresh();
+    toast(`${docName} added — ${n} new requirement${n>1?"s":""} ready for characterization`,"ok");
+  }, 900);
+}
+document.getElementById("add-doc-btn")?.addEventListener("click", simulateAddDocument);
 document.getElementById("wrap-toggle")?.addEventListener("change",e=>{ state.wrapText=e.target.checked; renderReview(); });
 document.getElementById("filter-btn")?.addEventListener("click",e=>{ e.stopPropagation(); filterPanelState.open=!filterPanelState.open; renderFilterPanel(); });
 document.addEventListener("click",e=>{ if(filterPanelState.open && !e.target.closest("#filter-panel") && !e.target.closest("#filter-btn")){ filterPanelState.open=false; renderFilterPanel(); } });
@@ -4265,9 +4323,9 @@ function renderColumnsPanel(){
     <div class="view-panel-head">View</div>
     <div class="view-sec">
       <div class="view-sec-head">Table columns</div>
-      ${TE.columnChecklistHTML(COLUMN_TOGGLE_DEFS,state.colCollapsed)}
+      ${TE.reorderableColumnListHTML(COLUMN_TOGGLE_DEFS,state.colOrder,state.colCollapsed)}
     </div>`;
-  TE.bindColumnChecklist(p,state.colCollapsed,()=>applyCols());
+  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyCols(); renderColumnsPanel(); });
 }
 document.getElementById("cols-btn")?.addEventListener("click",e=>{ e.stopPropagation(); colsPanelState.open=!colsPanelState.open; renderColumnsPanel(); });
 document.addEventListener("click",e=>{ if(colsPanelState.open && !e.target.closest("#cols-panel") && !e.target.closest("#cols-btn")){ colsPanelState.open=false; renderColumnsPanel(); } });
@@ -4299,31 +4357,36 @@ const EXPORT_FORMATS=[
   {k:"reqif",label:"ReqIF (.reqif) — requirements exchange"},
   {k:"doors9",label:"DOORS 9 (.csv for import)"},{k:"doorsng",label:"DOORS Next (ReqIF)"},
 ];
-const exportState={steps:new Set(["capture","charac","alloc"]),format:"xlsx",open:false};
+const exportState={steps:new Set(["capture","charac","alloc"]),format:"xlsx",docId:"all",open:false};
 function renderExportPanel(){
   const p=document.getElementById("export-panel"); if(!p) return;
   p.classList.toggle("on",exportState.open);
   if(!exportState.open){ p.innerHTML=""; return; }
+  const docOptions=`<option value="all">All documents (${DOCS.length})</option>`+
+    DOCS.map((d,i)=>`<option value="${d.id}" ${exportState.docId===d.id?"selected":""}>Doc ${i+1} — ${d.name}</option>`).join("");
   p.innerHTML=`
     <div class="exp-h">Export requirements</div>
+    <div class="exp-sec-lbl">Document</div>
+    <select id="exp-doc" class="exp-format">${docOptions}</select>
     <div class="exp-sec-lbl">Include steps</div>
     ${EXPORT_STEPS.map(s=>`<label class="exp-row"><input type="checkbox" data-estep="${s.k}" ${exportState.steps.has(s.k)?"checked":""}><span><span class="exp-t">${s.label}</span><span class="exp-d">${s.desc}</span></span></label>`).join("")}
     <div class="exp-sec-lbl">Target format</div>
     <select id="exp-format" class="exp-format">${EXPORT_FORMATS.map(f=>`<option value="${f.k}" ${exportState.format===f.k?"selected":""}>${f.label}</option>`).join("")}</select>
     <button class="exp-go" id="exp-go">Generate export</button>
     <div class="exp-note">DOORS import keeps the requirement register upstream. Export late — most of the review stays in the tool.</div>`;
+  p.querySelector("#exp-doc").addEventListener("change",e=>exportState.docId=e.target.value);
   p.querySelectorAll("[data-estep]").forEach(cb=>cb.addEventListener("change",()=>{ cb.checked?exportState.steps.add(cb.dataset.estep):exportState.steps.delete(cb.dataset.estep); }));
   p.querySelector("#exp-format").addEventListener("change",e=>exportState.format=e.target.value);
   p.querySelector("#exp-go").addEventListener("click",()=>{
     if(!exportState.steps.size){ toast("Select at least one step to export","warn"); return; }
     const fmt=EXPORT_FORMATS.find(f=>f.k===exportState.format).label.split(" ")[0];
     const steps=[...exportState.steps].map(k=>EXPORT_STEPS.find(s=>s.k===k).label).join(" + ");
-    const scope=state.docFilter==="all"?"all documents":("Doc "+(DOCS.findIndex(d=>d.id===state.docFilter)+1));
+    const scope=exportState.docId==="all"?"all documents":("Doc "+(DOCS.findIndex(d=>d.id===exportState.docId)+1));
     exportState.open=false; renderExportPanel();
     toast(`Export generated — ${fmt} · ${steps} · ${scope}`,"ok");
   });
 }
-document.getElementById("export-btn")?.addEventListener("click",e=>{ e.stopPropagation(); exportState.open=!exportState.open; renderExportPanel(); });
+document.getElementById("export-btn")?.addEventListener("click",e=>{ e.stopPropagation(); exportState.docId=state.docFilter; exportState.open=!exportState.open; renderExportPanel(); });
 document.addEventListener("click",e=>{ if(exportState.open && !e.target.closest("#export-panel") && !e.target.closest("#export-btn")){ exportState.open=false; renderExportPanel(); } });
 
 /* close activity dropdown on outside click */

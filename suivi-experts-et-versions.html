@@ -208,7 +208,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
    component, this screen's own column config + adapter, table-engine.js for
    the interaction behaviour). Copied CSS conventions, not a shared stylesheet
    (this project has no bundler — CSS is duplicated per file by convention). */
-:root{ --rrow-h:44px; --frgrid-cols:32px 84px minmax(280px,1.6fr) 90px 140px 110px 190px 110px 70px; }
+:root{ --rrow-h:44px; --frgrid-cols:32px 84px minmax(280px,1.6fr) 90px 140px 110px 230px 90px 70px; }
 .rgrid{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
 /* TH2 — align-self:flex-start (mirrors the original intent in
    revue-documentaire.html: let the header's box grow to fit its columns so
@@ -242,6 +242,10 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rrow .c-sel{padding:0}
 .rrow .c-req{gap:8px}
 .rrow .c-req .excerpt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.45}
+/* USER-TEST-session-3.md §1.5 — the compliance comment sits under the verdict pill,
+   visible at a glance instead of behind an interaction. */
+.rrow .c-status{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding-top:6px;padding-bottom:6px}
+.verdict-comment{font-size:var(--text-xs);color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .rrow.branch-row{background:var(--panel-2);cursor:pointer}
 .rrow.branch-row:hover{background:var(--panel-3)}
 .rrow.branch-row .c-req{padding-left:var(--space-6);gap:6px}
@@ -249,11 +253,24 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rowsel{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
 .rcell.active-cell{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius-xs);position:relative;z-index:1}
 .rcell.c-id{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-2);white-space:nowrap}
-/* collapsed columns (Column Visibility Menu): hide content, show a thin »
-   re-expand strip — click the collapsed header cell to bring the column back */
-.rgrid[data-cc~="typo"] .c-typo>*,.rgrid[data-cc~="expert"] .c-expert>*,.rgrid[data-cc~="mgr"] .c-mgr>*,.rgrid[data-cc~="status"] .c-status>*,.rgrid[data-cc~="lastfu"] .c-lastfu>*,.rgrid[data-cc~="age"] .c-age>*{display:none}
-.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{padding:0;justify-content:center;cursor:pointer}
-.rgrid[data-cc~="typo"] .rgrid-head .c-typo::after,.rgrid[data-cc~="expert"] .rgrid-head .c-expert::after,.rgrid[data-cc~="mgr"] .rgrid-head .c-mgr::after,.rgrid[data-cc~="status"] .rgrid-head .c-status::after,.rgrid[data-cc~="lastfu"] .rgrid-head .c-lastfu::after,.rgrid[data-cc~="age"] .rgrid-head .c-age::after{content:"»";color:var(--text-3);font-size:var(--text-xs)}
+/* column visibility + order — USER-TEST-session-3.md §1.4. A hidden column disappears
+   entirely; position comes from --ord-* custom properties set on .rgrid by
+   applyFCols() and inherited by every .rcell, current rows and future ones alike. */
+.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{display:none}
+.rcell.c-sel{order:var(--ord-sel,0)}
+.rcell.c-id{order:var(--ord-id,1)}
+.rcell.c-req{order:var(--ord-req,2)}
+.rcell.c-typo{order:var(--ord-typo,3)}
+.rcell.c-expert{order:var(--ord-expert,4)}
+.rcell.c-mgr{order:var(--ord-mgr,5)}
+.rcell.c-status{order:var(--ord-status,6)}
+.rcell.c-lastfu{order:var(--ord-lastfu,7)}
+.rcell.c-age{order:var(--ord-age,8)}
+/* column menu — drag-to-reorder rows */
+.colf-row{display:flex;align-items:center;gap:4px}
+.colf-row .colf-opt{flex:1}
+.colf-handle{cursor:grab;color:var(--text-3);font-size:var(--text-sm);flex-shrink:0;line-height:1;padding:0 4px}
+.colf-row.dragging{opacity:.4}
 .rgrid-head .rcell{position:relative}
 .empty-rows{padding:40px;text-align:center;color:var(--text-3);font-size:var(--text-base)}
 .multi-ph{color:var(--text-3);font-size:var(--text-xs);font-style:italic}
@@ -975,6 +992,7 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
   /* B5 — shared table engine state (see table-engine.js / TE) */
   selection:new Set(),colFilters:{},filterToSelection:false,savedColFilters:null,
   activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","mgr","age"]),
+  colOrder:["typo","expert","mgr","status","lastfu","age"],
   docNavCollapsed:new Set(),
   navPanelCollapsed:false,detailPanelCollapsed:false,
   ownTeamOnly:true};
@@ -1013,7 +1031,10 @@ function consolidate(r){
     return {compliance:null,pending:true,blocking,remaining:unfinished.length};
   }
   const worst=CMP_ORDER.find(c=>brs.some(b=>b.compliance===c))||null;
-  return {compliance:worst,pending:false,blocking:null,remaining:0};
+  // USER-TEST-session-3.md §1.5 — the comment travels with the verdict so the table
+  // can show it inline, not just the compliance colour.
+  const worstBranch=brs.find(b=>b.compliance===worst)||null;
+  return {compliance:worst,pending:false,blocking:null,remaining:0,comment:worstBranch?.resp?.note||null};
 }
 const isConsolidated=r=>!consolidate(r).pending;
 /* experts available for (re)allocation — same pool everywhere */
@@ -1174,15 +1195,19 @@ function tableRows(){
    stuck on reassignment is the one exception kept distinct, since it's an action item
    for the manager, not just a wait. Used for the consolidated row (single branch or
    the aggregate across several); pending must never read as a decided verdict. */
+function verdictCommentHTML(note){
+  if(!note) return "";
+  return `<span class="verdict-comment" title="${esc(note)}">${esc(note)}</span>`;
+}
 function consolidatedStatusHTML(c){
-  if(!c.pending) return `<span class="vpill ${c.compliance}">${CMP[c.compliance]||"—"}</span>`;
+  if(!c.pending) return `<span class="vpill ${c.compliance}">${CMP[c.compliance]||"—"}</span>${verdictCommentHTML(c.comment)}`;
   if(c.blocking && c.blocking.status==="reassignment_needed")
     return `<span class="blocking-chip" title="${TY(c.blocking.typology).label} needs reassignment">⛔ Reassignment needed</span>`;
   return `<span class="vpill none pending-pill">Pending${c.remaining>1?` · ${c.remaining} allocated activities`:""}</span>`;
 }
 /* same merge, per individual allocated activity (multi-activity sub-rows) */
 function branchStatusHTML(b){
-  if(isAnswered(b)) return `<span class="vpill ${b.compliance}">${CMP[b.compliance]||"—"}</span>`;
+  if(isAnswered(b)) return `<span class="vpill ${b.compliance}">${CMP[b.compliance]||"—"}</span>${verdictCommentHTML(b.resp?.note)}`;
   if(b.status==="reassignment_needed") return `<span class="blocking-chip" title="Needs reassignment">⛔ Reassignment needed</span>`;
   return `<span class="vpill none pending-pill">Pending</span>`;
 }
@@ -1242,11 +1267,18 @@ const F_COLUMN_TOGGLE_DEFS=[
   {k:"typo",label:"Activity"},{k:"expert",label:"Expert"},{k:"mgr",label:"Manager"},
   {k:"status",label:"Status"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
 ];
+const F_RCOLS_BY_KEY=Object.fromEntries(F_RCOLS.map(c=>[c.k,c]));
 const F_NAV_COLS=["sel","id","req","typo","expert","mgr","status","lastfu","age"];
 function fNavCols(){ return F_NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
+/* USER-TEST-session-3.md §1.4 — full removal + reorder, same technique as
+   revue-documentaire.html's applyCols(): --ord-* customs properties on .rgrid,
+   inherited by every .rcell so row-render code stays untouched. */
 function applyFCols(){
   const grid=document.querySelector("#view-table .rgrid"); if(!grid) return;
-  grid.style.setProperty("--frgrid-cols", F_RCOLS.map(c=>state.colCollapsed.has(c.k)?"24px":c.w).join(" "));
+  const fullOrder=["sel","id","req",...state.colOrder];
+  const visible=fullOrder.filter(k=>!state.colCollapsed.has(k));
+  grid.style.setProperty("--frgrid-cols", visible.map(k=>F_RCOLS_BY_KEY[k].w).join(" "));
+  fullOrder.forEach((k,i)=>grid.style.setProperty(`--ord-${k}`, i));
   grid.setAttribute("data-cc",[...state.colCollapsed].join(" "));
 }
 // clicking a header cell toggles it collapsed/expanded — retractable columns,
@@ -1949,9 +1981,9 @@ function renderFColumnsPanel(){
   p.innerHTML=`<div class="view-panel-head">View</div>
     <div class="view-sec">
       <div class="view-sec-head">Table columns</div>
-      ${TE.columnChecklistHTML(F_COLUMN_TOGGLE_DEFS,state.colCollapsed)}
+      ${TE.reorderableColumnListHTML(F_COLUMN_TOGGLE_DEFS,state.colOrder,state.colCollapsed)}
     </div>`;
-  TE.bindColumnChecklist(p,state.colCollapsed,()=>applyFCols());
+  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyFCols(); renderFColumnsPanel(); });
 }
 document.getElementById("f-cols-btn").addEventListener("click",e=>{ e.stopPropagation(); fColsPanelState.open=!fColsPanelState.open; renderFColumnsPanel(); });
 document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.closest("#f-cols-panel") && !e.target.closest("#f-cols-btn")){ fColsPanelState.open=false; renderFColumnsPanel(); } });

@@ -491,7 +491,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <div>
           <div class="hero-kicker">Tender project</div>
           <h1 id="dash-title">Energy Monitoring System</h1>
-          <div class="meta"><span>Ref. <b id="dash-ref">STB-2026</b></span><span id="dash-line-sub">Multi-site EMS</span><span><b id="dash-line">Signalling &amp; Urban</b></span><span>Bid Director: <b>Thibaud Breton</b></span></div>
+          <div class="meta"><span>BO-ID <b id="dash-ref">STB-2026</b></span><span id="dash-line-sub">Multi-site EMS</span><span><b id="dash-line">SIG</b></span><span>Bid Director: <b>Thibaud Breton</b></span></div>
         </div>
         <div class="deadline warn"><div class="d-num">23</div><div class="d-lbl">days to submission</div></div>
       </div>
@@ -747,8 +747,10 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="cfg-sub">Project identity and key dates. The submission deadline drives the countdown and the overdue calculations.</div>
           <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: these fields aren't wired to the rest of the app in this build. The Dashboard/Review/Follow-up screens keep their own hand-authored project identity, and the deadline shown here doesn't drive any real countdown or overdue calculation.</div>
           <div class="frow"><div class="fl"><div class="flt">Project name</div><div class="fld">Displayed across all screens.</div></div><div class="fc"><input class="inp" value="Energy Monitoring System"></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Tender reference</div></div><div class="fc"><input class="inp" value="STB-2026"></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Product line</div></div><div class="fc"><select class="sel"><option>Signalling &amp; Urban</option><option>Rolling stock</option><option>Services</option><option>Systems</option></select></div></div>
+          <div class="frow"><div class="fl"><div class="flt">BO-ID</div></div><div class="fc"><input class="inp" value="STB-2026"></div></div>
+          <!-- USER-TEST-session-3.md §1.3 — Turnkey/RCS/SIG/INFRA confirmed; Rolling Stock/
+               Services are placeholders, not confirmed. -->
+          <div class="frow"><div class="fl"><div class="flt">Product line</div></div><div class="fc"><select class="sel"><option>Turnkey</option><option>RCS</option><option selected>SIG</option><option>INFRA</option><option>Rolling Stock</option><option>Services</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Submission deadline</div><div class="fld">Sets the countdown and overdue thresholds baseline.</div></div><div class="fc"><input class="inp" type="date" value="2026-08-12"></div></div>
           <div class="frow"><div class="fl"><div class="flt">Source document</div><div class="fld">Active version used for review.</div></div><div class="fc"><div class="tog-row"><span class="tl" style="font-family:var(--font-mono)">STB-2026_v2.1.pdf</span><span style="font-size:var(--text-xs);color:var(--text-3)">· 24 pages · managed in Versions</span></div></div></div>
         </section>
