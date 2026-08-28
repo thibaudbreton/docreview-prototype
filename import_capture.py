@@ -51,10 +51,10 @@ def doc_short_name(filename: str) -> str:
     return re.sub(r"^capture[_-]", "", stem, flags=re.I)
 
 
-# Matches the prototype's own convention: REQ-00001 (5 digits), H-… for headings,
-# INF-… for information rows. Numbering is continuous across the whole tender,
-# per category, so it reads as one document rather than several concatenated ones.
-ID_PREFIX = {"requirement": "REQ", "heading": "H", "information": "INF"}
+# USER-TEST-session-3.md §1.4 — one identifier scheme across headings, information
+# and requirements, not one counter per category. SRM-00001 (5 digits), continuous
+# across the whole tender.
+ID_PREFIX = "SRM"
 
 
 def build_rows(path: Path, doc_index: int, doc_id: str, doc_name: str):
@@ -167,12 +167,9 @@ def main():
 
     # One continuous tender: rows stay in document order, then row order within each.
     all_rows.sort(key=lambda r: (r["docIndex"], r["position"]))
-    counters = {"requirement": 0, "heading": 0, "information": 0}
     for n, r in enumerate(all_rows):
         r["index"] = n
-        cat = r["category"]
-        counters[cat] += 1
-        r["id"] = f'{ID_PREFIX[cat]}-{counters[cat]:05d}'
+        r["id"] = f'{ID_PREFIX}-{n + 1:05d}'
 
     if args.seed_demo:
         all_rows = seed_demo_state(all_rows)

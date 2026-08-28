@@ -813,38 +813,38 @@ const SEC_DOC={
 };
 /* T1 — assignments live at ACTIVITY level: one allocated activity per activity per requirement.
    Single-typology requirement = 1 branch; multi-typology = N branches, one expert each.
-   EXG-003 (3 branches) and EXG-007 (2 branches) mirror the branches seeded in
+   SRM-00005 (3 branches) and SRM-00011 (2 branches) mirror the branches seeded in
    revue-documentaire.html so both screens tell the same story.
    All values hand-authored — nothing here is computed. */
 const REQS_HAND=[
-  // TD3 — IMG-1-R1/IMG-1-R2: image-sourced requirements (Figure 1, section 2.1) validatable
+  // TD3 — SRM-00001/SRM-00002: image-sourced requirements (Figure 1, section 2.1) validatable
   // in revue-documentaire.html but previously absent here, so validating/allocating them
   // there had nowhere to land — any demo scenario touching the image-container feature
-  // couldn't be walked end-to-end. Mirrors that screen's alloc: IMG-1-R1 is assigned
-  // (sig/m_sig/sup); IMG-1-R2 has no manager/expert yet (manager:null there too).
-  {id:"IMG-1-R1",sec:"2. Functional requirements",type:"Functional",
+  // couldn't be walked end-to-end. Mirrors that screen's alloc: SRM-00001 is assigned
+  // (sig/m_sig/sup); SRM-00002 has no manager/expert yet (manager:null there too).
+  {id:"SRM-00001",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL route telemetry from each site gateway through its regional aggregator before reaching the central monitoring platform.",
    branches:[
      {typology:"sig",manager:"m_sig",expert:"sup",status:"awaiting_answer",compliance:null,age:3},
    ]},
-  {id:"IMG-1-R2",sec:"2. Functional requirements",type:"Functional",
+  {id:"SRM-00002",sec:"2. Functional requirements",type:"Functional",
    text:"Each site gateway SHALL connect to exactly one regional aggregator, with automatic failover to a secondary aggregator on link loss.",
    branches:[
      {typology:"sig",manager:null,expert:null,status:"proposed",compliance:null,age:3},
    ]},
-  {id:"EXG-001",sec:"2. Functional requirements",type:"Functional",
+  {id:"SRM-00003",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family.",
    branches:[
      {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"compliant",age:9,
       resp:{note:"Standard acquisition stack covers all listed measurement families. No deviation from the requirement.",att:0,date:"Jul 12"}},
    ]},
-  {id:"EXG-002",sec:"2. Functional requirements",type:"Functional",
+  {id:"SRM-00004",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type.",
    branches:[
      {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"compliant",age:9,
       resp:{note:"Dashboard aggregation (site / region / type) is available out of the box.",att:1,date:"Jul 12"}},
    ]},
-  {id:"EXG-003",sec:"2. Functional requirements",type:"Functional",outdated:true,
+  {id:"SRM-00005",sec:"2. Functional requirements",type:"Functional",outdated:true,
    text:"The system SHALL generate an alert when a site's consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.",
    branches:[
      {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"not_compliant",age:8,
@@ -853,54 +853,54 @@ const REQS_HAND=[
      {typology:"sys",manager:null,expert:null,status:"reassignment_needed",compliance:null,age:3,
       reassignComment:"Alerting escalation is a safety-critical chain — this should sit with the Safety authority, not with my perimeter. Please reallocate."},
    ]},
-  {id:"EXG-004",sec:"2. Functional requirements",type:"Functional",
+  {id:"SRM-00006",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets.",
    branches:[
      {typology:"mln",manager:"m_mln",expert:"sup",status:"awaiting_answer",compliance:null,age:6},
    ]},
-  {id:"EXG-011",sec:"2. Functional requirements",type:"Interface",
+  {id:"SRM-00007",sec:"2. Functional requirements",type:"Interface",
    text:"The system SHALL expose site telemetry to third-party tools through a documented REST API.",
    branches:[
      {typology:"sig",manager:"m_sig",expert:"infra",status:"answered",compliance:"not_compliant",age:7,
       resp:{note:"Current API rate limits are below the implied third-party load. Meeting the requirement would need a gateway rework — not feasible within the proposed budget envelope.",att:1,date:"Jul 14"}},
    ]},
-  {id:"EXG-012",sec:"2. Functional requirements",type:"Interface",
+  {id:"SRM-00008",sec:"2. Functional requirements",type:"Interface",
    text:"The system SHALL import weather forecast feeds, refreshed every 15 minutes.",
    branches:[
      {typology:"tlc",manager:"m_mln",expert:"infra",status:"awaiting_answer",compliance:null,age:2},
    ]},
-  {id:"EXG-005",sec:"3. Performance requirements",type:"Performance",
+  {id:"SRM-00009",sec:"3. Performance requirements",type:"Performance",
    text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites.",
    branches:[
      {typology:"mln",manager:"m_inf",expert:"infra",status:"answered",compliance:"compliant",age:8,
       resp:{note:"3 s refresh validated in load test for 250 simultaneous sites.",att:1,date:"Jul 12"}},
    ]},
-  {id:"EXG-006",sec:"3. Performance requirements",type:"Performance",
+  {id:"SRM-00010",sec:"3. Performance requirements",type:"Performance",
    text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile.",
    branches:[
      {typology:"mln",manager:"m_inf",expert:"infra",status:"awaiting_qa",compliance:null,age:7,qaRef:"QA-01",
       qaNote:"Cannot commit without knowing whether the one-year depth is a rolling year or a calendar year — the storage strategy differs."},
    ]},
-  {id:"EXG-007",sec:"3. Performance requirements",type:"Performance",
+  {id:"SRM-00011",sec:"3. Performance requirements",type:"Performance",
    text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.",
    branches:[
      {typology:"sig",manager:"m_sig",expert:null,status:"proposed",compliance:null,age:7},
      {typology:"mln",manager:"m_mln",expert:"infra",status:"answered",compliance:"compliant",age:5,
       resp:{note:"99.7% business-hours availability is met by the standard redundant deployment; maintenance windows are already excluded contractually.",att:0,date:"Jul 15"}},
    ]},
-  {id:"EXG-008",sec:"4. Security requirements",type:"Security",
+  {id:"SRM-00012",sec:"4. Security requirements",type:"Security",
    text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges.",
    branches:[
      {typology:"sig",manager:"m_sig",expert:"cyber",status:"awaiting_qa",compliance:null,age:5,qaRef:"QA-04",
       qaNote:"MFA is enforced through the corporate IdP, but I need to know whether TLS 1.3 is mandatory on gateways already deployed on existing sites before I can commit."},
    ]},
-  {id:"EXG-009",sec:"4. Security requirements",type:"Security",
+  {id:"SRM-00013",sec:"4. Security requirements",type:"Security",
    text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years.",
    branches:[
      {typology:"mln",manager:"m_mln",expert:"cyber",status:"awaiting_qa",compliance:null,age:6,qaRef:"QA-02",
       qaNote:"Logging is fully supported, but the 3-year retention conflicts with the group policy (5 years) — needs issuer confirmation before commitment."},
    ]},
-  {id:"EXG-010",sec:"4. Security requirements",type:"Security",
+  {id:"SRM-00014",sec:"4. Security requirements",type:"Security",
    text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review.",
    branches:[
      {typology:"sig",manager:"m_sig",expert:"cyber",status:"awaiting_qa",compliance:null,age:4,qaRef:"QA-03",
@@ -946,7 +946,7 @@ function genFollowupReqs(n){
     const branches=[genBranch(i,typo)];
     if(i%6===0) branches.push(genBranch(i+1,GEN_TYPO[(i+2)%GEN_TYPO.length]));
     out.push({
-      id:"EXG-"+String(13+i).padStart(3,"0"), sec, type:GEN_TYPE[sec],
+      id:"SRM-"+String(15+i).padStart(5,"0"), sec, type:GEN_TYPE[sec],
       text:`${GEN_SUBJ[i%GEN_SUBJ.length]} ${GEN_VERB[(i*7)%GEN_VERB.length]} ${GEN_OBJ[(i*11)%GEN_OBJ.length]} ${GEN_QUAL[(i*5)%GEN_QUAL.length]}.`,
       branches,
     });
@@ -959,15 +959,15 @@ const OVERDUE_DAYS=5;
    branch (reqId + typology), and that branch sits in `awaiting_qa` until an answer lands. */
 let QA=[
   {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",
-   reqs:["EXG-006"],branch:{req:"EXG-006",typology:"mln"},expert:"infra",from:"Karim Benali",date:"Jul 14"},
+   reqs:["SRM-00010"],branch:{req:"SRM-00010",typology:"mln"},expert:"infra",from:"Karim Benali",date:"Jul 14"},
   {id:"QA-02",st:"internal",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
-   reqs:["EXG-009"],branch:{req:"EXG-009",typology:"mln"},expert:"cyber",from:"Claire Moreau",date:"Jul 15"},
+   reqs:["SRM-00013"],branch:{req:"SRM-00013",typology:"mln"},expert:"cyber",from:"Claire Moreau",date:"Jul 15"},
   {id:"QA-03",st:"draft",q:"Which TLS version applies to legacy site gateways?",
-   reqs:["EXG-010"],branch:{req:"EXG-010",typology:"sig"},expert:"cyber",from:"Claire Moreau",date:"Jul 16",dup:"QA-04"},
+   reqs:["SRM-00014"],branch:{req:"SRM-00014",typology:"sig"},expert:"cyber",from:"Claire Moreau",date:"Jul 16",dup:"QA-04"},
   {id:"QA-04",st:"draft",q:"Is TLS 1.3 mandatory for gateways already deployed on existing sites?",
-   reqs:["EXG-008"],branch:{req:"EXG-008",typology:"sig"},expert:"cyber",from:"Claire Moreau",date:"Jul 16",dup:"QA-03"},
+   reqs:["SRM-00012"],branch:{req:"SRM-00012",typology:"sig"},expert:"cyber",from:"Claire Moreau",date:"Jul 16",dup:"QA-03"},
   {id:"QA-05",st:"answered",q:"Does the escalation matrix referenced in the alerting requirement come from the issuer or the contractor?",
-   reqs:["EXG-003"],branch:{req:"EXG-003",typology:"sig"},expert:"sup",from:"Sophie Lang",date:"Jul 10",
+   reqs:["SRM-00005"],branch:{req:"SRM-00005",typology:"sig"},expert:"sup",from:"Sophie Lang",date:"Jul 10",
    ans:"The escalation matrix will be provided by the issuer at contract award (Annex F).",ansDate:"Jul 13"},
 ];
 /* resolve a question back to the allocated activity/activities it blocks — usually one, but a merged
@@ -1746,12 +1746,12 @@ document.getElementById("sim-upload").addEventListener("click",()=>{
   toast("v2.2 uploaded — AI processing started","ok");
   setTimeout(()=>{
     VERSIONS[0]={num:"v2.2",state:"ready",date:"Today",note:"Addendum n°3 — received during allocation of v2.1",gap:{a:2,m:1,r:0},
-      impact:"EXG-005 was modified and already has an expert response → flagged as <b>answered on outdated version</b> in Expert follow-up. Unchanged requirements keep their characterization, assignment and status."};
-    const r5=findR("EXG-005");r5.outdated=true;
+      impact:"SRM-00009 was modified and already has an expert response → flagged as <b>answered on outdated version</b> in Expert follow-up. Unchanged requirements keep their characterization, assignment and status."};
+    const r5=findR("SRM-00009");r5.outdated=true;
     renderVersions();refreshAll();
     try{ if(window.parent!==window && window.parent.setV22Uploaded) window.parent.setV22Uploaded(true); }catch(e){}
     toast("Gap analysis ready: +2 ~1 −0 — the active review switches to v2.2","ok");
-    setTimeout(()=>toast("1 expert response flagged as answered on outdated version (EXG-005)","warn"),1000);
+    setTimeout(()=>toast("1 expert response flagged as answered on outdated version (SRM-00009)","warn"),1000);
   },2400);
 });
 

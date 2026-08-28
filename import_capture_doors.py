@@ -57,11 +57,12 @@ TYPE_MAP = {
     "information": "information",
 }
 
-# Matches the prototype's own convention: REQ-00001 (5 digits), H-… for
-# headings, INF-… for information rows — continuous across the whole tender,
-# per category, so it reads as one document rather than three concatenated
-# ones. Matches import_capture.py's own convention exactly.
-ID_PREFIX = {"requirement": "REQ", "heading": "H", "information": "INF"}
+# USER-TEST-session-3.md §1.4 — one identifier scheme across headings, information
+# and requirements, not one counter per category (a row's ID no longer changes
+# meaning if it's later recategorized — see main() below). SRM-00001 (5 digits),
+# continuous across the whole tender. Matches import_capture.py's own convention
+# exactly.
+ID_PREFIX = "SRM"
 
 
 def clean(v):
@@ -242,12 +243,9 @@ def main():
     # One continuous tender: rows stay in document order, then row order
     # within each — never sorted by the source Object Identifier.
     all_rows.sort(key=lambda r: (r["docIndex"], r["position"]))
-    counters = {"requirement": 0, "heading": 0, "information": 0}
     for n, r in enumerate(all_rows):
         r["index"] = n
-        cat = r["category"]
-        counters[cat] += 1
-        r["id"] = f'{ID_PREFIX[cat]}-{counters[cat]:05d}'
+        r["id"] = f'{ID_PREFIX}-{n + 1:05d}'
 
     if unknown_types:
         print(f"\n!! unmapped Type value(s), imported as 'information': {sorted(unknown_types.items())}")

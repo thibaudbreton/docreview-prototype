@@ -571,7 +571,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           </div>
           <div class="att v22only hidden" data-go="suivi-experts-et-versions.html#versions">
             <div class="att-ic ia">⇄</div>
-            <div><div class="att-t"><b>New version v2.2 ready for review</b></div><div class="att-sub">Arrived during allocation · +2 ~1 −0 · EXG-005 response now on an outdated version</div></div>
+            <div><div class="att-t"><b>New version v2.2 ready for review</b></div><div class="att-sub">Arrived during allocation · +2 ~1 −0 · SRM-00009 response now on an outdated version</div></div>
             <span class="att-go">Review changes →</span>
           </div>
           <div class="att" data-go="revue-documentaire.html">
@@ -581,7 +581,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           </div>
           <div class="att p2only" id="att-overdue" data-go="suivi-experts-et-versions.html">
             <div class="att-ic warn">🔔</div>
-            <div><div class="att-t"><b id="att-overdue-t">1 expert response overdue</b></div><div class="att-sub" id="att-overdue-sub">Sophie Lang — EXG-004 unopened for 6 days</div></div>
+            <div><div class="att-t"><b id="att-overdue-t">1 expert response overdue</b></div><div class="att-sub" id="att-overdue-sub">Sophie Lang — SRM-00006 unopened for 6 days</div></div>
             <span class="att-go">Remind →</span>
           </div>
           <div class="att p2only" data-go="suivi-experts-et-versions.html">
@@ -591,7 +591,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           </div>
           <div class="att p2only" data-go="suivi-experts-et-versions.html">
             <div class="att-ic warn">⚠</div>
-            <div><div class="att-t"><b>1 non-compliant requirement</b></div><div class="att-sub">EXG-011 — REST API rate limits below third-party load (Infrastructure)</div></div>
+            <div><div class="att-t"><b>1 non-compliant requirement</b></div><div class="att-sub">SRM-00007 — REST API rate limits below third-party load (Infrastructure)</div></div>
             <span class="att-go">See verdict →</span>
           </div>
         </div>
@@ -716,8 +716,8 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <h3>Recent activity <a href="#">View all</a></h3>
         <div class="feed">
           <div class="feed-item ia v22only hidden"><div class="feed-w"><b>Version v2.2</b> uploaded and processed — gap analysis ready (+2 ~1 −0)</div><div class="feed-t">Today, 10:46 AM</div></div>
-          <div class="feed-item warn v22only hidden"><div class="feed-w"><b>EXG-005</b> flagged as answered on outdated version after v2.2</div><div class="feed-t">Today, 10:46 AM</div></div>
-          <div class="feed-item ok"><div class="feed-w"><b>Claire Moreau</b> responded on EXG-009 — verdict Needs clarification</div><div class="feed-t">Jul 15, 4:20 PM</div></div>
+          <div class="feed-item warn v22only hidden"><div class="feed-w"><b>SRM-00009</b> flagged as answered on outdated version after v2.2</div><div class="feed-t">Today, 10:46 AM</div></div>
+          <div class="feed-item ok"><div class="feed-w"><b>Claire Moreau</b> responded on SRM-00013 — verdict Needs clarification</div><div class="feed-t">Jul 15, 4:20 PM</div></div>
           <div class="feed-item send"><div class="feed-w"><b>Q&amp;A batch</b> — 1 question sent to the issuer (retention period)</div><div class="feed-t">Jul 15, 2:10 PM</div></div>
           <div class="feed-item ok"><div class="feed-w"><b>Allocation</b> milestone reached — register exported, 3 experts notified</div><div class="feed-t">Jul 12, 9:30 AM</div></div>
         </div>
@@ -1457,30 +1457,30 @@ document.querySelectorAll('[data-redact]').forEach(b=>b.addEventListener("click"
    breakdown and the Response rate instead of typing the resulting numbers into the
    markup, so they can't silently drift from the screens that own that data. */
 const REVIEW_REQS=[
-  {id:"IMG-1-R1",status:"toreview"},{id:"IMG-1-R2",status:"toreview"},
-  {id:"EXG-001",status:"allocated"},{id:"EXG-002",status:"allocated"},
-  {id:"EXG-003",status:"toreview"},{id:"EXG-004",status:"suggested"},
-  {id:"EXG-011",status:"suggested"},{id:"EXG-012",status:"suggested"},
-  {id:"EXG-005",status:"allocated"},{id:"EXG-006",status:"edited"},
-  {id:"EXG-007",status:"suggested"},{id:"EXG-008",status:"allocated"},
-  {id:"EXG-009",status:"toreview"},{id:"EXG-010",status:"allocated"},
+  {id:"SRM-00001",status:"toreview"},{id:"SRM-00002",status:"toreview"},
+  {id:"SRM-00003",status:"allocated"},{id:"SRM-00004",status:"allocated"},
+  {id:"SRM-00005",status:"toreview"},{id:"SRM-00006",status:"suggested"},
+  {id:"SRM-00007",status:"suggested"},{id:"SRM-00008",status:"suggested"},
+  {id:"SRM-00009",status:"allocated"},{id:"SRM-00010",status:"edited"},
+  {id:"SRM-00011",status:"suggested"},{id:"SRM-00012",status:"allocated"},
+  {id:"SRM-00013",status:"toreview"},{id:"SRM-00014",status:"allocated"},
 ];
 const FOLLOWUP_REQS=[
-  // TD3 — IMG-1-R1/IMG-1-R2 now exist in suivi-experts-et-versions.html's REQS; kept in sync here.
-  {id:"IMG-1-R1",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"IMG-1-R2",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"EXG-001",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"EXG-002",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"EXG-003",compliance:null,branchesAnswered:1,branchesTotal:3},
-  {id:"EXG-004",compliance:null,branchesAnswered:0,branchesTotal:1,overdueBranches:1},
-  {id:"EXG-011",compliance:"not_compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"EXG-012",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"EXG-005",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"EXG-006",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"EXG-007",compliance:null,branchesAnswered:1,branchesTotal:2},
-  {id:"EXG-008",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"EXG-009",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"EXG-010",compliance:null,branchesAnswered:0,branchesTotal:1},
+  // TD3 — SRM-00001/SRM-00002 now exist in suivi-experts-et-versions.html's REQS; kept in sync here.
+  {id:"SRM-00001",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00002",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00003",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"SRM-00004",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"SRM-00005",compliance:null,branchesAnswered:1,branchesTotal:3},
+  {id:"SRM-00006",compliance:null,branchesAnswered:0,branchesTotal:1,overdueBranches:1},
+  {id:"SRM-00007",compliance:"not_compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"SRM-00008",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00009",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"SRM-00010",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00011",compliance:null,branchesAnswered:1,branchesTotal:2},
+  {id:"SRM-00012",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00013",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00014",compliance:null,branchesAnswered:0,branchesTotal:1},
 ];
 function renderReviewKPIs(){
   const total=REVIEW_REQS.length;
@@ -1516,7 +1516,7 @@ function renderComplianceKPIs(){
    manager. Drives the "expert response overdue" attention card instead of a hand-typed
    name/id/day-count that can silently point at the wrong person. */
 const OVERDUE_BRANCHES=[
-  {reqId:"EXG-004",expert:"Sophie Lang",days:6},
+  {reqId:"SRM-00006",expert:"Sophie Lang",days:6},
 ];
 function renderOverdueCard(){
   const card=document.getElementById("att-overdue");
@@ -1596,10 +1596,10 @@ function renderStatsComplianceBar(barId,legendId){
 // in this screen's own mirror; hand-authored, req ids match suivi-experts-et-versions.html's
 // real awaiting_qa branches for narrative consistency across screens)
 const STATS_QA_BLOCKED=[
-  {reqId:"EXG-006",note:"One-year depth: rolling or calendar year?",days:6},
-  {reqId:"EXG-008",note:"Is TLS 1.3 mandatory on already-deployed gateways?",days:5},
-  {reqId:"EXG-009",note:"3-year vs 5-year retention conflict",days:5},
-  {reqId:"EXG-010",note:"Which TLS version applies to legacy gateways?",days:4},
+  {reqId:"SRM-00010",note:"One-year depth: rolling or calendar year?",days:6},
+  {reqId:"SRM-00012",note:"Is TLS 1.3 mandatory on already-deployed gateways?",days:5},
+  {reqId:"SRM-00013",note:"3-year vs 5-year retention conflict",days:5},
+  {reqId:"SRM-00014",note:"Which TLS version applies to legacy gateways?",days:4},
 ];
 function renderStatsQABlocked(){
   const el=document.getElementById("stats-qa-blocked"); if(!el) return;
@@ -1625,7 +1625,7 @@ function renderStatsInvalidated(){
   const block=document.getElementById("stats-invalidated-block");
   const el=document.getElementById("stats-invalidated");
   if(!block||!el) return;
-  const stale=FOLLOWUP_REQS.filter(r=>r.id==="EXG-005"&&v22Done());
+  const stale=FOLLOWUP_REQS.filter(r=>r.id==="SRM-00009"&&v22Done());
   if(!stale.length){ block.classList.add("hidden"); return; }
   block.classList.remove("hidden");
   el.innerHTML=`<div class="invalidated-row" id="stats-invalidated-link">⇄ ${stale.length} expert answer${stale.length>1?"s":""} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
