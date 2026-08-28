@@ -290,10 +290,16 @@ header .btn-ghost{margin-left:auto}
           <div class="h1">Project details</div>
           <div class="sub">Basic identity of the tender. The deadline drives the countdown and the overdue thresholds later on.</div>
           <div class="frow"><div class="fl"><div class="flt">Project name <span class="req-star">*</span></div><div class="fld">Displayed across all screens.</div></div><div class="fc"><input class="inp" id="f-name" placeholder="e.g. Energy Monitoring System"></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Tender reference <span class="req-star">*</span></div></div><div class="fc"><input class="inp" id="f-ref" placeholder="e.g. STB-2026"></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Product line</div></div><div class="fc"><select class="sel" id="f-line"><option>Signalling &amp; Urban</option><option>Rolling stock</option><option>Services</option><option>Systems</option></select></div></div>
+          <div class="frow"><div class="fl"><div class="flt">BO-ID <span class="req-star">*</span></div></div><div class="fc"><input class="inp" id="f-ref" placeholder="e.g. STB-2026"></div></div>
+          <!-- USER-TEST-session-3.md §1.3 — Turnkey/RCS/SIG/INFRA confirmed in the session;
+               Rolling Stock/Services are NOT confirmed, added as plausible placeholders
+               so the list isn't empty. Replace with the real full set once collected. -->
+          <div class="frow"><div class="fl"><div class="flt">Product line</div></div><div class="fc"><select class="sel" id="f-line"><option>Turnkey</option><option>RCS</option><option>SIG</option><option>INFRA</option><option>Rolling Stock</option><option>Services</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">System</div><div class="fld">The system concerned by the tender.</div></div><div class="fc"><select class="sel" id="f-system"><option>Mainline</option><option>Urban / Metro</option><option>Tramway</option><option>Monorail</option><option>Multiple systems</option></select></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Region</div></div><div class="fc"><select class="sel" id="f-region"><option>Europe</option><option>Middle East</option><option>Asia Pacific</option><option>Americas</option><option>Africa</option></select></div></div>
+          <!-- USER-TEST-session-3.md §1.3 — "real acronyms... need collecting; improvise for
+               now." These are placeholder acronyms, not confirmed values. Swap for the real
+               regional codes once collected. -->
+          <div class="frow"><div class="fl"><div class="flt">Region</div></div><div class="fc"><select class="sel" id="f-region"><option>EUR — Europe</option><option>MEA — Middle East</option><option>APAC — Asia Pacific</option><option>AME — Americas</option><option>AFR — Africa</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Tender issuer</div><div class="fld">The organization that published the tender.</div></div><div class="fc"><input class="inp" id="f-issuer" placeholder="e.g. Regional Transport Authority"></div></div>
           <div class="frow"><div class="fl"><div class="flt">Submission deadline</div></div><div class="fc"><input class="inp" type="date" id="f-deadline" value="2026-08-12"></div></div>
         </section>
@@ -434,7 +440,7 @@ const TYPO=[
   {id:"oth",code:"OTH",label:"Other"},
 ];
 const TY=id=>TYPO.find(t=>t.id===id)||{code:String(id||"—").toUpperCase(),label:id||"—"};
-const P={step:1,name:"",ref:"",line:"Signalling & Urban",system:"Mainline",region:"Europe",issuer:"",deadline:"2026-08-12",
+const P={step:1,name:"",ref:"",line:"Turnkey",system:"Mainline",region:"EUR — Europe",issuer:"",deadline:"2026-08-12",
   file:null,preset:"ai",ai:{seg:true,char:true,alloc:true,mgr:true},
   casting:[],
   /* isAdmin marks the PM's own expert-pool entry: whenever they cast
@@ -481,7 +487,7 @@ function validate(n){
     P.region=document.getElementById("f-region").value;
     P.issuer=document.getElementById("f-issuer").value.trim();
     P.deadline=document.getElementById("f-deadline").value;
-    if(!P.name||!P.ref){toast("Project name and tender reference are required","warn");return false;}
+    if(!P.name||!P.ref){toast("Project name and BO-ID are required","warn");return false;}
   }
   return true;
 }
@@ -718,7 +724,7 @@ function renderSummary(){
   const b=document.getElementById("sum-body");
   const rows=[
     ["Project",P.name||"<span class='miss'>Not set</span>"],
-    ["Reference",P.ref||"<span class='miss'>Not set</span>"],
+    ["BO-ID",P.ref||"<span class='miss'>Not set</span>"],
     ["Product line",P.line],
     ["System",P.system],
     ["Region",P.region],

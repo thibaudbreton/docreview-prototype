@@ -1,5 +1,7 @@
 # SPEC — Expert Space
 
+> **SUPERSEDED by the Compliance step on 2026-08-28.** Kept for reference. Do not build from this. See `TICKET-merge-expert-space-into-compliance.md`: there is no more expert space — the second workflow step is now `compliance.html`, serving both the project manager and contributors (the merged manager/expert role) from one screen. The reasoning behind the research panel (Document/REX/Chat) and the "Ask the client" naming risk survive the merge; the three-zone layout, the manager/expert role split, and the three-value compliance model below do not.
+>
 > **Reconciled during the docs cleanup (2026-08-16).** This file was moved into `docs/specs/` from outside the git repo (see `docs/INVENTORY.md`) and updated in place so it reads as current truth, per the two later ticket decisions below. The original wording and the history of what changed live in `docs/decisions/DECISIONS.md` (D8, D11) — this is not a silent rewrite. `expert-space.html` is built and shipped; this is no longer "a spec to validate."
 >
 > - The **compliance model** below now reflects `SPEC-domain-model.md` §9.2 (decision **D8** in the log): compliance is a **three-value** scale (Compliant / R&D Needed / Not compliant), not the two-value model originally described here. The original two-value wording was an explicit choice at the time this spec was written, later reversed once it was found to conflict with the rest of the domain model.

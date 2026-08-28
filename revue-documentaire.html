@@ -263,6 +263,9 @@ body.mode-compare .nav-section-head .sec-changes{display:inline-flex}
 body.mode-compare .nbadge.b-change{display:block}
 .nav-item.dimmed{opacity:.28;pointer-events:none}
 .nav-count{padding:var(--space-2) var(--space-3);font-size:var(--text-xs);color:var(--text-3);border-top:1px solid var(--line)}
+/* USER-TEST-session-3.md §1.4 — the project isn't sealed at creation, a document
+   can be added any time and gets the same AI pass a fresh project would. */
+.nav-add-doc{margin:0 var(--space-3) var(--space-2);justify-content:center;flex-shrink:0}
 .nav-count b{color:var(--text-2)}
 
 /* ---------- Center ---------- */
@@ -529,11 +532,29 @@ body.mode-review .doc-scroll{display:none}
 .view-scale-row{display:flex;align-items:flex-start;gap:var(--space-2);padding:6px 2px;cursor:pointer;font-size:var(--text-sm);color:var(--text-2)}
 .view-scale-row input{margin-top:2px}
 .view-scale-note{display:block;font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
-/* column collapse */
+/* column visibility + order — USER-TEST-session-3.md §1.4. A hidden column disappears
+   entirely (no sliver); its cell just isn't in the grid flow. Position comes from
+   --ord-* custom properties set once on .rgrid by applyCols() and inherited by every
+   .rcell, current rows and future ones alike — the row-render code never needs to
+   know the current order. */
 .rgrid-head .rcell{position:relative}
-.rgrid[data-cc~="class"] .c-class>*,.rgrid[data-cc~="typo"] .c-typo>*,.rgrid[data-cc~="abs"] .c-abs>*,.rgrid[data-cc~="type"] .c-type>*,.rgrid[data-cc~="obs"] .c-obs>*,.rgrid[data-cc~="mgr"] .c-mgr>*,.rgrid[data-cc~="status"] .c-status>*,.rgrid[data-cc~="compliance"] .c-compliance>*{display:none}
-.rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="type"] .c-type,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{padding:0;justify-content:center;cursor:pointer}
-.rgrid[data-cc~="class"] .rgrid-head .c-class::after,.rgrid[data-cc~="typo"] .rgrid-head .c-typo::after,.rgrid[data-cc~="abs"] .rgrid-head .c-abs::after,.rgrid[data-cc~="type"] .rgrid-head .c-type::after,.rgrid[data-cc~="obs"] .rgrid-head .c-obs::after,.rgrid[data-cc~="mgr"] .rgrid-head .c-mgr::after,.rgrid[data-cc~="status"] .rgrid-head .c-status::after,.rgrid[data-cc~="compliance"] .rgrid-head .c-compliance::after{content:"»";color:var(--text-3);font-size:var(--text-xs)}
+.rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="type"] .c-type,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{display:none}
+.rcell.c-sel{order:var(--ord-sel,0)}
+.rcell.c-id{order:var(--ord-id,1)}
+.rcell.c-req{order:var(--ord-req,2)}
+.rcell.c-class{order:var(--ord-class,3)}
+.rcell.c-typo{order:var(--ord-typo,4)}
+.rcell.c-abs{order:var(--ord-abs,5)}
+.rcell.c-type{order:var(--ord-type,6)}
+.rcell.c-obs{order:var(--ord-obs,7)}
+.rcell.c-mgr{order:var(--ord-mgr,8)}
+.rcell.c-status{order:var(--ord-status,9)}
+.rcell.c-compliance{order:var(--ord-compliance,10)}
+/* column menu — drag-to-reorder rows */
+.colf-row{display:flex;align-items:center;gap:4px}
+.colf-row .colf-opt{flex:1}
+.colf-handle{cursor:grab;color:var(--text-3);font-size:var(--text-sm);flex-shrink:0;line-height:1;padding:0 4px}
+.colf-row.dragging{opacity:.4}
 /* nav / detail panel collapse */
 .panel-toggle{
   position:absolute;top:8px;z-index:5;width:20px;height:20px;border-radius:var(--radius-sm);
@@ -640,7 +661,7 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .status-pill.branch-status-answered{background:var(--ok-soft);color:var(--ok);cursor:default}
 /* TD2 — full six-value allocated-activity-status set (was answered/awaiting/reassignment_needed only,
    collapsing proposed/assigned/awaiting_answer/awaiting_qa into one bucket). Styling mirrors
-   suivi-experts-et-versions.html's .spill rules: proposed/assigned/awaiting_answer stay neutral,
+   compliance.html's .spill rules: proposed/assigned/awaiting_answer stay neutral,
    awaiting_qa gets the accent highlight since it's blocked on something external. */
 .status-pill.branch-status-proposed,.status-pill.branch-status-assigned,.status-pill.branch-status-awaiting_answer{background:var(--panel-3);color:var(--text-2);cursor:default}
 .status-pill.branch-status-awaiting_qa{background:var(--accent-soft);color:var(--accent);cursor:default}
@@ -1268,17 +1289,17 @@ body.restricted .restrict-banner{display:flex}
   <!-- Notifications dropdown -->
   <div class="notif-drop" id="notif-drop">
     <div class="nd-head">Notifications</div>
-    <div class="nd-item" data-goto="EXG-006">
+    <div class="nd-item" data-goto="SRM-00017">
       <div class="nd-dot" style="background:var(--accent)"></div>
-      <div><div class="nd-text"><b>Karim Benali</b> mentioned you on <b>EXG-006</b>: "the 2s threshold seems optimistic…"</div><div class="nd-time">25 min ago</div></div>
+      <div><div class="nd-text"><b>Karim Benali</b> mentioned you on <b>SRM-00017</b>: "the 2s threshold seems optimistic…"</div><div class="nd-time">25 min ago</div></div>
     </div>
-    <div class="nd-item" data-goto="EXG-003">
+    <div class="nd-item" data-goto="SRM-00009">
       <div class="nd-dot" style="background:var(--ia)"></div>
-      <div><div class="nd-text"><b>EXG-003</b> was modified in version v2.1 — review required.</div><div class="nd-time">2 hours ago</div></div>
+      <div><div class="nd-text"><b>SRM-00009</b> was modified in version v2.1 — review required.</div><div class="nd-time">2 hours ago</div></div>
     </div>
-    <div class="nd-item" data-goto="EXG-009">
+    <div class="nd-item" data-goto="SRM-00021">
       <div class="nd-dot" style="background:var(--warn)"></div>
-      <div><div class="nd-text">Reminder: validate <b>EXG-009</b> allocation by Friday.</div><div class="nd-time">Yesterday</div></div>
+      <div><div class="nd-text">Reminder: validate <b>SRM-00021</b> allocation by Friday.</div><div class="nd-time">Yesterday</div></div>
     </div>
   </div>
 
@@ -1309,6 +1330,7 @@ body.restricted .restrict-banner{display:flex}
         </div>
       </div>
       <div class="nav-list" id="nav-list"></div>
+      <button class="btn-ghost nav-add-doc" id="add-doc-btn">⬆ Add a document</button>
       <div class="nav-count" id="nav-count"></div>
     </aside>
 
@@ -1584,35 +1606,35 @@ function seedDemoSections(){
   {
     id:"s1", docId:"d1", num:"1", title:"Scope and purpose",
     blocks:[
-      {id:"TXT-001", kind:"text", status:"allocated",
+      {id:"SRM-00001", kind:"text", status:"allocated",
        text:"This technical requirements specification defines the requirements applicable to the multi-site energy monitoring system (EMS) intended for the operation of the group's production and distribution facilities."},
-      {id:"TXT-002", kind:"text", status:"allocated",
+      {id:"SRM-00002", kind:"text", status:"allocated",
        text:"It applies to all software and hardware lots within scope, excluding metering equipment covered in document STB-2026-CPT."},
     ]
   },
   {
     id:"s2", docId:"d1", num:"2", title:"Functional requirements",
     blocks:[
-      {id:"H-201", kind:"heading", level:2, text:"2.1 Data acquisition and visualization"},
-      {id:"INF-1", kind:"text", status:"allocated",
+      {id:"SRM-00003", kind:"heading", level:2, text:"2.1 Data acquisition and visualization"},
+      {id:"SRM-00004", kind:"text", status:"allocated",
        text:"The requirements in this subsection apply to the acquisition and display subsystem. Threshold values are indicative and refined during detailed design."},
       // B9 — new image model (UI-only demo): the image itself is never a requirement — detecting
-      // it auto-creates exactly one requirement row (IMG-1-R1), attached via sourceImage. IMG-1-R2
+      // it auto-creates exactly one requirement row (SRM-00005), attached via sourceImage. SRM-00006
       // demonstrates the "duplicate" action — a second requirement captured from the same figure
       // (this image happens to be a table of two related rules, not a single diagram). Image &
       // document stay read-only either way; no container, no nesting.
       {id:"IMG-1", kind:"image",
        caption:"Figure 1 — System architecture: site gateways feeding the central monitoring platform.",
        text:"Figure 1 — System architecture: site gateways feeding the central monitoring platform."},
-      {id:"IMG-1-R1", kind:"requirement", sourceImage:"IMG-1", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:90}, abs:{v:"Design & Engineering",c:86}, obs:{v:"Monitoring & Supervision — FR",c:88}, manager:"m_sig", type:"Functional", domain:"Architecture", status:"toreview", alloc:"sup", comments:0,
+      {id:"SRM-00005", kind:"requirement", sourceImage:"IMG-1", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:90}, abs:{v:"Design & Engineering",c:86}, obs:{v:"Monitoring & Supervision — FR",c:88}, manager:"m_sig", type:"Functional", domain:"Architecture", status:"toreview", alloc:"sup", comments:0,
        text:"The system SHALL route telemetry from each site gateway through its regional aggregator before reaching the central monitoring platform."},
-      {id:"IMG-1-R2", kind:"requirement", sourceImage:"IMG-1", duplicatedFrom:"IMG-1-R1", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:85}, abs:{v:"Design & Engineering",c:80}, obs:{v:"Monitoring & Supervision — FR",c:82}, manager:null, type:"Functional", domain:"Architecture", status:"toreview", alloc:null, comments:0,
+      {id:"SRM-00006", kind:"requirement", sourceImage:"IMG-1", duplicatedFrom:"SRM-00005", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:85}, abs:{v:"Design & Engineering",c:80}, obs:{v:"Monitoring & Supervision — FR",c:82}, manager:null, type:"Functional", domain:"Architecture", status:"toreview", alloc:null, comments:0,
        text:"Each site gateway SHALL connect to exactly one regional aggregator, with automatic failover to a secondary aggregator on link loss."},
-      {id:"EXG-001", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:96}, abs:{v:"Design & Engineering",c:91}, obs:{v:"Monitoring & Supervision — FR",c:93}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
+      {id:"SRM-00007", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:96}, abs:{v:"Design & Engineering",c:91}, obs:{v:"Monitoring & Supervision — FR",c:93}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
        text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family."},
-      {id:"EXG-002", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Dashboard",c:94}, abs:{v:"Design & Engineering",c:88}, obs:{v:"Monitoring & Supervision — FR",c:90}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
+      {id:"SRM-00008", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Dashboard",c:94}, abs:{v:"Design & Engineering",c:88}, obs:{v:"Monitoring & Supervision — FR",c:90}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
        text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type."},
-      {id:"EXG-003", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln","sys"], perimAI:true, pbs:{v:"Supervision / Alerting",c:89}, abs:{v:"Design & Engineering",c:74}, obs:{v:"Monitoring & Supervision — FR",c:61}, manager:"m_sig", type:"Functional", domain:"Alerting", status:"toreview", alloc:"sup", comments:0,
+      {id:"SRM-00009", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln","sys"], perimAI:true, pbs:{v:"Supervision / Alerting",c:89}, abs:{v:"Design & Engineering",c:74}, obs:{v:"Monitoring & Supervision — FR",c:61}, manager:"m_sig", type:"Functional", domain:"Alerting", status:"toreview", alloc:"sup", comments:0,
        // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the allocated activities.
        branches:[
          {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:"sup", branchStatus:"answered", allocStatus:"allocated", compliance:"not_compliant",
@@ -1628,14 +1650,14 @@ function seedDemoSections(){
        change:"modified",
        text:'The system SHALL generate an alert when a site\'s consumption exceeds the configured threshold for more than <span class="diff-del">15 minutes</span><span class="diff-ins">5 consecutive minutes</span>, and notify the operator according to the escalation matrix.',
        changeDesc:"Alert trigger delay changed from 15 to 5 consecutive minutes. Probable impact on notification chain sizing."},
-      {id:"EXG-004", kind:"requirement", tech:"nontech", techAI:true, perim:["mln"], perimAI:false, pbs:{v:"Supervision / Reporting",c:82}, abs:{v:"Design & Engineering",c:69}, obs:{v:"Monitoring & Supervision — FR",c:54}, manager:null, type:"Functional", domain:"Reporting", status:"suggested", alloc:null, comments:0, uncertain:true,
+      {id:"SRM-00010", kind:"requirement", tech:"nontech", techAI:true, perim:["mln"], perimAI:false, pbs:{v:"Supervision / Reporting",c:82}, abs:{v:"Design & Engineering",c:69}, obs:{v:"Monitoring & Supervision — FR",c:54}, manager:null, type:"Functional", domain:"Reporting", status:"suggested", alloc:null, comments:0, uncertain:true,
        text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets."},
-      {id:"H-202", kind:"heading", level:2, text:"2.2 External interfaces"},
+      {id:"SRM-00011", kind:"heading", level:2, text:"2.2 External interfaces"},
       {id:"TBL-1", kind:"table", gran:"row", title:"Table 1 — External interfaces (AI-detected: one requirement per row)",
        rows:[
-        {id:"EXG-011", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Interfaces / Open API",c:91}, abs:{v:"Design & Engineering",c:85}, obs:{v:"Infrastructure & Platform — FR",c:88}, manager:"m_sig", ref:"INT-A", proto:"HTTPS", type:"Interface", domain:"Interfaces", status:"suggested", alloc:null, comments:0,
+        {id:"SRM-00012", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Interfaces / Open API",c:91}, abs:{v:"Design & Engineering",c:85}, obs:{v:"Infrastructure & Platform — FR",c:88}, manager:"m_sig", ref:"INT-A", proto:"HTTPS", type:"Interface", domain:"Interfaces", status:"suggested", alloc:null, comments:0,
          text:"The system SHALL expose site telemetry to third-party tools through a documented REST API."},
-        {id:"EXG-012", kind:"requirement", tech:"nontech", techAI:false, perim:["tlc"], perimAI:true, pbs:{v:"Interfaces / External feeds",c:76}, abs:{v:"Integration",c:58}, obs:{v:"Infrastructure & Platform — FR",c:47}, manager:null, ref:"INT-B", proto:"SFTP", type:"Interface", domain:"Interfaces", status:"suggested", alloc:null, comments:0, uncertain:true,
+        {id:"SRM-00013", kind:"requirement", tech:"nontech", techAI:false, perim:["tlc"], perimAI:true, pbs:{v:"Interfaces / External feeds",c:76}, abs:{v:"Integration",c:58}, obs:{v:"Infrastructure & Platform — FR",c:47}, manager:null, ref:"INT-B", proto:"SFTP", type:"Interface", domain:"Interfaces", status:"suggested", alloc:null, comments:0, uncertain:true,
          text:"The system SHALL import weather forecast feeds. The feed SHALL be refreshed every 15 minutes."},
        ]},
     ]
@@ -1643,14 +1665,14 @@ function seedDemoSections(){
   {
     id:"s3", docId:"d2", num:"3", title:"Performance requirements",
     blocks:[
-      {id:"H-301", kind:"heading", level:2, text:"3.1 Real-time and history"},
-      {id:"EXG-005", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / Real-time",c:95}, abs:{v:"Performance & Validation",c:90}, obs:{v:"Infrastructure & Platform — FR",c:92}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"allocated", allocStatus:"allocated", alloc:"infra", comments:0,
+      {id:"SRM-00014", kind:"heading", level:2, text:"3.1 Real-time and history"},
+      {id:"SRM-00015", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / Real-time",c:95}, abs:{v:"Performance & Validation",c:90}, obs:{v:"Infrastructure & Platform — FR",c:92}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"allocated", allocStatus:"allocated", alloc:"infra", comments:0,
        text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites."},
-      {id:"H-3011", kind:"heading", level:3, text:"3.1.1 Historical queries"},
-      {id:"EXG-006", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / History",c:93}, abs:{v:"Performance & Validation",c:87}, obs:{v:"Infrastructure & Platform — FR",c:89}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"edited", alloc:"infra", comments:2,
+      {id:"SRM-00016", kind:"heading", level:3, text:"3.1.1 Historical queries"},
+      {id:"SRM-00017", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / History",c:93}, abs:{v:"Performance & Validation",c:87}, obs:{v:"Infrastructure & Platform — FR",c:89}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"edited", alloc:"infra", comments:2,
        text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile."},
-      {id:"H-302", kind:"heading", level:2, text:"3.2 Availability"},
-      {id:"EXG-007", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln"], perimAI:true, pbs:{v:"Platform / Availability",c:88}, abs:{v:"Operations",c:71}, obs:{v:"Infrastructure & Platform — FR",c:63}, manager:"m_mln", type:"Performance", domain:"Availability", status:"suggested", alloc:null, comments:0,
+      {id:"SRM-00018", kind:"heading", level:2, text:"3.2 Availability"},
+      {id:"SRM-00019", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln"], perimAI:true, pbs:{v:"Platform / Availability",c:88}, abs:{v:"Operations",c:71}, obs:{v:"Infrastructure & Platform — FR",c:63}, manager:"m_mln", type:"Performance", domain:"Availability", status:"suggested", alloc:null, comments:0,
        // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the allocated activities.
        branches:[
          {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:null, branchStatus:"proposed", allocStatus:"allocated", compliance:"pending",
@@ -1672,11 +1694,11 @@ function seedDemoSections(){
   {
     id:"s4", docId:"d2", num:"4", title:"Security requirements",
     blocks:[
-      {id:"EXG-008", kind:"requirement", tech:"tech", techAI:false, perim:["tky","sig","mln"], perimAI:false, pbs:{v:"Security / Access control",c:97}, abs:{v:"Design & Engineering",c:93}, obs:{v:"Cybersecurity — Group",c:95}, manager:"m_sig", type:"Security", domain:"Access", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
+      {id:"SRM-00020", kind:"requirement", tech:"tech", techAI:false, perim:["tky","sig","mln"], perimAI:false, pbs:{v:"Security / Access control",c:97}, abs:{v:"Design & Engineering",c:93}, obs:{v:"Cybersecurity — Group",c:95}, manager:"m_sig", type:"Security", domain:"Access", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
        text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges."},
-      {id:"EXG-009", kind:"requirement", tech:"nontech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Security / Audit trail",c:92}, abs:{v:"Compliance",c:84}, obs:{v:"Cybersecurity — Group",c:88}, manager:"m_mln", type:"Security", domain:"Traceability", status:"toreview", alloc:"cyber", comments:1,
+      {id:"SRM-00021", kind:"requirement", tech:"nontech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Security / Audit trail",c:92}, abs:{v:"Compliance",c:84}, obs:{v:"Cybersecurity — Group",c:88}, manager:"m_mln", type:"Security", domain:"Traceability", status:"toreview", alloc:"cyber", comments:1,
        text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years."},
-      {id:"EXG-010", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Security / Data flows",c:94}, abs:{v:"Design & Engineering",c:90}, obs:{v:"Cybersecurity — Group",c:91}, manager:"m_sig", type:"Security", domain:"Data", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
+      {id:"SRM-00022", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Security / Data flows",c:94}, abs:{v:"Design & Engineering",c:90}, obs:{v:"Cybersecurity — Group",c:91}, manager:"m_sig", type:"Security", domain:"Data", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
        text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review."},
     ]
   },
@@ -1705,7 +1727,7 @@ const COMPLIANCE_DEFS=[
   {k:"pending",label:"Pending"},
 ];
 const complianceLabel = k => (COMPLIANCE_DEFS.find(c=>c.k===k)||{}).label || k || "—";
-/* TD2 — full six-value set, matching SPEC-domain-model.md §2 / suivi-experts-et-versions.html's
+/* TD2 — full six-value set, matching SPEC-domain-model.md §2 / compliance.html's
    BST (reference implementation). Was {answered, awaiting, reassignment_needed} — a real
    collapse of proposed/assigned/awaiting_answer/awaiting_qa into "awaiting", not a shorthand. */
 const BRANCH_STATUS_LABEL = {proposed:"Proposed", assigned:"Assigned", awaiting_answer:"Awaiting answer", awaiting_qa:"Awaiting Q&A", reassignment_needed:"Reassignment needed", answered:"Answered"};
@@ -1715,8 +1737,8 @@ const BRANCH_STATUS_LABEL = {proposed:"Proposed", assigned:"Assigned", awaiting_
    replacement typology, it doesn't just remove the branch. */
 const REASON_LABEL = {wrong_person:"Right typology, wrong person", wrong_typology:"Wrong typology", not_applicable:"This activity doesn't apply here"};
 function hasPendingReassign(b){ return !!b.reassignRequest || (b.branches||[]).some(br=>br.reassignRequest); }
-const TYPE_SUGGEST = {"EXG-004":{type:"Functional", alloc:"sup", reason:'"Reporting" domain historically owned by the Monitoring team; source passage detected in section 2.'},
-                      "EXG-007":{type:"Performance", alloc:"infra", reason:"Monthly availability requirement; Infrastructure team owns platform SLAs."}};
+const TYPE_SUGGEST = {"SRM-00010":{type:"Functional", alloc:"sup", reason:'"Reporting" domain historically owned by the Monitoring team; source passage detected in section 2.'},
+                      "SRM-00019":{type:"Performance", alloc:"infra", reason:"Monthly availability requirement; Infrastructure team owns platform SLAs."}};
 
 /* =====================================================
    PROJECT MODE — manual / segmentation-only / ai
@@ -2116,6 +2138,7 @@ const state = {
   docNavCollapsed:new Set(),
   docFilter:"all",
   colCollapsed:new Set(),
+  colOrder:["class","typo","abs","type","obs","mgr","status","compliance"],
   navPanelCollapsed:false,
   detailPanelCollapsed:false,
   sortCol:null,
@@ -2134,7 +2157,7 @@ const state = {
 // sections across a handful of documents — a wide-open tree by default was
 // unusable at that scale.
 SECTIONS.forEach(s=>{ state.navCollapsed.add(s.id); state.docNavCollapsed.add(s.docId); });
-const changesOrder = ["EXG-003","EXG-007","GHOST-1"];
+const changesOrder = ["SRM-00009","SRM-00019","GHOST-1"];
 const allBlocks = () => SECTIONS.flatMap(s=>s.blocks.flatMap(b=>b.kind==="table"?b.rows.map(r=>({...r,section:s})):[{...b,section:s}]));
 const reqs = () => BIG.on ? BIG.rows : allBlocks().filter(b=>b.kind==="requirement");
 const findBlock = id => {
@@ -2223,7 +2246,7 @@ function buildBigData(n){
     const conf=45+((i*37)%54);
     const techAI=(i%5===0);
     const row={
-      id:"REQ-"+String(i+1).padStart(5,"0"), kind:"requirement", section:sec,
+      id:"SRM-"+String(i+1).padStart(5,"0"), kind:"requirement", section:sec,
       text:`The system ${BIG_VERBS[i%BIG_VERBS.length]} ${BIG_OBJ[i%BIG_OBJ.length]} ${BIG_QUAL[i%BIG_QUAL.length]}.`,
       tech:"tech", techAI,
       type:BIG_TYPES[i%BIG_TYPES.length], domain:obs[0].split(" ")[0],
@@ -3754,29 +3777,29 @@ function renderSettings(){
    external system, opened via the link, not shown here).
 ===================================================== */
 const REX_BASE = {
-  "EXG-003":[
+  "SRM-00009":[
     {id:"REX-2211",title:"Alert threshold tuning caused notification storms — Metro Line 2 supervision",src:"REX360",match:92},
     {id:"REX-1874",title:"Escalation matrix rework after consumption-spike false positives",src:"REX360",match:81},
     {id:"REX-1590",title:"Consecutive-minutes vs single-sample alerting: lessons learned",src:"Rexbook",match:74},
   ],
-  "EXG-005":[
+  "SRM-00015":[
     {id:"REX-2033",title:"Real-time refresh degradation above 150 concurrent sites",src:"REX360",match:88},
     {id:"REX-1720",title:"Acquisition-to-display latency budget on regional SCADA",src:"Rexbook",match:70},
   ],
-  "EXG-007":[
+  "SRM-00019":[
     {id:"REX-2450",title:"99.7% availability clause — penalties triggered by maintenance windows",src:"REX360",match:90},
     {id:"REX-2109",title:"Availability measurement disputes: business hours definition",src:"Rexbook",match:77},
     {id:"REX-1802",title:"SLA sizing for platform availability on multi-site EMS",src:"REX360",match:69},
     {id:"REX-1655",title:"Planned-maintenance exclusion wording that avoided a claim",src:"Rexbook",match:64},
   ],
-  "EXG-008":[
+  "SRM-00020":[
     {id:"REX-2380",title:"MFA rollout friction for field operators — adoption REX",src:"REX360",match:85},
   ],
-  "EXG-011":[
+  "SRM-00012":[
     {id:"REX-1990",title:"Open REST API rate-limits under third-party integration load",src:"REX360",match:83},
     {id:"REX-1540",title:"Documented API deliverable scope creep on prior tender",src:"Rexbook",match:66},
   ],
-  "EXG-012":[
+  "SRM-00013":[
     {id:"REX-2260",title:"Weather-feed SFTP refresh failures and fallback strategy",src:"Rexbook",match:71},
   ],
 };
@@ -3787,14 +3810,14 @@ function activityFor(b){
     {k:"ia",who:"Segmentation AI",what:`Block detected and typed as "${b.type||"Text"}" during v2.1 processing.`,time:"Jul 16, 2026, 9:14 AM"},
   ];
   if(b.branchLog&&b.branchLog.length) base.unshift(...b.branchLog);
-  if(b.id==="EXG-006"){
+  if(b.id==="SRM-00017"){
     base.unshift(
       {k:"comment",who:"Karim Benali",what:'"The 2s threshold seems optimistic over a one-year depth. Are we targeting P95 or P99?" <b>@Thibaud</b>',time:"25 min ago"},
       {k:"human",who:"Thibaud Breton",what:'Criterion text clarified.<span class="before-after"><span class="ba-del">under 2 seconds</span> → <span class="ba-ins">under 2 seconds … at the 95th percentile</span></span>',time:"Yesterday, 5:40 PM"},
     );
   }
   if(isFullyAllocated(b)) base.unshift({k:"ok",who:"Thibaud Breton",what:"Requirement allocated — characterisation and assignment confirmed, sent to Expert Review.",time:"Jul 15, 2026, 11:02 AM"});
-  if(b.id==="EXG-009") base.unshift({k:"comment",who:"Claire Moreau",what:'"Is the 3-year retention period aligned with group policy (5 years)?"',time:"Jul 14, 2026, 4:20 PM"});
+  if(b.id==="SRM-00021") base.unshift({k:"comment",who:"Claire Moreau",what:'"Is the 3-year retention period aligned with group policy (5 years)?"',time:"Jul 14, 2026, 4:20 PM"});
   return base;
 }
 /* ---------- image-sourced requirements: duplicate / delete ---------- */
@@ -4161,15 +4184,25 @@ function renderSortIndicators(){
   if(resetLink) resetLink.style.display=state.sortCol?"inline":"none";
 }
 
-/* ---------- column collapse (Excel-like) ---------- */
+/* ---------- column visibility + order ---------- */
+/* USER-TEST-session-3.md §1.4 — a column can now disappear entirely (not just collapse
+   to a sliver) and be reordered. sel/id/req stay pinned first, in that order; everything
+   else follows state.colOrder. Width and CSS `order` are both driven off colOrder, so a
+   hidden column's track drops out of --rgrid-cols and every current+future .rcell (rows
+   included, via the --ord-* custom properties inherited from .rgrid) repaints in the
+   right visual position without the row-render code needing to know about ordering. */
 const RCOLS=[
   {k:"sel",w:"32px"},{k:"id",w:"98px"},{k:"req",w:"minmax(325px,1.82fr)"},
   {k:"class",w:"78px"},{k:"typo",w:"112px"},{k:"abs",w:"120px"},{k:"type",w:"100px"},
   {k:"obs",w:"140px"},{k:"mgr",w:"118px"},{k:"status",w:"92px"},{k:"compliance",w:"108px"},
 ];
+const RCOLS_BY_KEY=Object.fromEntries(RCOLS.map(c=>[c.k,c]));
 function applyCols(){
   const grid=document.querySelector(".rgrid"); if(!grid) return;
-  grid.style.setProperty("--rgrid-cols", RCOLS.map(c=>state.colCollapsed.has(c.k)?"24px":c.w).join(" "));
+  const fullOrder=["sel","id","req",...state.colOrder];
+  const visible=fullOrder.filter(k=>!state.colCollapsed.has(k));
+  grid.style.setProperty("--rgrid-cols", visible.map(k=>RCOLS_BY_KEY[k].w).join(" "));
+  fullOrder.forEach((k,i)=>grid.style.setProperty(`--ord-${k}`, i));
   grid.setAttribute("data-cc",[...state.colCollapsed].join(" "));
 }
 // keep the header's horizontal scroll in sync with the body — otherwise columns beyond the
@@ -4179,10 +4212,6 @@ function applyCols(){
   if(!body||!head) return;
   body.addEventListener("scroll",()=>{ head.scrollLeft = body.scrollLeft; });
 })();
-// clicking a collapsed header cell re-expands it
-document.querySelectorAll(".rgrid-head [data-col]").forEach(cell=>cell.addEventListener("click",e=>{
-  const k=cell.dataset.col; if(state.colCollapsed.has(k)){ state.colCollapsed.delete(k); applyCols(); }
-}));
 function renderColFilterIndicators(){
   const n=colFilterActiveCount();
   const badge=document.getElementById("view-badge");
@@ -4247,6 +4276,39 @@ function toggleScaleTest(on){
   if(state.mode!=="review") setMode("review");
   refresh();
 }
+/* USER-TEST-session-3.md §1.4 — the project isn't sealed at creation: a document can
+   be added any time, gets its own AI pass, and its requirements land the same way a
+   fresh project's do — uncharacterized, Incomplete, ready to review. Mirrors
+   reclassify()'s info→requirement field set rather than inventing a new shape. */
+let addedDocsCount=0;
+// USER-TEST-session-3.md §1.4 — one continuous id sequence, so a document added mid-project
+// just picks up where the tender's own numbering left off, same as a real re-import would.
+let srmIdCounter=SECTIONS.reduce((n,s)=>n+s.blocks.reduce((m,b)=>m+(b.kind==="table"?b.rows.length:1),0),0);
+function simulateAddDocument(){
+  const btn=document.getElementById("add-doc-btn");
+  if(btn){ btn.disabled=true; btn.textContent="Processing…"; }
+  toast("Uploading document…","ok");
+  setTimeout(()=>{
+    addedDocsCount++;
+    const docId="d-new"+addedDocsCount, docName="Addendum "+addedDocsCount+" — new scope";
+    DOCS.push({id:docId, name:docName, file:""});
+    const n=3+(addedDocsCount%3);
+    const blocks=[];
+    for(let i=0;i<n;i++){
+      srmIdCounter++;
+      const id="SRM-"+String(srmIdCounter).padStart(5,"0");
+      const text=`The system ${BIG_VERBS[(i+addedDocsCount)%BIG_VERBS.length]} ${BIG_OBJ[(i*3+addedDocsCount)%BIG_OBJ.length]} ${BIG_QUAL[(i*5+addedDocsCount)%BIG_QUAL.length]}.`;
+      const b={id, kind:"requirement", text, type:"Functional", tech:"tech", perim:[], alloc:null, manager:null, allocStatus:"incomplete"};
+      computeCharStatus(b);
+      blocks.push(b);
+    }
+    SECTIONS.push({id:"s-new"+addedDocsCount, docId, num:"", title:"New scope", blocks});
+    if(btn){ btn.disabled=false; btn.textContent="⬆ Add a document"; }
+    refresh();
+    toast(`${docName} added — ${n} new requirement${n>1?"s":""} ready for characterization`,"ok");
+  }, 900);
+}
+document.getElementById("add-doc-btn")?.addEventListener("click", simulateAddDocument);
 document.getElementById("wrap-toggle")?.addEventListener("change",e=>{ state.wrapText=e.target.checked; renderReview(); });
 document.getElementById("filter-btn")?.addEventListener("click",e=>{ e.stopPropagation(); filterPanelState.open=!filterPanelState.open; renderFilterPanel(); });
 document.addEventListener("click",e=>{ if(filterPanelState.open && !e.target.closest("#filter-panel") && !e.target.closest("#filter-btn")){ filterPanelState.open=false; renderFilterPanel(); } });
@@ -4265,9 +4327,9 @@ function renderColumnsPanel(){
     <div class="view-panel-head">View</div>
     <div class="view-sec">
       <div class="view-sec-head">Table columns</div>
-      ${TE.columnChecklistHTML(COLUMN_TOGGLE_DEFS,state.colCollapsed)}
+      ${TE.reorderableColumnListHTML(COLUMN_TOGGLE_DEFS,state.colOrder,state.colCollapsed)}
     </div>`;
-  TE.bindColumnChecklist(p,state.colCollapsed,()=>applyCols());
+  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyCols(); renderColumnsPanel(); });
 }
 document.getElementById("cols-btn")?.addEventListener("click",e=>{ e.stopPropagation(); colsPanelState.open=!colsPanelState.open; renderColumnsPanel(); });
 document.addEventListener("click",e=>{ if(colsPanelState.open && !e.target.closest("#cols-panel") && !e.target.closest("#cols-btn")){ colsPanelState.open=false; renderColumnsPanel(); } });
@@ -4299,31 +4361,36 @@ const EXPORT_FORMATS=[
   {k:"reqif",label:"ReqIF (.reqif) — requirements exchange"},
   {k:"doors9",label:"DOORS 9 (.csv for import)"},{k:"doorsng",label:"DOORS Next (ReqIF)"},
 ];
-const exportState={steps:new Set(["capture","charac","alloc"]),format:"xlsx",open:false};
+const exportState={steps:new Set(["capture","charac","alloc"]),format:"xlsx",docId:"all",open:false};
 function renderExportPanel(){
   const p=document.getElementById("export-panel"); if(!p) return;
   p.classList.toggle("on",exportState.open);
   if(!exportState.open){ p.innerHTML=""; return; }
+  const docOptions=`<option value="all">All documents (${DOCS.length})</option>`+
+    DOCS.map((d,i)=>`<option value="${d.id}" ${exportState.docId===d.id?"selected":""}>Doc ${i+1} — ${d.name}</option>`).join("");
   p.innerHTML=`
     <div class="exp-h">Export requirements</div>
+    <div class="exp-sec-lbl">Document</div>
+    <select id="exp-doc" class="exp-format">${docOptions}</select>
     <div class="exp-sec-lbl">Include steps</div>
     ${EXPORT_STEPS.map(s=>`<label class="exp-row"><input type="checkbox" data-estep="${s.k}" ${exportState.steps.has(s.k)?"checked":""}><span><span class="exp-t">${s.label}</span><span class="exp-d">${s.desc}</span></span></label>`).join("")}
     <div class="exp-sec-lbl">Target format</div>
     <select id="exp-format" class="exp-format">${EXPORT_FORMATS.map(f=>`<option value="${f.k}" ${exportState.format===f.k?"selected":""}>${f.label}</option>`).join("")}</select>
     <button class="exp-go" id="exp-go">Generate export</button>
     <div class="exp-note">DOORS import keeps the requirement register upstream. Export late — most of the review stays in the tool.</div>`;
+  p.querySelector("#exp-doc").addEventListener("change",e=>exportState.docId=e.target.value);
   p.querySelectorAll("[data-estep]").forEach(cb=>cb.addEventListener("change",()=>{ cb.checked?exportState.steps.add(cb.dataset.estep):exportState.steps.delete(cb.dataset.estep); }));
   p.querySelector("#exp-format").addEventListener("change",e=>exportState.format=e.target.value);
   p.querySelector("#exp-go").addEventListener("click",()=>{
     if(!exportState.steps.size){ toast("Select at least one step to export","warn"); return; }
     const fmt=EXPORT_FORMATS.find(f=>f.k===exportState.format).label.split(" ")[0];
     const steps=[...exportState.steps].map(k=>EXPORT_STEPS.find(s=>s.k===k).label).join(" + ");
-    const scope=state.docFilter==="all"?"all documents":("Doc "+(DOCS.findIndex(d=>d.id===state.docFilter)+1));
+    const scope=exportState.docId==="all"?"all documents":("Doc "+(DOCS.findIndex(d=>d.id===exportState.docId)+1));
     exportState.open=false; renderExportPanel();
     toast(`Export generated — ${fmt} · ${steps} · ${scope}`,"ok");
   });
 }
-document.getElementById("export-btn")?.addEventListener("click",e=>{ e.stopPropagation(); exportState.open=!exportState.open; renderExportPanel(); });
+document.getElementById("export-btn")?.addEventListener("click",e=>{ e.stopPropagation(); exportState.docId=state.docFilter; exportState.open=!exportState.open; renderExportPanel(); });
 document.addEventListener("click",e=>{ if(exportState.open && !e.target.closest("#export-panel") && !e.target.closest("#export-btn")){ exportState.open=false; renderExportPanel(); } });
 
 /* close activity dropdown on outside click */

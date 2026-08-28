@@ -116,9 +116,14 @@ paintActiveCell(state, adapter){
   const cell = row.querySelector(`.rcell.c-${ac.col}`);
   if(cell) cell.classList.add("active-cell");
 },
+/* USER-TEST-session-3.md §1.4 — must follow the active cell on both axes: vertically
+   between rows, horizontally between columns. Scrolling the specific cell (not just the
+   row) is what gets inline:"nearest" to actually move the horizontal scrollbar when a
+   column is off-screen — scrolling the row only ever addressed the vertical axis. */
 scrollActiveCellIntoView(state, adapter){
-  const row = adapter.activeCellRowEl(state.activeCell);
-  if(row) row.scrollIntoView({ block:"nearest" });
+  const row = adapter.activeCellRowEl(state.activeCell); if(!row) return;
+  const cell = state.activeCell.col && row.querySelector(`.rcell.c-${state.activeCell.col}`);
+  (cell || row).scrollIntoView({ block:"nearest", inline:"nearest" });
 },
 focusActiveCellControl(state, adapter){
   const row = adapter.activeCellRowEl(state.activeCell); if(!row) return;
@@ -157,20 +162,48 @@ handleNavKeydown(e, state, adapter){
   return false;
 },
 
-/* ---------- Column Visibility Menu ---------- */
-/* columnDefs: [{k,label}]. Renders just the checklist — hosts can prepend/append
-   their own extra rows (e.g. revue's "wrap rows" toggle) around this HTML. */
-columnChecklistHTML(columnDefs, colCollapsed){
-  return columnDefs.map(c=>
-    `<label class="colf-opt"><input type="checkbox" data-colvis="${c.k}" ${colCollapsed.has(c.k)?"":"checked"}>${c.label}</label>`
-  ).join("");
+/* ---------- Column Visibility + Reorder Menu ---------- */
+/* USER-TEST-session-3.md §1.4 — columns must be fully removable (not just collapsed
+   to a sliver) and reorderable by the user. columnDefs: [{k,label}] — only the
+   optional columns (sel/id/req stay pinned, hosts don't pass those in). colOrder:
+   array of every columnDefs key, in current display order — mutated in place by
+   drag-and-drop. colCollapsed: Set of keys currently hidden. */
+reorderableColumnListHTML(columnDefs, colOrder, colCollapsed){
+  const byKey = Object.fromEntries(columnDefs.map(c=>[c.k,c]));
+  return colOrder.filter(k=>byKey[k]).map(k=>{
+    const c = byKey[k];
+    return `<div class="colf-row" draggable="true" data-colkey="${c.k}">
+      <span class="colf-handle" title="Drag to reorder">⠿</span>
+      <label class="colf-opt"><input type="checkbox" data-colvis="${c.k}" ${colCollapsed.has(c.k)?"":"checked"}>${c.label}</label>
+    </div>`;
+  }).join("");
 },
-bindColumnChecklist(panelEl, colCollapsed, onToggle){
+bindReorderableColumnList(panelEl, colOrder, colCollapsed, onChange){
   panelEl.querySelectorAll("[data-colvis]").forEach(cb=>cb.addEventListener("change", ()=>{
     const k = cb.dataset.colvis;
     cb.checked ? colCollapsed.delete(k) : colCollapsed.add(k);
-    onToggle(k, cb.checked);
+    onChange();
   }));
+  let dragKey = null;
+  panelEl.querySelectorAll("[data-colkey]").forEach(row=>{
+    row.addEventListener("dragstart", e=>{
+      dragKey = row.dataset.colkey;
+      e.dataTransfer.effectAllowed = "move";
+      row.classList.add("dragging");
+    });
+    row.addEventListener("dragend", ()=>{ row.classList.remove("dragging"); dragKey = null; });
+    row.addEventListener("dragover", e=>{ e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
+    row.addEventListener("drop", e=>{
+      e.preventDefault();
+      const targetKey = row.dataset.colkey;
+      if(!dragKey || dragKey===targetKey) return;
+      const from = colOrder.indexOf(dragKey), to = colOrder.indexOf(targetKey);
+      if(from<0 || to<0) return;
+      colOrder.splice(from,1);
+      colOrder.splice(to,0,dragKey);
+      onChange();
+    });
+  });
 },
 
 };

@@ -35,10 +35,9 @@ from pathlib import Path
 SOURCES = [
     ("dash", "dashboard-et-config.html"),
     ("review", "revue-documentaire.html"),
-    ("followup", "suivi-experts-et-versions.html"),
+    ("compliance", "compliance.html"),
     ("create", "creation-projet.html"),
     ("home", "accueil.html"),
-    ("expert", "expert-space.html"),
 ]
 
 INCLUDE_MARKER = "/* @include table-engine.js */"
@@ -70,7 +69,7 @@ const BLOBS = {
 
 FOOTER = """
 };
-const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "followup": ["followup", "followup"], "versions": ["followup", "versions"], "new": ["create", null], "expert": ["expert", null]};
+const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "compliance": ["compliance", "compliance"], "compliance-contributor": ["compliance", "compliance-contributor"], "versions": ["compliance", "versions"], "new": ["create", null]};
 function b64utf8(s){return decodeURIComponent(Array.prototype.map.call(atob(s),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));}
 const frame = document.getElementById('frame');
 
@@ -92,18 +91,18 @@ function seedProjects(){
     // of this seed data, not computed — and only set on projects with enough real progress
     // data to assess (skipped for `processing`, which has nothing yet, and `submitted`,
     // which is already closed rather than "on track/at risk").
-    {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Signalling & Urban", days:23, deadline:1,
+    {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"SIG", days:23, deadline:1,
      status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager", builtOut:true,
      health:"on_track", healthNote:"On pace — 2 items need attention"},
-    {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"Signalling & Urban", days:9, deadline:1,
+    {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"SIG", days:9, deadline:1,
      status:"expert_review", done:34, total:41, updated:"2h ago", role:"Signalling manager", builtOut:false,
      health:"at_risk", healthNote:"9 days left, 7 requirements still open"},
     {id:"ao088", ref:"AO-2026-088", name:"Depot Maintenance Systems", line:"Services", days:41, deadline:1,
      status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now", role:"Project manager", builtOut:false},
-    {id:"stb133", ref:"STB-2026-133", name:"Regional Fleet Telemetry", line:"Rolling stock", days:5, deadline:1,
+    {id:"stb133", ref:"STB-2026-133", name:"Regional Fleet Telemetry", line:"Rolling Stock", days:5, deadline:1,
      status:"qa_versioning", done:58, total:63, updated:"yesterday", role:"Expert", builtOut:false,
      health:"on_track", healthNote:"92% resolved, on pace for the deadline"},
-    {id:"stb2025", ref:"STB-2025-071", name:"Metro Depot Power Supply", line:"Systems", days:-12, deadline:1,
+    {id:"stb2025", ref:"STB-2025-071", name:"Metro Depot Power Supply", line:"INFRA", days:-12, deadline:1,
      status:"submitted", reqs:88, updated:"Jun 3", role:"Expert", builtOut:false},
   ];
 }
@@ -202,10 +201,10 @@ window.setProjectMeta = (m)=>{ projectMeta = m; };
 const aiFeedback = [];
 window.pushAIFeedback = (f)=>{ aiFeedback.push(Object.assign({at:Date.now()},f)); };
 window.getAIFeedback = ()=>aiFeedback;
-// B10 — reassignment requests, shared across screens so a request raised by an
-// Expert (expert-space.html) is visible to the project manager's approval queue
-// (revue-documentaire.html) and vice versa; each screen owns its own requirement
-// data, this is only the cross-screen mailbox.
+// B10 — reassignment requests, shared across screens so a request raised by a
+// contributor (compliance.html) is visible to the project manager's approval
+// queue (revue-documentaire.html) and vice versa; each screen owns its own
+// requirement data, this is only the cross-screen mailbox.
 const reassignRequests = [];
 window.pushReassignRequest = function(req){
   req.id = req.id || ('RR-'+(reassignRequests.length+1));
@@ -239,7 +238,8 @@ function load(routeKey){
       else if(_sub === 'dashboard' && cw.showConfig) cw.showConfig(false);
       else if(_sub === 'team' && cw.showScreen) cw.showScreen('team');
       else if(_sub === 'versions' && cw.setScreen) cw.setScreen(3);
-      else if(_sub === 'followup' && cw.setScreen) cw.setScreen(2);
+      else if(_sub === 'compliance' && cw.setScreen) cw.setScreen(2);
+      else if(_sub === 'compliance-contributor' && cw.setScreen){ cw.setScreen(2); if(cw.setDemoContributorView) cw.setDemoContributorView(); }
     }catch(e){}
   };
   frame.srcdoc = b64utf8(BLOBS[r[0]]);
@@ -252,12 +252,12 @@ window.route = function(key){
 const URLMAP = {
   'accueil.html':'home',
   'revue-documentaire.html':'review',
-  'suivi-experts-et-versions.html':'followup',
-  'suivi-experts-et-versions.html#versions':'versions',
+  'compliance.html':'compliance',
+  'compliance.html#versions':'versions',
+  'compliance.html#contributor':'compliance-contributor',
   'dashboard-et-config.html':'dashboard',
   'dashboard-et-config.html#config':'config',
-  'creation-projet.html':'new',
-  'expert-space.html':'expert'
+  'creation-projet.html':'new'
 };
 window.routeUrl = function(u){ window.route(URLMAP[u] || 'dashboard'); };
 // moderator shortcut: Ctrl+Shift+R resets the demo

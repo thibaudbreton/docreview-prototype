@@ -475,7 +475,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
     <div class="crumb"><a class="crumb-home" href="javascript:parent.route('home')">My tenders</a><span class="sep">/</span><span class="project" id="crumb-project">STB-2026 · Energy Monitoring System</span></div>
     <div style="margin-left:auto"></div>
     <div class="hdr-actions">
-      <a class="demo-link" id="demo-expert-link" href="javascript:void(0)" title="An expert normally arrives here from their own email/notification link, never through this dashboard — this exists only for a moderated walkthrough."><b>DEMO</b> Expert Space →</a>
+      <a class="demo-link" id="demo-contributor-link" href="javascript:void(0)" title="A contributor normally arrives here from their own email/notification link, never through this dashboard — this exists only for a moderated walkthrough."><b>DEMO</b> Compliance (contributor) →</a>
       <a class="btn-ghost" id="new-proj" href="javascript:parent.route('new')">＋ New project</a>
       <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span></button>
       <button class="icon-btn" id="team-btn" title="Team management"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
@@ -491,7 +491,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <div>
           <div class="hero-kicker">Tender project</div>
           <h1 id="dash-title">Energy Monitoring System</h1>
-          <div class="meta"><span>Ref. <b id="dash-ref">STB-2026</b></span><span id="dash-line-sub">Multi-site EMS</span><span><b id="dash-line">Signalling &amp; Urban</b></span><span>Bid Director: <b>Thibaud Breton</b></span></div>
+          <div class="meta"><span>BO-ID <b id="dash-ref">STB-2026</b></span><span id="dash-line-sub">Multi-site EMS</span><span><b id="dash-line">SIG</b></span><span>Bid Director: <b>Thibaud Breton</b></span></div>
         </div>
         <div class="deadline warn"><div class="d-num">23</div><div class="d-lbl">days to submission</div></div>
       </div>
@@ -500,7 +500,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
            below are the EMS reference data reused for this prototype phase, instead of
            silently presenting them as if they were this project's own. -->
       <div class="warnbox" id="dash-scope-banner" style="display:none;margin-bottom:18px">
-        <b>Prototype scope.</b> This project was just created — its Allocation, Follow-up and Expert Space
+        <b>Prototype scope.</b> This project was just created — its Allocation and Compliance
         screens below reuse the <b>Energy Monitoring System (STB-2026)</b> reference content for this test
         phase, rather than data of its own. Team casting above <i>is</i> this project's own, from the creation wizard.
       </div>
@@ -521,7 +521,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <div class="phase active-phase" id="ph-followup" style="cursor:pointer">
           <div class="ph-num">2</div>
           <div class="ph-info">
-            <div class="ph-name">Expert follow-up</div>
+            <div class="ph-name">Compliance</div>
             <div class="ph-stat" id="ph-followup-body"><span class="big">0</span><span>/ 0 answered</span></div>
             <div class="ph-bar"><div style="width:0%;background:var(--ia)"></div></div>
           </div>
@@ -554,11 +554,11 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <span class="ph-open-btn">Open →</span>
       </div>
 
-      <!-- TH1 — Expert Space no longer gets a phase-rail card: an expert would
-           never reach their own view through the manager's dashboard in real
-           life (they arrive from an email/notification link). The entry
-           point for a moderated walkthrough is now the small "DEMO" link in
-           the header instead — see #demo-expert-link. -->
+      <!-- TH1 — Compliance's contributor view doesn't get its own phase-rail card: a
+           contributor would never reach it through the project manager's dashboard in
+           real life (they arrive from an email/notification link). The entry point for
+           a moderated walkthrough is now the small "DEMO" link in the header instead —
+           see #demo-contributor-link. -->
 
       <!-- main: attention (primary) + health (secondary) -->
       <div class="dash-main">
@@ -569,9 +569,9 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             <div><div class="att-t"><b>Allocation not finalized</b></div><div class="att-sub" id="att-review-sub">9 requirements still to validate</div></div>
             <span class="att-go">Finalize allocation →</span>
           </div>
-          <div class="att v22only hidden" data-go="suivi-experts-et-versions.html#versions">
+          <div class="att v22only hidden" data-go="compliance.html#versions">
             <div class="att-ic ia">⇄</div>
-            <div><div class="att-t"><b>New version v2.2 ready for review</b></div><div class="att-sub">Arrived during allocation · +2 ~1 −0 · EXG-005 response now on an outdated version</div></div>
+            <div><div class="att-t"><b>New version v2.2 ready for review</b></div><div class="att-sub">Arrived during allocation · +2 ~1 −0 · SRM-00009 response now on an outdated version</div></div>
             <span class="att-go">Review changes →</span>
           </div>
           <div class="att" data-go="revue-documentaire.html">
@@ -579,19 +579,19 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             <div><div class="att-t"><b>2 uncertain segmentations</b></div><div class="att-sub">Table rows in section 2 flagged by the AI — confirm boundaries before validating</div></div>
             <span class="att-go">Fix in review →</span>
           </div>
-          <div class="att p2only" id="att-overdue" data-go="suivi-experts-et-versions.html">
+          <div class="att p2only" id="att-overdue" data-go="compliance.html">
             <div class="att-ic warn">🔔</div>
-            <div><div class="att-t"><b id="att-overdue-t">1 expert response overdue</b></div><div class="att-sub" id="att-overdue-sub">Sophie Lang — EXG-004 unopened for 6 days</div></div>
+            <div><div class="att-t"><b id="att-overdue-t">1 contributor response overdue</b></div><div class="att-sub" id="att-overdue-sub">Sophie Lang — SRM-00006 unopened for 6 days</div></div>
             <span class="att-go">Remind →</span>
           </div>
-          <div class="att p2only" data-go="suivi-experts-et-versions.html">
+          <div class="att p2only" data-go="compliance.html">
             <div class="att-ic accent">⇗</div>
             <div><div class="att-t"><b>2 questions awaiting internal review</b></div><div class="att-sub">A possible duplicate was detected (TLS on legacy gateways) — merge before sending</div></div>
             <span class="att-go">Open Q&amp;A →</span>
           </div>
-          <div class="att p2only" data-go="suivi-experts-et-versions.html">
+          <div class="att p2only" data-go="compliance.html">
             <div class="att-ic warn">⚠</div>
-            <div><div class="att-t"><b>1 non-compliant requirement</b></div><div class="att-sub">EXG-011 — REST API rate limits below third-party load (Infrastructure)</div></div>
+            <div><div class="att-t"><b>1 non-compliant requirement</b></div><div class="att-sub">SRM-00007 — REST API rate limits below third-party load (Infrastructure)</div></div>
             <span class="att-go">See verdict →</span>
           </div>
         </div>
@@ -716,8 +716,8 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <h3>Recent activity <a href="#">View all</a></h3>
         <div class="feed">
           <div class="feed-item ia v22only hidden"><div class="feed-w"><b>Version v2.2</b> uploaded and processed — gap analysis ready (+2 ~1 −0)</div><div class="feed-t">Today, 10:46 AM</div></div>
-          <div class="feed-item warn v22only hidden"><div class="feed-w"><b>EXG-005</b> flagged as answered on outdated version after v2.2</div><div class="feed-t">Today, 10:46 AM</div></div>
-          <div class="feed-item ok"><div class="feed-w"><b>Claire Moreau</b> responded on EXG-009 — verdict Needs clarification</div><div class="feed-t">Jul 15, 4:20 PM</div></div>
+          <div class="feed-item warn v22only hidden"><div class="feed-w"><b>SRM-00009</b> flagged as answered on outdated version after v2.2</div><div class="feed-t">Today, 10:46 AM</div></div>
+          <div class="feed-item ok"><div class="feed-w"><b>Claire Moreau</b> responded on SRM-00013 — verdict Needs clarification</div><div class="feed-t">Jul 15, 4:20 PM</div></div>
           <div class="feed-item send"><div class="feed-w"><b>Q&amp;A batch</b> — 1 question sent to the issuer (retention period)</div><div class="feed-t">Jul 15, 2:10 PM</div></div>
           <div class="feed-item ok"><div class="feed-w"><b>Allocation</b> milestone reached — register exported, 3 experts notified</div><div class="feed-t">Jul 12, 9:30 AM</div></div>
         </div>
@@ -747,8 +747,10 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="cfg-sub">Project identity and key dates. The submission deadline drives the countdown and the overdue calculations.</div>
           <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: these fields aren't wired to the rest of the app in this build. The Dashboard/Review/Follow-up screens keep their own hand-authored project identity, and the deadline shown here doesn't drive any real countdown or overdue calculation.</div>
           <div class="frow"><div class="fl"><div class="flt">Project name</div><div class="fld">Displayed across all screens.</div></div><div class="fc"><input class="inp" value="Energy Monitoring System"></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Tender reference</div></div><div class="fc"><input class="inp" value="STB-2026"></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Product line</div></div><div class="fc"><select class="sel"><option>Signalling &amp; Urban</option><option>Rolling stock</option><option>Services</option><option>Systems</option></select></div></div>
+          <div class="frow"><div class="fl"><div class="flt">BO-ID</div></div><div class="fc"><input class="inp" value="STB-2026"></div></div>
+          <!-- USER-TEST-session-3.md §1.3 — Turnkey/RCS/SIG/INFRA confirmed; Rolling Stock/
+               Services are placeholders, not confirmed. -->
+          <div class="frow"><div class="fl"><div class="flt">Product line</div></div><div class="fc"><select class="sel"><option>Turnkey</option><option>RCS</option><option selected>SIG</option><option>INFRA</option><option>Rolling Stock</option><option>Services</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Submission deadline</div><div class="fld">Sets the countdown and overdue thresholds baseline.</div></div><div class="fc"><input class="inp" type="date" value="2026-08-12"></div></div>
           <div class="frow"><div class="fl"><div class="flt">Source document</div><div class="fld">Active version used for review.</div></div><div class="fc"><div class="tog-row"><span class="tl" style="font-family:var(--font-mono)">STB-2026_v2.1.pdf</span><span style="font-size:var(--text-xs);color:var(--text-3)">· 24 pages · managed in Versions</span></div></div></div>
         </section>
@@ -769,9 +771,9 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="cfg-sub">Rules that govern phase transitions, reminders and the review gate.</div>
           <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls change real behavior in this build. Follow-up's lock (see the phase card on the Dashboard) is driven by whether allocation is actually finalized, not by the toggle below; the overdue threshold used by Follow-up's own overdue logic is a fixed constant, not this slider.</div>
           <div class="frow"><div class="fl"><div class="flt">Review milestone gate</div><div class="fld">Requires 100% of requirements assigned and validated before export to the follow-up phase.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="gate"></span><span class="tl">Enforce full validation before export</span></div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Overdue threshold</div><div class="fld">Days without an expert response before a request is flagged overdue.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="1" max="14" value="5" id="over-range"><span class="range-val" id="over-val">5 days</span></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Overdue threshold</div><div class="fld">Days without a contributor response before a request is flagged overdue.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="1" max="14" value="5" id="over-range"><span class="range-val" id="over-val">5 days</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Maximum reminder cadence</div><div class="fld">Prevents reminder spam to experts.</div></div><div class="fc"><select class="sel"><option>Once every 2 days</option><option>Daily</option><option>Once every 3 days</option><option>Manual only</option></select></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Outdated-response re-flag</div><div class="fld">When a new version changes a requirement that already had a response.</div></div><div class="fc"><div class="segc" data-seg="reflag"><button class="on">Substantive changes only</button><button>Any change</button></div><div class="opt-desc"><b>Substantive changes only:</b> typo-level edits don't invalidate an existing expert response — a human arbitrates borderline cases.</div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Outdated-response re-flag</div><div class="fld">When a new version changes a requirement that already had a response.</div></div><div class="fc"><div class="segc" data-seg="reflag"><button class="on">Substantive changes only</button><button>Any change</button></div><div class="opt-desc"><b>Substantive changes only:</b> typo-level edits don't invalidate an existing contributor response — a human arbitrates borderline cases.</div></div></div>
         </section>
 
         <!-- AI -->
@@ -961,7 +963,7 @@ function applyGating(){
   const fOverdue=FOLLOWUP_REQS.reduce((s,r)=>s+(r.overdueBranches||0),0);
   const fPct=Math.round(fAnswered/fTotal*1000)/10;
   fbody.outerHTML=`<div class="ph-stat" id="ph-followup-body"><span class="big">${fAnswered}</span><span>/ ${fTotal} answered${fOverdue?` · ${fOverdue} overdue`:""}</span></div><div class="ph-bar"><div style="width:${fPct}%;background:var(--ia)"></div></div>`;
-  f.onclick=()=>goRoute("suivi-experts-et-versions.html");
+  f.onclick=()=>goRoute("compliance.html");
   // attention count
   const visibleAtt=[...document.querySelectorAll(".att")].filter(a=>a.offsetParent!==null||!a.classList.contains("hidden"));
   document.getElementById("att-count").textContent=document.querySelectorAll(".att:not(.hidden)").length;
@@ -971,8 +973,8 @@ function applyGating(){
 document.querySelectorAll(".att[data-go]").forEach(a=>a.addEventListener("click",()=>goRoute(a.dataset.go)));
 /* Phase cards routing through shell */
 document.getElementById("ph-review").addEventListener("click",e=>{e.preventDefault();goRoute("revue-documentaire.html");});
-document.getElementById("ph-versions").addEventListener("click",e=>{e.preventDefault();goRoute("suivi-experts-et-versions.html#versions");});
-document.getElementById("demo-expert-link").addEventListener("click",()=>goRoute("expert-space.html"));
+document.getElementById("ph-versions").addEventListener("click",e=>{e.preventDefault();goRoute("compliance.html#versions");});
+document.getElementById("demo-contributor-link").addEventListener("click",()=>goRoute("compliance.html#contributor"));
 document.getElementById("new-proj").addEventListener("click",e=>{e.preventDefault();goRoute("creation-projet.html");});
 
 /* Config nav */
@@ -997,7 +999,7 @@ const cR=document.getElementById("conf-range"),cV=document.getElementById("conf-
 cR.addEventListener("input",()=>cV.textContent=cR.value+"%");
 
 /* B2/B4 — activity managers (mirrors MANAGERS in revue-documentaire.html /
-   suivi-experts-et-versions.html — same names/ids/roles across screens for a
+   compliance.html — same names/ids/roles across screens for a
    coherent demo, though each file's data stays independently hand-authored,
    per this project's convention). Casting is now asynchronous (B2): the
    project manager casts one activity manager per activity at creation, but
@@ -1448,37 +1450,37 @@ document.querySelectorAll('[data-redact]').forEach(b=>b.addEventListener("click"
 }));
 
 /* TB1 — mirrors revue-documentaire.html's SECTIONS requirement statuses (review/
-   allocation phase) and suivi-experts-et-versions.html's REQS/consolidate() (follow-up
+   allocation phase) and compliance.html's REQS/consolidate() (follow-up
    phase's compliance verdicts + branch answer counts). Independently hand-authored per
    this project's convention (see the MANAGERS mirror above) — used to compute the
    Allocation phase card, the "Requirements validated" health stat, the Compliance
    breakdown and the Response rate instead of typing the resulting numbers into the
    markup, so they can't silently drift from the screens that own that data. */
 const REVIEW_REQS=[
-  {id:"IMG-1-R1",status:"toreview"},{id:"IMG-1-R2",status:"toreview"},
-  {id:"EXG-001",status:"allocated"},{id:"EXG-002",status:"allocated"},
-  {id:"EXG-003",status:"toreview"},{id:"EXG-004",status:"suggested"},
-  {id:"EXG-011",status:"suggested"},{id:"EXG-012",status:"suggested"},
-  {id:"EXG-005",status:"allocated"},{id:"EXG-006",status:"edited"},
-  {id:"EXG-007",status:"suggested"},{id:"EXG-008",status:"allocated"},
-  {id:"EXG-009",status:"toreview"},{id:"EXG-010",status:"allocated"},
+  {id:"SRM-00001",status:"toreview"},{id:"SRM-00002",status:"toreview"},
+  {id:"SRM-00003",status:"allocated"},{id:"SRM-00004",status:"allocated"},
+  {id:"SRM-00005",status:"toreview"},{id:"SRM-00006",status:"suggested"},
+  {id:"SRM-00007",status:"suggested"},{id:"SRM-00008",status:"suggested"},
+  {id:"SRM-00009",status:"allocated"},{id:"SRM-00010",status:"edited"},
+  {id:"SRM-00011",status:"suggested"},{id:"SRM-00012",status:"allocated"},
+  {id:"SRM-00013",status:"toreview"},{id:"SRM-00014",status:"allocated"},
 ];
 const FOLLOWUP_REQS=[
-  // TD3 — IMG-1-R1/IMG-1-R2 now exist in suivi-experts-et-versions.html's REQS; kept in sync here.
-  {id:"IMG-1-R1",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"IMG-1-R2",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"EXG-001",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"EXG-002",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"EXG-003",compliance:null,branchesAnswered:1,branchesTotal:3},
-  {id:"EXG-004",compliance:null,branchesAnswered:0,branchesTotal:1,overdueBranches:1},
-  {id:"EXG-011",compliance:"not_compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"EXG-012",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"EXG-005",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"EXG-006",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"EXG-007",compliance:null,branchesAnswered:1,branchesTotal:2},
-  {id:"EXG-008",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"EXG-009",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"EXG-010",compliance:null,branchesAnswered:0,branchesTotal:1},
+  // TD3 — SRM-00001/SRM-00002 now exist in compliance.html's REQS; kept in sync here.
+  {id:"SRM-00001",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00002",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00003",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"SRM-00004",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"SRM-00005",compliance:null,branchesAnswered:1,branchesTotal:3},
+  {id:"SRM-00006",compliance:null,branchesAnswered:0,branchesTotal:1,overdueBranches:1},
+  {id:"SRM-00007",compliance:"not_compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"SRM-00008",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00009",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
+  {id:"SRM-00010",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00011",compliance:null,branchesAnswered:1,branchesTotal:2},
+  {id:"SRM-00012",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00013",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00014",compliance:null,branchesAnswered:0,branchesTotal:1},
 ];
 function renderReviewKPIs(){
   const total=REVIEW_REQS.length;
@@ -1508,19 +1510,19 @@ function renderComplianceKPIs(){
   const branchesTotal=FOLLOWUP_REQS.reduce((s,r)=>s+r.branchesTotal,0);
   document.getElementById("hs-response-rate").textContent=(Math.round(branchesAnswered/branchesTotal*1000)/10)+"%";
 }
-/* TB2 — mirrors the activity-level detail behind suivi-experts-et-versions.html's
+/* TB2 — mirrors the activity-level detail behind compliance.html's
    isOverB() (awaiting_answer && age >= OVERDUE_DAYS): only a branch actually waiting
-   on its expert can be overdue, not one blocked on the issuer or bounced back to the
-   manager. Drives the "expert response overdue" attention card instead of a hand-typed
-   name/id/day-count that can silently point at the wrong person. */
+   on its contributor can be overdue, not one blocked on the issuer or bounced back
+   for reassignment. Drives the "contributor response overdue" attention card instead
+   of a hand-typed name/id/day-count that can silently point at the wrong person. */
 const OVERDUE_BRANCHES=[
-  {reqId:"EXG-004",expert:"Sophie Lang",days:6},
+  {reqId:"SRM-00006",expert:"Sophie Lang",days:6},
 ];
 function renderOverdueCard(){
   const card=document.getElementById("att-overdue");
   if(!OVERDUE_BRANCHES.length){ card.classList.add("hidden"); return; }
   const n=OVERDUE_BRANCHES.length;
-  document.getElementById("att-overdue-t").textContent=`${n} expert response${n>1?"s":""} overdue`;
+  document.getElementById("att-overdue-t").textContent=`${n} contributor response${n>1?"s":""} overdue`;
   const first=OVERDUE_BRANCHES[0];
   const sub=n>1
     ? `${first.expert} — ${first.reqId} unopened for ${first.days} days, +${n-1} more`
@@ -1591,19 +1593,19 @@ function renderStatsComplianceBar(barId,legendId){
 }
 
 // 1.3 — blocked on the client (data gap: qa-raised dates aren't tracked at branch level
-// in this screen's own mirror; hand-authored, req ids match suivi-experts-et-versions.html's
+// in this screen's own mirror; hand-authored, req ids match compliance.html's
 // real awaiting_qa branches for narrative consistency across screens)
 const STATS_QA_BLOCKED=[
-  {reqId:"EXG-006",note:"One-year depth: rolling or calendar year?",days:6},
-  {reqId:"EXG-008",note:"Is TLS 1.3 mandatory on already-deployed gateways?",days:5},
-  {reqId:"EXG-009",note:"3-year vs 5-year retention conflict",days:5},
-  {reqId:"EXG-010",note:"Which TLS version applies to legacy gateways?",days:4},
+  {reqId:"SRM-00010",note:"One-year depth: rolling or calendar year?",days:6},
+  {reqId:"SRM-00012",note:"Is TLS 1.3 mandatory on already-deployed gateways?",days:5},
+  {reqId:"SRM-00013",note:"3-year vs 5-year retention conflict",days:5},
+  {reqId:"SRM-00014",note:"Which TLS version applies to legacy gateways?",days:4},
 ];
 function renderStatsQABlocked(){
   const el=document.getElementById("stats-qa-blocked"); if(!el) return;
   if(!STATS_QA_BLOCKED.length){ el.innerHTML=`<div class="qa-blocked-empty">Nothing blocked on the client right now.</div>`; return; }
   el.innerHTML=`<div class="qa-blocked-count">${STATS_QA_BLOCKED.length} question${STATS_QA_BLOCKED.length>1?"s":""} raised, oldest ${Math.max(...STATS_QA_BLOCKED.map(q=>q.days))} days ago</div>`
-    + STATS_QA_BLOCKED.map(q=>`<div class="qa-blocked-row" data-go="suivi-experts-et-versions.html"><b>${q.reqId}</b><span>${q.note}</span><span class="qa-blocked-days">${q.days}d</span></div>`).join("");
+    + STATS_QA_BLOCKED.map(q=>`<div class="qa-blocked-row" data-go="compliance.html"><b>${q.reqId}</b><span>${q.note}</span><span class="qa-blocked-days">${q.days}d</span></div>`).join("");
   el.querySelectorAll("[data-go]").forEach(row=>row.addEventListener("click",()=>goRoute(row.dataset.go)));
 }
 
@@ -1623,11 +1625,11 @@ function renderStatsInvalidated(){
   const block=document.getElementById("stats-invalidated-block");
   const el=document.getElementById("stats-invalidated");
   if(!block||!el) return;
-  const stale=FOLLOWUP_REQS.filter(r=>r.id==="EXG-005"&&v22Done());
+  const stale=FOLLOWUP_REQS.filter(r=>r.id==="SRM-00009"&&v22Done());
   if(!stale.length){ block.classList.add("hidden"); return; }
   block.classList.remove("hidden");
   el.innerHTML=`<div class="invalidated-row" id="stats-invalidated-link">⇄ ${stale.length} expert answer${stale.length>1?"s":""} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
-  document.getElementById("stats-invalidated-link")?.addEventListener("click",()=>goRoute("suivi-experts-et-versions.html#versions"));
+  document.getElementById("stats-invalidated-link")?.addEventListener("click",()=>goRoute("compliance.html#versions"));
 }
 
 // 1.6/2.3 — trajectory to deadline (data gap: needs periodic snapshots of remaining
