@@ -4,6 +4,8 @@ Produced as Phase 1 of `docs/tickets/TICKET-vocabulary-alignment.md` (once moved
 
 **Chosen phrasing for "an activity allocated to a requirement":** ​**allocated activity**. Used consistently below and, from Phase 2 onward, throughout the live corpus in place of "branch."
 
+> **Correction (2026-08-28), per `TICKET-merge-expert-space-into-compliance.md`:** `Activity Manager` and `Expert` are both void as in-tool role names — the two have merged into one role, **contributor**, scoped by activity rather than by person. An allocated activity now carries one contributor, not a separate manager and expert. The compliance scale is also void below: it's two-value (Compliant / Not compliant), not three — "R&D Needed" is text inside a Compliant comment, not a value of its own. Corrected inline below rather than left standing.
+
 ---
 
 ## Renamed terms
@@ -18,11 +20,10 @@ A child activity in the activity hierarchy above. Same permissions-only semantic
 
 ### Allocated activity
 *Replaces: branch.*
-One activity allocated to a specific requirement — not a new concept distinct from Activity, but an Activity in its "allocated to this requirement" state. Carries its own manager, expert, progress status, and — once answered — a compliance verdict. A single-activity requirement has exactly one allocated activity; a multi-activity requirement has one per activity assigned to it. "Branch" was a team invention; nobody outside the team ever called this anything.
+One activity allocated to a specific requirement — not a new concept distinct from Activity, but an Activity in its "allocated to this requirement" state. Carries its own contributor, progress status, and — once answered — a compliance verdict. *(Was "its own manager, expert" — void, see the correction note above; one allocated activity now has one contributor, not two people.)* A single-activity requirement has exactly one allocated activity; a multi-activity requirement has one per activity assigned to it. "Branch" was a team invention; nobody outside the team ever called this anything.
 
-### Activity Manager
-*Replaces: Branch Manager.*
-The person responsible for a given allocated activity: assigning or reassigning its expert, tracking the response, and being the first stop when an expert raises a reassignment request. Already the term used naturally when describing the AS-IS workflow.
+### ~~Activity Manager~~ Contributor
+*Replaces: Branch Manager, Activity Manager, Expert.* **Corrected 2026-08-28** — this entry originally read "Activity Manager, replaces Branch Manager." Void per `TICKET-merge-expert-space-into-compliance.md`: manager and expert are one in-tool role now, scoped by activity, not by person. Within their own activity, a contributor does what a manager and an expert both used to do — render a compliance verdict, reassign, track responses. No permission boundary between contributors on the same activity.
 
 ### ⚠ Nature → Type — BLOCKED, not renamed (collision discovered)
 *Ticket says: Nature (the title/information/requirement attribute) → Type.*
@@ -41,7 +42,7 @@ Dropped, not renamed — a dead concept, superseded by the current one-requireme
 These follow from the rename above, not from mechanical substitution:
 
 - **Allocated-activity sub-row** *(replaces: Branch Sub-row)* — the sub-row in the review/follow-up tables showing one requirement's allocated activity; shown whenever a requirement carries more than one.
-- **Allocated-activity section** *(replaces: Branch Section)* — the retractable section in a detail panel showing one allocated activity's manager, expert, status and compliance.
+- **Allocated-activity section** *(replaces: Branch Section)* — the retractable section in a detail panel showing one allocated activity's contributor, status and compliance. *(Was "manager, expert" — void, see the correction note above.)*
 - **Allocated-activity status** *(replaces: branch status)* — the progress axis of one allocated activity: Proposed → Assigned → Awaiting answer → Awaiting Q&A → Reassignment needed → Answered. Kept distinct from compliance (the result axis, meaningful only once Answered) — the two must never be conflated.
 
 ---
@@ -50,23 +51,23 @@ These follow from the rename above, not from mechanical substitution:
 
 Listed for completeness, since the glossary should define every term in use, not only the renamed ones.
 
-- **Compliance** — the per-allocated-activity verdict once answered: Compliant / R&D Needed / Not compliant.
+- **Compliance** — the per-allocated-activity verdict once answered: Compliant / Not compliant. *(Was a three-value scale including R&D Needed — void as of `TICKET-merge-expert-space-into-compliance.md`, which reverses decision D8. R&D Needed is written as plain text inside a Compliant comment, not a value of its own.)*
 - **Compliance matrix** — the consolidated, per-requirement compliance view assembled from every requirement's allocated activities, exported to the client.
 - **ABS / PBS / OBS** — the three assignment dimensions (product / activity / organisation breakdown structure) an allocation is derived from.
 - **REX** — prior-experience references surfaced to an expert for a given requirement.
 - **Q&A** — the clarification-question loop between the team and the tender issuer, distinct from the internal reassignment loop.
 - **Capture** — the AI step that segments a source document into blocks.
 - **Characterisation** — the AI/human step that assigns each captured block a Type, Class, and Activity.
-- **Allocation** — the AI/human step that assigns a requirement's allocated activity to a manager and expert (ABS/PBS/OBS).
+- **Allocation** — the AI/human step that assigns a requirement's allocated activity to a contributor (ABS/PBS/OBS). *(Was "a manager and expert" — void, see the correction note above.)*
 - **Gap analysis** — the diff computed between two document versions, surfaced when a new AO version arrives.
 - **Product line** — a project-level classification (e.g. Signalling & Urban, Rolling stock, Services, Systems).
 - **Turnkey** — the most complex/variable activity value, spanning multiple systems on one requirement.
 - **Information** — a Type value: a block that carries no requirement content and no allocation/compliance/status fields at all.
 - **Requirement** — a Type value: a block that goes through characterisation, allocation, and compliance.
-- **Expert** — the person who renders a compliance verdict on an allocated activity.
+- ~~**Expert** — the person who renders a compliance verdict on an allocated activity.~~ **Void** — see the correction note above. That person is a **Contributor** now.
 - **VIP** — a read-only role, dashboard/KPI visibility only.
 - **Admin** — the unrestricted-access in-tool role.
-- **Requirement Manager** — a job title used by the client's own teams (AS-IS), **not** the name of an in-tool role — do not confuse it with any specific SRM permission role (e.g. Project Manager, Activity Manager).
+- **Requirement Manager** — a job title used by the client's own teams (AS-IS), **not** the name of an in-tool role — do not confuse it with any specific SRM permission role (e.g. Project Manager, Contributor).
 - **Bid Manager** — an AS-IS job title, kept as-is; its relationship (if any) to a specific in-tool role is not established.
 - **Project Manager** — the in-tool role with full access to their assigned project, including locking/unlocking compliance verdicts and approving reassignment/reallocation requests.
 

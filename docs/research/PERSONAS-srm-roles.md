@@ -6,6 +6,8 @@
 > - **[N] Invented** — pure fictional detail added for realism (name, age, personal habits, voice, quote phrasing). No evidentiary basis — illustrative only.
 >
 > All three work at the same company, unnamed by design (per the standing confidentiality rule).
+>
+> **Correction (2026-08-28), per `TICKET-merge-expert-space-into-compliance.md`:** Persona 2 (the activity manager) and Persona 3 (the expert) now share one in-tool role, **contributor** — "no action boundary between experts and bid managers... within their own activity, experts and bid managers can do the same things." They remain two distinct *people* below, with different backgrounds and motivations — only the role label changed, not the profiles.
 
 ---
 
@@ -40,21 +42,21 @@ DOORS (version varies by activity) [A], Excel [A], Salesforce as CRM [B, unvalid
 
 ---
 
-## Persona 2 — The Activity Manager
+## Persona 2 — The Contributor (manager-flavoured)
 
-**Karim Boujaidi** [N], 44 [N] — Activity Manager, signalling subsystem [N for subsystem, A for role]
+**Karim Boujaidi** [N], 44 [N] — Contributor, signalling subsystem [N for subsystem, A for role — was "Activity Manager", see the correction note above]
 
 > *"Je sais ce qui est technique et ce qui ne l'est pas — je n'ai pas besoin qu'un outil me le confirme."* [I/N — phrasing invented, but the underlying attitude reflects a confirmed AS-IS fact: classifiers reported being 100% certain of their calls, right or wrong]
 
 ### Background
-- One of several Activity Managers who attend the TLW to align casting with the Bid/Project Manager, in the same room, at bid launch [A].
+- One of several contributors who attend the TLW to align casting with the Bid/Project Manager, in the same room, at bid launch [A].
 - Personally does the **Technical vs. Non-technical classification** for his activity [A].
 - Deep technical background in his subsystem [N] — has been doing this classification call directly, by feel, for years, with no second opinion built into the process [A/I].
 
 ### Goals / Motivations
 - Get his activity staffed with the right experts as early as possible in the bid [I].
 - Trusts his own judgment on classification calls — wants a tool to be genuinely better before he defers to it, not just present [I, playful extrapolation of the "100% certain" finding].
-- Wants less time lost to manual clean-up — a confirmed AS-IS finding is that roughly two-thirds of rows in a DOORS export are non-requirement titles needing a manually retyped fix [A, though this specific data point comes from the V&V track — attributing it to the Activity Manager specifically is **[I]**, not confirmed to be his task precisely].
+- Wants less time lost to manual clean-up — a confirmed AS-IS finding is that roughly two-thirds of rows in a DOORS export are non-requirement titles needing a manually retyped fix [A, though this specific data point comes from the V&V track — attributing it to this contributor specifically is **[I]**, not confirmed to be his task precisely].
 
 ### Pain points
 - Classification and activity tagging is entirely manual, and entirely on him — there's no equivalent of a doubt signal today, even to flag a tricky case to himself for later [A].
@@ -65,9 +67,9 @@ DOORS or shared Excel, depending on the activity's own preference [A].
 
 ---
 
-## Persona 3 — The Expert
+## Persona 3 — The Contributor (field-expert-flavoured)
 
-**Julien Ferrand** [N], 39 [N] — Field / subsystem expert [A]
+**Julien Ferrand** [N], 39 [N] — Contributor, field / subsystem [A — was "Expert", see the correction note above]
 
 > *"Donne-moi le bon bout du document et je te dis en trente secondes si c'est bon ou pas. Le problème, c'est jamais le jugement — c'est de retrouver l'info."* [N/I — phrasing invented, but the underlying split between "fast, obvious calls" and "slow, research-heavy calls" is a confirmed AS-IS observation, not our invention]
 
@@ -94,4 +96,4 @@ DOORS (scoped access) or shared Excel, whichever his activity uses [A].
 
 ## One role deliberately left out
 
-**RME (Requirement Management Engineer)** — confirmed to exist as guardian of the DOORS baselines (As Required / As Specified / As Sold) [A], but never named as a direct actor in any of the B1–B7 tickets, the Expert Space, or the workflow map. **[I]** It may overlap with the Activity Manager role above, or be a distinct, adjacent one — not enough evidence yet to build a fourth persona without guessing. Worth a direct question next time you're with a real user.
+**RME (Requirement Management Engineer)** — confirmed to exist as guardian of the DOORS baselines (As Required / As Specified / As Sold) [A], but never named as a direct actor in any of the B1–B7 tickets, the Compliance step, or the workflow map. **[I]** It may overlap with the contributor role above, or be a distinct, adjacent one — not enough evidence yet to build a fourth persona without guessing. Worth a direct question next time you're with a real user.

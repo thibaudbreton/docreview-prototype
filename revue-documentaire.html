@@ -661,7 +661,7 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .status-pill.branch-status-answered{background:var(--ok-soft);color:var(--ok);cursor:default}
 /* TD2 — full six-value allocated-activity-status set (was answered/awaiting/reassignment_needed only,
    collapsing proposed/assigned/awaiting_answer/awaiting_qa into one bucket). Styling mirrors
-   suivi-experts-et-versions.html's .spill rules: proposed/assigned/awaiting_answer stay neutral,
+   compliance.html's .spill rules: proposed/assigned/awaiting_answer stay neutral,
    awaiting_qa gets the accent highlight since it's blocked on something external. */
 .status-pill.branch-status-proposed,.status-pill.branch-status-assigned,.status-pill.branch-status-awaiting_answer{background:var(--panel-3);color:var(--text-2);cursor:default}
 .status-pill.branch-status-awaiting_qa{background:var(--accent-soft);color:var(--accent);cursor:default}
@@ -1727,7 +1727,7 @@ const COMPLIANCE_DEFS=[
   {k:"pending",label:"Pending"},
 ];
 const complianceLabel = k => (COMPLIANCE_DEFS.find(c=>c.k===k)||{}).label || k || "—";
-/* TD2 — full six-value set, matching SPEC-domain-model.md §2 / suivi-experts-et-versions.html's
+/* TD2 — full six-value set, matching SPEC-domain-model.md §2 / compliance.html's
    BST (reference implementation). Was {answered, awaiting, reassignment_needed} — a real
    collapse of proposed/assigned/awaiting_answer/awaiting_qa into "awaiting", not a shorthand. */
 const BRANCH_STATUS_LABEL = {proposed:"Proposed", assigned:"Assigned", awaiting_answer:"Awaiting answer", awaiting_qa:"Awaiting Q&A", reassignment_needed:"Reassignment needed", answered:"Answered"};

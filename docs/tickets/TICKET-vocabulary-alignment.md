@@ -1,6 +1,8 @@
 # Ticket — Align vocabulary with the users' own terms
 
 > **Not for the unattended nightly routine.** A corpus-wide rename needs a human reviewing the diff — see "Why this shouldn't run unattended" at the end. Run it as a supervised task, on a branch, one phase per commit.
+>
+> **Correction (2026-08-28), per `TICKET-merge-expert-space-into-compliance.md`:** the `Branch Manager → Activity Manager` row below is **void**. `Activity Manager` is no longer the target — `expert` and `(activity) manager` have since merged into one in-tool role, **contributor**, and that's what `Branch Manager` (and any other manager/expert role reference) becomes instead. Also void: `expert` is no longer "confirmed correct — leave untouched" as an in-tool role name (it still may appear correctly as a real-world job title/subject-matter sense outside the tool). Everything else on this page — `typology → activity`, `sub-typology → sub-activity`, `branch → activity`, `Nature → Type`, `title → heading`, `container` deletion — is unaffected and still pending.
 
 ## Why
 
@@ -13,7 +15,7 @@ Several terms in the corpus are ours, not the users'. They were reasonable worki
 | typology / typologie | **activity** | The users' own word. Appears constantly — expect the highest hit count. |
 | sub-typology | **sub-activity** | Same hierarchy, same permissions-only semantics (parent grants access to descendants). |
 | **branch** | **activity** (as allocated to a requirement) | Our invention. Nobody said "branch". A "branch" was only ever *an activity allocated to a requirement* — so it collapses into `activity`, it doesn't get a new name. |
-| Branch Manager | **Activity Manager** | Already the term used naturally when describing the AS-IS. |
+| Branch Manager | ~~Activity Manager~~ **contributor** | **Void, see the correction note at the top of this ticket.** Was "already the term used naturally when describing the AS-IS" — no longer the target since manager and expert merged into one in-tool role. |
 | Nature *(the title/information/requirement attribute)* | **Type** | This is the column name in the real capture files. |
 | title *(as a Type value)* | **heading** | Already confirmed. |
 | container *(image model)* | — *(delete)* | Dead concept, superseded by the one-row-per-image model. Remove, don't rename. |
@@ -43,7 +45,9 @@ Leaving these alone is correct. Renaming them on a guess would be worse than the
 
 ## Terms confirmed correct — leave untouched
 
-compliance, compliance matrix, ABS / PBS / OBS, REX, Q&A, capture, characterisation, allocation, gap analysis, product line, Turnkey, information, requirement, expert, VIP, admin, Requirement Manager *(as a job title, not an in-tool role)*, Bid Manager, Project Manager.
+compliance, compliance matrix, ABS / PBS / OBS, REX, Q&A, capture, characterisation, allocation, gap analysis, product line, Turnkey, information, requirement, VIP, admin, Requirement Manager *(as a job title, not an in-tool role)*, Bid Manager, Project Manager.
+
+~~expert~~ — **void, see the correction note at the top.** No longer correct as an in-tool role name — merged into **contributor**. May still appear correctly as a real-world job title/subject-matter sense (e.g. "subject-matter expert") outside the tool.
 
 ## Phases
 
