@@ -200,10 +200,12 @@ html[data-theme="light"] .logo-mark-light{display:block}
    .view.on generally, since #view-doc/#view-qa's block-flow content don't
    need or want to become flex columns. */
 #view-table.on{display:flex;flex-direction:column}
-.view-pad{padding:20px}
-.view-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:14px}
-.view-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
+.view-pad{padding:16px 20px}
+.view-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:10px;flex-wrap:wrap}
+.view-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px;flex-shrink:0}
 .view-head .sub{font-size:var(--text-sm);color:var(--text-3)}
+/* the action pills live in the title row now — no block spacing of their own */
+.view-head .needs-you{margin-bottom:0}
 /* ---------- B5: shared review-table grid (see revue-documentaire.html — same
    component, this screen's own column config + adapter, table-engine.js for
    the interaction behaviour). Copied CSS conventions, not a shared stylesheet
@@ -276,7 +278,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .multi-ph{color:var(--text-3);font-size:var(--text-xs);font-style:italic}
 .lastfu-date{font-size:var(--text-xs);color:var(--text-2);font-variant-numeric:tabular-nums}
 /* Bulk Action Bar + Filter to Selection banner (TE, shared with revue-documentaire.html) */
-.rtoolbar{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap}
 .filter-sel-banner{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-lg);font-size:var(--text-sm);color:var(--text)}
 .filter-sel-banner b{font-variant-numeric:tabular-nums}
 .sel-bar{position:fixed;left:0;right:0;bottom:24px;margin-inline:auto;width:max-content;z-index:55;display:none;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 48px rgba(0,0,0,.6);opacity:0;transition:opacity .25s ease;max-width:calc(100vw - 48px);flex-wrap:wrap;justify-content:center}
@@ -303,6 +304,16 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .colf-opt:hover{background:var(--panel-3);color:var(--text)}
 .colf-opt input{accent-color:var(--accent)}
 /* own-team default scope (B5 OPEN, resolved: liftable UI filter) */
+/* demo-only role/person switcher, tucked into the header (see the note in the
+   markup). Dashed border + purple hover is the same "this is scaffolding, not
+   the product" language dashboard-et-config.html already uses. */
+.demo-link{font-size:var(--text-xs);color:var(--text-3);padding:var(--space-1) var(--space-3);border-radius:var(--radius-md);border:1px dashed var(--line-2);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.demo-link:hover{border-color:var(--human);color:var(--human)}
+.demo-link b{font-weight:700;letter-spacing:.3px}
+.demo-panel .team-scope{flex-direction:column;align-items:stretch;gap:7px}
+.demo-panel .team-scope>span:first-child{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
+.demo-panel .team-scope select{width:100%}
+.demo-panel .team-chip{align-self:flex-start}
 .team-scope{display:flex;align-items:center;gap:6px}
 .team-scope select{font-size:var(--text-sm);padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2)}
 .team-chip{font-size:var(--text-sm);font-weight:600;padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);white-space:nowrap}
@@ -439,10 +450,10 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .qa-blocking{font-size:var(--text-xs);font-weight:700;color:var(--warn)}
 /* T9/T10 — toolbar + "what needs you now" banner, above the tracking list */
 .needs-you{margin-bottom:12px}
-.ny-empty{font-size:var(--text-sm);color:var(--text-3);font-style:italic;padding:var(--space-2) var(--space-3);border:1px dashed var(--line-2);border-radius:var(--radius-md)}
-.ny-head{font-size:var(--text-xs);font-weight:700;letter-spacing:.3px;color:var(--text-2);margin-bottom:7px}
+/* unboxed and inline — the reassurance is worth a few words, not a full row */
+.ny-empty{font-size:var(--text-sm);color:var(--text-3);font-style:italic;white-space:nowrap}
 .ny-row{display:flex;gap:var(--space-2);flex-wrap:wrap}
-.ny-pill{font-size:var(--text-sm);font-weight:600;padding:6px var(--space-3);border-radius:var(--radius-pill);border:1px solid transparent}
+.ny-pill{font-size:var(--text-sm);font-weight:600;padding:5px var(--space-3);border-radius:var(--radius-pill);border:1px solid transparent}
 .ny-pill.ny-warn{background:var(--warn-soft);color:var(--warn);border-color:rgba(224,164,60,.3)}
 .ny-pill.ny-accent{background:var(--accent-soft);color:var(--accent);border-color:color-mix(in srgb, var(--accent) 30%, transparent)}
 .ny-pill.ny-ok{background:var(--ok-soft);color:var(--ok);border-color:rgba(63,178,127,.3)}
@@ -453,15 +464,14 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .f10-needsme.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 /* T12 — export readiness banner */
 .export-ready{margin-bottom:12px}
-.xr-ready,.xr-pending{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-base)}
+/* pending renders nothing now — don't leave its margin behind on a short screen */
+.export-ready:empty{display:none}
+.xr-ready{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-base)}
 .xr-ready{background:var(--ok-soft);border:1px solid rgba(63,178,127,.3)}
 .xr-ready .xr-ico{color:var(--ok);font-weight:700;font-size:var(--text-lg)}
 .xr-ready .xr-t{color:var(--text-2)}
 .xr-ready .xr-t b{color:var(--ok)}
 .xr-btn{margin-left:auto;font-size:var(--text-sm);font-weight:600;padding:6px var(--space-3);border-radius:var(--radius-sm);background:var(--ok);color:#fff;white-space:nowrap}
-.xr-pending{background:var(--panel-2);border:1px solid var(--line)}
-.xr-pending .xr-ico{color:var(--text-3);font-size:var(--text-lg)}
-.xr-pending .xr-t{color:var(--text-3)}
 
 /* ---------- Right panel ---------- */
 .settings{width:330px;flex-shrink:0;display:flex;flex-direction:column;position:relative;background:var(--panel);border-left:1px solid var(--line);transition:width .15s ease}
@@ -653,6 +663,25 @@ textarea.resp-in:focus{border-color:var(--accent)}
       <button data-view="qa">Q&amp;A <span class="mcount" id="qa-count">0</span></button>
     </div>
     <div class="hdr-actions">
+      <!-- Demo-only: switching role/person is a moderator affordance for
+           walkthroughs, not a product feature — in real use you are who you
+           are. It used to sit in the table's own header, where it read as part
+           of the screen. Behind a dashed DEMO control here instead, matching
+           the same convention dashboard-et-config.html uses for its
+           contributor-walkthrough link. -->
+      <div class="view-wrap">
+        <button class="demo-link" id="demo-viewas-btn" title="Demo control — render this screen as another role or person. Not part of the product.">🎭 <b>DEMO</b> <span id="demo-viewas-label">Project manager</span> ▾</button>
+        <div class="view-panel demo-panel" id="demo-viewas-panel">
+          <div class="view-panel-head">Demo control</div>
+          <div class="team-scope">
+            <span>Viewing as</span>
+            <select id="f-role"><option value="pm">Project manager</option><option value="contributor">Contributor</option></select>
+            <select id="f-viewer"></select>
+            <span class="team-chip" id="team-chip" style="display:none">My team only<span class="x" id="team-chip-x" title="Show every team">✕</span></span>
+          </div>
+          <div class="field-hint">Renders the screen as that role/person so a walkthrough can show both sides. Not a product feature.</div>
+        </div>
+      </div>
       <a class="btn-ghost" href="javascript:parent.route('dashboard')" title="Back to dashboard">← Dashboard</a>
       <a class="btn-ghost" href="javascript:parent.route('versions')" title="Versions &amp; Q&amp;A has moved to its own screen">Versions &amp; Q&amp;A →</a>
       <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span></button>
@@ -690,18 +719,19 @@ textarea.resp-in:focus{border-color:var(--accent)}
         <div class="nav-body" id="nav2"></div>
       </aside>
       <section class="center">
+        <!-- Header trimmed from five stacked blocks to two rows: the table was
+             being pushed off short screens. The action pills moved up into the
+             title row (they lost their "What needs you now" heading — the pill
+             text already says it), the consolidation count folded into the sub
+             line, and the View button joined the filter toolbar instead of
+             owning a full row on its own. #export-ready now only renders in the
+             completed state, where it carries a real CTA worth the space. -->
         <div class="view view-pad on" id="view-table">
           <div class="view-head"><h2>Compliance</h2><span class="sub" id="table-sub"></span>
-            <div class="team-scope" style="margin-left:auto">
-              <span>Viewing as</span>
-              <select id="f-role"><option value="pm">Project manager</option><option value="contributor">Contributor</option></select>
-              <select id="f-viewer"></select>
-              <span class="team-chip" id="team-chip" style="display:none">My team only<span class="x" id="team-chip-x" title="Show every team">✕</span></span>
-            </div>
+            <div class="needs-you" id="needs-you"></div>
           </div>
           <div class="export-ready" id="export-ready"></div>
-          <div class="needs-you" id="needs-you"></div>
-          <div class="f10-tools">
+          <div class="f10-tools" id="f10-tools">
             <input id="f10-search" placeholder="Search requirement ref or text…" autocomplete="off">
             <select id="f10-expert"><option value="">All experts</option></select>
             <select id="f10-typo"><option value="">All activities</option></select>
@@ -712,16 +742,12 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <option value="req">Sort: requirement ref</option>
             </select>
             <button class="f10-needsme" id="f10-needsme">⚡ Needs my action</button>
+            <div class="view-wrap" style="margin-left:auto"><button class="btn-ghost" id="f-cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
+              <div class="view-panel" id="f-cols-panel"></div></div>
           </div>
           <div class="filter-sel-banner" id="filter-sel-banner" style="display:none">
             <span>Showing <b id="fsb-n">0</b> of <b id="fsb-total">0</b> requirements — selected</span>
             <button class="btn-ghost" id="fsb-show-all" style="font-size:var(--text-sm)">Show all</button>
-          </div>
-          <div class="rtoolbar" id="rtoolbar">
-            <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
-              <div class="view-wrap"><button class="btn-ghost" id="f-cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
-                <div class="view-panel" id="f-cols-panel"></div></div>
-            </div>
           </div>
           <div class="rgrid">
             <div class="rgrid-head" id="frgrid-head">
@@ -1284,19 +1310,24 @@ function branchWhoHTML(b){
 /* T12 — consolidation & export readiness: the follow-up screen's end state is a
    client-ready compliance matrix, so make that state explicit rather than implied
    by an empty to-do list. Links straight into the existing modular export. */
+/* One source for consolidation progress, read by both the sub line (pending
+   case) and the export strip (complete case) so the two can't disagree. */
+function consolidationStatus(){
+  const total=REQS.length, consolidated=REQS.filter(isConsolidated).length;
+  return {total, consolidated, remaining:total-consolidated, complete:consolidated===total};
+}
+/* Only renders in the completed state now. Pending progress used to be a
+   full-width banner here; it's a quiet fact, so it moved into the sub line
+   and this block collapses to nothing — the completed state is the one that
+   earns a banner, because it carries the export CTA. */
 function renderExportReady(){
   const el=document.getElementById("export-ready"); if(!el) return;
-  const consolidated=REQS.filter(isConsolidated).length, total=REQS.length;
-  if(consolidated===total){
-    el.innerHTML=`<div class="xr-ready"><span class="xr-ico">✓</span>
-      <span class="xr-t"><b>Compliance matrix complete</b> — all ${total} requirements consolidated, ready for the client export.</span>
-      <button class="xr-btn" id="xr-go">Go to export →</button></div>`;
-    el.querySelector("#xr-go").addEventListener("click",()=>document.getElementById("export2-btn").click());
-  }else{
-    const remaining=total-consolidated;
-    el.innerHTML=`<div class="xr-pending"><span class="xr-ico">◔</span>
-      <span class="xr-t">${remaining} of ${total} requirement${total>1?"s":""} still pending consolidation before the compliance matrix is export-ready.</span></div>`;
-  }
+  const c=consolidationStatus();
+  if(!c.complete){ el.innerHTML=""; return; }
+  el.innerHTML=`<div class="xr-ready"><span class="xr-ico">✓</span>
+    <span class="xr-t"><b>Compliance matrix complete</b> — all ${c.total} requirements consolidated, ready for the client export.</span>
+    <button class="xr-btn" id="xr-go">Go to export →</button></div>`;
+  el.querySelector("#xr-go").addEventListener("click",()=>document.getElementById("export2-btn").click());
 }
 /* T10 — "what needs you now": the three manager to-dos, gathered in one glance
    regardless of what the list below is currently filtered/sorted to. */
@@ -1307,8 +1338,10 @@ function renderNeedsYou(){
   const toSend=questionsToSend();
   const justUnblocked=brs.filter(b=>b.unblockedAt==="Today"&&b.status==="awaiting_answer");
   const total=reassign.length+toSend.length+justUnblocked.length;
-  if(!total){ el.innerHTML=`<div class="ny-empty">✓ Nothing needs you right now — every open item is with an expert or the issuer.</div>`; return; }
-  el.innerHTML=`<div class="ny-head">⚡ What needs you now</div><div class="ny-row">
+  // No "What needs you now" heading any more: each pill already names its own
+  // action, and the heading cost a whole line above the fold.
+  if(!total){ el.innerHTML=`<span class="ny-empty">✓ Nothing needs you right now</span>`; return; }
+  el.innerHTML=`<div class="ny-row">
     ${reassign.length?`<button class="ny-pill ny-warn" id="ny-reassign">${reassign.length} reassignment${reassign.length>1?"s":""} to handle</button>`:""}
     ${toSend.length?`<button class="ny-pill ny-accent" id="ny-tosend">${toSend.length} question${toSend.length>1?"s":""} ready to export</button>`:""}
     ${justUnblocked.length?`<button class="ny-pill ny-ok" id="ny-unblocked">${justUnblocked.length} just unblocked by the issuer</button>`:""}
@@ -1445,7 +1478,7 @@ function bindFRows(win){
 }
 function renderTable2(){
   const win=document.getElementById("frgrid-window"); if(!win) return;
-  document.getElementById("rtoolbar").style.display=state.filterToSelection?"none":"flex";
+  document.getElementById("f10-tools").style.display=state.filterToSelection?"none":"flex";
   document.getElementById("filter-sel-banner").style.display=state.filterToSelection?"flex":"none";
   const rows=buildFVRows();
   const shownBranches=rows.reduce((n,r)=>n+r.branches.filter(passesB).length,0);
@@ -1453,8 +1486,13 @@ function renderTable2(){
     document.getElementById("fsb-n").textContent=rows.length;
     document.getElementById("fsb-total").textContent=REQS.length;
   }
+  // Dropped the "— action items first (…)" tail: it explained the default sort,
+  // which the sort dropdown right below already states. Carries the pending
+  // consolidation count instead, which used to need its own banner.
+  const cs=consolidationStatus();
   document.getElementById("table-sub").textContent=
-    `${rows.length} requirement${rows.length>1?"s":""} · ${shownBranches} assignment${shownBranches>1?"s":""} — action items first (reassignments, Q&A blocks, overdue)`;
+    `${rows.length} requirement${rows.length>1?"s":""} · ${shownBranches} assignment${shownBranches>1?"s":""}`
+    + (cs.complete?"":` · ${cs.remaining}/${cs.total} pending consolidation`);
   if(!fVROWS.length){
     win.innerHTML=`<div class="empty-rows">No assignment matches the current view.</div>`;
   } else {
@@ -2134,6 +2172,12 @@ document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.clos
   const syncUI=()=>{
     roleSel.value=state.role;
     chip.style.display=(state.role==="pm"&&state.ownTeamOnly)?"inline-flex":"none";
+    // the header control is collapsed most of the time, so it has to say who
+    // you're currently rendering as without being opened
+    const lbl=document.getElementById("demo-viewas-label");
+    if(lbl) lbl.textContent = state.role==="pm"
+      ? "Project manager"
+      : ((MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).name.split(" ")[0]+" — contributor");
   };
   syncUI();
   roleSel.addEventListener("change",e=>{
@@ -2151,17 +2195,26 @@ document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.clos
   document.getElementById("team-chip-x").addEventListener("click",e=>{
     e.stopPropagation(); state.ownTeamOnly=false; syncUI(); refreshAll();
   });
+  // header popover. Capture phase on the outside-click close, same reason as
+  // revue-documentaire.html's advanced filter: a click inside can re-render and
+  // detach the target, which a bubble-phase listener then misreads as outside.
+  const demoBtn=document.getElementById("demo-viewas-btn"), demoPanel=document.getElementById("demo-viewas-panel");
+  demoBtn.addEventListener("click",e=>{ e.stopPropagation(); demoPanel.classList.toggle("on"); });
+  document.addEventListener("click",e=>{
+    if(demoPanel.classList.contains("on") && !e.target.closest("#demo-viewas-panel") && !e.target.closest("#demo-viewas-btn")) demoPanel.classList.remove("on");
+  },true);
 })();
 /* Entry point for the Dashboard's "DEMO Compliance (contributor)" walkthrough link —
    forces the contributor default scope instead of landing as the project manager. */
 window.setDemoContributorView=function(){
-  state.role="contributor";
-  VIEWER=MANAGERS[0].id;
-  state.contribTypo=MANAGERS[0].typology;
+  // Drive the real control rather than re-implementing what it does: setting
+  // the select and firing change runs initViewer's own handler, which derives
+  // contribTypo, syncs the header label and refreshes. Duplicating that here
+  // is how the label silently drifts out of step later.
   const roleSel=document.getElementById("f-role"), sel=document.getElementById("f-viewer");
-  if(roleSel) roleSel.value="contributor";
-  if(sel) sel.value=VIEWER;
-  refreshAll();
+  if(sel){ VIEWER=MANAGERS[0].id; sel.value=VIEWER; }
+  if(roleSel){ roleSel.value="contributor"; roleSel.dispatchEvent(new Event("change")); }
+  else { state.role="contributor"; state.contribTypo=MANAGERS[0].typology; refreshAll(); }
 };
 /* Init — default to Follow-up, unless the link explicitly asked for Versions & Q&A. */
 if(location.hash==="#versions"){setScreen(3);}else{setScreen(2);}
