@@ -73,10 +73,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .crumb{display:flex;align-items:center;gap:var(--space-2);color:var(--text-2);min-width:0}
 .crumb .sep{color:var(--text-3)}
 .crumb .project{color:var(--text);font-weight:600;white-space:nowrap}
-.screen-nav{display:flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:3px}
-.screen-nav .sn{padding:5px var(--space-3);border-radius:var(--radius-sm);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;cursor:pointer;white-space:nowrap}
-.screen-nav .sn:hover{color:var(--text)}
-.screen-nav .sn.on{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
 .mode-switch{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-1);margin-left:auto}
 .mode-switch button{padding:5px var(--space-4);border-radius:var(--radius-sm);color:var(--text-2);font-weight:500;font-size:var(--text-base);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
 .mode-switch button.active{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
@@ -204,13 +200,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .view-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:10px;flex-wrap:wrap}
 .view-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px;flex-shrink:0}
 .view-head .sub{font-size:var(--text-sm);color:var(--text-3)}
-/* the action pills live in the title row now — no block spacing of their own */
-.view-head .needs-you{margin-bottom:0}
 /* ---------- B5: shared review-table grid (see revue-documentaire.html — same
    component, this screen's own column config + adapter, table-engine.js for
    the interaction behaviour). Copied CSS conventions, not a shared stylesheet
    (this project has no bundler — CSS is duplicated per file by convention). */
-:root{ --rrow-h:44px; --frgrid-cols:32px 84px minmax(280px,1.6fr) 90px 140px 110px 230px 90px 70px; }
+:root{ --rrow-h:44px; --frgrid-cols:32px 84px minmax(240px,1.4fr) 90px 140px 110px 150px minmax(200px,1fr) 110px 70px; }
 .rgrid{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
 /* TH2 — align-self:flex-start (mirrors the original intent in
    revue-documentaire.html: let the header's box grow to fit its columns so
@@ -246,8 +240,8 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rrow .c-req .excerpt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.45}
 /* USER-TEST-session-3.md §1.5 — the compliance comment sits under the verdict pill,
    visible at a glance instead of behind an interaction. */
-.rrow .c-status{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding-top:6px;padding-bottom:6px}
-.verdict-comment{font-size:var(--text-xs);color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* the comment is its own column now, so Status is back to a single centred pill */
+.verdict-comment{font-size:var(--text-sm);color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .rrow.branch-row{background:var(--panel-2);cursor:pointer}
 .rrow.branch-row:hover{background:var(--panel-3)}
 .rrow.branch-row .c-req{padding-left:var(--space-6);gap:6px}
@@ -258,7 +252,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 /* column visibility + order — USER-TEST-session-3.md §1.4. A hidden column disappears
    entirely; position comes from --ord-* custom properties set on .rgrid by
    applyFCols() and inherited by every .rcell, current rows and future ones alike. */
-.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{display:none}
+.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="comment"] .c-comment,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{display:none}
 .rcell.c-sel{order:var(--ord-sel,0)}
 .rcell.c-id{order:var(--ord-id,1)}
 .rcell.c-req{order:var(--ord-req,2)}
@@ -266,8 +260,9 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rcell.c-expert{order:var(--ord-expert,4)}
 .rcell.c-mgr{order:var(--ord-mgr,5)}
 .rcell.c-status{order:var(--ord-status,6)}
-.rcell.c-lastfu{order:var(--ord-lastfu,7)}
-.rcell.c-age{order:var(--ord-age,8)}
+.rcell.c-comment{order:var(--ord-comment,7)}
+.rcell.c-lastfu{order:var(--ord-lastfu,8)}
+.rcell.c-age{order:var(--ord-age,9)}
 /* column menu — drag-to-reorder rows */
 .colf-row{display:flex;align-items:center;gap:4px}
 .colf-row .colf-opt{flex:1}
@@ -449,14 +444,6 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .qa-branch{font-family:var(--font-mono);font-size:var(--text-xs);padding:2px var(--space-2);border-radius:var(--radius-sm);background:var(--accent-soft);color:var(--accent)}
 .qa-blocking{font-size:var(--text-xs);font-weight:700;color:var(--warn)}
 /* T9/T10 — toolbar + "what needs you now" banner, above the tracking list */
-.needs-you{margin-bottom:12px}
-/* unboxed and inline — the reassurance is worth a few words, not a full row */
-.ny-empty{font-size:var(--text-sm);color:var(--text-3);font-style:italic;white-space:nowrap}
-.ny-row{display:flex;gap:var(--space-2);flex-wrap:wrap}
-.ny-pill{font-size:var(--text-sm);font-weight:600;padding:5px var(--space-3);border-radius:var(--radius-pill);border:1px solid transparent}
-.ny-pill.ny-warn{background:var(--warn-soft);color:var(--warn);border-color:rgba(224,164,60,.3)}
-.ny-pill.ny-accent{background:var(--accent-soft);color:var(--accent);border-color:color-mix(in srgb, var(--accent) 30%, transparent)}
-.ny-pill.ny-ok{background:var(--ok-soft);color:var(--ok);border-color:rgba(63,178,127,.3)}
 .f10-tools{display:flex;gap:var(--space-2);align-items:center;margin-bottom:var(--space-3);flex-wrap:wrap}
 .f10-tools input{flex:1;min-width:160px;font-size:var(--text-sm);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text)}
 .f10-tools select{font-size:var(--text-sm);padding:var(--space-2) var(--space-2);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2)}
@@ -507,6 +494,9 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .btn-submit.warn{background:var(--warn)}
 .btn-cancel{padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-size:var(--text-sm)}
 .btn-cancel:hover{color:var(--text)}
+.reassign-reasons{display:flex;flex-direction:column;gap:6px;margin-bottom:var(--space-3)}
+.reassign-reason{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2);cursor:pointer}
+.reassign-reason input{accent-color:var(--accent)}
 /* REX + Document tabs, migrated from expert-space.html */
 .rex-list{display:flex;flex-direction:column;gap:8px;margin-bottom:var(--space-4)}
 .rex-item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);cursor:pointer;transition:all .13s}
@@ -650,13 +640,11 @@ textarea.resp-in:focus{border-color:var(--accent)}
       </defs>
       </svg>SRM</a></div>
     <div class="crumb"><span class="sep">/</span><span class="project">STB-2026 · Energy Monitoring System</span></div>
-    <!-- TH6 — Versions & Q&A used to sit here as a co-equal tab, reading as a
-         sub-panel of Compliance rather than its own space. It's reached from
-         Compliance via the button in .hdr-actions below instead now; this nav
-         only carries Compliance itself. -->
-    <nav class="screen-nav" id="phase-nav">
-      <button class="sn" data-screen="2" id="tab-followup">Compliance</button>
-    </nav>
+    <!-- TH6 — Versions & Q&A used to sit here as a co-equal tab; it's reached
+         from .hdr-actions below now. That left this nav holding a single
+         "Compliance" button that only ever navigated to the screen you were
+         already on, so it's gone too — the breadcrumb already says where you
+         are, and the Table/Document/Q&A switch below is the real nav. -->
     <div class="mode-switch" id="s2-views">
       <button data-view="table" class="active">Table</button>
       <button data-view="doc">Document</button>
@@ -728,7 +716,8 @@ textarea.resp-in:focus{border-color:var(--accent)}
              completed state, where it carries a real CTA worth the space. -->
         <div class="view view-pad on" id="view-table">
           <div class="view-head"><h2>Compliance</h2><span class="sub" id="table-sub"></span>
-            <div class="needs-you" id="needs-you"></div>
+            <div class="view-wrap" style="margin-left:auto"><button class="btn-ghost" id="f-cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
+              <div class="view-panel" id="f-cols-panel"></div></div>
           </div>
           <div class="export-ready" id="export-ready"></div>
           <div class="f10-tools" id="f10-tools">
@@ -742,8 +731,6 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <option value="req">Sort: requirement ref</option>
             </select>
             <button class="f10-needsme" id="f10-needsme">⚡ Needs my action</button>
-            <div class="view-wrap" style="margin-left:auto"><button class="btn-ghost" id="f-cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
-              <div class="view-panel" id="f-cols-panel"></div></div>
           </div>
           <div class="filter-sel-banner" id="filter-sel-banner" style="display:none">
             <span>Showing <b id="fsb-n">0</b> of <b id="fsb-total">0</b> requirements — selected</span>
@@ -758,6 +745,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <div class="rcell c-expert" data-col="expert"><span class="cl">Expert</span></div>
               <div class="rcell c-mgr" data-col="mgr"><span class="cl">Manager</span></div>
               <div class="rcell c-status" data-col="status"><span class="cl">Status</span></div>
+              <div class="rcell c-comment" data-col="comment"><span class="cl">Compliance comment</span></div>
               <div class="rcell c-lastfu" data-col="lastfu"><span class="cl">Last follow-up</span></div>
               <div class="rcell c-age" data-col="age"><span class="cl">Age</span></div>
             </div>
@@ -867,6 +855,10 @@ const CMP={compliant:"Compliant",not_compliant:"Not Compliant"};
    values — swap for the real non-compliance category list once it exists. */
 const CATEGORY_LIST_PLACEHOLDER=true;
 const CATEGORY_LIST=["Placeholder category A","Placeholder category B","Placeholder category C","Other"];
+/* The three real reassignment cases (SPEC-expert-space.md, still valid after the
+   merge — they were about the task, not the role). Carried over from
+   expert-space.html when its verdict form moved here. */
+const REASON_LABEL={wrong_person:"Right activity, wrong person", wrong_typology:"Wrong activity", not_applicable:"This activity doesn't apply here"};
 /* REX tab — migrated from expert-space.html, remapped to this screen's own SRM- ids. */
 const REX_BASE={
   "SRM-00005":[
@@ -1078,7 +1070,7 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
   /* B5 — shared table engine state (see table-engine.js / TE) */
   selection:new Set(),colFilters:{},filterToSelection:false,savedColFilters:null,
   activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","mgr","age"]),
-  colOrder:["typo","expert","mgr","status","lastfu","age"],
+  colOrder:["typo","expert","mgr","status","comment","lastfu","age"],
   docNavCollapsed:new Set(),
   navPanelCollapsed:false,detailPanelCollapsed:false,
   ownTeamOnly:true};
@@ -1291,14 +1283,14 @@ function verdictCommentHTML(note){
   return `<span class="verdict-comment" title="${esc(note)}">${esc(note)}</span>`;
 }
 function consolidatedStatusHTML(c){
-  if(!c.pending) return `<span class="vpill ${c.compliance}">${CMP[c.compliance]||"—"}</span>${verdictCommentHTML(c.comment)}`;
+  if(!c.pending) return `<span class="vpill ${c.compliance}">${CMP[c.compliance]||"—"}</span>`;
   if(c.blocking && c.blocking.status==="reassignment_needed")
     return `<span class="blocking-chip" title="${TY(c.blocking.typology).label} needs reassignment">⛔ Reassignment needed</span>`;
   return `<span class="vpill none pending-pill">Pending${c.remaining>1?` · ${c.remaining} allocated activities`:""}</span>`;
 }
 /* same merge, per individual allocated activity (multi-activity sub-rows) */
 function branchStatusHTML(b){
-  if(isAnswered(b)) return `<span class="vpill ${b.compliance}">${CMP[b.compliance]||"—"}</span>${verdictCommentHTML(b.resp?.note)}`;
+  if(isAnswered(b)) return `<span class="vpill ${b.compliance}">${CMP[b.compliance]||"—"}</span>`;
   if(b.status==="reassignment_needed") return `<span class="blocking-chip" title="Needs reassignment">⛔ Reassignment needed</span>`;
   return `<span class="vpill none pending-pill">Pending</span>`;
 }
@@ -1329,44 +1321,32 @@ function renderExportReady(){
     <button class="xr-btn" id="xr-go">Go to export →</button></div>`;
   el.querySelector("#xr-go").addEventListener("click",()=>document.getElementById("export2-btn").click());
 }
-/* T10 — "what needs you now": the three manager to-dos, gathered in one glance
-   regardless of what the list below is currently filtered/sorted to. */
-function renderNeedsYou(){
-  const el=document.getElementById("needs-you"); if(!el) return;
-  const brs=allBranches();
-  const reassign=brs.filter(needsReassign);
-  const toSend=questionsToSend();
-  const justUnblocked=brs.filter(b=>b.unblockedAt==="Today"&&b.status==="awaiting_answer");
-  const total=reassign.length+toSend.length+justUnblocked.length;
-  // No "What needs you now" heading any more: each pill already names its own
-  // action, and the heading cost a whole line above the fold.
-  if(!total){ el.innerHTML=`<span class="ny-empty">✓ Nothing needs you right now</span>`; return; }
-  el.innerHTML=`<div class="ny-row">
-    ${reassign.length?`<button class="ny-pill ny-warn" id="ny-reassign">${reassign.length} reassignment${reassign.length>1?"s":""} to handle</button>`:""}
-    ${toSend.length?`<button class="ny-pill ny-accent" id="ny-tosend">${toSend.length} question${toSend.length>1?"s":""} ready to export</button>`:""}
-    ${justUnblocked.length?`<button class="ny-pill ny-ok" id="ny-unblocked">${justUnblocked.length} just unblocked by the issuer</button>`:""}
-  </div>`;
-  el.querySelector("#ny-reassign")?.addEventListener("click",()=>{state.filter="reassign";state.fExpert="";state.fTypo="";state.needsMe=false;refreshAll();});
-  el.querySelector("#ny-tosend")?.addEventListener("click",()=>{setView("qa");});
-  el.querySelector("#ny-unblocked")?.addEventListener("click",()=>{state.filter=null;state.needsMe=true;refreshAll();});
-}
+/* T10's "what needs you now" pill row is gone: it restated what the triage bar
+   at the top of the screen already shows, and every one of its shortcuts has an
+   equivalent there — "reassignments to handle" is the triage bar's own
+   `reassign` pill, "questions ready to export" is the Q&A view in the header
+   switch, and "just unblocked" is the toolbar's "Needs my action". */
 /* =====================================================
    B5 — shared review-table grid (config, not a different component: same
    selection/Bulk-Action-Bar/Filter-to-Selection/keyboard-nav/Column-Visibility-
    Menu behaviour as revue-documentaire.html, via table-engine.js / TE). This
    screen supplies its own columns, row source and cell rendering below.
 ===================================================== */
+/* The compliance comment is a column of its own now, not a second line squeezed
+   under the verdict pill: the reasoning is what a reviewer actually reads, and
+   it needs room to be sortable/hideable/reorderable like any other field.
+   Status goes back to just the pill, so it no longer needs the extra width. */
 const F_RCOLS=[
-  {k:"sel",w:"32px"},{k:"id",w:"84px"},{k:"req",w:"minmax(280px,1.6fr)"},
+  {k:"sel",w:"32px"},{k:"id",w:"84px"},{k:"req",w:"minmax(240px,1.4fr)"},
   {k:"typo",w:"90px"},{k:"expert",w:"140px"},{k:"mgr",w:"110px"},
-  {k:"status",w:"190px"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
+  {k:"status",w:"150px"},{k:"comment",w:"minmax(200px,1fr)"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
 ];
 const F_COLUMN_TOGGLE_DEFS=[
   {k:"typo",label:"Activity"},{k:"expert",label:"Expert"},{k:"mgr",label:"Manager"},
-  {k:"status",label:"Status"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
+  {k:"status",label:"Status"},{k:"comment",label:"Compliance comment"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
 ];
 const F_RCOLS_BY_KEY=Object.fromEntries(F_RCOLS.map(c=>[c.k,c]));
-const F_NAV_COLS=["sel","id","req","typo","expert","mgr","status","lastfu","age"];
+const F_NAV_COLS=["sel","id","req","typo","expert","mgr","status","comment","lastfu","age"];
 function fNavCols(){ return F_NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
 /* USER-TEST-session-3.md §1.4 — full removal + reorder, same technique as
    revue-documentaire.html's applyCols(): --ord-* customs properties on .rgrid,
@@ -1424,6 +1404,7 @@ function fRowInnerHTML(r){
     <div class="rcell c-expert">${single?branchWhoHTML(single):`<span class="multi-ph">Multiple (${r.branches.length})</span>`}</div>
     <div class="rcell c-mgr">${single?(single.manager?`<span>${mgrOf(single.manager).name.split(" ")[0]}</span>`:'<span class="none">—</span>'):`<span class="multi-ph">Multiple</span>`}</div>
     <div class="rcell c-status">${consolidatedStatusHTML(c)}</div>
+    <div class="rcell c-comment">${verdictCommentHTML(c.comment)}</div>
     <div class="rcell c-lastfu">${fLastFollowupHTML({lastFollowup})}</div>
     <div class="rcell c-age ${single&&isOverB(single)?"over":""}">${single?(isAnswered(single)?"":single.age+" d"):""}</div>`;
 }
@@ -1437,6 +1418,7 @@ function fBranchRowHTML(parent,b,idx){
     <div class="rcell c-expert">${branchWhoHTML(b)}</div>
     <div class="rcell c-mgr">${m?m.name.split(" ")[0]:'<span class="none">—</span>'}</div>
     <div class="rcell c-status">${branchStatusHTML(b)}</div>
+    <div class="rcell c-comment">${verdictCommentHTML(b.resp?.note)}</div>
     <div class="rcell c-lastfu">${fLastFollowupHTML(b)}</div>
     <div class="rcell c-age ${isOverB(b)?"over":""}">${isAnswered(b)?"":b.age+" d"}</div>
   </div>`;
@@ -1785,9 +1767,64 @@ function renderPanel2(){
             <div class="form-actions"><button class="btn-cancel" id="v-cancel">Cancel</button><button class="btn-submit warn" id="v-submit-notcompliant">Save verdict</button></div>
           `:`<div class="field-hint">Pick Compliant or Not compliant to continue.</div>`}
         </div>`;
-      b.innerHTML=whoBlock+`<div class="field"><label>Waiting</label><div class="fval">${waitCopy}</div></div>${formHTML}
-        ${e?`<button class="cta line" id="a-remind" style="margin-top:8px">🔔 Send a reminder</button>`:""}`;
+      // Rendering a verdict isn't the only answer: the allocation itself may be
+      // wrong. Restored from expert-space.html's action set, which lost this on
+      // the merge — a contributor could only ever say yes, never "not mine".
+      const otherExperts=EXPERTS.filter(x=>x.id!==br.expert);
+      const otherTypos=Object.keys(TYPOS).filter(t=>t!==br.typology);
+      const reassignHTML=state.openForm!=="reassign"?`<button class="cta line" id="a-reassign" style="margin-top:8px">↩ Request reassignment</button>`:`
+        <div class="inline-form" id="reassign-form">
+          <div class="if-label">Request reassignment</div>
+          <div class="reassign-reasons">
+            ${Object.entries(REASON_LABEL).map(([k,label])=>`<label class="reassign-reason"><input type="radio" name="reassign-reason" value="${k}" ${k==="wrong_person"?"checked":""}> ${label}</label>`).join("")}
+          </div>
+          <div class="field" id="reassign-expert-field"><label>Reassign to</label>
+            <select id="reassign-expert">${otherExperts.length?otherExperts.map(x=>`<option value="${x.id}">${x.name} — ${x.team}</option>`).join(""):'<option value="">Nobody else available</option>'}</select></div>
+          <div class="field" id="reassign-typo-field" style="display:none"><label>Correct activity</label>
+            <select id="reassign-typo">${otherTypos.map(t=>`<option value="${t}">${TY(t).label}</option>`).join("")}</select></div>
+          <div class="field"><label>Why</label><textarea id="reassign-text" rows="3" placeholder="Required — why should this be reassigned?"></textarea></div>
+          <div class="form-actions"><button class="btn-cancel" id="reassign-cancel">Cancel</button><button class="btn-submit warn" id="reassign-submit">Send request</button></div>
+        </div>`;
+      b.innerHTML=whoBlock+`<div class="field"><label>Waiting</label><div class="fval">${waitCopy}</div></div>${formHTML}${reassignHTML}
+        ${e&&state.openForm===null?`<button class="cta line" id="a-remind" style="margin-top:8px">🔔 Send a reminder</button>`:""}`;
       b.querySelector("#a-verdict")?.addEventListener("click",()=>{ state.openForm="verdict"; state.verdictPick=null; renderPanel2(); });
+      b.querySelector("#a-reassign")?.addEventListener("click",()=>{ state.openForm="reassign"; renderPanel2(); });
+      b.querySelector("#reassign-cancel")?.addEventListener("click",()=>{ state.openForm=null; renderPanel2(); });
+      b.querySelectorAll('input[name="reassign-reason"]').forEach(radio=>radio.addEventListener("change",()=>{
+        const isPerson=b.querySelector('input[name="reassign-reason"]:checked').value==="wrong_person";
+        b.querySelector("#reassign-expert-field").style.display=isPerson?"block":"none";
+        b.querySelector("#reassign-typo-field").style.display=isPerson?"none":"block";
+      }));
+      b.querySelector("#reassign-submit")?.addEventListener("click",()=>{
+        const note=b.querySelector("#reassign-text").value.trim();
+        if(!note){ toast("A reason is required to request a reassignment","warn"); return; }
+        const reason=b.querySelector('input[name="reassign-reason"]:checked').value;
+        const replacementExpert=reason==="wrong_person"?b.querySelector("#reassign-expert").value:null;
+        if(reason==="wrong_person" && !replacementExpert){ toast("Nobody else is available to take this","warn"); return; }
+        const replacementTypology=reason!=="wrong_person"?b.querySelector("#reassign-typo").value:null;
+        const me=MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0];
+        const req={
+          reqId:r.id, typology:br.typology, reason, note,
+          by:VIEWER, byName:me.name,
+          // wire value, not UI copy: revue-documentaire.html's project-manager
+          // approval queue filters on byRole==="expert" to tell a contributor's
+          // request apart from a manager's B1 escalation. Renaming it is part
+          // of the wider vocabulary pass, not this change.
+          byRole:"expert", at:"Today",
+          replacementExpert, replacementTypology,
+          replacementExpertLabel: replacementExpert?(EXPERTS.find(x=>x.id===replacementExpert)||{}).name:null,
+          replacementTypologyLabel: replacementTypology?TY(replacementTypology).label:null,
+          prevStatus:br.status,
+        };
+        let shared=null;
+        try{ if(window.parent!==window && window.parent.pushReassignRequest) shared=window.parent.pushReassignRequest(Object.assign({},req)); }catch(err){}
+        br.reassignRequest=Object.assign({requestId:shared?shared.id:null}, req);
+        br.reassignComment=note;
+        br.status="reassignment_needed";
+        state.openForm=null;
+        toast(`${r.id} · ${TY(br.typology).label} — reassignment requested, sent to the project manager`,"warn");
+        refreshAll();
+      });
       b.querySelector("#v-cancel")?.addEventListener("click",()=>{ state.openForm=null; state.verdictPick=null; renderPanel2(); });
       b.querySelectorAll("[data-pick]").forEach(btn=>btn.addEventListener("click",()=>{ state.verdictPick=btn.dataset.pick; renderPanel2(); }));
       b.querySelector("#v-submit-compliant")?.addEventListener("click",()=>{
@@ -2005,7 +2042,6 @@ function setScreen(n){
   document.getElementById("screen3").classList.toggle("on",n===3);
   document.getElementById("s2-views").style.display=n===2?"flex":"none";
   document.getElementById("export2-btn").style.display=n===2?"inline-flex":"none";
-  document.querySelectorAll("#phase-nav .sn").forEach(s=>s.classList.toggle("on",s.dataset.screen==String(n)));
   refreshAll();
 }
 function setView(v){
@@ -2047,10 +2083,9 @@ document.getElementById("nav2-toggle")?.addEventListener("click",()=>{ state.nav
 document.getElementById("settings2-toggle")?.addEventListener("click",()=>{ state.detailPanelCollapsed=!state.detailPanelCollapsed; applyFPanels(); });
 function refreshAll(){
   syncReassignRequestsFromShell();
-  renderNav2();renderTable2();renderDoc2();renderQA();renderPanel2();renderTriage2();renderNeedsYou();renderExportReady();
+  renderNav2();renderTable2();renderDoc2();renderQA();renderPanel2();renderTriage2();renderExportReady();
   if(state.screen===3){renderVersions();renderIssuer();}
 }
-document.querySelectorAll("#phase-nav [data-screen]").forEach(b=>b.addEventListener("click",()=>setScreen(+b.dataset.screen)));
 document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 /* T9/T10 toolbar — populate the expert/activity selects once, then wire up live filtering */
 (function initF10(){
