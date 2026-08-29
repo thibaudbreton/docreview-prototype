@@ -532,6 +532,39 @@ body.mode-review .doc-scroll{display:none}
 .view-scale-row{display:flex;align-items:flex-start;gap:var(--space-2);padding:6px 2px;cursor:pointer;font-size:var(--text-sm);color:var(--text-2)}
 .view-scale-row input{margin-top:2px}
 .view-scale-note{display:block;font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
+/* SPEC-advanced-filters.md — the rule builder. Wider than .view-panel (300px):
+   field + operator + value in one row needs the room. */
+.adv-link{display:flex;align-items:center;justify-content:space-between;padding:8px 2px;cursor:pointer;font-size:var(--text-sm);color:var(--accent);font-weight:600}
+.adv-link:hover{text-decoration:underline}
+.adv-panel{position:absolute;top:calc(100% + 6px);right:0;z-index:61;width:460px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);padding:var(--space-3);display:none}
+.adv-panel.on{display:block}
+.adv-toplevel{display:flex;align-items:center;gap:6px;font-size:var(--text-sm);color:var(--text-2);margin-bottom:var(--space-2)}
+.adv-toplevel .gseg{margin:0 2px}
+.adv-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;padding-right:2px;margin-bottom:var(--space-2)}
+.adv-row{display:flex;gap:6px;align-items:center}
+.adv-row select,.adv-row input{background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:5px 6px;font-size:var(--text-xs);color:var(--text);min-width:0}
+.adv-row .adv-field{flex:0 0 108px}
+.adv-row .adv-op{flex:0 0 100px}
+.adv-row .adv-value{flex:1;min-width:0;display:flex;gap:4px}
+.adv-row .adv-value input,.adv-row .adv-value select{width:100%}
+.adv-remove{flex-shrink:0;width:22px;height:22px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center}
+.adv-remove:hover{background:var(--panel-3);color:var(--warn)}
+.adv-group{border:1px solid var(--line-2);border-radius:var(--radius-md);padding:8px;background:var(--panel)}
+.adv-group-head{display:flex;align-items:center;justify-content:space-between;font-size:var(--text-xs);color:var(--text-3);margin-bottom:6px}
+.adv-group .adv-list{margin-bottom:6px;max-height:none}
+.adv-addrow{display:flex;gap:8px;margin-bottom:var(--space-2)}
+.adv-summary{font-size:var(--text-xs);color:var(--text-2);background:var(--panel-3);border-radius:var(--radius-sm);padding:6px var(--space-2);margin-bottom:var(--space-2);line-height:1.5}
+.adv-summary b{color:var(--accent)}
+.adv-count{font-size:var(--text-xs);color:var(--text-3);margin-bottom:var(--space-2)}
+.adv-actions{display:flex;gap:8px;justify-content:flex-end;margin-bottom:var(--space-2)}
+.adv-saved{border-top:1px solid var(--line);padding-top:8px}
+.adv-saved-row{display:flex;align-items:center;gap:6px;padding:4px 2px;font-size:var(--text-sm)}
+.adv-saved-row .n{flex:1;color:var(--text-2);cursor:pointer}
+.adv-saved-row .n:hover{color:var(--text);text-decoration:underline}
+.adv-saved-row button{color:var(--text-3);font-size:var(--text-xs)}
+.adv-saved-row button:hover{color:var(--warn)}
+.adv-save-row{display:flex;gap:6px;margin-top:6px}
+.adv-save-row input{flex:1;background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:5px 6px;font-size:var(--text-xs);color:var(--text)}
 /* column visibility + order — USER-TEST-session-3.md §1.4. A hidden column disappears
    entirely (no sliver); its cell just isn't in the grid flow. Position comes from
    --ord-* custom properties set once on .rgrid by applyCols() and inherited by every
@@ -1365,6 +1398,14 @@ body.restricted .restrict-banner{display:flex}
           <span>Showing <b id="fsb-n">0</b> of <b id="fsb-total">0</b> requirements — selected</span>
           <button class="btn-ghost" id="fsb-show-all" style="font-size:var(--text-sm)">Show all</button>
         </div>
+        <!-- SPEC-advanced-filters.md §4 — "always show the filter in plain language above
+             the results". Reuses .filter-sel-banner's look; hidden while Filter to Selection
+             is showing its own banner instead (§7 — Filter to Selection suspends chips, so
+             the advanced filter is moot while it's active). -->
+        <div class="filter-sel-banner" id="adv-filter-banner" style="display:none">
+          <span id="adv-filter-banner-text"></span>
+          <button class="btn-ghost" id="adv-filter-banner-clear" style="font-size:var(--text-sm)">Clear</button>
+        </div>
         <div class="rtoolbar" id="rtoolbar">
           <div class="search-box" style="width:220px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -1380,6 +1421,7 @@ body.restricted .restrict-banner{display:flex}
             <div class="view-wrap" style="position:relative">
               <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)">⏷ Filter <span class="view-badge" id="view-badge" style="display:none"></span> ▾</button>
               <div class="view-panel" id="filter-panel"></div>
+              <div class="adv-panel" id="adv-filter-panel"></div>
             </div>
             <div class="view-wrap" style="position:relative">
               <button class="btn-ghost" id="cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
@@ -2144,6 +2186,11 @@ const state = {
   sortCol:null,
   sortDir:"asc",
   colFilters:{class:new Set(),typo:new Set(),type:new Set(),mgr:new Set(),obs:new Set(),status:new Set(),doubtfield:new Set()},
+  /* SPEC-advanced-filters.md §5 — nothing applies until confirmed: advFilter is
+     what's live on the table, advFilterDraft is what the builder is editing.
+     Applying copies draft into advFilter; closing without applying discards
+     the draft and leaves advFilter untouched. */
+  advFilter:{op:"AND",items:[]}, advFilterDraft:null, advFilterOpen:false,
   filterToSelection:false,
   savedColFilters:null,
   activeCell:{id:null,bidx:null,col:null},
@@ -2320,6 +2367,7 @@ function matchesFilter(b){
   if(!visibleTo(b)) return false;
   if(state.filterToSelection) return state.selection.has(b.id);
   if(!passesColFilters(b)) return false;
+  if(!passesAdvFilter(b)) return false;
   const isInfo = blockNature(b)==="info";
   // B8 / TICKET-ai-uncertainty-display.md — an information row carries none of
   // the fields most quick/column filters describe (no activity, no allocation…),
@@ -2932,7 +2980,53 @@ function passesColFilters(b){
   }
   return true;
 }
+
+/* ---------- Advanced filter (SPEC-advanced-filters.md) ---------- */
+/* §2's own field list vs. what's actually live, reconciled rather than copied:
+   - "Type" (heading/information/requirement) is labelled Nature here, not Type —
+     GLOSSARY.md already blocks that exact rename (collision with the live PBS
+     field, which the corpus calls Type in one place). Also added a 4th real
+     value, Image, that the spec's table didn't list.
+   - "Perimeter" isn't a field of its own — it's the same underlying data as
+     Activity (b.perim). Offering both would be two fields answering the same
+     question; merged into one.
+   - Status options are the live STATUS_LABEL values (…/Allocated), not the
+     spec's literal "Valid" — matching real data, not spec prose, per §2's own
+     rule that a field with nothing behind it shouldn't appear.
+   - Compliance reflects this screen's actual 4-value scale (still
+     compliant/rnd_needed/not_compliant/pending here — compliance.html moved to
+     2-value, this screen hasn't; that's a separate, already-flagged drift).
+   - ABS is free text (b.domain), not a closed list — the live data has no
+     fixed ABS vocabulary, so it gets contains/is/starts-with, not is-any-of.
+   - "Compliance comment" and "Last follow-up" don't exist on this screen's
+     data at all (they're compliance.html/Follow-up concepts) — omitted per
+     §2's rule, not just left as dead options. "Responsible person" is
+     Manager here — the single-responsible-person model session 3 asked for
+     isn't built yet; this is the closest live field until it is. */
+const ADV_FILTER_FIELDS={
+  id:{label:"ID",type:"text",get:b=>[b.id||""]},
+  text:{label:"Text",type:"text",get:b=>[b.text||""]},
+  nature:{label:"Nature",type:"enum",options:[{v:"heading",l:"Heading"},{v:"info",l:"Information"},{v:"requirement",l:"Requirement"},{v:"image",l:"Image"}],get:b=>[blockNature(b)]},
+  class:{type:"enum",label:COL_FILTER_DEFS.class.label,options:COL_FILTER_DEFS.class.options,get:COL_FILTER_DEFS.class.get},
+  status:{type:"enum",label:COL_FILTER_DEFS.status.label,options:COL_FILTER_DEFS.status.options,get:COL_FILTER_DEFS.status.get},
+  compliance:{label:"Compliance",type:"enum",options:[...COMPLIANCE_DEFS.map(c=>({v:c.k,l:c.label}))],get:b=>{
+    const brs=(b.branches||[]); return brs.length ? brs.map(x=>x.compliance||"pending") : ["pending"];
+  }},
+  typo:{type:"enum",label:COL_FILTER_DEFS.typo.label,options:COL_FILTER_DEFS.typo.options,get:COL_FILTER_DEFS.typo.get},
+  abs:{label:"ABS",type:"text",get:b=>[b.domain||""]},
+  type:{type:"enum",label:COL_FILTER_DEFS.type.label,options:COL_FILTER_DEFS.type.options,get:COL_FILTER_DEFS.type.get},
+  obs:{type:"enum",label:COL_FILTER_DEFS.obs.label,options:COL_FILTER_DEFS.obs.options,get:COL_FILTER_DEFS.obs.get},
+  mgr:{label:"Manager",type:"enum",options:COL_FILTER_DEFS.mgr.options,get:COL_FILTER_DEFS.mgr.get},
+  doc:{label:"Document",type:"enum",options:DOCS.map(d=>({v:d.id,l:d.name})),get:b=>[b.section&&b.section.docId||""]},
+  section:{label:"Section",type:"text",get:b=>[b.section?`${b.section.num||""} ${b.section.title||""}`.trim():""]},
+  doubtfield:{type:"enum",label:COL_FILTER_DEFS.doubtfield.label,options:COL_FILTER_DEFS.doubtfield.options,get:COL_FILTER_DEFS.doubtfield.get},
+  changed:{label:"Changed since version",type:"enum",options:[{v:"added",l:"Added"},{v:"modified",l:"Modified"},{v:"unchanged",l:"Unchanged"}],get:b=>[b.change||"unchanged"]},
+};
+function passesAdvFilter(b){ return TE.matchesFilter(ADV_FILTER_FIELDS, state.advFilter, b); }
 function colFilterActiveCount(){ return Object.values(state.colFilters).filter(s=>s.size).length; }
+/* SPEC-advanced-filters.md §7 — chips and the advanced filter show as ONE combined
+   active-filter count, not two separate indicators. */
+function advFilterActiveCount(){ return (state.advFilter.items||[]).length; }
 /* pushes a "row" entry, then — full-render path only, never in the BIG.on scale test —
    one "branch" entry per allocation if this requirement is expanded. UI-only: no recomputation. */
 function pushRow(b){
@@ -2999,6 +3093,9 @@ function renderReview(){
     document.getElementById("fsb-n").textContent = rows.length.toLocaleString();
     document.getElementById("fsb-total").textContent = total.toLocaleString();
   }
+  const advActive = !state.filterToSelection && state.advFilter.items.length>0;
+  document.getElementById("adv-filter-banner").style.display = advActive?"flex":"none";
+  if(advActive) document.getElementById("adv-filter-banner-text").textContent = TE.describeFilter(ADV_FILTER_FIELDS, state.advFilter);
   document.getElementById("review-sub").innerHTML =
     `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, activity, managers, experts and statuses`+(BIG.on?' · <span style="color:var(--ia)">scale test active</span>':"");
   renderSortIndicators();
@@ -4105,6 +4202,7 @@ document.getElementById("sel-filter").addEventListener("click",()=>{
 const emptyColFilters=()=>({class:new Set(),typo:new Set(),type:new Set(),mgr:new Set(),obs:new Set(),status:new Set()});
 document.getElementById("sel-show-only").addEventListener("click",()=>{ TE.enterFilterToSelection(state,emptyColFilters); renderReview(); });
 document.getElementById("fsb-show-all").addEventListener("click",()=>{ TE.exitFilterToSelection(state); renderReview(); });
+document.getElementById("adv-filter-banner-clear").addEventListener("click",()=>{ state.advFilter={op:"AND",items:[]}; refresh(); });
 /* drag-select: mousedown on the selection gutter, drag across rows to extend a contiguous range.
    Rows outside the live [anchor, cursor] range fall back to their pre-drag state, Excel-style. */
 TE.bindDragSelect({
@@ -4213,7 +4311,7 @@ function applyCols(){
   body.addEventListener("scroll",()=>{ head.scrollLeft = body.scrollLeft; });
 })();
 function renderColFilterIndicators(){
-  const n=colFilterActiveCount();
+  const n=colFilterActiveCount()+advFilterActiveCount();
   const badge=document.getElementById("view-badge");
   if(badge){ badge.style.display=n?"inline":"none"; badge.textContent=n; }
 }
@@ -4245,6 +4343,8 @@ function renderFilterPanel(){
     <div class="view-sep"></div>
     <div class="view-scroll">${sections}</div>
     <div class="view-sep"></div>
+    <div class="adv-link" id="adv-filter-open">⚙ Advanced filter${advFilterActiveCount()?` <span class="view-badge">${advFilterActiveCount()}</span>`:""}<span>›</span></div>
+    <div class="view-sep"></div>
     <label class="view-scale-row"><input type="checkbox" id="view-scale-cb" ${BIG.on?"checked":""}><span>⚡ Scale test — load 12,000 synthetic rows<span class="view-scale-note">Prototype only, to check the table stays usable at volume.</span></span></label>`;
   p.querySelector("#pf-doc-filter").addEventListener("change",e=>{ state.docFilter=e.target.value; state.selection.clear(); refresh(); });
   p.querySelectorAll("#pf-gseg button").forEach(b=>b.addEventListener("click",()=>{
@@ -4260,9 +4360,198 @@ function renderFilterPanel(){
   }));
   p.querySelectorAll("[data-viewall]").forEach(s=>s.addEventListener("click",()=>{ state.colFilters[s.dataset.viewall].clear(); renderFilterPanel(); refresh(); }));
   p.querySelectorAll("[data-viewnone]").forEach(s=>s.addEventListener("click",()=>{ const col=s.dataset.viewnone; COL_FILTER_DEFS[col].options.forEach(o=>state.colFilters[col].add(o.v)); renderFilterPanel(); refresh(); }));
-  p.querySelector("#view-clearall").addEventListener("click",()=>{ Object.values(state.colFilters).forEach(s=>s.clear()); renderFilterPanel(); refresh(); });
+  p.querySelector("#view-clearall").addEventListener("click",()=>{ Object.values(state.colFilters).forEach(s=>s.clear()); state.advFilter={op:"AND",items:[]}; renderFilterPanel(); refresh(); });
   p.querySelector("#view-scale-cb").addEventListener("change",e=>toggleScaleTest(e.target.checked));
+  p.querySelector("#adv-filter-open").addEventListener("click",()=>{ filterPanelState.open=false; renderFilterPanel(); openAdvFilterPanel(); });
 }
+
+/* ---------- Advanced filter builder (SPEC-advanced-filters.md) ---------- */
+const ADV_FIELD_ORDER=["id","text","nature","class","status","compliance","typo","abs","type","obs","mgr","doc","section","doubtfield","changed"];
+function advDefaultValue(def,op){
+  if(op==="is_any_of"||op==="is_none_of") return [];
+  if(op==="between") return {from:"",to:""};
+  if(op==="in_last") return "7";
+  if(op==="is_empty"||op==="is_not_empty"||op==="is_true"||op==="is_false") return null;
+  return "";
+}
+function advNewCondition(){
+  const field=ADV_FIELD_ORDER[0], def=ADV_FILTER_FIELDS[field], op=TE.OPS_BY_TYPE[def.type][0];
+  return {field, op, value:advDefaultValue(def,op)};
+}
+function openAdvFilterPanel(){
+  // §7 — the builder inherits the active column chips as its starting point,
+  // but only the first time it's opened (an empty draft) — never silently
+  // overwrites conditions already customized here on a later open.
+  if(!state.advFilter.items.length){
+    const inherited=[];
+    for(const col in state.colFilters){
+      const excluded=state.colFilters[col]; if(!excluded.size) continue;
+      const def=COL_FILTER_DEFS[col];
+      const included=def.options.map(o=>o.v).filter(v=>!excluded.has(v));
+      if(included.length) inherited.push({field:col, op:"is_any_of", value:included});
+    }
+    state.advFilterDraft={op:state.advFilter.op, items:inherited};
+  }else{
+    state.advFilterDraft=JSON.parse(JSON.stringify(state.advFilter));
+  }
+  state.advFilterOpen=true;
+  renderAdvFilterPanel();
+}
+function closeAdvFilterPanel(){
+  state.advFilterOpen=false; state.advFilterDraft=null;
+  renderAdvFilterPanel();
+}
+function advGetItemByAddr(addr){
+  const parts=String(addr).split(".").map(Number);
+  return parts.length===1 ? state.advFilterDraft.items[parts[0]] : state.advFilterDraft.items[parts[0]].items[parts[1]];
+}
+function advValueEditorHTML(def, cond, addr){
+  const op=cond.op;
+  if(op==="is_empty"||op==="is_not_empty"||op==="is_true"||op==="is_false") return "";
+  if(op==="is_any_of"||op==="is_none_of"){
+    const sel=new Set(cond.value||[]);
+    return `<select class="adv-val" data-addr="${addr}" multiple size="4">${(def.options||[]).map(o=>`<option value="${o.v}" ${sel.has(o.v)?"selected":""}>${o.l}</option>`).join("")}</select>`;
+  }
+  if(def.type==="enum") return `<select class="adv-val" data-addr="${addr}"><option value="">— choose —</option>${(def.options||[]).map(o=>`<option value="${o.v}" ${cond.value===o.v?"selected":""}>${o.l}</option>`).join("")}</select>`;
+  if(def.type==="date"){
+    if(op==="between") return `<input type="date" class="adv-val" data-addr="${addr}" data-part="from" value="${(cond.value&&cond.value.from)||""}"><input type="date" class="adv-val" data-addr="${addr}" data-part="to" value="${(cond.value&&cond.value.to)||""}">`;
+    if(op==="in_last") return `<input type="number" min="1" class="adv-val" data-addr="${addr}" value="${cond.value||7}">`;
+    return `<input type="date" class="adv-val" data-addr="${addr}" value="${cond.value||""}">`;
+  }
+  return `<input type="text" class="adv-val" data-addr="${addr}" placeholder="Value…" value="${escHtml(cond.value||"")}">`;
+}
+function advConditionRowHTML(cond, addr){
+  const def=ADV_FILTER_FIELDS[cond.field]||ADV_FILTER_FIELDS[ADV_FIELD_ORDER[0]];
+  const ops=TE.OPS_BY_TYPE[def.type];
+  return `<div class="adv-row">
+    <select class="adv-field" data-addr="${addr}">${ADV_FIELD_ORDER.map(k=>`<option value="${k}" ${k===cond.field?"selected":""}>${ADV_FILTER_FIELDS[k].label}</option>`).join("")}</select>
+    <select class="adv-op" data-addr="${addr}">${ops.map(o=>`<option value="${o}" ${o===cond.op?"selected":""}>${TE.OP_LABEL[o]}</option>`).join("")}</select>
+    <span class="adv-value">${advValueEditorHTML(def,cond,addr)}</span>
+    <button class="adv-remove" data-addr="${addr}" title="Remove">✕</button>
+  </div>`;
+}
+function advGroupHTML(group, topIdx){
+  return `<div class="adv-group">
+    <div class="adv-group-head">Where
+      <span class="gseg" style="display:inline-flex"><button class="adv-gop ${group.op==="AND"?"on":""}" data-top="${topIdx}" data-gop="AND">all</button><button class="adv-gop ${group.op==="OR"?"on":""}" data-top="${topIdx}" data-gop="OR">any</button></span>
+      of:
+      <button class="mini-btn" data-addr="${topIdx}" data-removegroup="1">✕ Remove group</button>
+    </div>
+    <div class="adv-list">${group.items.map((it,i)=>advConditionRowHTML(it,`${topIdx}.${i}`)).join("")}</div>
+    <button class="mini-btn" data-addgroupitem="${topIdx}">+ Add condition</button>
+  </div>`;
+}
+function advLiveMatch(){
+  const d=state.advFilterDraft;
+  const baseline=allBlocks().filter(visibleTo);
+  const matched=baseline.filter(b=>passesColFilters(b)&&TE.matchesFilter(ADV_FILTER_FIELDS,d,b));
+  return {matched:matched.length, total:baseline.length};
+}
+function renderAdvFilterCountAndSummaryOnly(p){
+  const {matched,total}=advLiveMatch();
+  const countEl=p.querySelector(".adv-count"); if(countEl) countEl.textContent=`${matched} of ${total} rows`;
+  const summaryEl=p.querySelector(".adv-summary"); if(summaryEl) summaryEl.textContent=TE.describeFilter(ADV_FILTER_FIELDS,state.advFilterDraft);
+}
+function renderAdvFilterPanel(){
+  const p=document.getElementById("adv-filter-panel"); if(!p) return;
+  p.classList.toggle("on", state.advFilterOpen);
+  if(!state.advFilterOpen){ p.innerHTML=""; return; }
+  const d=state.advFilterDraft;
+  const itemsHTML=d.items.map((it,i)=>it.items?advGroupHTML(it,i):advConditionRowHTML(it,String(i))).join("");
+  const {matched,total}=advLiveMatch();
+  const summary=TE.describeFilter(ADV_FILTER_FIELDS,d);
+  const saved=TE.loadSavedFilters("review");
+  p.innerHTML=`
+    <div class="view-panel-head">Advanced filter<button class="mini-btn" id="adv-close">Close</button></div>
+    ${d.items.length>1?`<div class="adv-toplevel">Match <span class="gseg"><button class="adv-topop ${d.op==="AND"?"on":""}" data-gop="AND">all</button><button class="adv-topop ${d.op==="OR"?"on":""}" data-gop="OR">any</button></span> of the following</div>`:""}
+    <div class="adv-list">${itemsHTML||`<div class="field-hint" style="margin-bottom:8px">No conditions yet — add one below.</div>`}</div>
+    <div class="adv-addrow"><button class="mini-btn" id="adv-add-cond">+ Add condition</button><button class="mini-btn" id="adv-add-group">+ Add group</button></div>
+    ${d.items.length?`<div class="adv-summary">${escHtml(summary)}</div>`:""}
+    <div class="adv-count">${matched} of ${total} rows</div>
+    <div class="adv-actions"><button class="btn-cancel" id="adv-cancel">Cancel</button><button class="btn-submit ok" id="adv-apply">Apply</button></div>
+    <div class="adv-saved">
+      <div class="view-sec-head">Saved filters</div>
+      ${saved.length?saved.map((sf,i)=>`<div class="adv-saved-row"><span class="n" data-loadsaved="${i}">${escHtml(sf.name)}</span><button data-delsaved="${i}" title="Delete">✕</button></div>`).join(""):`<div class="field-hint">None yet — build a filter and save it to reuse on any tender.</div>`}
+      <div class="adv-save-row"><input type="text" id="adv-save-name" placeholder="Save current as…"><button class="mini-btn" id="adv-save-btn">Save</button></div>
+    </div>`;
+  bindAdvFilterPanel(p);
+}
+function bindAdvFilterPanel(p){
+  p.querySelector("#adv-close").addEventListener("click",closeAdvFilterPanel);
+  p.querySelector("#adv-cancel").addEventListener("click",closeAdvFilterPanel);
+  p.querySelector("#adv-apply").addEventListener("click",()=>{
+    state.advFilter=state.advFilterDraft;
+    closeAdvFilterPanel();
+    refresh();
+  });
+  p.querySelector("#adv-add-cond").addEventListener("click",()=>{ state.advFilterDraft.items.push(advNewCondition()); renderAdvFilterPanel(); });
+  p.querySelector("#adv-add-group").addEventListener("click",()=>{ state.advFilterDraft.items.push({op:"AND",items:[advNewCondition()]}); renderAdvFilterPanel(); });
+  p.querySelectorAll("[data-addgroupitem]").forEach(b=>b.addEventListener("click",()=>{
+    state.advFilterDraft.items[+b.dataset.addgroupitem].items.push(advNewCondition()); renderAdvFilterPanel();
+  }));
+  p.querySelectorAll("[data-removegroup]").forEach(b=>b.addEventListener("click",()=>{
+    state.advFilterDraft.items.splice(+b.dataset.addr,1); renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".adv-topop").forEach(b=>b.addEventListener("click",()=>{ state.advFilterDraft.op=b.dataset.gop; renderAdvFilterPanel(); }));
+  p.querySelectorAll(".adv-gop").forEach(b=>b.addEventListener("click",()=>{ state.advFilterDraft.items[+b.dataset.top].op=b.dataset.gop; renderAdvFilterPanel(); }));
+  p.querySelectorAll(".adv-remove").forEach(b=>b.addEventListener("click",()=>{
+    const addr=b.dataset.addr;
+    if(addr.includes(".")){
+      const [gi,ii]=addr.split(".").map(Number);
+      state.advFilterDraft.items[gi].items.splice(ii,1);
+      if(!state.advFilterDraft.items[gi].items.length) state.advFilterDraft.items.splice(gi,1);
+    }else state.advFilterDraft.items.splice(+addr,1);
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".adv-field").forEach(s=>s.addEventListener("change",()=>{
+    const cond=advGetItemByAddr(s.dataset.addr), def=ADV_FILTER_FIELDS[s.value];
+    cond.field=s.value; cond.op=TE.OPS_BY_TYPE[def.type][0]; cond.value=advDefaultValue(def,cond.op);
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".adv-op").forEach(s=>s.addEventListener("change",()=>{
+    const cond=advGetItemByAddr(s.dataset.addr), def=ADV_FILTER_FIELDS[cond.field];
+    cond.op=s.value; cond.value=advDefaultValue(def,cond.op);
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".adv-val").forEach(el=>{
+    const onInput=()=>{
+      const cond=advGetItemByAddr(el.dataset.addr);
+      if(el.multiple) cond.value=[...el.selectedOptions].map(o=>o.value);
+      else if(el.dataset.part){ cond.value=cond.value||{}; cond.value[el.dataset.part]=el.value; }
+      else cond.value=el.value;
+      renderAdvFilterCountAndSummaryOnly(p);
+    };
+    el.addEventListener("input",onInput); el.addEventListener("change",onInput);
+  });
+  p.querySelectorAll("[data-loadsaved]").forEach(el=>el.addEventListener("click",()=>{
+    const sf=TE.loadSavedFilters("review")[+el.dataset.loadsaved];
+    if(sf) state.advFilterDraft=JSON.parse(JSON.stringify(sf.filter));
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll("[data-delsaved]").forEach(el=>el.addEventListener("click",()=>{
+    const list=TE.loadSavedFilters("review"); list.splice(+el.dataset.delsaved,1); TE.saveSavedFilters("review",list);
+    renderAdvFilterPanel();
+  }));
+  p.querySelector("#adv-save-btn").addEventListener("click",()=>{
+    const name=p.querySelector("#adv-save-name").value.trim();
+    if(!name){ toast("Name the filter before saving","warn"); return; }
+    if(!state.advFilterDraft.items.length){ toast("Add at least one condition before saving","warn"); return; }
+    const list=TE.loadSavedFilters("review");
+    list.push({name, filter:JSON.parse(JSON.stringify(state.advFilterDraft))});
+    TE.saveSavedFilters("review",list);
+    toast(`Filter "${name}" saved`,"ok");
+    renderAdvFilterPanel();
+  });
+}
+// Capture phase, not bubble: a click inside the panel that triggers a re-render
+// (e.g. "+ Add condition") replaces p.innerHTML before the event finishes
+// bubbling, detaching e.target — closest() on a detached node can't find its
+// old ancestor, so a bubble-phase listener here would wrongly read every
+// in-panel click as "outside". Capture runs before that mutation happens.
+document.addEventListener("click",e=>{
+  if(state.advFilterOpen && !e.target.closest("#adv-filter-panel") && !e.target.closest("#adv-filter-open")){ closeAdvFilterPanel(); }
+},true);
+
 function toggleScaleTest(on){
   if(on){
     if(!BIG.rows.length) BIG.rows=buildBigData(12000);

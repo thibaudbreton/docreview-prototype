@@ -1,7 +1,7 @@
 /* =====================================================
    TABLE ENGINE — shared review-table interaction behaviour
    (B5, was ticket 5). Spliced verbatim by build_merge.py into
-   both revue-documentaire.html and suivi-experts-et-versions.html
+   both revue-documentaire.html and compliance.html
    — edit this ONE file to change behaviour on both screens.
 
    Design: stateless/functional, not a class or owned state object.
@@ -204,6 +204,86 @@ bindReorderableColumnList(panelEl, colOrder, colCollapsed, onChange){
       onChange();
     });
   });
+},
+
+/* ---------- Advanced Filter (SPEC-advanced-filters.md) ---------- */
+/* A filter is {op:"AND"|"OR", items:[condition|group]}. A condition is
+   {field,op,value}. A group is {op:"AND"|"OR", items:[condition,...]} — ONE
+   level only, per §4: a group never contains another group. fieldDefs is
+   {key:{label,type:"text"|"enum"|"date"|"boolean",options,get(row)}} — get()
+   returns an ARRAY of values so one field (e.g. Activity) can carry several. */
+OPS_BY_TYPE:{
+  text:["contains","not_contains","is","is_not","starts_with","is_empty","is_not_empty"],
+  enum:["is","is_not","is_any_of","is_none_of","is_empty"],
+  date:["before","after","between","in_last","is_empty"],
+  boolean:["is_true","is_false"],
+},
+OP_LABEL:{contains:"contains",not_contains:"does not contain",is:"is",is_not:"is not",starts_with:"starts with",
+  is_empty:"is empty",is_not_empty:"is not empty",is_any_of:"is any of",is_none_of:"is none of",
+  before:"before",after:"after",between:"between",in_last:"in the last N days",is_true:"is true",is_false:"is false"},
+matchesCondition(fieldDefs, cond, row){
+  const def=fieldDefs[cond.field]; if(!def) return true;
+  const vals=def.get(row)||[];
+  const present=vals.filter(v=>v!==""&&v!=null);
+  const s=v=>String(v).toLowerCase();
+  switch(cond.op){
+    case "is_empty": return present.length===0;
+    case "is_not_empty": return present.length>0;
+    case "contains": return present.some(v=>s(v).includes(s(cond.value||"")));
+    case "not_contains": return !present.some(v=>s(v).includes(s(cond.value||"")));
+    case "is": return present.some(v=>s(v)===s(cond.value||""));
+    case "is_not": return !present.some(v=>s(v)===s(cond.value||""));
+    case "starts_with": return present.some(v=>s(v).startsWith(s(cond.value||"")));
+    case "is_any_of": { const set=new Set(cond.value||[]); return present.some(v=>set.has(v)); }
+    case "is_none_of": { const set=new Set(cond.value||[]); return present.length>0 && !present.some(v=>set.has(v)); }
+    case "before": return present.some(v=>v<cond.value);
+    case "after": return present.some(v=>v>cond.value);
+    case "between": return present.some(v=>v>=(cond.value&&cond.value.from) && v<=(cond.value&&cond.value.to));
+    case "in_last": { const days=+cond.value||0, cutoff=Date.now()-days*86400000; return present.some(v=>new Date(v).getTime()>=cutoff); }
+    case "is_true": return present.some(v=>v===true);
+    case "is_false": return present.length===0 || present.every(v=>v!==true);
+    default: return true;
+  }
+},
+matchesGroupItem(fieldDefs, item, row){
+  return item.items ? this.matchesFilter(fieldDefs,item,row) : this.matchesCondition(fieldDefs,item,row);
+},
+matchesFilter(fieldDefs, filter, row){
+  if(!filter || !filter.items || !filter.items.length) return true;
+  const results=filter.items.map(it=>this.matchesGroupItem(fieldDefs,it,row));
+  return filter.op==="OR" ? results.some(Boolean) : results.every(Boolean);
+},
+optLabel(def,v){ const o=(def.options||[]).find(o=>o.v===v); return o?o.l:v; },
+describeValue(def, cond){
+  if(cond.op==="is_any_of"||cond.op==="is_none_of") return (cond.value||[]).map(v=>this.optLabel(def,v)).join(", ");
+  if(cond.op==="between") return `${(cond.value&&cond.value.from)||"…"} and ${(cond.value&&cond.value.to)||"…"}`;
+  if(cond.op==="in_last") return `${cond.value||"N"} days`;
+  if(cond.op==="is_empty"||cond.op==="is_not_empty"||cond.op==="is_true"||cond.op==="is_false") return "";
+  return def.type==="enum" ? this.optLabel(def,cond.value) : (cond.value||"");
+},
+describeCondition(fieldDefs, cond){
+  const def=fieldDefs[cond.field]; if(!def) return "";
+  const val=this.describeValue(def,cond);
+  return `${def.label} ${this.OP_LABEL[cond.op]||cond.op}${val?" "+val:""}`;
+},
+describeGroupItem(fieldDefs,item){
+  return item.items ? `(${this.describeFilter(fieldDefs,item)})` : this.describeCondition(fieldDefs,item);
+},
+describeFilter(fieldDefs, filter){
+  if(!filter || !filter.items || !filter.items.length) return "";
+  return filter.items.map(it=>this.describeGroupItem(fieldDefs,it)).join(` ${filter.op} `);
+},
+/* Saved filters — personal, cross-project (§6): localStorage, keyed per table
+   (not per project — that's the point) so review's saved filters stay separate
+   from any other table's. This is the prototype's first use of localStorage;
+   everything else resets with the demo on purpose, but a "saved" filter that
+   didn't survive a reload wouldn't actually demonstrate what §6 is selling. */
+savedFiltersKey(tableKey){ return `srm-saved-filters-${tableKey}`; },
+loadSavedFilters(tableKey){
+  try{ return JSON.parse(localStorage.getItem(this.savedFiltersKey(tableKey))||"[]"); }catch(e){ return []; }
+},
+saveSavedFilters(tableKey, list){
+  try{ localStorage.setItem(this.savedFiltersKey(tableKey), JSON.stringify(list)); }catch(e){}
 },
 
 };
