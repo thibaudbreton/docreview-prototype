@@ -150,7 +150,8 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .phase:hover .ph-open-btn{border-color:var(--accent);background:var(--accent-soft)}
 /* support rail — same molecule, deliberately quieter: no big CTA competing with
    the two steps, badge and arrow inline instead of pinned to the corners. */
-.support-rail{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-3);margin-bottom:26px}
+.support-rail{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3);margin-bottom:26px}
+@media(max-width:1000px){.support-rail{grid-template-columns:repeat(2,1fr)}}
 .phase.is-support{min-height:0;align-items:center;padding:var(--space-3) var(--space-4);background:var(--panel-2)}
 .phase.is-support .ph-num{width:24px;height:24px;font-size:var(--text-sm)}
 .phase.is-support .ph-num.transversal{font-size:var(--text-base)}
@@ -572,10 +573,19 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <span class="ph-badge wait" id="ph-team-badge">1 pending</span>
           <span class="ph-open-btn">→</span>
         </div>
-        <a class="phase is-support" id="ph-versions" href="javascript:parent.route('versions')">
+        <a class="phase is-support" id="ph-documents" href="javascript:parent.route('documents')">
+          <div class="ph-num transversal">▤</div>
+          <div class="ph-info">
+            <div class="ph-name">Documents &amp; versions</div>
+            <div class="ph-stat"><span class="big">3</span><span>documents · 1 processing</span></div>
+          </div>
+          <span class="ph-badge wait">Open</span>
+          <span class="ph-open-btn">→</span>
+        </a>
+        <a class="phase is-support" id="ph-qa" href="javascript:parent.route('qa')">
           <div class="ph-num transversal">↻</div>
           <div class="ph-info">
-            <div class="ph-name">Versions &amp; Q&amp;A</div>
+            <div class="ph-name">Q&amp;A</div>
             <div class="ph-stat"><span class="big">5</span><span>questions · 1 answered</span></div>
           </div>
           <span class="ph-badge wait">Open</span>
@@ -598,7 +608,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             <div><div class="att-t"><b>Allocation not finalized</b></div><div class="att-sub" id="att-review-sub">9 requirements still to validate</div></div>
             <span class="att-go">Finalize allocation →</span>
           </div>
-          <div class="att v22only hidden" data-go="compliance.html#versions">
+          <div class="att v22only hidden" data-go="documents.html">
             <div class="att-ic ia">⇄</div>
             <div><div class="att-t"><b>New version v2.2 ready for review</b></div><div class="att-sub">Arrived during allocation · +2 ~1 −0 · SRM-00009 response now on an outdated version</div></div>
             <span class="att-go">Review changes →</span>
@@ -1011,7 +1021,8 @@ function applyGating(){
 document.querySelectorAll(".att[data-go]").forEach(a=>a.addEventListener("click",()=>goRoute(a.dataset.go)));
 /* Phase cards routing through shell */
 document.getElementById("ph-review").addEventListener("click",e=>{e.preventDefault();goRoute("revue-documentaire.html");});
-document.getElementById("ph-versions").addEventListener("click",e=>{e.preventDefault();goRoute("compliance.html#versions");});
+document.getElementById("ph-documents").addEventListener("click",e=>{e.preventDefault();goRoute("documents.html");});
+document.getElementById("ph-qa").addEventListener("click",e=>{e.preventDefault();goRoute("qa.html");});
 document.getElementById("demo-contributor-link").addEventListener("click",()=>goRoute("compliance.html#contributor"));
 document.getElementById("new-proj").addEventListener("click",e=>{e.preventDefault();goRoute("creation-projet.html");});
 
@@ -1667,7 +1678,7 @@ function renderStatsInvalidated(){
   if(!stale.length){ block.classList.add("hidden"); return; }
   block.classList.remove("hidden");
   el.innerHTML=`<div class="invalidated-row" id="stats-invalidated-link">⇄ ${stale.length} expert answer${stale.length>1?"s":""} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
-  document.getElementById("stats-invalidated-link")?.addEventListener("click",()=>goRoute("compliance.html#versions"));
+  document.getElementById("stats-invalidated-link")?.addEventListener("click",()=>goRoute("documents.html"));
 }
 
 // 1.6/2.3 — trajectory to deadline (data gap: needs periodic snapshots of remaining

@@ -1363,7 +1363,7 @@ body.restricted .restrict-banner{display:flex}
         </div>
       </div>
       <div class="nav-list" id="nav-list"></div>
-      <button class="btn-ghost nav-add-doc" id="add-doc-btn">⬆ Add a document</button>
+      <a class="btn-ghost nav-add-doc" id="add-doc-btn" href="javascript:parent.route('documents')" title="Opens Documents &amp; versions, where documents are added and reordered">⬆ Add a document</a>
       <div class="nav-count" id="nav-count"></div>
     </aside>
 
@@ -4565,39 +4565,11 @@ function toggleScaleTest(on){
   if(state.mode!=="review") setMode("review");
   refresh();
 }
-/* USER-TEST-session-3.md §1.4 — the project isn't sealed at creation: a document can
-   be added any time, gets its own AI pass, and its requirements land the same way a
-   fresh project's do — uncharacterized, Incomplete, ready to review. Mirrors
-   reclassify()'s info→requirement field set rather than inventing a new shape. */
-let addedDocsCount=0;
-// USER-TEST-session-3.md §1.4 — one continuous id sequence, so a document added mid-project
-// just picks up where the tender's own numbering left off, same as a real re-import would.
-let srmIdCounter=SECTIONS.reduce((n,s)=>n+s.blocks.reduce((m,b)=>m+(b.kind==="table"?b.rows.length:1),0),0);
-function simulateAddDocument(){
-  const btn=document.getElementById("add-doc-btn");
-  if(btn){ btn.disabled=true; btn.textContent="Processing…"; }
-  toast("Uploading document…","ok");
-  setTimeout(()=>{
-    addedDocsCount++;
-    const docId="d-new"+addedDocsCount, docName="Addendum "+addedDocsCount+" — new scope";
-    DOCS.push({id:docId, name:docName, file:""});
-    const n=3+(addedDocsCount%3);
-    const blocks=[];
-    for(let i=0;i<n;i++){
-      srmIdCounter++;
-      const id="SRM-"+String(srmIdCounter).padStart(5,"0");
-      const text=`The system ${BIG_VERBS[(i+addedDocsCount)%BIG_VERBS.length]} ${BIG_OBJ[(i*3+addedDocsCount)%BIG_OBJ.length]} ${BIG_QUAL[(i*5+addedDocsCount)%BIG_QUAL.length]}.`;
-      const b={id, kind:"requirement", text, type:"Functional", tech:"tech", perim:[], alloc:null, manager:null, allocStatus:"incomplete"};
-      computeCharStatus(b);
-      blocks.push(b);
-    }
-    SECTIONS.push({id:"s-new"+addedDocsCount, docId, num:"", title:"New scope", blocks});
-    if(btn){ btn.disabled=false; btn.textContent="⬆ Add a document"; }
-    refresh();
-    toast(`${docName} added — ${n} new requirement${n>1?"s":""} ready for characterization`,"ok");
-  }, 900);
-}
-document.getElementById("add-doc-btn")?.addEventListener("click", simulateAddDocument);
+/* TICKET-three-support-screens.md — adding a document is the Documents & versions
+   screen's job now; that screen is where the tender's structure is visible and
+   editable, and it shows the AI pipeline's progress on the new file. This button
+   stays as a shortcut from where you notice the gap, but routes there instead of
+   carrying a second implementation that would drift from it. */
 document.getElementById("wrap-toggle")?.addEventListener("change",e=>{ state.wrapText=e.target.checked; renderReview(); });
 document.getElementById("filter-btn")?.addEventListener("click",e=>{ e.stopPropagation(); filterPanelState.open=!filterPanelState.open; renderFilterPanel(); });
 document.addEventListener("click",e=>{ if(filterPanelState.open && !e.target.closest("#filter-panel") && !e.target.closest("#filter-btn")){ filterPanelState.open=false; renderFilterPanel(); } });

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Requirement Manager — STB-2026 · Documents &amp; versions</title>
+<link rel="icon" type="image/svg+xml" media="(prefers-color-scheme: light)" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIyIDIwIDg0IDQ4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMy4wNzAzMSA0NC4yMTczQzMuMDcwMzEgMzEuMzI4NiAxMy41MTg2IDIwLjg4MDMgMjYuNDA3MyAyMC44ODAzSDYxLjE5MDVDNjEuMzEzMiAyMC44ODAzIDYxLjQxMjcgMjAuOTc5OCA2MS40MTI3IDIxLjEwMjVWNjcuMzMyMUM2MS40MTI3IDY3LjQ1NDggNjEuMzEzMiA2Ny41NTQyIDYxLjE5MDUgNjcuNTU0MkgyNi40MDczQzEzLjUxODYgNjcuNTU0MiAzLjA3MDMxIDU3LjEwNTkgMy4wNzAzMSA0NC4yMTczVjQ0LjIxNzNaIiBmaWxsPSJ1cmwoI2ZsYSkiIGZpbGwtb3BhY2l0eT0iLjU0Ii8+CjxwYXRoIGQ9Ik0xOC40MjM4IDQ0LjIxNzNDMTguNDIzOCAzMS4zMjg2IDI4Ljg3MjEgMjAuODgwMyA0MS43NjA4IDIwLjg4MDNINjMuMDg0NkM2My4xNzg5IDIwLjg4MDMgNjMuMjU1MyAyMC45NTY4IDYzLjI1NTMgMjEuMDUxVjY3LjM4MzVDNjMuMjU1MyA2Ny40Nzc4IDYzLjE3ODkgNjcuNTU0MiA2My4wODQ2IDY3LjU1NDJINDEuNzYwOEMyOC44NzIxIDY3LjU1NDIgMTguNDIzOCA1Ny4xMDU5IDE4LjQyMzggNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmbGIpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8cGF0aCBkPSJNMzUuMDA1NCA0NC4yMTczQzM1LjAwNTQgMzEuMzI4NiA0NS40NTM3IDIwLjg4MDMgNTguMzQyMyAyMC44ODAzSDYxLjQxM0M3NC4zMDE2IDIwLjg4MDMgODQuNzQ5OSAzMS4zMjg2IDg0Ljc0OTkgNDQuMjE3M1Y0NC4yMTczQzg0Ljc0OTkgNTcuMTA1OSA3NC4zMDE2IDY3LjU1NDIgNjEuNDEzIDY3LjU1NDJINTguMzQyM0M0NS40NTM3IDY3LjU1NDIgMzUuMDA1NCA1Ny4xMDU5IDM1LjAwNTQgNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmbGMpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8Y2lyY2xlIGN4PSI2MC4zMTA1IiBjeT0iNDQuMzQzMSIgcj0iMTguNTQ5NyIgZmlsbD0iI2ZmZiIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJmbGEiIHgxPSIzLjA3IiB5MT0iNDQuMjIiIHgyPSI2MS40MSIgeTI9IjQ0LjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iIzFFMzI0NiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzFFMzI0NiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJmbGIiIHgxPSIxOC40MiIgeTE9IjQ0LjIyIiB4Mj0iNjMuMjYiIHkyPSI0NC4yMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiMxRTMyNDYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxRTMyNDYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZmxjIiB4MT0iMzUuMDEiIHkxPSI0NC4yMiIgeDI9Ijg0Ljc1IiB5Mj0iNDQuMjIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjMUUzMjQ2Ii8+PHN0b3Agb2Zmc2V0PSIuMTY4IiBzdG9wLWNvbG9yPSIjMUUzMjQ2Ii8+PC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=">
+<link rel="icon" type="image/svg+xml" media="(prefers-color-scheme: dark)" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIyIDIwIDg0IDQ4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMy4wNzAzMSA0NC4yMTczQzMuMDcwMzEgMzEuMzI4NiAxMy41MTg2IDIwLjg4MDMgMjYuNDA3MyAyMC44ODAzSDYxLjE5MDVDNjEuMzEzMiAyMC44ODAzIDYxLjQxMjcgMjAuOTc5OCA2MS40MTI3IDIxLjEwMjVWNjcuMzMyMUM2MS40MTI3IDY3LjQ1NDggNjEuMzEzMiA2Ny41NTQyIDYxLjE5MDUgNjcuNTU0MkgyNi40MDczQzEzLjUxODYgNjcuNTU0MiAzLjA3MDMxIDU3LjEwNTkgMy4wNzAzMSA0NC4yMTczVjQ0LjIxNzNaIiBmaWxsPSJ1cmwoI2ZkYSkiIGZpbGwtb3BhY2l0eT0iLjU0Ii8+CjxwYXRoIGQ9Ik0xOC40MjM4IDQ0LjIxNzNDMTguNDIzOCAzMS4zMjg2IDI4Ljg3MjEgMjAuODgwMyA0MS43NjA4IDIwLjg4MDNINjMuMDg0NkM2My4xNzg5IDIwLjg4MDMgNjMuMjU1MyAyMC45NTY4IDYzLjI1NTMgMjEuMDUxVjY3LjM4MzVDNjMuMjU1MyA2Ny40Nzc4IDYzLjE3ODkgNjcuNTU0MiA2My4wODQ2IDY3LjU1NDJINDEuNzYwOEMyOC44NzIxIDY3LjU1NDIgMTguNDIzOCA1Ny4xMDU5IDE4LjQyMzggNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmZGIpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8cGF0aCBkPSJNMzUuMDA1NCA0NC4yMTczQzM1LjAwNTQgMzEuMzI4NiA0NS40NTM3IDIwLjg4MDMgNTguMzQyMyAyMC44ODAzSDYxLjQxM0M3NC4zMDE2IDIwLjg4MDMgODQuNzQ5OSAzMS4zMjg2IDg0Ljc0OTkgNDQuMjE3M1Y0NC4yMTczQzg0Ljc0OTkgNTcuMTA1OSA3NC4zMDE2IDY3LjU1NDIgNjEuNDEzIDY3LjU1NDJINTguMzQyM0M0NS40NTM3IDY3LjU1NDIgMzUuMDA1NCA1Ny4xMDU5IDM1LjAwNTQgNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmZGMpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8Y2lyY2xlIGN4PSI2MC4zMTA1IiBjeT0iNDQuMzQzMSIgcj0iMTguNTQ5NyIgZmlsbD0iI2ZmZiIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJmZGEiIHgxPSIzLjA3IiB5MT0iNDQuMjIiIHgyPSI2MS40MSIgeTI9IjQ0LjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJmZGIiIHgxPSIxOC40MiIgeTE9IjQ0LjIyIiB4Mj0iNjMuMjYiIHkyPSI0NC4yMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZmRjIiB4MT0iMzUuMDEiIHkxPSI0NC4yMiIgeDI9Ijg0Ljc1IiB5Mj0iNDQuMjIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjZmZmIi8+PHN0b3Agb2Zmc2V0PSIuMTY4IiBzdG9wLWNvbG9yPSIjZmZmIi8+PC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=">
+<style>
+:root{
+  --bg:#141F2B; --panel:#1E3246; --panel-2:#26374C; --panel-3:#2F4257;
+  --line:#2C3E52; --line-2:#3A4E66;
+  --text:#EEF1F8; --text-2:#AAB6C6; --text-3:#8B9AAD;
+  --accent:#4C82FF; --accent-soft:#1E3A63; --accent-hover:color-mix(in srgb, var(--accent) 75%, white);
+  --ia:#E3A64B; --ia-soft:rgba(227,166,75,.12);
+  --ok:#3FBE86; --ok-soft:rgba(63,190,134,.12);
+  --human:#a06ef2; --human-soft:rgba(160,110,242,.12);
+  --warn:#F2604F; --warn-soft:rgba(242,96,79,.12);
+  --paper:#fbfaf6; --paper-ink:#1d2129; --paper-ink-2:#4a5162;
+  --text-xs:11px; --text-sm:12px; --text-base:13px; --text-lg:16px; --text-xl:21px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
+  --radius-xs:4px; --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-pill:999px;
+  --font-ui:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-doc:Georgia,"Times New Roman",serif;
+  --font-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+}
+
+html[data-theme="light"]{
+  --bg:#F4F5FA;
+  --panel:#FFFFFF;
+  --panel-2:#F4F5FA;
+  --panel-3:#E6E6F0;
+  --line:#E1E3EE;
+  --line-2:#CDD2E3;
+  --text:#1E3246;
+  --text-2:#4A5A6E;
+  --text-3:#637187;
+  --accent:#0050E3;
+  --accent-soft:#E9EFFD;
+  --ia:#C67A16;
+  --ia-soft:rgba(198,122,22,.12);
+  --ok:#1E8E5A;
+  --ok-soft:rgba(30,142,90,.12);
+  --human:#8250dc;
+  --human-soft:rgba(130,80,220,.12);
+  --warn:#DC3223;
+  --warn-soft:rgba(220,50,35,.10);
+  --paper:#ffffff;
+  --paper-ink:#1d2129;
+  --paper-ink-2:#4a5162;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);font-size:var(--text-base);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:var(--radius-sm);border:2px solid var(--bg)}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius-xs)}
+#app{display:flex;flex-direction:column;height:100vh}
+main{display:flex;flex:1;min-height:0}
+
+/* ---------- Header ---------- */
+header{display:flex;align-items:center;gap:var(--space-4);height:52px;padding:0 var(--space-4);background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+.logo{display:flex;align-items:center;gap:var(--space-2);font-weight:700;font-size:var(--text-base);letter-spacing:-.2px}
+.logo-mark{height:22px;width:auto;flex-shrink:0;display:block}
+.logo-mark-light{display:none}
+html[data-theme="light"] .logo-mark-dark{display:none}
+html[data-theme="light"] .logo-mark-light{display:block}
+.crumb{display:flex;align-items:center;gap:var(--space-2);color:var(--text-2);min-width:0}
+.crumb .sep{color:var(--text-3)}
+.crumb .project{color:var(--text);font-weight:600;white-space:nowrap}
+.mode-switch{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-1);margin-left:auto}
+.mode-switch button{padding:5px var(--space-4);border-radius:var(--radius-sm);color:var(--text-2);font-weight:500;font-size:var(--text-base);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.mode-switch button.active{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.mode-switch button:hover:not(.active){color:var(--text)}
+.mode-switch .mcount{font-size:var(--text-xs);font-weight:700;padding:1px 6px;border-radius:var(--radius-lg);background:var(--accent-soft);color:var(--accent)}
+.hdr-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{position:relative;width:32px;height:32px;border-radius:var(--radius-md);display:grid;place-items:center;color:var(--text-2);transition:all .15s}
+.icon-btn:hover{background:var(--panel-3);color:var(--text)}
+.badge-dot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--warn);border:2px solid var(--panel)}
+.btn-primary{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-base);transition:all .15s}
+.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
+.btn-ghost{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#e0a43c,#c4763a);display:grid;place-items:center;font-size:var(--text-xs);font-weight:700;color:#fff;cursor:pointer}
+
+/* ---------- Triage ---------- */
+.triage{display:flex;align-items:center;gap:var(--space-4);height:44px;padding:0 var(--space-4);background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+
+/* ===================== Documents & versions =====================
+   TICKET-three-support-screens.md — screen 2 of the three support screens.
+   Its own screen, reached by a button, never a panel inside a workflow step. */
+.wrap{max-width:1080px;margin:0 auto;padding:var(--space-6) var(--space-6) 80px}
+.scroll{flex:1;overflow-y:auto}
+.page-head{display:flex;align-items:flex-start;gap:var(--space-4);margin-bottom:var(--space-5);flex-wrap:wrap}
+.page-head h1{font-size:var(--text-xl);font-weight:600;letter-spacing:-.2px}
+.page-head .sub{font-size:var(--text-sm);color:var(--text-3);margin-top:3px;line-height:1.5}
+.page-head .ph-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+/* summary strip */
+.doc-summary{display:flex;gap:var(--space-3);margin-bottom:var(--space-5);flex-wrap:wrap}
+.ds{flex:1;min-width:150px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4)}
+.ds-n{font-size:var(--text-xl);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.ds-l{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
+.ds.is-warn .ds-n{color:var(--ia)}
+
+/* document list */
+.doc-list{display:flex;flex-direction:column;gap:var(--space-3)}
+.doc-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .15s}
+.doc-card:hover{border-color:var(--line-2)}
+.doc-card.is-processing{border-color:color-mix(in srgb, var(--accent) 45%, transparent)}
+.doc-main{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4)}
+.doc-pos{width:26px;height:26px;border-radius:var(--radius-md);background:var(--panel-3);color:var(--text-3);display:grid;place-items:center;font-size:var(--text-sm);font-weight:700;flex-shrink:0;font-variant-numeric:tabular-nums}
+.doc-id{flex:1;min-width:0}
+.doc-name{font-size:var(--text-base);font-weight:600;display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+.doc-meta{font-size:var(--text-xs);color:var(--text-3);margin-top:3px;display:flex;gap:var(--space-3);flex-wrap:wrap}
+.doc-meta b{color:var(--text-2);font-weight:600;font-variant-numeric:tabular-nums}
+.doc-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.doc-move{width:24px;height:24px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center;font-size:var(--text-sm)}
+.doc-move:hover:not(:disabled){background:var(--panel-3);color:var(--text)}
+.doc-move:disabled{opacity:.25;cursor:default}
+.mini-btn{font-size:var(--text-xs);font-weight:600;padding:4px var(--space-2);border-radius:var(--radius-sm);border:1px solid var(--line-2);color:var(--text-2);white-space:nowrap}
+.mini-btn:hover{border-color:var(--accent);color:var(--text)}
+.mini-btn.danger:hover{border-color:var(--warn);color:var(--warn)}
+
+/* processing state */
+.pstate{font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-pill);white-space:nowrap}
+.pstate.ready{background:var(--ok-soft);color:var(--ok)}
+.pstate.running{background:var(--accent-soft);color:var(--accent)}
+.pstate.queued{background:var(--panel-3);color:var(--text-3)}
+.doc-prog{height:4px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden;margin-top:8px}
+.doc-prog>div{height:100%;background:var(--accent);border-radius:var(--radius-xs);transition:width .4s ease}
+.doc-prog-lbl{font-size:var(--text-xs);color:var(--accent);margin-top:5px}
+
+/* version history, expanded per document */
+.doc-versions{border-top:1px solid var(--line);background:var(--panel-2);padding:var(--space-3) var(--space-4)}
+.vrow{display:flex;align-items:flex-start;gap:var(--space-3);padding:7px 0;font-size:var(--text-sm)}
+.vrow+.vrow{border-top:1px solid var(--line)}
+.vnum{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-2);width:44px;flex-shrink:0;padding-top:2px}
+.vbody{flex:1;min-width:0}
+.vnote{color:var(--text-2);line-height:1.45}
+.vdate{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
+.vgap{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
+.gap-chip{font-size:var(--text-xs);font-weight:700;padding:1px var(--space-2);border-radius:var(--radius-lg)}
+.gap-chip.a{background:var(--ok-soft);color:var(--ok)}
+.gap-chip.m{background:var(--ia-soft);color:var(--ia)}
+.gap-chip.r{background:var(--warn-soft);color:var(--warn)}
+.vcurrent{font-size:var(--text-xs);font-weight:700;color:var(--ok);flex-shrink:0}
+
+/* stale-work warning — the consequence that matters most (§ Uploading a new version) */
+.stale-note{display:flex;align-items:flex-start;gap:var(--space-2);margin-top:8px;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--warn-soft);border:1px solid color-mix(in srgb, var(--warn) 35%, transparent);font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
+.stale-note b{color:var(--warn)}
+.stale-note .go{margin-left:auto;color:var(--accent);font-weight:600;white-space:nowrap;font-size:var(--text-xs)}
+
+/* add-document dropzone */
+.upload-zone{display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4);border:1.5px dashed var(--line-2);border-radius:var(--radius-lg);margin-top:var(--space-4);background:var(--panel-2)}
+.upload-ic{width:34px;height:34px;border-radius:var(--radius-md);background:var(--panel-3);color:var(--text-3);display:grid;place-items:center;font-size:var(--text-lg);flex-shrink:0}
+.upload-t{font-size:var(--text-base);font-weight:600}
+.upload-d{font-size:var(--text-sm);color:var(--text-3);margin-top:2px;line-height:1.45}
+
+/* modal — used by both remove-confirm and per-document export */
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:70;display:none;align-items:center;justify-content:center;padding:var(--space-4)}
+.modal-back.on{display:flex}
+.modal{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 24px 80px rgba(0,0,0,.6);padding:var(--space-5)}
+.modal h3{font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-2)}
+.modal p{font-size:var(--text-sm);color:var(--text-2);line-height:1.6;margin-bottom:var(--space-3)}
+.modal .loss{background:var(--warn-soft);border:1px solid color-mix(in srgb, var(--warn) 35%, transparent);border-radius:var(--radius-md);padding:var(--space-3);font-size:var(--text-sm);color:var(--text-2);line-height:1.6;margin-bottom:var(--space-4)}
+.modal .loss b{color:var(--warn)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+.btn-cancel{padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-size:var(--text-sm)}
+.btn-danger{padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--warn);color:#fff;font-weight:600;font-size:var(--text-sm)}
+.field{margin-bottom:var(--space-3)}
+.field label{display:block;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+.field select{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2);font-size:var(--text-base);color:var(--text)}
+.exp-row{display:flex;align-items:flex-start;gap:var(--space-2);padding:5px 0;cursor:pointer;font-size:var(--text-sm);color:var(--text-2)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo"><a href="javascript:parent.route('dashboard')" style="display:flex;align-items:center;gap:var(--space-2);color:inherit;text-decoration:none"><svg class="logo-mark logo-mark-dark" viewBox="2 20 84 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M3.07031 44.2173C3.07031 31.3286 13.5186 20.8803 26.4073 20.8803H61.1905C61.3132 20.8803 61.4127 20.9798 61.4127 21.1025V67.3321C61.4127 67.4548 61.3132 67.5542 61.1905 67.5542H26.4073C13.5186 67.5542 3.07031 57.1059 3.07031 44.2173V44.2173Z" fill="url(#srmDa)" fill-opacity=".54"/>
+      <path d="M18.4238 44.2173C18.4238 31.3286 28.8721 20.8803 41.7608 20.8803H63.0846C63.1789 20.8803 63.2553 20.9568 63.2553 21.051V67.3835C63.2553 67.4778 63.1789 67.5542 63.0846 67.5542H41.7608C28.8721 67.5542 18.4238 57.1059 18.4238 44.2173V44.2173Z" fill="url(#srmDb)" fill-opacity=".54"/>
+      <path d="M35.0054 44.2173C35.0054 31.3286 45.4537 20.8803 58.3423 20.8803H61.413C74.3016 20.8803 84.7499 31.3286 84.7499 44.2173V44.2173C84.7499 57.1059 74.3016 67.5542 61.413 67.5542H58.3423C45.4537 67.5542 35.0054 57.1059 35.0054 44.2173V44.2173Z" fill="url(#srmDc)" fill-opacity=".54"/>
+      <circle cx="60.3105" cy="44.3431" r="18.5497" fill="#fff"/>
+      <defs>
+      <linearGradient id="srmDa" x1="3.07" y1="44.22" x2="61.41" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <linearGradient id="srmDb" x1="18.42" y1="44.22" x2="63.26" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <linearGradient id="srmDc" x1="35.01" y1="44.22" x2="84.75" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset=".168" stop-color="#fff"/></linearGradient>
+      </defs>
+      </svg>
+      <svg class="logo-mark logo-mark-light" viewBox="2 20 84 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M3.07031 44.2173C3.07031 31.3286 13.5186 20.8803 26.4073 20.8803H61.1905C61.3132 20.8803 61.4127 20.9798 61.4127 21.1025V67.3321C61.4127 67.4548 61.3132 67.5542 61.1905 67.5542H26.4073C13.5186 67.5542 3.07031 57.1059 3.07031 44.2173V44.2173Z" fill="url(#srmLa)" fill-opacity=".54"/>
+      <path d="M18.4238 44.2173C18.4238 31.3286 28.8721 20.8803 41.7608 20.8803H63.0846C63.1789 20.8803 63.2553 20.9568 63.2553 21.051V67.3835C63.2553 67.4778 63.1789 67.5542 63.0846 67.5542H41.7608C28.8721 67.5542 18.4238 57.1059 18.4238 44.2173V44.2173Z" fill="url(#srmLb)" fill-opacity=".54"/>
+      <path d="M35.0054 44.2173C35.0054 31.3286 45.4537 20.8803 58.3423 20.8803H61.413C74.3016 20.8803 84.7499 31.3286 84.7499 44.2173V44.2173C84.7499 57.1059 74.3016 67.5542 61.413 67.5542H58.3423C45.4537 67.5542 35.0054 57.1059 35.0054 44.2173V44.2173Z" fill="url(#srmLc)" fill-opacity=".54"/>
+      <circle cx="60.3105" cy="44.3431" r="18.5497" fill="#fff"/>
+      <defs>
+      <linearGradient id="srmLa" x1="3.07" y1="44.22" x2="61.41" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset="1" stop-color="#1E3246" stop-opacity="0"/></linearGradient>
+      <linearGradient id="srmLb" x1="18.42" y1="44.22" x2="63.26" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset="1" stop-color="#1E3246" stop-opacity="0"/></linearGradient>
+      <linearGradient id="srmLc" x1="35.01" y1="44.22" x2="84.75" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset=".168" stop-color="#1E3246"/></linearGradient>
+      </defs>
+      </svg>SRM</a></div>
+    <div class="crumb"><span class="sep">/</span><span class="project">STB-2026 · Energy Monitoring System</span></div>
+    <div class="hdr-actions" style="margin-left:auto">
+      <a class="btn-ghost" href="javascript:parent.route('dashboard')" title="Back to dashboard">← Dashboard</a>
+      <a class="btn-ghost" href="javascript:parent.route('qa')" title="Questions to the client">Q&amp;A →</a>
+      <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+      <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
+      <div class="avatar" title="Thibaud Breton">TB</div>
+    </div>
+  </header>
+
+  <div class="scroll">
+    <div class="wrap">
+      <div class="page-head">
+        <div>
+          <h1>Documents &amp; versions</h1>
+          <div class="sub">The tender's source material, in the order it reads as one continuous whole. Add a document at any time, or replace one with a newer version.</div>
+        </div>
+        <div class="ph-actions">
+          <button class="btn-ghost" id="export-btn">⬇ Export one document</button>
+        </div>
+      </div>
+
+      <div class="doc-summary" id="doc-summary"></div>
+      <div class="doc-list" id="doc-list"></div>
+
+      <div class="upload-zone">
+        <div class="upload-ic">⬆</div>
+        <div style="flex:1">
+          <div class="upload-t">Add a document to this tender</div>
+          <div class="upload-d">Drop a PDF here. Capture then characterisation run on it after the fact — it joins the existing material rather than starting a separate project. You can leave and come back while it processes.</div>
+        </div>
+        <button class="btn-primary" id="add-doc">＋ Add a document</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- remove confirmation — states what is lost BEFORE acting (§ Reordering and removing) -->
+<div class="modal-back" id="remove-modal">
+  <div class="modal">
+    <h3>Remove this document?</h3>
+    <p id="remove-what"></p>
+    <div class="loss" id="remove-loss"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="remove-cancel">Cancel</button>
+      <button class="btn-danger" id="remove-confirm">Remove the document</button>
+    </div>
+  </div>
+</div>
+
+<!-- per-document export (session 3) — this screen is its natural home -->
+<div class="modal-back" id="export-modal">
+  <div class="modal">
+    <h3>Export one document</h3>
+    <p>Exports the requirements of a single document rather than the whole tender.</p>
+    <div class="field"><label>Document</label><select id="export-doc"></select></div>
+    <div class="field"><label>Include</label>
+      <label class="exp-row"><input type="checkbox" data-estep="capture" checked> Capture — structure, segments and tables</label>
+      <label class="exp-row"><input type="checkbox" data-estep="charac" checked> Characterisation — class, activity, type and status</label>
+      <label class="exp-row"><input type="checkbox" data-estep="alloc" checked> Allocation — assignments</label>
+    </div>
+    <div class="field"><label>Format</label>
+      <select id="export-format"><option>Excel (.xlsx)</option><option>CSV (.csv)</option><option>ReqIF (.reqif)</option><option>DOORS 9 (.csv)</option></select></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="export-cancel">Cancel</button>
+      <button class="btn-primary" id="export-go">Generate export</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-zone"></div>
+<script>
+/* =====================================================
+   DATA — TICKET-three-support-screens.md, screen 2.
+
+   Versions are held PER DOCUMENT here, not as one tender-wide list the way
+   compliance.html's old screen3 did it. The ticket is explicit that a version
+   replaces a document in place and that history is "readable per document", so
+   a flat tender-level list can't express which document a version belongs to.
+
+   Hand-authored demo data, like every other screen's — see HANDOVER.md: each
+   screen owns its own copy of the story on purpose. `rows` is the document's
+   weight in the tender (its requirement count); `state` is where the AI
+   pipeline has got to on it.
+===================================================== */
+let DOCS=[
+  {id:"d1", name:"Tender specification — main volume", file:"EMS_tender_main.pdf",
+   rows:512, state:"ready", added:"Mar 3, 2026",
+   versions:[
+     {num:"v2.1", date:"Jul 16, 2026", note:"Addendum n°2 — alerting threshold revision", gap:{a:1,m:2,r:1}, stale:2},
+     {num:"v2.0", date:"May 28, 2026", note:"Consolidated issue after pre-tender meeting", gap:{a:6,m:9,r:2}, stale:0},
+     {num:"v1.0", date:"Mar 3, 2026", note:"Initial AO release", gap:null, stale:0},
+   ]},
+  {id:"d2", name:"Technical annex A — performance & security", file:"EMS_annex_A.pdf",
+   rows:308, state:"ready", added:"Mar 3, 2026",
+   versions:[
+     {num:"v1.2", date:"May 28, 2026", note:"Security section reissued after the pre-tender meeting", gap:{a:3,m:4,r:0}, stale:0},
+     {num:"v1.0", date:"Mar 3, 2026", note:"Initial annex", gap:null, stale:0},
+   ]},
+  {id:"d3", name:"Annex C — operations manual (referenced)", file:"EMS_annex_C.pdf",
+   rows:0, state:"queued", added:"Jul 18, 2026",
+   versions:[{num:"v1.0", date:"Jul 18, 2026", note:"Added mid-project — waiting for capture", gap:null, stale:0}]},
+];
+const DOC=id=>DOCS.find(d=>d.id===id);
+const PSTATE={ready:"Captured &amp; characterised", running:"Processing…", queued:"Not yet processed"};
+const state={expanded:new Set(), removeId:null, addSeq:0};
+
+/* =====================================================
+   TOAST
+===================================================== */
+function toast(msg,kind="ok"){
+  const z=document.getElementById("toast-zone"),t=document.createElement("div");
+  t.className="toast";
+  t.innerHTML=`<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>`;
+  z.appendChild(t);
+  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3600);
+}
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+
+/* =====================================================
+   RENDER
+===================================================== */
+function renderSummary(){
+  const total=DOCS.reduce((n,d)=>n+d.rows,0);
+  const processing=DOCS.filter(d=>d.state!=="ready").length;
+  const stale=DOCS.reduce((n,d)=>n+d.versions.reduce((m,v)=>m+(v.stale||0),0),0);
+  document.getElementById("doc-summary").innerHTML=`
+    <div class="ds"><div class="ds-n">${DOCS.length}</div><div class="ds-l">Documents in this tender</div></div>
+    <div class="ds"><div class="ds-n">${total.toLocaleString()}</div><div class="ds-l">Requirements across them</div></div>
+    <div class="ds${processing?" is-warn":""}"><div class="ds-n">${processing}</div><div class="ds-l">Still processing</div></div>
+    <div class="ds${stale?" is-warn":""}"><div class="ds-n">${stale}</div><div class="ds-l">Verdicts made stale by a new version</div></div>`;
+}
+function versionsHTML(d){
+  return `<div class="doc-versions">${d.versions.map((v,i)=>`
+    <div class="vrow">
+      <span class="vnum">${v.num}</span>
+      <div class="vbody">
+        <div class="vnote">${esc(v.note)}</div>
+        <div class="vdate">${v.date}</div>
+        ${v.gap?`<div class="vgap">
+          <span class="gap-chip a">+${v.gap.a} added</span>
+          <span class="gap-chip m">~${v.gap.m} modified</span>
+          <span class="gap-chip r">−${v.gap.r} removed</span></div>`:""}
+        ${v.stale?`<div class="stale-note"><span>⚠</span><span><b>${v.stale} verdict${v.stale>1?"s":""} made stale by this version</b> — given before the change, on requirements the change affected. They need confirming or redoing in Compliance.</span><a class="go" href="javascript:parent.route('compliance')">Open Compliance →</a></div>`:""}
+      </div>
+      ${i===0?`<span class="vcurrent">Current</span>`:""}
+    </div>`).join("")}</div>`;
+}
+function renderDocs(){
+  const list=document.getElementById("doc-list");
+  list.innerHTML=DOCS.map((d,i)=>{
+    const cur=d.versions[0];
+    const open=state.expanded.has(d.id);
+    const staleTotal=d.versions.reduce((m,v)=>m+(v.stale||0),0);
+    return `<div class="doc-card${d.state==="running"?" is-processing":""}" data-id="${d.id}">
+      <div class="doc-main">
+        <span class="doc-pos">${i+1}</span>
+        <div class="doc-id">
+          <div class="doc-name">${esc(d.name)}
+            <span class="pstate ${d.state}">${PSTATE[d.state]}</span>
+            ${staleTotal?`<span class="pstate" style="background:var(--warn-soft);color:var(--warn)">${staleTotal} stale verdict${staleTotal>1?"s":""}</span>`:""}
+          </div>
+          <div class="doc-meta">
+            <span><b>${cur.num}</b> · ${cur.date}</span>
+            <span><b>${d.rows.toLocaleString()}</b> requirements</span>
+            <span>${d.versions.length} version${d.versions.length>1?"s":""}</span>
+            <span>${esc(d.file)}</span>
+          </div>
+          ${d.state==="running"?`<div class="doc-prog"><div style="width:${d.prog||0}%"></div></div><div class="doc-prog-lbl">${esc(d.progLabel||"Processing…")}</div>`:""}
+        </div>
+        <div class="doc-actions">
+          <button class="doc-move" data-up="${d.id}" ${i===0?"disabled":""} title="Move earlier in the tender">↑</button>
+          <button class="doc-move" data-down="${d.id}" ${i===DOCS.length-1?"disabled":""} title="Move later in the tender">↓</button>
+          <button class="mini-btn" data-newver="${d.id}">⬆ New version</button>
+          <button class="mini-btn" data-toggle="${d.id}">${open?"Hide":"History"}</button>
+          <button class="mini-btn danger" data-remove="${d.id}">Remove</button>
+        </div>
+      </div>
+      ${open?versionsHTML(d):""}
+    </div>`;
+  }).join("");
+  bindDocs();
+}
+function bindDocs(){
+  const l=document.getElementById("doc-list");
+  l.querySelectorAll("[data-toggle]").forEach(b=>b.addEventListener("click",()=>{
+    const id=b.dataset.toggle;
+    state.expanded.has(id)?state.expanded.delete(id):state.expanded.add(id);
+    renderDocs();
+  }));
+  l.querySelectorAll("[data-up]").forEach(b=>b.addEventListener("click",()=>move(b.dataset.up,-1)));
+  l.querySelectorAll("[data-down]").forEach(b=>b.addEventListener("click",()=>move(b.dataset.down,1)));
+  l.querySelectorAll("[data-newver]").forEach(b=>b.addEventListener("click",()=>uploadVersion(b.dataset.newver)));
+  l.querySelectorAll("[data-remove]").forEach(b=>b.addEventListener("click",()=>askRemove(b.dataset.remove)));
+}
+/* Order determines how requirements read as one continuous tender (§ Reordering) */
+function move(id,delta){
+  const i=DOCS.findIndex(d=>d.id===id), j=i+delta;
+  if(i<0||j<0||j>=DOCS.length) return;
+  [DOCS[i],DOCS[j]]=[DOCS[j],DOCS[i]];
+  renderDocs();
+  toast(`${DOCS[j].name.split("—")[0].trim()} moved — tender order updated`,"ok");
+}
+/* A new version replaces the document in place; gap analysis runs automatically
+   and any verdict it invalidates is flagged here rather than discovered later. */
+function uploadVersion(id){
+  const d=DOC(id); if(!d) return;
+  const cur=d.versions[0].num.replace(/^v/,"").split(".").map(Number);
+  const next=`v${cur[0]}.${(cur[1]||0)+1}`;
+  const gap={a:1+(d.versions.length%3), m:2+(d.versions.length%2), r:d.versions.length%2};
+  const stale=gap.m;
+  d.versions.unshift({num:next, date:"Today", note:"New issue uploaded from this screen", gap, stale});
+  state.expanded.add(id);
+  renderSummary(); renderDocs();
+  toast(`${next} uploaded — gap analysis: +${gap.a} ~${gap.m} −${gap.r}${stale?`, ${stale} verdict${stale>1?"s":""} now stale`:""}`, stale?"warn":"ok");
+}
+/* Removing takes the document's requirements — and any work done on them — with
+   it. Say what is lost before it happens, not after (§ Reordering and removing) */
+function askRemove(id){
+  const d=DOC(id); if(!d) return;
+  state.removeId=id;
+  document.getElementById("remove-what").textContent=`${d.name} (${d.versions[0].num}) is position ${DOCS.findIndex(x=>x.id===id)+1} of ${DOCS.length} in this tender.`;
+  document.getElementById("remove-loss").innerHTML=d.rows
+    ? `<b>This removes ${d.rows.toLocaleString()} requirements</b> and every characterisation, allocation and compliance verdict recorded against them. The remaining documents keep their order. This cannot be undone.`
+    : `This document has not been processed yet, so no requirements or work are attached to it. Removing it only takes the file.`;
+  document.getElementById("remove-modal").classList.add("on");
+}
+function doRemove(){
+  const d=DOC(state.removeId); if(!d) return;
+  DOCS=DOCS.filter(x=>x.id!==state.removeId);
+  state.expanded.delete(state.removeId);
+  state.removeId=null;
+  document.getElementById("remove-modal").classList.remove("on");
+  renderSummary(); renderDocs(); fillExportDocs();
+  toast(`${d.name} removed — ${d.rows.toLocaleString()} requirements gone with it`,"warn");
+}
+/* Added at any time, not only at project creation. Capture then characterisation
+   run after the fact; progress is visible and you can leave and come back. */
+function addDocument(){
+  state.addSeq++;
+  const id="d-new"+state.addSeq;
+  const doc={id, name:`Addendum ${state.addSeq} — new scope`, file:`EMS_addendum_${state.addSeq}.pdf`,
+    rows:0, state:"running", prog:0, progLabel:"Capture — splitting the document into blocks…", added:"Today",
+    versions:[{num:"v1.0", date:"Today", note:"Added mid-project", gap:null, stale:0}]};
+  DOCS.push(doc);
+  renderSummary(); renderDocs(); fillExportDocs();
+  toast(`${doc.name} added — AI processing started`,"ok");
+  const steps=[
+    {p:35, l:"Capture — splitting the document into blocks…"},
+    {p:70, l:"Characterisation — class, activity and type…"},
+    {p:100, l:"Done"},
+  ];
+  let k=0;
+  const tick=()=>{
+    const live=DOC(id); if(!live) return;           // removed while processing
+    const s=steps[k++];
+    live.prog=s.p; live.progLabel=s.l;
+    if(k>=steps.length){
+      live.state="ready"; live.rows=40+((state.addSeq*17)%60);
+      renderSummary(); renderDocs(); fillExportDocs();
+      toast(`${live.name} processed — ${live.rows} requirements ready to review`,"ok");
+      return;
+    }
+    renderDocs();
+    setTimeout(tick,1100);
+  };
+  setTimeout(tick,900);
+}
+
+/* =====================================================
+   Per-document export (session 3 — this screen is its natural home)
+===================================================== */
+function fillExportDocs(){
+  const sel=document.getElementById("export-doc");
+  sel.innerHTML=DOCS.map((d,i)=>`<option value="${d.id}">Doc ${i+1} — ${esc(d.name)}</option>`).join("");
+}
+document.getElementById("export-btn").addEventListener("click",()=>{ fillExportDocs(); document.getElementById("export-modal").classList.add("on"); });
+document.getElementById("export-cancel").addEventListener("click",()=>document.getElementById("export-modal").classList.remove("on"));
+document.getElementById("export-go").addEventListener("click",()=>{
+  const steps=[...document.querySelectorAll("[data-estep]")].filter(c=>c.checked).length;
+  if(!steps){ toast("Select at least one step to export","warn"); return; }
+  const d=DOC(document.getElementById("export-doc").value);
+  const fmt=document.getElementById("export-format").value.split(" ")[0];
+  document.getElementById("export-modal").classList.remove("on");
+  toast(`Export generated — ${fmt} · ${d.name.split("—")[0].trim()} · ${d.rows.toLocaleString()} requirements`,"ok");
+});
+document.getElementById("remove-cancel").addEventListener("click",()=>{ state.removeId=null; document.getElementById("remove-modal").classList.remove("on"); });
+document.getElementById("remove-confirm").addEventListener("click",doRemove);
+document.getElementById("add-doc").addEventListener("click",addDocument);
+[...document.querySelectorAll(".modal-back")].forEach(m=>m.addEventListener("click",e=>{ if(e.target===m) m.classList.remove("on"); }));
+
+renderSummary(); renderDocs(); fillExportDocs();
+</script>
+</body>
+</html>

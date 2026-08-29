@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Merge the 5 Smart Requirement Manager (SRM) source screens into the single-file docreview-app.html deliverable.
+"""Merge the 7 Smart Requirement Manager (SRM) source screens into the single-file docreview-app.html deliverable.
 
 Usage: python3 build_merge.py
-Reads the 5 source files below, base64-encodes each (UTF-8), and writes docreview-app.html
+Reads the 7 source files below, base64-encodes each (UTF-8), and writes docreview-app.html
 plus an identical index.html (GitHub Pages serves index.html as the site entry point —
 writing both here keeps the hosted copy in sync with the deliverable automatically).
-Always edit the 5 sources — never the merged files directly — then re-run this script.
+Always edit the 7 sources — never the merged files directly — then re-run this script.
 
 Cross-screen navigation is expressed in the sources as parent.route(...) /
 parent.routeUrl(...) / goRoute(...) JS calls (see dashboard-et-config.html's
@@ -38,6 +38,11 @@ SOURCES = [
     ("compliance", "compliance.html"),
     ("create", "creation-projet.html"),
     ("home", "accueil.html"),
+    # TICKET-three-support-screens.md — Documents & versions and Q&A are their
+    # own screens, not panels inside a workflow step. Casting is the third and
+    # already lives as its own screen in dashboard-et-config.html.
+    ("documents", "documents.html"),
+    ("qa", "qa.html"),
 ]
 
 INCLUDE_MARKER = "/* @include table-engine.js */"
@@ -69,7 +74,7 @@ const BLOBS = {
 
 FOOTER = """
 };
-const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "compliance": ["compliance", "compliance"], "compliance-contributor": ["compliance", "compliance-contributor"], "versions": ["compliance", "versions"], "new": ["create", null]};
+const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "compliance": ["compliance", "compliance"], "compliance-contributor": ["compliance", "compliance-contributor"], "documents": ["documents", null], "qa": ["qa", null], "new": ["create", null]};
 function b64utf8(s){return decodeURIComponent(Array.prototype.map.call(atob(s),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));}
 const frame = document.getElementById('frame');
 
@@ -237,7 +242,6 @@ function load(routeKey){
       if(_sub === 'config' && cw.showConfig) cw.showConfig(true);
       else if(_sub === 'dashboard' && cw.showConfig) cw.showConfig(false);
       else if(_sub === 'team' && cw.showScreen) cw.showScreen('team');
-      else if(_sub === 'versions' && cw.setScreen) cw.setScreen(3);
       else if(_sub === 'compliance' && cw.setScreen) cw.setScreen(2);
       else if(_sub === 'compliance-contributor' && cw.setScreen){ cw.setScreen(2); if(cw.setDemoContributorView) cw.setDemoContributorView(); }
     }catch(e){}
@@ -253,8 +257,9 @@ const URLMAP = {
   'accueil.html':'home',
   'revue-documentaire.html':'review',
   'compliance.html':'compliance',
-  'compliance.html#versions':'versions',
   'compliance.html#contributor':'compliance-contributor',
+  'documents.html':'documents',
+  'qa.html':'qa',
   'dashboard-et-config.html':'dashboard',
   'dashboard-et-config.html#config':'config',
   'creation-projet.html':'new'
