@@ -95,6 +95,12 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
 .btn-ghost{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
 .btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+/* main menu bar — icon + label button for moving between screens. Reads as a
+   destination rather than a back-arrow, which is what the plain "X →" ghost
+   links had become once the breadcrumb took over "back to the dashboard". */
+.nav-btn{display:inline-flex;align-items:center;gap:7px;padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);font-size:var(--text-sm);font-weight:600;white-space:nowrap;text-decoration:none;transition:all .15s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.nav-btn svg{flex-shrink:0}
 
 .scroll{flex:1;overflow-y:auto}
 .wrap{max-width:1120px;margin:0 auto;padding:var(--space-6) var(--space-6) 80px}
@@ -500,6 +506,12 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
     <div class="crumb"><a class="crumb-home" href="javascript:parent.route('home')">My tenders</a><span class="sep">/</span><span class="project" id="crumb-project">STB-2026 · Energy Monitoring System</span></div>
     <div style="margin-left:auto"></div>
     <div class="hdr-actions">
+      <!-- Casting and Configuration are screens inside this file, so leaving them
+           is a local switch, not a route — hence a button here rather than the
+           breadcrumb (whose project name routes to the dashboard *screen*).
+           Hidden while the dashboard itself is showing. -->
+      <a class="nav-btn" id="back-to-dash" href="javascript:void(0)" style="display:none" title="Back to the project dashboard">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>Dashboard</a>
       <a class="demo-link" id="demo-contributor-link" href="javascript:void(0)" title="A contributor normally arrives here from their own email/notification link, never through this dashboard — this exists only for a moderated walkthrough."><b>DEMO</b> Compliance (contributor) →</a>
       <a class="btn-ghost" id="new-proj" href="javascript:parent.route('new')">＋ New project</a>
       <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span></button>
@@ -940,9 +952,11 @@ function showScreen(name){
   document.getElementById("team-screen").style.display=name==="team"?"block":"none";
   document.getElementById("cfg-btn").classList.toggle("on",name==="cfg");
   document.getElementById("team-btn").classList.toggle("on",name==="team");
+  document.getElementById("back-to-dash").style.display=name==="dash"?"none":"inline-flex";
   if(name==="team") renderTeamScreen();
 }
 function showConfig(on){ showScreen(on?"cfg":"dash"); }
+document.getElementById("back-to-dash").addEventListener("click",()=>showScreen("dash"));
 document.getElementById("cfg-btn").addEventListener("click",()=>showScreen(document.getElementById("cfg-screen").style.display==="none"?"cfg":"dash"));
 document.getElementById("team-btn").addEventListener("click",()=>showScreen(document.getElementById("team-screen").style.display==="none"?"team":"dash"));
 document.getElementById("logo").addEventListener("click",()=>goRoute("accueil.html"));
