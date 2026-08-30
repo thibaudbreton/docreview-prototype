@@ -72,7 +72,8 @@ html[data-theme="light"] .logo-mark-dark{display:none}
 html[data-theme="light"] .logo-mark-light{display:block}
 .crumb{display:flex;align-items:center;gap:var(--space-2);color:var(--text-2);min-width:0}
 .crumb .sep{color:var(--text-3)}
-.crumb .project{color:var(--text);font-weight:600;white-space:nowrap}
+.crumb .project{color:var(--text);font-weight:600;white-space:nowrap;text-decoration:none;cursor:pointer;border-radius:var(--radius-xs);transition:color .15s}
+.crumb .project:hover{color:var(--accent)}
 .mode-switch{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-1);margin-left:auto}
 .mode-switch button{padding:5px var(--space-4);border-radius:var(--radius-sm);color:var(--text-2);font-weight:500;font-size:var(--text-base);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
 .mode-switch button.active{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
@@ -86,22 +87,119 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
 .btn-ghost{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
 .btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+/* main menu bar — icon + label button for moving between screens. Reads as a
+   destination rather than a back-arrow, which is what the plain "X →" ghost
+   links had become once the breadcrumb took over "back to the dashboard". */
+.nav-btn{display:inline-flex;align-items:center;gap:7px;padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);font-size:var(--text-sm);font-weight:600;white-space:nowrap;text-decoration:none;transition:all .15s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.nav-btn svg{flex-shrink:0}
 .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#e0a43c,#c4763a);display:grid;place-items:center;font-size:var(--text-xs);font-weight:700;color:#fff;cursor:pointer}
 
 /* ---------- Triage ---------- */
 .triage{display:flex;align-items:center;gap:var(--space-4);height:44px;padding:0 var(--space-4);background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
 
 /* ===================== Q&A =====================
-   TICKET-three-support-screens.md — screen 3. Its own screen now, reached by a
-   button, no longer a tab inside the Compliance step.
-
-   Deliberately NOT redesigned: the ticket says the layout "hasn't been worked
-   through" and is "worth its own pass rather than being derived from the list
-   above". So this is the existing register and issuer-responses material moved
-   across as-is, with its own copy of the demo data (the convention every screen
-   here follows). What stays in compliance.html is the part that is genuinely
-   compliance state: a branch sitting in Awaiting Q&A and blocking consolidation.
+   SPEC-qa-screen.md. Two modes on one screen — Questions (outbound: compose,
+   review, export, once) and Answers (inbound: the dossier arrives, gets
+   matched, whatever the matching couldn't resolve goes through arbitration).
+   The spec is explicit the hard part is the return, not the send — that's
+   where the design effort below actually goes. What stays in compliance.html
+   is the part that is genuinely compliance state: a branch sitting in
+   Awaiting Q&A and blocking consolidation.
 */
+/* §3bis deadlines — degrade cleanly when unset: no placeholder, no "not set"
+   clutter, the framing just doesn't render. Static display strings, not live
+   date math — this prototype has no other screen computing a real countdown
+   either (the dashboard's "23 days to submission" is the same convention). */
+.qa-deadline{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);margin-bottom:var(--space-4);font-size:var(--text-sm)}
+.qa-deadline.ok{background:var(--panel-2);border:1px solid var(--line);color:var(--text-2)}
+.qa-deadline.soon{background:var(--ia-soft);border:1px solid color-mix(in srgb, var(--ia) 35%, transparent);color:var(--text-2)}
+.qa-deadline.passed,.qa-deadline.overdue{background:var(--warn-soft);border:1px solid color-mix(in srgb, var(--warn) 35%, transparent);color:var(--text-2)}
+.qa-deadline b{color:var(--text)}
+.qa-deadline .dl-ico{font-size:var(--text-lg);flex-shrink:0}
+/* progress strip — inbound volume must stay legible: how much matched itself,
+   how much needs a human, how much is still actually blocking work */
+.qa-progress{display:flex;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap}
+.qa-pstat{flex:1;min-width:150px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4)}
+.qa-pstat .n{font-size:var(--text-xl);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.qa-pstat .l{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
+.qa-pstat.warn .n{color:var(--warn)}
+.qa-pstat.ia .n{color:var(--ia)}
+.qa-pstat.ok .n{color:var(--ok)}
+/* Section headings. The screen had none: every block was a panel of roughly
+   the same weight, so there was nothing to tell you what part you were in or
+   where to go next. Each mode is now explicitly Act / Read, in that order. */
+.sec-head{display:flex;align-items:baseline;gap:var(--space-3);margin:var(--space-6) 0 var(--space-3);padding-bottom:7px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.sec-head h3{font-size:var(--text-base);font-weight:700;letter-spacing:-.1px}
+.sec-head .hint{font-size:var(--text-xs);color:var(--text-3);line-height:1.4}
+.sec-head .count{margin-left:auto;font-size:var(--text-xs);color:var(--text-3);white-space:nowrap}
+/* The one thing to DO in this mode, and it must not read like the panels
+   around it — accent border and tint, the number carried at display size. */
+.export-card{display:flex;align-items:center;gap:var(--space-5);flex-wrap:wrap;border:1px solid var(--accent);background:var(--accent-soft);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5)}
+.export-card.is-empty{border-color:var(--line);background:var(--panel-2)}
+.export-n{font-size:32px;font-weight:700;line-height:1;letter-spacing:-1px;color:var(--accent);font-variant-numeric:tabular-nums}
+.export-card.is-empty .export-n{color:var(--text-3)}
+.export-txt{flex:1;min-width:200px}
+.export-t{font-size:var(--text-base);font-weight:600;margin-bottom:3px}
+.export-d{font-size:var(--text-xs);color:var(--text-3);line-height:1.5}
+.export-card .btn-primary{flex-shrink:0}
+/* A blocking check, not another panel — amber, and it sits with the action
+   it blocks rather than floating among the reading material. */
+.dup-alert{display:flex;align-items:flex-start;gap:var(--space-3);margin-top:var(--space-2);padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);background:var(--ia-soft);border:1px solid color-mix(in srgb, var(--ia) 40%, transparent)}
+.dup-alert .ic{color:var(--ia);font-size:var(--text-lg);line-height:1;flex-shrink:0}
+.dup-alert .body{flex:1;min-width:0;font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
+.dup-alert .body b{color:var(--text)}
+.dup-alert button{flex-shrink:0;align-self:center}
+/* register card actions — one place per question, on the card itself */
+.qa-card-act{margin-left:auto;flex-shrink:0;font-size:var(--text-xs);font-weight:600;padding:3px var(--space-2);border-radius:var(--radius-sm);border:1px solid var(--line-2);color:var(--text-3);white-space:nowrap}
+.qa-card-act:hover{border-color:var(--warn);color:var(--warn)}
+.qa-card-act.undo:hover{border-color:var(--accent);color:var(--accent)}
+.qa-inbatch{font-size:var(--text-xs);font-weight:700;color:var(--accent);white-space:nowrap;flex-shrink:0}
+/* filter row — volume needs filtering/grouping (§6), not just a long scroll */
+.qa-filters{display:flex;gap:var(--space-2);margin-bottom:14px;flex-wrap:wrap}
+.qa-filters input,.qa-filters select{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:7px var(--space-3);font-size:var(--text-sm);color:var(--text)}
+.qa-filters input{flex:1;min-width:180px}
+.qa-excluded-note{font-size:var(--text-xs);color:var(--text-3);font-style:italic;margin-top:4px;line-height:1.5}
+.qa-card.is-excluded{opacity:.6}
+/* import — accept a file OR pasted content, no assumed layout */
+.qa-import-mode{display:flex;gap:2px;margin-bottom:10px}
+.qa-import-mode button{padding:5px var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:600;color:var(--text-3);border:1px solid var(--line-2)}
+.qa-import-mode button.active{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.qa-paste textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);font-family:inherit;font-size:var(--text-sm);resize:vertical}
+.qa-paste textarea:focus{border-style:solid;border-color:var(--accent)}
+.qa-extracting{display:flex;align-items:center;gap:var(--space-2);color:var(--text-3);font-size:var(--text-sm);padding:var(--space-2) 0}
+.qa-spin{width:13px;height:13px;border-radius:50%;border:2px solid var(--line-2);border-top-color:var(--accent);animation:qaspin .7s linear infinite;flex-shrink:0}
+@keyframes qaspin{to{transform:rotate(360deg)}}
+/* ---------- arbitration queue — the interaction that decides whether this
+   screen works at volume. One item, full context, decide, auto-advance. ---------- */
+.arb-wrap{max-width:640px;margin:0 auto}
+.arb-progress{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);font-size:var(--text-sm);color:var(--text-3)}
+.arb-progress .bar{flex:1;height:5px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
+.arb-progress .bar>div{height:100%;background:var(--accent);border-radius:var(--radius-xs);transition:width .25s ease}
+.arb-card{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-5)}
+.arb-src{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.arb-src .ours{color:var(--accent)}
+.arb-q{font-size:var(--text-base);line-height:1.55;color:var(--text-2);margin-bottom:4px}
+.arb-a{font-size:var(--text-lg);line-height:1.5;font-weight:500;margin-bottom:var(--space-4);padding:var(--space-3);background:var(--panel-2);border-radius:var(--radius-md)}
+.arb-guesses{display:flex;flex-direction:column;gap:6px;margin-bottom:var(--space-4)}
+.arb-guess{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);text-align:left;transition:all .12s}
+.arb-guess:hover{border-color:var(--accent)}
+.arb-guess .kb{width:20px;height:20px;border-radius:var(--radius-xs);background:var(--panel-3);color:var(--text-3);font-size:var(--text-xs);font-weight:700;display:grid;place-items:center;flex-shrink:0;font-family:var(--font-mono)}
+.arb-guess .req{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--accent)}
+.arb-guess .txt{flex:1;font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arb-guess .conf{font-size:var(--text-xs);color:var(--text-3);white-space:nowrap;flex-shrink:0}
+.arb-actions{display:flex;gap:8px;align-items:center;padding-top:var(--space-3);border-top:1px solid var(--line)}
+.arb-actions .kb{width:20px;height:20px;border-radius:var(--radius-xs);background:var(--panel-3);color:var(--text-3);font-size:var(--text-xs);font-weight:700;display:grid;place-items:center;flex-shrink:0;font-family:var(--font-mono);margin-right:6px}
+.arb-nomatch{display:inline-flex;align-items:center;padding:8px var(--space-4);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-size:var(--text-sm)}
+.arb-nomatch:hover{border-color:var(--warn);color:var(--warn)}
+.arb-skip{margin-left:auto;color:var(--text-3);font-size:var(--text-sm);display:inline-flex;align-items:center;padding:8px var(--space-3)}
+.arb-skip:hover{color:var(--text)}
+.arb-empty{text-align:center;padding:var(--space-8) var(--space-4);color:var(--text-3)}
+.arb-empty .big{font-size:28px;margin-bottom:var(--space-2)}
+.ctx-row{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-2)}
+.ctx-row .who{font-size:var(--text-xs);color:var(--text-3);margin-bottom:4px}
+.ctx-row .txt{font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
+.ctx-row .req{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--accent)}
 .wrap{max-width:1080px;margin:0 auto;padding:var(--space-6) var(--space-6) 80px}
 .scroll{flex:1;overflow-y:auto}
 .view-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap}
@@ -111,14 +209,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .hub-tabs button{padding:10px var(--space-4);font-size:var(--text-base);font-weight:500;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;display:inline-flex;gap:var(--space-2);align-items:center}
 .hub-tabs button.active{color:var(--text);border-bottom-color:var(--accent)}
 .hub-tabs .tcount{font-size:var(--text-xs);font-weight:700;padding:1px 6px;border-radius:var(--radius-lg);background:var(--warn-soft);color:var(--warn)}
-.vpill{display:inline-flex;align-items:center;gap:6px;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:700;white-space:nowrap}
-.vpill.compliant{background:var(--ok-soft);color:var(--ok)}
-.vpill.not_compliant{background:var(--warn-soft);color:var(--warn)}
-.vpill.none{color:var(--text-3)}
-/* pending is NOT a verdict — dashed outline, muted, italic, never reads as decided */
-.vpill.pending-pill{border:1px dashed var(--line-2);color:var(--text-3);font-style:italic;font-weight:500;background:transparent}
-.flag-out{display:inline-flex;font-size:var(--text-xs);font-weight:700;padding:1px var(--space-2);border-radius:var(--radius-lg);background:var(--ia-soft);color:var(--ia);margin-left:6px;white-space:nowrap}
-.qa-toolbar{display:flex;align-items:center;gap:var(--space-3);margin-bottom:14px}
 .qa-group{margin-bottom:22px}
 .qa-group-head{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-2);display:flex;gap:var(--space-2);align-items:center}
 .qa-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-2);transition:border-color .15s}
@@ -139,34 +229,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .dedup .reject{padding:6px var(--space-3);border-radius:var(--radius-sm);border:1px solid var(--line-2);color:var(--text-2);font-size:var(--text-sm)}
 /* T7 — manager's outbound batch */
 .qa-batch{border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);background:var(--panel-2)}
-.qa-batch-h{font-size:var(--text-sm);font-weight:700;color:var(--text);display:flex;align-items:center;gap:var(--space-2);margin-bottom:8px}
 .qa-batch-n{font-size:var(--text-xs);font-weight:700;background:var(--accent-soft);color:var(--accent);border-radius:var(--radius-lg);padding:1px 8px}
 .qa-batch-empty{font-size:var(--text-sm);color:var(--text-3);font-style:italic}
-.qa-batch-list{display:flex;flex-direction:column;gap:6px}
-.qa-batch-item{display:flex;align-items:center;gap:var(--space-3);font-size:var(--text-sm);padding:var(--space-2) var(--space-2);border-radius:var(--radius-md);background:var(--panel)}
-.qa-batch-q{flex:1;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.qa-batch-src{color:var(--text-3);white-space:nowrap;font-size:var(--text-xs)}
-.qa-batch-st{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--accent);white-space:nowrap}
-.qa-batch-st.orphan{color:var(--text-3)}
 /* T8 — inbound dossier + matching result */
 .qa-upload{border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);background:var(--panel-2)}
-.qa-upload-h{font-size:var(--text-sm);font-weight:700;color:var(--text);margin-bottom:5px}
 .qa-upload-t{font-size:var(--text-sm);color:var(--text-3);line-height:1.5;margin-bottom:10px}
-.qa-upload-row{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
-.qa-match{margin-top:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--line)}
-.qa-match-h{font-size:var(--text-sm);font-weight:700;color:var(--ok);margin-bottom:8px}
-.qa-match-row{display:flex;align-items:center;gap:var(--space-3);font-size:var(--text-sm);padding:6px 0;color:var(--text-2)}
-.qa-match-ok{color:var(--ok);font-weight:600;margin-left:auto}
-.iss-layout{display:grid;grid-template-columns:1fr 340px;gap:var(--space-5);align-items:start}
-.iss-row{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-2);cursor:pointer;transition:border-color .15s}
-.iss-row:hover{border-color:var(--line-2)}
-.iss-row.active{border-color:var(--accent);background:var(--accent-soft)}
-.iss-row.flagged{border-style:dashed;border-color:rgba(229,84,75,.55)}
-.iss-top{display:flex;gap:var(--space-3);align-items:flex-start}
-.iss-q{flex:1;font-size:var(--text-base);line-height:1.5}
-.iss-meta{display:flex;gap:var(--space-3);margin-top:var(--space-2);font-size:var(--text-xs);color:var(--text-3);align-items:center;flex-wrap:wrap}
-.iss-panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);position:sticky;top:0}
-.iss-panel h3{font-size:var(--text-base);font-weight:600;margin-bottom:12px}
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -197,10 +264,9 @@ html[data-theme="light"] .logo-mark-light{display:block}
       <linearGradient id="srmLc" x1="35.01" y1="44.22" x2="84.75" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset=".168" stop-color="#1E3246"/></linearGradient>
       </defs>
       </svg>SRM</a></div>
-    <div class="crumb"><span class="sep">/</span><span class="project">STB-2026 · Energy Monitoring System</span></div>
+    <div class="crumb"><span class="sep">/</span><a class="project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a></div>
     <div class="hdr-actions" style="margin-left:auto">
-      <a class="btn-ghost" href="javascript:parent.route('dashboard')" title="Back to dashboard">← Dashboard</a>
-      <a class="btn-ghost" href="javascript:parent.route('documents')" title="Documents &amp; versions">Documents →</a>
+      <a class="nav-btn" href="javascript:parent.route('documents')" title="Documents &amp; versions — add, reorder or replace a source document"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>Documents</a>
       <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
       <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
       <div class="avatar" title="Thibaud Breton">TB</div>
@@ -211,20 +277,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
     <div class="wrap">
       <div class="view-head"><h2>Q&amp;A</h2><span class="sub">Questions raised to the client, and the answers coming back</span></div>
       <div class="hub-tabs">
-        <button data-htab="register" class="active">Register</button>
-        <button data-htab="issuer">Issuer responses <span class="tcount" id="iss-count">0</span></button>
+        <button data-htab="questions" class="active">Questions</button>
+        <button data-htab="answers">Answers <span class="tcount" id="answers-count">0</span></button>
       </div>
-      <div id="htab-register"></div>
-      <div id="htab-issuer" style="display:none">
-        <div class="qa-toolbar" style="margin-bottom:12px">
-          <span style="font-size:var(--text-sm);color:var(--text-3)">Answers come back as one dossier mixed with every competitor's questions — import it and the matching attaches each answer to its question.</span>
-          <button class="btn-ghost" id="bulk-import" style="margin-left:auto">⇪ Import response document</button>
-        </div>
-        <div class="iss-layout">
-          <div id="iss-list"></div>
-          <div class="iss-panel" id="iss-panel"></div>
-        </div>
-      </div>
+      <div id="htab-questions"></div>
+      <div id="htab-answers" style="display:none"></div>
     </div>
   </div>
 </div>
@@ -238,7 +295,7 @@ const TY=id=>TYPOS[id]||{code:String(id||"—").toUpperCase(),label:id||"—"};
 let QA=[
   {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",
    refs:[{req:"SRM-00010",typology:"mln"}],from:"Karim Benali",date:"Jul 14"},
-  {id:"QA-02",st:"internal",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
+  {id:"QA-02",st:"draft",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
    refs:[{req:"SRM-00013",typology:"mln"}],from:"Claire Moreau",date:"Jul 15"},
   {id:"QA-03",st:"draft",q:"Which TLS version applies to legacy site gateways?",
    refs:[{req:"SRM-00014",typology:"sig"}],from:"Claire Moreau",date:"Jul 16",dup:"QA-04"},
@@ -248,9 +305,21 @@ let QA=[
    refs:[{req:"SRM-00005",typology:"sig"}],from:"Sophie Lang",date:"Jul 10",
    ans:"The escalation matrix will be provided by the issuer at contract award (Annex F).",ansDate:"Jul 13"},
 ];
-const state={htab:"register",selQ:null,imported:false};
+/* §3bis — two optional tender-level dates. Static display strings, not live
+   date math (no other screen in this prototype computes a real countdown
+   either — the dashboard's "23 days to submission" is the same convention).
+   Set either to null to see the "degrades cleanly" behaviour: no framing, no
+   placeholder, nothing shown at all. The cut-off is modelled as already
+   passed and the answer date as overdue — the more instructive states to
+   demonstrate (don't-hard-block, and the branches-still-blocked consequence)
+   given this tender's timeline (dashboard: 23 days to submission). */
+const TENDER_QA_DATES={
+  questionCutoff:{date:"Aug 22, 2026", passed:true},
+  expectedAnswerBy:{date:"Aug 24, 2026", overdue:true},
+};
+const state={htab:"questions",qSearch:"",qActivity:"",imported:false,arbTotal:0};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
-const questionsToSend=()=>QA.filter(q=>q.st==="draft"||q.st==="internal");
+const questionsToSend=()=>QA.filter(q=>q.st==="draft");
 const questionsSent=()=>QA.filter(q=>q.st==="sent");
 const refsLabel=q=>q.refs.map(r=>`${r.req} · ${TY(r.typology).label}`).join(", ");
 function toast(msg,kind="ok"){
@@ -260,46 +329,100 @@ function toast(msg,kind="ok"){
   z.appendChild(t);
   setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3600);
 }
+/* Re-render a container without losing focus/cursor position in whatever
+   input triggered it — every filter here re-renders its whole panel on
+   every keystroke, same pattern dashboard-et-config.html's roster search
+   already uses, but that one gets away with it because the input sits
+   outside the re-rendered node. These don't, so this restores it by hand. */
+function preserveFocus(fn){
+  const active=document.activeElement;
+  const id=active&&active.id, s=active&&active.selectionStart, e=active&&active.selectionEnd;
+  fn();
+  if(!id) return;
+  const el=document.getElementById(id);
+  if(el&&(el.tagName==="INPUT"||el.tagName==="TEXTAREA")){ el.focus(); if(s!=null){ try{ el.setSelectionRange(s,e); }catch(err){} } }
+}
+function renderDeadlineBanner(mode){
+  if(mode==="questions"){
+    const c=TENDER_QA_DATES.questionCutoff; if(!c) return "";
+    return c.passed
+      ? `<div class="qa-deadline passed"><span class="dl-ico">⏳</span><span>Question cut-off <b>passed</b> — ${c.date}. New questions can still be raised and merged in; it's your call whether a late one still goes out.</span></div>`
+      : `<div class="qa-deadline ok"><span class="dl-ico">🕐</span><span>Question cut-off: <b>${c.date}</b>.</span></div>`;
+  }
+  const a=TENDER_QA_DATES.expectedAnswerBy; if(!a) return "";
+  const blocked=QA.filter(q=>q.st==="sent").length;
+  return a.overdue
+    ? `<div class="qa-deadline overdue"><span class="dl-ico">⚠</span><span>Answers were expected by <b>${a.date}</b> — <b>overdue</b>.${blocked?` ${blocked} branch${blocked>1?"es are":" is"} still blocked in Awaiting Q&amp;A.`:""}</span></div>`
+    : `<div class="qa-deadline ok"><span class="dl-ico">🕐</span><span>Answers expected by <b>${a.date}</b>.</span></div>`;
+}
 
-/* ---------- register ---------- */
-function renderRegister(){
-  const v=document.getElementById("htab-register");
+/* ---------- Questions (outbound) ---------- */
+function renderQuestions(){
+  const v=document.getElementById("htab-questions");
   const toSend=questionsToSend();
   const dupPair=QA.filter(q=>q.dup&&QA.find(x=>x.id===q.dup));
-  let html=`<div class="view-head" style="margin-bottom:14px"><h2 style="font-size:var(--text-base)">${QA.length} questions</h2>
-    <span class="sub">One question blocks exactly one assignment</span>
-    <button class="btn-primary" style="margin-left:auto" id="send-batch">⬇ Export batch for issuer${toSend.length?` (${toSend.length})`:""}</button></div>`;
-  // Questions are exported, not sent — the tool has no channel to the issuer.
-  html+=`<div class="qa-batch">
-    <div class="qa-batch-h">⬇ Questions to export <span class="qa-batch-n">${toSend.length}</span></div>
-    ${toSend.length
-      ? `<div class="qa-batch-list">${toSend.map(q=>`<div class="qa-batch-item">
-          <span class="qa-id">${q.id}</span>
-          <span class="qa-batch-q">${esc(q.q)}</span>
-          <span class="qa-batch-src">${esc(q.from)} · ${esc(refsLabel(q))}</span>
-          <span class="qa-batch-st${q.st==="draft"?" orphan":""}">${q.st==="draft"?"Draft":"In review"}</span>
-        </div>`).join("")}</div>`
-      : `<div class="qa-batch-empty">Nothing waiting to be exported.</div>`}
+  let html=renderDeadlineBanner("questions");
+  /* The export block used to re-list the same questions the Drafts and
+     Internal-review groups showed immediately below it — the same content
+     twice, with nothing saying which was authoritative. It's a summary and an
+     action now; the register below is the single list, and per-question
+     controls live on the register card rather than in two places. */
+  const contributors=new Set(toSend.map(q=>q.from)).size;
+  html+=`<div class="sec-head"><h3>Export the batch</h3>
+    <span class="hint">Once per tender · nothing leaves the tool by itself</span></div>`;
+  html+=`<div class="export-card${toSend.length?"":" is-empty"}">
+    <div class="export-n">${toSend.length}</div>
+    <div class="export-txt">
+      <div class="export-t">${toSend.length?`question${toSend.length>1?"s":""} ready to go out`:"Nothing waiting to be exported"}</div>
+      <div class="export-d">${toSend.length
+        ? `From ${contributors} contributor${contributors>1?"s":""}. Excel, one row per question with its requirement ID beside it — you forward the file to the issuer yourself.`
+        : `Questions raised from Compliance land here as drafts. Everything already exported is in the register below.`}</div>
+    </div>
+    ${toSend.length?`<button class="btn-primary" id="send-batch">⬇ Export batch for issuer</button>`:""}
   </div>`;
   if(dupPair.length>=2){
-    html+=`<div class="qa-upload"><div class="qa-upload-h">⚠ Possible duplicate detected</div>
-      <div class="qa-upload-t">${dupPair.map(q=>`<b>${q.id}</b>`).join(" and ")} look like the same question to the issuer. Merge before exporting so the client gets one, not two.</div>
-      <div class="qa-upload-row"><button class="btn-ghost" id="merge-dup">⇲ Merge into ${dupPair[0].id}</button></div></div>`;
+    html+=`<div class="dup-alert"><span class="ic">⚠</span>
+      <div class="body">${dupPair.map(q=>`<b>${q.id}</b>`).join(" and ")} look like the same question to the issuer. Merge before exporting so the client gets one, not two.</div>
+      <button class="btn-ghost" id="merge-dup">⇲ Merge into ${dupPair[0].id}</button></div>`;
   }
-  const groups=[["draft","Drafts"],["internal","Internal review"],["sent","Sent to the issuer"],["answered","Answered"]];
+  // The PM can't reject a question, only pull it from the export (§3) — kept as
+  // its own group rather than deleted, so it stays on record and reversible.
+  // Fewer statuses than the first pass: Internal review carried no behaviour
+  // of its own (nothing here read it) — merged into Draft. Four now: Draft,
+  // Sent, Answered, Excluded — the one still explicitly kept per the point of
+  // this pass, since removing a question from export is the real feature.
+  const groups=[["draft","Drafts"],["sent","Sent to the issuer"],["answered","Answered"],["excluded","Excluded from export"]];
+  const search=state.qSearch.toLowerCase(),actF=state.qActivity;
+  html+=`<div class="sec-head"><h3>All questions</h3>
+    <span class="hint">One question blocks exactly one assignment</span>
+    <span class="count">${QA.length} on record</span></div>`;
+  html+=`<div class="qa-filters">
+    <input id="q-search" placeholder="Search question text or requirement ref…" autocomplete="off">
+    <select id="q-activity"><option value="">All activities</option>${Object.keys(TYPOS).map(k=>`<option value="${k}">${TY(k).label}</option>`).join("")}</select>
+  </div>`;
+  let anyGroup=false;
   groups.forEach(([st,label])=>{
-    const rows=QA.filter(q=>q.st===st);
+    let rows=QA.filter(q=>q.st===st);
+    if(actF) rows=rows.filter(q=>q.refs.some(r=>r.typology===actF));
+    if(search) rows=rows.filter(q=>q.q.toLowerCase().includes(search)||q.refs.some(r=>r.req.toLowerCase().includes(search)));
     if(!rows.length) return;
+    anyGroup=true;
+    const inBatch=st==="draft";
     html+=`<div class="qa-group"><div class="qa-group-head">${label} <span class="qa-batch-n">${rows.length}</span></div>
-      ${rows.map(q=>`<div class="qa-card">
-        <div class="qa-top"><span class="qa-id">${q.id}</span><span class="qa-q">${esc(q.q)}</span></div>
+      ${rows.map(q=>`<div class="qa-card${st==="excluded"?" is-excluded":""}">
+        <div class="qa-top"><span class="qa-id">${q.id}</span><span class="qa-q">${esc(q.q)}</span>
+          ${inBatch?`<span class="qa-inbatch">In the batch</span><button class="qa-card-act" data-exclude="${q.id}" title="Remove from this export — the question stays on record, but ${esc(q.from)} isn't told it was dropped">Exclude</button>`:""}
+          ${st==="excluded"?`<button class="qa-card-act undo" data-include="${q.id}">↺ Include again</button>`:""}</div>
         <div class="qa-meta">${q.refs.map(r=>`<span class="qa-req">${r.req}</span>`).join("")}
           <span>${esc(refsLabel(q))}</span><span>raised by ${esc(q.from)} · ${q.date}</span></div>
+        ${st==="excluded"?`<div class="qa-excluded-note">Removed from export — ${esc(q.from)} hasn't been told; there's no notification for this yet.</div>`:""}
         ${q.ans?`<div class="qa-ans"><b>Issuer answer · ${q.ansDate}</b>${esc(q.ans)}</div>`:""}
       </div>`).join("")}</div>`;
   });
+  if((search||actF)&&!anyGroup) html+=`<div class="qa-batch-empty">No question matches this filter.</div>`;
   v.innerHTML=html;
-  v.querySelector("#send-batch").addEventListener("click",()=>{
+  // the button is only rendered when there is a batch, so this must be optional
+  v.querySelector("#send-batch")?.addEventListener("click",()=>{
     const batch=questionsToSend();
     if(!batch.length){ toast("Nothing to export","warn"); return; }
     batch.forEach(q=>{ q.st="sent"; q.date="Today"; });
@@ -314,72 +437,232 @@ function renderRegister(){
     toast(`${drop.id} merged into ${keep.id} — one question to the issuer, both assignments attached`,"ok");
     renderAll();
   });
+  v.querySelectorAll("[data-exclude]").forEach(b=>b.addEventListener("click",()=>{
+    const q=QA.find(x=>x.id===b.dataset.exclude); if(!q) return;
+    q.prevSt=q.st; q.st="excluded";
+    toast(`${q.id} removed from the export batch`,"warn");
+    renderAll();
+  }));
+  v.querySelectorAll("[data-include]").forEach(b=>b.addEventListener("click",()=>{
+    const q=QA.find(x=>x.id===b.dataset.include); if(!q) return;
+    q.st=q.prevSt||"draft"; delete q.prevSt;
+    toast(`${q.id} back in the export batch`,"ok");
+    renderAll();
+  }));
+  v.querySelector("#q-search").addEventListener("input",e=>{ state.qSearch=e.target.value; preserveFocus(renderQuestions); });
+  v.querySelector("#q-activity").value=actF;
+  v.querySelector("#q-activity").addEventListener("change",e=>{ state.qActivity=e.target.value; renderQuestions(); });
 }
 
-/* ---------- issuer responses ---------- */
-function renderIssuer(){
-  const list=document.getElementById("iss-list"); list.innerHTML="";
-  const rows=QA.filter(q=>q.st==="sent"||q.st==="answered");
-  document.getElementById("iss-count").textContent=QA.filter(q=>q.st==="sent").length;
-  if(!rows.length){ list.innerHTML=`<div class="qa-batch-empty">No question has been exported yet.</div>`; }
-  rows.forEach(q=>{
-    const el=document.createElement("div");
-    el.className="iss-row"+(state.selQ===q.id?" active":"")+(q.flagged?" flagged":"");
-    el.innerHTML=`<div class="iss-top"><span class="qa-id">${q.id}</span><span class="iss-q">${esc(q.q)}</span></div>
-      <div class="iss-meta">${q.refs.map(r=>`<span class="qa-req">${r.req}</span>`).join("")}
-        <span>sent ${q.date}</span>
-        ${q.st==="answered"?'<span class="vpill compliant">Answered · propagated</span>':'<span class="vpill none">Awaiting issuer</span>'}
-        ${q.flagged?'<span class="flag-out">Uncertain match — confirm manually</span>':""}</div>
-      ${q.ans?`<div class="qa-ans"><b>Issuer answer · ${q.ansDate}</b>${esc(q.ans)}</div>`:""}`;
-    el.addEventListener("click",()=>{state.selQ=q.id;renderIssuer();});
-    list.appendChild(el);
+/* ---------- Answers (inbound) ----------
+   §4 — the design effort belongs here. The dossier arrives in whatever form
+   the client used and holds every bidder's Q&A, not just ours (buildDossier
+   simulates the tolerant-extraction step an LLM brick would actually do).
+   Matching resolves what it can confidently; everything else queues for
+   arbitration — one item at a time, decide, auto-advance (§ arbitration). */
+const COMPETITOR_Q=[
+  "Please confirm the minimum bending radius accepted for trackside cable routing.",
+  "Is the SIL4 requirement applicable to the whole interlocking or only the core safety logic?",
+  "Clarify whether redundant power feeds are mandatory at every substation or only the main ones.",
+  "What is the expected MTBF for platform screen door actuators?",
+  "Does the monitoring platform need to support IPv6 for all field devices?",
+  "Confirm whether the historian must retain raw telemetry or only aggregated values.",
+  "Is a third-party SOC integration mandatory, or can the bidder propose its own?",
+  "What certification is required for the traction power SCADA link?",
+  "Please clarify the acceptance test duration for the signalling interlocking.",
+  "Is remote firmware update over the operational network permitted for field controllers?",
+  "Confirm the expected availability target (%) for the central monitoring platform.",
+  "Does the alerting requirement cover planned maintenance windows or only unplanned events?",
+  "What language(s) must the operator console support at handover?",
+  "Is a digital twin of the signalling layout part of the expected deliverable?",
+  "Please confirm whether cybersecurity logging must comply with IEC 62443 SL2 or SL3.",
+];
+const REQ_POOL=["SRM-00002","SRM-00003","SRM-00006","SRM-00007","SRM-00008","SRM-00009","SRM-00011","SRM-00015","SRM-00018","SRM-00021","SRM-00024","SRM-00027","SRM-00030","SRM-00033","SRM-00036","SRM-00039"];
+let DOSSIER=[];
+const queuedItems=()=>DOSSIER.filter(d=>d.status==="queued");
+function syntheticAnswer(q){ return `Per the official response dossier: ${q.q.replace(/\?$/,"")} — confirmed as specified in the STB.`; }
+function buildDossier(){
+  const rows=[]; let n=0;
+  // Our own sent questions — matched back to unblock the branch waiting on
+  // them. Most resolve confidently; one is deliberately left ambiguous so the
+  // queue always has at least one "ours" case to arbitrate, not only competitor noise.
+  questionsSent().forEach((q,i)=>{
+    n++;
+    const conf=i===0?63:96, auto=conf>=85;
+    const text=syntheticAnswer(q);
+    const row={id:"D"+n,kind:"ours",ourQ:q.id,text,
+      guesses:[{req:q.refs[0].req,label:refsLabel(q),conf},{req:REQ_POOL[(i*3)%REQ_POOL.length],label:REQ_POOL[(i*3)%REQ_POOL.length],conf:conf-28}],
+      status:auto?"auto":"queued", resolution:auto?{type:"matched",req:q.refs[0].req}:null};
+    rows.push(row);
+    if(auto){ q.st="answered"; q.ans=text; q.ansDate="Today"; }
   });
-  const panel=document.getElementById("iss-panel");
-  const q=QA.find(x=>x.id===state.selQ);
-  if(!q){
-    panel.innerHTML=`<h3>Record an issuer answer</h3><div style="font-size:var(--text-sm);color:var(--text-3);line-height:1.6">Select a question on the left, or import the official response document to let the matching attach answers to questions.</div>`;
+  // Competitor volume — everyone's questions arrive in the same dossier;
+  // nothing in it is discarded, even what clarifies someone else's answer.
+  for(let i=0;rows.length<50;i++){
+    n++;
+    const text=COMPETITOR_Q[i%COMPETITOR_Q.length]+(i>=COMPETITOR_Q.length?` (variant ${Math.floor(i/COMPETITOR_Q.length)+1})`:"");
+    const reqA=REQ_POOL[(i*7)%REQ_POOL.length], reqB=REQ_POOL[(i*7+5)%REQ_POOL.length];
+    const roll=(i*0.61803398875)%1; // deterministic spread, not Math.random — reproducible across runs
+    if(roll<0.06){
+      // "No matching requirement" is a valid answer, not a failure — some of
+      // these resolve to that automatically, confidently, not just via arbitration.
+      rows.push({id:"D"+n,kind:"competitor",text,guesses:[],status:"auto",resolution:{type:"none"}});
+    } else if(roll<0.22){
+      rows.push({id:"D"+n,kind:"competitor",text,status:"queued",resolution:null,
+        guesses:[{req:reqA,label:reqA,conf:58+Math.round((roll*97)%15)},{req:reqB,label:reqB,conf:30+Math.round((roll*53)%15)}]});
+    } else {
+      rows.push({id:"D"+n,kind:"competitor",text,status:"auto",resolution:{type:"matched",req:reqA},
+        guesses:[{req:reqA,label:reqA,conf:88+Math.round((roll*41)%10)}]});
+    }
+  }
+  return rows;
+}
+function decideArb(item,resolution){
+  item.status="auto"; item.resolution=resolution;
+  if(item.kind==="ours"&&resolution.type==="matched"){
+    const q=QA.find(x=>x.id===item.ourQ);
+    if(q){ q.st="answered"; q.ans=item.text; q.ansDate="Today"; toast(`${q.id} resolved — ${esc(refsLabel(q))} unblocked, ${esc(q.from)} notified`,"ok"); }
+  } else if(resolution.type==="none"){
+    toast(`${item.id} recorded as "no matching requirement"`,"ok");
+  } else {
+    toast(`${item.id} attached to ${resolution.req} as context`,"ok");
+  }
+  renderAnswers();
+}
+function skipArb(item){
+  // "come back to this" — move to the back of the queue rather than
+  // reappearing immediately, so skip is actually useful with more than one item.
+  DOSSIER.splice(DOSSIER.indexOf(item),1); DOSSIER.push(item);
+  renderAnswers();
+}
+function renderArbitration(){
+  const el=document.getElementById("arb-body"); if(!el) return;
+  const queue=queuedItems();
+  if(!queue.length){
+    el.innerHTML=state.arbTotal
+      ? `<div class="arb-empty"><div class="big">✓</div>Nothing left to arbitrate — ${state.arbTotal} item${state.arbTotal>1?"s":""} went through this queue.</div>`
+      : "";
     return;
   }
-  if(q.st==="answered"){
-    panel.innerHTML=`<h3>${q.id} — answered</h3>
-      <div class="qa-ans" style="margin-top:0"><b>Issuer answer · ${q.ansDate}</b>${esc(q.ans)}</div>
-      <div style="font-size:var(--text-sm);color:var(--text-3);line-height:1.6;margin-top:10px">Attached to ${esc(refsLabel(q))}. The assignment it was blocking is unblocked in Compliance.</div>`;
-    return;
-  }
-  panel.innerHTML=`<h3>Record the issuer's answer</h3>
-    <div style="font-size:var(--text-sm);color:var(--text-2);line-height:1.5;margin-bottom:10px">${esc(q.q)}</div>
-    <textarea id="ans-text" rows="4" style="width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2);font-size:var(--text-sm);color:var(--text);font-family:inherit" placeholder="Paste the issuer's official wording…"></textarea>
-    <button class="btn-primary" id="save-ans" style="width:100%;justify-content:center;margin-top:10px">Save answer</button>`;
-  panel.querySelector("#save-ans").addEventListener("click",()=>{
-    const t=panel.querySelector("#ans-text").value.trim();
-    if(!t){ toast("Paste the answer first","warn"); return; }
-    q.st="answered"; q.ans=t; q.ansDate="Today";
-    toast(`${q.id} answered — ${esc(refsLabel(q))} unblocked`,"ok");
+  const item=queue[0], done=state.arbTotal-queue.length, pct=state.arbTotal?Math.round(done/state.arbTotal*100):0;
+  el.innerHTML=`
+    <div class="arb-progress"><span>${done}/${state.arbTotal} arbitrated</span><div class="bar"><div style="width:${pct}%"></div></div><span>${queue.length} left</span></div>
+    <div class="arb-card">
+      <div class="arb-src">${item.kind==="ours"?`<span class="ours">● Our question</span> — ${esc(QA.find(q=>q.id===item.ourQ)?.q||"")}`:"Competitor question — matched for context only"}</div>
+      <div class="arb-a">${esc(item.text)}</div>
+      <div class="arb-guesses">
+        ${item.guesses.map((g,i)=>`<button class="arb-guess" data-pick="${i}"><span class="kb">${i+1}</span><span class="req">${g.req}</span><span class="txt">${esc(g.label||g.req)}</span><span class="conf">${g.conf}% confidence</span></button>`).join("")}
+      </div>
+      <div class="arb-actions">
+        <button class="arb-nomatch" id="arb-nomatch"><span class="kb">N</span>No matching requirement</button>
+        <button class="arb-skip" id="arb-skip"><span class="kb">S</span>Skip — come back to this</button>
+      </div>
+    </div>`;
+  el.querySelectorAll("[data-pick]").forEach(b=>b.addEventListener("click",()=>decideArb(item,{type:"matched",req:item.guesses[+b.dataset.pick].req})));
+  el.querySelector("#arb-nomatch").addEventListener("click",()=>decideArb(item,{type:"none"}));
+  el.querySelector("#arb-skip").addEventListener("click",()=>skipArb(item));
+}
+function renderResolvedList(){
+  const rows=DOSSIER.filter(d=>d.resolution);
+  if(!rows.length) return "";
+  return `<details class="qa-group" style="margin-top:var(--space-5)">
+    <summary style="cursor:pointer;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)">Resolved &amp; context (${rows.length})</summary>
+    <div style="margin-top:var(--space-2)">${rows.map(d=>`<div class="ctx-row">
+      <div class="who">${d.kind==="ours"?`Our question — ${esc(QA.find(q=>q.id===d.ourQ)?.id||"")}`:"Competitor — context only"}${d.resolution.type==="matched"?` · <span class="req">${d.resolution.req}</span>`:d.resolution.type==="none"?" · no matching requirement":""}</div>
+      <div class="txt">${esc(d.text)}</div>
+    </div>`).join("")}</div>
+  </details>`;
+}
+function renderImportBox(){
+  // no inner title — the section heading above already names this block
+  return `<div class="qa-upload">
+    <div class="qa-upload-t">In whatever form the client sent it — Excel, PDF, a plain email body. No fixed columns are assumed; extraction reads the layout itself. The dossier holds every bidder's questions and answers, not only ours — nothing in it is discarded.</div>
+    <div class="qa-import-mode">
+      <button data-imode="file" class="active">Upload a file</button>
+      <button data-imode="paste">Paste content</button>
+    </div>
+    <div id="import-file-mode"><button class="btn-primary" id="import-file-btn">⬆ Choose a file (simulated)</button></div>
+    <div id="import-paste-mode" class="qa-paste" style="display:none">
+      <textarea id="import-paste-text" placeholder="Paste the dossier's raw text here — any layout…"></textarea>
+      <button class="btn-primary" id="import-paste-btn" style="margin-top:8px">Extract Q&amp;A pairs</button>
+    </div>
+  </div>`;
+}
+function runImport(){
+  const el=document.getElementById("htab-answers");
+  el.innerHTML=renderDeadlineBanner("answers")+`<div class="qa-extracting"><span class="qa-spin"></span>Extracting question/answer pairs from an arbitrary layout…</div>`;
+  setTimeout(()=>{
+    DOSSIER=buildDossier();
+    state.arbTotal=queuedItems().length;
+    state.imported=true;
+    const matched=DOSSIER.filter(d=>d.status==="auto").length;
+    toast(`Dossier imported — ${DOSSIER.length} pairs extracted, ${matched} matched automatically, ${state.arbTotal} need arbitration`, state.arbTotal?"warn":"ok");
     renderAll();
+  },900);
+}
+function bindImportBox(container){
+  container.querySelectorAll("[data-imode]").forEach(b=>b.addEventListener("click",()=>{
+    container.querySelectorAll("[data-imode]").forEach(x=>x.classList.toggle("active",x===b));
+    container.querySelector("#import-file-mode").style.display=b.dataset.imode==="file"?"block":"none";
+    container.querySelector("#import-paste-mode").style.display=b.dataset.imode==="paste"?"block":"none";
+  }));
+  container.querySelector("#import-file-btn").addEventListener("click",runImport);
+  container.querySelector("#import-paste-btn").addEventListener("click",()=>{
+    if(!container.querySelector("#import-paste-text").value.trim()){ toast("Paste the dossier's content first","warn"); return; }
+    runImport();
   });
 }
-document.getElementById("bulk-import").addEventListener("click",()=>{
-  if(state.imported){ toast("Response document already imported","warn"); return; }
-  const sent=questionsSent();
-  if(!sent.length){ toast("No exported question is waiting for an answer","warn"); return; }
-  state.imported=true;
-  sent.forEach((q,i)=>{
-    if(i===0){ q.st="answered"; q.ans="Confirmed by the issuer in the official response dossier."; q.ansDate="Today"; }
-    else { q.flagged=true; }
-  });
-  const matched=1, unsure=sent.length-1;
-  toast(`Response document imported — ${matched} matched automatically${unsure?`, ${unsure} need confirming`:""}`, unsure?"warn":"ok");
-  renderAll();
+function renderAnswers(){
+  const el=document.getElementById("htab-answers");
+  const queued=queuedItems().length;
+  const badge=document.getElementById("answers-count");
+  badge.textContent=queued; badge.style.display=queued?"inline-flex":"none";
+  if(!state.imported){
+    el.innerHTML=renderDeadlineBanner("answers")
+      +`<div class="sec-head"><h3>Import the dossier</h3><span class="hint">The client's answers, in whatever form they sent them</span></div>`
+      +renderImportBox();
+    bindImportBox(el);
+    return;
+  }
+  const matched=DOSSIER.filter(d=>d.status==="auto").length;
+  const blocked=QA.filter(q=>q.st==="sent").length;
+  // Same Act-then-Read order as the Questions mode: where things stand, the
+  // one decision in front of you, then what's already settled.
+  el.innerHTML=renderDeadlineBanner("answers")+`
+    <div class="sec-head"><h3>Where the dossier stands</h3>
+      <span class="hint">${DOSSIER.length} question/answer pairs extracted</span></div>
+    <div class="qa-progress">
+      <div class="qa-pstat ok"><div class="n">${matched}</div><div class="l">Matched automatically</div></div>
+      <div class="qa-pstat${queued?" ia":""}"><div class="n">${queued}</div><div class="l">Awaiting arbitration</div></div>
+      <div class="qa-pstat${blocked?" warn":""}"><div class="n">${blocked}</div><div class="l">Branches still in Awaiting Q&amp;A</div></div>
+    </div>
+    ${queued?`<div class="sec-head"><h3>Arbitrate what the matching couldn't place</h3>
+      <span class="hint">One at a time · <b>1</b>–<b>9</b> pick a requirement, <b>N</b> no match, <b>S</b> skip</span></div>`:""}
+    <div class="arb-wrap" id="arb-body"></div>
+    ${renderResolvedList()}`;
+  renderArbitration();
+}
+/* Keyboard-driven arbitration (§4): number picks a guess, N = no matching
+   requirement, S = skip. Only live while Answers is the active mode and an
+   input isn't mid-edit (the paste textarea, the question search). */
+document.addEventListener("keydown",e=>{
+  if(state.htab!=="answers") return;
+  if(document.activeElement&&["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) return;
+  const queue=queuedItems(); if(!queue.length) return;
+  const item=queue[0];
+  if(e.key>="1"&&e.key<="9"){ const g=item.guesses[+e.key-1]; if(g){ decideArb(item,{type:"matched",req:g.req}); } }
+  else if(e.key.toLowerCase()==="n"){ decideArb(item,{type:"none"}); }
+  else if(e.key.toLowerCase()==="s"){ skipArb(item); }
 });
 
 /* ---------- tabs ---------- */
 document.querySelectorAll(".hub-tabs button").forEach(b=>b.addEventListener("click",()=>{
   state.htab=b.dataset.htab;
   document.querySelectorAll(".hub-tabs button").forEach(x=>x.classList.toggle("active",x===b));
-  document.getElementById("htab-register").style.display=state.htab==="register"?"block":"none";
-  document.getElementById("htab-issuer").style.display=state.htab==="issuer"?"block":"none";
+  document.getElementById("htab-questions").style.display=state.htab==="questions"?"block":"none";
+  document.getElementById("htab-answers").style.display=state.htab==="answers"?"block":"none";
 }));
-function renderAll(){ renderRegister(); renderIssuer(); }
+function renderAll(){ renderQuestions(); renderAnswers(); }
 renderAll();
 </script>
 </body>

@@ -72,7 +72,8 @@ html[data-theme="light"] .logo-mark-dark{display:none}
 html[data-theme="light"] .logo-mark-light{display:block}
 .crumb{display:flex;align-items:center;gap:var(--space-2);color:var(--text-2);min-width:0}
 .crumb .sep{color:var(--text-3)}
-.crumb .project{color:var(--text);font-weight:600;white-space:nowrap}
+.crumb .project{color:var(--text);font-weight:600;white-space:nowrap;text-decoration:none;cursor:pointer;border-radius:var(--radius-xs);transition:color .15s}
+.crumb .project:hover{color:var(--accent)}
 .mode-switch{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-1);margin-left:auto}
 .mode-switch button{padding:5px var(--space-4);border-radius:var(--radius-sm);color:var(--text-2);font-weight:500;font-size:var(--text-base);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
 .mode-switch button.active{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
@@ -86,6 +87,12 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
 .btn-ghost{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
 .btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+/* main menu bar — icon + label button for moving between screens. Reads as a
+   destination rather than a back-arrow, which is what the plain "X →" ghost
+   links had become once the breadcrumb took over "back to the dashboard". */
+.nav-btn{display:inline-flex;align-items:center;gap:7px;padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);font-size:var(--text-sm);font-weight:600;white-space:nowrap;text-decoration:none;transition:all .15s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.nav-btn svg{flex-shrink:0}
 .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#e0a43c,#c4763a);display:grid;place-items:center;font-size:var(--text-xs);font-weight:700;color:#fff;cursor:pointer}
 
 /* ---------- Triage ---------- */
@@ -108,36 +115,72 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .ds-l{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
 .ds.is-warn .ds-n{color:var(--ia)}
 
-/* document list */
-.doc-list{display:flex;flex-direction:column;gap:var(--space-3)}
-.doc-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .15s}
-.doc-card:hover{border-color:var(--line-2)}
-.doc-card.is-processing{border-color:color-mix(in srgb, var(--accent) 45%, transparent)}
-.doc-main{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4)}
-.doc-pos{width:26px;height:26px;border-radius:var(--radius-md);background:var(--panel-3);color:var(--text-3);display:grid;place-items:center;font-size:var(--text-sm);font-weight:700;flex-shrink:0;font-variant-numeric:tabular-nums}
-.doc-id{flex:1;min-width:0}
-.doc-name{font-size:var(--text-base);font-weight:600;display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
-.doc-meta{font-size:var(--text-xs);color:var(--text-3);margin-top:3px;display:flex;gap:var(--space-3);flex-wrap:wrap}
-.doc-meta b{color:var(--text-2);font-weight:600;font-variant-numeric:tabular-nums}
-.doc-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.doc-move{width:24px;height:24px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center;font-size:var(--text-sm)}
-.doc-move:hover:not(:disabled){background:var(--panel-3);color:var(--text)}
-.doc-move:disabled{opacity:.25;cursor:default}
-.mini-btn{font-size:var(--text-xs);font-weight:600;padding:4px var(--space-2);border-radius:var(--radius-sm);border:1px solid var(--line-2);color:var(--text-2);white-space:nowrap}
-.mini-btn:hover{border-color:var(--accent);color:var(--text)}
-.mini-btn.danger:hover{border-color:var(--warn);color:var(--warn)}
-
-/* processing state */
-.pstate{font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-pill);white-space:nowrap}
+/* document list — The list is a real grid, not a stack of free-flowing cards. At three
+   documents a flex row looked fine; at thirty nothing lined up, so you
+   couldn't scan a column to compare versions or weights. One shared column
+   template drives the header and every row, so everything aligns. */
+.doc-list{border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--panel)}
+.doc-grid{--doc-cols:30px minmax(220px,1fr) 116px 104px 150px 92px;}
+.doc-head,.doc-row{display:grid;grid-template-columns:var(--doc-cols);align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-4)}
+.doc-head{background:var(--panel-2);border-bottom:1px solid var(--line);font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);padding-top:9px;padding-bottom:9px}
+.doc-head .num{text-align:right}
+.doc-card{border-bottom:1px solid var(--line)}
+.doc-card:last-child{border-bottom:none}
+.doc-row{cursor:pointer;transition:background .12s;min-height:52px}
+.doc-card:hover .doc-row{background:var(--panel-2)}
+.doc-card.is-open .doc-row{background:var(--panel-2)}
+.doc-card.is-processing .doc-row{background:color-mix(in srgb, var(--accent) 5%, transparent)}
+/* 1 — position, and the caret that says the row opens */
+.doc-pos{display:flex;align-items:center;gap:5px;color:var(--text-3);font-size:var(--text-xs);font-weight:700;font-variant-numeric:tabular-nums}
+.doc-caret{transition:transform .15s;font-size:9px;opacity:.7}
+.doc-card.is-open .doc-caret{transform:rotate(90deg)}
+/* 2 — identity: the name leads, the filename is secondary and never competes */
+.doc-id{min-width:0}
+.doc-name{font-size:var(--text-base);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-file{font-size:var(--text-xs);color:var(--text-3);font-family:var(--font-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+/* 3 — state, one fixed column so it sits at the same x on every row */
+.pstate{font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-pill);white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.pstate::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
 .pstate.ready{background:var(--ok-soft);color:var(--ok)}
 .pstate.running{background:var(--accent-soft);color:var(--accent)}
 .pstate.queued{background:var(--panel-3);color:var(--text-3)}
-.doc-prog{height:4px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden;margin-top:8px}
-.doc-prog>div{height:100%;background:var(--accent);border-radius:var(--radius-xs);transition:width .4s ease}
-.doc-prog-lbl{font-size:var(--text-xs);color:var(--accent);margin-top:5px}
+.doc-stale{font-size:var(--text-xs);font-weight:700;color:var(--warn);margin-top:3px;white-space:nowrap}
+/* 4 — version and its date, stacked so the number is scannable down the column */
+.doc-ver{font-family:var(--font-mono);font-size:var(--text-sm);font-weight:700;color:var(--text-2)}
+.doc-verdate{font-size:var(--text-xs);color:var(--text-3);margin-top:1px;white-space:nowrap}
+.doc-vercount{font-size:var(--text-xs);color:var(--text-3)}
+/* 5 — weight. The ticket asks for the weight of each document to be obvious
+   "at a glance", which a number buried in a run of text is not — so it's a
+   proportion bar against the heaviest document, with the count beside it. */
+.doc-weight{display:flex;align-items:center;gap:var(--space-2)}
+.doc-wbar{flex:1;height:6px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden;min-width:34px}
+.doc-wbar>div{height:100%;border-radius:var(--radius-xs);background:var(--accent);opacity:.75}
+.doc-wnum{font-size:var(--text-sm);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:34px;text-align:right}
+.doc-wpct{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.doc-weight.is-none .doc-wnum{color:var(--text-3);font-weight:500}
+/* 6 — actions. Five buttons on every row meant 150 controls at thirty
+   documents; they reveal on hover/focus now and stay reachable by keyboard. */
+.doc-actions{display:flex;align-items:center;gap:2px;justify-content:flex-end;opacity:0;transition:opacity .12s}
+.doc-card:hover .doc-actions,.doc-card:focus-within .doc-actions{opacity:1}
+.act-btn{width:26px;height:26px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center;font-size:var(--text-sm);flex-shrink:0}
+.act-btn:hover:not(:disabled){background:var(--panel-3);color:var(--text)}
+.act-btn.danger:hover:not(:disabled){background:var(--warn-soft);color:var(--warn)}
+.act-btn:disabled{opacity:.2;cursor:default}
+/* filter bar — thirty rows need finding, not just scrolling */
+.doc-tools{display:flex;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
+.doc-tools input,.doc-tools select{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:8px var(--space-3);font-size:var(--text-sm);color:var(--text)}
+.doc-tools input{flex:1;min-width:200px}
+.doc-tools input:focus,.doc-tools select:focus{outline:none;border-color:var(--accent)}
+.doc-none{padding:var(--space-6);text-align:center;color:var(--text-3);font-size:var(--text-sm)}
+
+/* processing progress — a thin strip under the row it belongs to, full width,
+   so it never squeezes the grid columns out of alignment */
+.doc-prog{height:3px;background:var(--panel-3);overflow:hidden}
+.doc-prog>div{height:100%;background:var(--accent);transition:width .4s ease}
+.doc-prog-lbl{font-size:var(--text-xs);color:var(--accent);padding:5px var(--space-4) 8px 62px}
 
 /* version history, expanded per document */
-.doc-versions{border-top:1px solid var(--line);background:var(--panel-2);padding:var(--space-3) var(--space-4)}
+.doc-versions{border-top:1px solid var(--line);background:var(--panel-2);padding:var(--space-3) var(--space-4) var(--space-3) 62px}
 .vrow{display:flex;align-items:flex-start;gap:var(--space-3);padding:7px 0;font-size:var(--text-sm)}
 .vrow+.vrow{border-top:1px solid var(--line)}
 .vnum{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-2);width:44px;flex-shrink:0;padding-top:2px}
@@ -206,10 +249,9 @@ html[data-theme="light"] .logo-mark-light{display:block}
       <linearGradient id="srmLc" x1="35.01" y1="44.22" x2="84.75" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset=".168" stop-color="#1E3246"/></linearGradient>
       </defs>
       </svg>SRM</a></div>
-    <div class="crumb"><span class="sep">/</span><span class="project">STB-2026 · Energy Monitoring System</span></div>
+    <div class="crumb"><span class="sep">/</span><a class="project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a></div>
     <div class="hdr-actions" style="margin-left:auto">
-      <a class="btn-ghost" href="javascript:parent.route('dashboard')" title="Back to dashboard">← Dashboard</a>
-      <a class="btn-ghost" href="javascript:parent.route('qa')" title="Questions to the client">Q&amp;A →</a>
+      <a class="nav-btn" href="javascript:parent.route('qa')" title="Q&amp;A — questions to the client"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Q&amp;A</a>
       <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
       <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
       <div class="avatar" title="Thibaud Breton">TB</div>
@@ -229,6 +271,15 @@ html[data-theme="light"] .logo-mark-light{display:block}
       </div>
 
       <div class="doc-summary" id="doc-summary"></div>
+      <div class="doc-tools">
+        <input id="doc-search" placeholder="Search a document by name or filename…" autocomplete="off">
+        <select id="doc-filter">
+          <option value="all">All documents</option>
+          <option value="unprocessed">Not fully processed</option>
+          <option value="multi">Has several versions</option>
+          <option value="stale">Has stale verdicts</option>
+        </select>
+      </div>
       <div class="doc-list" id="doc-list"></div>
 
       <div class="upload-zone">
@@ -291,27 +342,80 @@ html[data-theme="light"] .logo-mark-light{display:block}
    weight in the tender (its requirement count); `state` is where the AI
    pipeline has got to on it.
 ===================================================== */
-let DOCS=[
-  {id:"d1", name:"Tender specification — main volume", file:"EMS_tender_main.pdf",
-   rows:512, state:"ready", added:"Mar 3, 2026",
-   versions:[
-     {num:"v2.1", date:"Jul 16, 2026", note:"Addendum n°2 — alerting threshold revision", gap:{a:1,m:2,r:1}, stale:2},
-     {num:"v2.0", date:"May 28, 2026", note:"Consolidated issue after pre-tender meeting", gap:{a:6,m:9,r:2}, stale:0},
-     {num:"v1.0", date:"Mar 3, 2026", note:"Initial AO release", gap:null, stale:0},
-   ]},
-  {id:"d2", name:"Technical annex A — performance & security", file:"EMS_annex_A.pdf",
-   rows:308, state:"ready", added:"Mar 3, 2026",
-   versions:[
-     {num:"v1.2", date:"May 28, 2026", note:"Security section reissued after the pre-tender meeting", gap:{a:3,m:4,r:0}, stale:0},
-     {num:"v1.0", date:"Mar 3, 2026", note:"Initial annex", gap:null, stale:0},
-   ]},
-  {id:"d3", name:"Annex C — operations manual (referenced)", file:"EMS_annex_C.pdf",
-   rows:0, state:"queued", added:"Jul 18, 2026",
-   versions:[{num:"v1.0", date:"Jul 18, 2026", note:"Added mid-project — waiting for capture", gap:null, stale:0}]},
+/* Thirty documents, per the ticket's own "a tender can hold up to around
+   thirty documents on the largest projects" — the earlier three were enough to
+   prove the mechanics but not to design the list against, which is what made
+   the row layout look fine while being unscannable at real size.
+
+   Seeded from a compact table: name, file, requirement count, processing
+   state, number of versions. The two that carry the demo narrative (the main
+   volume's stale verdicts, the annex added mid-project and still unprocessed)
+   are patched with hand-written history below; the rest get a plausible
+   version ladder generated deterministically — index-based, not Math.random,
+   so the same demo tells the same story every reload. */
+const VLADDER=["v1.0","v1.1","v2.0","v2.1","v3.0"];
+const VDATES=["Mar 3, 2026","Apr 21, 2026","May 28, 2026","Jun 30, 2026","Jul 16, 2026"];
+const VNOTES=["Initial release","Corrections to cross-references","Consolidated issue after the pre-tender meeting","Clarification following bidder questions","Reissued with revised annexes"];
+const DOC_SEED=[
+  ["Tender specification — main volume","EMS_tender_main.pdf",512,"ready",3],
+  ["Technical annex A — performance & security","EMS_annex_A.pdf",308,"ready",2],
+  ["Technical annex B — system interfaces","EMS_annex_B.pdf",214,"ready",2],
+  ["Particular technical specification — signalling","EMS_pts_signalling.pdf",186,"ready",3],
+  ["Particular technical specification — power supply","EMS_pts_power.pdf",164,"ready",2],
+  ["RAMS specification","EMS_rams.pdf",142,"ready",2],
+  ["Cybersecurity requirements","EMS_cyber.pdf",128,"ready",3],
+  ["Interface control document — rolling stock","EMS_icd_rst.pdf",96,"ready",1],
+  ["Interface control document — SCADA","EMS_icd_scada.pdf",88,"ready",2],
+  ["Testing & commissioning plan","EMS_tc_plan.pdf",84,"ready",1],
+  ["Environmental requirements","EMS_environment.pdf",76,"ready",1],
+  ["Quality assurance requirements","EMS_qa.pdf",72,"ready",2],
+  ["Health & safety file","EMS_hs_file.pdf",68,"ready",1],
+  ["Site data — Lot 1 stations","EMS_site_lot1.pdf",64,"ready",1],
+  ["Site data — Lot 2 depot","EMS_site_lot2.pdf",58,"ready",1],
+  ["Training & documentation requirements","EMS_training.pdf",54,"ready",1],
+  ["Spare parts & maintenance","EMS_spares.pdf",48,"ready",1],
+  ["Standards & normative references","EMS_standards.pdf",44,"ready",1],
+  ["Works programme & milestones","EMS_programme.pdf",38,"ready",2],
+  ["Special conditions of contract","EMS_scc.pdf",36,"ready",1],
+  ["General conditions of contract","EMS_gcc.pdf",34,"ready",1],
+  ["Warranty & defects liability","EMS_warranty.pdf",28,"ready",1],
+  ["Price schedule & bill of quantities","EMS_boq.pdf",24,"ready",2],
+  ["Drawings register — signalling layouts","EMS_dwg_sig.pdf",22,"ready",1],
+  ["Drawings register — power distribution","EMS_dwg_pwr.pdf",18,"ready",1],
+  ["Form of tender & annexes","EMS_form.pdf",14,"ready",1],
+  ["Addendum n°1 — clarifications","EMS_add_1.pdf",12,"ready",1],
+  ["Addendum n°2 — alerting threshold revision","EMS_add_2.pdf",9,"ready",1],
+  ["Q&A response dossier — round 1","EMS_qa_round1.pdf",6,"running",1],
+  ["Annex C — operations manual (referenced)","EMS_annex_C.pdf",0,"queued",1],
 ];
+let DOCS=DOC_SEED.map(([name,file,rows,st,nv],i)=>{
+  const versions=[];
+  for(let k=nv-1;k>=0;k--){
+    versions.push({
+      num:VLADDER[k], date:VDATES[k],
+      note:k===0?"Initial release":VNOTES[(i+k)%VNOTES.length],
+      gap:k===0?null:{a:1+((i+k)%5), m:2+((i*3+k)%6), r:(i+k)%3},
+      stale:0,
+    });
+  }
+  return {id:"d"+(i+1), name, file, rows, state:st, added:versions[versions.length-1].date, versions};
+});
 const DOC=id=>DOCS.find(d=>d.id===id);
-const PSTATE={ready:"Captured &amp; characterised", running:"Processing…", queued:"Not yet processed"};
-const state={expanded:new Set(), removeId:null, addSeq:0};
+// the two that carry the narrative — hand-written, not generated
+Object.assign(DOC("d1"),{added:"Mar 3, 2026", versions:[
+  {num:"v2.1", date:"Jul 16, 2026", note:"Addendum n°2 — alerting threshold revision", gap:{a:1,m:2,r:1}, stale:2},
+  {num:"v2.0", date:"May 28, 2026", note:"Consolidated issue after pre-tender meeting", gap:{a:6,m:9,r:2}, stale:0},
+  {num:"v1.0", date:"Mar 3, 2026", note:"Initial AO release", gap:null, stale:0},
+]});
+Object.assign(DOC("d30"),{added:"Jul 18, 2026", versions:[
+  {num:"v1.0", date:"Jul 18, 2026", note:"Added mid-project — waiting for capture", gap:null, stale:0},
+]});
+Object.assign(DOC("d29"),{prog:70, progLabel:"Characterisation — class, activity and type…"});
+const PSTATE={ready:"Ready", running:"Processing", queued:"Not processed"};
+const PSTATE_FULL={ready:"Captured & characterised", running:"AI processing running", queued:"Not yet processed"};
+const state={expanded:new Set(), removeId:null, addSeq:0, search:"", filter:"all"};
+const totalRows=()=>DOCS.reduce((n,d)=>n+d.rows,0);
+const heaviest=()=>DOCS.reduce((m,d)=>Math.max(m,d.rows),0)||1;
 
 /* =====================================================
    TOAST
@@ -354,52 +458,85 @@ function versionsHTML(d){
       ${i===0?`<span class="vcurrent">Current</span>`:""}
     </div>`).join("")}</div>`;
 }
+/* One row. Every fact gets its own aligned column instead of the old flat
+   dot-separated run, where the requirement count read exactly like the
+   filename. Reading order across the row is: where it sits, what it is,
+   whether it's been processed, which version, how much of the tender it
+   carries. */
+function docRowHTML(d,i){
+  const cur=d.versions[0];
+  const open=state.expanded.has(d.id);
+  const staleTotal=d.versions.reduce((m,v)=>m+(v.stale||0),0);
+  const pct=totalRows()?Math.round(d.rows/totalRows()*100):0;
+  const barPct=Math.round(d.rows/heaviest()*100);
+  return `<div class="doc-card${d.state==="running"?" is-processing":""}${open?" is-open":""}" data-id="${d.id}">
+    <div class="doc-row" data-toggle="${d.id}" role="button" tabindex="0" aria-expanded="${open}" title="${open?"Hide":"Show"} version history">
+      <span class="doc-pos"><span class="doc-caret">▶</span>${i+1}</span>
+      <div class="doc-id">
+        <div class="doc-name" title="${esc(d.name)}">${esc(d.name)}</div>
+        <div class="doc-file">${esc(d.file)}</div>
+      </div>
+      <div>
+        <span class="pstate ${d.state}">${PSTATE[d.state]}</span>
+        ${staleTotal?`<div class="doc-stale">⚠ ${staleTotal} stale verdict${staleTotal>1?"s":""}</div>`:""}
+      </div>
+      <div>
+        <div class="doc-ver">${cur.num}</div>
+        <div class="doc-verdate">${cur.date}</div>
+        ${d.versions.length>1?`<div class="doc-vercount">${d.versions.length} versions</div>`:""}
+      </div>
+      <div class="doc-weight${d.rows?"":" is-none"}">
+        <span class="doc-wnum">${d.rows?d.rows.toLocaleString():"—"}</span>
+        <div class="doc-wbar"><div style="width:${barPct}%"></div></div>
+        <span class="doc-wpct">${d.rows?pct+"%":""}</span>
+      </div>
+      <div class="doc-actions">
+        <button class="act-btn" data-up="${d.id}" ${i===0?"disabled":""} title="Move earlier in the tender">↑</button>
+        <button class="act-btn" data-down="${d.id}" ${i===DOCS.length-1?"disabled":""} title="Move later in the tender">↓</button>
+        <button class="act-btn" data-newver="${d.id}" title="Upload a new version — runs gap analysis">⬆</button>
+        <button class="act-btn danger" data-remove="${d.id}" title="Remove this document from the tender">✕</button>
+      </div>
+    </div>
+    ${d.state==="running"?`<div class="doc-prog"><div style="width:${d.prog||0}%"></div></div><div class="doc-prog-lbl">${esc(d.progLabel||"Processing…")}</div>`:""}
+    ${open?versionsHTML(d):""}
+  </div>`;
+}
+function visibleDocs(){
+  const q=state.search.toLowerCase().trim();
+  return DOCS.map((d,i)=>({d,i})).filter(({d})=>{
+    if(state.filter==="unprocessed" && d.state==="ready") return false;
+    if(state.filter==="multi" && d.versions.length<2) return false;
+    if(state.filter==="stale" && !d.versions.some(v=>v.stale)) return false;
+    if(q && !d.name.toLowerCase().includes(q) && !d.file.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
 function renderDocs(){
   const list=document.getElementById("doc-list");
-  list.innerHTML=DOCS.map((d,i)=>{
-    const cur=d.versions[0];
-    const open=state.expanded.has(d.id);
-    const staleTotal=d.versions.reduce((m,v)=>m+(v.stale||0),0);
-    return `<div class="doc-card${d.state==="running"?" is-processing":""}" data-id="${d.id}">
-      <div class="doc-main">
-        <span class="doc-pos">${i+1}</span>
-        <div class="doc-id">
-          <div class="doc-name">${esc(d.name)}
-            <span class="pstate ${d.state}">${PSTATE[d.state]}</span>
-            ${staleTotal?`<span class="pstate" style="background:var(--warn-soft);color:var(--warn)">${staleTotal} stale verdict${staleTotal>1?"s":""}</span>`:""}
-          </div>
-          <div class="doc-meta">
-            <span><b>${cur.num}</b> · ${cur.date}</span>
-            <span><b>${d.rows.toLocaleString()}</b> requirements</span>
-            <span>${d.versions.length} version${d.versions.length>1?"s":""}</span>
-            <span>${esc(d.file)}</span>
-          </div>
-          ${d.state==="running"?`<div class="doc-prog"><div style="width:${d.prog||0}%"></div></div><div class="doc-prog-lbl">${esc(d.progLabel||"Processing…")}</div>`:""}
-        </div>
-        <div class="doc-actions">
-          <button class="doc-move" data-up="${d.id}" ${i===0?"disabled":""} title="Move earlier in the tender">↑</button>
-          <button class="doc-move" data-down="${d.id}" ${i===DOCS.length-1?"disabled":""} title="Move later in the tender">↓</button>
-          <button class="mini-btn" data-newver="${d.id}">⬆ New version</button>
-          <button class="mini-btn" data-toggle="${d.id}">${open?"Hide":"History"}</button>
-          <button class="mini-btn danger" data-remove="${d.id}">Remove</button>
-        </div>
-      </div>
-      ${open?versionsHTML(d):""}
-    </div>`;
-  }).join("");
+  const rows=visibleDocs();
+  // The position number stays the document's real place in the tender order,
+  // not its index in a filtered view — the order is the thing being managed.
+  list.innerHTML=`<div class="doc-head doc-grid">
+      <span class="num">#</span><span>Document</span><span>State</span><span>Version</span><span>Weight in tender</span><span></span>
+    </div>`
+    + (rows.length?rows.map(({d,i})=>docRowHTML(d,i)).join("")
+       :`<div class="doc-none">No document matches this filter.</div>`);
+  list.querySelectorAll(".doc-row").forEach(r=>r.classList.add("doc-grid"));
   bindDocs();
 }
 function bindDocs(){
   const l=document.getElementById("doc-list");
-  l.querySelectorAll("[data-toggle]").forEach(b=>b.addEventListener("click",()=>{
-    const id=b.dataset.toggle;
-    state.expanded.has(id)?state.expanded.delete(id):state.expanded.add(id);
-    renderDocs();
-  }));
-  l.querySelectorAll("[data-up]").forEach(b=>b.addEventListener("click",()=>move(b.dataset.up,-1)));
-  l.querySelectorAll("[data-down]").forEach(b=>b.addEventListener("click",()=>move(b.dataset.down,1)));
-  l.querySelectorAll("[data-newver]").forEach(b=>b.addEventListener("click",()=>uploadVersion(b.dataset.newver)));
-  l.querySelectorAll("[data-remove]").forEach(b=>b.addEventListener("click",()=>askRemove(b.dataset.remove)));
+  const toggle=id=>{ state.expanded.has(id)?state.expanded.delete(id):state.expanded.add(id); renderDocs(); };
+  l.querySelectorAll("[data-toggle]").forEach(r=>{
+    r.addEventListener("click",e=>{ if(e.target.closest(".doc-actions")) return; toggle(r.dataset.toggle); });
+    r.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggle(r.dataset.toggle); } });
+  });
+  // stopPropagation so an action never also toggles the row it sits in
+  const act=(sel,fn)=>l.querySelectorAll(sel).forEach(b=>b.addEventListener("click",e=>{ e.stopPropagation(); fn(b); }));
+  act("[data-up]",b=>move(b.dataset.up,-1));
+  act("[data-down]",b=>move(b.dataset.down,1));
+  act("[data-newver]",b=>uploadVersion(b.dataset.newver));
+  act("[data-remove]",b=>askRemove(b.dataset.remove));
 }
 /* Order determines how requirements read as one continuous tender (§ Reordering) */
 function move(id,delta){
@@ -496,6 +633,10 @@ document.getElementById("remove-cancel").addEventListener("click",()=>{ state.re
 document.getElementById("remove-confirm").addEventListener("click",doRemove);
 document.getElementById("add-doc").addEventListener("click",addDocument);
 [...document.querySelectorAll(".modal-back")].forEach(m=>m.addEventListener("click",e=>{ if(e.target===m) m.classList.remove("on"); }));
+// the search input lives outside #doc-list, so re-rendering the list on every
+// keystroke doesn't detach it — no focus restoration needed here
+document.getElementById("doc-search").addEventListener("input",e=>{ state.search=e.target.value; renderDocs(); });
+document.getElementById("doc-filter").addEventListener("change",e=>{ state.filter=e.target.value; renderDocs(); });
 
 renderSummary(); renderDocs(); fillExportDocs();
 </script>

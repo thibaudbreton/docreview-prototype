@@ -69,7 +69,7 @@ Listed for completeness, since the glossary should define every term in use, not
 - **Admin** — the unrestricted-access in-tool role.
 - **Requirement Manager** — a job title used by the client's own teams (AS-IS), **not** the name of an in-tool role — do not confuse it with any specific SRM permission role (e.g. Project Manager, Contributor).
 - **Bid Manager** — an AS-IS job title, kept as-is; its relationship (if any) to a specific in-tool role is not established.
-- **Project Manager** — the in-tool role with full access to their assigned project, including locking/unlocking compliance verdicts and approving reassignment/reallocation requests.
+- **Project Manager** — the in-tool role with full access to their assigned project, including locking/unlocking compliance verdicts and approving reassignment/reallocation requests. **Correction (2026-08-30):** several people can hold this role on one project at once — it is a permission level, not a single fixed identity. See `TICKET-casting-screen-redesign.md`'s "project management team": any holder has whole-project scope, and the project's creator is automatically the first one.
 
 ---
 

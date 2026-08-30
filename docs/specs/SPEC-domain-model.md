@@ -71,8 +71,12 @@ Practical consequence for anything built on top of this model: never assume ever
 A per-project roster, scoped by role — never global, and never showing another project's people:
 
 - **An activity manager** sees and manages **only their own team** (the experts they've attached), and can add to it at any time, independent of where the project is in the casting timeline.
-- **The project manager** sees **everyone** — a first-level, read-only view listing every activity manager together with the experts currently attached to them. This is where "N of M managers have completed their team" (§6) is observable in detail, not just as a dashboard count.
+- **The project manager** sees **everyone** — an overview across every activity manager together with the experts currently attached to them. This is where "N of M managers have completed their team" (§6) is observable in detail, not just as a dashboard count.
 - "Completed their team" means the activity manager has attached **at least one expert** — it is not a statement about whether that team is *sufficient* for the activity's actual workload, only that casting has moved past "nobody assigned yet."
+
+**Correction (2026-08-30) — `TICKET-casting-screen-redesign.md`:**
+- The project manager's overview is no longer read-only: a PM may staff any activity that already has a manager cast (an activity with none stays blocked for everyone — a data-integrity gate, not a permission one).
+- "The project manager" is a **role several people can hold at once**, not one fixed identity — a `PM_TEAM`, whole-project scope, no activity restriction, visible and editable on the casting overview itself. The project's creator is the first member; any member can add another. A project always keeps at least one. See `docs/specs/SPEC-team-management.md` §3.
 
 ## 8. Characterisation/allocation progression (B6/B7)
 
