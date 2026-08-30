@@ -1,5 +1,7 @@
 # SPEC — Expert follow-up
 
+> **SUPERSEDED (2026-08-28, noted 2026-08-30).** Kept for reference. Do not build from this. `TICKET-merge-expert-space-into-compliance.md` retired `suivi-experts-et-versions.html` — it was renamed to `compliance.html`, and "Screen 2" described below became that screen's only content (2-way compliance, contributor verdict form, no more `state.screen===2`/`===3` split). Its sibling half, `docs/specs/SPEC-versions-qa.md` ("Screen 3"), left the file entirely per `TICKET-three-support-screens.md`. Should have been archived alongside that spec at the time; doing both together now rather than leave one half of a stale pair uncorrected.
+>
 > Derived from the prototype's actual behaviour, per `docs/prompts/PROMPT-derive-specs-from-prototype.md`. Describes "Screen 2" (`#screen2`, `state.screen===2`) of `suivi-experts-et-versions.html` as built — the Follow-up half of the file; the Versions & Q&A half ("Screen 3") is `docs/specs/SPEC-versions-qa.md`. Split along the file's own `screen:2`/`screen:3` boundary and its two top-nav tabs, matching `HANDOVER.md`'s own "Expert follow-up + Versions & Q&A" description. Cross-references `docs/specs/SPEC-domain-model.md` (allocated activities, statuses, compliance) and `docs/specs/SPEC-review-table.md` (the shared table component) — does not restate either.
 
 ## 1. Purpose

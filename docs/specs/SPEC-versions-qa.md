@@ -1,5 +1,7 @@
 # SPEC — Versions & Q&A
 
+> **SUPERSEDED (2026-08-30).** Kept for reference. Do not build from this. `TICKET-three-support-screens.md` split "Screen 3" into two of its own screens — `documents.html` (versions) and `qa.html` (Q&A) — and `TICKET-casting-screen-redesign.md`/`SPEC-qa-screen.md` moved the underlying models on well past what's described below (Q&A alone gained two modes, deadline framing, and an inbound arbitration queue). This file should have been archived when the split shipped and was missed; doing it now while `qa.html` is being rebuilt against `SPEC-qa-screen.md` rather than let the drift compound further. `suivi-experts-et-versions.html` itself no longer exists — it was renamed to `compliance.html`, which then had this screen removed from it entirely.
+>
 > Derived from the prototype's actual behaviour, per `docs/prompts/PROMPT-derive-specs-from-prototype.md`. Describes "Screen 3" (`#screen3`, `state.screen===3`) of `suivi-experts-et-versions.html` as built — the counterpart to `docs/specs/SPEC-followup.md` ("Screen 2"); see that spec's header note for why the file is split this way. Cross-references `docs/specs/SPEC-domain-model.md`.
 
 ## 1. Purpose
