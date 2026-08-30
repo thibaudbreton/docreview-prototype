@@ -137,6 +137,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
   display:grid;place-items:center;color:var(--text-2);transition:all .15s;
 }
 .icon-btn:hover{background:var(--panel-3);color:var(--text)}
+/* Casting/Documents glued to the bell — zero gap between them, a hairline
+   divider so hovering one doesn't visually fuse it into its neighbour. */
+.icon-cluster{display:flex;align-items:center}
+.icon-cluster .icon-btn+.icon-btn{position:relative}
+.icon-cluster .icon-btn+.icon-btn::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:1px;background:var(--line)}
 .badge-dot{
   position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;
   background:var(--warn);border:2px solid var(--panel);
@@ -1301,16 +1306,21 @@ body.restricted .restrict-banner{display:flex}
            people-icon is the same glyph dashboard-et-config.html's own
            team-btn uses, so "this icon means casting" stays consistent
            wherever it appears. -->
-      <a class="icon-btn" href="javascript:parent.route('team')" title="Team casting"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></a>
-      <a class="icon-btn" href="javascript:parent.route('documents')" title="Documents &amp; versions"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></a>
       <div class="viewas" id="viewas" title="Preview a manager's restricted view (demo only)">
         <span class="va-current"></span>
         <div class="viewas-menu" id="viewas-menu"></div>
       </div>
-      <button class="icon-btn" id="notif-btn" title="Notifications">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-        <span class="badge-dot"></span>
-      </button>
+      <!-- Grouped with zero gap between them so Casting/Documents read as
+         attached to the bell — one cluster, not three separate controls
+         that happen to sit near each other. -->
+      <div class="icon-cluster">
+        <a class="icon-btn" href="javascript:parent.route('team')" title="Team casting"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></a>
+        <a class="icon-btn" href="javascript:parent.route('documents')" title="Documents &amp; versions"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></a>
+        <button class="icon-btn" id="notif-btn" title="Notifications">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="badge-dot"></span>
+        </button>
+      </div>
       <div class="exp-wrap" style="position:relative">
         <button class="btn-ghost" id="export-btn" style="font-size:var(--text-sm)">⬇ Export ▾</button>
         <div class="export-panel" id="export-panel" style="top:calc(100% + 6px)"></div>
