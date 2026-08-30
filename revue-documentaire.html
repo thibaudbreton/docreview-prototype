@@ -153,12 +153,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
   color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;
 }
 .btn-ghost:hover{border-color:var(--accent);color:var(--text)}
-/* main menu bar — icon + label button for moving between screens. Reads as a
-   destination rather than a back-arrow, which is what the plain "X →" ghost
-   links had become once the breadcrumb took over "back to the dashboard". */
-.nav-btn{display:inline-flex;align-items:center;gap:7px;padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);font-size:var(--text-sm);font-weight:600;white-space:nowrap;text-decoration:none;transition:all .15s}
-.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
-.nav-btn svg{flex-shrink:0}
 .avatar{
   width:28px;height:28px;border-radius:50%;
   background:linear-gradient(135deg,#e0a43c,#c4763a);
@@ -1299,11 +1293,16 @@ body.restricted .restrict-banner{display:flex}
     </div>
 
     <div class="hdr-actions">
-      <!-- Documents & versions sits here rather than on Compliance: this is the
-           screen where you are working through the source material, so it is
-           where you notice a document is missing or out of date. -->
-      <a class="nav-btn" href="javascript:parent.route('documents')" title="Documents &amp; versions — add, reorder or replace a source document">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>Documents</a>
+      <!-- Support-screen access as plain icon buttons, same treatment as the
+           notification bell right after them — a labelled nav-btn read as
+           heavier than the other header controls sitting next to it. Casting
+           joins here too: this is where you notice an activity has nobody to
+           staff it, same as Documents is where you notice one is missing. The
+           people-icon is the same glyph dashboard-et-config.html's own
+           team-btn uses, so "this icon means casting" stays consistent
+           wherever it appears. -->
+      <a class="icon-btn" href="javascript:parent.route('team')" title="Team casting"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></a>
+      <a class="icon-btn" href="javascript:parent.route('documents')" title="Documents &amp; versions"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></a>
       <div class="viewas" id="viewas" title="Preview a manager's restricted view (demo only)">
         <span class="va-current"></span>
         <div class="viewas-menu" id="viewas-menu"></div>
