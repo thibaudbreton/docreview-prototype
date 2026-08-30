@@ -126,15 +126,41 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .qa-pstat.warn .n{color:var(--warn)}
 .qa-pstat.ia .n{color:var(--ia)}
 .qa-pstat.ok .n{color:var(--ok)}
+/* Section headings. The screen had none: every block was a panel of roughly
+   the same weight, so there was nothing to tell you what part you were in or
+   where to go next. Each mode is now explicitly Act / Read, in that order. */
+.sec-head{display:flex;align-items:baseline;gap:var(--space-3);margin:var(--space-6) 0 var(--space-3);padding-bottom:7px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.sec-head h3{font-size:var(--text-base);font-weight:700;letter-spacing:-.1px}
+.sec-head .hint{font-size:var(--text-xs);color:var(--text-3);line-height:1.4}
+.sec-head .count{margin-left:auto;font-size:var(--text-xs);color:var(--text-3);white-space:nowrap}
+/* The one thing to DO in this mode, and it must not read like the panels
+   around it — accent border and tint, the number carried at display size. */
+.export-card{display:flex;align-items:center;gap:var(--space-5);flex-wrap:wrap;border:1px solid var(--accent);background:var(--accent-soft);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5)}
+.export-card.is-empty{border-color:var(--line);background:var(--panel-2)}
+.export-n{font-size:32px;font-weight:700;line-height:1;letter-spacing:-1px;color:var(--accent);font-variant-numeric:tabular-nums}
+.export-card.is-empty .export-n{color:var(--text-3)}
+.export-txt{flex:1;min-width:200px}
+.export-t{font-size:var(--text-base);font-weight:600;margin-bottom:3px}
+.export-d{font-size:var(--text-xs);color:var(--text-3);line-height:1.5}
+.export-card .btn-primary{flex-shrink:0}
+/* A blocking check, not another panel — amber, and it sits with the action
+   it blocks rather than floating among the reading material. */
+.dup-alert{display:flex;align-items:flex-start;gap:var(--space-3);margin-top:var(--space-2);padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);background:var(--ia-soft);border:1px solid color-mix(in srgb, var(--ia) 40%, transparent)}
+.dup-alert .ic{color:var(--ia);font-size:var(--text-lg);line-height:1;flex-shrink:0}
+.dup-alert .body{flex:1;min-width:0;font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
+.dup-alert .body b{color:var(--text)}
+.dup-alert button{flex-shrink:0;align-self:center}
+/* register card actions — one place per question, on the card itself */
+.qa-card-act{margin-left:auto;flex-shrink:0;font-size:var(--text-xs);font-weight:600;padding:3px var(--space-2);border-radius:var(--radius-sm);border:1px solid var(--line-2);color:var(--text-3);white-space:nowrap}
+.qa-card-act:hover{border-color:var(--warn);color:var(--warn)}
+.qa-card-act.undo:hover{border-color:var(--accent);color:var(--accent)}
+.qa-inbatch{font-size:var(--text-xs);font-weight:700;color:var(--accent);white-space:nowrap;flex-shrink:0}
 /* filter row — volume needs filtering/grouping (§6), not just a long scroll */
 .qa-filters{display:flex;gap:var(--space-2);margin-bottom:14px;flex-wrap:wrap}
 .qa-filters input,.qa-filters select{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:7px var(--space-3);font-size:var(--text-sm);color:var(--text)}
 .qa-filters input{flex:1;min-width:180px}
 .qa-excluded-note{font-size:var(--text-xs);color:var(--text-3);font-style:italic;margin-top:4px;line-height:1.5}
 .qa-card.is-excluded{opacity:.6}
-.qa-batch-item .rm-btn{color:var(--text-3);font-size:var(--text-xs);padding:2px 6px;border-radius:var(--radius-xs);flex-shrink:0}
-.qa-batch-item .rm-btn:hover{color:var(--warn);background:var(--warn-soft)}
-.qa-batch-item .undo-btn{color:var(--accent);font-size:var(--text-xs);padding:2px 6px;border-radius:var(--radius-xs);flex-shrink:0}
 /* import — accept a file OR pasted content, no assumed layout */
 .qa-import-mode{display:flex;gap:2px;margin-bottom:10px}
 .qa-import-mode button{padding:5px var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:600;color:var(--text-3);border:1px solid var(--line-2)}
@@ -203,20 +229,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .dedup .reject{padding:6px var(--space-3);border-radius:var(--radius-sm);border:1px solid var(--line-2);color:var(--text-2);font-size:var(--text-sm)}
 /* T7 — manager's outbound batch */
 .qa-batch{border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);background:var(--panel-2)}
-.qa-batch-h{font-size:var(--text-sm);font-weight:700;color:var(--text);display:flex;align-items:center;gap:var(--space-2);margin-bottom:8px}
 .qa-batch-n{font-size:var(--text-xs);font-weight:700;background:var(--accent-soft);color:var(--accent);border-radius:var(--radius-lg);padding:1px 8px}
 .qa-batch-empty{font-size:var(--text-sm);color:var(--text-3);font-style:italic}
-.qa-batch-list{display:flex;flex-direction:column;gap:6px}
-.qa-batch-item{display:flex;align-items:center;gap:var(--space-3);font-size:var(--text-sm);padding:var(--space-2) var(--space-2);border-radius:var(--radius-md);background:var(--panel)}
-.qa-batch-q{flex:1;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.qa-batch-src{color:var(--text-3);white-space:nowrap;font-size:var(--text-xs)}
-.qa-batch-st{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--accent);white-space:nowrap}
-.qa-batch-st.orphan{color:var(--text-3)}
 /* T8 — inbound dossier + matching result */
 .qa-upload{border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);background:var(--panel-2)}
-.qa-upload-h{font-size:var(--text-sm);font-weight:700;color:var(--text);margin-bottom:5px}
 .qa-upload-t{font-size:var(--text-sm);color:var(--text-3);line-height:1.5;margin-bottom:10px}
-.qa-upload-row{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -345,35 +362,40 @@ function renderQuestions(){
   const toSend=questionsToSend();
   const dupPair=QA.filter(q=>q.dup&&QA.find(x=>x.id===q.dup));
   let html=renderDeadlineBanner("questions");
-  html+=`<div class="view-head" style="margin-bottom:14px"><h2 style="font-size:var(--text-base)">${QA.length} questions</h2>
-    <span class="sub">One question blocks exactly one assignment</span>
-    <button class="btn-primary" style="margin-left:auto" id="send-batch">⬇ Export batch for issuer${toSend.length?` (${toSend.length})`:""}</button></div>`;
-  // Questions are exported, not sent — the tool has no channel to the issuer.
-  html+=`<div class="qa-batch">
-    <div class="qa-batch-h">⬇ Questions to export <span class="qa-batch-n">${toSend.length}</span></div>
-    ${toSend.length
-      ? `<div class="qa-batch-list">${toSend.map(q=>`<div class="qa-batch-item">
-          <span class="qa-id">${q.id}</span>
-          <span class="qa-batch-q">${esc(q.q)}</span>
-          <span class="qa-batch-src">${esc(q.from)} · ${esc(refsLabel(q))}</span>
-          <span class="qa-batch-st${q.st==="draft"?" orphan":""}">${q.st==="draft"?"Draft":"In review"}</span>
-          <button class="rm-btn" data-exclude="${q.id}" title="Remove from this export — the question stays on record, but ${esc(q.from)} isn't told it was dropped">✕</button>
-        </div>`).join("")}</div>`
-      : `<div class="qa-batch-empty">Nothing waiting to be exported.</div>`}
+  /* The export block used to re-list the same questions the Drafts and
+     Internal-review groups showed immediately below it — the same content
+     twice, with nothing saying which was authoritative. It's a summary and an
+     action now; the register below is the single list, and per-question
+     controls live on the register card rather than in two places. */
+  const contributors=new Set(toSend.map(q=>q.from)).size;
+  html+=`<div class="sec-head"><h3>Export the batch</h3>
+    <span class="hint">Once per tender · nothing leaves the tool by itself</span></div>`;
+  html+=`<div class="export-card${toSend.length?"":" is-empty"}">
+    <div class="export-n">${toSend.length}</div>
+    <div class="export-txt">
+      <div class="export-t">${toSend.length?`question${toSend.length>1?"s":""} ready to go out`:"Nothing waiting to be exported"}</div>
+      <div class="export-d">${toSend.length
+        ? `From ${contributors} contributor${contributors>1?"s":""}. Excel, one row per question with its requirement ID beside it — you forward the file to the issuer yourself.`
+        : `Questions raised from Compliance land here as drafts. Everything already exported is in the register below.`}</div>
+    </div>
+    ${toSend.length?`<button class="btn-primary" id="send-batch">⬇ Export batch for issuer</button>`:""}
   </div>`;
   if(dupPair.length>=2){
-    html+=`<div class="qa-upload"><div class="qa-upload-h">⚠ Possible duplicate detected</div>
-      <div class="qa-upload-t">${dupPair.map(q=>`<b>${q.id}</b>`).join(" and ")} look like the same question to the issuer. Merge before exporting so the client gets one, not two.</div>
-      <div class="qa-upload-row"><button class="btn-ghost" id="merge-dup">⇲ Merge into ${dupPair[0].id}</button></div></div>`;
+    html+=`<div class="dup-alert"><span class="ic">⚠</span>
+      <div class="body">${dupPair.map(q=>`<b>${q.id}</b>`).join(" and ")} look like the same question to the issuer. Merge before exporting so the client gets one, not two.</div>
+      <button class="btn-ghost" id="merge-dup">⇲ Merge into ${dupPair[0].id}</button></div>`;
   }
-  html+=`<div class="qa-filters">
-    <input id="q-search" placeholder="Search question text or requirement ref…" autocomplete="off">
-    <select id="q-activity"><option value="">All activities</option>${Object.keys(TYPOS).map(k=>`<option value="${k}">${TY(k).label}</option>`).join("")}</select>
-  </div>`;
   // The PM can't reject a question, only pull it from the export (§3) — kept as
   // its own group rather than deleted, so it stays on record and reversible.
   const groups=[["draft","Drafts"],["internal","Internal review"],["sent","Sent to the issuer"],["answered","Answered"],["excluded","Excluded from export"]];
   const search=state.qSearch.toLowerCase(),actF=state.qActivity;
+  html+=`<div class="sec-head"><h3>All questions</h3>
+    <span class="hint">One question blocks exactly one assignment</span>
+    <span class="count">${QA.length} on record</span></div>`;
+  html+=`<div class="qa-filters">
+    <input id="q-search" placeholder="Search question text or requirement ref…" autocomplete="off">
+    <select id="q-activity"><option value="">All activities</option>${Object.keys(TYPOS).map(k=>`<option value="${k}">${TY(k).label}</option>`).join("")}</select>
+  </div>`;
   let anyGroup=false;
   groups.forEach(([st,label])=>{
     let rows=QA.filter(q=>q.st===st);
@@ -381,9 +403,12 @@ function renderQuestions(){
     if(search) rows=rows.filter(q=>q.q.toLowerCase().includes(search)||q.refs.some(r=>r.req.toLowerCase().includes(search)));
     if(!rows.length) return;
     anyGroup=true;
+    const inBatch=st==="draft"||st==="internal";
     html+=`<div class="qa-group"><div class="qa-group-head">${label} <span class="qa-batch-n">${rows.length}</span></div>
       ${rows.map(q=>`<div class="qa-card${st==="excluded"?" is-excluded":""}">
-        <div class="qa-top"><span class="qa-id">${q.id}</span><span class="qa-q">${esc(q.q)}</span>${st==="excluded"?`<button class="undo-btn" data-include="${q.id}">↺ Include again</button>`:""}</div>
+        <div class="qa-top"><span class="qa-id">${q.id}</span><span class="qa-q">${esc(q.q)}</span>
+          ${inBatch?`<span class="qa-inbatch">In the batch</span><button class="qa-card-act" data-exclude="${q.id}" title="Remove from this export — the question stays on record, but ${esc(q.from)} isn't told it was dropped">Exclude</button>`:""}
+          ${st==="excluded"?`<button class="qa-card-act undo" data-include="${q.id}">↺ Include again</button>`:""}</div>
         <div class="qa-meta">${q.refs.map(r=>`<span class="qa-req">${r.req}</span>`).join("")}
           <span>${esc(refsLabel(q))}</span><span>raised by ${esc(q.from)} · ${q.date}</span></div>
         ${st==="excluded"?`<div class="qa-excluded-note">Removed from export — ${esc(q.from)} hasn't been told; there's no notification for this yet.</div>`:""}
@@ -392,7 +417,8 @@ function renderQuestions(){
   });
   if((search||actF)&&!anyGroup) html+=`<div class="qa-batch-empty">No question matches this filter.</div>`;
   v.innerHTML=html;
-  v.querySelector("#send-batch").addEventListener("click",()=>{
+  // the button is only rendered when there is a batch, so this must be optional
+  v.querySelector("#send-batch")?.addEventListener("click",()=>{
     const batch=questionsToSend();
     if(!batch.length){ toast("Nothing to export","warn"); return; }
     batch.forEach(q=>{ q.st="sent"; q.date="Today"; });
@@ -544,8 +570,8 @@ function renderResolvedList(){
   </details>`;
 }
 function renderImportBox(){
+  // no inner title — the section heading above already names this block
   return `<div class="qa-upload">
-    <div class="qa-upload-h">Import the answer dossier</div>
     <div class="qa-upload-t">In whatever form the client sent it — Excel, PDF, a plain email body. No fixed columns are assumed; extraction reads the layout itself. The dossier holds every bidder's questions and answers, not only ours — nothing in it is discarded.</div>
     <div class="qa-import-mode">
       <button data-imode="file" class="active">Upload a file</button>
@@ -588,18 +614,26 @@ function renderAnswers(){
   const badge=document.getElementById("answers-count");
   badge.textContent=queued; badge.style.display=queued?"inline-flex":"none";
   if(!state.imported){
-    el.innerHTML=renderDeadlineBanner("answers")+renderImportBox();
+    el.innerHTML=renderDeadlineBanner("answers")
+      +`<div class="sec-head"><h3>Import the dossier</h3><span class="hint">The client's answers, in whatever form they sent them</span></div>`
+      +renderImportBox();
     bindImportBox(el);
     return;
   }
   const matched=DOSSIER.filter(d=>d.status==="auto").length;
   const blocked=QA.filter(q=>q.st==="sent").length;
+  // Same Act-then-Read order as the Questions mode: where things stand, the
+  // one decision in front of you, then what's already settled.
   el.innerHTML=renderDeadlineBanner("answers")+`
+    <div class="sec-head"><h3>Where the dossier stands</h3>
+      <span class="hint">${DOSSIER.length} question/answer pairs extracted</span></div>
     <div class="qa-progress">
       <div class="qa-pstat ok"><div class="n">${matched}</div><div class="l">Matched automatically</div></div>
       <div class="qa-pstat${queued?" ia":""}"><div class="n">${queued}</div><div class="l">Awaiting arbitration</div></div>
       <div class="qa-pstat${blocked?" warn":""}"><div class="n">${blocked}</div><div class="l">Branches still in Awaiting Q&amp;A</div></div>
     </div>
+    ${queued?`<div class="sec-head"><h3>Arbitrate what the matching couldn't place</h3>
+      <span class="hint">One at a time · <b>1</b>–<b>9</b> pick a requirement, <b>N</b> no match, <b>S</b> skip</span></div>`:""}
     <div class="arb-wrap" id="arb-body"></div>
     ${renderResolvedList()}`;
   renderArbitration();
