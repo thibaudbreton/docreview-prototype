@@ -1605,7 +1605,7 @@ function renderPanel2(){
         br.reassignComment=note;
         br.status="reassignment_needed";
         state.openForm=null;
-        toast(`${r.id} · ${TY(br.typology).label} — reassignment requested, sent to the project manager`,"warn");
+        toast(`${r.id} · ${TY(br.typology).label} — reassignment requested, sent to the project management team`,"warn");
         refreshAll();
       });
       b.querySelector("#v-cancel")?.addEventListener("click",()=>{ state.openForm=null; state.verdictPick=null; renderPanel2(); });

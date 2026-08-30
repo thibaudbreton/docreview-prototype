@@ -373,6 +373,9 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .cast-cov-stat.ok{color:var(--ok);font-weight:600}
 .cast-group{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);margin-bottom:var(--space-3);overflow:hidden}
 .cast-group.is-unstaffed{border-color:rgba(242,96,79,.35)}
+.cast-group.is-pm-team{border-color:var(--accent);margin-bottom:var(--space-5)}
+.cast-group.is-pm-team .cast-group-head{background:var(--accent-soft)}
+.cast-group.is-pm-team .cast-ptag{color:var(--accent);border-color:var(--accent)}
 .cast-group-head{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--panel-2);cursor:pointer;user-select:none}
 .cast-group-head:hover{background:var(--panel-3)}
 .cast-caret{transition:transform .15s;flex-shrink:0;color:var(--text-3);font-size:var(--text-xs)}
@@ -925,6 +928,13 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
       <div class="cast-head-row">
         <div class="cast-search-wrap"><span class="ic">⌕</span><input id="cast-roster-search" placeholder="Search the roster — is this person already staffed, and where?" autocomplete="off"></div>
         <button class="cast-unstaffed-toggle" id="cast-unstaffed-toggle">⚠ Unstaffed only</button>
+        <!-- TICKET-casting-screen-redesign.md DoD #5: "stays usable and responsive
+             with 200 entries." The real casting holds 150-200 people; this seed
+             has ~13. Rather than bloat the shipped demo data (which every other
+             narrative on this screen — coverage counts, the "just added" chip —
+             is tuned around), a repeatable control generates the scale on demand
+             so the claim stays demonstrable, not just asserted in a commit message. -->
+        <button class="demo-link" id="cast-simulate-scale" title="Generates ~185 additional staffed rows across every activity/perimeter, to demonstrate the screen at the ticket's real scale">🎭 <b>DEMO</b> Simulate 200 roster</button>
       </div>
       <div id="cast-coverage"></div>
       <div id="team-body"></div>
@@ -1075,7 +1085,6 @@ cR.addEventListener("input",()=>cV.textContent=cR.value+"%");
    activities (plus one, cvl, deliberately left with no manager yet) for a
    richer coverage demo — see CAST_ACTIVITIES below. */
 const MANAGERS=[
-  {id:"admin",name:"Thibaud Breton",role:"Project lead (admin)",init:"TB",color:"#6e7bf2",admin:true},
   {id:"m_sig",name:"Louis Renaud",role:"SIG manager",init:"LR",color:"#3fb27f"},
   {id:"m_mln",name:"Amina Cherif",role:"Mainline manager",init:"AC",color:"#e0a43c"},
   {id:"m_inf",name:"Paolo Ferri",role:"Infrastructure manager",init:"PF",color:"#a06ef2"},
@@ -1084,6 +1093,29 @@ const MANAGERS=[
   {id:"m_sys",name:"Elena Popescu",role:"Systems Integration manager",init:"EP",color:"#c46bd6"},
 ];
 const MGR=id=>MANAGERS.find(m=>m.id===id);
+/* TICKET-casting-screen-redesign.md — "the project management team": several
+   people hold PM status, not one, each with whole-project scope and no
+   activity restriction — that is what distinguishes them from a manager
+   above. The project creator is the first member; any member can add
+   another. Kept as its own array rather than a flag on a MANAGERS row: a
+   PM's scope is categorically different (the whole project, not one
+   activity), not just another entry in the same table. Never shown in the
+   contributor roster either — the ticket is explicit that would suggest a
+   scope restriction on them that does not exist. */
+let PM_TEAM=[
+  {id:"admin",name:"Thibaud Breton",title:"Bid Director",init:"TB",color:"#6e7bf2",addedBy:null,addedAt:"Mar 3, 2026"},
+];
+const isPM=id=>PM_TEAM.some(p=>p.id===id);
+const PMbyId=id=>PM_TEAM.find(p=>p.id===id);
+/* Casting viewer identity can now be a PM_TEAM member OR a MANAGERS (activity)
+   entry — MGR() alone can't resolve a PM id any more, since admin moved out
+   of MANAGERS. This is the one place both are reconciled. */
+function viewerInfo(id){
+  const pm=PMbyId(id);
+  if(pm) return {id:pm.id,name:pm.name,isPM:true};
+  const m=MGR(id);
+  return {id:m.id,name:m.name,isPM:false};
+}
 /* Experts editor — TA2: for a project created via the wizard, this is the real roster
    the PM cast in step 4 (creation-projet.html -> build_merge.py's addProject stores it
    on the project). The reference project (stb2026) carries no `.experts` on its seed,
@@ -1229,16 +1261,19 @@ const castExpanded=new Set(); // activity ids expanded in the current view
 
 function initTeamViewer(){
   const sel=document.getElementById("team-viewer");
-  sel.innerHTML="";
-  MANAGERS.forEach(m=>sel.insertAdjacentHTML("beforeend",`<option value="${m.id}">${m.name} — ${m.role}</option>`));
+  // two populations, two optgroups — a PM team member and an activity manager
+  // land on genuinely different views below, so the picker should say which
+  // kind of person is being simulated, not just list names.
+  sel.innerHTML=`<optgroup label="Project management team">${PM_TEAM.map(p=>`<option value="${p.id}">${p.name} — ${p.title}</option>`).join("")}</optgroup>
+    <optgroup label="Activity managers">${MANAGERS.map(m=>`<option value="${m.id}">${m.name} — ${m.role}</option>`).join("")}</optgroup>`;
   sel.value=TEAM_VIEWER;
   sel.addEventListener("change",e=>{
     TEAM_VIEWER=e.target.value;
     // arriving as a manager = landing directly on their own scope, expanded —
     // not a 7-activity list they have to navigate first.
     castExpanded.clear();
-    const viewer=MGR(TEAM_VIEWER);
-    if(!viewer.admin){ const own=CAST_ACTIVITIES.find(a=>a.managerId===TEAM_VIEWER); if(own) castExpanded.add(own.id); }
+    const viewer=viewerInfo(TEAM_VIEWER);
+    if(!viewer.isPM){ const own=CAST_ACTIVITIES.find(a=>a.managerId===TEAM_VIEWER); if(own) castExpanded.add(own.id); }
     renderTeamScreen();
   });
 }
@@ -1246,8 +1281,8 @@ function initTeamViewer(){
 /* ---------- coverage overview strip (PM's "are we there yet") ---------- */
 function renderCoverageStrip(){
   const el=document.getElementById("cast-coverage");
-  const viewer=MGR(TEAM_VIEWER);
-  if(!viewer.admin){ el.innerHTML=""; return; }
+  const viewer=viewerInfo(TEAM_VIEWER);
+  if(!viewer.isPM){ el.innerHTML=""; return; }
   el.innerHTML=`<div class="cast-coverage-strip">${CAST_ACTIVITIES.map(a=>{
     const cov=a.managerId?activityCoverage(a):{kind:"unstaffed",staffed:0,total:perimetersOf(a.id).length||1};
     const cls=!a.managerId?"unstaffed":(cov.kind==="staffed"?"complete":(cov.kind==="unstaffed"?"unstaffed":""));
@@ -1324,7 +1359,7 @@ function bindCastAddFlow(container,activityId){
       const perimeterId=resolvePerimeter(activityId,perimInput.value);
       const dup=ROSTER.find(r=>r.personId===p.id && r.activityId===activityId && r.perimeterId===perimeterId);
       if(dup){ toast(`${p.name} is already staffed here — pick a different perimeter, or search someone else`,"warn"); return; }
-      ROSTER.push({personId:p.id,activityId,perimeterId,addedBy:MGR(TEAM_VIEWER).name,addedAt:"Today",count:0});
+      ROSTER.push({personId:p.id,activityId,perimeterId,addedBy:viewerInfo(TEAM_VIEWER).name,addedAt:"Today",count:0});
       CAST_LAST_ADDED={personId:p.id,label:p.name};
       toast(`${p.name} added${perimeterId?` — ${perimeterLabel(activityId,perimeterId)}`:" — staffed directly"}`,"ok");
       renderTeamScreen();
@@ -1414,17 +1449,78 @@ function castGroupHTML(a,viewerIsAdmin){
   </div>`;
 }
 
+/* ---------- project management team (PM overview only) ----------
+   "Visible and editable here too — it's part of who can do what on this
+   project." Reuses the .cast-group/.cast-person-row/.cast-add-flow language
+   the activity groups below already use, so it reads as the same kind of
+   thing, with an .is-pm-team accent so it doesn't read as just another
+   activity — its scope is the whole project, not one activity. Add has no
+   perimeter step: a PM team member isn't attached to a perimeter at all. */
+function castPMTeamHTML(){
+  const rows=PM_TEAM.map(p=>`<div class="cast-person-row" data-pm-person="${p.id}">
+    <div class="exp-av" style="width:26px;height:26px;font-size:11px;background:${p.color}">${p.init}</div>
+    <div><div class="cast-person-name">${p.name} <span class="cast-person-meta">— ${p.title}</span></div>
+      <div class="cast-person-meta">${p.addedBy?`Added by ${p.addedBy} · ${p.addedAt}`:`On the project since ${p.addedAt} — created it`}</div></div>
+    ${PM_TEAM.length>1?`<button class="cast-person-rm" title="Remove" data-rm-pm="${p.id}">✕</button>`:`<span class="cast-person-meta" title="A project always keeps at least one project manager">Last member</span>`}
+  </div>`).join("");
+  return `<div class="cast-group is-pm-team" data-act="__pmteam">
+    <div class="cast-group-head" style="cursor:default">
+      <span class="cast-ptag">PM</span>
+      <div><div class="cast-group-title">Project management team</div><div class="cast-group-mgr">Whole-project scope — no activity restriction</div></div>
+      <span class="cast-group-badge staffed">${PM_TEAM.length} member${PM_TEAM.length>1?"s":""}</span>
+    </div>
+    <div class="cast-body">
+      ${castAddFlowHTML("__pmteam")}
+      ${rows}
+    </div>
+  </div>`;
+}
+function bindPMAddFlow(container){
+  const activityId="__pmteam";
+  const flow=container.querySelector(`[data-add-act="${activityId}"]`);
+  if(!flow) return;
+  const slot=flow.querySelector(`[data-add-slot="${activityId}"]`);
+  function doAdd(p){
+    if(isPM(p.id)){ toast(`${p.name} is already on the project management team`,"warn"); return; }
+    PM_TEAM.push({id:p.id,name:p.name,title:"Project manager",init:p.init,color:p.color,addedBy:viewerInfo(TEAM_VIEWER).name,addedAt:"Today"});
+    toast(`${p.name} added to the project management team`,"ok");
+    renderTeamScreen();
+    requestAnimationFrame(()=>{ document.querySelector(`[data-add-input="${activityId}"]`)?.focus(); });
+  }
+  const input=slot.querySelector(`[data-add-input="${activityId}"]`);
+  const results=slot.querySelector(`[data-add-results="${activityId}"]`);
+  let active=0,matches=[];
+  function draw(q){
+    const ql=(q||"").toLowerCase().trim();
+    matches=ql?DIRECTORY.filter(p=>p.name.toLowerCase().includes(ql)).slice(0,8):[];
+    active=0;
+    if(!ql){ results.classList.remove("open"); results.innerHTML=""; return; }
+    results.innerHTML=matches.length?matches.map((p,i)=>`<div class="cast-add-opt${i===0?" active":""}" data-pick="${p.id}"><div class="exp-av" style="background:${p.color}">${p.init}</div>${p.name}</div>`).join(""):`<div class="cast-add-empty">No match in the directory.</div>`;
+    results.classList.add("open");
+    results.querySelectorAll("[data-pick]").forEach(o=>o.addEventListener("mousedown",e=>{ e.preventDefault(); doAdd(personById(o.dataset.pick)); }));
+  }
+  input.addEventListener("input",()=>draw(input.value));
+  input.addEventListener("focus",()=>{ if(input.value) draw(input.value); });
+  input.addEventListener("keydown",e=>{
+    if(!results.classList.contains("open")) return;
+    if(e.key==="ArrowDown"){ e.preventDefault(); active=Math.min(active+1,matches.length-1); results.querySelectorAll(".cast-add-opt").forEach((o,i)=>o.classList.toggle("active",i===active)); }
+    else if(e.key==="ArrowUp"){ e.preventDefault(); active=Math.max(active-1,0); results.querySelectorAll(".cast-add-opt").forEach((o,i)=>o.classList.toggle("active",i===active)); }
+    else if(e.key==="Enter"){ e.preventDefault(); if(matches[active]) doAdd(matches[active]); }
+    else if(e.key==="Escape"){ input.value=""; results.classList.remove("open"); results.innerHTML=""; }
+  });
+  document.addEventListener("click",e=>{ if(!e.target.closest(`[data-add-act="${activityId}"]`)) results.classList.remove("open"); });
+}
 function renderTeamScreen(){
   renderCoverageStrip();
   const body=document.getElementById("team-body");
   const h1=document.getElementById("team-h1"),sub=document.getElementById("team-sub");
-  const viewer=MGR(TEAM_VIEWER);
-  h1.textContent=viewer.admin?"Team casting — overview":"Team casting — your scope";
-  sub.textContent=viewer.admin
+  const viewer=viewerInfo(TEAM_VIEWER);
+  h1.textContent=viewer.isPM?"Team casting — overview":"Team casting — your scope";
+  sub.textContent=viewer.isPM
     ? "Which activities and perimeters still need someone, at a glance — click a card above to jump to it."
     : "Your own activity, expanded and ready to staff. Everything else stays visible for context, read-only.";
   const lastAddedChip=CAST_LAST_ADDED?`<div class="cast-readonly-note" style="margin-bottom:12px">↻ Just added <b>${CAST_LAST_ADDED.label}</b> — staffing them on another perimeter too? Search their name again in the right spot below. <button class="btn-ghost" style="font-size:var(--text-xs);padding:2px 8px;margin-left:8px" id="cast-clear-last">Dismiss</button></div>`:"";
-  body.innerHTML=lastAddedChip + CAST_ACTIVITIES.map(a=>castGroupHTML(a,viewer.admin)).join("");
+  body.innerHTML=(viewer.isPM?castPMTeamHTML():"") + lastAddedChip + CAST_ACTIVITIES.map(a=>castGroupHTML(a,viewer.isPM)).join("");
   document.getElementById("cast-clear-last")?.addEventListener("click",()=>{ CAST_LAST_ADDED=null; renderTeamScreen(); });
   body.querySelectorAll("[data-toggle-act]").forEach(h=>h.addEventListener("click",()=>{
     const id=h.dataset.toggleAct;
@@ -1442,7 +1538,22 @@ function renderTeamScreen(){
     toast(`${p.name} removed`,"ok");
     renderTeamScreen();
   }));
-  body.querySelectorAll("[data-add-act]").forEach(flow=>bindCastAddFlow(body,flow.dataset.addAct));
+  body.querySelectorAll("[data-add-act]").forEach(flow=>{
+    if(flow.dataset.addAct==="__pmteam") bindPMAddFlow(body); else bindCastAddFlow(body,flow.dataset.addAct);
+  });
+  body.querySelectorAll("[data-rm-pm]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    const idx=PM_TEAM.findIndex(p=>p.id===btn.dataset.rmPm);
+    if(idx<0) return;
+    if(PM_TEAM.length<=1){ toast("A project always keeps at least one project manager","warn"); return; }
+    const p=PM_TEAM[idx];
+    PM_TEAM.splice(idx,1);
+    // the viewer removed themself: fall back to whoever is left rather than
+    // simulating a viewer who no longer exists
+    if(TEAM_VIEWER===p.id) TEAM_VIEWER=PM_TEAM[0].id;
+    toast(`${p.name} removed from the project management team`,"ok");
+    initTeamViewer(); renderTeamScreen();
+  }));
 }
 initTeamViewer();
 document.getElementById("cast-roster-search").addEventListener("input",e=>{ CAST_ROSTER_SEARCH=e.target.value; renderTeamScreen(); });
@@ -1450,6 +1561,41 @@ document.getElementById("cast-unstaffed-toggle").addEventListener("click",functi
   CAST_UNSTAFFED_ONLY=!CAST_UNSTAFFED_ONLY;
   this.classList.toggle("on",CAST_UNSTAFFED_ONLY);
   renderTeamScreen();
+});
+/* DoD #5 generator — random but reproducible-in-shape: spreads synthetic
+   people across every castable activity/perimeter (never the uncast cvl —
+   that's a real block, not something scale should paper over), respecting
+   the same duplicate rule a real add goes through. New names are added to
+   DIRECTORY too, so the roster search and add-flow keep working normally
+   against the larger pool afterwards. */
+const SIM_FIRST=["Elise","Karim","Nadia","Bruno","Sana","Victor","Layla","Hugo","Priya","Malik","Chiara","Tarek","Ines","Yann","Farah","Cedric","Amel","Louis","Nour","Damien","Salma","Theo","Widad","Romain"];
+const SIM_LAST=["Girard","Ndiaye","Costa","Benyahia","Moreno","Lambert","Achouri","Petit","Sow","Berger","Haidari","Roussel","Kessler","Fabre","Belhadj","Duval","Traore","Mercier","Aziz","Colin"];
+function generateScaleRoster(targetTotal){
+  const activities=CAST_ACTIVITIES.filter(a=>a.managerId);
+  let added=0,guard=0;
+  while(ROSTER.length<targetTotal && guard<4000){
+    guard++;
+    const a=activities[Math.floor(Math.random()*activities.length)];
+    const perims=perimetersOf(a.id);
+    const perimeterId=perims.length && Math.random()<0.85 ? perims[Math.floor(Math.random()*perims.length)].id : null;
+    const first=SIM_FIRST[Math.floor(Math.random()*SIM_FIRST.length)], last=SIM_LAST[Math.floor(Math.random()*SIM_LAST.length)];
+    const name=`${first} ${last}`;
+    let person=DIRECTORY.find(p=>p.name===name);
+    if(!person){
+      person={id:"sim"+DIRECTORY.length,name,init:(first[0]+last[0]).toUpperCase(),color:CAST_COLORS[DIRECTORY.length%CAST_COLORS.length]};
+      DIRECTORY.push(person);
+    }
+    if(ROSTER.some(r=>r.personId===person.id&&r.activityId===a.id&&r.perimeterId===perimeterId)) continue;
+    ROSTER.push({personId:person.id,activityId:a.id,perimeterId,addedBy:"Simulated seed",addedAt:"—",count:0});
+    added++;
+  }
+  return added;
+}
+document.getElementById("cast-simulate-scale").addEventListener("click",function(){
+  const added=generateScaleRoster(200);
+  if(!added){ toast(`Roster is already at the 200-row demo target (${ROSTER.length})`,"warn"); return; }
+  renderTeamScreen(); renderCastingProgress();
+  toast(`Simulated ${added} additional staffed rows — ${ROSTER.length} total, spread across every activity`,"ok");
 });
 
 /* B2 — casting progress indicator (dashboard phase card). Reflects the same
