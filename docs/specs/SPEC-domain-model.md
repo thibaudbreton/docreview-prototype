@@ -66,6 +66,8 @@ This prototype does not compute the rollup live (`rollupCompliance` is hand-auth
 
 Practical consequence for anything built on top of this model: never assume every activity has a fully-cast team by the time a project exists. "Casting complete" is a state a project moves *into* over time, tracked per activity manager (see §7), not a precondition of project creation.
 
+**Correction (2026-08-30) — `TICKET-tender-creation-rework.md`:** the second bullet above is superseded. Creation no longer assigns an activity manager to anything — casting left the creation wizard entirely, not just the expert-assignment half of it. The wizard's only remaining people-related step seeds the project management team (creator first, others optional; `SPEC-project-creation.md` §6). Every activity starts with no manager cast at all, from the moment the project exists — not a synchronous first pass followed by asynchronous delegation.
+
 ## 7. Team management (B4)
 
 A per-project roster, scoped by role — never global, and never showing another project's people:

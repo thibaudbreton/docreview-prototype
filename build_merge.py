@@ -153,16 +153,21 @@ window.addProject = function(meta){
   const p={ id, ref:meta.ref||("AO-"+id.slice(-4).toUpperCase()), name:meta.name||"Untitled tender",
     line:meta.line||"—", days:meta.days!=null?meta.days:30, deadline:1, updated:"just now",
     role:"Project manager",
-    // TA2 — casting captured in the creation wizard (step 4) now survives past project
-    // creation instead of being discarded: `casting` is the raw per-activity {activityId,
-    // managerId,expertId} list, `experts` is the roster dashboard-et-config.html's Team
-    // screen renders for this project (only the activities the wizard's admin cast
-    // *themselves* on carry a real expert yet — every delegated activity is filled in
-    // later by its own branch manager on that screen, per SPEC-domain-model.md §6; that's
-    // intentional, not a gap this ticket closes). No `builtOut` flag is set here on
-    // purpose — wizard-created projects are exempt from TA1's demo-only block.
-    casting: Array.isArray(meta.casting) ? meta.casting : [],
-    experts: Array.isArray(meta.experts) ? meta.experts : [] };  // whoever creates the tender owns it
+    // TICKET-tender-creation-rework.md — casting left the creation wizard
+    // entirely (it's ongoing project user management on its own screen now,
+    // TICKET-casting-screen-redesign.md), so there's no per-activity roster
+    // to carry through any more. What creation still collects is the much
+    // smaller `pmTeam` — the wizard's own step 4, creator seeded in first.
+    // Not consumed by dashboard-et-config.html's redesigned casting screen
+    // (that screen owns its own independent PM_TEAM, per this project's
+    // no-shared-data-layer convention) — stored here for completeness, same
+    // treatment `experts` got before it. Configuration's own "Team &
+    // experts" section already falls back to its own seed list when this is
+    // empty, which it always will be now — no change needed there. No
+    // `builtOut` flag is set here on purpose — wizard-created projects are
+    // exempt from TA1's demo-only block.
+    experts: [],
+    pmTeam: Array.isArray(meta.pmTeam) ? meta.pmTeam : [] };  // whoever creates the tender owns it
   if(manual){ p.status="requirement_review"; p.done=0; p.total=0; }
   else { p.status="processing"; p.progress=3; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); }
   PROJECTS.unshift(p);

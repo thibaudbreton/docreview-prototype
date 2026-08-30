@@ -1,88 +1,91 @@
 # SPEC — Project creation (New tender wizard)
 
-> Derived from the prototype's actual behaviour, per `docs/prompts/PROMPT-derive-specs-from-prototype.md`. Describes `creation-projet.html` as built. Cross-references `docs/specs/SPEC-domain-model.md` §6 (casting) for the shared casting model; does not restate it.
+> Derived from the prototype's actual behaviour, per `docs/prompts/PROMPT-derive-specs-from-prototype.md`. Describes `creation-projet.html` as built. Implements `TICKET-tender-creation-rework.md` — see that ticket for the reasoning behind each decision below; this spec states the result. Supersedes every earlier version of this document, which described a five-step wizard with per-activity casting built into it.
 
 ## 1. Purpose
 
-A four-step wizard that creates a new tender project: identity, source documents, AI-processing mode, and initial team casting. Ends by registering the project so it appears on Home and opens on its Dashboard (or, in manual mode, straight on the review table).
+**Creation produces the minimum needed to start working, and nothing more.** A four-step wizard collecting identity, documents, processing mode and the project management team, then ends by starting capture and landing the user on the project — not on another form. Everything it collects stays editable afterwards; nothing here is a commitment.
 
-## 2. Actors
+## 2. What left the flow, and why
 
-The person running the wizard is the project's **project manager** — referred to in the code as `"admin"` with the label "Project lead (admin) — you." They are also one of the four seeded activity managers and can cast themselves on an activity like any other manager. No other role interacts with this screen; activity managers who are cast but not the creator only appear as options in the casting selects, they don't use this wizard themselves.
+Casting — assigning who works on which activity — used to be steps 4 and 5 here. It is gone. Casting stopped being a creation-time activity: it's ongoing project user management, on its own permanent screen (`SPEC-team-management.md`), filled in by several people at their own pace, throughout the project's life. A sequential form can't represent that, and trying to was the actual source of the old flow's confusion — it asked for things nobody could answer yet.
 
-## 3. Entry points
+Capture and characterisation never needed a roster. Allocation only needs one for the activities characterisation actually finds in the document — which creation can't know in advance either.
 
-- "＋ New tender" on Home (`accueil.html`, both instances) and on the Dashboard header (`dashboard-et-config.html`, `#new-proj`).
+## 3. Actors
+
+The person running the wizard is the project's creator, automatically the first member of its project management team (`id:"admin"`, `"Bid Director — you"`). No other role interacts with this screen.
+
+## 4. Entry points
+
+- "＋ New tender" on Home (`accueil.html`) and on the Dashboard header (`dashboard-et-config.html`, `#new-proj`).
 - "Cancel" (header) routes back to Home without creating anything — no confirmation prompt, no draft is kept.
 
-From step 4's completion, this screen routes either to the Dashboard (AI-assisted or segmentation-only modes, after a brief non-blocking overlay) or directly to the Allocation/Review screen (manual mode).
+From step 4's completion: **AI-assisted or segmentation-only mode** routes to the Dashboard, where capture is already running in the background — not to a review-then-open flow, and not to Casting. **Manual mode** routes straight to the Review/Allocation screen, since there's no processing to show and a human does every step from the start.
 
-## 4. Layout
+## 5. Layout
 
 - **Header** — logo, "New project" breadcrumb, "Cancel."
-- **Left stepper** (270px) — 4 numbered steps (Project details / Source document / Processing mode / Team & review) with a description line each; the current step is highlighted, completed steps are marked done and clickable to jump back.
+- **Left stepper** (270px) — 4 numbered steps (Project identity / Documents / Processing mode / Management team), current step highlighted, completed steps marked done and clickable to jump back.
 - **Right content pane** — one form per step, scrollable, max-width constrained for readability.
 - **Footer** — "Step N of 4" progress text, Back (hidden on step 1) and Continue/Create buttons.
-- **Processing overlay** (modal, non-blocking mode only) — a brief confirmation box shown while control returns to Home.
+- **Processing overlay** (modal, non-blocking, AI/segmentation modes only) — a brief confirmation shown while control passes to the Dashboard.
 
-## 5. Data displayed
+## 6. Data collected
 
-**Step 1 — Project details.** Name*, tender reference*, product line (select, 4 options), system (select, 5 options), region (select, 5 options), tender issuer (free text), submission deadline (date input, defaults to a fixed `2026-08-12`). Fields marked `*` are required; all others are optional with a placeholder or default.
+**Step 1 — Project identity.** Name*, BO-ID*, product line, system (select, 5 options), region (select, 5 placeholder-acronym options — the real list is still to collect, per the ticket's own open question), tender issuer (free text), submission deadline (date, defaults to a fixed `2026-08-12`).
 
-**Step 2 — Source documents.** A reorderable list of documents, each showing a synthetic filename (`{ref}_part{n}.pdf`), page count, size, and language — all generated from a fixed 5-entry sample table, cycled by index (see §6). An empty-state upload zone is shown when the list is empty; an "add another document" zone appears once at least one exists.
+**Product line gets its own control**, not a plain `<select>` among the other fields: six buttons (Turnkey / RCS / SIG / INFRA / Rolling Stock / Services) with a live note underneath stating the downstream consequence — Turnkey resolves allocation to an **activity** (further split by technical/non-technical classification); every other line resolves it to a **person**. This is deliberately surfaced because it's a setting, not a label — allocation behaves differently depending on it. Whether the choice can still change after allocation has run is explicitly open in the ticket; nothing here locks it.
 
-**Step 3 — Processing mode.** Two presets (AI-assisted / AI segmentation only) as radio-style cards, plus four individual step toggles — Capture, Characterizer, Compliance matrix (its label reads "Compliance matrix" but its live copy describes proposing an *expert*), Allocation (proposes a *manager*) — each with on/off descriptive copy. A computed estimate line (block count guess, steps-enabled count, rough processing time) and, when both Capture and Characterizer are off, a manual-mode warning box.
+**Step 2 — Documents.** A reorderable list, each showing a synthetic filename (`{ref}_part{n}.pdf`), page count, size, and language, generated from a fixed 5-entry sample table cycled by index. Unchanged from before this rework — it already matched what the ticket asks for (multiple documents, ordered, more expected later on the Documents screen).
 
-**Step 4 — Team & review.** A search-combo to add an activity (searches the full `TYPO` activity vocabulary, 13 entries — no predefined subset), one row per added activity showing its activity code, an activity-manager select, and either an expert select (only if the viewer manages that activity themselves), a "to be filled in later" note (if delegated), or a "assign a manager first" prompt. Below it, a flat list of known experts (name, team, remove) with an inline add row. A closing summary table echoes every field entered across all four steps, flagging anything still missing.
+**Step 3 — Processing mode.** Two presets (AI-assisted / AI segmentation only) as radio-style cards, plus three individual step toggles — Capture, Characterisation, Allocation — each with on/off descriptive copy, down from four. The fourth toggle, labelled "Compliance matrix," is removed: the matrix is built continuously from verdicts as contributors answer, not produced by an AI pipeline step, so offering it as one was misleading. "Allocation" now means proposing which **activity** a requirement needs, not a manager or expert — there's no roster to propose against at creation time any more. A computed estimate line and, when both Capture and Characterisation are off, a manual-mode warning box, unchanged.
 
-## 6. Interactions
+**Step 4 — Project management team.** A list starting with the creator, pre-seeded and permanently first (no remove control on that row). A search-add row below it (own local directory, SSO-style typeahead — same interaction the Casting screen's own PM-team add flow uses) lets the creator add others now; nothing requires it, and skipping straight to Create is a normal path. A closing summary table echoes every field entered across all four steps.
+
+## 7. Interactions
 
 - **Step navigation** — click a stepper item (only to a completed or the current step, or forward via Continue which re-validates first), or Back/Continue. *Implemented.*
-- **Step 1 validation** — Continue is blocked with a toast ("Project name and tender reference are required") if either is empty; every other field is optional. *Implemented.*
-- **Add / reorder / remove a document** — clicking the upload zone or "add another document" appends one synthetic document (cycling through 5 canned `{pages, size}` pairs); ▲/▼ swap it with its neighbour; ✕ removes it. *Implemented*, but see §10 — this is not a real file picker.
-- **Processing-mode presets and toggles** — selecting a preset sets all four toggles at once and marks the card active; toggling an individual step switches to "Custom" and updates the estimate/manual-mode copy live. *Implemented*, all client-side state — no AI estimate is actually computed from the (fake) uploaded document; the numbers are a fixed illustrative string ("~2,400 blocks... estimated processing 2 min" style text), not derived from `P.docs`.
-- **Add an activity to casting** — typing in the search combo filters the remaining (not-yet-added) activities live; clicking one adds it with no manager/expert yet. *Implemented.*
-- **Assign an activity manager to an activity** — a per-row select; choosing `"admin"` (the viewer) automatically also assigns them as that activity's expert (their first expert-pool entry marked `isAdmin`), since they're both the manager and, until they delegate research, effectively the point of contact; choosing anyone else clears any expert selection for that row, since the PM cannot pick an expert on another manager's behalf. *Implemented*, matches `SPEC-domain-model.md` §6's casting model.
-- **Assign an expert** (only when the viewer manages the activity themselves) — a per-row select against the flat "known experts" list. *Implemented.*
-- **Remove an activity / expert** — ✕ on either row; removing an expert who's referenced by an existing casting row nulls that row's expert selection (index-based sync) rather than leaving a dangling reference. *Implemented.*
-- **Add a known expert** (name + team/domain, free text) — appended to the flat expert pool, immediately selectable in any casting row the viewer manages. *Implemented.*
+- **Step 1 validation** — Continue is blocked with a toast ("Project name and BO-ID are required") if either is empty; every other field is optional. *Implemented.*
+- **Pick a product line** — click sets `P.line` immediately (no hidden `<select>` to keep in sync) and swaps the consequence note. *Implemented.*
+- **Add / reorder / remove a document** — clicking the upload zone or "add another document" appends one synthetic document; ▲/▼ swap it with its neighbour; ✕ removes it. *Implemented*, not a real file picker (§10).
+- **Processing-mode presets and toggles** — selecting a preset sets all three toggles at once; toggling one individually switches to "Custom" and updates the estimate/manual-mode copy live. *Implemented*, all client-side — the estimate is a fixed illustrative string, not derived from `P.docs`.
+- **Search and add a project management team member** — typing filters the local directory live (top 8 matches); clicking one adds them with whole-project scope and no further fields — there's no perimeter step, unlike the Casting screen's per-activity add flow, because a PM team member isn't attached to one. *Implemented.*
+- **Remove a project management team member** — ✕ on any row except the creator's, which has none. *Implemented.*
 - **Create project** (step 4's Continue, relabelled "✓ Create project") —
   1. Re-validates step 1.
-  2. Notifies every delegated activity manager (anyone cast on an activity who isn't the viewer) via a toast reading "{names} notified by email — asked to complete their team," after an 800ms delay. **Represented / backend-dependent** — no real email is sent; see `SPEC-backend-requirements.md` FR7 (notifications).
-  3. Computes the processing mode (`ai` / `segmentation` / `manual`) from the toggle state and pushes it, plus the review-validated flag and a project-meta summary, into the shell's shared state.
-  4. Registers the project via the shell's `addProject`, carrying the full casting roster through (only activities the viewer cast on themselves arrive with a real expert — delegated ones intentionally arrive empty, to be filled in later on the Team management screen; see `SPEC-domain-model.md` §6).
-  5. **Manual mode** routes straight to the Allocation/Review screen with a toast, skipping the normal "click the card on Home" step. **AI-assisted / segmentation-only modes** show the brief non-blocking processing overlay, then route to Home, where the new project now appears with `status:"processing"` and animates via the same background loop described in `SPEC-home.md` §6.
+  2. Computes the processing mode (`ai` / `segmentation` / `manual`) from the toggle state and pushes it, plus the review-validated flag and a project-meta summary, into the shell's shared state.
+  3. Registers the project via the shell's `addProject`, carrying `pmTeam` through (stored on the project object for completeness; not yet consumed by the Casting screen's own independent `PM_TEAM`, per this project's no-shared-data-layer convention — same treatment the old `experts` field got before it).
+  4. **Manual mode** routes straight to Review with a toast. **AI-assisted / segmentation-only** show the brief non-blocking overlay, then route to the **Dashboard** — capture is already running by the time it opens (`accueil.html`'s "still processing, opens when complete" gate only applies to opening a project by clicking its card from the tender list; a direct route right after creating it is unaffected).
 
-## 7. States
+## 8. States
 
-- **Step validation error** — toast only (see §6); the offending field isn't visually marked invalid beyond that.
+- **Step validation error** — toast only; the offending field isn't visually marked invalid beyond that.
 - **Empty documents** — upload zone shown in place of a list.
-- **Empty casting** — "No activity added yet — search above to add the first one."
-- **Empty known-experts list** — "No expert yet. You can add them now or later — requirements can be characterized before anyone is assigned."
-- **No search match** (casting combo) — "No match," or "Every activity has been added" once the full 13-entry vocabulary is exhausted.
-- **Loading** — the processing overlay is the only loading-style state, and it's fixed-duration (1.4s) rather than tied to any real completion signal.
-- **Error** — not present; nothing in this wizard can fail beyond the one client-side required-field check.
+- **No search match** (PM team add) — "No match in the directory."
+- **Loading** — the processing overlay is the only loading-style state, fixed-duration (1.4s) rather than tied to a real completion signal.
+- **Error** — not present beyond the one client-side required-field check.
 
-## 8. Business rules
+## 9. Business rules
 
-- **A project manager can only directly assign an expert to an activity they manage themselves.** Every other activity's expert is deliberately left unassigned at creation and filled in later by that activity's own activity manager (async casting, `SPEC-domain-model.md` §6) — this is a confirmed, intended delay to the start of analysis, not a defect.
-- **Delegating a manager auto-clears any expert pick on that row**, and **claiming an activity for yourself auto-fills you as its expert** — both directions of the same rule: the expert field only ever holds a value the current viewer is entitled to set.
-- **Casting search offers the full activity vocabulary with no predefined subset** — the project manager builds their own activity list from scratch every time, rather than choosing from a hard-coded handful.
-- **Manual mode skips the workspace click.** Because manual-mode projects route straight to Review, the wizard calls the shell's `setCurrentProject` directly instead of relying on the Home-card click that normally performs that step for every other mode.
-- **New projects are exempt from Home's demo-only block** (`SPEC-home.md` §8) — no `builtOut` flag is set on wizard-created projects, so they're always fully openable, unlike four of the five hand-seeded projects.
-- **The deadline field defaults to a fixed calendar date** (`2026-08-12`) rather than to "N days from today" — worth noting since the countdown/urgency chip elsewhere in the app (`SPEC-home.md` §5) is computed from this value, so a project created long after that date would show as already overdue by default unless the field is changed.
+- **The creator is always the first project management team member and can never be removed from this form** — mirrors the Casting screen's own "a project always keeps at least one" rule, enforced from the start rather than only once you can trigger it there.
+- **Adding to the project management team here is optional, never required** — forcing it would reintroduce exactly the problem this rework removes (asking for things nobody can usefully answer yet).
+- **New projects are exempt from Home's demo-only block** (`SPEC-home.md` §8) — no `builtOut` flag is set on wizard-created projects, so they're always fully openable, unlike the hand-seeded demo projects.
+- **The deadline field defaults to a fixed calendar date** (`2026-08-12`) rather than to "N days from today" — the countdown/urgency chip elsewhere in the app is computed from this value, so a project created long after that date would show as already overdue by default unless the field is changed.
 
-## 9. Non-functional
+## 10. Non-functional
 
-Nothing scale-related — casting is capped by the 13-entry activity vocabulary, and the document list has no stated limit (the per-file "up to 200 MB" cap in the upload-zone copy is never enforced, since no real file is ever read).
+Nothing scale-related — the document list has no stated limit (the per-file "up to 200 MB" cap in the upload-zone copy is never enforced, since no real file is ever read), and the PM-team directory is a 12-entry illustrative pool.
 
-## 10. Placeholders & gaps
+## 11. Placeholders & gaps
 
-- **"Drop tender documents here" implies drag-and-drop, but only a click handler exists** on the upload zone and the "add another document" zone — there is no `dragover`/`drop` listener anywhere in the source. A user who actually tries to drag a file onto the zone gets no response at all; only clicking adds a (synthetic) document. This is a real gap between the copy's implied behaviour and the wired behaviour, distinct from the upload itself being simulated (see §6, which is backend-dependent by nature, not a gap).
-- **No native file picker.** Clicking the upload zone doesn't open an OS file dialog — it appends a canned document from a fixed 5-entry table. Unlike parsing/storing a real PDF (which does need a backend), opening a file picker is something a static page can do without one; its absence here is a scope choice for the prototype rather than something inherently backend-dependent, so it's listed here rather than folded into §6's backend-dependent items.
+- **"Drop tender documents here" implies drag-and-drop, but only a click handler exists.** A user who tries to drag a file onto the zone gets no response; only clicking adds a synthetic document.
+- **No native file picker.** Clicking the upload zone appends a canned document from a fixed 5-entry table rather than opening an OS file dialog.
+- **Region acronyms are still placeholders**, per the ticket's own open question — the real regional code list hasn't been collected.
 
-## 11. Open points
+## 12. Open points
 
-- The **Compliance matrix** toggle's static label doesn't match its own live description text (which describes assigning an *expert*, i.e. what the Allocation toggle's own copy would suggest) — worth confirming whether the label or the description is the one that's stale; not resolved here since picking one would be guessing at intent.
-- The step-3 estimate ("~2,400 blocks... 2 min") is a fixed string regardless of how many documents were actually added in step 2 — unclear whether this is intentional (a fixed demo number, since the "documents" aren't real anyway) or an oversight that should scale with `P.docs.length`.
-- Whether the manual-mode warning box in step 3 ("The review screen opens with the document but no blocks") is accurate when zero documents were added in step 2 (a legal path — step 2 has no required minimum) isn't addressed by any copy on this screen.
+Carried over unresolved from the ticket:
+
+- Do the per-step AI toggles survive alongside the manual/AI-assisted mode as two views of the same setting (current behaviour), or should the mode replace them entirely? Two overlapping controls for the same thing risks being confusing.
+- Whether the product-line choice can change after allocation has run — probably worth locking at that point, since it drives allocation rules retroactively, but not decided; nothing here locks it yet.
