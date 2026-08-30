@@ -295,7 +295,7 @@ const TY=id=>TYPOS[id]||{code:String(id||"—").toUpperCase(),label:id||"—"};
 let QA=[
   {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",
    refs:[{req:"SRM-00010",typology:"mln"}],from:"Karim Benali",date:"Jul 14"},
-  {id:"QA-02",st:"internal",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
+  {id:"QA-02",st:"draft",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
    refs:[{req:"SRM-00013",typology:"mln"}],from:"Claire Moreau",date:"Jul 15"},
   {id:"QA-03",st:"draft",q:"Which TLS version applies to legacy site gateways?",
    refs:[{req:"SRM-00014",typology:"sig"}],from:"Claire Moreau",date:"Jul 16",dup:"QA-04"},
@@ -319,7 +319,7 @@ const TENDER_QA_DATES={
 };
 const state={htab:"questions",qSearch:"",qActivity:"",imported:false,arbTotal:0};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
-const questionsToSend=()=>QA.filter(q=>q.st==="draft"||q.st==="internal");
+const questionsToSend=()=>QA.filter(q=>q.st==="draft");
 const questionsSent=()=>QA.filter(q=>q.st==="sent");
 const refsLabel=q=>q.refs.map(r=>`${r.req} · ${TY(r.typology).label}`).join(", ");
 function toast(msg,kind="ok"){
@@ -387,7 +387,11 @@ function renderQuestions(){
   }
   // The PM can't reject a question, only pull it from the export (§3) — kept as
   // its own group rather than deleted, so it stays on record and reversible.
-  const groups=[["draft","Drafts"],["internal","Internal review"],["sent","Sent to the issuer"],["answered","Answered"],["excluded","Excluded from export"]];
+  // Fewer statuses than the first pass: Internal review carried no behaviour
+  // of its own (nothing here read it) — merged into Draft. Four now: Draft,
+  // Sent, Answered, Excluded — the one still explicitly kept per the point of
+  // this pass, since removing a question from export is the real feature.
+  const groups=[["draft","Drafts"],["sent","Sent to the issuer"],["answered","Answered"],["excluded","Excluded from export"]];
   const search=state.qSearch.toLowerCase(),actF=state.qActivity;
   html+=`<div class="sec-head"><h3>All questions</h3>
     <span class="hint">One question blocks exactly one assignment</span>
@@ -403,7 +407,7 @@ function renderQuestions(){
     if(search) rows=rows.filter(q=>q.q.toLowerCase().includes(search)||q.refs.some(r=>r.req.toLowerCase().includes(search)));
     if(!rows.length) return;
     anyGroup=true;
-    const inBatch=st==="draft"||st==="internal";
+    const inBatch=st==="draft";
     html+=`<div class="qa-group"><div class="qa-group-head">${label} <span class="qa-batch-n">${rows.length}</span></div>
       ${rows.map(q=>`<div class="qa-card${st==="excluded"?" is-excluded":""}">
         <div class="qa-top"><span class="qa-id">${q.id}</span><span class="qa-q">${esc(q.q)}</span>
