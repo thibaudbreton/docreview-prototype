@@ -1005,7 +1005,18 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .deriv-conf.weak{color:var(--ia);background:var(--ia-soft);font-weight:700}
 .deriv-hint{font-size:var(--text-xs);color:var(--text-3);margin-top:5px;line-height:1.45}
 .deriv-hint b{color:var(--text-2)}
-.add-activity-btn{margin-top:var(--space-2);width:100%}
+/* activity list — one aligned row per activity: code, name, confidence, whether
+   it has a model. The confidence badge drops the auto-margin it uses in a step
+   header, otherwise it and the model tag fight over the free space. */
+.act-list{border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden}
+.act-row{display:flex;align-items:center;gap:var(--space-2);padding:7px var(--space-3);border-bottom:1px solid var(--line)}
+.act-row.empty{color:var(--text-3);font-size:var(--text-sm);font-style:italic;justify-content:center}
+.act-row-name{flex:1;min-width:0;font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act-row .deriv-conf{margin-left:0}
+.act-row-model{font-size:var(--text-xs);font-weight:600;color:var(--accent);white-space:nowrap}
+.act-row-model.none{color:var(--text-3)}
+.act-add-row{width:100%;border:none;border-radius:0;padding:8px;color:var(--accent);font-weight:600;background:var(--panel-2)}
+.act-add-row:hover{background:var(--panel-3)}
 /* per-activity blocks in the project manager's view */
 .act-block-name{font-size:var(--text-sm);font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .act-alloc-pill{font-size:var(--text-xs);font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);white-space:nowrap}
@@ -3980,7 +3991,7 @@ function roleRecapHTML(b){
 function confBadgeHTML(f){
   if(!f || f.c==null) return "";
   const weak=f.c<OBS_THRESHOLD;
-  return `<span class="deriv-conf${weak?" weak":""}" title="${f.c}% confidence${weak?" — below the ${OBS_THRESHOLD}% threshold, this step needs checking":""}">${f.c}%</span>`;
+  return `<span class="deriv-conf${weak?" weak":""}" title="${f.c}% confidence${weak?` — below the ${OBS_THRESHOLD}% threshold, this step needs checking`:""}">${f.c}%</span>`;
 }
 function derivStepHTML(label,control,conf,hint){
   return `<div class="deriv-step">
@@ -4057,10 +4068,10 @@ function pmClassificationHTML(b){
   const useAbs = b.tech==="nontech";
   const acts=(b.branches&&b.branches.length)?b.branches
     :((b.perim||[]).length?[{typology:b.perim[0],label:TY(b.perim[0]).label,tkObs:b.tkObs}]:[]);
-  return `<div class="deriv-pass">
-    <div class="deriv-pass-h"><span class="deriv-pass-n">Pass 1</span>Classification</div>
-
-    ${derivStepHTML("Nature",
+  /* No container and no "Pass 1 / Classification" header: these read as the
+     panel's ordinary fields, in derivation order. The arrows already carry the
+     sequence, which is the part that matters. */
+  return `${derivStepHTML("Nature",
       `<select id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${b.kind===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
       null)}
     <div class="deriv-arrow small">↓</div>
@@ -4080,18 +4091,22 @@ function pmClassificationHTML(b){
 
     <div class="deriv-step">
       <div class="deriv-head"><span class="deriv-label">Activity</span></div>
-      ${acts.length?acts.map(a=>{
-        const hasModel=activityHasModel(a.typology);
-        return `<div class="deriv-act">
-          <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>
-          <span class="deriv-act-label">${escHtml(a.label||TY(a.typology).label)}</span>
-          ${confBadgeHTML(a.tkObs)}
-          <span class="deriv-act-model${hasModel?"":" none"}" title="${hasModel?"Routed into this activity's own allocation model.":"No model — allocated by hand inside the activity."}">${hasModel?"has a model":"manual"}</span>
-        </div>`;
-      }).join(""):`<div class="deriv-hint">No activity yet.</div>`}
-      <button class="mini-btn add-activity-btn" id="pm-add-activity">+ Add activity</button>
-    </div>
-  </div>`;
+      <div class="act-list">
+        ${acts.length?acts.map(a=>{
+          const hasModel=activityHasModel(a.typology);
+          const name=a.label||TY(a.typology).label;
+          // the capture's codes double as labels — don't print the same word twice
+          const showName = name && name!==TY(a.typology).code;
+          return `<div class="act-row">
+            <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>
+            ${showName?`<span class="act-row-name">${escHtml(name)}</span>`:`<span class="act-row-name"></span>`}
+            ${confBadgeHTML(a.tkObs)}
+            <span class="act-row-model${hasModel?"":" none"}" title="${hasModel?"Routed into this activity's own allocation model.":"No model — allocated by hand inside the activity."}">${hasModel?"has a model":"manual"}</span>
+          </div>`;
+        }).join(""):`<div class="act-row empty">No activity yet</div>`}
+        <button class="mini-btn act-add-row" id="pm-add-activity">+ Add activity</button>
+      </div>
+    </div>`;
 }
 function activityBlocksHTML(b){
   const acts=b.branches||[];
