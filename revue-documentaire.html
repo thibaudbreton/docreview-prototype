@@ -1704,7 +1704,18 @@ function seedDemoSections(){
          {typology:"mln", label:"Mainline Wayside", manager:"m_mln", expert:"infra", branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
           pbs:{v:"Platform / Wayside alerting",c:80}, abs:{v:"Performance & Validation",c:76}, obs:{v:"Infrastructure & Platform — FR",c:74}},
          {typology:"sys", label:"Safety", manager:null, expert:null, branchStatus:"reassignment_needed", allocStatus:"allocated", compliance:"pending",
-          pbs:{v:"Safety / Alerting escalation",c:70}, abs:{v:"Systems Integration",c:58}, obs:{v:"Cybersecurity — Group",c:42}},
+          pbs:{v:"Safety / Alerting escalation",c:70}, abs:{v:"Systems Integration",c:58}, obs:{v:"Cybersecurity — Group",c:42},
+          // TICKET-two-pass-allocation.md §6 — the one seeded activity that
+          // branches again at pass 2: two teams under one activity, so the
+          // tree is genuinely two levels deep somewhere in the demo and the
+          // "pending propagates upward" rule has something to bite on (Risk
+          // hasn't answered, so Safety stays pending however DBM answers).
+          teams:[
+            {team:"dbm", manager:"m_sig", expert:"cyber", branchStatus:"answered", allocStatus:"allocated", compliance:"not_compliant",
+             pbs:{v:"Safety / Alerting escalation",c:70}, abs:{v:"Systems Integration",c:58}, obs:{v:"DBM",c:64}},
+            {team:"risk", manager:null, expert:null, branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
+             pbs:{v:"Safety / Alerting escalation",c:70}, abs:{v:"Systems Integration",c:58}, obs:{v:"Risk",c:41}},
+          ]},
        ],
        rollupStatus:"Mixed — 1 branch blocked",
        rollupCompliance:"pending",
@@ -1864,6 +1875,57 @@ const TYPO=[
  {id:"trk",code:"TRK",label:"TRK"},
 ];
 const TY=id=>TYPO.find(t=>t.id===id)||{code:id.toUpperCase(),label:id};
+
+/* =====================================================
+   TWO-PASS ALLOCATION — TICKET-two-pass-allocation.md
+
+   Pass 1 (Turnkey only): characterisation feeds ONE dimension, chosen by
+   technical/non-technical — non-technical reads the ABS, technical reads the
+   PBS. That dimension produces the TK OBS, which is an ACTIVITY, and the TK
+   OBS routes the requirement into that activity's own allocation model.
+
+   Pass 2 (every tender): the activity's own model, PBS -> ABS -> OBS in
+   sequence, resolving to a team. Pass 2's OBS is a team/service, which is
+   what casting staffs — not the same kind of thing as pass 1's OBS, which is
+   why the two are never both labelled "OBS".
+
+   Every non-Turnkey tender skips pass 1: a SIG tender is already scoped to
+   SIG, there is nothing to distribute.
+===================================================== */
+const TENDER_LINE=(function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return "Turnkey";
+    const p=window.parent.getCurrentProject();
+    return (p&&p.line)||"Turnkey";
+  }catch(e){ return "Turnkey"; }
+})();
+const runsPassOne=()=>TENDER_LINE==="Turnkey";
+
+/* Which activities have an allocation model of their own. SIG and RST are
+   large enough to be tender types in their own right, so their models were
+   built for those standalone tenders; Turnkey reuses them when it routes
+   there. Everything else has none — and that is the ordinary case, not an
+   error state (ticket §3).
+
+   OPEN, and deliberately not guessed at: the ticket names SIG and "RSC" as
+   the two modelled activities, but the prototype's activity vocabulary (the
+   real Riyadh L7 capture codes above) has no RSC and no RCS — the closest
+   is RST. RST is marked modelled here so the routing is demonstrable with
+   more than one destination; confirm the real list before treating this as
+   fact. Everything not listed resolves to "no model" via the fallback. */
+const ACTIVITY_MODEL={sig:true, rst:true};
+const activityHasModel=id=>!!ACTIVITY_MODEL[id];
+
+/* Pass 1's single dimension, chosen by the requirement's own tech/non-tech
+   characterisation. Returns the dimension name and the value it read, so the
+   panel can show which one actually drove the distribution rather than
+   implying both were consulted. */
+function passOneDimension(b){
+  if(!b || b.tech==null) return null;
+  const useAbs = b.tech==="nontech";
+  const src = useAbs ? b.abs : b.pbs;
+  return {dim: useAbs?"ABS":"PBS", value: src?src.v:null, conf: src?src.c:null};
+}
 /* a requirement can already arrive with 2+ activities — real capture data,
    not just something a user grows one click at a time via the perimeter
    pickers further down. Run the same sync once up front so those rows get
@@ -1872,6 +1934,15 @@ const TY=id=>TYPO.find(t=>t.id===id)||{code:id.toUpperCase(),label:id};
 SECTIONS.forEach(s=>s.blocks.forEach(b=>{
   const arr=(b.kind==="table")?b.rows:[b];
   arr.forEach(r=>{ if(r.kind==="requirement") syncBranchesFromPerim(r); });
+}));
+/* TICKET-two-pass-allocation.md §6 — derive every requirement's verdict from
+   its tree once at init, so the hand-authored rollupCompliance values stop
+   being the source of truth and start being checked against the teams
+   underneath them. Runs after syncBranchesFromPerim so every activity has a
+   branch to derive from. */
+SECTIONS.forEach(s=>s.blocks.forEach(b=>{
+  const arr=(b.kind==="table")?b.rows:[b];
+  arr.forEach(r=>{ if(r.kind==="requirement" && (r.branches||[]).length) deriveRequirementCompliance(r); });
 }));
 // Cycled the same way creation-projet.html cycles expert-avatar colors
 // (COLORS[i % COLORS.length]) — 16 real codes, 6 base colors, some repeats.
@@ -2378,6 +2449,102 @@ function syncBranchesFromPerim(b){
   b.perim.forEach(t=>{
     if(!have.has(t)) b.branches.push({typology:t, label:TY(t).label, manager:null, expert:null, branchStatus:"proposed", compliance:"pending"});
   });
+}
+
+/* =====================================================
+   PASS 2 — TEAM LEVEL (TICKET-two-pass-allocation.md §6)
+
+   Allocation is a two-level tree, not a chain: one requirement -> N activities
+   -> each with M teams. `b.branches[]` was already the activity level, so it
+   keeps that role; what's new is `branch.teams[]` beneath it.
+
+   The per-branch allocation fields (manager, expert, branchStatus, allocStatus,
+   pbs/abs/obs) belong to a TEAM, not to the activity — an activity with two
+   teams has two of each. They stay mirrored onto the branch for the single-team
+   case, which is the overwhelming majority and what every existing consumer
+   still reads; ensureTeams() is what keeps the two views in step.
+
+   `branch.compliance` becomes DERIVED and is never entered by anyone: an
+   activity's verdict is the most restrictive of its teams', pending until all
+   of them have answered (§6). Same rule, applied again one level up, gives the
+   requirement's verdict.
+===================================================== */
+/* Perimeter values from the real casting file — these are what casting staffs,
+   and what pass 2's OBS resolves to. */
+const TEAMS=[
+  {id:"dbm",label:"DBM"},{id:"risk",label:"Risk"},{id:"btm",label:"BTM"},
+  {id:"wayside",label:"Wayside"},{id:"design",label:"Design"},{id:"vv",label:"V&V"},
+];
+const TEAM=id=>TEAMS.find(t=>t.id===id)||{id,label:String(id||"—").toUpperCase()};
+
+/* Promotes a branch's own allocation fields into teams[0] the first time the
+   two-level model touches it — exactly the shape ensureBranches() uses one
+   level up, for the same reason: existing single-level data stays valid. */
+function ensureTeams(branch){
+  if(!branch) return [];
+  if(!(branch.teams&&branch.teams.length)){
+    branch.teams=[{
+      team: branch.team||null,
+      manager: branch.manager||null, expert: branch.expert||null,
+      branchStatus: branch.branchStatus||"proposed",
+      allocStatus: branch.allocStatus||"incomplete",
+      compliance: branch.compliance||"pending",
+      pbs: branch.pbs||null, abs: branch.abs||null, obs: branch.obs||null,
+    }];
+  }
+  return branch.teams;
+}
+/* most restrictive wins, pending until everyone has answered — the ticket's
+   one rule, used at both levels (§6). Order is COMPLIANCE_DEFS' own. */
+const CMP_RANK={not_compliant:3, rnd_needed:2, compliant:1};
+function consolidateCompliance(values){
+  if(!values.length) return "pending";
+  if(values.some(v=>!v||v==="pending")) return "pending"; // one silent leaf blocks its parent
+  return values.reduce((worst,v)=>(CMP_RANK[v]||0)>(CMP_RANK[worst]||0)?v:worst, values[0]);
+}
+/* An activity's verdict is derived from its teams and mirrored back onto the
+   branch, so every existing consumer of branch.compliance keeps reading a
+   correct value without knowing the tree got deeper. */
+function deriveActivityCompliance(branch){
+  const teams=ensureTeams(branch);
+  const v=consolidateCompliance(teams.map(t=>t.compliance));
+  branch.compliance=v;
+  return v;
+}
+/* The requirement's verdict, one level up. A LOCKED verdict is excluded from
+   recalculation — otherwise the lock would mean nothing (§6). Locking only
+   ever happens here, at the top; never a team, never an activity. */
+function deriveRequirementCompliance(b){
+  if(!b.branches||!b.branches.length) return b.rollupCompliance||"pending";
+  const per=b.branches.map(deriveActivityCompliance);
+  const derived=consolidateCompliance(per);
+  b.derivedCompliance=derived;                 // always kept, shown in the panel
+  if(!b.complianceLocked) b.rollupCompliance=derived;
+  return b.rollupCompliance;
+}
+
+/* §3 — routed to an activity that has no allocation model: activity known,
+   fine allocation still to be done by hand. A routine mode of working, not a
+   failure, and a real queue of work that has to be filterable. */
+function needsManualAllocation(branch){
+  if(!branch) return false;
+  if(activityHasModel(branch.typology)) return false;
+  return ensureTeams(branch).some(t=>!t.obs && !t.expert);
+}
+function reqNeedsManualAllocation(b){
+  return (b.branches||[]).some(needsManualAllocation);
+}
+
+/* §2 — the chain is sequential, PBS -> ABS -> OBS. Correcting a step
+   invalidates what follows it, rather than leaving stale downstream values
+   sitting there still looking valid. */
+const DERIV_CHAIN=["pbs","abs","obs"];
+function invalidateDownstream(target,changed){
+  const i=DERIV_CHAIN.indexOf(changed);
+  if(i<0||!target) return [];
+  const cleared=DERIV_CHAIN.slice(i+1).filter(k=>target[k]);
+  cleared.forEach(k=>{ target[k]=null; });
+  return cleared;
 }
 function pushBranchLog(b,who,what,k){
   b.branchLog=b.branchLog||[];
@@ -3262,9 +3429,18 @@ function bindVRows(win){
   win.querySelectorAll("[data-branchcompl]").forEach(sel=>sel.addEventListener("change",e=>{
     e.stopPropagation();
     const [id,idx]=sel.dataset.branchcompl.split("::"); const f=findBlock(id); if(!f)return;
-    const branch=f.b.branches[+idx]; branch.compliance=sel.value;
-    // scripted, local-only: this updates the allocated activity cell alone — the parent's rollupCompliance is hand-authored and never recomputed here
-    toast(`${branch.label}: compliance set to ${complianceLabel(branch.compliance)}`,"ok");
+    const branch=f.b.branches[+idx];
+    // TICKET-two-pass-allocation.md §6 — a verdict is entered on a TEAM. The
+    // activity's verdict and the requirement's are derived from it, never typed:
+    // this used to write branch.compliance directly and leave the parent's
+    // rollup hand-authored and stale.
+    const teams=ensureTeams(branch);
+    teams[0].compliance=sel.value;
+    deriveRequirementCompliance(f.b);
+    const locked=f.b.complianceLocked;
+    toast(`${branch.label}: compliance set to ${complianceLabel(branch.compliance)}`
+      +(locked?` — final verdict stays locked at ${complianceLabel(f.b.rollupCompliance)}`:""),
+      locked?"warn":"ok");
     refresh();
   }));
   win.querySelectorAll("[data-alloc]").forEach(sel=>sel.addEventListener("change",e=>{e.stopPropagation();setAlloc(sel.dataset.alloc, sel.value||null);}));

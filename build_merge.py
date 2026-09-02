@@ -96,7 +96,12 @@ function seedProjects(){
     // of this seed data, not computed — and only set on projects with enough real progress
     // data to assess (skipped for `processing`, which has nothing yet, and `submitted`,
     // which is already closed rather than "on track/at risk").
-    {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"SIG", days:23, deadline:1,
+    // TICKET-two-pass-allocation.md — line was "SIG", which contradicted this
+    // project's own seed data: its requirements are already distributed across
+    // SIG, Mainline and Safety, and only a Turnkey tender distributes across
+    // activities like that (a SIG tender is already scoped to SIG). Turnkey
+    // also makes pass 1 demonstrable on the one fully-built demo project.
+    {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Turnkey", days:23, deadline:1,
      status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager", builtOut:true,
      health:"on_track", healthNote:"On pace — 2 items need attention"},
     {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"SIG", days:9, deadline:1,
