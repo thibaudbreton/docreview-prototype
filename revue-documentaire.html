@@ -1004,6 +1004,20 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .deriv-conf{margin-left:auto;font-size:var(--text-xs);font-variant-numeric:tabular-nums;color:var(--text-3);padding:1px 6px;border-radius:var(--radius-pill);background:var(--panel-3)}
 .deriv-conf.weak{color:var(--ia);background:var(--ia-soft);font-weight:700}
 .deriv-hint{font-size:var(--text-xs);color:var(--text-3);margin-top:5px;line-height:1.45}
+.deriv-hint b{color:var(--text-2)}
+.add-activity-btn{margin-top:var(--space-2);width:100%}
+/* per-activity blocks in the project manager's view */
+.act-block-name{font-size:var(--text-sm);font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act-alloc-pill{font-size:var(--text-xs);font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);white-space:nowrap}
+.act-alloc-pill.s-notstarted{background:var(--panel-3);color:var(--text-3)}
+.act-alloc-pill.s-inprogress{background:var(--ia-soft);color:var(--ia)}
+.act-alloc-pill.s-allocated{background:var(--ok-soft);color:var(--ok)}
+.act-line{display:flex;align-items:baseline;gap:var(--space-3);padding:5px 0;font-size:var(--text-sm)}
+.act-line+.act-line{border-top:1px solid var(--line)}
+.act-k{width:110px;flex-shrink:0;font-size:var(--text-xs);color:var(--text-3)}
+.act-v{flex:1;min-width:0;color:var(--text-2)}
+.act-open-btn{margin-top:var(--space-3);width:100%}
+.act-detail-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
 .review-why{font-size:var(--text-xs);color:var(--ia);line-height:1.45;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--ia-soft);border-radius:var(--radius-sm)}
 /* RM view: "N assignments" indicator + retractable per-allocated-activity sections (collapsed by default) */
 .assignments-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-size:var(--text-xs);font-weight:700;color:var(--accent);background:var(--accent-soft);padding:var(--space-1) var(--space-2);border-radius:var(--radius-pill)}
@@ -2341,6 +2355,12 @@ const state = {
   wrapText:false,
   expandedBranches:new Set(),
   expandedTeams:new Set(),   // "blockId::branchIdx" — pass-2 nesting, independent of the activity level
+  /* Detail panel has two views, not two screens: the project manager's
+     overview of the whole distribution, and one activity's own detail — the
+     view a specialised contributor works in. panelActivity is the branch index
+     the activity view is showing. */
+  panelView:"pm",
+  panelActivity:null,
   redactMode:(function(){try{return (window.parent!==window&&window.parent.getRedactMode)?window.parent.getRedactMode():"redact";}catch(e){return "redact";}})(),
 };
 // TH-followup3 — nav starts fully collapsed (state.selected is still null at
@@ -2581,6 +2601,19 @@ function deriveRequirementCompliance(b){
   return b.rollupCompliance;
 }
 
+/* The pass-2 allocation status, at ACTIVITY level — "has this activity done its
+   allocation yet?". Derived from its teams the same way its verdict is, so
+   nobody enters it and it can't drift: no team resolved -> Not started, some ->
+   In progress, all -> Allocated. Deliberately three states, not the four-state
+   Incomplete/To review/To validate/Allocated vocabulary used per team — the
+   question being asked here is coarser than that one. */
+const ACT_ALLOC_LABEL={notstarted:"Not started", inprogress:"In progress", allocated:"Allocated"};
+function activityAllocStatus(branch){
+  const teams=ensureTeams(branch);
+  const resolved=teams.filter(t=>t.expert||t.obs).length;
+  if(!resolved) return "notstarted";
+  return resolved===teams.length ? "allocated" : "inprogress";
+}
 /* §3 — routed to an activity that has no allocation model: activity known,
    fine allocation still to be done by hand. A routine mode of working, not a
    failure, and a real queue of work that has to be filterable. */
@@ -4002,6 +4035,139 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
   </div>`;
   return html;
 }
+/* =====================================================
+   DETAIL PANEL — two views, one panel
+
+   VIEW 1, the project manager's on a Turnkey tender: what the distribution
+   decided, and where each activity has got to. Classification reads as one
+   sequence — nature, type, the single dimension that type selects, then the
+   activities it produced — followed by one block per activity carrying only
+   what a PM needs to see about it: its OBS, whether it has allocated yet, its
+   verdict, and who holds it.
+
+   VIEW 2, one activity's own detail: the view a specialised contributor works
+   in. Full pass-2 chain for that activity, the person on it, and the two
+   escalations they can raise.
+
+   Deliberately not two screens: it's the same requirement either way, so
+   switching view must not lose where you are in the table.
+===================================================== */
+function pmClassificationHTML(b){
+  const dim=passOneDimension(b);
+  const useAbs = b.tech==="nontech";
+  const acts=(b.branches&&b.branches.length)?b.branches
+    :((b.perim||[]).length?[{typology:b.perim[0],label:TY(b.perim[0]).label,tkObs:b.tkObs}]:[]);
+  return `<div class="deriv-pass">
+    <div class="deriv-pass-h"><span class="deriv-pass-n">Pass 1</span>Classification</div>
+
+    ${derivStepHTML("Nature",
+      `<select id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${b.kind===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
+      null)}
+    <div class="deriv-arrow small">↓</div>
+
+    ${derivStepHTML(`Type${b.techAI?` <span class="deriv-scope" style="color:var(--ia)">· AI, unconfirmed</span>`:""}`,
+      `<select id="f-tech">
+        <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
+        <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
+      </select>`, null,
+      `${useAbs?"Non-technical":"Technical"} — pass 1 reads the <b>${useAbs?"ABS":"PBS"}</b> and nothing else.`)}
+    <div class="deriv-arrow small">↓</div>
+
+    ${useAbs
+      ? derivStepHTML("ABS", `<input type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim?{c:dim.conf}:null)
+      : derivStepHTML("PBS", `<select id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`, dim?{c:dim.conf}:null)}
+    <div class="deriv-arrow small">↓</div>
+
+    <div class="deriv-step">
+      <div class="deriv-head"><span class="deriv-label">Activity</span></div>
+      ${acts.length?acts.map(a=>{
+        const hasModel=activityHasModel(a.typology);
+        return `<div class="deriv-act">
+          <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>
+          <span class="deriv-act-label">${escHtml(a.label||TY(a.typology).label)}</span>
+          ${confBadgeHTML(a.tkObs)}
+          <span class="deriv-act-model${hasModel?"":" none"}" title="${hasModel?"Routed into this activity's own allocation model.":"No model — allocated by hand inside the activity."}">${hasModel?"has a model":"manual"}</span>
+        </div>`;
+      }).join(""):`<div class="deriv-hint">No activity yet.</div>`}
+      <button class="mini-btn add-activity-btn" id="pm-add-activity">+ Add activity</button>
+    </div>
+  </div>`;
+}
+function activityBlocksHTML(b){
+  const acts=b.branches||[];
+  if(!acts.length) return "";
+  return `<div class="set-sep"></div>
+  <div class="branch-sections">
+    <label class="branch-sections-lbl">Activities (${acts.length})</label>
+    ${acts.map((branch,bidx)=>{
+      const st=activityAllocStatus(branch);
+      const teams=ensureTeams(branch);
+      const who=teams.map(t=>{
+        const e=t.expert?(ALLOCS.find(a=>a.id===t.expert)||{}).label:null;
+        const m=t.manager?(MGR(t.manager)||{}).name:null;
+        return [m,e].filter(Boolean).join(" / ")||"Unassigned";
+      }).join(" · ");
+      const obs=teams.map(t=>t.obs&&t.obs.v?t.obs.v:TEAM(t.team).label).filter(Boolean).join(", ");
+      return `<div class="branch-sec">
+        <div class="branch-sec-head">
+          <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}">${TY(branch.typology).code}</span>
+          <span class="act-block-name">${escHtml(branch.label||TY(branch.typology).label)}</span>
+          <span class="act-alloc-pill s-${st}" title="Derived from this activity's ${teams.length} team${teams.length>1?"s":""} — nobody enters it">${ACT_ALLOC_LABEL[st]}</span>
+        </div>
+        <div class="branch-sec-body">
+          <div class="act-line"><span class="act-k">OBS · team</span><span class="act-v">${escHtml(obs)||"—"}</span></div>
+          <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this activity's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
+          <div class="act-line"><span class="act-k">Manager / expert</span><span class="act-v">${escHtml(who)}</span></div>
+          <button class="mini-btn act-open-btn" data-openact="${bidx}">Open activity detail →</button>
+        </div>
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+function activityDetailHTML(b,bidx){
+  const branch=(b.branches||[])[bidx];
+  if(!branch) return `<div class="deriv-hint">That activity is gone.</div>`;
+  const teams=ensureTeams(branch);
+  const t=teams[0];
+  const person=t.expert?(ALLOCS.find(a=>a.id===t.expert)||{}).label:null;
+  const mgr=t.manager?(MGR(t.manager)||{}).name:null;
+  /* Specialty = the sub-activity inside the activity (Urban, Mainline…), the
+     level the casting model already has between activity and perimeter. Read
+     from the activity's own label where the source data carries it — not
+     invented as a new field. */
+  const specialty=(branch.label&&branch.label!==TY(branch.typology).label)
+    ? branch.label.replace(TY(branch.typology).code,"").replace(/^[\s&·—-]+/,"").trim()
+    : null;
+  return `<div class="act-detail-head">
+      <button class="mini-btn" id="act-back">← All activities</button>
+      <span class="ptag${branch.typology==="tky"?" tky":""}">${TY(branch.typology).code}</span>
+      <span class="act-block-name">${escHtml(branch.label||TY(branch.typology).label)}</span>
+    </div>
+    <div class="deriv-pass">
+      <div class="deriv-pass-h"><span class="deriv-pass-n">Pass 2</span>${escHtml(TY(branch.typology).label)}'s own model</div>
+      ${derivStepHTML("Type", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
+      ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-activity within this activity."):""}
+      <div class="deriv-arrow small">↓</div>
+      ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||b.type||"—")}</div>`, t.pbs)}
+      <div class="deriv-arrow small">↓</div>
+      ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
+      <div class="deriv-arrow small">↓</div>
+      ${derivStepHTML("OBS · team", `<div class="fval">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label)}</div>`, t.obs,
+        "The team or service within this activity — this is what casting staffs.")}
+    </div>
+    <div class="set-sep"></div>
+    <div class="field"><label>Assigned to</label>
+      <div class="fval">${escHtml(person||"— nobody yet —")}${mgr?` <span class="deriv-scope">· manager ${escHtml(mgr)}</span>`:""}</div></div>
+    <div class="set-sep"></div>
+    <div class="propose-block">
+      <label class="propose-lbl">Raise a problem</label>
+      <div class="propose-actions">
+        <button class="mini-btn" id="act-reassign" ${branch.reassignRequest?"disabled":""} title="${branch.reassignRequest?"Already flagged for reassignment":"Right activity, wrong person — or the wrong activity entirely"}">↩ Request reassignment</button>
+        <button class="mini-btn" id="act-missing">+ Missing activity</button>
+      </div>
+      <div class="propose-form" id="propose-form" style="display:none"></div>
+    </div>`;
+}
 function renderSettings(){
   const panel = document.getElementById("settings-body");
   if(!state.selected){
@@ -4026,6 +4192,11 @@ function renderSettings(){
   // manager's approve/reject card even when the requirement still has only one
   // allocated activity; hasBranches/rmView alone would hide it until a second allocated activity exists.
   const showBranchPanel = isReq && isAdmin() && ((b.branches||[]).length>1 || (b.branches||[]).some(br=>br.proposal||br.reassignRequest));
+  /* The project manager's two-pass view of a Turnkey tender. Everything else —
+     a contributor, or any non-Turnkey tender — keeps the single-pass panel it
+     already had, since there is no distribution to explain there. */
+  const pmTurnkey = isReq && runsPassOne() && isAdmin();
+  const actView = pmTurnkey && state.panelView==="activity" && state.panelActivity!=null;
   // TC1 — a request raised by the EXPERT belongs to that allocated activity's own manager to
   // resolve, not the admin (a byRole:"manager" request is a B1 escalation and stays
   // admin-only, handled above by showBranchPanel). Looked up independently of
@@ -4093,18 +4264,24 @@ function renderSettings(){
       </div>`;
     }
     const derivSrc = myBranch || b; // whose OBS confidence the weak-derivation warning checks
+    /* The two views replace the FIELD section only — the source-section link and
+       the propose block below them belong to every view and stay shared. */
+    html += pmTurnkey
+      ? (actView ? activityDetailHTML(b,state.panelActivity)
+                 : pmClassificationHTML(b)+activityBlocksHTML(b))
+      : "";
     html += `
-      ${isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
+      ${!pmTurnkey&&isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <select id="f-tech">
           <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
           <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
         </select>
         <div class="tech-hint">${b.tech==="tech"?"Technical requirement — routed through the PBS allocated activity.":"Non-technical requirement — routed through the ABS allocated activity."}</div>
       </div>`:""}
-      ${isReq&&myBranch?`<div class="field"><label>Activity <span style="font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-3)"> · your allocated activity</span></label>
+      ${!pmTurnkey&&isReq&&myBranch?`<div class="field"><label>Activity <span style="font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-3)"> · your allocated activity</span></label>
         <div class="fval"><span class="ptag${myBranch.typology==="tky"?" tky":""}">${TY(myBranch.typology).code}</span> ${TY(myBranch.typology).label}</div>
       </div>`:""}
-      ${isReq&&!myBranch?`<div class="field"><label>Activity ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
+      ${!pmTurnkey&&isReq&&!myBranch?`<div class="field"><label>Activity ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <div class="msel ${state.typoOpen?"open":""}" id="typo-msel">
           <button class="msel-btn" id="typo-btn">
             <span class="mval">${(b.perim||[]).length?(b.perim||[]).map(p=>`<span class="ptag${p==="tky"?" tky":""}">${TY(p).code}</span>`).join(""):'<span class="placeholder">Select activities…</span>'}</span>
@@ -4119,7 +4296,7 @@ function renderSettings(){
         ${isTurnkey(b)?`<div class="tky-note"><b>Turnkey.</b> Supervises the whole scope — needs a coordinating owner plus one specialist per perimeter.</div>`:""}
       </div>`:""}
 
-      ${isReq?`<div class="set-sep"></div>${derivationChainHTML(b,myBranch,derivSrc,rmView)}`:""}
+      ${!pmTurnkey&&isReq?`<div class="set-sep"></div>${derivationChainHTML(b,myBranch,derivSrc,rmView)}`:""}
       ${myReassignBranch?`<div class="set-sep"></div>
       <div class="branch-proposal">
         <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(expert)</span></div>
@@ -4133,7 +4310,7 @@ function renderSettings(){
         </div>
       </div>`:""}
 
-      ${showBranchPanel?`<div class="set-sep"></div>
+      ${showBranchPanel&&!pmTurnkey?`<div class="set-sep"></div>
       <div class="branch-sections">
         <label class="branch-sections-lbl">Allocations (${b.branches.length})</label>
         ${b.branches.map((branch,bidx)=>`<div class="branch-sec">
@@ -4177,7 +4354,7 @@ function renderSettings(){
 
       <div class="field"><label>Source section</label>
         <div class="fval">${s.num}. ${s.title} · <button class="peek-btn" id="goto-doc">View in document →</button></div></div>
-      ${isReq&&!rmView?`<div class="set-sep"></div>
+      ${isReq&&!rmView&&!actView?`<div class="set-sep"></div>
       <div class="mgr-block" id="mgr-block">
         <label class="mgr-lbl">Manager <span>· ${myBranch?"handles your allocated activity":"handles this requirement"}</span></label>
         <div class="mgr-view" id="mgr-view">${managerViewHTML(myBranch||b)}</div>
@@ -4231,6 +4408,21 @@ function renderSettings(){
       announceCleared(cleared,"ABS");
     });
     body.querySelector("#propose-reassign-btn")?.addEventListener("click",()=>renderReassignForm(b,body));
+    /* ---- two-view navigation + the PM view's own controls ---- */
+    body.querySelectorAll("[data-openact]").forEach(btn=>btn.addEventListener("click",()=>{
+      state.panelView="activity"; state.panelActivity=+btn.dataset.openact;
+      applyViewColumns(); renderSettings();
+    }));
+    body.querySelector("#act-back")?.addEventListener("click",()=>{
+      state.panelView="pm"; state.panelActivity=null;
+      applyViewColumns(); renderSettings();
+    });
+    // the activity view's escalations reuse the existing forms — same two
+    // reasons the propose block already offers, raised from inside one activity
+    body.querySelector("#act-reassign")?.addEventListener("click",()=>renderReassignForm(b,body));
+    body.querySelector("#act-missing")?.addEventListener("click",()=>renderProposeForm("add",b,body));
+    body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
+    body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });
     body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
     body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
@@ -4742,6 +4934,23 @@ const RCOLS=[
   {k:"tkobs",w:"124px"},{k:"obs",w:"140px"},{k:"mgr",w:"118px"},{k:"status",w:"92px"},{k:"compliance",w:"108px"},
 ];
 const RCOLS_BY_KEY=Object.fromEntries(RCOLS.map(c=>[c.k,c]));
+/* The panel's two views ask different questions of the table, so each brings its
+   own default column set: the project-manager overview is about pass 1 (which
+   activity, is it distributed), the activity view is about pass 2 inside one
+   activity (the ABS/PBS/OBS chain and who holds it). Only ever applied on a
+   view switch — after that the View menu wins, so a deliberate choice is never
+   overwritten on the next click. */
+const VIEW_COLUMNS={
+  pm:       {hide:["abs","type","obs","mgr"], show:["typo","tkobs","status","compliance"]},
+  activity: {hide:["tkobs"],                  show:["abs","type","obs","mgr","status","compliance"]},
+};
+function applyViewColumns(){
+  if(!runsPassOne()) return;              // no pass 1, no two views to switch between
+  const set=VIEW_COLUMNS[state.panelView]; if(!set) return;
+  set.hide.forEach(k=>state.colCollapsed.add(k));
+  set.show.forEach(k=>state.colCollapsed.delete(k));
+  applyCols();
+}
 function applyCols(){
   const grid=document.querySelector(".rgrid"); if(!grid) return;
   const fullOrder=["sel","id","req",...state.colOrder];
@@ -5054,6 +5263,11 @@ function applyPanels(){
 document.getElementById("nav-toggle")?.addEventListener("click",()=>{ state.navPanelCollapsed=!state.navPanelCollapsed; applyPanels(); });
 document.getElementById("settings-toggle")?.addEventListener("click",()=>{ state.detailPanelCollapsed=!state.detailPanelCollapsed; applyPanels(); });
 applyPanels();
+/* The panel opens in the project-manager view, so the table should open with
+   that view's columns too — applied once at init. Nothing is persisted yet, so
+   there is no user choice to trample here; every later switch respects the View
+   menu, per applyViewColumns' own note. */
+applyViewColumns();
 
 /* ---------- document filter (multi-doc) ---------- */
 function matchesDoc(b){ return state.docFilter==="all" || (b.section && b.section.docId===state.docFilter); }
