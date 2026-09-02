@@ -414,7 +414,7 @@ body.mode-review .doc-scroll{display:none}
 .review-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
 .review-head .sub{font-size:var(--text-sm);color:var(--text-3)}
 /* ---- virtualized grid ---- */
-:root{ --rrow-h:44px; --rgrid-cols:32px 98px minmax(325px,1.82fr) 78px 112px 120px 100px 140px 118px 92px 108px; }
+:root{ --rrow-h:44px; --rgrid-cols:32px 98px minmax(325px,1.82fr) 78px 112px 120px 100px 124px 140px 118px 92px 108px; }
 .rgrid{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
 /* TH2 — this used to opt out of the flex-column default stretch (align-self:
    flex-start) so the header's own box grew to fit its columns and its
@@ -576,7 +576,7 @@ body.mode-review .doc-scroll{display:none}
    .rcell, current rows and future ones alike — the row-render code never needs to
    know the current order. */
 .rgrid-head .rcell{position:relative}
-.rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="type"] .c-type,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{display:none}
+.rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="type"] .c-type,.rgrid[data-cc~="tkobs"] .c-tkobs,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{display:none}
 .rcell.c-sel{order:var(--ord-sel,0)}
 .rcell.c-id{order:var(--ord-id,1)}
 .rcell.c-req{order:var(--ord-req,2)}
@@ -584,8 +584,9 @@ body.mode-review .doc-scroll{display:none}
 .rcell.c-typo{order:var(--ord-typo,4)}
 .rcell.c-abs{order:var(--ord-abs,5)}
 .rcell.c-type{order:var(--ord-type,6)}
-.rcell.c-obs{order:var(--ord-obs,7)}
-.rcell.c-mgr{order:var(--ord-mgr,8)}
+.rcell.c-tkobs{order:var(--ord-tkobs,7)}
+.rcell.c-obs{order:var(--ord-obs,8)}
+.rcell.c-mgr{order:var(--ord-mgr,9)}
 .rcell.c-status{order:var(--ord-status,9)}
 .rcell.c-compliance{order:var(--ord-compliance,10)}
 /* column menu — drag-to-reorder rows */
@@ -735,6 +736,23 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .rrow.branch-row{background:var(--panel-2);cursor:default}
 .rrow.branch-row:hover{background:var(--panel-2)}
 .rrow.branch-row .c-req{padding-left:var(--space-6);gap:6px}
+/* TICKET-two-pass-allocation.md — level 3: a team inside an activity. Indented
+   past the activity row so the activity grouping stays readable; the tree is
+   two levels deep, not a flat list of leaves. */
+.rrow.team-row .c-req{padding-left:calc(var(--space-6) + var(--space-5))}
+.rrow.team-row{background:var(--bg)}
+.rrow.team-row:hover{background:var(--bg)}
+.team-connector{opacity:.55}
+.team-caret{margin-left:var(--space-4)}
+.team-count{font-size:var(--text-xs);color:var(--text-3);white-space:nowrap}
+/* pass-1 confidence, shown per level — being unsure which ACTIVITY a
+   requirement belongs to is its own kind of doubt (§4) */
+.tkobs-val{display:inline-flex;align-items:center;gap:5px;font-size:var(--text-sm);color:var(--text-2);min-width:0}
+.tkobs-val .tkobs-c{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums}
+.tkobs-val.weak{color:var(--ia)}
+.tkobs-val.weak .tkobs-c{color:var(--ia);font-weight:700}
+/* an activity with no allocation model — routine, so neutral, not a warning */
+.manual-alloc-tag{font-size:var(--text-xs);font-weight:700;padding:1px 6px;border-radius:var(--radius-pill);background:var(--panel-3);color:var(--text-3);white-space:nowrap}
 .branch-connector{color:var(--text-3);flex-shrink:0}
 .cbadge.container-count-badge{color:var(--human);background:var(--human-soft);font-weight:600;flex-shrink:0}
 /* B9 — image-sourced row: the text cell's main content is a jump-to-image button
@@ -964,6 +982,28 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .msel-opt .code{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-3);width:30px;flex-shrink:0}
 .msel-opt.on .code{color:var(--accent)}
 .weak-inline{display:inline-flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--warn);margin-top:6px}
+/* TICKET-two-pass-allocation.md — the derivation chain. Each pass is a bounded
+   block so the two are distinguishable at a glance on a Turnkey tender, and the
+   arrows between steps carry the "derived from" relationship that presenting
+   these as three sibling fields used to hide. */
+.deriv-pass{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);background:var(--panel-2)}
+.deriv-pass-h{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-3)}
+.deriv-pass-n{font-size:var(--text-xs);font-weight:700;padding:1px 7px;border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent);letter-spacing:.3px}
+.deriv-dim{font-size:var(--text-xs);color:var(--text-3);line-height:1.5;margin-bottom:var(--space-2)}
+.deriv-dim b{color:var(--text-2)}
+.deriv-act{display:flex;align-items:center;gap:var(--space-2);padding:6px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.deriv-act:first-of-type{border-top:none}
+.deriv-act-label{font-size:var(--text-sm);color:var(--text-2)}
+.deriv-act-model{margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--accent);white-space:nowrap}
+.deriv-act-model.none{color:var(--text-3)}
+.deriv-arrow{text-align:center;font-size:var(--text-xs);color:var(--text-3);padding:var(--space-2) 0}
+.deriv-arrow.small{padding:4px 0}
+.deriv-step .deriv-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:5px}
+.deriv-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
+.deriv-scope{font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-3)}
+.deriv-conf{margin-left:auto;font-size:var(--text-xs);font-variant-numeric:tabular-nums;color:var(--text-3);padding:1px 6px;border-radius:var(--radius-pill);background:var(--panel-3)}
+.deriv-conf.weak{color:var(--ia);background:var(--ia-soft);font-weight:700}
+.deriv-hint{font-size:var(--text-xs);color:var(--text-3);margin-top:5px;line-height:1.45}
 .review-why{font-size:var(--text-xs);color:var(--ia);line-height:1.45;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--ia-soft);border-radius:var(--radius-sm)}
 /* RM view: "N assignments" indicator + retractable per-allocated-activity sections (collapsed by default) */
 .assignments-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-size:var(--text-xs);font-weight:700;color:var(--accent);background:var(--accent-soft);padding:var(--space-1) var(--space-2);border-radius:var(--radius-pill)}
@@ -1458,7 +1498,8 @@ body.restricted .restrict-banner{display:flex}
             <div class="rcell c-typo" data-col="typo" data-sortcol="typo"><span class="cl">Activity<span class="sort-arrow"></span></span></div>
             <div class="rcell c-abs" data-col="abs" data-sortcol="abs"><span class="cl">ABS<span class="sort-arrow"></span></span></div>
             <div class="rcell c-type" data-col="type" data-sortcol="type"><span class="cl">PBS<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-obs" data-col="obs" data-sortcol="obs"><span class="cl">OBS<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-tkobs" data-col="tkobs" data-sortcol="tkobs" title="Pass 1 — the activity this requirement is distributed to. Turnkey tenders only."><span class="cl">TK OBS<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="Pass 2 — the team or service within the activity. This is what casting staffs."><span class="cl">OBS · team<span class="sort-arrow"></span></span></div>
             <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Manager<span class="sort-arrow"></span></span></div>
             <div class="rcell c-status" data-col="status" data-sortcol="status"><span class="cl">Status<span class="sort-arrow"></span></span></div>
             <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
@@ -2086,15 +2127,27 @@ function applyCaptureDemoStatuses(){
     // person.
     if(x.branches && x.branches.length){
       x.branches.forEach(br=>{
-        if(bucket<2){ br.expert=null; br.pbs=null; br.abs=null; br.obs=null; }
+        if(bucket<2){ br.expert=null; br.pbs=null; br.abs=null; br.obs=null; br.tkObs=null; }
         else {
           const bh = hashId(x.id+":"+br.typology);
           if(!br.expert) br.expert = ALLOCS[bh % ALLOCS.length].id;
           br.pbs = {v:"", c: x.pbs.c};
           br.abs = {v:"", c: x.abs.c};
           br.obs = {v:"", c: x.obs.c};
+          /* TICKET-two-pass-allocation.md §4 — pass 1's TK OBS carries its OWN
+             confidence: being unsure which ACTIVITY a requirement belongs to is
+             a distinct and consequential kind of doubt, independent of how
+             confident pass 2 then is inside that activity. Derived from its own
+             hash so it genuinely varies against the pass-2 values rather than
+             mirroring them. */
+          br.tkObs = {v: TY(br.typology).label, c: 55 + (bh % 45)};
         }
       });
+    }
+    // single-activity rows have no branches, but pass 1 still ran on them —
+    // keep the requirement-level TK OBS so the column isn't empty for them
+    if(runsPassOne() && bucket>=2 && !(x.branches&&x.branches.length) && (x.perim||[]).length){
+      x.tkObs = {v: TY(x.perim[0]).label, c: 55 + (h % 45)};
     }
   });
 }
@@ -2271,7 +2324,7 @@ const state = {
   docNavCollapsed:new Set(),
   docFilter:"all",
   colCollapsed:new Set(),
-  colOrder:["class","typo","abs","type","obs","mgr","status","compliance"],
+  colOrder:["class","typo","abs","type","tkobs","obs","mgr","status","compliance"],
   navPanelCollapsed:false,
   detailPanelCollapsed:false,
   sortCol:null,
@@ -2287,6 +2340,7 @@ const state = {
   activeCell:{id:null,bidx:null,col:null},
   wrapText:false,
   expandedBranches:new Set(),
+  expandedTeams:new Set(),   // "blockId::branchIdx" — pass-2 nesting, independent of the activity level
   redactMode:(function(){try{return (window.parent!==window&&window.parent.getRedactMode)?window.parent.getRedactMode():"redact";}catch(e){return "redact";}})(),
 };
 // TH-followup3 — nav starts fully collapsed (state.selected is still null at
@@ -2475,7 +2529,11 @@ const TEAMS=[
   {id:"dbm",label:"DBM"},{id:"risk",label:"Risk"},{id:"btm",label:"BTM"},
   {id:"wayside",label:"Wayside"},{id:"design",label:"Design"},{id:"vv",label:"V&V"},
 ];
-const TEAM=id=>TEAMS.find(t=>t.id===id)||{id,label:String(id||"—").toUpperCase()};
+/* A promoted legacy branch has no team id — pass 2 resolved to a person without
+   ever naming the team. Say that, rather than rendering a bare dash that reads
+   like missing data. */
+const TEAM=id=>id?(TEAMS.find(t=>t.id===id)||{id,label:String(id).toUpperCase()})
+                :{id:null,label:"Team not set"};
 
 /* Promotes a branch's own allocation fields into teams[0] the first time the
    two-level model touches it — exactly the shape ensureBranches() uses one
@@ -3019,6 +3077,17 @@ function rowInnerHTML(b){
   const mgrCellHTML = hasBranches
     ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see managers per branch">Multiple (${b.branches.length})</span>`
     : `<select class="cell-select${b.manager?"":" empty"}" data-mgr="${b.id}">${mgrOptions}</select>`;
+  /* TICKET-two-pass-allocation.md — pass 1's output: the ACTIVITY the
+     requirement was distributed to, with its own confidence. Empty on every
+     non-Turnkey tender, which runs no pass 1 at all. Never labelled "OBS" on
+     its own — the header says TK OBS, the pass-2 column says OBS · team. */
+  const tkObsCellHTML = !runsPassOne()
+    ? `<span class="ph" title="Pass 1 runs on Turnkey tenders only — this tender is already scoped to one activity">—</span>`
+    : hasBranches
+      ? `<span class="multi-ph" title="Distributed to ${b.branches.length} activities — expand to see each one's confidence">Multiple (${b.branches.length})</span>`
+      : (b.tkObs
+        ? `<span class="tkobs-val${b.tkObs.c<OBS_THRESHOLD?" weak":""}" title="Pass 1 — distributed to ${escHtml(b.tkObs.v)} · ${b.tkObs.c}% confidence${b.tkObs.c<OBS_THRESHOLD?" (below threshold — which activity this belongs to is uncertain)":""}">${escHtml(b.tkObs.v)}<span class="tkobs-c">${b.tkObs.c}%</span></span>`
+        : `<span class="ph">—</span>`);
   const obsCellHTML = hasBranches
     ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see experts per branch">Multiple (${b.branches.length})</span>`
     : `<select class="cell-select${!b.alloc&&TYPE_SUGGEST[b.id]?" is-ia":""}${b.alloc?"":" empty"}" data-alloc="${b.id}">${allocOptions}</select>`;
@@ -3061,6 +3130,7 @@ function rowInnerHTML(b){
     <div class="rcell c-typo"><button class="typo-cell" data-typocell="${b.id}">${typoTags}</button></div>
     <div class="rcell c-abs"><input type="text" class="cell-text" data-abs="${b.id}" value="${(b.domain||"").replace(/"/g,'&quot;')}" placeholder="—"></div>
     <div class="rcell c-type"><select class="cell-select" data-type="${b.id}">${typeOptions}</select></div>
+    <div class="rcell c-tkobs">${tkObsCellHTML}</div>
     <div class="rcell c-obs">${obsCellHTML}</div>
     <div class="rcell c-mgr">${mgrCellHTML}</div>
     <div class="rcell c-status"><button class="status-pill ${statusCls}" data-cycle="${b.id}" title="${statusTitle.replace(/"/g,'&quot;')}">${statusLbl}</button></div>
@@ -3088,6 +3158,7 @@ function infoRowHTML(b){
     <div class="rcell c-typo"><span class="ph">—</span></div>
     <div class="rcell c-abs"><span class="ph">—</span></div>
     <div class="rcell c-type"><span class="ph">—</span></div>
+    <div class="rcell c-tkobs"><span class="ph">—</span></div>
     <div class="rcell c-obs"><span class="ph">—</span></div>
     <div class="rcell c-mgr"><span class="ph">—</span></div>
     <div class="rcell c-status">${statusHTML}</div>
@@ -3110,20 +3181,71 @@ function branchRowHTML(parent, branch, idx){
         return `<button class="status-pill s-${branch.allocStatus}" data-branchcycle="${parent.id}::${idx}" title="${title.replace(/"/g,'&quot;')}">${STATUS_LABEL[branch.allocStatus]}</button>`;
       })()
     : `<span class="status-pill branch-status-${branch.branchStatus}" title="In Expert Review">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>`;
+  /* TICKET-two-pass-allocation.md §6 — an activity that branches again at pass 2
+     stops being editable in place: its manager/team/verdict belong to the teams
+     underneath it, and its own verdict is DERIVED, never entered. A single-team
+     activity (the common case) still edits inline and writes through to teams[0],
+     so nothing changes for it.
+     The branch-level lock that used to render here is gone: the lock applies only
+     at the requirement's final verdict, never a leaf and never an activity. */
+  const teams=ensureTeams(branch);
+  const multiTeam=teams.length>1;
+  const teamKey=`${parent.id}::${idx}`;
+  const teamCaret = multiTeam
+    ? `<button class="branch-caret team-caret${state.expandedTeams.has(teamKey)?" open":""}" data-teamtoggle="${teamKey}" title="${state.expandedTeams.has(teamKey)?"Collapse teams":`Expand ${teams.length} teams`}">▸</button>`
+    : "";
+  const manualFlag = needsManualAllocation(branch)
+    ? `<span class="manual-alloc-tag" title="This activity has no allocation model — its contributors allocate within it by hand. A normal way of working, not a failure.">manual</span>`
+    : "";
+  const tkObsCell = !runsPassOne() ? `<span class="ph">—</span>`
+    : (branch.tkObs
+      ? `<span class="tkobs-val${branch.tkObs.c<OBS_THRESHOLD?" weak":""}" title="Pass 1 — ${escHtml(branch.tkObs.v)} · ${branch.tkObs.c}% confidence${branch.tkObs.c<OBS_THRESHOLD?" (below threshold — this activity may be the wrong destination)":""}">${branch.tkObs.c}%</span>`
+      : `<span class="ph">—</span>`);
   return `<div class="rrow branch-row" data-branchof="${parent.id}" data-branchidx="${idx}">
     <div class="rcell c-sel"></div>
-    <div class="rcell c-id"></div>
-    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${branch.label}</span></div>
+    <div class="rcell c-id">${teamCaret}</div>
+    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${branch.label}</span>${manualFlag}${multiTeam?`<span class="team-count" title="${teams.length} teams allocated within this activity">${teams.length} teams</span>`:""}</div>
     <div class="rcell c-class"></div>
     <div class="rcell c-typo"><span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending project-manager review":""}">${TY(branch.typology).code}</span></div>
     <div class="rcell c-abs"></div>
     <div class="rcell c-type"></div>
-    <div class="rcell c-obs"><select class="cell-select branch-edit${branch.expert?"":" empty"}" data-branchexp="${parent.id}::${idx}">${allocOptions}</select></div>
-    <div class="rcell c-mgr"><select class="cell-select branch-edit${branch.manager?"":" empty"}" data-branchmgr="${parent.id}::${idx}">${mgrOptions}</select></div>
+    <div class="rcell c-tkobs">${tkObsCell}</div>
+    <div class="rcell c-obs">${multiTeam
+      ? `<span class="multi-ph" title="${teams.length} teams within this activity — expand to see each">Multiple (${teams.length})</span>`
+      : `<select class="cell-select branch-edit${branch.expert?"":" empty"}" data-branchexp="${parent.id}::${idx}">${allocOptions}</select>`}</div>
+    <div class="rcell c-mgr">${multiTeam
+      ? `<span class="multi-ph">Multiple (${teams.length})</span>`
+      : `<select class="cell-select branch-edit${branch.manager?"":" empty"}" data-branchmgr="${parent.id}::${idx}">${mgrOptions}</select>`}</div>
     <div class="rcell c-status">${branchStatusHTML}</div>
-    <div class="rcell c-compliance">${branch.locked
-      ? `<span class="compliance-pill locked c-${branch.compliance}" title="Locked by ${MGR(branch.lockedBy).name} — no longer editable">🔒 ${complianceLabel(branch.compliance)}</span>`
+    <div class="rcell c-compliance">${multiTeam
+      ? `<span class="compliance-pill c-${branch.compliance}" title="Derived from ${teams.length} teams — most restrictive wins, pending until all have answered. Never entered directly.">${complianceLabel(branch.compliance)}</span>`
       : `<select class="cell-select branch-edit compliance-${branch.compliance}" data-branchcompl="${parent.id}::${idx}">${complianceOptions}</select>`}</div>
+  </div>`;
+}
+
+/* Level 3 — one team within an activity. Where the actual allocation lives once
+   pass 2 branches: manager, team, verdict. Indented past the activity row so the
+   activity grouping stays legible rather than flattening into a list of leaves. */
+function teamRowHTML(parent, branch, bidx, team, tidx){
+  const mgrOptions = ['<option value="">— Unassigned —</option>']
+    .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${team.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
+  const allocOptions = ['<option value="">— Unassigned —</option>']
+    .concat(ALLOCS.map(a=>`<option value="${a.id}" ${team.expert===a.id?"selected":""}>${a.label}</option>`)).join("");
+  const complianceOptions = COMPLIANCE_DEFS.map(c=>`<option value="${c.k}" ${team.compliance===c.k?"selected":""}>${c.label}</option>`).join("");
+  const key=`${parent.id}::${bidx}::${tidx}`;
+  return `<div class="rrow branch-row team-row" data-teamof="${parent.id}" data-teambranch="${bidx}" data-teamidx="${tidx}">
+    <div class="rcell c-sel"></div>
+    <div class="rcell c-id"></div>
+    <div class="rcell c-req"><span class="branch-connector team-connector">↳</span><span class="branch-label">${escHtml(TEAM(team.team).label)}</span></div>
+    <div class="rcell c-class"></div>
+    <div class="rcell c-typo"></div>
+    <div class="rcell c-abs"></div>
+    <div class="rcell c-type"></div>
+    <div class="rcell c-tkobs"></div>
+    <div class="rcell c-obs"><select class="cell-select branch-edit${team.expert?"":" empty"}" data-teamexp="${key}">${allocOptions}</select></div>
+    <div class="rcell c-mgr"><select class="cell-select branch-edit${team.manager?"":" empty"}" data-teammgr="${key}">${mgrOptions}</select></div>
+    <div class="rcell c-status"><span class="status-pill branch-status-${team.branchStatus}">${BRANCH_STATUS_LABEL[team.branchStatus]||team.branchStatus}</span></div>
+    <div class="rcell c-compliance"><select class="cell-select branch-edit compliance-${team.compliance}" data-teamcompl="${key}">${complianceOptions}</select></div>
   </div>`;
 }
 
@@ -3219,7 +3341,14 @@ function advFilterActiveCount(){ return (state.advFilter.items||[]).length; }
 function pushRow(b){
   VROWS.push({type:"row",b});
   if(!BIG.on && (b.branches||[]).length>1 && state.expandedBranches.has(b.id)){
-    b.branches.forEach((branch,idx)=>VROWS.push({type:"branch",parent:b,branch,idx}));
+    b.branches.forEach((branch,idx)=>{
+      VROWS.push({type:"branch",parent:b,branch,idx});
+      // second level: teams within this activity, only when it actually branches
+      const teams=ensureTeams(branch);
+      if(teams.length>1 && state.expandedTeams.has(`${b.id}::${idx}`)){
+        teams.forEach((team,tidx)=>VROWS.push({type:"team",parent:b,branch,bidx:idx,team,tidx}));
+      }
+    });
   }
 }
 function buildVRows(){
@@ -3311,6 +3440,7 @@ function renderReview(){
       return `<div class="rgrid-sub lvl-${it.b.level||2}${state.selected===it.b.id?" active":""}" data-id="${it.b.id}"><span class="rh-t">${it.b.text}</span>${pill}</div>`;
     }
     if(it.type==="branch") return branchRowHTML(it.parent,it.branch,it.idx);
+    if(it.type==="team") return teamRowHTML(it.parent,it.branch,it.bidx,it.team,it.tidx);
     if(it.type==="info")  return `<div class="rrow info-row${state.selected===it.b.id?" active":""}" data-id="${it.b.id}">${infoRowHTML(it.b)}</div>`;
     const b=it.b;
     return `<div class="rrow${state.selected===b.id?" active":""}${state.selection.has(b.id)?" bulk-sel":""}" data-id="${b.id}">${rowInnerHTML(b)}</div>`;
@@ -3351,14 +3481,14 @@ function renderReview(){
    (which row's detail panel is open) — this is purely a keyboard
    focus position, painted as an accent ring on one .rcell.
 ===================================================== */
-const NAV_COLS=["sel","id","req","class","typo","abs","type","obs","mgr","status","compliance"];
+const NAV_COLS=["sel","id","req","class","typo","abs","type","tkobs","obs","mgr","status","compliance"];
 function navCols(){ return NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
 /* flat, on-screen order of data rows (parents + visible allocated-activity sub-rows) — respects
    current sort/filter/branch-expansion, exactly what Up/Down should step through.
    This stays host-specific (VROWS is revue's own row model) — everything below it
    is generic and shared with the follow-up screen via table-engine.js (TE). */
 function visibleDataRows(){
-  return VROWS.filter(it=>it.type==="row"||it.type==="branch").map(it=>
+  return VROWS.filter(it=>it.type==="row"||it.type==="branch"||it.type==="team").map(it=>
     it.type==="row" ? {id:it.b.id,bidx:null} : {id:it.parent.id,bidx:it.idx});
 }
 function activeCellRowEl(ac){
@@ -3406,6 +3536,40 @@ function bindVRows(win){
     const id=btn.dataset.branchtoggle;
     state.expandedBranches.has(id) ? state.expandedBranches.delete(id) : state.expandedBranches.add(id);
     renderReview();
+  }));
+  /* second level — teams within one activity. Independent of the activity
+     caret: collapsing the requirement hides everything under it, but an
+     activity's teams keep their own open/closed state. */
+  win.querySelectorAll("[data-teamtoggle]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    const k=btn.dataset.teamtoggle;
+    state.expandedTeams.has(k) ? state.expandedTeams.delete(k) : state.expandedTeams.add(k);
+    renderReview();
+  }));
+  /* team-level edits — this is where allocation actually lives once pass 2
+     branches. Every verdict change re-derives the activity and the requirement
+     above it; nothing writes a derived value directly. */
+  const teamAt=(key)=>{
+    const [id,bidx,tidx]=key.split("::"); const f=findBlock(id); if(!f) return null;
+    const branch=f.b.branches[+bidx]; if(!branch) return null;
+    return {b:f.b, branch, team:ensureTeams(branch)[+tidx]};
+  };
+  win.querySelectorAll("[data-teammgr]").forEach(sel=>sel.addEventListener("change",e=>{
+    e.stopPropagation(); const t=teamAt(sel.dataset.teammgr); if(!t)return;
+    t.team.manager=sel.value||null; refresh();
+  }));
+  win.querySelectorAll("[data-teamexp]").forEach(sel=>sel.addEventListener("change",e=>{
+    e.stopPropagation(); const t=teamAt(sel.dataset.teamexp); if(!t)return;
+    t.team.expert=sel.value||null; refresh();
+  }));
+  win.querySelectorAll("[data-teamcompl]").forEach(sel=>sel.addEventListener("change",e=>{
+    e.stopPropagation(); const t=teamAt(sel.dataset.teamcompl); if(!t)return;
+    t.team.compliance=sel.value;
+    deriveRequirementCompliance(t.b);
+    toast(`${TEAM(t.team.team).label}: ${complianceLabel(t.team.compliance)} — ${t.branch.label} now ${complianceLabel(t.branch.compliance)}`
+      +(t.b.complianceLocked?` (final verdict locked at ${complianceLabel(t.b.rollupCompliance)})`:""),
+      t.b.complianceLocked?"warn":"ok");
+    refresh();
   }));
   win.querySelectorAll("[data-gotoimg]").forEach(btn=>btn.addEventListener("click",e=>{
     e.stopPropagation();
@@ -3764,6 +3928,80 @@ function roleRecapHTML(b){
     ${row("Expert", expName, expTeam?("Expert · "+expTeam):"Expert", "#3fa9b2", expName?expName.replace(/[^A-Za-z]/g,"").slice(0,2).toUpperCase():"", !exp)}
   </div>`;
 }
+/* =====================================================
+   DETAIL PANEL — the derivation chain (TICKET-two-pass-allocation.md §2, §4)
+
+   These were three sibling fields in the order ABS, PBS, OBS, which said they
+   were three equivalent inputs. They are not: the chain is PBS -> ABS -> OBS,
+   each step derived from the one before it, so they are presented in that
+   order with the derivation made visible between them.
+
+   Each step carries its OWN confidence (§4) — the AI can be sure of the PBS
+   and unsure of the ABS derived from it — so confidence is shown per level,
+   never collapsed into one row-level signal.
+
+   On a Turnkey tender, pass 1 is shown above pass 2: the single dimension it
+   read, the activity it produced, and whether that activity has a model to
+   route into or needs allocating by hand.
+===================================================== */
+function confBadgeHTML(f){
+  if(!f || f.c==null) return "";
+  const weak=f.c<OBS_THRESHOLD;
+  return `<span class="deriv-conf${weak?" weak":""}" title="${f.c}% confidence${weak?" — below the ${OBS_THRESHOLD}% threshold, this step needs checking":""}">${f.c}%</span>`;
+}
+function derivStepHTML(label,control,conf,hint){
+  return `<div class="deriv-step">
+    <div class="deriv-head"><span class="deriv-label">${label}</span>${confBadgeHTML(conf)}</div>
+    ${control}
+    ${hint?`<div class="deriv-hint">${hint}</div>`:""}
+  </div>`;
+}
+function derivationChainHTML(b,myBranch,derivSrc,rmView){
+  const dim=passOneDimension(b);
+  let html="";
+
+  /* ---- pass 1 — distribution across activities (Turnkey only) ---- */
+  if(runsPassOne()){
+    const acts = (b.branches&&b.branches.length)
+      ? b.branches
+      : ((b.perim||[]).length ? [{typology:b.perim[0], label:TY(b.perim[0]).label, tkObs:b.tkObs}] : []);
+    html += `<div class="deriv-pass">
+      <div class="deriv-pass-h"><span class="deriv-pass-n">Pass 1</span>Distribution across activities</div>
+      ${dim?`<div class="deriv-dim">${b.tech==="nontech"?"Non-technical":"Technical"} — a single dimension is read, the <b>${dim.dim}</b>. The other one takes no part in this pass.</div>`
+            :`<div class="deriv-dim">Not classified yet — pass 1 needs the technical / non-technical call before it can read a dimension.</div>`}
+      ${acts.length?acts.map(a=>{
+        const hasModel=activityHasModel(a.typology);
+        return `<div class="deriv-act">
+          <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>
+          <span class="deriv-act-label">${escHtml(a.label||TY(a.typology).label)}</span>
+          ${confBadgeHTML(a.tkObs)}
+          <span class="deriv-act-model${hasModel?"":" none"}" title="${hasModel?"Routed into this activity's own allocation model — pass 2 runs automatically.":"No allocation model for this activity. Its contributors allocate within it by hand — a routine way of working, not a failure."}">${hasModel?"→ has a model":"→ allocate manually"}</span>
+        </div>`;
+      }).join(""):`<div class="deriv-hint">No activity yet — nothing to route into.</div>`}
+    </div>
+    <div class="deriv-arrow" title="The TK OBS routes the requirement into that activity's own allocation model">↓ routes into</div>`;
+  }
+
+  /* ---- pass 2 — the activity's own model, PBS -> ABS -> OBS ---- */
+  const scope = myBranch ? `${TY(myBranch.typology).label}'s model` : (runsPassOne()?"the activity's own model":`${escHtml(TENDER_LINE)}'s model`);
+  html += `<div class="deriv-pass">
+    <div class="deriv-pass-h"><span class="deriv-pass-n">Pass 2</span>${escHtml(scope)}</div>
+    ${derivStepHTML("PBS",
+      `<select id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
+      derivSrc.pbs)}
+    <div class="deriv-arrow small">↓</div>
+    ${derivStepHTML("ABS",
+      `<input type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
+      derivSrc.abs,
+      "Derived from the PBS above — correcting the PBS clears this and the OBS.")}
+    ${!rmView?`<div class="deriv-arrow small">↓</div>
+    ${derivStepHTML(`OBS · team${myBranch?` <span class="deriv-scope">· your allocated activity</span>`:""}`,
+      `<select id="f-alloc">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${(myBranch?myBranch.expert:b.alloc)===a.id?"selected":""}>${a.label}</option>`)).join("")}</select>`,
+      derivSrc.obs,
+      "The team or service within the activity — this is what casting staffs.")}`:""}
+  </div>`;
+  return html;
+}
 function renderSettings(){
   const panel = document.getElementById("settings-body");
   if(!state.selected){
@@ -3881,14 +4119,7 @@ function renderSettings(){
         ${isTurnkey(b)?`<div class="tky-note"><b>Turnkey.</b> Supervises the whole scope — needs a coordinating owner plus one specialist per perimeter.</div>`:""}
       </div>`:""}
 
-      ${isReq?`<div class="set-sep"></div>
-      <div class="field"><label>ABS</label>
-        <input type="text" id="f-domain" value="${b.domain||""}"></div>
-      <div class="field"><label>PBS</label>
-        <select id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select></div>`:""}
-      ${!rmView&&isReq?`<div class="field"><label>OBS${myBranch?` <span style="font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-3)">· your allocated activity</span>`:""}</label>
-        ${derivSrc.obs&&weakestLink(derivSrc)?`<div class="weak-inline">⚠ Weak ${weakestLink(derivSrc).k} (${weakestLink(derivSrc).c}%) — check the derivation</div>`:""}
-        <select id="f-alloc">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${(myBranch?myBranch.expert:b.alloc)===a.id?"selected":""}>${a.label}</option>`)).join("")}</select></div>`:""}
+      ${isReq?`<div class="set-sep"></div>${derivationChainHTML(b,myBranch,derivSrc,rmView)}`:""}
       ${myReassignBranch?`<div class="set-sep"></div>
       <div class="branch-proposal">
         <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(expert)</span></div>
@@ -3977,8 +4208,28 @@ function renderSettings(){
       if(was) logFeedback("char", b.id, before==="tech"?"Technical":"Non-technical", b.tech==="tech"?"Technical":"Non-technical", null);
       refresh();
     });
-    body.querySelector("#f-type")?.addEventListener("change",e=>{const before=b.type;b.type=e.target.value;logFeedback("char",b.id,before,e.target.value,null);markAllocEdited(b);refresh();toast("Type updated","ok")});
-    body.querySelector("#f-domain")?.addEventListener("change",e=>{b.domain=e.target.value.trim();markAllocEdited(b);refresh();});
+    /* TICKET-two-pass-allocation.md §2 — the chain is sequential, so correcting a
+       step invalidates what follows it. Leaving a stale ABS and OBS sitting
+       there still looking valid is exactly what the ticket asks us to stop
+       doing, so the consequence is applied and then stated. */
+    const derivTarget = () => (typeof myBranchOf==="function" && myBranchOf(b)) || b;
+    const announceCleared = (cleared,changed)=>{
+      if(!cleared.length) return;
+      toast(`${changed.toUpperCase()} changed — ${cleared.map(c=>c.toUpperCase()).join(" and ")} cleared, they were derived from it`,"warn");
+    };
+    body.querySelector("#f-type")?.addEventListener("change",e=>{
+      const before=b.type; b.type=e.target.value;
+      logFeedback("char",b.id,before,e.target.value,null);
+      const cleared=invalidateDownstream(derivTarget(),"pbs");
+      markAllocEdited(b); refresh();
+      cleared.length ? announceCleared(cleared,"PBS") : toast("PBS updated","ok");
+    });
+    body.querySelector("#f-domain")?.addEventListener("change",e=>{
+      b.domain=e.target.value.trim();
+      const cleared=invalidateDownstream(derivTarget(),"abs");
+      markAllocEdited(b); refresh();
+      announceCleared(cleared,"ABS");
+    });
     body.querySelector("#propose-reassign-btn")?.addEventListener("click",()=>renderReassignForm(b,body));
     body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
@@ -4488,7 +4739,7 @@ function renderSortIndicators(){
 const RCOLS=[
   {k:"sel",w:"32px"},{k:"id",w:"98px"},{k:"req",w:"minmax(325px,1.82fr)"},
   {k:"class",w:"78px"},{k:"typo",w:"112px"},{k:"abs",w:"120px"},{k:"type",w:"100px"},
-  {k:"obs",w:"140px"},{k:"mgr",w:"118px"},{k:"status",w:"92px"},{k:"compliance",w:"108px"},
+  {k:"tkobs",w:"124px"},{k:"obs",w:"140px"},{k:"mgr",w:"118px"},{k:"status",w:"92px"},{k:"compliance",w:"108px"},
 ];
 const RCOLS_BY_KEY=Object.fromEntries(RCOLS.map(c=>[c.k,c]));
 function applyCols(){
@@ -4774,7 +5025,7 @@ document.addEventListener("click",e=>{ if(filterPanelState.open && !e.target.clo
 const colsPanelState={open:false};
 const COLUMN_TOGGLE_DEFS=[
   {k:"class",label:"Class"},{k:"typo",label:"Activity"},{k:"abs",label:"ABS"},{k:"type",label:"PBS"},
-  {k:"obs",label:"OBS"},{k:"mgr",label:"Manager"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
+  {k:"tkobs",label:"TK OBS (activity)"},{k:"obs",label:"OBS (team)"},{k:"mgr",label:"Manager"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
 ];
 function renderColumnsPanel(){
   const p=document.getElementById("cols-panel"); if(!p) return;
