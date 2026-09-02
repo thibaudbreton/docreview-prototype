@@ -4023,16 +4023,16 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
   html += `<div class="deriv-pass">
     <div class="deriv-pass-h"><span class="deriv-pass-n">Pass 2</span>${escHtml(scope)}</div>
     ${derivStepHTML("PBS",
-      `<select id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
+      `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
       derivSrc.pbs)}
     <div class="deriv-arrow small">↓</div>
     ${derivStepHTML("ABS",
-      `<input type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
+      `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
       derivSrc.abs,
       "Derived from the PBS above — correcting the PBS clears this and the OBS.")}
     ${!rmView?`<div class="deriv-arrow small">↓</div>
     ${derivStepHTML(`OBS · team${myBranch?` <span class="deriv-scope">· your allocated activity</span>`:""}`,
-      `<select id="f-alloc">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${(myBranch?myBranch.expert:b.alloc)===a.id?"selected":""}>${a.label}</option>`)).join("")}</select>`,
+      `<select class="ui-select${(myBranch?myBranch.expert:b.alloc)?"":" is-empty"}" id="f-alloc">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${(myBranch?myBranch.expert:b.alloc)===a.id?"selected":""}>${a.label}</option>`)).join("")}</select>`,
       derivSrc.obs,
       "The team or service within the activity — this is what casting staffs.")}`:""}
   </div>`;
@@ -4064,12 +4064,12 @@ function pmClassificationHTML(b){
      panel's ordinary fields, in derivation order. The arrows already carry the
      sequence, which is the part that matters. */
   return `${derivStepHTML("Nature",
-      `<select id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${b.kind===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
+      `<select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${b.kind===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
       null)}
     <div class="deriv-arrow small">↓</div>
 
     ${derivStepHTML(`Type${b.techAI?` <span class="deriv-scope" style="color:var(--ia)">· AI, unconfirmed</span>`:""}`,
-      `<select id="f-tech">
+      `<select class="ui-select" id="f-tech">
         <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
         <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
       </select>`, null,
@@ -4077,8 +4077,8 @@ function pmClassificationHTML(b){
     <div class="deriv-arrow small">↓</div>
 
     ${useAbs
-      ? derivStepHTML("ABS", `<input type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim?{c:dim.conf}:null)
-      : derivStepHTML("PBS", `<select id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`, dim?{c:dim.conf}:null)}
+      ? derivStepHTML("ABS", `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim?{c:dim.conf}:null)
+      : derivStepHTML("PBS", `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`, dim?{c:dim.conf}:null)}
     <div class="deriv-arrow small">↓</div>
 
     <div class="deriv-step">
@@ -4280,7 +4280,7 @@ function renderSettings(){
       : "";
     html += `
       ${!pmTurnkey&&isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
-        <select id="f-tech">
+        <select class="ui-select" id="f-tech">
           <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
           <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
         </select>

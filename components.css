@@ -170,3 +170,66 @@
 .ui-list.is-compact .ui-list-add{padding:7px var(--space-3)}
 /* borderless variant, when the list already sits inside a bordered container */
 .ui-list.is-flush{border:none;border-radius:0;background:transparent}
+
+/* ---------- ui-select / ui-input — the universal field controls ----------
+   ~46 select rulesets across the seven screens, all near-identical: padding
+   drifting between 5px, 7px, 8px and var(--space-2), backgrounds split between
+   --panel-2 and --panel-3, font sizes between --text-xs, --text-sm and
+   --text-base, and most of them still showing the browser's own dropdown arrow,
+   which looks different on every OS. This is the one dropdown field.
+
+   The chevron is drawn here rather than left to the platform, so the control
+   looks the same everywhere and its arrow follows the text colour scale.
+*/
+.ui-select{
+  appearance:none;
+  -webkit-appearance:none;
+  width:100%;
+  padding:8px 30px 8px var(--space-3);
+  background-color:var(--panel-2);
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B9AAD' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 10px center;
+  background-size:11px;
+  border:1px solid var(--line-2);
+  border-radius:var(--radius-md);
+  color:var(--text);
+  font-family:var(--font-ui);
+  font-size:var(--text-base);
+  line-height:1.35;
+  outline:none;
+  cursor:pointer;
+  transition:border-color .15s, background-color .15s;
+}
+html[data-theme="light"] .ui-select{
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23637187' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+.ui-select:hover{background-color:var(--panel-3)}
+.ui-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent)}
+/* nothing chosen yet — muted, so an unset field reads as unset at a glance */
+.ui-select.is-empty{color:var(--text-3)}
+.ui-select:disabled{opacity:.5;cursor:default;background-color:var(--panel-2)}
+
+/* text input sharing the same box, so a form doesn't mix two shapes */
+.ui-input{
+  width:100%;
+  padding:8px var(--space-3);
+  background:var(--panel-2);
+  border:1px solid var(--line-2);
+  border-radius:var(--radius-md);
+  color:var(--text);
+  font-family:var(--font-ui);
+  font-size:var(--text-base);
+  line-height:1.35;
+  outline:none;
+  transition:border-color .15s, background-color .15s;
+}
+.ui-input::placeholder{color:var(--text-3)}
+.ui-input:hover{background-color:var(--panel-3)}
+.ui-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent)}
+
+/* denser variant, for a control sitting in a table cell or a toolbar */
+.ui-select.is-compact,.ui-input.is-compact{padding-top:5px;padding-bottom:5px;font-size:var(--text-sm)}
+.ui-select.is-compact{padding-right:26px;background-position:right 7px center;background-size:10px}
+/* sits inline in a row rather than filling its container */
+.ui-select.is-inline,.ui-input.is-inline{width:auto}
