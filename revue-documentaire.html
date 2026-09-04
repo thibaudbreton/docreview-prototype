@@ -4065,7 +4065,7 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
         </div>`;
       }).join(""):`<div class="deriv-hint">No activity yet — nothing to route into.</div>`}
     </div>
-    <div class="deriv-arrow" title="The TK OBS routes the requirement into that activity's own allocation model">↓ routes into</div>`;
+    <div class="deriv-arrow" title="The TK OBS routes the requirement into that activity's own allocation model">routes into</div>`;
   }
 
   /* ---- pass 2 — the activity's own model, PBS -> ABS -> OBS ---- */
@@ -4075,7 +4075,6 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
     ${derivStepHTML("PBS",
       `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
       derivSrc.pbs)}
-    <div class="deriv-arrow small">↓</div>
     ${derivStepHTML("ABS",
       `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
       derivSrc.abs,
@@ -4116,7 +4115,6 @@ function pmClassificationHTML(b){
   return `${derivStepHTML("Nature",
       `<select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${b.kind===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
       null)}
-    <div class="deriv-arrow small">↓</div>
 
     ${derivStepHTML(`Type${b.techAI?` <span class="deriv-scope" style="color:var(--ia)">· AI, unconfirmed</span>`:""}`,
       `<select class="ui-select" id="f-tech">
@@ -4124,12 +4122,10 @@ function pmClassificationHTML(b){
         <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
       </select>`, null,
       `${useAbs?"Non-technical":"Technical"} — pass 1 reads the <b>${useAbs?"ABS":"PBS"}</b> and nothing else.`)}
-    <div class="deriv-arrow small">↓</div>
 
     ${useAbs
       ? derivStepHTML("ABS", `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim?{c:dim.conf}:null)
       : derivStepHTML("PBS", `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`, dim?{c:dim.conf}:null)}
-    <div class="deriv-arrow small">↓</div>
 
     <div class="deriv-step">
       <div class="deriv-head"><span class="deriv-label">Activity</span></div>
@@ -4226,12 +4222,9 @@ function activityDetailHTML(b,bidx){
       <div class="deriv-pass-h"><span class="deriv-pass-n">Pass 2</span>${escHtml(TY(branch.typology).label)}'s own model</div>
       ${derivStepHTML("Type", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
       ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-activity within this activity."):""}
-      <div class="deriv-arrow small">↓</div>
-      ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||b.type||"—")}</div>`, t.pbs)}
-      <div class="deriv-arrow small">↓</div>
-      ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
-      <div class="deriv-arrow small">↓</div>
-      ${derivStepHTML("OBS · team", `<div class="fval">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label)}</div>`, t.obs,
+        ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||b.type||"—")}</div>`, t.pbs)}
+        ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
+        ${derivStepHTML("OBS · team", `<div class="fval">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label)}</div>`, t.obs,
         "The team or service within this activity — this is what casting staffs.")}
     </div>
     <div class="set-sep"></div>
