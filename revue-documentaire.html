@@ -669,6 +669,12 @@ body.mode-review .doc-scroll{display:none}
 .export-panel .exp-go{width:100%;margin-top:var(--space-4);padding:var(--space-2);border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-base)}
 .export-panel .exp-go:hover{background:var(--accent-hover)}
 .export-panel .exp-note{font-size:var(--text-xs);color:var(--text-3);line-height:1.5;margin-top:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--line)}
+/* batch-6 "Export what the filters currently show" — exporting has to say,
+   plainly, what it's about to hand over. A narrowed export that reads as "the
+   export" is the mistake the ticket calls out: silent and expensive. */
+.exp-scope{font-size:var(--text-sm);color:var(--text-2);background:var(--panel-3);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-2);line-height:1.5}
+.exp-scope b{color:var(--text)}
+.exp-scope.zero{color:var(--warn)}
 .doc-filter{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);color:var(--text);font-size:var(--text-sm);padding:var(--space-1) var(--space-2);max-width:200px}
 .rcell.c-id{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-2);white-space:nowrap}
 .rcell.c-sec{color:var(--text-3);font-size:var(--text-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:var(--rrow-h)}
@@ -5604,6 +5610,29 @@ const EXPORT_FORMATS=[
   {k:"doors9",label:"DOORS 9 (.csv for import)"},{k:"doorsng",label:"DOORS Next (ReqIF)"},
 ];
 const exportState={steps:new Set(["capture","charac","alloc"]),format:"xlsx",docId:"all",open:false};
+/* The rows an export would actually contain: document scope (this panel's
+   own control) narrowed by whatever's currently active on the table — the
+   per-column chips and the advanced filter (SPEC-advanced-filters.md's own
+   "one combined active-filter state", same two mechanisms the toolbar's
+   readback chip already speaks for). Search and the quick triage pills are
+   deliberately NOT applied here — the ticket names chips and the advanced
+   filter specifically, and those two are a considered "which subset should
+   go out," not a passing lens for browsing the table. */
+function exportRows(){
+  return reqs().filter(visibleTo)
+    .filter(b=>exportState.docId==="all" || (b.section&&b.section.docId===exportState.docId))
+    .filter(passesColFilters).filter(passesAdvFilter);
+}
+function exportScopeHTML(){
+  const rows=exportRows();
+  const filterParts=colFilterActiveCount()||advFilterActiveCount()
+    ? [document.getElementById("adv-filter-banner-text").textContent].filter(Boolean)
+    : [];
+  const docPart=exportState.docId==="all"?"":`Doc ${DOCS.findIndex(d=>d.id===exportState.docId)+1}`;
+  const scopeBits=[docPart,...filterParts].filter(Boolean);
+  const scopeTxt=scopeBits.length?` — ${scopeBits.join(" AND ")}`:"";
+  return `<div class="exp-scope${rows.length?"":" zero"}">${rows.length?`<b>${rows.length.toLocaleString()}</b> requirement${rows.length>1?"s":""}`:"Nothing matches the current scope"}${scopeTxt}</div>`;
+}
 function renderExportPanel(){
   const p=document.getElementById("export-panel"); if(!p) return;
   p.classList.toggle("on",exportState.open);
@@ -5614,22 +5643,26 @@ function renderExportPanel(){
     <div class="exp-h">Export requirements</div>
     <div class="exp-sec-lbl">Document</div>
     <select id="exp-doc" class="exp-format">${docOptions}</select>
+    <div id="exp-scope">${exportScopeHTML()}</div>
     <div class="exp-sec-lbl">Include steps</div>
     ${EXPORT_STEPS.map(s=>`<label class="exp-row"><input type="checkbox" data-estep="${s.k}" ${exportState.steps.has(s.k)?"checked":""}><span><span class="exp-t">${s.label}</span><span class="exp-d">${s.desc}</span></span></label>`).join("")}
     <div class="exp-sec-lbl">Target format</div>
     <select id="exp-format" class="exp-format">${EXPORT_FORMATS.map(f=>`<option value="${f.k}" ${exportState.format===f.k?"selected":""}>${f.label}</option>`).join("")}</select>
     <button class="exp-go" id="exp-go">Generate export</button>
     <div class="exp-note">DOORS import keeps the requirement register upstream. Export late — most of the review stays in the tool.</div>`;
-  p.querySelector("#exp-doc").addEventListener("change",e=>exportState.docId=e.target.value);
+  p.querySelector("#exp-doc").addEventListener("change",e=>{ exportState.docId=e.target.value; document.getElementById("exp-scope").innerHTML=exportScopeHTML(); });
   p.querySelectorAll("[data-estep]").forEach(cb=>cb.addEventListener("change",()=>{ cb.checked?exportState.steps.add(cb.dataset.estep):exportState.steps.delete(cb.dataset.estep); }));
   p.querySelector("#exp-format").addEventListener("change",e=>exportState.format=e.target.value);
   p.querySelector("#exp-go").addEventListener("click",()=>{
     if(!exportState.steps.size){ toast("Select at least one step to export","warn"); return; }
+    const rows=exportRows();
+    if(!rows.length){ toast("Nothing to export — the current filters match 0 requirements","warn"); return; }
     const fmt=EXPORT_FORMATS.find(f=>f.k===exportState.format).label.split(" ")[0];
     const steps=[...exportState.steps].map(k=>EXPORT_STEPS.find(s=>s.k===k).label).join(" + ");
     const scope=exportState.docId==="all"?"all documents":("Doc "+(DOCS.findIndex(d=>d.id===exportState.docId)+1));
+    const filtered=colFilterActiveCount()||advFilterActiveCount();
     exportState.open=false; renderExportPanel();
-    toast(`Export generated — ${fmt} · ${steps} · ${scope}`,"ok");
+    toast(`Export generated — ${rows.length.toLocaleString()} requirement${rows.length>1?"s":""} · ${fmt} · ${steps} · ${scope}${filtered?" · filtered":""}`,"ok");
   });
 }
 document.getElementById("export-btn")?.addEventListener("click",e=>{ e.stopPropagation(); exportState.docId=state.docFilter; exportState.open=!exportState.open; renderExportPanel(); });
