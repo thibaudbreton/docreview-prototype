@@ -721,6 +721,16 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .compliance-compliant{color:var(--ok)}
 /* B3 — project-manager compliance override + lock */
 .compliance-pill.locked{border-color:var(--warn);opacity:.9}
+/* TICKET-two-pass-allocation.md §6 — the requirement's own final verdict,
+   distinct from the activity blocks below it: a light warm tint when locked
+   so it reads as "this is the answer, whatever the tree computes" without
+   needing the tooltip to find out. */
+.final-verdict{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:var(--space-3);background:var(--panel-2)}
+.final-verdict.is-locked{border-color:rgba(224,164,60,.4);background:var(--ia-soft)}
+.final-verdict-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
+.final-verdict-drift{font-size:var(--text-xs);color:var(--ia);font-style:italic}
+.final-verdict-btn{margin-left:auto}
+.final-verdict-note{margin-left:auto;font-size:var(--text-xs);color:var(--text-3);font-style:italic}
 .lock-badge{display:inline-flex;align-items:center;gap:4px;font-size:var(--text-xs);font-weight:700;color:var(--warn);background:var(--warn-soft);padding:2px var(--space-2);border-radius:var(--radius-pill);white-space:nowrap}
 .compliance-rnd_needed{color:var(--ia)}
 .compliance-not_compliant{color:var(--warn)}
@@ -1423,6 +1433,11 @@ body.restricted .restrict-banner{display:flex}
       <button class="tpill p-allocated" data-filter="allocated"><span class="n" id="n-allocated">0</span> allocated</button>
       <button class="tpill p-changes" data-filter="changed"><span class="n" id="n-changes">0</span> changes v2.0 → v2.1</button>
       <button class="tpill p-reassign" data-filter="reassign" id="pill-reassign" style="display:none"><span class="n" id="n-reassign">0</span> pending reassignment</button>
+      <!-- TICKET-two-pass-allocation.md §3/lot 4 — "must be visible and filterable —
+           it's a real queue of work, not a failure." Only ever shown on a Turnkey
+           tender: everywhere else the tender's own activity always has a model by
+           definition, so the count would be permanently zero. -->
+      <button class="tpill p-manual" data-filter="manual" id="pill-manual" style="display:none"><span class="n" id="n-manual">0</span> awaiting manual allocation</button>
     </div>
     <button class="clear-filter" id="clear-filter">✕ Clear filter</button>
     <button class="btn-ghost" id="seg-btn" style="margin-left:auto">✂ Edit segmentation</button>
@@ -2629,6 +2644,30 @@ function reqNeedsManualAllocation(b){
   return (b.branches||[]).some(needsManualAllocation);
 }
 
+/* §6 — the tree branches at two independent levels; a requirement's SHAPE is
+   one of three states, the deepest branching present. A requirement can be
+   multi-activity AND have one of those activities branch into multiple teams —
+   reported as "team" in that case, since that's the level someone filtering by
+   shape actually wants to find. */
+function reqAllocLevel(b){
+  const brs=b.branches||[];
+  if(brs.some(br=>ensureTeams(br).length>1)) return "team";
+  if(brs.length>1) return "activity";
+  return "single";
+}
+/* §4/§2 — which pass a requirement's doubt belongs to, if any. Pass 1 doubt
+   (unsure which ACTIVITY this belongs to) is checked first and wins: it is
+   the more consequential kind — a weak pass-2 chain inside the wrong activity
+   is moot. Only ever "pass1" on a Turnkey tender, since nothing else runs pass 1. */
+function reqPassDoubt(b){
+  const brs=b.branches||[];
+  const pass1Sources = brs.length ? brs : (b.tkObs?[{tkObs:b.tkObs}]:[]);
+  if(runsPassOne() && pass1Sources.some(a=>a.tkObs && a.tkObs.c<OBS_THRESHOLD)) return "pass1";
+  const pass2Sources = brs.length ? brs.flatMap(br=>ensureTeams(br)) : [b];
+  if(pass2Sources.some(weakestLink)) return "pass2";
+  return "none";
+}
+
 /* §2 — the chain is sequential, PBS -> ABS -> OBS. Correcting a step
    invalidates what follows it, rather than leaving stale downstream values
    sitting there still looking valid. */
@@ -2663,6 +2702,7 @@ function matchesFilter(b){
   if(isInfo) return !state.filter; // no other quick filter (changed/reassign) ever applies to an info row
   if(state.filter==="changed") return !!b.change || b.kind==="ghost";
   if(state.filter==="reassign") return blockNature(b)==="requirement" && hasPendingReassign(b);
+  if(state.filter==="manual") return blockNature(b)==="requirement" && reqNeedsManualAllocation(b);
   return true;
 }
 function matchesSearch(b){
@@ -3155,8 +3195,10 @@ function rowInnerHTML(b){
       statusTitle=(es.reviewReason?es.reviewReason+" — ":"")+(statusEligible?("Click to validate"+(nextIsAlloc?" — sends to Expert Review":"")):"Nothing to validate yet");
     }
   }
+  // §6 — the lock is visible to everyone allocated on the requirement, not
+  // just whoever opens the panel; the row is where every one of them sees it.
   const complianceHTML = hasBranches
-    ? `<span class="compliance-pill c-${b.rollupCompliance}">${complianceLabel(b.rollupCompliance)}</span>`
+    ? `<span class="compliance-pill${b.complianceLocked?" locked":""} c-${b.rollupCompliance}" title="${b.complianceLocked?`Locked by ${MGR(b.lockedBy||VIEWER).name} — no longer follows the activities below`:""}">${b.complianceLocked?"🔒 ":""}${complianceLabel(b.rollupCompliance)}</span>`
     : `<span class="ph">—</span>`;
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
@@ -3366,6 +3408,13 @@ const ADV_FILTER_FIELDS={
   section:{label:"Section",type:"text",get:b=>[b.section?`${b.section.num||""} ${b.section.title||""}`.trim():""]},
   doubtfield:{type:"enum",label:COL_FILTER_DEFS.doubtfield.label,options:COL_FILTER_DEFS.doubtfield.options,get:COL_FILTER_DEFS.doubtfield.get},
   changed:{label:"Changed since version",type:"enum",options:[{v:"added",l:"Added"},{v:"modified",l:"Modified"},{v:"unchanged",l:"Unchanged"}],get:b=>[b.change||"unchanged"]},
+  // TICKET-two-pass-allocation.md lot 4 — "by allocation level, by pass, and
+  // by awaiting manual allocation." The quick pill above covers the third one
+  // as a one-click view; these three fields cover all of them at filter
+  // precision, combinable with everything else in the advanced filter.
+  alloclevel:{label:"Allocation level",type:"enum",options:[{v:"single",l:"Single (no branching)"},{v:"activity",l:"Branches — multiple activities"},{v:"team",l:"Branches — multiple teams"}],get:b=>[reqAllocLevel(b)]},
+  passdoubt:{label:"Doubt — which pass",type:"enum",options:[{v:"pass1",l:"Pass 1 — which activity"},{v:"pass2",l:"Pass 2 — within the activity"},{v:"none",l:"No doubt"}],get:b=>[reqPassDoubt(b)]},
+  manualalloc:{label:"Awaiting manual allocation",type:"enum",options:[{v:"yes",l:"Yes"},{v:"no",l:"No"}],get:b=>[reqNeedsManualAllocation(b)?"yes":"no"]},
 };
 function passesAdvFilter(b){ return TE.matchesFilter(ADV_FILTER_FIELDS, state.advFilter, b); }
 function colFilterActiveCount(){ return Object.values(state.colFilters).filter(s=>s.size).length; }
@@ -4101,6 +4150,23 @@ function pmClassificationHTML(b){
       </div>
     </div>`;
 }
+/* §6 — "the lock applies only at the top level — the requirement's final
+   verdict. Never a leaf, never an activity." This is that control: shown to
+   EVERY allocated contributor (§6 — "several contributors may be working
+   underneath a verdict that no longer reflects their input, and they need to
+   know"), but only the project manager can operate it, per
+   SPEC-domain-model.md §5's existing "only the project manager" rule — the
+   ticket doesn't reopen who may lock, only where the lock lives. */
+function finalVerdictHTML(b){
+  const locked=b.complianceLocked;
+  const admin=isAdmin();
+  return `<div class="final-verdict${locked?" is-locked":""}">
+    <div class="final-verdict-label">Final verdict</div>
+    <span class="compliance-pill${locked?" locked":""} c-${b.rollupCompliance}" title="${locked?`Locked by ${MGR(b.lockedBy||VIEWER).name} — the tree below keeps computing, this stays put until unlocked`:"Derived from every activity below — most restrictive wins, pending until all have answered"}">${locked?"🔒 ":""}${complianceLabel(b.rollupCompliance)}</span>
+    ${locked&&b.derivedCompliance&&b.derivedCompliance!==b.rollupCompliance?`<span class="final-verdict-drift" title="What the tree currently computes underneath the lock">tree now says ${complianceLabel(b.derivedCompliance)}</span>`:""}
+    ${admin?`<button class="mini-btn final-verdict-btn" id="final-verdict-toggle">${locked?"Unlock":"Lock"}</button>`:(locked?`<span class="final-verdict-note">Locked — contact the project management team to change it</span>`:"")}
+  </div>`;
+}
 function activityBlocksHTML(b){
   const acts=b.branches||[];
   if(!acts.length) return "";
@@ -4276,7 +4342,7 @@ function renderSettings(){
        the propose block below them belong to every view and stay shared. */
     html += pmTurnkey
       ? (actView ? activityDetailHTML(b,state.panelActivity)
-                 : pmClassificationHTML(b)+activityBlocksHTML(b))
+                 : pmClassificationHTML(b)+((b.branches||[]).length?finalVerdictHTML(b):"")+activityBlocksHTML(b))
       : "";
     html += `
       ${!pmTurnkey&&isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
@@ -4289,6 +4355,7 @@ function renderSettings(){
       ${!pmTurnkey&&isReq&&myBranch?`<div class="field"><label>Activity <span style="font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-3)"> · your allocated activity</span></label>
         <div class="fval"><span class="ptag${myBranch.typology==="tky"?" tky":""}">${TY(myBranch.typology).code}</span> ${TY(myBranch.typology).label}</div>
       </div>`:""}
+      ${!pmTurnkey&&isReq&&hasBranches?finalVerdictHTML(b):""}
       ${!pmTurnkey&&isReq&&!myBranch?`<div class="field"><label>Activity ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <div class="msel ${state.typoOpen?"open":""}" id="typo-msel">
           <button class="msel-btn" id="typo-btn">
@@ -4320,6 +4387,7 @@ function renderSettings(){
 
       ${showBranchPanel&&!pmTurnkey?`<div class="set-sep"></div>
       <div class="branch-sections">
+        ${finalVerdictHTML(b)}
         <label class="branch-sections-lbl">Allocations (${b.branches.length})</label>
         ${b.branches.map((branch,bidx)=>`<div class="branch-sec">
             <div class="branch-sec-head">
@@ -4431,6 +4499,17 @@ function renderSettings(){
     body.querySelector("#act-missing")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });
+    body.querySelector("#final-verdict-toggle")?.addEventListener("click",()=>{
+      if(b.complianceLocked){
+        b.complianceLocked=false; b.lockedBy=null;
+        deriveRequirementCompliance(b); // catch up on anything that changed while locked
+        toast(`${b.id} unlocked — the final verdict now follows the tree again`,"ok");
+      } else {
+        b.complianceLocked=true; b.lockedBy=VIEWER;
+        toast(`${b.id} locked at ${complianceLabel(b.rollupCompliance)} — visible to everyone allocated on it`,"warn");
+      }
+      refresh();
+    });
     body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
     body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
@@ -4790,6 +4869,15 @@ function renderTriage(){
     reassignPill.style.display = pendingReassign ? "" : "none";
     document.getElementById("n-reassign").textContent = pendingReassign;
     if(!pendingReassign && state.filter==="reassign") setFilter("reassign");
+  }
+  // TICKET-two-pass-allocation.md §3 — same "only occupy a slot when it means
+  // something" rule as the reassignment pill above.
+  const awaitingManual = runsPassOne() ? r.filter(reqNeedsManualAllocation).length : 0;
+  const manualPill = document.getElementById("pill-manual");
+  if(manualPill){
+    manualPill.style.display = awaitingManual ? "" : "none";
+    document.getElementById("n-manual").textContent = awaitingManual;
+    if(!awaitingManual && state.filter==="manual") setFilter("manual");
   }
 }
 

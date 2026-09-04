@@ -24,10 +24,14 @@ Let a user express a precise question about the requirement set — several cond
 | Activity | enum | from the real activity list |
 | Perimeter | enum | optional on a row, so "is empty" matters |
 | Responsible person | enum | one person per requirement since session 3 |
-| ABS / PBS / OBS | enum | |
+| ABS / PBS / OBS · team | enum | sequential — PBS → ABS → OBS, each derived from the one before |
+| TK OBS · activity | enum | pass 1 only (Turnkey tenders) — never the same field as OBS · team, see `TICKET-two-pass-allocation.md` |
+| Allocation level | enum | single / branches into activities / branches into teams |
+| Doubt — which pass | enum | pass 1 (which activity) / pass 2 (within it) / none |
+| Awaiting manual allocation | enum | the activity has no allocation model — a normal state, not an error |
 | Document | enum | which source document the row came from |
 | Section | text | the heading path |
-| Doubt on \<field\> | boolean | per AI-decided field: Type, Class, ABS, PBS, OBS |
+| Doubt on \<field\> | boolean | per AI-decided field: Type, Class, ABS, PBS, OBS · team, TK OBS |
 | Last follow-up | date | on the follow-up screen |
 | Changed since version | enum | ties into gap analysis |
 
