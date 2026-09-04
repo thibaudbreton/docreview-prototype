@@ -4150,7 +4150,7 @@ function pmClassificationHTML(b){
      panel's ordinary fields, in derivation order. The arrows already carry the
      sequence, which is the part that matters. */
   return `${derivStepHTML("Nature",
-      `<select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${b.kind===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
+      `<select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
       null)}
 
     ${derivStepHTML(`Type${b.techAI?` <span class="deriv-scope" style="color:var(--ia)">· AI, unconfirmed</span>`:""}`,
@@ -4319,7 +4319,7 @@ function renderSettings(){
   panel.innerHTML = `
     <div class="set-head">
       <div class="set-id-row">
-        <span class="set-id">${isReq?b.id:"Text block"}</span>
+        <span class="set-id">${b.id}</span>
         ${es.val?`<span class="status-pill s-${es.val}" style="cursor:default">${STATUS_LABEL[es.val]}</span>`:""}
         ${rmView?`<span class="assignments-badge" title="${b.branches.length} parallel allocations">🔀 ${b.branches.length} assignments</span>`:""}
         ${b.sourceImage?`<button class="mini-btn" id="back-to-container" style="margin-left:auto" title="Back to ${b.sourceImage}">← Image</button>`:""}
@@ -4381,6 +4381,9 @@ function renderSettings(){
                  : pmClassificationHTML(b)+activityBlocksHTML(b))
       : "";
     html += `
+      ${!isReq?`<div class="field"><label>Type</label>
+        <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
+      </div>`:""}
       ${!pmTurnkey&&isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <select class="ui-select" id="f-tech">
           <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
