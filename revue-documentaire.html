@@ -1017,6 +1017,14 @@ body.seg-on .tbl-gran{display:inline-flex}
 /* filter-to-selection banner — replaces the toolbar while active */
 .filter-sel-banner{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-lg);font-size:var(--text-sm);color:var(--text)}
 .filter-sel-banner b{font-variant-numeric:tabular-nums}
+/* The active-filter readback, inline in the toolbar. Truncates rather than
+   wrapping — a filter over several fields can run long, and growing the
+   toolbar to fit it would give back the row this was meant to save. The full
+   sentence stays available on hover. */
+.active-filter{display:flex;align-items:center;gap:6px;min-width:0;max-width:min(46%,520px);padding:4px 6px 4px 10px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-pill);font-size:var(--text-xs);color:var(--text)}
+.active-filter-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.active-filter button{flex-shrink:0;width:18px;height:18px;border-radius:50%;color:var(--text-2);font-size:10px;display:grid;place-items:center}
+.active-filter button:hover{background:var(--accent);color:#fff}
 /* keyboard active cell — same focus ring as Text Input's Focus state, inset to stay inside the cell */
 .rcell.active-cell{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius-xs);position:relative;z-index:1}
 .rtoolbar .lbl{font-size:var(--text-xs);color:var(--text-3);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
@@ -1554,15 +1562,16 @@ body.restricted .restrict-banner{display:flex}
           <span>Showing <b id="fsb-n">0</b> of <b id="fsb-total">0</b> requirements — selected</span>
           <button class="btn-ghost" id="fsb-show-all" style="font-size:var(--text-sm)">Show all</button>
         </div>
-        <!-- SPEC-advanced-filters.md §4 — "always show the filter in plain language above
-             the results". Reuses .filter-sel-banner's look; hidden while Filter to Selection
-             is showing its own banner instead (§7 — Filter to Selection suspends chips, so
-             the advanced filter is moot while it's active). -->
-        <div class="filter-sel-banner" id="adv-filter-banner" style="display:none">
-          <span id="adv-filter-banner-text"></span>
-          <button class="btn-ghost" id="adv-filter-banner-clear" style="font-size:var(--text-sm)">Clear</button>
-        </div>
         <div class="rtoolbar" id="rtoolbar">
+          <!-- SPEC-advanced-filters.md §4 — "always show the filter in plain language
+               above the results". It sits IN the toolbar rather than on a banner row of
+               its own: the sentence is one line of text, and a full-width bordered band
+               was spending ~50px of table height to say it. Hidden while Filter to
+               Selection shows its own banner (§7 — that mode suspends chips anyway). -->
+          <div class="active-filter" id="adv-filter-banner" style="display:none">
+            <span class="active-filter-t" id="adv-filter-banner-text"></span>
+            <button id="adv-filter-banner-clear" title="Clear every filter">✕</button>
+          </div>
           <div class="search-box" style="width:220px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
             <input type="text" id="table-search" placeholder="Search requirement, ID…">
@@ -3538,7 +3547,11 @@ function renderReview(){
   const allParts=colParts.concat(advPart?[advPart]:[]);
   const anyActive = !state.filterToSelection && allParts.length>0;
   document.getElementById("adv-filter-banner").style.display = anyActive?"flex":"none";
-  if(anyActive) document.getElementById("adv-filter-banner-text").textContent = allParts.join(" AND ");
+  if(anyActive){
+    const sentence=allParts.join(" AND ");
+    const t=document.getElementById("adv-filter-banner-text");
+    t.textContent=sentence; t.title=sentence;   // truncated inline, full on hover
+  }
   document.getElementById("review-sub").innerHTML =
     `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, activity, managers, experts and statuses`;
   renderSortIndicators();
