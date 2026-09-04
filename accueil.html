@@ -147,7 +147,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
     <div class="hdr-r">
       <button class="reset-btn" id="reset-btn" title="Reset the demo to its initial state (for user testing)">↺ Reset demo</button>
       <button class="btn-primary" id="new-btn">＋ New tender</button>
-      <div class="avatar">TB</div>
+      <div class="avatar" id="header-avatar">TB</div>
     </div>
   </header>
 
@@ -169,6 +169,21 @@ html[data-theme="light"] .logo-mark-light{display:block}
 <div id="toast-zone"></div>
 
 <script>
+/* TICKETS-prototype-batch6.md "Prepare the login for SSO" — identity now comes
+   from the shell's directory-shaped getCurrentUser(), not typed into each
+   screen's own markup (every screen had "Thibaud Breton"/"TB" hardcoded
+   independently — six copies, no source of truth). No real SSO integration —
+   prototype-level, per the ticket — but the screens now assume an identity
+   handed to them. Standalone file:// open (no parent) keeps the same default
+   so a screen still renders sensibly opened on its own, consistent with how
+   CURRENT_PROJECT already falls back elsewhere in these files. */
+(function(){
+  try{
+    const u=(window.parent!==window && window.parent.getCurrentUser) ? window.parent.getCurrentUser() : {name:"Thibaud Breton",title:"Bid Director",init:"TB"};
+    const av=document.getElementById("header-avatar");
+    if(av){ av.textContent=u.init; av.title=u.title?`${u.name} — ${u.title}`:u.name; }
+  }catch(e){}
+})();
 function toast(msg,kind="ok"){
   const z=document.getElementById("toast-zone"),t=document.createElement("div");
   t.className="toast";

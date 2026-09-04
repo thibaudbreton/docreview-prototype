@@ -131,6 +131,18 @@ let PROJECTS = seedProjects();
 let currentProjectId = "stb2026";
 window.getProjects = ()=>PROJECTS;
 window.getCurrentProject = ()=>PROJECTS.find(p=>p.id===currentProjectId)||null;
+
+// TICKETS-prototype-batch6.md "Prepare the login for SSO" — there is no login
+// screen in this prototype (the app opens straight on My tenders), so there
+// is no form to remove. What there WAS: every screen's avatar had "Thibaud
+// Breton"/"TB" typed literally into its own markup — six independent copies
+// of a hand-entered identity, no single source of truth. This is that source:
+// shaped like what an SSO/directory lookup returns (id, name, title, email,
+// initials), fetched by every screen the same way getCurrentProject() already
+// is. No real SSO integration — prototype-level, per the ticket — but the
+// screens and the user model now assume an identity handed to them, not typed.
+const CURRENT_USER = {id:"admin", name:"Thibaud Breton", title:"Bid Director", email:"thibaud.breton@company.com", init:"TB"};
+window.getCurrentUser = ()=>CURRENT_USER;
 // manual-mode project creation routes straight to "review", skipping the
 // workspace click that would normally call openProject() — this is the
 // direct way to make a just-created project "current" without also

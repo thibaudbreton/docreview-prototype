@@ -624,7 +624,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
       </div>
       <button class="btn-primary" id="export2-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Export</button>
       <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
-      <div class="avatar" title="Thibaud Breton">TB</div>
+      <div class="avatar" id="header-avatar" title="Thibaud Breton">TB</div>
     </div>
   </header>
 
@@ -726,6 +726,21 @@ textarea.resp-in:focus{border-color:var(--accent)}
 <div id="toast-zone"></div>
 
 <script>
+/* TICKETS-prototype-batch6.md "Prepare the login for SSO" — identity now comes
+   from the shell's directory-shaped getCurrentUser(), not typed into each
+   screen's own markup (every screen had "Thibaud Breton"/"TB" hardcoded
+   independently — six copies, no source of truth). No real SSO integration —
+   prototype-level, per the ticket — but the screens now assume an identity
+   handed to them. Standalone file:// open (no parent) keeps the same default
+   so a screen still renders sensibly opened on its own, consistent with how
+   CURRENT_PROJECT already falls back elsewhere in these files. */
+(function(){
+  try{
+    const u=(window.parent!==window && window.parent.getCurrentUser) ? window.parent.getCurrentUser() : {name:"Thibaud Breton",title:"Bid Director",init:"TB"};
+    const av=document.getElementById("header-avatar");
+    if(av){ av.textContent=u.init; av.title=u.title?`${u.name} — ${u.title}`:u.name; }
+  }catch(e){}
+})();
 /* @include table-engine.js */
 /* =====================================================
    SHARED DATA
