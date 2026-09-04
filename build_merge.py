@@ -12,6 +12,11 @@ parent.routeUrl(...) / goRoute(...) JS calls (see dashboard-et-config.html's
 goRoute() for the standalone-fallback pattern) — not <a href="X.html"> tags.
 Keep new cross-screen links in that form; there is no href rewriting here.
 
+Shared CSS: components.css holds UI components used by more than one screen
+(the ui-list list field, and whatever follows it). It is inlined the same way
+via "/* @include components.css */" in a screen's own <style> block. Edit that
+one file to change a component everywhere it appears.
+
 Shared JS (B5): table-engine.js holds review-table interaction behaviour used
 by more than one screen (selection, Bulk Action Bar, Filter to Selection,
 keyboard navigation, Column Visibility Menu). It is a plain JS file, not a
@@ -47,6 +52,12 @@ SOURCES = [
 
 INCLUDE_MARKER = "/* @include table-engine.js */"
 SHARED_JS_FILE = "table-engine.js"
+# Shared CSS, same mechanism as the shared JS above. COMPONENTS.md's inventory
+# found ~50 distinct list/row classes across the seven screens, all the same
+# idea re-implemented per screen with independently drifted values; this is
+# where the shared components live so that stops happening.
+CSS_INCLUDE_MARKER = "/* @include components.css */"
+SHARED_CSS_FILE = "components.css"
 DATA_INCLUDE_MARKER = "/* @include data.js */"
 DATA_FILE = "data.js"
 
@@ -96,7 +107,12 @@ function seedProjects(){
     // of this seed data, not computed — and only set on projects with enough real progress
     // data to assess (skipped for `processing`, which has nothing yet, and `submitted`,
     // which is already closed rather than "on track/at risk").
-    {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"SIG", days:23, deadline:1,
+    // TICKET-two-pass-allocation.md — line was "SIG", which contradicted this
+    // project's own seed data: its requirements are already distributed across
+    // SIG, Mainline and Safety, and only a Turnkey tender distributes across
+    // activities like that (a SIG tender is already scoped to SIG). Turnkey
+    // also makes pass 1 demonstrable on the one fully-built demo project.
+    {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Turnkey", days:23, deadline:1,
      status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager", builtOut:true,
      health:"on_track", healthNote:"On pace — 2 items need attention"},
     {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"SIG", days:9, deadline:1,
@@ -286,6 +302,8 @@ load(location.hash.slice(1) || 'home');
 def main():
     with open(SHARED_JS_FILE, encoding="utf-8") as f:
         shared_js = f.read()
+    with open(SHARED_CSS_FILE, encoding="utf-8") as f:
+        shared_css = f.read()
 
     # data.js is optional — nobody may have run import_capture.py yet, and the
     # prototype must still build (falling back to buildBigData(n)) if so.
@@ -304,6 +322,8 @@ def main():
             html = html.replace(INCLUDE_MARKER, shared_js)
         if DATA_INCLUDE_MARKER in html:
             html = html.replace(DATA_INCLUDE_MARKER, capture_js)
+        if CSS_INCLUDE_MARKER in html:
+            html = html.replace(CSS_INCLUDE_MARKER, shared_css)
         b64 = base64.b64encode(html.encode("utf-8")).decode("ascii")
         blob_lines.append(f'{key}:"{b64}",')
 

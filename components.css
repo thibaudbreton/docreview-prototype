@@ -1,0 +1,235 @@
+/* =====================================================
+   SHARED UI COMPONENTS — spliced into every screen by build_merge.py via the
+   "/* @include components.css *\/" marker, the same mechanism table-engine.js
+   already uses for shared behaviour. Edit this ONE file to change how a
+   component looks everywhere.
+
+   Why this exists: COMPONENTS.md's inventory found ~50 distinct list/row
+   classes across the seven screens — .exprow, .cast-person-row, .qa-card,
+   .iss-row, .vrow, .doc-row, .act-row and the rest — all the same idea,
+   re-implemented per screen with independently drifted padding, borders and
+   hardcoded values. That drift is the thing this file is meant to stop.
+
+   Everything here uses design tokens only. If a component needs a value the
+   scale doesn't have, add it to the scale rather than hardcoding it here.
+
+   NOTE, same tradeoff as table-engine.js: a source screen opened directly on
+   disk (file://) has only the marker comment, so it renders unstyled. The
+   deliverable is always the merged build.
+===================================================== */
+
+/* ---------- ui-list — the universal list field ----------
+   One bordered list. Rows are uniform, separated, and hoverable; the slots
+   inside a row are always in the same order (tag, main, meta, action) so a
+   list reads the same way wherever it appears.
+
+   <div class="ui-list">
+     <div class="ui-list-row">
+       <span class="ui-list-tag">SIG</span>
+       <span class="ui-list-main">Signalling &amp; Urban
+         <span class="ui-list-sub">2 teams</span></span>
+       <span class="ui-list-meta">73%</span>
+       <span class="ui-list-note">has a model</span>
+     </div>
+     <button class="ui-list-add">+ Add activity</button>
+   </div>
+*/
+.ui-list{
+  border:1px solid var(--line);
+  border-radius:var(--radius-md);
+  background:var(--panel);
+  overflow:hidden;
+}
+.ui-list-row{
+  display:flex;
+  align-items:center;
+  gap:var(--space-3);
+  padding:9px var(--space-3);
+  border-bottom:1px solid var(--line);
+  min-height:38px;
+  transition:background .12s;
+}
+.ui-list-row:last-child{border-bottom:none}
+.ui-list-row.is-clickable{cursor:pointer}
+.ui-list-row.is-clickable:hover{background:var(--panel-2)}
+.ui-list-row.is-selected{background:var(--accent-soft)}
+
+/* leading slot — a short code, badge or icon. Fixed width so every row in the
+   list lines up down the left edge, which is most of what makes a list scan. */
+.ui-list-tag{
+  flex-shrink:0;
+  min-width:42px;
+  text-align:center;
+  font-family:var(--font-mono);
+  font-size:var(--text-xs);
+  font-weight:700;
+  letter-spacing:.4px;
+  padding:2px var(--space-2);
+  border:1px solid var(--line-2);
+  border-radius:var(--radius-xs);
+  color:var(--text-2);
+}
+/* main slot — takes the free space, truncates rather than wrapping so row
+   heights stay uniform */
+.ui-list-main{
+  flex:1;
+  min-width:0;
+  font-size:var(--text-sm);
+  color:var(--text);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.ui-list-sub{
+  display:block;
+  font-size:var(--text-xs);
+  color:var(--text-3);
+  margin-top:1px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+/* right-hand slots — meta is a value (tabular, so digits line up), note is a
+   short status word */
+.ui-list-meta{
+  flex-shrink:0;
+  font-size:var(--text-xs);
+  color:var(--text-3);
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.ui-list-note{
+  flex-shrink:0;
+  font-size:var(--text-xs);
+  font-weight:600;
+  color:var(--text-3);
+  white-space:nowrap;
+}
+.ui-list-note.is-accent{color:var(--accent)}
+.ui-list-note.is-ok{color:var(--ok)}
+.ui-list-note.is-warn{color:var(--warn)}
+.ui-list-note.is-ia{color:var(--ia)}
+
+/* a value badge inside a row — for a confidence or count that needs weight */
+.ui-list-badge{
+  flex-shrink:0;
+  font-size:var(--text-xs);
+  font-variant-numeric:tabular-nums;
+  font-weight:600;
+  padding:1px var(--space-2);
+  border-radius:var(--radius-pill);
+  background:var(--panel-3);
+  color:var(--text-3);
+  white-space:nowrap;
+}
+.ui-list-badge.is-warn{background:var(--ia-soft);color:var(--ia);font-weight:700}
+.ui-list-badge.is-ok{background:var(--ok-soft);color:var(--ok)}
+
+/* the list's own action row — reads as an action, not as another entry */
+.ui-list-add{
+  display:block;
+  width:100%;
+  padding:9px var(--space-3);
+  border:none;
+  border-top:1px solid var(--line);
+  background:var(--panel-2);
+  color:var(--accent);
+  font-size:var(--text-sm);
+  font-weight:600;
+  text-align:left;
+  cursor:pointer;
+  transition:background .12s;
+}
+.ui-list-add:hover{background:var(--panel-3)}
+
+/* nothing in it yet */
+.ui-list-empty{
+  padding:var(--space-4) var(--space-3);
+  text-align:center;
+  font-size:var(--text-sm);
+  font-style:italic;
+  color:var(--text-3);
+}
+
+/* optional column header, when the meta slots need naming */
+.ui-list-head{
+  display:flex;
+  align-items:center;
+  gap:var(--space-3);
+  padding:7px var(--space-3);
+  border-bottom:1px solid var(--line);
+  background:var(--panel-2);
+  font-size:var(--text-xs);
+  font-weight:700;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  color:var(--text-3);
+}
+
+/* denser variant, for lists inside an already-tight panel */
+.ui-list.is-compact .ui-list-row{padding:6px var(--space-3);min-height:32px}
+.ui-list.is-compact .ui-list-add{padding:7px var(--space-3)}
+/* borderless variant, when the list already sits inside a bordered container */
+.ui-list.is-flush{border:none;border-radius:0;background:transparent}
+
+/* ---------- ui-select / ui-input — the universal field controls ----------
+   ~46 select rulesets across the seven screens, all near-identical: padding
+   drifting between 5px, 7px, 8px and var(--space-2), backgrounds split between
+   --panel-2 and --panel-3, font sizes between --text-xs, --text-sm and
+   --text-base, and most of them still showing the browser's own dropdown arrow,
+   which looks different on every OS. This is the one dropdown field.
+
+   The chevron is drawn here rather than left to the platform, so the control
+   looks the same everywhere and its arrow follows the text colour scale.
+*/
+.ui-select{
+  appearance:none;
+  -webkit-appearance:none;
+  width:100%;
+  padding:8px 30px 8px var(--space-3);
+  background-color:var(--panel-2);
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B9AAD' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 10px center;
+  background-size:11px;
+  border:1px solid var(--line-2);
+  border-radius:var(--radius-md);
+  color:var(--text);
+  font-family:var(--font-ui);
+  font-size:var(--text-base);
+  line-height:1.35;
+  outline:none;
+  cursor:pointer;
+  transition:border-color .15s, background-color .15s;
+}
+html[data-theme="light"] .ui-select{
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23637187' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+.ui-select:hover{background-color:var(--panel-3)}
+.ui-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent)}
+/* nothing chosen yet — muted, so an unset field reads as unset at a glance */
+.ui-select.is-empty{color:var(--text-3)}
+.ui-select:disabled{opacity:.5;cursor:default;background-color:var(--panel-2)}
+
+/* text input sharing the same box, so a form doesn't mix two shapes */
+.ui-input{
+  width:100%;
+  padding:8px var(--space-3);
+  background:var(--panel-2);
+  border:1px solid var(--line-2);
+  border-radius:var(--radius-md);
+  color:var(--text);
+  font-family:var(--font-ui);
+  font-size:var(--text-base);
+  line-height:1.35;
+  outline:none;
+  transition:border-color .15s, background-color .15s;
+}
+.ui-input::placeholder{color:var(--text-3)}
+.ui-input:hover{background-color:var(--panel-3)}
+.ui-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent)}
+
+/* denser variant, for a control sitting in a table cell or a toolbar */
+.ui-select.is-compact,.ui-input.is-compact{padding-top:5px;padding-bottom:5px;font-size:var(--text-sm)}
+.ui-select.is-compact{padding-right:26px;background-position:right 7px center;background-size:10px}
+/* sits inline in a row rather than filling its container */
+.ui-select.is-inline,.ui-input.is-inline{width:auto}

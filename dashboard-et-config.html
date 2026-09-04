@@ -384,6 +384,11 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .cast-ptag{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;padding:2px 7px;border:1px solid var(--line-2);border-radius:var(--radius-xs);color:var(--text-2);flex-shrink:0}
 .cast-group-title{font-weight:600;font-size:var(--text-base)}
 .cast-group-mgr{font-size:var(--text-xs);color:var(--text-3)}
+/* TICKET-two-pass-allocation.md §3 — an activity with no allocation model is a
+   normal, first-class state, so it gets a plain neutral tag rather than a
+   warning colour: "manual" is how most activities work, not a problem. */
+.model-tag{margin-left:7px;font-size:var(--text-xs);font-weight:700;padding:1px 7px;border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent);vertical-align:middle}
+.model-tag.none{background:var(--panel-3);color:var(--text-3)}
 .cast-group-badge{margin-left:auto;font-size:var(--text-xs);font-weight:700;padding:3px 10px;border-radius:var(--radius-pill);white-space:nowrap;flex-shrink:0}
 .cast-group-badge.staffed{background:var(--ok-soft);color:var(--ok)}
 .cast-group-badge.unstaffed{background:var(--warn-soft);color:var(--warn)}
@@ -1166,8 +1171,17 @@ renderExperts();
    invented-as-fact; INF and TLC are modelled with no perimeter breakdown
    at all, which is itself a real, intended case, not a gap.
 ===================================================== */
+/* TICKET-two-pass-allocation.md §3 — `hasModel` marks the activities that have
+   an allocation model of their own. Only SIG does here: it's large enough to
+   be a tender type in its own right, so its model was built for those
+   standalone tenders and Turnkey reuses it when it routes there. Everything
+   else allocates manually, which is the ORDINARY case, not a failure.
+   (The ticket also names "RSC" as modelled; this screen's activity vocabulary
+   has no such entry — see revue-documentaire.html's ACTIVITY_MODEL for the
+   same open question. The two screens hold independent vocabularies by
+   convention, and they do not currently match.) */
 const CAST_ACTIVITIES=[
-  {id:"sig",code:"SIG",label:"Signalling & Urban",managerId:"m_sig"},
+  {id:"sig",code:"SIG",label:"Signalling & Urban",managerId:"m_sig",hasModel:true},
   {id:"mln",code:"MLN",label:"Mainline",managerId:"m_mln"},
   {id:"inf",code:"INF",label:"Infrastructure",managerId:"m_inf"},
   {id:"pwr",code:"PWR",label:"Power Supply",managerId:"m_pwr"},
@@ -1442,7 +1456,7 @@ function castGroupHTML(a,viewerIsAdmin){
     <div class="cast-group-head" data-toggle-act="${a.id}">
       <span class="cast-caret">▾</span>
       <span class="cast-ptag">${a.code}</span>
-      <div><div class="cast-group-title">${a.label}</div><div class="cast-group-mgr">${mgr?mgr.name:"Unassigned"}</div></div>
+      <div><div class="cast-group-title">${a.label}${a.hasModel?`<span class="model-tag" title="Has its own allocation model — a Turnkey tender can route requirements into it automatically">model</span>`:`<span class="model-tag none" title="No allocation model — requirements routed here are allocated manually by this activity's contributors">manual</span>`}</div><div class="cast-group-mgr">${mgr?mgr.name:"Unassigned"}</div></div>
       <span class="cast-group-badge ${badgeCls}">${badgeTxt}</span>
     </div>
     <div class="cast-body">${bodyInner}</div>
