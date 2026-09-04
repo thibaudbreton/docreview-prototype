@@ -795,6 +795,7 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
   padding:4px var(--space-2);border-radius:var(--radius-sm);border:1px solid var(--line-2);
   font-size:var(--text-xs);color:var(--text-2);transition:all .15s;display:inline-flex;gap:var(--space-1);align-items:center;
 }
+.mini-btn:disabled{opacity:.4;cursor:default}
 .mini-btn:hover{border-color:var(--accent);color:var(--text)}
 .set-title{font-size:var(--text-base);font-weight:600;line-height:1.4;margin-bottom:var(--space-3);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px}
@@ -4160,11 +4161,15 @@ function pmClassificationHTML(b){
 function finalVerdictHTML(b){
   const locked=b.complianceLocked;
   const admin=isAdmin();
+  // §5 — there's nothing to freeze yet while the tree hasn't produced a real
+  // answer. The button says so up front rather than being clickable and
+  // rejecting the click after the fact.
+  const nothingToLock = !locked && b.rollupCompliance==="pending";
   return `<div class="final-verdict${locked?" is-locked":""}">
     <div class="final-verdict-label">Final verdict</div>
     <span class="compliance-pill${locked?" locked":""} c-${b.rollupCompliance}" title="${locked?`Locked by ${MGR(b.lockedBy||VIEWER).name} — the tree below keeps computing, this stays put until unlocked`:"Derived from every activity below — most restrictive wins, pending until all have answered"}">${locked?"🔒 ":""}${complianceLabel(b.rollupCompliance)}</span>
     ${locked&&b.derivedCompliance&&b.derivedCompliance!==b.rollupCompliance?`<span class="final-verdict-drift" title="What the tree currently computes underneath the lock">tree now says ${complianceLabel(b.derivedCompliance)}</span>`:""}
-    ${admin?`<button class="mini-btn final-verdict-btn" id="final-verdict-toggle">${locked?"Unlock":"Lock"}</button>`:(locked?`<span class="final-verdict-note">Locked — contact the project management team to change it</span>`:"")}
+    ${admin?`<button class="mini-btn final-verdict-btn" id="final-verdict-toggle" ${nothingToLock?"disabled":""} title="${nothingToLock?"Every activity needs to answer before there's a verdict to lock":""}">${locked?"Unlock":"Lock"}</button>`:(locked?`<span class="final-verdict-note">Locked — contact the project management team to change it</span>`:"")}
   </div>`;
 }
 function activityBlocksHTML(b){
@@ -4342,7 +4347,7 @@ function renderSettings(){
        the propose block below them belong to every view and stay shared. */
     html += pmTurnkey
       ? (actView ? activityDetailHTML(b,state.panelActivity)
-                 : pmClassificationHTML(b)+((b.branches||[]).length?finalVerdictHTML(b):"")+activityBlocksHTML(b))
+                 : pmClassificationHTML(b)+activityBlocksHTML(b))
       : "";
     html += `
       ${!pmTurnkey&&isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
@@ -4505,6 +4510,15 @@ function renderSettings(){
         deriveRequirementCompliance(b); // catch up on anything that changed while locked
         toast(`${b.id} unlocked — the final verdict now follows the tree again`,"ok");
       } else {
+        // §5 — the lock exists to say "this is our answer, whatever the tree
+        // computes underneath." Pending isn't an answer, it's the absence of
+        // one — locking it would freeze "no verdict yet" as if it were the
+        // decision sent to the client. Block it here, at the one place a lock
+        // actually gets created, rather than just fixing how it looks after.
+        if(b.rollupCompliance==="pending"){
+          toast(`${b.id} — nothing to lock yet. Every activity needs to answer before there's a verdict to freeze.`,"warn");
+          return;
+        }
         b.complianceLocked=true; b.lockedBy=VIEWER;
         toast(`${b.id} locked at ${complianceLabel(b.rollupCompliance)} — visible to everyone allocated on it`,"warn");
       }
