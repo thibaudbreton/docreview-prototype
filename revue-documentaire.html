@@ -1041,7 +1041,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .act-line+.act-line{border-top:1px solid var(--line)}
 .act-k{width:110px;flex-shrink:0;font-size:var(--text-xs);color:var(--text-3)}
 .act-v{flex:1;min-width:0;color:var(--text-2)}
-.act-open-btn{margin-top:var(--space-3);width:100%}
+.act-open-row{margin-top:var(--space-3);text-align:right}
 .act-detail-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
 .review-why{font-size:var(--text-xs);color:var(--ia);line-height:1.45;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--ia-soft);border-radius:var(--radius-sm)}
 /* RM view: "N assignments" indicator + retractable per-allocated-activity sections (collapsed by default) */
@@ -4203,9 +4203,9 @@ function activityBlocksHTML(b){
         </div>
         <div class="branch-sec-body">
           <div class="act-line"><span class="act-k">OBS · team</span><span class="act-v">${escHtml(obs)||"—"}</span></div>
-          <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this activity's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
           <div class="act-line"><span class="act-k">Manager / expert</span><span class="act-v">${escHtml(who)}</span></div>
-          <button class="mini-btn act-open-btn" data-openact="${bidx}">Open activity detail →</button>
+          <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this activity's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
+          <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open activity detail →</button></div>
         </div>
       </div>`;
     }).join("")}
