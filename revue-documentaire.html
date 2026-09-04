@@ -533,17 +533,27 @@ body.mode-review .doc-scroll{display:none}
 .colf-opt{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-sm);color:var(--text-2);cursor:pointer}
 .colf-opt:hover{background:var(--panel-3);color:var(--text)}
 .colf-opt input{accent-color:var(--accent)}
+/* Column filtering lives on the column, where the user is already looking.
+   The old home was a Filter popover listing every column's values at once —
+   a second place to learn, disconnected from the header it was narrowing. */
+.colf-btn{margin-left:auto;width:18px;height:18px;border-radius:var(--radius-sm);color:var(--text-3);font-size:9px;display:grid;place-items:center;flex-shrink:0}
+.rgrid-head .rcell:hover .colf-btn{color:var(--text-2);background:var(--panel-3)}
+.colf-btn:hover{color:var(--text)!important;background:var(--line)!important}
+.colf-btn.on{color:#fff!important;background:var(--accent)!important}
+.colf-pop{position:fixed;z-index:70;width:236px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);padding:var(--space-2);display:none;text-transform:none;letter-spacing:0;font-weight:400}
+.colf-pop.on{display:block}
+.colf-pop-head{display:flex;align-items:center;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);padding:2px 4px 6px}
+.colf-pop-head .colf-actions{margin-left:auto;display:flex;gap:8px}
+.colf-pop-list{max-height:260px;overflow-y:auto}
+.colf-pop-foot{border-top:1px solid var(--line);margin-top:6px;padding-top:6px;display:flex;align-items:center;gap:8px}
+.colf-pop-foot .n{font-size:var(--text-xs);color:var(--text-3)}
+.colf-pop-foot .mini-btn{margin-left:auto}
 .view-sep{height:1px;background:var(--line);margin:var(--space-2) 0}
-.view-scale-row{display:flex;align-items:flex-start;gap:var(--space-2);padding:6px 2px;cursor:pointer;font-size:var(--text-sm);color:var(--text-2)}
-.view-scale-row input{margin-top:2px}
-.view-scale-note{display:block;font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
 /* SPEC-advanced-filters.md — the rule builder. Wider than .view-panel (300px):
    field + operator + value in one row needs the room. The panel is a column
    with ONE scrolling area (the condition list); the readback, the live count
    and Cancel/Apply are pinned below it, because §5 makes the count the thing
    the user watches while building — it must never scroll out of sight. */
-.adv-link{display:flex;align-items:center;justify-content:space-between;padding:8px 2px;cursor:pointer;font-size:var(--text-sm);color:var(--accent);font-weight:600}
-.adv-link:hover{text-decoration:underline}
 .adv-panel{position:absolute;top:calc(100% + 6px);right:0;z-index:61;width:560px;max-height:min(76vh,640px);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);display:none;flex-direction:column;overflow:hidden}
 .adv-panel.on{display:flex}
 .adv-head{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-3) var(--space-2);border-bottom:1px solid var(--line);flex-shrink:0}
@@ -874,11 +884,17 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
   color:var(--text-3);margin-bottom:6px;
 }
 .field .fval{font-size:var(--text-base);color:var(--text)}
-.field select,.field input[type=text]{
+/* :not(.ui-select/.ui-input) — this legacy rule uses the `background`
+   SHORTHAND, which resets background-image/repeat/position. It is more
+   specific than .ui-select, so a component select dropped inside a .field
+   lost its chevron's repeat/position and tiled the icon across the whole
+   control. Excluding the components here keeps the trap from firing on every
+   remaining screen still to be migrated onto them. */
+.field select:not(.ui-select),.field input[type=text]:not(.ui-input){
   width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);
   padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base);transition:border-color .15s;
 }
-.field select:focus,.field input:focus{border-color:var(--accent)}
+.field select:not(.ui-select):focus,.field input:not(.ui-input):focus{border-color:var(--accent)}
 .ia-suggestion{
   border:1px dashed rgba(224,164,60,.5);background:var(--ia-soft);
   border-radius:var(--radius-md);padding:var(--space-3) var(--space-3);margin-bottom:var(--space-4);
@@ -1559,8 +1575,7 @@ body.restricted .restrict-banner{display:flex}
               <span class="wrap-switch-label">Wrap text</span>
             </label>
             <div class="view-wrap" style="position:relative">
-              <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)">⏷ Filter <span class="view-badge" id="view-badge" style="display:none"></span> ▾</button>
-              <div class="view-panel" id="filter-panel"></div>
+              <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once">⏷ Filter <span class="view-badge" id="view-badge" style="display:none"></span> ▾</button>
               <div class="adv-panel" id="adv-filter-panel"></div>
             </div>
             <div class="view-wrap" style="position:relative">
@@ -1574,14 +1589,14 @@ body.restricted .restrict-banner{display:flex}
             <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" id="sel-all" title="Select all in view"></label></div>
             <div class="rcell c-id" data-sortcol="id"><span class="cl">ID<span class="sort-arrow"></span></span></div>
             <div class="rcell c-req"><span class="cl">Requirement</span></div>
-            <div class="rcell c-class" data-col="class" data-sortcol="class"><span class="cl">Class<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-typo" data-col="typo" data-sortcol="typo"><span class="cl">Activity<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-class" data-col="class" data-sortcol="class"><span class="cl">Class<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="class" title="Filter this column">⏷</button></div>
+            <div class="rcell c-typo" data-col="typo" data-sortcol="typo"><span class="cl">Activity<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
             <div class="rcell c-abs" data-col="abs" data-sortcol="abs"><span class="cl">ABS<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-type" data-col="type" data-sortcol="type"><span class="cl">PBS<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-type" data-col="type" data-sortcol="type"><span class="cl">PBS<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="type" title="Filter this column">⏷</button></div>
             <div class="rcell c-tkobs" data-col="tkobs" data-sortcol="tkobs" title="Pass 1 — the activity this requirement is distributed to. Turnkey tenders only."><span class="cl">TK OBS<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="Pass 2 — the team or service within the activity. This is what casting staffs."><span class="cl">OBS · team<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Manager<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-status" data-col="status" data-sortcol="status"><span class="cl">Status<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="Pass 2 — the team or service within the activity. This is what casting staffs."><span class="cl">OBS · team<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="obs" title="Filter this column">⏷</button></div>
+            <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Manager<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="mgr" title="Filter this column">⏷</button></div>
+            <div class="rcell c-status" data-col="status" data-sortcol="status"><span class="cl">Status<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="status" title="Filter this column">⏷</button></div>
             <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
           </div>
           <div class="rgrid-body" id="rgrid-body">
@@ -1591,6 +1606,8 @@ body.restricted .restrict-banner{display:flex}
         </div>
       </div>
     </section>
+
+    <div class="colf-pop" id="colf-pop"></div>
 
     <!-- (legacy table kept hidden for compare/segmentation reuse) -->
     <table class="review" style="display:none"><tbody id="review-body"></tbody></table>
@@ -2437,9 +2454,8 @@ const state = {
 SECTIONS.forEach(s=>{ state.navCollapsed.add(s.id); state.docNavCollapsed.add(s.docId); });
 const changesOrder = ["SRM-00009","SRM-00019","GHOST-1"];
 const allBlocks = () => SECTIONS.flatMap(s=>s.blocks.flatMap(b=>b.kind==="table"?b.rows.map(r=>({...r,section:s})):[{...b,section:s}]));
-const reqs = () => BIG.on ? BIG.rows : allBlocks().filter(b=>b.kind==="requirement");
+const reqs = () => allBlocks().filter(b=>b.kind==="requirement");
 const findBlock = id => {
-  if(BIG.on){ const r=BIG.rows.find(x=>x.id===id); if(r) return {b:r,s:r.section}; }
   for(const s of SECTIONS){ for(const b of s.blocks){ if(b.id===id) return {b,s}; if(b.kind==="table"){ const r=b.rows.find(x=>x.id===id); if(r) return {b:r,s}; } } } return null;
 };
 /* --- block nature: heading / info / requirement / image --- */
@@ -2504,42 +2520,6 @@ function reclassify(id, nature){
   toast(`${id} reclassified as ${NATURE_LABEL[nature]}`,"ok");
   if(nature==="heading"||nature==="info") state.selected=null;
   refresh();
-}
-
-/* ---- SCALE TEST DATA ---- */
-const BIG = { on:false, rows:[] };
-const BIG_VERBS=["shall provide","must ensure","shall support","is required to maintain","shall guarantee","must implement","shall log","must restrict","shall expose","must validate"];
-const BIG_OBJ=["the supervision interface","real-time telemetry","the audit trail","access control policies","the reporting module","data retention","the alerting pipeline","external system interfaces","the redundancy mechanism","operator dashboards","the diagnostic service","message encryption"];
-const BIG_QUAL=["within 2 seconds","under nominal load","for all connected assets","according to EN 50128","without data loss","across all sites","during degraded mode","for a 10-year horizon","with 99.9% availability","under peak concurrency"];
-const BIG_TYPES=["Functional","Performance","Security","Interface","Regulatory"];
-const BIG_OBS=[["Monitoring & Supervision — FR","sup"],["Infrastructure & Platform — FR","infra"],["Cybersecurity — Group","cyber"]];
-const BIG_MGR=["m_sig","m_mln","m_inf",null];
-const BIG_PERIM=[["sig"],["mln"],["sig","mln"],["inf"],["urb"],["sig"],["mln"],["tlc"]];
-function buildBigData(n){
-  const secs=SECTIONS.map(s=>({num:s.num,title:s.title}));
-  const out=[];
-  for(let i=0;i<n;i++){
-    const sec=secs[i%secs.length];
-    const obs=BIG_OBS[i%BIG_OBS.length];
-    const conf=45+((i*37)%54);
-    const techAI=(i%5===0);
-    const row={
-      id:"SRM-"+String(i+1).padStart(5,"0"), kind:"requirement", section:sec,
-      text:`The system ${BIG_VERBS[i%BIG_VERBS.length]} ${BIG_OBJ[i%BIG_OBJ.length]} ${BIG_QUAL[i%BIG_QUAL.length]}.`,
-      tech:"tech", techAI,
-      type:BIG_TYPES[i%BIG_TYPES.length], domain:obs[0].split(" ")[0],
-      perim:BIG_PERIM[i%BIG_PERIM.length].slice(), perimAI:(i%3===0),
-      manager:BIG_MGR[i%BIG_MGR.length],
-      alloc:conf>=OBS_THRESHOLD?obs[1]:null,
-      pbs:{v:BIG_OBJ[i%BIG_OBJ.length],c:Math.min(99,conf+10)},
-      abs:{v:"Design & Engineering",c:Math.min(99,conf+4)},
-      obs:{v:obs[0],c:conf},
-      comments:(i%11===0)?1:0, change:null,
-    };
-    computeCharStatus(row); computeAllocStatus(row); // B7 — same derivation as the real dataset
-    out.push(row);
-  }
-  return out;
 }
 
 /* =====================================================
@@ -3377,7 +3357,6 @@ function teamRowHTML(parent, branch, bidx, team, tidx){
 
 /* Build the flat list of items to virtualize: group headers + rows, all fixed-height */
 let VROWS=[];        // [{type:'group'|'row', ...}]
-let vScrollBound=false;
 /* per-column sort — an alternative flat view; document order (state.sortCol=null) is the default and always restorable via the header's 3rd click or the "Document order" reset link */
 const SORT_KEYS={
   id:b=>b.id||"",
@@ -3471,11 +3450,11 @@ function colFilterActiveCount(){ return Object.values(state.colFilters).filter(s
 /* Counts conditions, not top-level items: a group holding three conditions is
    three things narrowing the table, and the badge exists to say how many. */
 function advFilterActiveCount(){ return advFlatConditions(state.advFilter).length; }
-/* pushes a "row" entry, then — full-render path only, never in the BIG.on scale test —
-   one "branch" entry per allocation if this requirement is expanded. UI-only: no recomputation. */
+/* pushes a "row" entry, then one "branch" entry per allocation if this
+   requirement is expanded. UI-only: no recomputation. */
 function pushRow(b){
   VROWS.push({type:"row",b});
-  if(!BIG.on && (b.branches||[]).length>1 && state.expandedBranches.has(b.id)){
+  if((b.branches||[]).length>1 && state.expandedBranches.has(b.id)){
     b.branches.forEach((branch,idx)=>{
       VROWS.push({type:"branch",parent:b,branch,idx});
       // second level: teams within this activity, only when it actually branches
@@ -3505,8 +3484,6 @@ function buildVRows(){
       VROWS.push({type:"group",g,n:items.length});
       items.forEach(b=>pushRow(b));
     });
-  } else if(BIG.on){
-    rows.forEach(b=>VROWS.push({type:"row",b}));
   } else {
     // document structure: document title > section (H1) > headings (H2/H3), requirements in document order
     // (doc filter is applied at the section level below; provenance stays available via the Document filter)
@@ -3544,11 +3521,26 @@ function renderReview(){
     document.getElementById("fsb-n").textContent = rows.length.toLocaleString();
     document.getElementById("fsb-total").textContent = total.toLocaleString();
   }
-  const advActive = !state.filterToSelection && state.advFilter.items.length>0;
-  document.getElementById("adv-filter-banner").style.display = advActive?"flex":"none";
-  if(advActive) document.getElementById("adv-filter-banner-text").textContent = TE.describeFilter(ADV_FILTER_FIELDS, state.advFilter);
+  // §7 — chips and the advanced filter are ONE active-filter state, not two
+  // competing indicators. Now that column values live on the headers, this
+  // banner is the only place both are visible at once, so it reads back both
+  // and its Clear drops both.
+  const colParts=Object.keys(state.colFilters).filter(c=>state.colFilters[c].size).map(c=>{
+    const def=COL_FILTER_DEFS[c], excl=state.colFilters[c];
+    const kept=def.options.filter(o=>!excl.has(o.v)), gone=def.options.filter(o=>excl.has(o.v));
+    if(!kept.length) return `${def.label} — nothing shown`;
+    // "Activity is not TRK" beats listing the sixteen values that stayed.
+    return gone.length<kept.length
+      ? `${def.label} is not ${gone.map(o=>o.l).join(", ")}`
+      : `${def.label} is any of ${kept.map(o=>o.l).join(", ")}`;
+  });
+  const advPart=state.advFilter.items.length?TE.describeFilter(ADV_FILTER_FIELDS,state.advFilter):"";
+  const allParts=colParts.concat(advPart?[advPart]:[]);
+  const anyActive = !state.filterToSelection && allParts.length>0;
+  document.getElementById("adv-filter-banner").style.display = anyActive?"flex":"none";
+  if(anyActive) document.getElementById("adv-filter-banner-text").textContent = allParts.join(" AND ");
   document.getElementById("review-sub").innerHTML =
-    `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, activity, managers, experts and statuses`+(BIG.on?' · <span style="color:var(--ia)">scale test active</span>':"");
+    `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, activity, managers, experts and statuses`;
   renderSortIndicators();
   renderColFilterIndicators();
 
@@ -3581,29 +3573,12 @@ function renderReview(){
     return `<div class="rrow${state.selected===b.id?" active":""}${state.selection.has(b.id)?" bulk-sel":""}" data-id="${b.id}">${rowInnerHTML(b)}</div>`;
   }
 
-  if(BIG.on){
-    // windowed (fixed height) for the scale test — no inline text wrap
-    scroller.classList.remove("rgrid-full");
-    const ROW_H=44;
-    spacer.style.height=(VROWS.length*ROW_H)+"px";
-    const paint=()=>{
-      const scrollTop=scroller.scrollTop, vh=scroller.clientHeight, buffer=6;
-      let start=Math.max(0,Math.floor(scrollTop/ROW_H)-buffer);
-      let end=Math.min(VROWS.length,Math.ceil((scrollTop+vh)/ROW_H)+buffer);
-      win.style.transform=`translateY(${start*ROW_H}px)`;
-      let html=""; for(let i=start;i<end;i++) html+=rowHTML(VROWS[i]);
-      win.innerHTML=html; bindVRows(win);
-    };
-    paint();
-    if(!vScrollBound){ let ticking=false; scroller.addEventListener("scroll",()=>{ if(!ticking){ ticking=true; requestAnimationFrame(()=>{ if(BIG.on) paint(); ticking=false; }); } }); vScrollBound=true; }
-  } else {
-    // full render (normal data): variable-height, readable, fully editable
-    scroller.classList.add("rgrid-full");
-    scroller.classList.toggle("wrap-text", state.wrapText);
-    spacer.style.height="0px"; win.style.transform="none";
-    win.innerHTML=VROWS.map(rowHTML).join("");
-    bindVRows(win);
-  }
+  // variable-height, readable, fully editable
+  scroller.classList.add("rgrid-full");
+  scroller.classList.toggle("wrap-text", state.wrapText);
+  spacer.style.height="0px"; win.style.transform="none";
+  win.innerHTML=VROWS.map(rowHTML).join("");
+  bindVRows(win);
   syncSelAll(rows);
   renderSelBar();
   applyCols();
@@ -4994,7 +4969,11 @@ document.getElementById("sel-filter").addEventListener("click",()=>{
 const emptyColFilters=()=>({class:new Set(),typo:new Set(),type:new Set(),mgr:new Set(),obs:new Set(),status:new Set()});
 document.getElementById("sel-show-only").addEventListener("click",()=>{ TE.enterFilterToSelection(state,emptyColFilters); renderReview(); });
 document.getElementById("fsb-show-all").addEventListener("click",()=>{ TE.exitFilterToSelection(state); renderReview(); });
-document.getElementById("adv-filter-banner-clear").addEventListener("click",()=>{ state.advFilter={op:"AND",items:[]}; refresh(); });
+document.getElementById("adv-filter-banner-clear").addEventListener("click",()=>{
+  state.advFilter={op:"AND",items:[]};
+  Object.values(state.colFilters).forEach(set=>set.clear());
+  refresh();
+});
 /* drag-select: mousedown on the selection gutter, drag across rows to extend a contiguous range.
    Rows outside the live [anchor, cursor] range fall back to their pre-drag state, Excel-style. */
 TE.bindDragSelect({
@@ -5124,54 +5103,75 @@ function renderColFilterIndicators(){
   const badge=document.getElementById("view-badge");
   if(badge){ badge.style.display=n?"inline":"none"; badge.textContent=n; }
 }
-/* ---------- consolidated table View panel (column filters + scale test) ---------- */
-/* ---------- Filter panel: document, group by, per-column value filters ---------- */
-const filterPanelState={open:false};
-function renderFilterPanel(){
-  const p=document.getElementById("filter-panel"); if(!p) return;
-  p.classList.toggle("on", filterPanelState.open);
-  if(!filterPanelState.open){ p.innerHTML=""; return; }
-  const docOptions=`<option value="all">All documents (${DOCS.length})</option>`+
-    DOCS.map((d,i)=>`<option value="${d.id}" ${state.docFilter===d.id?"selected":""}>Doc ${i+1} — ${d.name}</option>`).join("");
-  const sections=Object.keys(COL_FILTER_DEFS).map(col=>{
-    const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
-    return `<div class="view-sec">
-      <div class="view-sec-head">${def.label}<div class="colf-actions"><span data-viewall="${col}">All</span><span data-viewnone="${col}">None</span></div></div>
-      ${def.options.map(o=>`<label class="colf-opt"><input type="checkbox" data-viewval="${col}::${o.v}" ${excluded.has(o.v)?"":"checked"}>${o.l}</label>`).join("")}
-    </div>`;
-  }).join("");
+/* ---------- Column filters: on the column header, not in a separate panel ----------
+   These used to live in a "Filter" popover that listed every filterable column's
+   values at once — a second place to learn, disconnected from the header it was
+   narrowing, and competing with the advanced builder for the same button. Now a
+   ⏷ on the header opens that column's values, and the toolbar's Filter button
+   goes straight to the advanced builder (the only thing a header can't express).
+   "Review field" has no column of its own, so it is advanced-filter-only now. */
+const colfPop={open:null};
+function openColFilterPop(col, anchor){
+  colfPop.open=col;
+  const p=document.getElementById("colf-pop"); if(!p) return;
+  const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
+  const kept=def.options.filter(o=>!excluded.has(o.v)).length;
   p.innerHTML=`
-    <div class="view-panel-head">Filter<button class="mini-btn" id="view-clearall">Clear all filters</button></div>
-    <div class="field" style="margin-bottom:10px"><label>Document</label><select id="pf-doc-filter" class="doc-filter" style="width:100%;max-width:none">${docOptions}</select></div>
-    <div class="field" style="margin-bottom:2px"><label>Group by</label>
-      <div class="gseg" id="pf-gseg">
-        <button data-g="none" class="${state.groupBy==="none"?"on":""}">None</button>
-        <button data-g="typology" class="${state.groupBy==="typology"?"on":""}">Activity</button>
-      </div>
-    </div>
-    <div class="view-sep"></div>
-    <div class="view-scroll">${sections}</div>
-    <div class="view-sep"></div>
-    <div class="adv-link" id="adv-filter-open">⚙ Advanced filter${advFilterActiveCount()?` <span class="view-badge">${advFilterActiveCount()}</span>`:""}<span>›</span></div>
-    <div class="view-sep"></div>
-    <label class="view-scale-row"><input type="checkbox" id="view-scale-cb" ${BIG.on?"checked":""}><span>⚡ Scale test — load 12,000 synthetic rows<span class="view-scale-note">Prototype only, to check the table stays usable at volume.</span></span></label>`;
-  p.querySelector("#pf-doc-filter").addEventListener("change",e=>{ state.docFilter=e.target.value; state.selection.clear(); refresh(); });
-  p.querySelectorAll("#pf-gseg button").forEach(b=>b.addEventListener("click",()=>{
-    state.groupBy=b.dataset.g;
-    if(b.dataset.g==="typology") setSortCol(null);
-    p.querySelectorAll("#pf-gseg button").forEach(x=>x.classList.toggle("on",x===b));
-    renderReview();
-  }));
+    <div class="colf-pop-head">${def.label}<div class="colf-actions"><span data-viewall="${col}">All</span><span data-viewnone="${col}">None</span></div></div>
+    <div class="colf-pop-list">${def.options.map(o=>`<label class="colf-opt"><input type="checkbox" data-viewval="${col}::${o.v}" ${excluded.has(o.v)?"":"checked"}>${o.l}</label>`).join("")}</div>
+    <div class="colf-pop-foot"><span class="n">${kept} of ${def.options.length} shown</span>${excluded.size?`<button class="mini-btn" data-viewall="${col}">Clear</button>`:""}</div>`;
+  p.classList.add("on");
+  // Fixed positioning against the header cell: the grid header scrolls
+  // horizontally on its own, so an absolutely-positioned popover inside it
+  // would be clipped by the scroller on the right-hand columns.
+  const r=anchor.getBoundingClientRect();
+  p.style.top=(r.bottom+4)+"px";
+  p.style.left=Math.max(8, Math.min(r.left-180, window.innerWidth-p.offsetWidth-8))+"px";
   p.querySelectorAll("[data-viewval]").forEach(cb=>cb.addEventListener("change",()=>{
-    const [col,v]=cb.dataset.viewval.split("::");
-    state.colFilters[col].has(v)?state.colFilters[col].delete(v):state.colFilters[col].add(v);
+    const [c,v]=cb.dataset.viewval.split("::");
+    state.colFilters[c].has(v)?state.colFilters[c].delete(v):state.colFilters[c].add(v);
+    // Update the footer in place rather than re-rendering the popover: these
+    // lists run to 17 values, and rebuilding sent the scroll position back to
+    // the top after every single tick.
+    updateColfFoot(p,c);
     refresh();
   }));
-  p.querySelectorAll("[data-viewall]").forEach(s=>s.addEventListener("click",()=>{ state.colFilters[s.dataset.viewall].clear(); renderFilterPanel(); refresh(); }));
-  p.querySelectorAll("[data-viewnone]").forEach(s=>s.addEventListener("click",()=>{ const col=s.dataset.viewnone; COL_FILTER_DEFS[col].options.forEach(o=>state.colFilters[col].add(o.v)); renderFilterPanel(); refresh(); }));
-  p.querySelector("#view-clearall").addEventListener("click",()=>{ Object.values(state.colFilters).forEach(s=>s.clear()); state.advFilter={op:"AND",items:[]}; renderFilterPanel(); refresh(); });
-  p.querySelector("#view-scale-cb").addEventListener("change",e=>toggleScaleTest(e.target.checked));
-  p.querySelector("#adv-filter-open").addEventListener("click",()=>{ filterPanelState.open=false; renderFilterPanel(); openAdvFilterPanel(); });
+  p.querySelectorAll("[data-viewall]").forEach(el=>el.addEventListener("click",()=>{ state.colFilters[col].clear(); openColFilterPop(col,anchor); refresh(); }));
+  p.querySelectorAll("[data-viewnone]").forEach(el=>el.addEventListener("click",()=>{ def.options.forEach(o=>state.colFilters[col].add(o.v)); openColFilterPop(col,anchor); refresh(); }));
+}
+function updateColfFoot(p,col){
+  const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
+  const foot=p.querySelector(".colf-pop-foot"); if(!foot) return;
+  foot.innerHTML=`<span class="n">${def.options.length-excluded.size} of ${def.options.length} shown</span>${excluded.size?`<button class="mini-btn" data-clearcol="${col}">Clear</button>`:""}`;
+  foot.querySelector("[data-clearcol]")?.addEventListener("click",()=>{
+    state.colFilters[col].clear();
+    p.querySelectorAll("[data-viewval]").forEach(cb=>{ cb.checked=true; });
+    updateColfFoot(p,col); refresh();
+  });
+}
+function closeColFilterPop(){
+  colfPop.open=null;
+  const p=document.getElementById("colf-pop"); if(p){ p.classList.remove("on"); p.innerHTML=""; }
+}
+document.querySelectorAll("[data-colf]").forEach(btn=>btn.addEventListener("click",e=>{
+  e.stopPropagation();  // the header cell itself sorts — the funnel must not
+  const col=btn.dataset.colf;
+  colfPop.open===col ? closeColFilterPop() : openColFilterPop(col,btn);
+}));
+document.addEventListener("click",e=>{
+  if(colfPop.open && !e.target.closest("#colf-pop") && !e.target.closest("[data-colf]")) closeColFilterPop();
+});
+function renderColFilterIndicators(){
+  const n=colFilterActiveCount()+advFilterActiveCount();
+  const badge=document.getElementById("view-badge");
+  if(badge){ badge.style.display=advFilterActiveCount()?"inline":"none"; badge.textContent=advFilterActiveCount(); }
+  document.querySelectorAll("[data-colf]").forEach(btn=>{
+    const set=state.colFilters[btn.dataset.colf];
+    const on=!!(set&&set.size);
+    btn.classList.toggle("on",on);
+    btn.title=on?`Filtered — ${COL_FILTER_DEFS[btn.dataset.colf].label}`:"Filter this column";
+  });
+  return n;
 }
 
 /* ---------- Advanced filter builder (SPEC-advanced-filters.md) ---------- */
@@ -5372,8 +5372,7 @@ function renderAdvFilterPanel(){
   const pruned=advPruned(d);
   p.innerHTML=`
     <div class="adv-head">
-      <button class="adv-back" id="adv-back" title="Back to the column filters">‹</button>
-      <span class="adv-head-t">Advanced filter</span>
+      <span class="adv-head-t">Filter</span>
       <button class="mini-btn" id="adv-close">Close</button>
     </div>
     <div class="adv-body">
@@ -5410,15 +5409,6 @@ function advFootHTML(){
 }
 function bindAdvFilterPanel(p){
   p.querySelector("#adv-close").addEventListener("click",closeAdvFilterPanel);
-  p.querySelector("#adv-back").addEventListener("click",e=>{
-    // §7 — chips and the builder are one filtering story, so this is a stack,
-    // not two dead-end popovers: going "advanced" must be reversible.
-    // stopPropagation: the document-level click-away handler that closes
-    // #filter-panel is bubble-phase, so without this it would immediately
-    // shut the panel we just reopened.
-    e.stopPropagation();
-    closeAdvFilterPanel(); filterPanelState.open=true; renderFilterPanel();
-  });
   p.querySelector("#adv-cancel").addEventListener("click",closeAdvFilterPanel);
   p.querySelector("#adv-apply").addEventListener("click",()=>{
     // Store the pruned filter, never the draft: an incomplete condition must
@@ -5508,30 +5498,21 @@ function bindAdvFilterPanel(p){
 // old ancestor, so a bubble-phase listener here would wrongly read every
 // in-panel click as "outside". Capture runs before that mutation happens.
 document.addEventListener("click",e=>{
-  if(state.advFilterOpen && !e.target.closest("#adv-filter-panel") && !e.target.closest("#adv-filter-open")){ closeAdvFilterPanel(); }
+  if(state.advFilterOpen && !e.target.closest("#adv-filter-panel") && !e.target.closest("#filter-btn")){ closeAdvFilterPanel(); }
 },true);
 
-function toggleScaleTest(on){
-  if(on){
-    if(!BIG.rows.length) BIG.rows=buildBigData(12000);
-    BIG.on=true;
-    toast("Loaded 12,000 synthetic requirements — scroll the table","ok");
-  }else{
-    BIG.on=false;
-    toast("Back to the demo dataset","ok");
-  }
-  state.selection.clear(); state.selected=null; lastSel=null;
-  if(state.mode!=="review") setMode("review");
-  refresh();
-}
 /* TICKET-three-support-screens.md — adding a document is the Documents & versions
    screen's job now; that screen is where the tender's structure is visible and
    editable, and it shows the AI pipeline's progress on the new file. This button
    stays as a shortcut from where you notice the gap, but routes there instead of
    carrying a second implementation that would drift from it. */
 document.getElementById("wrap-toggle")?.addEventListener("change",e=>{ state.wrapText=e.target.checked; renderReview(); });
-document.getElementById("filter-btn")?.addEventListener("click",e=>{ e.stopPropagation(); filterPanelState.open=!filterPanelState.open; renderFilterPanel(); });
-document.addEventListener("click",e=>{ if(filterPanelState.open && !e.target.closest("#filter-panel") && !e.target.closest("#filter-btn")){ filterPanelState.open=false; renderFilterPanel(); } });
+// Filter goes straight to the builder: with per-column values on the headers,
+// the intermediate panel had nothing left to hold that the header doesn't.
+document.getElementById("filter-btn")?.addEventListener("click",e=>{
+  e.stopPropagation();
+  state.advFilterOpen ? closeAdvFilterPanel() : openAdvFilterPanel();
+});
 
 /* ---------- View panel: column visibility + expert derivation chain ---------- */
 const colsPanelState={open:false};
@@ -5543,12 +5524,32 @@ function renderColumnsPanel(){
   const p=document.getElementById("cols-panel"); if(!p) return;
   p.classList.toggle("on", colsPanelState.open);
   if(!colsPanelState.open){ p.innerHTML=""; return; }
+  // Document scope and Group by moved here from the old Filter panel: neither
+  // narrows the row set by a value the way a column filter does — they change
+  // what the table is showing you and how it's arranged, which is what View is.
+  const docOptions=`<option value="all">All documents (${DOCS.length})</option>`+
+    DOCS.map((d,i)=>`<option value="${d.id}" ${state.docFilter===d.id?"selected":""}>Doc ${i+1} — ${d.name}</option>`).join("");
   p.innerHTML=`
     <div class="view-panel-head">View</div>
+    <div class="field" style="margin-bottom:10px"><label>Document</label><select id="pf-doc-filter" class="ui-select" style="width:100%;max-width:none">${docOptions}</select></div>
+    <div class="field" style="margin-bottom:2px"><label>Group by</label>
+      <div class="gseg" id="pf-gseg">
+        <button data-g="none" class="${state.groupBy==="none"?"on":""}">None</button>
+        <button data-g="typology" class="${state.groupBy==="typology"?"on":""}">Activity</button>
+      </div>
+    </div>
+    <div class="view-sep"></div>
     <div class="view-sec">
       <div class="view-sec-head">Table columns</div>
       ${TE.reorderableColumnListHTML(COLUMN_TOGGLE_DEFS,state.colOrder,state.colCollapsed)}
     </div>`;
+  p.querySelector("#pf-doc-filter").addEventListener("change",e=>{ state.docFilter=e.target.value; state.selection.clear(); refresh(); });
+  p.querySelectorAll("#pf-gseg button").forEach(b=>b.addEventListener("click",()=>{
+    state.groupBy=b.dataset.g;
+    if(b.dataset.g==="typology") setSortCol(null);
+    p.querySelectorAll("#pf-gseg button").forEach(x=>x.classList.toggle("on",x===b));
+    renderReview();
+  }));
   TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyCols(); renderColumnsPanel(); });
 }
 document.getElementById("cols-btn")?.addEventListener("click",e=>{ e.stopPropagation(); colsPanelState.open=!colsPanelState.open; renderColumnsPanel(); });
