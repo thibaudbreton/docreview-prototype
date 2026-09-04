@@ -424,7 +424,12 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .cast-person-rm{margin-left:auto;width:24px;height:24px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center;flex-shrink:0}
 .cast-person-rm:hover{background:var(--warn-soft);color:var(--warn)}
 .cast-empty-note{font-size:var(--text-xs);color:var(--text-3);font-style:italic;padding:var(--space-2) 0}
-.cast-add-flow{margin-bottom:var(--space-3);background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-md);padding:var(--space-3)}
+/* position:relative — .cast-add-results below is position:absolute and was
+   positioning against whatever ancestor happens to be positioned (the page's
+   own scroll container), landing far below the input instead of right under
+   it. The dropdown WAS rendering with matches on every keystroke — it just
+   showed up off-screen, which is why it read as no results at all. */
+.cast-add-flow{position:relative;margin-bottom:var(--space-3);background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-md);padding:var(--space-3)}
 .cast-add-flow-title{font-size:var(--text-sm);font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .cast-add-picked{display:flex;align-items:center;gap:8px;font-size:var(--text-sm);margin-bottom:8px;background:var(--panel-2);border-radius:var(--radius-md);padding:6px 10px}
 .cast-add-picked .x{margin-left:auto;color:var(--text-3);cursor:pointer;font-size:var(--text-xs)}
