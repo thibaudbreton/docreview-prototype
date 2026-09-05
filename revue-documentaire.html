@@ -855,15 +855,6 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .mini-btn:disabled{opacity:.4;cursor:default}
 .mini-btn:hover{border-color:var(--accent);color:var(--text)}
 .set-title{font-size:var(--text-base);font-weight:600;line-height:1.4;margin-bottom:var(--space-3);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* SPEC-translation.md §4 — reading. One control does both jobs the spec asks
-   for: the original is one of its options (so it's never more than a click
-   away, never buried in a menu or a separate tab), and it doubles as the
-   "read in another language" convenience for anyone more comfortable there.
-   Always visible under the title, not hidden behind anything. */
-.lang-bar{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.lang-bar-ic{font-size:var(--text-xs);opacity:.6;flex-shrink:0}
-.lang-bar select{width:auto;max-width:220px}
-.lang-bar-note{font-size:var(--text-xs);color:var(--text-3);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px}
 .set-tabs button{
   padding:8px var(--space-3);font-size:var(--text-base);font-weight:500;color:var(--text-3);
@@ -4783,10 +4774,10 @@ function renderSettings(){
     // sat on every tab whether or not the row had anything to correct.
     const langBar=(()=>{
       const opts=langReadOptions();
-      return `<div class="lang-bar">
-        <span class="lang-bar-ic">🌐</span>
-        <select class="ui-select is-compact is-inline" id="lang-view-select">${opts.map(o=>`<option value="${o.code}">${o.label}</option>`).join("")}</select>
-        <span class="lang-bar-note" id="lang-bar-note"></span>
+      return `<div class="field">
+        <label>Read in</label>
+        <select class="ui-select" id="lang-view-select">${opts.map(o=>`<option value="${o.code}">${o.label}</option>`).join("")}</select>
+        <div class="tech-hint" id="lang-bar-note"></div>
       </div>`;
     })();
     const bindLangBar=()=>body.querySelector("#lang-view-select")?.addEventListener("change",e=>{
