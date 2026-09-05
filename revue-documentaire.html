@@ -888,6 +888,21 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .rex-open{font-size:var(--text-xs);color:var(--accent);white-space:nowrap;opacity:0;transition:opacity .12s}
 .rex-item:hover .rex-open{opacity:1}
 .rex-foot{font-size:var(--text-xs);color:var(--text-3);margin-top:var(--space-4);padding-top:var(--space-3);border-top:1px solid var(--line);line-height:1.5}
+/* SPEC-translation.md §5 — the correction tab. Side by side so a correction
+   is judged against the source, not from memory; the original column is
+   never editable (immutable per §3), only the English one is. */
+.corr-langs{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-3)}
+.corr-col-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.corr-badge{font-size:var(--text-xs);font-weight:700;color:var(--ok);text-transform:none;letter-spacing:0}
+.corr-original-text{font-family:var(--font-doc);background:var(--paper);color:var(--paper-ink);padding:var(--space-3);border-radius:var(--radius-sm);line-height:1.55;min-height:96px;height:100%}
+.corr-en-text{min-height:96px;resize:vertical;font-family:var(--font-doc);line-height:1.55}
+.corr-empty{font-size:var(--text-sm);color:var(--text-3);font-style:italic;padding:var(--space-2) 0}
+.corr-log{margin-top:var(--space-2)}
+.corr-log-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+.corr-log-row{font-size:var(--text-xs);color:var(--text-2);padding:6px 0;border-bottom:1px solid var(--line);line-height:1.5}
+.corr-log-row:last-child{border-bottom:none}
+.corr-log-who{color:var(--text);font-weight:600}
+.corr-log-time{color:var(--text-3)}
 .set-empty{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:var(--space-3);padding:var(--space-8);text-align:center;color:var(--text-3);
@@ -4487,7 +4502,7 @@ function renderSettings(){
       <button data-tab="details" class="${state.tab==="details"?"active":""}">Details</button>
       <button data-tab="activity" class="${state.tab==="activity"?"active":""}">Activity ${b.comments?`<span class="tab-count">${b.comments}</span>`:""}</button>
       ${isReq&&rexFor(b).length?`<button data-tab="rex" class="${state.tab==="rex"?"active":""}">REX <span class="tab-count rex-count">${rexFor(b).length}</span></button>`:""}
-      <button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translate</button>
+      ${b.textOriginal!==undefined?`<button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translation${b.translationCorrected?` <span class="tab-count corr-count" title="Translation corrected">✓</span>`:""}</button>`:""}
     </div>
     <div class="set-body" id="set-body"></div>`;
 
@@ -4513,6 +4528,7 @@ function renderSettings(){
 
   const body = panel.querySelector("#set-body");
   if(state.tab==="rex" && !(isReq && rexFor(b).length)) state.tab="details";
+  if(state.tab==="translate" && b.textOriginal===undefined) state.tab="details";
   if(state.tab==="details"){
     let html = "";
     if(b.uncertain){
@@ -4770,15 +4786,47 @@ function renderSettings(){
       <div class="rex-foot">Titles only. REX content stays in the external base and opens in the source system.</div>`;
     body.querySelectorAll("[data-rex]").forEach(it=>it.addEventListener("click",()=>toast(`Opening ${it.dataset.rex} in the REX base…`,"ok")));
   } else if(state.tab==="translate"){
-    body.innerHTML = `
-      <div class="field"><label>Target language</label>
-        <select id="tr-lang"><option>French (FR)</option><option>German (DE)</option><option>Spanish (ES)</option></select></div>
-      <div class="field"><label>Machine translation</label>
-        <div class="fval" style="font-family:var(--font-doc);background:var(--paper);color:var(--paper-ink);padding:var(--space-3) var(--space-3);border-radius:var(--radius-sm);line-height:1.55">Le système DOIT ${b.text.replace(/<[^>]+>/g,"").replace(/^The system SHALL /i,"").slice(0,110)}…</div>
-        <span class="prov-hint">✦ AI translation — not validated. Source text remains authoritative.</span></div>
-      <button class="validate-cta" id="tr-validate">✓ Mark translation as validated</button>`;
-    body.querySelector("#tr-validate").addEventListener("click",()=>toast("Translation validated for "+b.id,"ok"));
-    body.querySelector("#tr-lang").addEventListener("change",e=>toast("Translation regenerated — "+e.target.value,"ok"));
+    const plain=s=>(s||"").replace(/<[^>]+>/g,"");
+    if(TENDER_LANGUAGE==="en"){
+      body.innerHTML = `<div class="corr-empty">This tender's source language is English — there is no translation to correct.</div>`;
+    } else if(!b.textOriginal || b.textOriginal===b.text){
+      body.innerHTML = `<div class="corr-empty">No original was captured in a different language for this row — nothing to check the English against.</div>`;
+    } else {
+      const log=b.translationLog||[];
+      body.innerHTML = `
+        <div class="corr-langs">
+          <div>
+            <div class="corr-col-lbl">Original — ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE}</div>
+            <div class="corr-original-text">${escHtml(plain(b.textOriginal))}</div>
+          </div>
+          <div>
+            <div class="corr-col-lbl">English — working text${b.translationCorrected?` <span class="corr-badge">✓ corrected</span>`:""}</div>
+            <textarea class="ui-input corr-en-text" id="corr-en-text" rows="4">${escHtml(plain(b.text))}</textarea>
+          </div>
+        </div>
+        <button class="validate-cta" id="corr-save">Save correction</button>
+        <div class="corr-log">
+          <div class="corr-log-lbl">Correction history</div>
+          ${log.length?log.map(l=>`<div class="corr-log-row"><span class="corr-log-who">${escHtml(l.who)}</span> <span class="corr-log-time">— ${l.time}</span><br>"${escHtml(l.before)}" → "${escHtml(l.after)}"</div>`).join("")
+                       :`<div class="corr-empty">No corrections yet.</div>`}
+        </div>`;
+      body.querySelector("#corr-save").addEventListener("click",()=>{
+        const ta=body.querySelector("#corr-en-text");
+        const after=ta.value.trim();
+        if(!after){ toast("The English text can't be empty","warn"); return; }
+        const before=plain(b.text);
+        if(after===before){ toast("Nothing changed","warn"); return; }
+        pushTranslationLog(b, MGR(VIEWER).name, before, after);
+        b.text=after; b.translationCorrected=true;
+        // §7 — this tender trusts the translation and runs the pipeline immediately,
+        // rather than gating on a review step (see the sweep comment near
+        // TENDER_LANGUAGE); a correction here can therefore land after
+        // characterisation/allocation already ran on the old text. Accepted per
+        // that decision — no staleness flag raised on the rest of the tree.
+        toast(`${b.id} — English text corrected`,"ok");
+        refresh();
+      });
+    }
   } else {
     const items = activityFor(b);
     body.innerHTML = `${isReq?roleRecapHTML(b):""}<div class="timeline">${items.map(i=>`
