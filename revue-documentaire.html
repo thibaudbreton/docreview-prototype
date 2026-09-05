@@ -533,43 +533,89 @@ body.mode-review .doc-scroll{display:none}
 .colf-opt{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-sm);color:var(--text-2);cursor:pointer}
 .colf-opt:hover{background:var(--panel-3);color:var(--text)}
 .colf-opt input{accent-color:var(--accent)}
+/* Column filtering lives on the column, where the user is already looking.
+   The old home was a Filter popover listing every column's values at once —
+   a second place to learn, disconnected from the header it was narrowing. */
+.colf-btn{margin-left:auto;width:18px;height:18px;border-radius:var(--radius-sm);color:var(--text-3);font-size:9px;display:grid;place-items:center;flex-shrink:0}
+.rgrid-head .rcell:hover .colf-btn{color:var(--text-2);background:var(--panel-3)}
+.colf-btn:hover{color:var(--text)!important;background:var(--line)!important}
+.colf-btn.on{color:#fff!important;background:var(--accent)!important}
+.colf-pop{position:fixed;z-index:70;width:236px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);padding:var(--space-2);display:none;text-transform:none;letter-spacing:0;font-weight:400}
+.colf-pop.on{display:block}
+.colf-pop-head{display:flex;align-items:center;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);padding:2px 4px 6px}
+.colf-pop-head .colf-actions{margin-left:auto;display:flex;gap:8px}
+.colf-pop-list{max-height:260px;overflow-y:auto}
+.colf-pop-foot{border-top:1px solid var(--line);margin-top:6px;padding-top:6px;display:flex;align-items:center;gap:8px}
+.colf-pop-foot .n{font-size:var(--text-xs);color:var(--text-3)}
+.colf-pop-foot .mini-btn{margin-left:auto}
 .view-sep{height:1px;background:var(--line);margin:var(--space-2) 0}
-.view-scale-row{display:flex;align-items:flex-start;gap:var(--space-2);padding:6px 2px;cursor:pointer;font-size:var(--text-sm);color:var(--text-2)}
-.view-scale-row input{margin-top:2px}
-.view-scale-note{display:block;font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
 /* SPEC-advanced-filters.md — the rule builder. Wider than .view-panel (300px):
-   field + operator + value in one row needs the room. */
-.adv-link{display:flex;align-items:center;justify-content:space-between;padding:8px 2px;cursor:pointer;font-size:var(--text-sm);color:var(--accent);font-weight:600}
-.adv-link:hover{text-decoration:underline}
-.adv-panel{position:absolute;top:calc(100% + 6px);right:0;z-index:61;width:460px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);padding:var(--space-3);display:none}
-.adv-panel.on{display:block}
+   field + operator + value in one row needs the room. The panel is a column
+   with ONE scrolling area (the condition list); the readback, the live count
+   and Cancel/Apply are pinned below it, because §5 makes the count the thing
+   the user watches while building — it must never scroll out of sight. */
+.adv-panel{position:absolute;top:calc(100% + 6px);right:0;z-index:61;width:560px;max-height:min(76vh,640px);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);display:none;flex-direction:column;overflow:hidden}
+.adv-panel.on{display:flex}
+.adv-head{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-3) var(--space-2);border-bottom:1px solid var(--line);flex-shrink:0}
+.adv-back{font-size:var(--text-sm);color:var(--text-3);padding:2px 6px;border-radius:var(--radius-sm)}
+.adv-back:hover{background:var(--panel-3);color:var(--text)}
+.adv-head-t{font-size:var(--text-base);font-weight:600;color:var(--text)}
+.adv-head .mini-btn{margin-left:auto}
+.adv-body{flex:1;min-height:0;overflow-y:auto;padding:var(--space-3)}
+/* §7 — inherited column chips are visible, not silent: the user is told where
+   the conditions they didn't type came from, and that dropping them is fine. */
+.adv-inherit{display:flex;gap:6px;font-size:var(--text-xs);color:var(--text-2);background:var(--accent-soft);border-radius:var(--radius-sm);padding:6px var(--space-2);margin-bottom:var(--space-2);line-height:1.45}
 .adv-toplevel{display:flex;align-items:center;gap:6px;font-size:var(--text-sm);color:var(--text-2);margin-bottom:var(--space-2)}
 .adv-toplevel .gseg{margin:0 2px}
-.adv-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;padding-right:2px;margin-bottom:var(--space-2)}
-.adv-row{display:flex;gap:6px;align-items:center}
-.adv-row select,.adv-row input{background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:5px 6px;font-size:var(--text-xs);color:var(--text);min-width:0}
-.adv-row .adv-field{flex:0 0 108px}
-.adv-row .adv-op{flex:0 0 100px}
-.adv-row .adv-value{flex:1;min-width:0;display:flex;gap:4px}
-.adv-row .adv-value input,.adv-row .adv-value select{width:100%}
-.adv-remove{flex-shrink:0;width:22px;height:22px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center}
+.adv-list{display:flex;flex-direction:column;gap:6px;margin-bottom:var(--space-2)}
+.adv-row{display:flex;gap:6px;align-items:flex-start;padding:6px;border-radius:var(--radius-md);border:1px solid transparent}
+.adv-row .ui-select,.adv-row .ui-input{font-size:var(--text-xs);padding:5px 22px 5px 7px}
+.adv-row .ui-input{padding-right:7px}
+.adv-row .adv-field{flex:0 0 132px}
+.adv-row .adv-op{flex:0 0 118px}
+.adv-row .adv-value{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.adv-row .adv-value>.ui-input,.adv-row .adv-value>.ui-select{width:100%}
+.adv-row .adv-value .adv-nofield{font-size:var(--text-xs);color:var(--text-3);font-style:italic;padding:5px 0}
+/* An incomplete condition is the whole reason this builder used to lie: a
+   blank "contains" matches every row, so three empty rows read as "3 filters
+   active" while nothing was filtered. Marked here, excluded from the match,
+   the readback and Apply. */
+.adv-row.is-incomplete{border-color:var(--line-2);background:var(--warn-soft)}
+.adv-row.is-incomplete .adv-value .ui-input,.adv-row.is-incomplete .adv-value .ui-select{border-style:dashed;border-color:var(--warn)}
+.adv-need{font-size:var(--text-xs);color:var(--warn);white-space:nowrap;padding:5px 0}
+/* is any of / is none of — a native <select multiple> needs ctrl-click, shows
+   no selection once it scrolls, and is the one control in the app nobody can
+   use on a trackpad. Toggle chips instead: what's on is legible at a glance. */
+.advv-chip{font-size:var(--text-xs);padding:3px 8px;border-radius:var(--radius-pill);border:1px solid var(--line-2);color:var(--text-2);background:var(--panel-3)}
+.advv-chip:hover{border-color:var(--accent);color:var(--text)}
+.advv-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.adv-remove{flex-shrink:0;width:24px;height:26px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center}
 .adv-remove:hover{background:var(--panel-3);color:var(--warn)}
-.adv-group{border:1px solid var(--line-2);border-radius:var(--radius-md);padding:8px;background:var(--panel)}
-.adv-group-head{display:flex;align-items:center;justify-content:space-between;font-size:var(--text-xs);color:var(--text-3);margin-bottom:6px}
-.adv-group .adv-list{margin-bottom:6px;max-height:none}
-.adv-addrow{display:flex;gap:8px;margin-bottom:var(--space-2)}
-.adv-summary{font-size:var(--text-xs);color:var(--text-2);background:var(--panel-3);border-radius:var(--radius-sm);padding:6px var(--space-2);margin-bottom:var(--space-2);line-height:1.5}
-.adv-summary b{color:var(--accent)}
-.adv-count{font-size:var(--text-xs);color:var(--text-3);margin-bottom:var(--space-2)}
-.adv-actions{display:flex;gap:8px;justify-content:flex-end;margin-bottom:var(--space-2)}
-.adv-saved{border-top:1px solid var(--line);padding-top:8px}
+.adv-group{border:1px solid var(--line-2);border-left:3px solid var(--accent);border-radius:var(--radius-md);padding:8px;background:var(--panel)}
+.adv-group-head{display:flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--text-3);margin-bottom:6px}
+.adv-group-head .adv-remove{margin-left:auto}
+.adv-group .adv-list{margin-bottom:6px}
+.adv-addrow{display:flex;gap:8px}
+.adv-foot{flex-shrink:0;border-top:1px solid var(--line);padding:var(--space-3);background:var(--panel-2)}
+.adv-summary{font-size:var(--text-xs);color:var(--text-2);background:var(--panel-3);border-radius:var(--radius-sm);padding:6px var(--space-2);margin-bottom:6px;line-height:1.5}
+.adv-summary b{color:var(--text);font-weight:600}
+.adv-countrow{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2)}
+.adv-count{font-size:var(--text-sm);color:var(--text-2)}
+.adv-count b{color:var(--text);font-weight:600}
+.adv-count.zero{color:var(--warn)}
+.adv-blocked{font-size:var(--text-xs);color:var(--warn);margin-left:auto}
+.adv-actions{display:flex;gap:8px;justify-content:flex-end}
+.adv-saved{border-top:1px solid var(--line);margin-top:var(--space-3);padding-top:var(--space-2)}
+.adv-saved-head{display:flex;align-items:center;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:4px}
+.adv-saved-head span{margin-left:auto;font-weight:400;letter-spacing:0;text-transform:none}
 .adv-saved-row{display:flex;align-items:center;gap:6px;padding:4px 2px;font-size:var(--text-sm)}
 .adv-saved-row .n{flex:1;color:var(--text-2);cursor:pointer}
 .adv-saved-row .n:hover{color:var(--text);text-decoration:underline}
 .adv-saved-row button{color:var(--text-3);font-size:var(--text-xs)}
 .adv-saved-row button:hover{color:var(--warn)}
 .adv-save-row{display:flex;gap:6px;margin-top:6px}
-.adv-save-row input{flex:1;background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-sm);padding:5px 6px;font-size:var(--text-xs);color:var(--text)}
+.adv-save-row[hidden]{display:none}
+.adv-save-row .ui-input{flex:1;font-size:var(--text-xs);padding:5px 7px}
 /* column visibility + order — USER-TEST-session-3.md §1.4. A hidden column disappears
    entirely (no sliver); its cell just isn't in the grid flow. Position comes from
    --ord-* custom properties set once on .rgrid by applyCols() and inherited by every
@@ -623,6 +669,17 @@ body.mode-review .doc-scroll{display:none}
 .export-panel .exp-go{width:100%;margin-top:var(--space-4);padding:var(--space-2);border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-base)}
 .export-panel .exp-go:hover{background:var(--accent-hover)}
 .export-panel .exp-note{font-size:var(--text-xs);color:var(--text-3);line-height:1.5;margin-top:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--line)}
+/* batch-6 "Export what the filters currently show" — exporting has to say,
+   plainly, what it's about to hand over. A narrowed export that reads as "the
+   export" is the mistake the ticket calls out: silent and expensive. */
+.exp-scope{font-size:var(--text-sm);color:var(--text-2);background:var(--panel-3);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-2);line-height:1.5}
+.exp-scope b{color:var(--text)}
+.exp-scope.zero{color:var(--warn)}
+/* SPEC-translation.md §6 — stated plainly in the panel, not left implicit:
+   requirement text goes out in the original, contributions go out in
+   English. Only shown when the tender actually has a non-English original —
+   nothing to say here on an English-source tender. */
+.exp-lang-note{font-size:var(--text-xs);color:var(--text-2);line-height:1.5;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--accent-soft);border-radius:var(--radius-sm)}
 .doc-filter{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);color:var(--text);font-size:var(--text-sm);padding:var(--space-1) var(--space-2);max-width:200px}
 .rcell.c-id{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-2);white-space:nowrap}
 .rcell.c-sec{color:var(--text-3);font-size:var(--text-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:var(--rrow-h)}
@@ -721,6 +778,16 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .compliance-compliant{color:var(--ok)}
 /* B3 — project-manager compliance override + lock */
 .compliance-pill.locked{border-color:var(--warn);opacity:.9}
+/* TICKET-two-pass-allocation.md §6 — the requirement's own final verdict,
+   distinct from the activity blocks below it: a light warm tint when locked
+   so it reads as "this is the answer, whatever the tree computes" without
+   needing the tooltip to find out. */
+.final-verdict{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:var(--space-3);background:var(--panel-2)}
+.final-verdict.is-locked{border-color:rgba(224,164,60,.4);background:var(--ia-soft)}
+.final-verdict-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
+.final-verdict-drift{font-size:var(--text-xs);color:var(--ia);font-style:italic}
+.final-verdict-btn{margin-left:auto}
+.final-verdict-note{margin-left:auto;font-size:var(--text-xs);color:var(--text-3);font-style:italic}
 .lock-badge{display:inline-flex;align-items:center;gap:4px;font-size:var(--text-xs);font-weight:700;color:var(--warn);background:var(--warn-soft);padding:2px var(--space-2);border-radius:var(--radius-pill);white-space:nowrap}
 .compliance-rnd_needed{color:var(--ia)}
 .compliance-not_compliant{color:var(--warn)}
@@ -785,6 +852,7 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
   padding:4px var(--space-2);border-radius:var(--radius-sm);border:1px solid var(--line-2);
   font-size:var(--text-xs);color:var(--text-2);transition:all .15s;display:inline-flex;gap:var(--space-1);align-items:center;
 }
+.mini-btn:disabled{opacity:.4;cursor:default}
 .mini-btn:hover{border-color:var(--accent);color:var(--text)}
 .set-title{font-size:var(--text-base);font-weight:600;line-height:1.4;margin-bottom:var(--space-3);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px}
@@ -816,6 +884,32 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .rex-open{font-size:var(--text-xs);color:var(--accent);white-space:nowrap;opacity:0;transition:opacity .12s}
 .rex-item:hover .rex-open{opacity:1}
 .rex-foot{font-size:var(--text-xs);color:var(--text-3);margin-top:var(--space-4);padding-top:var(--space-3);border-top:1px solid var(--line);line-height:1.5}
+/* SPEC-translation.md §5 — the correction tab. Original on top, English
+   below — read top to bottom like the rest of the panel, not two columns
+   racing each other's height (the original runs long, the English box was
+   short and fixed, and the Save button ended up floating in the gap between
+   them). English stays read-only until "Correct" is clicked, same
+   view/edit toggle as the Manager field just below it (.mgr-view/.mgr-edit)
+   — editing a translation is a deliberate action, not something that
+   should be one accidental keystroke away every time this tab opens. */
+.corr-field{margin-bottom:var(--space-3)}
+.corr-col-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.corr-badge{font-size:var(--text-xs);font-weight:700;color:var(--ok);text-transform:none;letter-spacing:0}
+.corr-original-text{font-family:var(--font-doc);background:var(--paper);color:var(--paper-ink);padding:var(--space-3);border-radius:var(--radius-sm);line-height:1.55}
+.corr-en-view{display:flex;align-items:flex-start;gap:var(--space-2)}
+.corr-en-view .fval{flex:1;line-height:1.55}
+.corr-en-edit{display:none;flex-direction:column;gap:var(--space-2)}
+.corr-en-edit.on{display:flex}
+.corr-en-view.off{display:none}
+.corr-en-text{min-height:96px;resize:vertical;font-family:var(--font-doc);line-height:1.55}
+.corr-en-actions{display:flex;gap:var(--space-2)}
+.corr-empty{font-size:var(--text-sm);color:var(--text-3);font-style:italic;padding:var(--space-2) 0}
+.corr-log{margin-top:var(--space-2)}
+.corr-log-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+.corr-log-row{font-size:var(--text-xs);color:var(--text-2);padding:6px 0;border-bottom:1px solid var(--line);line-height:1.5}
+.corr-log-row:last-child{border-bottom:none}
+.corr-log-who{color:var(--text);font-weight:600}
+.corr-log-time{color:var(--text-3)}
 .set-empty{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:var(--space-3);padding:var(--space-8);text-align:center;color:var(--text-3);
@@ -827,11 +921,17 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
   color:var(--text-3);margin-bottom:6px;
 }
 .field .fval{font-size:var(--text-base);color:var(--text)}
-.field select,.field input[type=text]{
+/* :not(.ui-select/.ui-input) — this legacy rule uses the `background`
+   SHORTHAND, which resets background-image/repeat/position. It is more
+   specific than .ui-select, so a component select dropped inside a .field
+   lost its chevron's repeat/position and tiled the icon across the whole
+   control. Excluding the components here keeps the trap from firing on every
+   remaining screen still to be migrated onto them. */
+.field select:not(.ui-select),.field input[type=text]:not(.ui-input){
   width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);
   padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base);transition:border-color .15s;
 }
-.field select:focus,.field input:focus{border-color:var(--accent)}
+.field select:not(.ui-select):focus,.field input:not(.ui-input):focus{border-color:var(--accent)}
 .ia-suggestion{
   border:1px dashed rgba(224,164,60,.5);background:var(--ia-soft);
   border-radius:var(--radius-md);padding:var(--space-3) var(--space-3);margin-bottom:var(--space-4);
@@ -954,6 +1054,14 @@ body.seg-on .tbl-gran{display:inline-flex}
 /* filter-to-selection banner — replaces the toolbar while active */
 .filter-sel-banner{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-lg);font-size:var(--text-sm);color:var(--text)}
 .filter-sel-banner b{font-variant-numeric:tabular-nums}
+/* The active-filter readback, inline in the toolbar. Truncates rather than
+   wrapping — a filter over several fields can run long, and growing the
+   toolbar to fit it would give back the row this was meant to save. The full
+   sentence stays available on hover. */
+.active-filter{display:flex;align-items:center;gap:6px;min-width:0;max-width:min(46%,520px);padding:4px 6px 4px 10px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-pill);font-size:var(--text-xs);color:var(--text)}
+.active-filter-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.active-filter button{flex-shrink:0;width:18px;height:18px;border-radius:50%;color:var(--text-2);font-size:10px;display:grid;place-items:center}
+.active-filter button:hover{background:var(--accent);color:#fff}
 /* keyboard active cell — same focus ring as Text Input's Focus state, inset to stay inside the cell */
 .rcell.active-cell{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius-xs);position:relative;z-index:1}
 .rtoolbar .lbl{font-size:var(--text-xs);color:var(--text-3);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
@@ -998,7 +1106,12 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .deriv-act-model{margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--accent);white-space:nowrap}
 .deriv-act-model.none{color:var(--text-3)}
 .deriv-arrow{text-align:center;font-size:var(--text-xs);color:var(--text-3);padding:var(--space-2) 0}
-.deriv-arrow.small{padding:4px 0}
+/* the arrows between plain fields are gone (they carried no information the
+   order/labels don't already), so each step needs its own breathing room
+   instead — same rhythm as the panel's ordinary .field rows, so the
+   derivation chain reads as more fields, not a visually separate thing. */
+.deriv-step{margin-bottom:var(--space-4)}
+.deriv-step:last-child{margin-bottom:0}
 .deriv-step .deriv-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:5px}
 .deriv-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
 .deriv-scope{font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-3)}
@@ -1006,6 +1119,12 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .deriv-conf.weak{color:var(--ia);background:var(--ia-soft);font-weight:700}
 .deriv-hint{font-size:var(--text-xs);color:var(--text-3);margin-top:5px;line-height:1.45}
 .deriv-hint b{color:var(--text-2)}
+/* an explanation that used to sit permanently under the field it was about —
+   costing space on every view — now lives behind a small ⓘ next to the
+   label of the step it actually explains, on hover only. Native title
+   tooltip: consistent with confBadgeHTML's own convention just above it. */
+.deriv-info{width:14px;height:14px;border-radius:50%;border:1px solid var(--line-2);color:var(--text-3);font-size:9px;font-weight:700;font-style:italic;display:inline-grid;place-items:center;cursor:help;flex-shrink:0}
+.deriv-info:hover{border-color:var(--accent);color:var(--accent)}
 /* activity list — one aligned row per activity: code, name, confidence, whether
    it has a model. The confidence badge drops the auto-margin it uses in a step
    header, otherwise it and the model tag fight over the free space. */
@@ -1019,7 +1138,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .act-line+.act-line{border-top:1px solid var(--line)}
 .act-k{width:110px;flex-shrink:0;font-size:var(--text-xs);color:var(--text-3)}
 .act-v{flex:1;min-width:0;color:var(--text-2)}
-.act-open-btn{margin-top:var(--space-3);width:100%}
+.act-open-row{margin-top:var(--space-3);text-align:right}
 .act-detail-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
 .review-why{font-size:var(--text-xs);color:var(--ia);line-height:1.45;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--ia-soft);border-radius:var(--radius-sm)}
 /* RM view: "N assignments" indicator + retractable per-allocated-activity sections (collapsed by default) */
@@ -1387,7 +1506,7 @@ body.restricted .restrict-banner{display:flex}
         Finalize allocation
       </button>
       <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
-      <div class="avatar" title="Thibaud Breton">TB</div>
+      <div class="avatar" id="header-avatar" title="Thibaud Breton">TB</div>
     </div>
   </header>
 
@@ -1423,6 +1542,11 @@ body.restricted .restrict-banner{display:flex}
       <button class="tpill p-allocated" data-filter="allocated"><span class="n" id="n-allocated">0</span> allocated</button>
       <button class="tpill p-changes" data-filter="changed"><span class="n" id="n-changes">0</span> changes v2.0 → v2.1</button>
       <button class="tpill p-reassign" data-filter="reassign" id="pill-reassign" style="display:none"><span class="n" id="n-reassign">0</span> pending reassignment</button>
+      <!-- TICKET-two-pass-allocation.md §3/lot 4 — "must be visible and filterable —
+           it's a real queue of work, not a failure." Only ever shown on a Turnkey
+           tender: everywhere else the tender's own activity always has a model by
+           definition, so the count would be permanently zero. -->
+      <button class="tpill p-manual" data-filter="manual" id="pill-manual" style="display:none"><span class="n" id="n-manual">0</span> awaiting manual allocation</button>
     </div>
     <button class="clear-filter" id="clear-filter">✕ Clear filter</button>
     <button class="btn-ghost" id="seg-btn" style="margin-left:auto">✂ Edit segmentation</button>
@@ -1475,15 +1599,16 @@ body.restricted .restrict-banner{display:flex}
           <span>Showing <b id="fsb-n">0</b> of <b id="fsb-total">0</b> requirements — selected</span>
           <button class="btn-ghost" id="fsb-show-all" style="font-size:var(--text-sm)">Show all</button>
         </div>
-        <!-- SPEC-advanced-filters.md §4 — "always show the filter in plain language above
-             the results". Reuses .filter-sel-banner's look; hidden while Filter to Selection
-             is showing its own banner instead (§7 — Filter to Selection suspends chips, so
-             the advanced filter is moot while it's active). -->
-        <div class="filter-sel-banner" id="adv-filter-banner" style="display:none">
-          <span id="adv-filter-banner-text"></span>
-          <button class="btn-ghost" id="adv-filter-banner-clear" style="font-size:var(--text-sm)">Clear</button>
-        </div>
         <div class="rtoolbar" id="rtoolbar">
+          <!-- SPEC-advanced-filters.md §4 — "always show the filter in plain language
+               above the results". It sits IN the toolbar rather than on a banner row of
+               its own: the sentence is one line of text, and a full-width bordered band
+               was spending ~50px of table height to say it. Hidden while Filter to
+               Selection shows its own banner (§7 — that mode suspends chips anyway). -->
+          <div class="active-filter" id="adv-filter-banner" style="display:none">
+            <span class="active-filter-t" id="adv-filter-banner-text"></span>
+            <button id="adv-filter-banner-clear" title="Clear every filter">✕</button>
+          </div>
           <div class="search-box" style="width:220px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
             <input type="text" id="table-search" placeholder="Search requirement, ID…">
@@ -1496,8 +1621,7 @@ body.restricted .restrict-banner{display:flex}
               <span class="wrap-switch-label">Wrap text</span>
             </label>
             <div class="view-wrap" style="position:relative">
-              <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)">⏷ Filter <span class="view-badge" id="view-badge" style="display:none"></span> ▾</button>
-              <div class="view-panel" id="filter-panel"></div>
+              <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once">⏷ Filter <span class="view-badge" id="view-badge" style="display:none"></span> ▾</button>
               <div class="adv-panel" id="adv-filter-panel"></div>
             </div>
             <div class="view-wrap" style="position:relative">
@@ -1511,14 +1635,14 @@ body.restricted .restrict-banner{display:flex}
             <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" id="sel-all" title="Select all in view"></label></div>
             <div class="rcell c-id" data-sortcol="id"><span class="cl">ID<span class="sort-arrow"></span></span></div>
             <div class="rcell c-req"><span class="cl">Requirement</span></div>
-            <div class="rcell c-class" data-col="class" data-sortcol="class"><span class="cl">Class<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-typo" data-col="typo" data-sortcol="typo"><span class="cl">Activity<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-class" data-col="class" data-sortcol="class"><span class="cl">Class<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="class" title="Filter this column">⏷</button></div>
+            <div class="rcell c-typo" data-col="typo" data-sortcol="typo"><span class="cl">Activity<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
             <div class="rcell c-abs" data-col="abs" data-sortcol="abs"><span class="cl">ABS<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-type" data-col="type" data-sortcol="type"><span class="cl">PBS<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-type" data-col="type" data-sortcol="type"><span class="cl">PBS<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="type" title="Filter this column">⏷</button></div>
             <div class="rcell c-tkobs" data-col="tkobs" data-sortcol="tkobs" title="Pass 1 — the activity this requirement is distributed to. Turnkey tenders only."><span class="cl">TK OBS<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="Pass 2 — the team or service within the activity. This is what casting staffs."><span class="cl">OBS · team<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Manager<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-status" data-col="status" data-sortcol="status"><span class="cl">Status<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="Pass 2 — the team or service within the activity. This is what casting staffs."><span class="cl">OBS · team<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="obs" title="Filter this column">⏷</button></div>
+            <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Manager<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="mgr" title="Filter this column">⏷</button></div>
+            <div class="rcell c-status" data-col="status" data-sortcol="status"><span class="cl">Status<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="status" title="Filter this column">⏷</button></div>
             <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
           </div>
           <div class="rgrid-body" id="rgrid-body">
@@ -1528,6 +1652,8 @@ body.restricted .restrict-banner{display:flex}
         </div>
       </div>
     </section>
+
+    <div class="colf-pop" id="colf-pop"></div>
 
     <!-- (legacy table kept hidden for compare/segmentation reuse) -->
     <table class="review" style="display:none"><tbody id="review-body"></tbody></table>
@@ -1620,6 +1746,21 @@ body.restricted .restrict-banner{display:flex}
 </div>
 
 <script>
+/* TICKETS-prototype-batch6.md "Prepare the login for SSO" — identity now comes
+   from the shell's directory-shaped getCurrentUser(), not typed into each
+   screen's own markup (every screen had "Thibaud Breton"/"TB" hardcoded
+   independently — six copies, no source of truth). No real SSO integration —
+   prototype-level, per the ticket — but the screens now assume an identity
+   handed to them. Standalone file:// open (no parent) keeps the same default
+   so a screen still renders sensibly opened on its own, consistent with how
+   CURRENT_PROJECT already falls back elsewhere in these files. */
+(function(){
+  try{
+    const u=(window.parent!==window && window.parent.getCurrentUser) ? window.parent.getCurrentUser() : {name:"Thibaud Breton",title:"Bid Director",init:"TB"};
+    const av=document.getElementById("header-avatar");
+    if(av){ av.textContent=u.init; av.title=u.title?`${u.name} — ${u.title}`:u.name; }
+  }catch(e){}
+})();
 /* @include data.js */
 /* @include table-engine.js */
 /* =====================================================
@@ -1727,16 +1868,19 @@ function seedDemoSections(){
     id:"s1", docId:"d1", num:"1", title:"Scope and purpose",
     blocks:[
       {id:"SRM-00001", kind:"text", status:"allocated",
+       textOriginal:"Le présent cahier des charges techniques définit les exigences applicables au système de supervision énergétique multi-sites (EMS) destiné à l'exploitation des installations de production et de distribution du groupe.",
        text:"This technical requirements specification defines the requirements applicable to the multi-site energy monitoring system (EMS) intended for the operation of the group's production and distribution facilities."},
       {id:"SRM-00002", kind:"text", status:"allocated",
+       textOriginal:"Il s'applique à l'ensemble des lots logiciels et matériels compris dans le périmètre, à l'exclusion des équipements de comptage couverts par le document STB-2026-CPT.",
        text:"It applies to all software and hardware lots within scope, excluding metering equipment covered in document STB-2026-CPT."},
     ]
   },
   {
     id:"s2", docId:"d1", num:"2", title:"Functional requirements",
     blocks:[
-      {id:"SRM-00003", kind:"heading", level:2, text:"2.1 Data acquisition and visualization"},
+      {id:"SRM-00003", kind:"heading", level:2, textOriginal:"2.1 Acquisition et visualisation des données", text:"2.1 Data acquisition and visualization"},
       {id:"SRM-00004", kind:"text", status:"allocated",
+       textOriginal:"Les exigences de la présente sous-section s'appliquent au sous-système d'acquisition et d'affichage. Les valeurs de seuil sont indicatives et seront affinées lors de la conception détaillée.",
        text:"The requirements in this subsection apply to the acquisition and display subsystem. Threshold values are indicative and refined during detailed design."},
       // B9 — new image model (UI-only demo): the image itself is never a requirement — detecting
       // it auto-creates exactly one requirement row (SRM-00005), attached via sourceImage. SRM-00006
@@ -1745,14 +1889,18 @@ function seedDemoSections(){
       // document stay read-only either way; no container, no nesting.
       {id:"IMG-1", kind:"image",
        caption:"Figure 1 — System architecture: site gateways feeding the central monitoring platform.",
-       text:"Figure 1 — System architecture: site gateways feeding the central monitoring platform."},
+       text:"Figure 1 — System architecture: site gateways feeding the central monitoring platform."}, // caption, not source-document body text — left out of the translation model, see ensureTranslationFields
       {id:"SRM-00005", kind:"requirement", sourceImage:"IMG-1", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:90}, abs:{v:"Design & Engineering",c:86}, obs:{v:"Monitoring & Supervision — FR",c:88}, manager:"m_sig", type:"Functional", domain:"Architecture", status:"toreview", alloc:"sup", comments:0,
+       textOriginal:"Le système DOIT acheminer la télémétrie de chaque passerelle de site via son agrégateur régional avant qu'elle n'atteigne la plateforme de supervision centrale.",
        text:"The system SHALL route telemetry from each site gateway through its regional aggregator before reaching the central monitoring platform."},
       {id:"SRM-00006", kind:"requirement", sourceImage:"IMG-1", duplicatedFrom:"SRM-00005", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:85}, abs:{v:"Design & Engineering",c:80}, obs:{v:"Monitoring & Supervision — FR",c:82}, manager:null, type:"Functional", domain:"Architecture", status:"toreview", alloc:null, comments:0,
+       textOriginal:"Chaque passerelle de site DOIT se connecter à un seul agrégateur régional, avec basculement automatique vers un agrégateur secondaire en cas de perte de liaison.",
        text:"Each site gateway SHALL connect to exactly one regional aggregator, with automatic failover to a secondary aggregator on link loss."},
       {id:"SRM-00007", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:96}, abs:{v:"Design & Engineering",c:91}, obs:{v:"Monitoring & Supervision — FR",c:93}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
+       textOriginal:"Le système DOIT collecter en continu les mesures de consommation, de production et de qualité d'énergie de chaque site raccordé, avec un intervalle d'acquisition configurable par famille d'équipements.",
        text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family."},
       {id:"SRM-00008", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Dashboard",c:94}, abs:{v:"Design & Engineering",c:88}, obs:{v:"Monitoring & Supervision — FR",c:90}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
+       textOriginal:"Le système DOIT fournir une visualisation consolidée des données multi-sites sur un tableau de bord unique, avec agrégation par site, région et type d'installation.",
        text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type."},
       {id:"SRM-00009", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln","sys"], perimAI:true, pbs:{v:"Supervision / Alerting",c:89}, abs:{v:"Design & Engineering",c:74}, obs:{v:"Monitoring & Supervision — FR",c:61}, manager:"m_sig", type:"Functional", domain:"Alerting", status:"toreview", alloc:"sup", comments:0,
        // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the allocated activities.
@@ -1779,16 +1927,20 @@ function seedDemoSections(){
        rollupCompliance:"pending",
        blockingBranch:"Safety — reassignment needed",
        change:"modified",
+       textOriginal:'Le système DOIT générer une alerte lorsque la consommation d\'un site dépasse le seuil configuré pendant plus de <span class="diff-del">15 minutes</span><span class="diff-ins">5 minutes consécutives</span>, et notifier l\'opérateur conformément à la matrice d\'escalade.',
        text:'The system SHALL generate an alert when a site\'s consumption exceeds the configured threshold for more than <span class="diff-del">15 minutes</span><span class="diff-ins">5 consecutive minutes</span>, and notify the operator according to the escalation matrix.',
        changeDesc:"Alert trigger delay changed from 15 to 5 consecutive minutes. Probable impact on notification chain sizing."},
       {id:"SRM-00010", kind:"requirement", tech:"nontech", techAI:true, perim:["mln"], perimAI:false, pbs:{v:"Supervision / Reporting",c:82}, abs:{v:"Design & Engineering",c:69}, obs:{v:"Monitoring & Supervision — FR",c:54}, manager:null, type:"Functional", domain:"Reporting", status:"suggested", alloc:null, comments:0, uncertain:true,
+       textOriginal:"Le système DOIT produire un rapport mensuel de performance énergétique par site, exportable aux formats PDF et XLSX, incluant l'écart par rapport aux objectifs contractuels.",
        text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets."},
-      {id:"SRM-00011", kind:"heading", level:2, text:"2.2 External interfaces"},
+      {id:"SRM-00011", kind:"heading", level:2, textOriginal:"2.2 Interfaces externes", text:"2.2 External interfaces"},
       {id:"TBL-1", kind:"table", gran:"row", title:"Table 1 — External interfaces (AI-detected: one requirement per row)",
        rows:[
         {id:"SRM-00012", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Interfaces / Open API",c:91}, abs:{v:"Design & Engineering",c:85}, obs:{v:"Infrastructure & Platform — FR",c:88}, manager:"m_sig", ref:"INT-A", proto:"HTTPS", type:"Interface", domain:"Interfaces", status:"suggested", alloc:null, comments:0,
+         textOriginal:"Le système DOIT exposer la télémétrie des sites à des outils tiers via une API REST documentée.",
          text:"The system SHALL expose site telemetry to third-party tools through a documented REST API."},
         {id:"SRM-00013", kind:"requirement", tech:"nontech", techAI:false, perim:["tlc"], perimAI:true, pbs:{v:"Interfaces / External feeds",c:76}, abs:{v:"Integration",c:58}, obs:{v:"Infrastructure & Platform — FR",c:47}, manager:null, ref:"INT-B", proto:"SFTP", type:"Interface", domain:"Interfaces", status:"suggested", alloc:null, comments:0, uncertain:true,
+         textOriginal:"Le système DOIT importer des flux de prévisions météorologiques. Le flux DOIT être actualisé toutes les 15 minutes.",
          text:"The system SHALL import weather forecast feeds. The feed SHALL be refreshed every 15 minutes."},
        ]},
     ]
@@ -1796,13 +1948,15 @@ function seedDemoSections(){
   {
     id:"s3", docId:"d2", num:"3", title:"Performance requirements",
     blocks:[
-      {id:"SRM-00014", kind:"heading", level:2, text:"3.1 Real-time and history"},
+      {id:"SRM-00014", kind:"heading", level:2, textOriginal:"3.1 Temps réel et historique", text:"3.1 Real-time and history"},
       {id:"SRM-00015", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / Real-time",c:95}, abs:{v:"Performance & Validation",c:90}, obs:{v:"Infrastructure & Platform — FR",c:92}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"allocated", allocStatus:"allocated", alloc:"infra", comments:0,
+       textOriginal:"Le rafraîchissement de la vue temps réel NE DOIT PAS dépasser 3 secondes entre l'acquisition de la mesure et son affichage, pour un parc de 200 sites simultanés.",
        text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites."},
-      {id:"SRM-00016", kind:"heading", level:3, text:"3.1.1 Historical queries"},
+      {id:"SRM-00016", kind:"heading", level:3, textOriginal:"3.1.1 Requêtes historiques", text:"3.1.1 Historical queries"},
       {id:"SRM-00017", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / History",c:93}, abs:{v:"Performance & Validation",c:87}, obs:{v:"Infrastructure & Platform — FR",c:89}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"edited", alloc:"infra", comments:2,
+       textOriginal:"Le temps de réponse des requêtes historiques DOIT rester inférieur à 2 secondes pour une profondeur d'un an, au 95e percentile.",
        text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile."},
-      {id:"SRM-00018", kind:"heading", level:2, text:"3.2 Availability"},
+      {id:"SRM-00018", kind:"heading", level:2, textOriginal:"3.2 Disponibilité", text:"3.2 Availability"},
       {id:"SRM-00019", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln"], perimAI:true, pbs:{v:"Platform / Availability",c:88}, abs:{v:"Operations",c:71}, obs:{v:"Infrastructure & Platform — FR",c:63}, manager:"m_mln", type:"Performance", domain:"Availability", status:"suggested", alloc:null, comments:0,
        // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the allocated activities.
        branches:[
@@ -1815,6 +1969,7 @@ function seedDemoSections(){
        rollupCompliance:"pending",
        blockingBranch:"SIG & Urban — awaiting expert answer",
        change:"added",
+       textOriginal:"Le système DOIT garantir une disponibilité de 99,7 % pendant les heures ouvrées, mesurée mensuellement, hors fenêtres de maintenance planifiée.",
        text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.",
        changeDesc:"New availability requirement introduced in v2.1. No existing assignment — needs allocation."},
       {id:"GHOST-1", kind:"ghost",
@@ -1826,10 +1981,13 @@ function seedDemoSections(){
     id:"s4", docId:"d2", num:"4", title:"Security requirements",
     blocks:[
       {id:"SRM-00020", kind:"requirement", tech:"tech", techAI:false, perim:["tky","sig","mln"], perimAI:false, pbs:{v:"Security / Access control",c:97}, abs:{v:"Design & Engineering",c:93}, obs:{v:"Cybersecurity — Group",c:95}, manager:"m_sig", type:"Security", domain:"Access", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
+       textOriginal:"L'accès au système DOIT exiger une authentification multifacteur pour tout profil disposant de droits d'écriture ou d'administration.",
        text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges."},
       {id:"SRM-00021", kind:"requirement", tech:"nontech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Security / Audit trail",c:92}, abs:{v:"Compliance",c:84}, obs:{v:"Cybersecurity — Group",c:88}, manager:"m_mln", type:"Security", domain:"Traceability", status:"toreview", alloc:"cyber", comments:1,
+       textOriginal:"Toute modification d'un paramètre de supervision DOIT être journalisée avec l'identité de l'auteur, l'horodatage et les valeurs avant/après, et conservée pendant 3 ans.",
        text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years."},
       {id:"SRM-00022", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Security / Data flows",c:94}, abs:{v:"Design & Engineering",c:90}, obs:{v:"Cybersecurity — Group",c:91}, manager:"m_sig", type:"Security", domain:"Data", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
+       textOriginal:"Les flux de données entre les sites et la plateforme centrale DOIVENT être chiffrés selon les standards de l'état de l'art (TLS 1.3 minimum) et faire l'objet d'une revue annuelle.",
        text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review."},
     ]
   },
@@ -1959,6 +2117,82 @@ const TENDER_LINE=(function(){
 })();
 const runsPassOne=()=>TENDER_LINE==="Turnkey";
 
+/* =====================================================
+   LANGUAGE & TRANSLATION — SPEC-translation.md
+
+   One source language per tender (§2), read the same way TENDER_LINE is.
+   Two texts live on every heading/information/requirement block:
+     b.text          — the working text, English, everything reads this
+                        exactly as before (characterisation, allocation,
+                        search, export defaults, all of it — unchanged).
+     b.textOriginal  — captured text, in the tender's source language.
+                        Immutable (§3) — nothing in this file ever assigns
+                        to it after the sweep below sets it once.
+   §1/§7 — the pipeline runs on b.text (the trusted translation), not on
+   b.textOriginal, and it runs immediately: this tender's own decision was
+   to NOT gate characterisation on a translation-review step. That means
+   §5's "no stale-work flagging" claim — which explicitly rests on
+   correction happening before work starts — no longer holds here, since
+   work starts immediately and a correction can arrive after. Accepted
+   trade-off, not rebuilt: no staleness mechanism added for this case,
+   per the decision to trust the translation rather than gate on review.
+===================================================== */
+const TENDER_LANGUAGE=(function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return "en";
+    const p=window.parent.getCurrentProject();
+    return (p&&p.language)||"en";
+  }catch(e){ return "en"; }
+})();
+const LANGUAGE_LABEL={en:"English", fr:"French", de:"German", es:"Spanish"};
+/* §5 — every correction is recorded: who, when, what changed. Same shape as
+   pushBranchLog's own log, for the same reason (a plain human-readable
+   trail, not an audit system). */
+function pushTranslationLog(b,who,before,after){
+  b.translationLog=b.translationLog||[];
+  b.translationLog.unshift({who,before,after,time:"Today"});
+}
+/* §4 — a few extra reading languages beyond the tender's own original, purely
+   for the "more comfortable reading in X" convenience. Demo-only: this
+   prototype has no real translation engine, same convention as casting's
+   simulated SSO directory — a language that isn't "en" or TENDER_LANGUAGE
+   never had a real translation captured or generated, so it's rendered as an
+   explicitly-labelled simulation, never presented as if it were real. */
+const LANG_READ_EXTRA=[{code:"de",label:"German"},{code:"es",label:"Spanish"}];
+function langReadOptions(){
+  const opts=[{code:"en",label:"English — working text"}];
+  if(TENDER_LANGUAGE!=="en") opts.push({code:TENDER_LANGUAGE, label:`${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} — original`});
+  LANG_READ_EXTRA.forEach(l=>{ if(l.code!==TENDER_LANGUAGE) opts.push(l); });
+  return opts;
+}
+/* Reading only — never assigns to b.text or b.textOriginal, never touches
+   what characterisation/allocation/export read. */
+function readInLanguage(b,code){
+  const plain=s=>(s||"").replace(/<[^>]+>/g,"");
+  if(code==="en") return {text:plain(b.text), note:null};
+  if(code===TENDER_LANGUAGE){
+    if(b.textOriginal && b.textOriginal!==b.text) return {text:plain(b.textOriginal), note:"Original text — reading only, never fed back into the pipeline."};
+    return {text:plain(b.text), note:"No original captured in this language for this row — showing the working text."};
+  }
+  const label=LANGUAGE_LABEL[code]||code;
+  return {text:`[${label}] ${plain(b.text)}`, note:`✦ Simulated machine translation (${label}) — reading only. No real translation engine in this prototype.`};
+}
+/* Every block gets textOriginal/translationCorrected/translationLog exactly
+   once, regardless of which source built SECTIONS. seedDemoSections() below
+   already carries real French originals (hand-translated, matching
+   TENDER_LANGUAGE:"fr" on the stb2026 project) for headings/information/
+   requirements — the block kinds a source language actually applies to.
+   Real capture data (data.js, gitignored, genuinely captured in English) has
+   no original to fall back to, so textOriginal mirrors text there: an
+   honest "nothing to translate", not a fabricated one. Images/tables/ghosts
+   are UI constructs (captions, diff narration), not literal single-language
+   document text, so they're left out of this model entirely. */
+function ensureTranslationFields(b){
+  if(b.textOriginal===undefined) b.textOriginal=b.text;
+  if(b.translationCorrected===undefined) b.translationCorrected=false;
+  if(!b.translationLog) b.translationLog=[];
+}
+
 /* Which activities have an allocation model of their own. SIG and RST are
    large enough to be tender types in their own right, so their models were
    built for those standalone tenders; Turnkey reuses them when it routes
@@ -1993,14 +2227,12 @@ SECTIONS.forEach(s=>s.blocks.forEach(b=>{
   const arr=(b.kind==="table")?b.rows:[b];
   arr.forEach(r=>{ if(r.kind==="requirement") syncBranchesFromPerim(r); });
 }));
-/* TICKET-two-pass-allocation.md §6 — derive every requirement's verdict from
-   its tree once at init, so the hand-authored rollupCompliance values stop
-   being the source of truth and start being checked against the teams
-   underneath them. Runs after syncBranchesFromPerim so every activity has a
-   branch to derive from. */
+/* SPEC-translation.md — every heading/information/requirement gets its
+   original/English pair, once, regardless of which source built SECTIONS.
+   Images/tables/ghosts are UI constructs, not literal source-document text. */
 SECTIONS.forEach(s=>s.blocks.forEach(b=>{
-  const arr=(b.kind==="table")?b.rows:[b];
-  arr.forEach(r=>{ if(r.kind==="requirement" && (r.branches||[]).length) deriveRequirementCompliance(r); });
+  if(b.kind==="table"){ b.rows.forEach(r=>{ if(r.kind==="requirement") ensureTranslationFields(r); }); return; }
+  if(b.kind==="requirement"||b.kind==="heading"||b.kind==="text") ensureTranslationFields(b);
 }));
 // Cycled the same way creation-projet.html cycles expert-avatar colors
 // (COLORS[i % COLORS.length]) — 16 real codes, 6 base colors, some repeats.
@@ -2374,9 +2606,8 @@ const state = {
 SECTIONS.forEach(s=>{ state.navCollapsed.add(s.id); state.docNavCollapsed.add(s.docId); });
 const changesOrder = ["SRM-00009","SRM-00019","GHOST-1"];
 const allBlocks = () => SECTIONS.flatMap(s=>s.blocks.flatMap(b=>b.kind==="table"?b.rows.map(r=>({...r,section:s})):[{...b,section:s}]));
-const reqs = () => BIG.on ? BIG.rows : allBlocks().filter(b=>b.kind==="requirement");
+const reqs = () => allBlocks().filter(b=>b.kind==="requirement");
 const findBlock = id => {
-  if(BIG.on){ const r=BIG.rows.find(x=>x.id===id); if(r) return {b:r,s:r.section}; }
   for(const s of SECTIONS){ for(const b of s.blocks){ if(b.id===id) return {b,s}; if(b.kind==="table"){ const r=b.rows.find(x=>x.id===id); if(r) return {b:r,s}; } } } return null;
 };
 /* --- block nature: heading / info / requirement / image --- */
@@ -2443,42 +2674,6 @@ function reclassify(id, nature){
   refresh();
 }
 
-/* ---- SCALE TEST DATA ---- */
-const BIG = { on:false, rows:[] };
-const BIG_VERBS=["shall provide","must ensure","shall support","is required to maintain","shall guarantee","must implement","shall log","must restrict","shall expose","must validate"];
-const BIG_OBJ=["the supervision interface","real-time telemetry","the audit trail","access control policies","the reporting module","data retention","the alerting pipeline","external system interfaces","the redundancy mechanism","operator dashboards","the diagnostic service","message encryption"];
-const BIG_QUAL=["within 2 seconds","under nominal load","for all connected assets","according to EN 50128","without data loss","across all sites","during degraded mode","for a 10-year horizon","with 99.9% availability","under peak concurrency"];
-const BIG_TYPES=["Functional","Performance","Security","Interface","Regulatory"];
-const BIG_OBS=[["Monitoring & Supervision — FR","sup"],["Infrastructure & Platform — FR","infra"],["Cybersecurity — Group","cyber"]];
-const BIG_MGR=["m_sig","m_mln","m_inf",null];
-const BIG_PERIM=[["sig"],["mln"],["sig","mln"],["inf"],["urb"],["sig"],["mln"],["tlc"]];
-function buildBigData(n){
-  const secs=SECTIONS.map(s=>({num:s.num,title:s.title}));
-  const out=[];
-  for(let i=0;i<n;i++){
-    const sec=secs[i%secs.length];
-    const obs=BIG_OBS[i%BIG_OBS.length];
-    const conf=45+((i*37)%54);
-    const techAI=(i%5===0);
-    const row={
-      id:"SRM-"+String(i+1).padStart(5,"0"), kind:"requirement", section:sec,
-      text:`The system ${BIG_VERBS[i%BIG_VERBS.length]} ${BIG_OBJ[i%BIG_OBJ.length]} ${BIG_QUAL[i%BIG_QUAL.length]}.`,
-      tech:"tech", techAI,
-      type:BIG_TYPES[i%BIG_TYPES.length], domain:obs[0].split(" ")[0],
-      perim:BIG_PERIM[i%BIG_PERIM.length].slice(), perimAI:(i%3===0),
-      manager:BIG_MGR[i%BIG_MGR.length],
-      alloc:conf>=OBS_THRESHOLD?obs[1]:null,
-      pbs:{v:BIG_OBJ[i%BIG_OBJ.length],c:Math.min(99,conf+10)},
-      abs:{v:"Design & Engineering",c:Math.min(99,conf+4)},
-      obs:{v:obs[0],c:conf},
-      comments:(i%11===0)?1:0, change:null,
-    };
-    computeCharStatus(row); computeAllocStatus(row); // B7 — same derivation as the real dataset
-    out.push(row);
-  }
-  return out;
-}
-
 /* =====================================================
    RENDER — LEFT NAV
 ===================================================== */
@@ -2520,7 +2715,12 @@ function ensureBranches(b){
    adds what's missing beyond that, one fresh (unassigned) branch per newly
    added activity. */
 function syncBranchesFromPerim(b){
-  if(!b.perim || b.perim.length<2) return;
+  // Used to require 2+ activities — a single-activity requirement never got a
+  // branches[] entry at all, so the panel's "Allocations" block (which reads
+  // b.branches, not b.perim) had nothing to show and stayed hidden for the
+  // overwhelming majority of requirements. One activity is one allocation,
+  // same as several — it should render the same way, just with one row.
+  if(!b.perim || !b.perim.length) return;
   ensureBranches(b);
   const have=new Set(b.branches.map(br=>br.typology));
   b.perim.forEach(t=>{
@@ -2603,6 +2803,23 @@ function deriveRequirementCompliance(b){
   if(!b.complianceLocked) b.rollupCompliance=derived;
   return b.rollupCompliance;
 }
+/* TICKET-two-pass-allocation.md §6 — derive every requirement's verdict from
+   its tree once at init, so the hand-authored rollupCompliance values stop
+   being the source of truth and start being checked against the teams
+   underneath them. Runs after syncBranchesFromPerim so every activity has a
+   branch to derive from.
+   This has to sit AFTER deriveRequirementCompliance/consolidateCompliance/
+   CMP_RANK are declared, not just after they're USED elsewhere — CMP_RANK is
+   a const, and this sweep calls into it at top level, at parse/init time.
+   Declared earlier in the file, it tripped a temporal-dead-zone
+   ReferenceError on every load; it only went unnoticed because it requires
+   (r.branches||[]).length>0 at sweep time, which used to be rare (2+
+   activities only) until syncBranchesFromPerim started running from one
+   activity up. */
+SECTIONS.forEach(s=>s.blocks.forEach(b=>{
+  const arr=(b.kind==="table")?b.rows:[b];
+  arr.forEach(r=>{ if(r.kind==="requirement" && (r.branches||[]).length) deriveRequirementCompliance(r); });
+}));
 
 /* The pass-2 allocation status, at ACTIVITY level — "has this activity done its
    allocation yet?". Derived from its teams the same way its verdict is, so
@@ -2627,6 +2844,30 @@ function needsManualAllocation(branch){
 }
 function reqNeedsManualAllocation(b){
   return (b.branches||[]).some(needsManualAllocation);
+}
+
+/* §6 — the tree branches at two independent levels; a requirement's SHAPE is
+   one of three states, the deepest branching present. A requirement can be
+   multi-activity AND have one of those activities branch into multiple teams —
+   reported as "team" in that case, since that's the level someone filtering by
+   shape actually wants to find. */
+function reqAllocLevel(b){
+  const brs=b.branches||[];
+  if(brs.some(br=>ensureTeams(br).length>1)) return "team";
+  if(brs.length>1) return "activity";
+  return "single";
+}
+/* §4/§2 — which pass a requirement's doubt belongs to, if any. Pass 1 doubt
+   (unsure which ACTIVITY this belongs to) is checked first and wins: it is
+   the more consequential kind — a weak pass-2 chain inside the wrong activity
+   is moot. Only ever "pass1" on a Turnkey tender, since nothing else runs pass 1. */
+function reqPassDoubt(b){
+  const brs=b.branches||[];
+  const pass1Sources = brs.length ? brs : (b.tkObs?[{tkObs:b.tkObs}]:[]);
+  if(runsPassOne() && pass1Sources.some(a=>a.tkObs && a.tkObs.c<OBS_THRESHOLD)) return "pass1";
+  const pass2Sources = brs.length ? brs.flatMap(br=>ensureTeams(br)) : [b];
+  if(pass2Sources.some(weakestLink)) return "pass2";
+  return "none";
 }
 
 /* §2 — the chain is sequential, PBS -> ABS -> OBS. Correcting a step
@@ -2663,6 +2904,7 @@ function matchesFilter(b){
   if(isInfo) return !state.filter; // no other quick filter (changed/reassign) ever applies to an info row
   if(state.filter==="changed") return !!b.change || b.kind==="ghost";
   if(state.filter==="reassign") return blockNature(b)==="requirement" && hasPendingReassign(b);
+  if(state.filter==="manual") return blockNature(b)==="requirement" && reqNeedsManualAllocation(b);
   return true;
 }
 function matchesSearch(b){
@@ -3155,8 +3397,10 @@ function rowInnerHTML(b){
       statusTitle=(es.reviewReason?es.reviewReason+" — ":"")+(statusEligible?("Click to validate"+(nextIsAlloc?" — sends to Expert Review":"")):"Nothing to validate yet");
     }
   }
+  // §6 — the lock is visible to everyone allocated on the requirement, not
+  // just whoever opens the panel; the row is where every one of them sees it.
   const complianceHTML = hasBranches
-    ? `<span class="compliance-pill c-${b.rollupCompliance}">${complianceLabel(b.rollupCompliance)}</span>`
+    ? `<span class="compliance-pill${b.complianceLocked?" locked":""} c-${b.rollupCompliance}" title="${b.complianceLocked?`Locked by ${MGR(b.lockedBy||VIEWER).name} — no longer follows the activities below`:""}">${b.complianceLocked?"🔒 ":""}${complianceLabel(b.rollupCompliance)}</span>`
     : `<span class="ph">—</span>`;
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
@@ -3287,7 +3531,6 @@ function teamRowHTML(parent, branch, bidx, team, tidx){
 
 /* Build the flat list of items to virtualize: group headers + rows, all fixed-height */
 let VROWS=[];        // [{type:'group'|'row', ...}]
-let vScrollBound=false;
 /* per-column sort — an alternative flat view; document order (state.sortCol=null) is the default and always restorable via the header's 3rd click or the "Document order" reset link */
 const SORT_KEYS={
   id:b=>b.id||"",
@@ -3366,17 +3609,26 @@ const ADV_FILTER_FIELDS={
   section:{label:"Section",type:"text",get:b=>[b.section?`${b.section.num||""} ${b.section.title||""}`.trim():""]},
   doubtfield:{type:"enum",label:COL_FILTER_DEFS.doubtfield.label,options:COL_FILTER_DEFS.doubtfield.options,get:COL_FILTER_DEFS.doubtfield.get},
   changed:{label:"Changed since version",type:"enum",options:[{v:"added",l:"Added"},{v:"modified",l:"Modified"},{v:"unchanged",l:"Unchanged"}],get:b=>[b.change||"unchanged"]},
+  // TICKET-two-pass-allocation.md lot 4 — "by allocation level, by pass, and
+  // by awaiting manual allocation." The quick pill above covers the third one
+  // as a one-click view; these three fields cover all of them at filter
+  // precision, combinable with everything else in the advanced filter.
+  alloclevel:{label:"Allocation level",type:"enum",options:[{v:"single",l:"Single (no branching)"},{v:"activity",l:"Branches — multiple activities"},{v:"team",l:"Branches — multiple teams"}],get:b=>[reqAllocLevel(b)]},
+  passdoubt:{label:"Doubt — which pass",type:"enum",options:[{v:"pass1",l:"Pass 1 — which activity"},{v:"pass2",l:"Pass 2 — within the activity"},{v:"none",l:"No doubt"}],get:b=>[reqPassDoubt(b)]},
+  manualalloc:{label:"Awaiting manual allocation",type:"enum",options:[{v:"yes",l:"Yes"},{v:"no",l:"No"}],get:b=>[reqNeedsManualAllocation(b)?"yes":"no"]},
 };
 function passesAdvFilter(b){ return TE.matchesFilter(ADV_FILTER_FIELDS, state.advFilter, b); }
 function colFilterActiveCount(){ return Object.values(state.colFilters).filter(s=>s.size).length; }
 /* SPEC-advanced-filters.md §7 — chips and the advanced filter show as ONE combined
    active-filter count, not two separate indicators. */
-function advFilterActiveCount(){ return (state.advFilter.items||[]).length; }
-/* pushes a "row" entry, then — full-render path only, never in the BIG.on scale test —
-   one "branch" entry per allocation if this requirement is expanded. UI-only: no recomputation. */
+/* Counts conditions, not top-level items: a group holding three conditions is
+   three things narrowing the table, and the badge exists to say how many. */
+function advFilterActiveCount(){ return advFlatConditions(state.advFilter).length; }
+/* pushes a "row" entry, then one "branch" entry per allocation if this
+   requirement is expanded. UI-only: no recomputation. */
 function pushRow(b){
   VROWS.push({type:"row",b});
-  if(!BIG.on && (b.branches||[]).length>1 && state.expandedBranches.has(b.id)){
+  if((b.branches||[]).length>1 && state.expandedBranches.has(b.id)){
     b.branches.forEach((branch,idx)=>{
       VROWS.push({type:"branch",parent:b,branch,idx});
       // second level: teams within this activity, only when it actually branches
@@ -3406,8 +3658,6 @@ function buildVRows(){
       VROWS.push({type:"group",g,n:items.length});
       items.forEach(b=>pushRow(b));
     });
-  } else if(BIG.on){
-    rows.forEach(b=>VROWS.push({type:"row",b}));
   } else {
     // document structure: document title > section (H1) > headings (H2/H3), requirements in document order
     // (doc filter is applied at the section level below; provenance stays available via the Document filter)
@@ -3445,11 +3695,30 @@ function renderReview(){
     document.getElementById("fsb-n").textContent = rows.length.toLocaleString();
     document.getElementById("fsb-total").textContent = total.toLocaleString();
   }
-  const advActive = !state.filterToSelection && state.advFilter.items.length>0;
-  document.getElementById("adv-filter-banner").style.display = advActive?"flex":"none";
-  if(advActive) document.getElementById("adv-filter-banner-text").textContent = TE.describeFilter(ADV_FILTER_FIELDS, state.advFilter);
+  // §7 — chips and the advanced filter are ONE active-filter state, not two
+  // competing indicators. Now that column values live on the headers, this
+  // banner is the only place both are visible at once, so it reads back both
+  // and its Clear drops both.
+  const colParts=Object.keys(state.colFilters).filter(c=>state.colFilters[c].size).map(c=>{
+    const def=COL_FILTER_DEFS[c], excl=state.colFilters[c];
+    const kept=def.options.filter(o=>!excl.has(o.v)), gone=def.options.filter(o=>excl.has(o.v));
+    if(!kept.length) return `${def.label} — nothing shown`;
+    // "Activity is not TRK" beats listing the sixteen values that stayed.
+    return gone.length<kept.length
+      ? `${def.label} is not ${gone.map(o=>o.l).join(", ")}`
+      : `${def.label} is any of ${kept.map(o=>o.l).join(", ")}`;
+  });
+  const advPart=state.advFilter.items.length?TE.describeFilter(ADV_FILTER_FIELDS,state.advFilter):"";
+  const allParts=colParts.concat(advPart?[advPart]:[]);
+  const anyActive = !state.filterToSelection && allParts.length>0;
+  document.getElementById("adv-filter-banner").style.display = anyActive?"flex":"none";
+  if(anyActive){
+    const sentence=allParts.join(" AND ");
+    const t=document.getElementById("adv-filter-banner-text");
+    t.textContent=sentence; t.title=sentence;   // truncated inline, full on hover
+  }
   document.getElementById("review-sub").innerHTML =
-    `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, activity, managers, experts and statuses`+(BIG.on?' · <span style="color:var(--ia)">scale test active</span>':"");
+    `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, activity, managers, experts and statuses`;
   renderSortIndicators();
   renderColFilterIndicators();
 
@@ -3482,29 +3751,12 @@ function renderReview(){
     return `<div class="rrow${state.selected===b.id?" active":""}${state.selection.has(b.id)?" bulk-sel":""}" data-id="${b.id}">${rowInnerHTML(b)}</div>`;
   }
 
-  if(BIG.on){
-    // windowed (fixed height) for the scale test — no inline text wrap
-    scroller.classList.remove("rgrid-full");
-    const ROW_H=44;
-    spacer.style.height=(VROWS.length*ROW_H)+"px";
-    const paint=()=>{
-      const scrollTop=scroller.scrollTop, vh=scroller.clientHeight, buffer=6;
-      let start=Math.max(0,Math.floor(scrollTop/ROW_H)-buffer);
-      let end=Math.min(VROWS.length,Math.ceil((scrollTop+vh)/ROW_H)+buffer);
-      win.style.transform=`translateY(${start*ROW_H}px)`;
-      let html=""; for(let i=start;i<end;i++) html+=rowHTML(VROWS[i]);
-      win.innerHTML=html; bindVRows(win);
-    };
-    paint();
-    if(!vScrollBound){ let ticking=false; scroller.addEventListener("scroll",()=>{ if(!ticking){ ticking=true; requestAnimationFrame(()=>{ if(BIG.on) paint(); ticking=false; }); } }); vScrollBound=true; }
-  } else {
-    // full render (normal data): variable-height, readable, fully editable
-    scroller.classList.add("rgrid-full");
-    scroller.classList.toggle("wrap-text", state.wrapText);
-    spacer.style.height="0px"; win.style.transform="none";
-    win.innerHTML=VROWS.map(rowHTML).join("");
-    bindVRows(win);
-  }
+  // variable-height, readable, fully editable
+  scroller.classList.add("rgrid-full");
+  scroller.classList.toggle("wrap-text", state.wrapText);
+  spacer.style.height="0px"; win.style.transform="none";
+  win.innerHTML=VROWS.map(rowHTML).join("");
+  bindVRows(win);
   syncSelAll(rows);
   renderSelBar();
   applyCols();
@@ -3985,9 +4237,9 @@ function confBadgeHTML(f){
   const weak=f.c<OBS_THRESHOLD;
   return `<span class="deriv-conf${weak?" weak":""}" title="${f.c}% confidence${weak?` — below the ${OBS_THRESHOLD}% threshold, this step needs checking`:""}">${f.c}%</span>`;
 }
-function derivStepHTML(label,control,conf,hint){
+function derivStepHTML(label,control,conf,hint,info){
   return `<div class="deriv-step">
-    <div class="deriv-head"><span class="deriv-label">${label}</span>${confBadgeHTML(conf)}</div>
+    <div class="deriv-head"><span class="deriv-label">${label}</span>${info?`<span class="deriv-info" title="${escHtml(info)}">i</span>`:""}${confBadgeHTML(conf)}</div>
     ${control}
     ${hint?`<div class="deriv-hint">${hint}</div>`:""}
   </div>`;
@@ -4015,7 +4267,7 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
         </div>`;
       }).join(""):`<div class="deriv-hint">No activity yet — nothing to route into.</div>`}
     </div>
-    <div class="deriv-arrow" title="The TK OBS routes the requirement into that activity's own allocation model">↓ routes into</div>`;
+    <div class="deriv-arrow" title="The TK OBS routes the requirement into that activity's own allocation model">routes into</div>`;
   }
 
   /* ---- pass 2 — the activity's own model, PBS -> ABS -> OBS ---- */
@@ -4025,7 +4277,6 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
     ${derivStepHTML("PBS",
       `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
       derivSrc.pbs)}
-    <div class="deriv-arrow small">↓</div>
     ${derivStepHTML("ABS",
       `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
       derivSrc.abs,
@@ -4064,22 +4315,20 @@ function pmClassificationHTML(b){
      panel's ordinary fields, in derivation order. The arrows already carry the
      sequence, which is the part that matters. */
   return `${derivStepHTML("Nature",
-      `<select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${b.kind===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
+      `<select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
       null)}
-    <div class="deriv-arrow small">↓</div>
 
     ${derivStepHTML(`Type${b.techAI?` <span class="deriv-scope" style="color:var(--ia)">· AI, unconfirmed</span>`:""}`,
       `<select class="ui-select" id="f-tech">
         <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
         <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
-      </select>`, null,
-      `${useAbs?"Non-technical":"Technical"} — pass 1 reads the <b>${useAbs?"ABS":"PBS"}</b> and nothing else.`)}
-    <div class="deriv-arrow small">↓</div>
+      </select>`, null)}
 
     ${useAbs
-      ? derivStepHTML("ABS", `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim?{c:dim.conf}:null)
-      : derivStepHTML("PBS", `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`, dim?{c:dim.conf}:null)}
-    <div class="deriv-arrow small">↓</div>
+      ? derivStepHTML("ABS", `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim?{c:dim.conf}:null, null,
+          `Non-technical — pass 1 reads the ABS and nothing else.`)
+      : derivStepHTML("PBS", `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`, dim?{c:dim.conf}:null, null,
+          `Technical — pass 1 reads the PBS and nothing else.`)}
 
     <div class="deriv-step">
       <div class="deriv-head"><span class="deriv-label">Activity</span></div>
@@ -4100,6 +4349,27 @@ function pmClassificationHTML(b){
         <button class="ui-list-add" id="pm-add-activity">+ Add activity</button>
       </div>
     </div>`;
+}
+/* §6 — "the lock applies only at the top level — the requirement's final
+   verdict. Never a leaf, never an activity." This is that control: shown to
+   EVERY allocated contributor (§6 — "several contributors may be working
+   underneath a verdict that no longer reflects their input, and they need to
+   know"), but only the project manager can operate it, per
+   SPEC-domain-model.md §5's existing "only the project manager" rule — the
+   ticket doesn't reopen who may lock, only where the lock lives. */
+function finalVerdictHTML(b){
+  const locked=b.complianceLocked;
+  const admin=isAdmin();
+  // §5 — there's nothing to freeze yet while the tree hasn't produced a real
+  // answer. The button says so up front rather than being clickable and
+  // rejecting the click after the fact.
+  const nothingToLock = !locked && b.rollupCompliance==="pending";
+  return `<div class="final-verdict${locked?" is-locked":""}">
+    <div class="final-verdict-label">Final verdict</div>
+    <span class="compliance-pill${locked?" locked":""} c-${b.rollupCompliance}" title="${locked?`Locked by ${MGR(b.lockedBy||VIEWER).name} — the tree below keeps computing, this stays put until unlocked`:"Derived from every activity below — most restrictive wins, pending until all have answered"}">${locked?"🔒 ":""}${complianceLabel(b.rollupCompliance)}</span>
+    ${locked&&b.derivedCompliance&&b.derivedCompliance!==b.rollupCompliance?`<span class="final-verdict-drift" title="What the tree currently computes underneath the lock">tree now says ${complianceLabel(b.derivedCompliance)}</span>`:""}
+    ${admin?`<button class="mini-btn final-verdict-btn" id="final-verdict-toggle" ${nothingToLock?"disabled":""} title="${nothingToLock?"Every activity needs to answer before there's a verdict to lock":""}">${locked?"Unlock":"Lock"}</button>`:(locked?`<span class="final-verdict-note">Locked — contact the project management team to change it</span>`:"")}
+  </div>`;
 }
 function activityBlocksHTML(b){
   const acts=b.branches||[];
@@ -4124,9 +4394,9 @@ function activityBlocksHTML(b){
         </div>
         <div class="branch-sec-body">
           <div class="act-line"><span class="act-k">OBS · team</span><span class="act-v">${escHtml(obs)||"—"}</span></div>
-          <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this activity's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
           <div class="act-line"><span class="act-k">Manager / expert</span><span class="act-v">${escHtml(who)}</span></div>
-          <button class="mini-btn act-open-btn" data-openact="${bidx}">Open activity detail →</button>
+          <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this activity's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
+          <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open activity detail →</button></div>
         </div>
       </div>`;
     }).join("")}
@@ -4155,12 +4425,9 @@ function activityDetailHTML(b,bidx){
       <div class="deriv-pass-h"><span class="deriv-pass-n">Pass 2</span>${escHtml(TY(branch.typology).label)}'s own model</div>
       ${derivStepHTML("Type", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
       ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-activity within this activity."):""}
-      <div class="deriv-arrow small">↓</div>
-      ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||b.type||"—")}</div>`, t.pbs)}
-      <div class="deriv-arrow small">↓</div>
-      ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
-      <div class="deriv-arrow small">↓</div>
-      ${derivStepHTML("OBS · team", `<div class="fval">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label)}</div>`, t.obs,
+        ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||b.type||"—")}</div>`, t.pbs)}
+        ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
+        ${derivStepHTML("OBS · team", `<div class="fval">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label)}</div>`, t.obs,
         "The team or service within this activity — this is what casting staffs.")}
     </div>
     <div class="set-sep"></div>
@@ -4193,13 +4460,13 @@ function renderSettings(){
 
   const suggestion = TYPE_SUGGEST[b.id];
   const isReq = blockNature(b)==="requirement";
-  const hasBranches = isReq && (b.branches||[]).length>1;
+  const hasBranches = isReq && (b.branches||[]).length>=1;
   const rmView = hasBranches && isAdmin();
   const myBranch = hasBranches && !isAdmin() ? myBranchOf(b) : null;
   // B10 — a reassignment request (or a B1 add-activity proposal) needs the project
   // manager's approve/reject card even when the requirement still has only one
   // allocated activity; hasBranches/rmView alone would hide it until a second allocated activity exists.
-  const showBranchPanel = isReq && isAdmin() && ((b.branches||[]).length>1 || (b.branches||[]).some(br=>br.proposal||br.reassignRequest));
+  const showBranchPanel = isReq && isAdmin() && ((b.branches||[]).length>=1 || (b.branches||[]).some(br=>br.proposal||br.reassignRequest));
   /* The project manager's two-pass view of a Turnkey tender. Everything else —
      a contributor, or any non-Turnkey tender — keeps the single-pass panel it
      already had, since there is no distribution to explain there. */
@@ -4217,9 +4484,9 @@ function renderSettings(){
   panel.innerHTML = `
     <div class="set-head">
       <div class="set-id-row">
-        <span class="set-id">${isReq?b.id:"Text block"}</span>
+        <span class="set-id">${b.id}</span>
         ${es.val?`<span class="status-pill s-${es.val}" style="cursor:default">${STATUS_LABEL[es.val]}</span>`:""}
-        ${rmView?`<span class="assignments-badge" title="${b.branches.length} parallel allocations">🔀 ${b.branches.length} assignments</span>`:""}
+        ${rmView&&b.branches.length>1?`<span class="assignments-badge" title="${b.branches.length} parallel allocations">🔀 ${b.branches.length} assignments</span>`:""}
         ${b.sourceImage?`<button class="mini-btn" id="back-to-container" style="margin-left:auto" title="Back to ${b.sourceImage}">← Image</button>`:""}
       </div>
       ${b.sourceImage?`<div class="prov-hint" style="color:var(--human);margin-bottom:4px;display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap">
@@ -4228,13 +4495,13 @@ function renderSettings(){
         ${b.duplicatedFrom?`<button class="mini-btn" id="panel-deldup" title="Delete this duplicate">🗑 Delete</button>`:""}
       </div>`:""}
       ${es.reviewReason&&es.val==="doubt"?`<div class="review-why">⚠ ${es.reviewReason}${es.doubtField==="type"?` — reclassify to resolve: ${natureTag(b)}`:""}</div>`:""}
-      <div class="set-title" title="${b.text.replace(/<[^>]+>/g,"").replace(/"/g,'&quot;')}">${b.text.replace(/<[^>]+>/g,"")}</div>
+      <div class="set-title" id="set-title-text" title="${b.text.replace(/<[^>]+>/g,"").replace(/"/g,'&quot;')}">${b.text.replace(/<[^>]+>/g,"")}</div>
     </div>
     <div class="set-tabs">
       <button data-tab="details" class="${state.tab==="details"?"active":""}">Details</button>
       <button data-tab="activity" class="${state.tab==="activity"?"active":""}">Activity ${b.comments?`<span class="tab-count">${b.comments}</span>`:""}</button>
       ${isReq&&rexFor(b).length?`<button data-tab="rex" class="${state.tab==="rex"?"active":""}">REX <span class="tab-count rex-count">${rexFor(b).length}</span></button>`:""}
-      <button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translate</button>
+      ${b.textOriginal!==undefined?`<button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translation${b.translationCorrected?` <span class="tab-count corr-count" title="Translation corrected">✓</span>`:""}</button>`:""}
     </div>
     <div class="set-body" id="set-body"></div>`;
 
@@ -4254,6 +4521,7 @@ function renderSettings(){
 
   const body = panel.querySelector("#set-body");
   if(state.tab==="rex" && !(isReq && rexFor(b).length)) state.tab="details";
+  if(state.tab==="translate" && b.textOriginal===undefined) state.tab="details";
   if(state.tab==="details"){
     let html = "";
     if(b.uncertain){
@@ -4279,6 +4547,9 @@ function renderSettings(){
                  : pmClassificationHTML(b)+activityBlocksHTML(b))
       : "";
     html += `
+      ${!isReq?`<div class="field"><label>Type</label>
+        <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
+      </div>`:""}
       ${!pmTurnkey&&isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <select class="ui-select" id="f-tech">
           <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
@@ -4289,6 +4560,7 @@ function renderSettings(){
       ${!pmTurnkey&&isReq&&myBranch?`<div class="field"><label>Activity <span style="font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-3)"> · your allocated activity</span></label>
         <div class="fval"><span class="ptag${myBranch.typology==="tky"?" tky":""}">${TY(myBranch.typology).code}</span> ${TY(myBranch.typology).label}</div>
       </div>`:""}
+      ${!pmTurnkey&&isReq&&hasBranches?finalVerdictHTML(b):""}
       ${!pmTurnkey&&isReq&&!myBranch?`<div class="field"><label>Activity ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <div class="msel ${state.typoOpen?"open":""}" id="typo-msel">
           <button class="msel-btn" id="typo-btn">
@@ -4320,6 +4592,7 @@ function renderSettings(){
 
       ${showBranchPanel&&!pmTurnkey?`<div class="set-sep"></div>
       <div class="branch-sections">
+        ${finalVerdictHTML(b)}
         <label class="branch-sections-lbl">Allocations (${b.branches.length})</label>
         ${b.branches.map((branch,bidx)=>`<div class="branch-sec">
             <div class="branch-sec-head">
@@ -4431,6 +4704,26 @@ function renderSettings(){
     body.querySelector("#act-missing")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });
+    body.querySelector("#final-verdict-toggle")?.addEventListener("click",()=>{
+      if(b.complianceLocked){
+        b.complianceLocked=false; b.lockedBy=null;
+        deriveRequirementCompliance(b); // catch up on anything that changed while locked
+        toast(`${b.id} unlocked — the final verdict now follows the tree again`,"ok");
+      } else {
+        // §5 — the lock exists to say "this is our answer, whatever the tree
+        // computes underneath." Pending isn't an answer, it's the absence of
+        // one — locking it would freeze "no verdict yet" as if it were the
+        // decision sent to the client. Block it here, at the one place a lock
+        // actually gets created, rather than just fixing how it looks after.
+        if(b.rollupCompliance==="pending"){
+          toast(`${b.id} — nothing to lock yet. Every activity needs to answer before there's a verdict to freeze.`,"warn");
+          return;
+        }
+        b.complianceLocked=true; b.lockedBy=VIEWER;
+        toast(`${b.id} locked at ${complianceLabel(b.rollupCompliance)} — visible to everyone allocated on it`,"warn");
+      }
+      refresh();
+    });
     body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
     body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
@@ -4486,15 +4779,82 @@ function renderSettings(){
       <div class="rex-foot">Titles only. REX content stays in the external base and opens in the source system.</div>`;
     body.querySelectorAll("[data-rex]").forEach(it=>it.addEventListener("click",()=>toast(`Opening ${it.dataset.rex} in the REX base…`,"ok")));
   } else if(state.tab==="translate"){
-    body.innerHTML = `
-      <div class="field"><label>Target language</label>
-        <select id="tr-lang"><option>French (FR)</option><option>German (DE)</option><option>Spanish (ES)</option></select></div>
-      <div class="field"><label>Machine translation</label>
-        <div class="fval" style="font-family:var(--font-doc);background:var(--paper);color:var(--paper-ink);padding:var(--space-3) var(--space-3);border-radius:var(--radius-sm);line-height:1.55">Le système DOIT ${b.text.replace(/<[^>]+>/g,"").replace(/^The system SHALL /i,"").slice(0,110)}…</div>
-        <span class="prov-hint">✦ AI translation — not validated. Source text remains authoritative.</span></div>
-      <button class="validate-cta" id="tr-validate">✓ Mark translation as validated</button>`;
-    body.querySelector("#tr-validate").addEventListener("click",()=>toast("Translation validated for "+b.id,"ok"));
-    body.querySelector("#tr-lang").addEventListener("change",e=>toast("Translation regenerated — "+e.target.value,"ok"));
+    const plain=s=>(s||"").replace(/<[^>]+>/g,"");
+    // §4's reading selector lives here too, at the top of the tab that's
+    // about this row's languages generally — moved off the header, where it
+    // sat on every tab whether or not the row had anything to correct.
+    const langBar=(()=>{
+      const opts=langReadOptions();
+      return `<div class="field">
+        <label>Read in</label>
+        <select class="ui-select" id="lang-view-select">${opts.map(o=>`<option value="${o.code}">${o.label}</option>`).join("")}</select>
+        <div class="tech-hint" id="lang-bar-note"></div>
+      </div>`;
+    })();
+    const bindLangBar=()=>body.querySelector("#lang-view-select")?.addEventListener("change",e=>{
+      const {text,note}=readInLanguage(b,e.target.value);
+      const titleEl=panel.querySelector("#set-title-text"), noteEl=body.querySelector("#lang-bar-note");
+      titleEl.textContent=text; titleEl.title=text;
+      if(noteEl) noteEl.textContent=note||"";
+    });
+    if(TENDER_LANGUAGE==="en"){
+      body.innerHTML = langBar+`<div class="corr-empty">This tender's source language is English — there is no translation to correct.</div>`;
+      bindLangBar();
+    } else if(!b.textOriginal || b.textOriginal===b.text){
+      body.innerHTML = langBar+`<div class="corr-empty">No original was captured in a different language for this row — nothing to check the English against.</div>`;
+      bindLangBar();
+    } else {
+      const log=b.translationLog||[];
+      body.innerHTML = langBar+`
+        <div class="corr-field">
+          <div class="corr-col-lbl">Original — ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE}</div>
+          <div class="corr-original-text">${escHtml(plain(b.textOriginal))}</div>
+        </div>
+        <div class="corr-field">
+          <div class="corr-col-lbl">English — working text${b.translationCorrected?` <span class="corr-badge">✓ corrected</span>`:""}</div>
+          <div class="corr-en-view" id="corr-en-view">
+            <div class="fval">${escHtml(plain(b.text))}</div>
+            <button class="mgr-change" id="corr-change" style="opacity:1">Correct</button>
+          </div>
+          <div class="corr-en-edit" id="corr-en-edit">
+            <textarea class="ui-input corr-en-text" id="corr-en-text" rows="4">${escHtml(plain(b.text))}</textarea>
+            <div class="corr-en-actions">
+              <button class="mini-btn" id="corr-cancel">Cancel</button>
+              <button class="mgr-done" id="corr-save">Save correction</button>
+            </div>
+          </div>
+        </div>
+        <div class="corr-log">
+          <div class="corr-log-lbl">Correction history</div>
+          ${log.length?log.map(l=>`<div class="corr-log-row"><span class="corr-log-who">${escHtml(l.who)}</span> <span class="corr-log-time">— ${l.time}</span><br>"${escHtml(l.before)}" → "${escHtml(l.after)}"</div>`).join("")
+                       :`<div class="corr-empty">No corrections yet.</div>`}
+        </div>`;
+      bindLangBar();
+      // View by default — same reasoning as the Manager field just below:
+      // correcting a translation is deliberate, not one keystroke away every
+      // time this tab happens to open.
+      const enView=body.querySelector("#corr-en-view"), enEdit=body.querySelector("#corr-en-edit");
+      const openEdit=()=>{ enView.classList.add("off"); enEdit.classList.add("on"); body.querySelector("#corr-en-text").focus(); };
+      const closeEdit=()=>{ enEdit.classList.remove("on"); enView.classList.remove("off"); };
+      body.querySelector("#corr-change").addEventListener("click",openEdit);
+      body.querySelector("#corr-cancel").addEventListener("click",closeEdit);
+      body.querySelector("#corr-save").addEventListener("click",()=>{
+        const ta=body.querySelector("#corr-en-text");
+        const after=ta.value.trim();
+        if(!after){ toast("The English text can't be empty","warn"); return; }
+        const before=plain(b.text);
+        if(after===before){ closeEdit(); return; }
+        pushTranslationLog(b, MGR(VIEWER).name, before, after);
+        b.text=after; b.translationCorrected=true;
+        // §7 — this tender trusts the translation and runs the pipeline immediately,
+        // rather than gating on a review step (see the sweep comment near
+        // TENDER_LANGUAGE); a correction here can therefore land after
+        // characterisation/allocation already ran on the old text. Accepted per
+        // that decision — no staleness flag raised on the rest of the tree.
+        toast(`${b.id} — English text corrected`,"ok");
+        refresh();
+      });
+    }
   } else {
     const items = activityFor(b);
     body.innerHTML = `${isReq?roleRecapHTML(b):""}<div class="timeline">${items.map(i=>`
@@ -4791,6 +5151,15 @@ function renderTriage(){
     document.getElementById("n-reassign").textContent = pendingReassign;
     if(!pendingReassign && state.filter==="reassign") setFilter("reassign");
   }
+  // TICKET-two-pass-allocation.md §3 — same "only occupy a slot when it means
+  // something" rule as the reassignment pill above.
+  const awaitingManual = runsPassOne() ? r.filter(reqNeedsManualAllocation).length : 0;
+  const manualPill = document.getElementById("pill-manual");
+  if(manualPill){
+    manualPill.style.display = awaitingManual ? "" : "none";
+    document.getElementById("n-manual").textContent = awaitingManual;
+    if(!awaitingManual && state.filter==="manual") setFilter("manual");
+  }
 }
 
 /* =====================================================
@@ -4849,7 +5218,11 @@ document.getElementById("sel-filter").addEventListener("click",()=>{
 const emptyColFilters=()=>({class:new Set(),typo:new Set(),type:new Set(),mgr:new Set(),obs:new Set(),status:new Set()});
 document.getElementById("sel-show-only").addEventListener("click",()=>{ TE.enterFilterToSelection(state,emptyColFilters); renderReview(); });
 document.getElementById("fsb-show-all").addEventListener("click",()=>{ TE.exitFilterToSelection(state); renderReview(); });
-document.getElementById("adv-filter-banner-clear").addEventListener("click",()=>{ state.advFilter={op:"AND",items:[]}; refresh(); });
+document.getElementById("adv-filter-banner-clear").addEventListener("click",()=>{
+  state.advFilter={op:"AND",items:[]};
+  Object.values(state.colFilters).forEach(set=>set.clear());
+  refresh();
+});
 /* drag-select: mousedown on the selection gutter, drag across rows to extend a contiguous range.
    Rows outside the live [anchor, cursor] range fall back to their pre-drag state, Excel-style. */
 TE.bindDragSelect({
@@ -4979,58 +5352,126 @@ function renderColFilterIndicators(){
   const badge=document.getElementById("view-badge");
   if(badge){ badge.style.display=n?"inline":"none"; badge.textContent=n; }
 }
-/* ---------- consolidated table View panel (column filters + scale test) ---------- */
-/* ---------- Filter panel: document, group by, per-column value filters ---------- */
-const filterPanelState={open:false};
-function renderFilterPanel(){
-  const p=document.getElementById("filter-panel"); if(!p) return;
-  p.classList.toggle("on", filterPanelState.open);
-  if(!filterPanelState.open){ p.innerHTML=""; return; }
-  const docOptions=`<option value="all">All documents (${DOCS.length})</option>`+
-    DOCS.map((d,i)=>`<option value="${d.id}" ${state.docFilter===d.id?"selected":""}>Doc ${i+1} — ${d.name}</option>`).join("");
-  const sections=Object.keys(COL_FILTER_DEFS).map(col=>{
-    const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
-    return `<div class="view-sec">
-      <div class="view-sec-head">${def.label}<div class="colf-actions"><span data-viewall="${col}">All</span><span data-viewnone="${col}">None</span></div></div>
-      ${def.options.map(o=>`<label class="colf-opt"><input type="checkbox" data-viewval="${col}::${o.v}" ${excluded.has(o.v)?"":"checked"}>${o.l}</label>`).join("")}
-    </div>`;
-  }).join("");
+/* ---------- Column filters: on the column header, not in a separate panel ----------
+   These used to live in a "Filter" popover that listed every filterable column's
+   values at once — a second place to learn, disconnected from the header it was
+   narrowing, and competing with the advanced builder for the same button. Now a
+   ⏷ on the header opens that column's values, and the toolbar's Filter button
+   goes straight to the advanced builder (the only thing a header can't express).
+   "Review field" has no column of its own, so it is advanced-filter-only now. */
+const colfPop={open:null};
+function openColFilterPop(col, anchor){
+  colfPop.open=col;
+  const p=document.getElementById("colf-pop"); if(!p) return;
+  const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
+  const kept=def.options.filter(o=>!excluded.has(o.v)).length;
   p.innerHTML=`
-    <div class="view-panel-head">Filter<button class="mini-btn" id="view-clearall">Clear all filters</button></div>
-    <div class="field" style="margin-bottom:10px"><label>Document</label><select id="pf-doc-filter" class="doc-filter" style="width:100%;max-width:none">${docOptions}</select></div>
-    <div class="field" style="margin-bottom:2px"><label>Group by</label>
-      <div class="gseg" id="pf-gseg">
-        <button data-g="none" class="${state.groupBy==="none"?"on":""}">None</button>
-        <button data-g="typology" class="${state.groupBy==="typology"?"on":""}">Activity</button>
-      </div>
-    </div>
-    <div class="view-sep"></div>
-    <div class="view-scroll">${sections}</div>
-    <div class="view-sep"></div>
-    <div class="adv-link" id="adv-filter-open">⚙ Advanced filter${advFilterActiveCount()?` <span class="view-badge">${advFilterActiveCount()}</span>`:""}<span>›</span></div>
-    <div class="view-sep"></div>
-    <label class="view-scale-row"><input type="checkbox" id="view-scale-cb" ${BIG.on?"checked":""}><span>⚡ Scale test — load 12,000 synthetic rows<span class="view-scale-note">Prototype only, to check the table stays usable at volume.</span></span></label>`;
-  p.querySelector("#pf-doc-filter").addEventListener("change",e=>{ state.docFilter=e.target.value; state.selection.clear(); refresh(); });
-  p.querySelectorAll("#pf-gseg button").forEach(b=>b.addEventListener("click",()=>{
-    state.groupBy=b.dataset.g;
-    if(b.dataset.g==="typology") setSortCol(null);
-    p.querySelectorAll("#pf-gseg button").forEach(x=>x.classList.toggle("on",x===b));
-    renderReview();
-  }));
+    <div class="colf-pop-head">${def.label}<div class="colf-actions"><span data-viewall="${col}">All</span><span data-viewnone="${col}">None</span></div></div>
+    <div class="colf-pop-list">${def.options.map(o=>`<label class="colf-opt"><input type="checkbox" data-viewval="${col}::${o.v}" ${excluded.has(o.v)?"":"checked"}>${o.l}</label>`).join("")}</div>
+    <div class="colf-pop-foot"><span class="n">${kept} of ${def.options.length} shown</span>${excluded.size?`<button class="mini-btn" data-viewall="${col}">Clear</button>`:""}</div>`;
+  p.classList.add("on");
+  // Fixed positioning against the header cell: the grid header scrolls
+  // horizontally on its own, so an absolutely-positioned popover inside it
+  // would be clipped by the scroller on the right-hand columns.
+  const r=anchor.getBoundingClientRect();
+  p.style.top=(r.bottom+4)+"px";
+  p.style.left=Math.max(8, Math.min(r.left-180, window.innerWidth-p.offsetWidth-8))+"px";
   p.querySelectorAll("[data-viewval]").forEach(cb=>cb.addEventListener("change",()=>{
-    const [col,v]=cb.dataset.viewval.split("::");
-    state.colFilters[col].has(v)?state.colFilters[col].delete(v):state.colFilters[col].add(v);
+    const [c,v]=cb.dataset.viewval.split("::");
+    state.colFilters[c].has(v)?state.colFilters[c].delete(v):state.colFilters[c].add(v);
+    // Update the footer in place rather than re-rendering the popover: these
+    // lists run to 17 values, and rebuilding sent the scroll position back to
+    // the top after every single tick.
+    updateColfFoot(p,c);
     refresh();
   }));
-  p.querySelectorAll("[data-viewall]").forEach(s=>s.addEventListener("click",()=>{ state.colFilters[s.dataset.viewall].clear(); renderFilterPanel(); refresh(); }));
-  p.querySelectorAll("[data-viewnone]").forEach(s=>s.addEventListener("click",()=>{ const col=s.dataset.viewnone; COL_FILTER_DEFS[col].options.forEach(o=>state.colFilters[col].add(o.v)); renderFilterPanel(); refresh(); }));
-  p.querySelector("#view-clearall").addEventListener("click",()=>{ Object.values(state.colFilters).forEach(s=>s.clear()); state.advFilter={op:"AND",items:[]}; renderFilterPanel(); refresh(); });
-  p.querySelector("#view-scale-cb").addEventListener("change",e=>toggleScaleTest(e.target.checked));
-  p.querySelector("#adv-filter-open").addEventListener("click",()=>{ filterPanelState.open=false; renderFilterPanel(); openAdvFilterPanel(); });
+  p.querySelectorAll("[data-viewall]").forEach(el=>el.addEventListener("click",()=>{ state.colFilters[col].clear(); openColFilterPop(col,anchor); refresh(); }));
+  p.querySelectorAll("[data-viewnone]").forEach(el=>el.addEventListener("click",()=>{ def.options.forEach(o=>state.colFilters[col].add(o.v)); openColFilterPop(col,anchor); refresh(); }));
+}
+function updateColfFoot(p,col){
+  const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
+  const foot=p.querySelector(".colf-pop-foot"); if(!foot) return;
+  foot.innerHTML=`<span class="n">${def.options.length-excluded.size} of ${def.options.length} shown</span>${excluded.size?`<button class="mini-btn" data-clearcol="${col}">Clear</button>`:""}`;
+  foot.querySelector("[data-clearcol]")?.addEventListener("click",()=>{
+    state.colFilters[col].clear();
+    p.querySelectorAll("[data-viewval]").forEach(cb=>{ cb.checked=true; });
+    updateColfFoot(p,col); refresh();
+  });
+}
+function closeColFilterPop(){
+  colfPop.open=null;
+  const p=document.getElementById("colf-pop"); if(p){ p.classList.remove("on"); p.innerHTML=""; }
+}
+document.querySelectorAll("[data-colf]").forEach(btn=>btn.addEventListener("click",e=>{
+  e.stopPropagation();  // the header cell itself sorts — the funnel must not
+  const col=btn.dataset.colf;
+  colfPop.open===col ? closeColFilterPop() : openColFilterPop(col,btn);
+}));
+document.addEventListener("click",e=>{
+  if(colfPop.open && !e.target.closest("#colf-pop") && !e.target.closest("[data-colf]")) closeColFilterPop();
+});
+function renderColFilterIndicators(){
+  const n=colFilterActiveCount()+advFilterActiveCount();
+  const badge=document.getElementById("view-badge");
+  if(badge){ badge.style.display=advFilterActiveCount()?"inline":"none"; badge.textContent=advFilterActiveCount(); }
+  document.querySelectorAll("[data-colf]").forEach(btn=>{
+    const set=state.colFilters[btn.dataset.colf];
+    const on=!!(set&&set.size);
+    btn.classList.toggle("on",on);
+    btn.title=on?`Filtered — ${COL_FILTER_DEFS[btn.dataset.colf].label}`:"Filter this column";
+  });
+  return n;
 }
 
 /* ---------- Advanced filter builder (SPEC-advanced-filters.md) ---------- */
-const ADV_FIELD_ORDER=["id","text","nature","class","status","compliance","typo","abs","type","obs","mgr","doc","section","doubtfield","changed"];
+/* §11 — "ordering by what's already known about how they sweep — status,
+   per-field doubt, activity — is a reasonable placeholder." A flat list of 15
+   fields wasn't that ordering, it was the data model's declaration order, and
+   it opened every new condition on ID (the one field nobody sweeps on).
+   Grouped, sweep-first, and the group a field lives in is itself the answer to
+   "where do I look for it". alloclevel/passdoubt/manualalloc were defined in
+   ADV_FILTER_FIELDS by TICKET-two-pass-allocation.md but never listed here, so
+   three fields the spec promises were unreachable in the UI — fixed. */
+const ADV_FIELD_GROUPS=[
+  {g:"Progress",         fields:["status","compliance","doubtfield","passdoubt","changed"]},
+  {g:"Characterisation", fields:["nature","class","typo"]},
+  {g:"Allocation",       fields:["type","abs","obs","mgr","alloclevel","manualalloc"]},
+  {g:"Content & source", fields:["id","text","section","doc"]},
+];
+const ADV_FIELD_ORDER=ADV_FIELD_GROUPS.reduce((a,g)=>a.concat(g.fields),[]);
+/* A condition is complete when its operator either needs no value, or has one.
+   This is the fix for the builder's worst behaviour: TE.matchesCondition reads
+   `contains ""` as "contains the empty string", which every populated row
+   satisfies. So three untouched rows used to apply as a live filter that
+   matched everything, while the badge said "3" and the readback said
+   "ID contains AND ID contains AND (ID contains)". Incomplete conditions are
+   now excluded from the match, from the readback, and from what Apply stores —
+   and Apply is blocked until they're finished or removed. */
+const ADV_NO_VALUE_OPS=["is_empty","is_not_empty","is_true","is_false"];
+function advCondComplete(cond){
+  const def=ADV_FILTER_FIELDS[cond.field]; if(!def) return false;
+  if(ADV_NO_VALUE_OPS.includes(cond.op)) return true;
+  if(cond.op==="is_any_of"||cond.op==="is_none_of") return Array.isArray(cond.value)&&cond.value.length>0;
+  if(cond.op==="between") return !!(cond.value&&cond.value.from&&cond.value.to);
+  return cond.value!==""&&cond.value!=null;
+}
+function advPruned(filter){
+  if(!filter||!filter.items) return {op:"AND",items:[]};
+  const items=[];
+  filter.items.forEach(it=>{
+    if(it.items){ const g=advPruned(it); if(g.items.length) items.push(g); }
+    else if(advCondComplete(it)) items.push(it);
+  });
+  return {op:filter.op,items};
+}
+function advIncompleteCount(filter){
+  if(!filter||!filter.items) return 0;
+  return filter.items.reduce((n,it)=>n+(it.items?advIncompleteCount(it):(advCondComplete(it)?0:1)),0);
+}
+function advFlatConditions(filter){
+  if(!filter||!filter.items) return [];
+  return filter.items.reduce((a,it)=>a.concat(it.items?advFlatConditions(it):[it]),[]);
+}
 function advDefaultValue(def,op){
   if(op==="is_any_of"||op==="is_none_of") return [];
   if(op==="between") return {from:"",to:""};
@@ -5042,10 +5483,15 @@ function advNewCondition(){
   const field=ADV_FIELD_ORDER[0], def=ADV_FILTER_FIELDS[field], op=TE.OPS_BY_TYPE[def.type][0];
   return {field, op, value:advDefaultValue(def,op)};
 }
+// How many of the draft's conditions came from the column chips rather than
+// from the user typing them — surfaced in the panel so inherited state is
+// visible rather than surprising (§7).
+let advInheritedCount=0;
 function openAdvFilterPanel(){
   // §7 — the builder inherits the active column chips as its starting point,
   // but only the first time it's opened (an empty draft) — never silently
   // overwrites conditions already customized here on a later open.
+  advInheritedCount=0;
   if(!state.advFilter.items.length){
     const inherited=[];
     for(const col in state.colFilters){
@@ -5054,6 +5500,7 @@ function openAdvFilterPanel(){
       const included=def.options.map(o=>o.v).filter(v=>!excluded.has(v));
       if(included.length) inherited.push({field:col, op:"is_any_of", value:included});
     }
+    advInheritedCount=inherited.length;
     state.advFilterDraft={op:state.advFilter.op, items:inherited};
   }else{
     state.advFilterDraft=JSON.parse(JSON.stringify(state.advFilter));
@@ -5071,50 +5518,98 @@ function advGetItemByAddr(addr){
 }
 function advValueEditorHTML(def, cond, addr){
   const op=cond.op;
-  if(op==="is_empty"||op==="is_not_empty"||op==="is_true"||op==="is_false") return "";
+  if(ADV_NO_VALUE_OPS.includes(op)) return "";
   if(op==="is_any_of"||op==="is_none_of"){
     const sel=new Set(cond.value||[]);
-    return `<select class="adv-val" data-addr="${addr}" multiple size="4">${(def.options||[]).map(o=>`<option value="${o.v}" ${sel.has(o.v)?"selected":""}>${o.l}</option>`).join("")}</select>`;
+    // Toggle chips, not <select multiple>: the native control needs ctrl-click,
+    // hides its own selection past four rows, and is unusable on a trackpad.
+    return (def.options||[]).map(o=>
+      `<button type="button" class="advv-chip${sel.has(o.v)?" on":""}" data-addr="${addr}" data-chip="${escHtml(String(o.v))}">${escHtml(o.l)}</button>`).join("");
   }
-  if(def.type==="enum") return `<select class="adv-val" data-addr="${addr}"><option value="">— choose —</option>${(def.options||[]).map(o=>`<option value="${o.v}" ${cond.value===o.v?"selected":""}>${o.l}</option>`).join("")}</select>`;
+  if(def.type==="enum") return `<select class="ui-select adv-val${cond.value?"":" is-empty"}" data-addr="${addr}"><option value="">— choose a value —</option>${(def.options||[]).map(o=>`<option value="${o.v}" ${cond.value===o.v?"selected":""}>${o.l}</option>`).join("")}</select>`;
   if(def.type==="date"){
-    if(op==="between") return `<input type="date" class="adv-val" data-addr="${addr}" data-part="from" value="${(cond.value&&cond.value.from)||""}"><input type="date" class="adv-val" data-addr="${addr}" data-part="to" value="${(cond.value&&cond.value.to)||""}">`;
-    if(op==="in_last") return `<input type="number" min="1" class="adv-val" data-addr="${addr}" value="${cond.value||7}">`;
-    return `<input type="date" class="adv-val" data-addr="${addr}" value="${cond.value||""}">`;
+    if(op==="between") return `<input type="date" class="ui-input adv-val" data-addr="${addr}" data-part="from" value="${(cond.value&&cond.value.from)||""}"><input type="date" class="ui-input adv-val" data-addr="${addr}" data-part="to" value="${(cond.value&&cond.value.to)||""}">`;
+    if(op==="in_last") return `<input type="number" min="1" class="ui-input adv-val" data-addr="${addr}" value="${cond.value||7}">`;
+    return `<input type="date" class="ui-input adv-val" data-addr="${addr}" value="${cond.value||""}">`;
   }
-  return `<input type="text" class="adv-val" data-addr="${addr}" placeholder="Value…" value="${escHtml(cond.value||"")}">`;
+  return `<input type="text" class="ui-input adv-val" data-addr="${addr}" placeholder="Type a value…" value="${escHtml(cond.value||"")}">`;
 }
 function advConditionRowHTML(cond, addr){
   const def=ADV_FILTER_FIELDS[cond.field]||ADV_FILTER_FIELDS[ADV_FIELD_ORDER[0]];
   const ops=TE.OPS_BY_TYPE[def.type];
-  return `<div class="adv-row">
-    <select class="adv-field" data-addr="${addr}">${ADV_FIELD_ORDER.map(k=>`<option value="${k}" ${k===cond.field?"selected":""}>${ADV_FILTER_FIELDS[k].label}</option>`).join("")}</select>
-    <select class="adv-op" data-addr="${addr}">${ops.map(o=>`<option value="${o}" ${o===cond.op?"selected":""}>${TE.OP_LABEL[o]}</option>`).join("")}</select>
-    <span class="adv-value">${advValueEditorHTML(def,cond,addr)}</span>
-    <button class="adv-remove" data-addr="${addr}" title="Remove">✕</button>
+  const incomplete=!advCondComplete(cond);
+  const fieldOpts=ADV_FIELD_GROUPS.map(g=>
+    `<optgroup label="${g.g}">${g.fields.map(k=>`<option value="${k}" ${k===cond.field?"selected":""}>${ADV_FILTER_FIELDS[k].label}</option>`).join("")}</optgroup>`).join("");
+  return `<div class="adv-row${incomplete?" is-incomplete":""}">
+    <select class="ui-select adv-field" data-addr="${addr}">${fieldOpts}</select>
+    <select class="ui-select adv-op" data-addr="${addr}">${ops.map(o=>`<option value="${o}" ${o===cond.op?"selected":""}>${TE.OP_LABEL[o]}</option>`).join("")}</select>
+    <span class="adv-value">${advValueEditorHTML(def,cond,addr)||`<span class="adv-nofield">no value needed</span>`}</span>
+    ${incomplete?`<span class="adv-need" title="This condition is ignored until it has a value">needs a value</span>`:""}
+    <button class="adv-remove" data-addr="${addr}" title="Remove this condition">✕</button>
   </div>`;
+}
+/* Same wording at both levels. The old panel said "Match all/any of the
+   following" at the top and "Where all/any of:" inside a group — two phrasings
+   for one concept, which made the nesting read as two unrelated mechanisms. */
+function advMatchSwitchHTML(op, attrs){
+  return `Match <span class="gseg" style="display:inline-flex"><button class="${attrs.cls} ${op==="AND"?"on":""}" ${attrs.data} data-gop="AND">all</button><button class="${attrs.cls} ${op==="OR"?"on":""}" ${attrs.data} data-gop="OR">any</button></span> of:`;
 }
 function advGroupHTML(group, topIdx){
   return `<div class="adv-group">
-    <div class="adv-group-head">Where
-      <span class="gseg" style="display:inline-flex"><button class="adv-gop ${group.op==="AND"?"on":""}" data-top="${topIdx}" data-gop="AND">all</button><button class="adv-gop ${group.op==="OR"?"on":""}" data-top="${topIdx}" data-gop="OR">any</button></span>
-      of:
-      <button class="mini-btn" data-addr="${topIdx}" data-removegroup="1">✕ Remove group</button>
+    <div class="adv-group-head">${advMatchSwitchHTML(group.op,{cls:"adv-gop",data:`data-top="${topIdx}"`})}
+      <button class="adv-remove" data-addr="${topIdx}" data-removegroup="1" title="Remove this group">✕</button>
     </div>
     <div class="adv-list">${group.items.map((it,i)=>advConditionRowHTML(it,`${topIdx}.${i}`)).join("")}</div>
     <button class="mini-btn" data-addgroupitem="${topIdx}">+ Add condition</button>
   </div>`;
 }
+/* The count has to be the same population the table reports, or it can't be
+   trusted: the header says "820 shown" (reqs()), while this used to count
+   allBlocks() — 1,348 — so the builder and the table disagreed by 528 rows on
+   the same screen. Same baseline, same word ("requirements"), same number. */
 function advLiveMatch(){
-  const d=state.advFilterDraft;
-  const baseline=allBlocks().filter(visibleTo);
+  const d=advPruned(state.advFilterDraft);
+  const baseline=reqs().filter(visibleTo);
   const matched=baseline.filter(b=>passesColFilters(b)&&TE.matchesFilter(ADV_FILTER_FIELDS,d,b));
-  return {matched:matched.length, total:baseline.length};
+  let culprit=null;
+  // §5 — "say which condition is the restrictive one where that can be
+  // determined, rather than showing a blank table."
+  if(!matched.length && d.items.length){
+    const conds=advFlatConditions(d);
+    if(conds.length>1){
+      const alone=conds.map(c=>({c,n:baseline.filter(b=>passesColFilters(b)&&TE.matchesCondition(ADV_FILTER_FIELDS,c,b)).length}));
+      const worst=alone.reduce((a,x)=>x.n<a.n?x:a,alone[0]);
+      if(worst.n===0) culprit=TE.describeCondition(ADV_FILTER_FIELDS,worst.c);
+    }
+  }
+  return {matched:matched.length, total:baseline.length, culprit};
+}
+/* The "needs a value" flag sits between the value editor and the ✕, so it's
+   added/removed in place rather than by rebuilding the row (which would blur
+   the input the user is typing into). */
+function refreshAdvNeedFlag(row,cond){
+  if(!row) return;
+  const has=row.querySelector(".adv-need"), incomplete=!advCondComplete(cond);
+  if(incomplete&&!has){
+    const s=document.createElement("span");
+    s.className="adv-need"; s.title="This condition is ignored until it has a value"; s.textContent="needs a value";
+    row.insertBefore(s,row.querySelector(".adv-remove"));
+  }else if(!incomplete&&has) has.remove();
 }
 function renderAdvFilterCountAndSummaryOnly(p){
-  const {matched,total}=advLiveMatch();
-  const countEl=p.querySelector(".adv-count"); if(countEl) countEl.textContent=`${matched} of ${total} rows`;
-  const summaryEl=p.querySelector(".adv-summary"); if(summaryEl) summaryEl.textContent=TE.describeFilter(ADV_FILTER_FIELDS,state.advFilterDraft);
+  const foot=p.querySelector(".adv-foot"); if(!foot) return;
+  // §6's save row follows the same "is there anything valid yet" test as the
+  // footer, so it has to be refreshed on this path too — otherwise filling in
+  // the last value leaves Save hidden until some unrelated full re-render.
+  const saveRow=p.querySelector("#adv-save-row");
+  if(saveRow) saveRow.hidden=!advPruned(state.advFilterDraft).items.length;
+  foot.innerHTML=advFootHTML();
+  foot.querySelector("#adv-cancel").addEventListener("click",closeAdvFilterPanel);
+  foot.querySelector("#adv-apply").addEventListener("click",()=>{
+    state.advFilter=advPruned(state.advFilterDraft);
+    closeAdvFilterPanel();
+    refresh();
+  });
 }
 function renderAdvFilterPanel(){
   const p=document.getElementById("adv-filter-panel"); if(!p) return;
@@ -5122,29 +5617,52 @@ function renderAdvFilterPanel(){
   if(!state.advFilterOpen){ p.innerHTML=""; return; }
   const d=state.advFilterDraft;
   const itemsHTML=d.items.map((it,i)=>it.items?advGroupHTML(it,i):advConditionRowHTML(it,String(i))).join("");
-  const {matched,total}=advLiveMatch();
-  const summary=TE.describeFilter(ADV_FILTER_FIELDS,d);
   const saved=TE.loadSavedFilters("review");
+  const pruned=advPruned(d);
   p.innerHTML=`
-    <div class="view-panel-head">Advanced filter<button class="mini-btn" id="adv-close">Close</button></div>
-    ${d.items.length>1?`<div class="adv-toplevel">Match <span class="gseg"><button class="adv-topop ${d.op==="AND"?"on":""}" data-gop="AND">all</button><button class="adv-topop ${d.op==="OR"?"on":""}" data-gop="OR">any</button></span> of the following</div>`:""}
-    <div class="adv-list">${itemsHTML||`<div class="field-hint" style="margin-bottom:8px">No conditions yet — add one below.</div>`}</div>
-    <div class="adv-addrow"><button class="mini-btn" id="adv-add-cond">+ Add condition</button><button class="mini-btn" id="adv-add-group">+ Add group</button></div>
-    ${d.items.length?`<div class="adv-summary">${escHtml(summary)}</div>`:""}
-    <div class="adv-count">${matched} of ${total} rows</div>
-    <div class="adv-actions"><button class="btn-cancel" id="adv-cancel">Cancel</button><button class="btn-submit ok" id="adv-apply">Apply</button></div>
-    <div class="adv-saved">
-      <div class="view-sec-head">Saved filters</div>
-      ${saved.length?saved.map((sf,i)=>`<div class="adv-saved-row"><span class="n" data-loadsaved="${i}">${escHtml(sf.name)}</span><button data-delsaved="${i}" title="Delete">✕</button></div>`).join(""):`<div class="field-hint">None yet — build a filter and save it to reuse on any tender.</div>`}
-      <div class="adv-save-row"><input type="text" id="adv-save-name" placeholder="Save current as…"><button class="mini-btn" id="adv-save-btn">Save</button></div>
-    </div>`;
+    <div class="adv-head">
+      <span class="adv-head-t">Filter</span>
+      <button class="mini-btn" id="adv-close">Close</button>
+    </div>
+    <div class="adv-body">
+      ${advInheritedCount?`<div class="adv-inherit"><span>⤵</span><span>Started from your ${advInheritedCount} active column filter${advInheritedCount>1?"s":""} — remove any you don't want. Nothing changes on the table until you press Apply.</span></div>`:""}
+      ${d.items.length>1?`<div class="adv-toplevel">${advMatchSwitchHTML(d.op,{cls:"adv-topop",data:""})}</div>`:""}
+      <div class="adv-list">${itemsHTML||`<div class="field-hint" style="margin-bottom:8px">No conditions yet — add one below. Column filters stay in charge until you do.</div>`}</div>
+      <div class="adv-addrow"><button class="mini-btn" id="adv-add-cond">+ Add condition</button><button class="mini-btn" id="adv-add-group">+ Add group</button></div>
+      <div class="adv-saved">
+        <div class="adv-saved-head">Saved filters<span>${saved.length?`${saved.length} saved · reusable on any tender`:""}</span></div>
+        ${saved.length?saved.map((sf,i)=>`<div class="adv-saved-row"><span class="n" data-loadsaved="${i}">${escHtml(sf.name)}</span><button data-delsaved="${i}" title="Delete">✕</button></div>`).join(""):`<div class="field-hint">None yet — build a filter and save it to reuse on any tender.</div>`}
+        <div class="adv-save-row" id="adv-save-row" ${pruned.items.length?"":"hidden"}><input type="text" class="ui-input" id="adv-save-name" placeholder="Save current as…"><button class="mini-btn" id="adv-save-btn">Save</button></div>
+      </div>
+    </div>
+    <div class="adv-foot">${advFootHTML()}</div>`;
   bindAdvFilterPanel(p);
+}
+/* The footer is re-rendered on its own while typing a value, so the live count
+   updates without rebuilding (and blurring) the input the user is in. */
+function advFootHTML(){
+  const d=state.advFilterDraft;
+  const pruned=advPruned(d);
+  const {matched,total,culprit}=advLiveMatch();
+  const missing=advIncompleteCount(d);
+  let count;
+  if(!pruned.items.length) count=`<div class="adv-count">No conditions yet — all <b>${total.toLocaleString()}</b> requirements</div>`;
+  else if(!matched) count=`<div class="adv-count zero">Nothing matches${culprit?` — <b>${escHtml(culprit)}</b> alone matches 0`:""}</div>`;
+  else count=`<div class="adv-count"><b>${matched.toLocaleString()}</b> of <b>${total.toLocaleString()}</b> requirements</div>`;
+  return `${pruned.items.length?`<div class="adv-summary">Showing requirements where ${escHtml(TE.describeFilter(ADV_FILTER_FIELDS,pruned))}</div>`:""}
+    <div class="adv-countrow">${count}${missing?`<span class="adv-blocked">${missing} condition${missing>1?"s":""} still need${missing>1?"":"s"} a value</span>`:""}</div>
+    <div class="adv-actions">
+      <button class="btn-cancel" id="adv-cancel">Cancel</button>
+      <button class="btn-submit ok" id="adv-apply" ${missing?"disabled":""} title="${missing?"Finish or remove the incomplete conditions first":""}">${pruned.items.length?"Apply":"Clear filter"}</button>
+    </div>`;
 }
 function bindAdvFilterPanel(p){
   p.querySelector("#adv-close").addEventListener("click",closeAdvFilterPanel);
   p.querySelector("#adv-cancel").addEventListener("click",closeAdvFilterPanel);
   p.querySelector("#adv-apply").addEventListener("click",()=>{
-    state.advFilter=state.advFilterDraft;
+    // Store the pruned filter, never the draft: an incomplete condition must
+    // not survive Apply as a live rule that quietly matches everything.
+    state.advFilter=advPruned(state.advFilterDraft);
     closeAdvFilterPanel();
     refresh();
   });
@@ -5177,12 +5695,26 @@ function bindAdvFilterPanel(p){
     cond.op=s.value; cond.value=advDefaultValue(def,cond.op);
     renderAdvFilterPanel();
   }));
+  p.querySelectorAll(".advv-chip").forEach(el=>el.addEventListener("click",()=>{
+    const cond=advGetItemByAddr(el.dataset.addr);
+    const set=new Set(cond.value||[]);
+    set.has(el.dataset.chip)?set.delete(el.dataset.chip):set.add(el.dataset.chip);
+    cond.value=[...set];
+    // Toggle in place rather than re-rendering the panel: with ten-odd chips
+    // per row, a full rebuild on every click loses the scroll position.
+    el.classList.toggle("on",set.has(el.dataset.chip));
+    el.closest(".adv-row").classList.toggle("is-incomplete",!advCondComplete(cond));
+    refreshAdvNeedFlag(el.closest(".adv-row"),cond);
+    renderAdvFilterCountAndSummaryOnly(p);
+  }));
   p.querySelectorAll(".adv-val").forEach(el=>{
     const onInput=()=>{
       const cond=advGetItemByAddr(el.dataset.addr);
-      if(el.multiple) cond.value=[...el.selectedOptions].map(o=>o.value);
-      else if(el.dataset.part){ cond.value=cond.value||{}; cond.value[el.dataset.part]=el.value; }
+      if(el.dataset.part){ cond.value=cond.value||{}; cond.value[el.dataset.part]=el.value; }
       else cond.value=el.value;
+      const row=el.closest(".adv-row");
+      row.classList.toggle("is-incomplete",!advCondComplete(cond));
+      refreshAdvNeedFlag(row,cond);
       renderAdvFilterCountAndSummaryOnly(p);
     };
     el.addEventListener("input",onInput); el.addEventListener("change",onInput);
@@ -5196,12 +5728,14 @@ function bindAdvFilterPanel(p){
     const list=TE.loadSavedFilters("review"); list.splice(+el.dataset.delsaved,1); TE.saveSavedFilters("review",list);
     renderAdvFilterPanel();
   }));
-  p.querySelector("#adv-save-btn").addEventListener("click",()=>{
+  // Only rendered once there's something worth saving — §6 is about reusing a
+  // filter you built, and offering "Save current as…" over an empty builder
+  // was an input that could only ever fail.
+  p.querySelector("#adv-save-btn")?.addEventListener("click",()=>{
     const name=p.querySelector("#adv-save-name").value.trim();
     if(!name){ toast("Name the filter before saving","warn"); return; }
-    if(!state.advFilterDraft.items.length){ toast("Add at least one condition before saving","warn"); return; }
     const list=TE.loadSavedFilters("review");
-    list.push({name, filter:JSON.parse(JSON.stringify(state.advFilterDraft))});
+    list.push({name, filter:JSON.parse(JSON.stringify(advPruned(state.advFilterDraft)))});
     TE.saveSavedFilters("review",list);
     toast(`Filter "${name}" saved`,"ok");
     renderAdvFilterPanel();
@@ -5213,30 +5747,21 @@ function bindAdvFilterPanel(p){
 // old ancestor, so a bubble-phase listener here would wrongly read every
 // in-panel click as "outside". Capture runs before that mutation happens.
 document.addEventListener("click",e=>{
-  if(state.advFilterOpen && !e.target.closest("#adv-filter-panel") && !e.target.closest("#adv-filter-open")){ closeAdvFilterPanel(); }
+  if(state.advFilterOpen && !e.target.closest("#adv-filter-panel") && !e.target.closest("#filter-btn")){ closeAdvFilterPanel(); }
 },true);
 
-function toggleScaleTest(on){
-  if(on){
-    if(!BIG.rows.length) BIG.rows=buildBigData(12000);
-    BIG.on=true;
-    toast("Loaded 12,000 synthetic requirements — scroll the table","ok");
-  }else{
-    BIG.on=false;
-    toast("Back to the demo dataset","ok");
-  }
-  state.selection.clear(); state.selected=null; lastSel=null;
-  if(state.mode!=="review") setMode("review");
-  refresh();
-}
 /* TICKET-three-support-screens.md — adding a document is the Documents & versions
    screen's job now; that screen is where the tender's structure is visible and
    editable, and it shows the AI pipeline's progress on the new file. This button
    stays as a shortcut from where you notice the gap, but routes there instead of
    carrying a second implementation that would drift from it. */
 document.getElementById("wrap-toggle")?.addEventListener("change",e=>{ state.wrapText=e.target.checked; renderReview(); });
-document.getElementById("filter-btn")?.addEventListener("click",e=>{ e.stopPropagation(); filterPanelState.open=!filterPanelState.open; renderFilterPanel(); });
-document.addEventListener("click",e=>{ if(filterPanelState.open && !e.target.closest("#filter-panel") && !e.target.closest("#filter-btn")){ filterPanelState.open=false; renderFilterPanel(); } });
+// Filter goes straight to the builder: with per-column values on the headers,
+// the intermediate panel had nothing left to hold that the header doesn't.
+document.getElementById("filter-btn")?.addEventListener("click",e=>{
+  e.stopPropagation();
+  state.advFilterOpen ? closeAdvFilterPanel() : openAdvFilterPanel();
+});
 
 /* ---------- View panel: column visibility + expert derivation chain ---------- */
 const colsPanelState={open:false};
@@ -5248,12 +5773,32 @@ function renderColumnsPanel(){
   const p=document.getElementById("cols-panel"); if(!p) return;
   p.classList.toggle("on", colsPanelState.open);
   if(!colsPanelState.open){ p.innerHTML=""; return; }
+  // Document scope and Group by moved here from the old Filter panel: neither
+  // narrows the row set by a value the way a column filter does — they change
+  // what the table is showing you and how it's arranged, which is what View is.
+  const docOptions=`<option value="all">All documents (${DOCS.length})</option>`+
+    DOCS.map((d,i)=>`<option value="${d.id}" ${state.docFilter===d.id?"selected":""}>Doc ${i+1} — ${d.name}</option>`).join("");
   p.innerHTML=`
     <div class="view-panel-head">View</div>
+    <div class="field" style="margin-bottom:10px"><label>Document</label><select id="pf-doc-filter" class="ui-select" style="width:100%;max-width:none">${docOptions}</select></div>
+    <div class="field" style="margin-bottom:2px"><label>Group by</label>
+      <div class="gseg" id="pf-gseg">
+        <button data-g="none" class="${state.groupBy==="none"?"on":""}">None</button>
+        <button data-g="typology" class="${state.groupBy==="typology"?"on":""}">Activity</button>
+      </div>
+    </div>
+    <div class="view-sep"></div>
     <div class="view-sec">
       <div class="view-sec-head">Table columns</div>
       ${TE.reorderableColumnListHTML(COLUMN_TOGGLE_DEFS,state.colOrder,state.colCollapsed)}
     </div>`;
+  p.querySelector("#pf-doc-filter").addEventListener("change",e=>{ state.docFilter=e.target.value; state.selection.clear(); refresh(); });
+  p.querySelectorAll("#pf-gseg button").forEach(b=>b.addEventListener("click",()=>{
+    state.groupBy=b.dataset.g;
+    if(b.dataset.g==="typology") setSortCol(null);
+    p.querySelectorAll("#pf-gseg button").forEach(x=>x.classList.toggle("on",x===b));
+    renderReview();
+  }));
   TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyCols(); renderColumnsPanel(); });
 }
 document.getElementById("cols-btn")?.addEventListener("click",e=>{ e.stopPropagation(); colsPanelState.open=!colsPanelState.open; renderColumnsPanel(); });
@@ -5292,6 +5837,29 @@ const EXPORT_FORMATS=[
   {k:"doors9",label:"DOORS 9 (.csv for import)"},{k:"doorsng",label:"DOORS Next (ReqIF)"},
 ];
 const exportState={steps:new Set(["capture","charac","alloc"]),format:"xlsx",docId:"all",open:false};
+/* The rows an export would actually contain: document scope (this panel's
+   own control) narrowed by whatever's currently active on the table — the
+   per-column chips and the advanced filter (SPEC-advanced-filters.md's own
+   "one combined active-filter state", same two mechanisms the toolbar's
+   readback chip already speaks for). Search and the quick triage pills are
+   deliberately NOT applied here — the ticket names chips and the advanced
+   filter specifically, and those two are a considered "which subset should
+   go out," not a passing lens for browsing the table. */
+function exportRows(){
+  return reqs().filter(visibleTo)
+    .filter(b=>exportState.docId==="all" || (b.section&&b.section.docId===exportState.docId))
+    .filter(passesColFilters).filter(passesAdvFilter);
+}
+function exportScopeHTML(){
+  const rows=exportRows();
+  const filterParts=colFilterActiveCount()||advFilterActiveCount()
+    ? [document.getElementById("adv-filter-banner-text").textContent].filter(Boolean)
+    : [];
+  const docPart=exportState.docId==="all"?"":`Doc ${DOCS.findIndex(d=>d.id===exportState.docId)+1}`;
+  const scopeBits=[docPart,...filterParts].filter(Boolean);
+  const scopeTxt=scopeBits.length?` — ${scopeBits.join(" AND ")}`:"";
+  return `<div class="exp-scope${rows.length?"":" zero"}">${rows.length?`<b>${rows.length.toLocaleString()}</b> requirement${rows.length>1?"s":""}`:"Nothing matches the current scope"}${scopeTxt}</div>`;
+}
 function renderExportPanel(){
   const p=document.getElementById("export-panel"); if(!p) return;
   p.classList.toggle("on",exportState.open);
@@ -5302,22 +5870,27 @@ function renderExportPanel(){
     <div class="exp-h">Export requirements</div>
     <div class="exp-sec-lbl">Document</div>
     <select id="exp-doc" class="exp-format">${docOptions}</select>
+    <div id="exp-scope">${exportScopeHTML()}</div>
+    ${TENDER_LANGUAGE!=="en"?`<div class="exp-lang-note">🌐 Requirement text exports in ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} — the original, never a round trip through English. Comments and non-compliance categories export in English, as written.</div>`:""}
     <div class="exp-sec-lbl">Include steps</div>
     ${EXPORT_STEPS.map(s=>`<label class="exp-row"><input type="checkbox" data-estep="${s.k}" ${exportState.steps.has(s.k)?"checked":""}><span><span class="exp-t">${s.label}</span><span class="exp-d">${s.desc}</span></span></label>`).join("")}
     <div class="exp-sec-lbl">Target format</div>
     <select id="exp-format" class="exp-format">${EXPORT_FORMATS.map(f=>`<option value="${f.k}" ${exportState.format===f.k?"selected":""}>${f.label}</option>`).join("")}</select>
     <button class="exp-go" id="exp-go">Generate export</button>
     <div class="exp-note">DOORS import keeps the requirement register upstream. Export late — most of the review stays in the tool.</div>`;
-  p.querySelector("#exp-doc").addEventListener("change",e=>exportState.docId=e.target.value);
+  p.querySelector("#exp-doc").addEventListener("change",e=>{ exportState.docId=e.target.value; document.getElementById("exp-scope").innerHTML=exportScopeHTML(); });
   p.querySelectorAll("[data-estep]").forEach(cb=>cb.addEventListener("change",()=>{ cb.checked?exportState.steps.add(cb.dataset.estep):exportState.steps.delete(cb.dataset.estep); }));
   p.querySelector("#exp-format").addEventListener("change",e=>exportState.format=e.target.value);
   p.querySelector("#exp-go").addEventListener("click",()=>{
     if(!exportState.steps.size){ toast("Select at least one step to export","warn"); return; }
+    const rows=exportRows();
+    if(!rows.length){ toast("Nothing to export — the current filters match 0 requirements","warn"); return; }
     const fmt=EXPORT_FORMATS.find(f=>f.k===exportState.format).label.split(" ")[0];
     const steps=[...exportState.steps].map(k=>EXPORT_STEPS.find(s=>s.k===k).label).join(" + ");
     const scope=exportState.docId==="all"?"all documents":("Doc "+(DOCS.findIndex(d=>d.id===exportState.docId)+1));
+    const filtered=colFilterActiveCount()||advFilterActiveCount();
     exportState.open=false; renderExportPanel();
-    toast(`Export generated — ${fmt} · ${steps} · ${scope}`,"ok");
+    toast(`Export generated — ${rows.length.toLocaleString()} requirement${rows.length>1?"s":""} · ${fmt} · ${steps} · ${scope}${filtered?" · filtered":""}`,"ok");
   });
 }
 document.getElementById("export-btn")?.addEventListener("click",e=>{ e.stopPropagation(); exportState.docId=state.docFilter; exportState.open=!exportState.open; renderExportPanel(); });
@@ -5382,7 +5955,8 @@ let EXPORT_STATS = {total:0, expertCount:0};
 function renderExportModal(){
   const all = reqs();
   document.getElementById("eo-xls-desc").textContent =
-    `${all.length} requirement${all.length>1?"s":""} · characterization, assignment, status, source section, traceability ID and link to original passage.`;
+    `${all.length} requirement${all.length>1?"s":""} · characterization, assignment, status, source section, traceability ID and link to original passage.`
+    + (TENDER_LANGUAGE!=="en" ? ` Requirement text in ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} (the original); comments and categories in English.` : "");
   const sendable = all.filter(b=>!b.sourceImage);
   const counts = {};
   sendable.forEach(b=>{ if(b.alloc) counts[b.alloc]=(counts[b.alloc]||0)+1; });

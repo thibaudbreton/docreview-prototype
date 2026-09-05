@@ -361,6 +361,19 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .cast-search-wrap .ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:var(--text-sm);pointer-events:none}
 .cast-unstaffed-toggle{display:flex;align-items:center;gap:8px;font-size:var(--text-sm);color:var(--text-2);cursor:pointer;padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);white-space:nowrap}
 .cast-unstaffed-toggle.on{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+/* batch-6 ticket "Add activities from the team screen" — adding a PERSON was
+   already covered (castAddFlowHTML); this is the activity level itself.
+   PM-only (see cast-add-act-wrap's visibility toggle in renderTeamScreen). */
+.cast-add-act-wrap{position:relative}
+.cast-add-act-btn{display:flex;align-items:center;gap:8px;font-size:var(--text-sm);font-weight:600;color:var(--accent);cursor:pointer;padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--accent);white-space:nowrap;background:var(--accent-soft)}
+.cast-add-act-btn:hover{background:var(--accent);color:#fff}
+.cast-add-act-pop{position:absolute;top:calc(100% + 6px);left:0;z-index:20;width:280px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.45);padding:var(--space-3);display:none}
+.cast-add-act-pop.on{display:block}
+.cast-add-act-pop-title{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+.cast-add-act-pop select{width:100%;background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:8px var(--space-3);color:var(--text);font-size:var(--text-sm);margin-bottom:8px}
+.cast-add-act-pop-empty{font-size:var(--text-sm);color:var(--text-3);font-style:italic;margin-bottom:8px}
+.cast-add-act-confirm{width:100%;padding:7px var(--space-3);border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-sm)}
+.cast-add-act-confirm:disabled{opacity:.4;cursor:default}
 .cast-coverage-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-2);margin-bottom:var(--space-5)}
 .cast-cov-card{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);background:var(--panel);cursor:pointer;transition:border-color .15s}
 .cast-cov-card:hover{border-color:var(--line-2)}
@@ -411,7 +424,12 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .cast-person-rm{margin-left:auto;width:24px;height:24px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center;flex-shrink:0}
 .cast-person-rm:hover{background:var(--warn-soft);color:var(--warn)}
 .cast-empty-note{font-size:var(--text-xs);color:var(--text-3);font-style:italic;padding:var(--space-2) 0}
-.cast-add-flow{margin-bottom:var(--space-3);background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-md);padding:var(--space-3)}
+/* position:relative — .cast-add-results below is position:absolute and was
+   positioning against whatever ancestor happens to be positioned (the page's
+   own scroll container), landing far below the input instead of right under
+   it. The dropdown WAS rendering with matches on every keystroke — it just
+   showed up off-screen, which is why it read as no results at all. */
+.cast-add-flow{position:relative;margin-bottom:var(--space-3);background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-md);padding:var(--space-3)}
 .cast-add-flow-title{font-size:var(--text-sm);font-weight:700;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .cast-add-picked{display:flex;align-items:center;gap:8px;font-size:var(--text-sm);margin-bottom:8px;background:var(--panel-2);border-radius:var(--radius-md);padding:6px 10px}
 .cast-add-picked .x{margin-left:auto;color:var(--text-3);cursor:pointer;font-size:var(--text-xs)}
@@ -525,7 +543,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
       <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span></button>
       <button class="icon-btn" id="team-btn" title="Team management"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
       <button class="icon-btn" id="cfg-btn" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
-      <div class="avatar" title="Thibaud Breton">TB</div>
+      <div class="avatar" id="header-avatar" title="Thibaud Breton">TB</div>
     </div>
   </header>
 
@@ -933,6 +951,13 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
       <div class="cast-head-row">
         <div class="cast-search-wrap"><span class="ic">⌕</span><input id="cast-roster-search" placeholder="Search the roster — is this person already staffed, and where?" autocomplete="off"></div>
         <button class="cast-unstaffed-toggle" id="cast-unstaffed-toggle">⚠ Unstaffed only</button>
+        <!-- PM-only: shown/hidden in renderTeamScreen alongside the coverage
+             strip, since adding an activity is a project-wide structural
+             change, not something scoped to one manager's own activity. -->
+        <div class="cast-add-act-wrap" id="cast-add-act-wrap" style="display:none">
+          <button class="cast-add-act-btn" id="cast-add-act-btn">+ Add activity</button>
+          <div class="cast-add-act-pop" id="cast-add-act-pop"></div>
+        </div>
         <!-- TICKET-casting-screen-redesign.md DoD #5: "stays usable and responsive
              with 200 entries." The real casting holds 150-200 people; this seed
              has ~13. Rather than bloat the shipped demo data (which every other
@@ -949,6 +974,21 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 <div id="toast-zone"></div>
 
 <script>
+/* TICKETS-prototype-batch6.md "Prepare the login for SSO" — identity now comes
+   from the shell's directory-shaped getCurrentUser(), not typed into each
+   screen's own markup (every screen had "Thibaud Breton"/"TB" hardcoded
+   independently — six copies, no source of truth). No real SSO integration —
+   prototype-level, per the ticket — but the screens now assume an identity
+   handed to them. Standalone file:// open (no parent) keeps the same default
+   so a screen still renders sensibly opened on its own, consistent with how
+   CURRENT_PROJECT already falls back elsewhere in these files. */
+(function(){
+  try{
+    const u=(window.parent!==window && window.parent.getCurrentUser) ? window.parent.getCurrentUser() : {name:"Thibaud Breton",title:"Bid Director",init:"TB"};
+    const av=document.getElementById("header-avatar");
+    if(av){ av.textContent=u.init; av.title=u.title?`${u.name} — ${u.title}`:u.name; }
+  }catch(e){}
+})();
 function toast(msg,kind="ok"){
   const z=document.getElementById("toast-zone"),t=document.createElement("div");
   t.className="toast";
@@ -1188,6 +1228,21 @@ const CAST_ACTIVITIES=[
   {id:"tlc",code:"TLC",label:"Telecom",managerId:"m_tlc"},
   {id:"cvl",code:"CVL",label:"Civil Works",managerId:null}, // not yet cast to a manager — a real, distinct empty state
   {id:"sys",code:"SYS",label:"Systems Integration",managerId:"m_sys"},
+];
+/* TICKET-casting-screen-redesign.md — "the rest of the reference list is
+   noise and should be secondary or collapsed": CAST_ACTIVITIES above is what
+   characterisation found relevant on THIS tender, not the full activity
+   vocabulary. batch-6 "Add activities from the team screen" is exactly that
+   secondary list surfacing on demand — activities this project hasn't cast
+   yet, offered from the reference list rather than typed freehand (an
+   ad-hoc activity would need its own decision — see the ticket's own open
+   question — so this only ever adds from here). Added with no manager cast
+   yet, same empty state "cvl" already demonstrates above. */
+const REFERENCE_ACTIVITIES=[
+  {id:"rst",code:"RST",label:"Rolling Stock"},
+  {id:"com",code:"COM",label:"Communications"},
+  {id:"saf",code:"SAF",label:"Safety & RAMS"},
+  {id:"arc",code:"ARC",label:"Architecture & Buildings"},
 ];
 const CAST_ACT=id=>CAST_ACTIVITIES.find(a=>a.id===id);
 /* perimeter = [] means this activity is staffed directly, no breakdown — a
@@ -1535,6 +1590,7 @@ function renderTeamScreen(){
     : "Your own activity, expanded and ready to staff. Everything else stays visible for context, read-only.";
   const lastAddedChip=CAST_LAST_ADDED?`<div class="cast-readonly-note" style="margin-bottom:12px">↻ Just added <b>${CAST_LAST_ADDED.label}</b> — staffing them on another perimeter too? Search their name again in the right spot below. <button class="btn-ghost" style="font-size:var(--text-xs);padding:2px 8px;margin-left:8px" id="cast-clear-last">Dismiss</button></div>`:"";
   body.innerHTML=(viewer.isPM?castPMTeamHTML():"") + lastAddedChip + CAST_ACTIVITIES.map(a=>castGroupHTML(a,viewer.isPM)).join("");
+  document.getElementById("cast-add-act-wrap").style.display=viewer.isPM?"block":"none";
   document.getElementById("cast-clear-last")?.addEventListener("click",()=>{ CAST_LAST_ADDED=null; renderTeamScreen(); });
   body.querySelectorAll("[data-toggle-act]").forEach(h=>h.addEventListener("click",()=>{
     const id=h.dataset.toggleAct;
@@ -1575,6 +1631,41 @@ document.getElementById("cast-unstaffed-toggle").addEventListener("click",functi
   CAST_UNSTAFFED_ONLY=!CAST_UNSTAFFED_ONLY;
   this.classList.toggle("on",CAST_UNSTAFFED_ONLY);
   renderTeamScreen();
+});
+/* ---------- + Add activity (batch-6) — pick from the reference list ---------- */
+function renderAddActivityPop(){
+  const pop=document.getElementById("cast-add-act-pop");
+  const available=REFERENCE_ACTIVITIES.filter(r=>!CAST_ACT(r.id));
+  if(!available.length){
+    pop.innerHTML=`<div class="cast-add-act-pop-title">Add activity</div>
+      <div class="cast-add-act-pop-empty">Every activity in the reference list is already on this project.</div>`;
+    return;
+  }
+  pop.innerHTML=`<div class="cast-add-act-pop-title">Add activity</div>
+    <select id="cast-add-act-select">${available.map(r=>`<option value="${r.id}">${r.code} — ${r.label}</option>`).join("")}</select>
+    <button class="cast-add-act-confirm" id="cast-add-act-confirm">+ Add</button>`;
+  pop.querySelector("#cast-add-act-confirm").addEventListener("click",()=>{
+    const id=pop.querySelector("#cast-add-act-select").value;
+    const ref=REFERENCE_ACTIVITIES.find(r=>r.id===id); if(!ref) return;
+    // No manager cast yet — the same real, distinct empty state "cvl" already
+    // demonstrates (castGroupHTML's !a.managerId branch), not a special case.
+    CAST_ACTIVITIES.push({id:ref.id,code:ref.code,label:ref.label,managerId:null});
+    castExpanded.add(ref.id);
+    closeAddActivityPop();
+    toast(`${ref.label} added — cast a manager to it to start staffing`,"ok");
+    renderTeamScreen();
+  });
+}
+function closeAddActivityPop(){ document.getElementById("cast-add-act-pop").classList.remove("on"); }
+document.getElementById("cast-add-act-btn").addEventListener("click",e=>{
+  e.stopPropagation();
+  const pop=document.getElementById("cast-add-act-pop");
+  const opening=!pop.classList.contains("on");
+  if(opening) renderAddActivityPop();
+  pop.classList.toggle("on",opening);
+});
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#cast-add-act-wrap")) closeAddActivityPop();
 });
 /* DoD #5 generator — random but reproducible-in-shape: spreads synthetic
    people across every castable activity/perimeter (never the uncast cvl —

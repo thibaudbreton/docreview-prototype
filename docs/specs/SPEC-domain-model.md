@@ -34,26 +34,47 @@ Only meaningful once the allocated activity is `answered`. Scale: **Compliant** 
 
 The code-level keys are `compliant` / `rnd_needed` / `not_compliant` (optionally `pending`), with exactly the labels above. This is the canonical set — `revue-documentaire.html`'s `COMPLIANCE_DEFS` and `expert-space.html`'s `COMPLIANCE_LABELS` already used it; `suivi-experts-et-versions.html` used to diverge (`compliant_rnd`/`non_compliant`, "Compliant with R&D"/"Non compliant") and has been reconciled to match. `TICKETS-followup-workflow.md`'s T2 wording ("Compliant with R&D" / "Non compliant") is **superseded** by this section — treat this spec as the source of truth for compliance vocabulary going forward.
 
-## 4. Consolidation — "most restrictive wins"
+## 3.2 Two-pass allocation — the chain is sequential, not crossed (`TICKET-two-pass-allocation.md`)
 
-The requirement-level verdict is **derived**, not stored: most restrictive across its allocated activities, and **pending until every allocated activity is `answered`**. For a single-activity requirement, the sole allocated activity's verdict is the requirement's verdict. Order of restrictiveness (most → least): Not Compliant > R&D Needed > Compliant.
+**Corrects a long-standing assumption in this corpus**, which described allocation as ABS × PBS → OBS or as "three assignment dimensions" feeding one derivation (§3.1 above, and `GLOSSARY.md`'s old ABS/PBS/OBS entry). That was wrong. The chain is sequential:
+
+**PBS → ABS → OBS**, each step derived from the one before it. Correcting a step invalidates what follows it — the interface must make that consequence visible (clear the downstream fields) rather than leaving stale values sitting there still looking valid.
+
+**A Turnkey tender runs two passes; every other tender type runs one.**
+
+- **Pass 1 (Turnkey only) — distribution across activities.** Characterisation feeds a single dimension, chosen by the requirement's technical/non-technical classification: non-technical reads the **ABS**, technical reads the **PBS** — never both in the same pass. That dimension produces the **TK OBS, which is an activity** (SIG, RST, INFRA…), and the TK OBS routes the requirement into that activity's own allocation model.
+- **Pass 2 (every tender) — the activity's own model.** A SIG tender is already scoped to SIG, so it feeds straight into pass 2 with nothing to distribute. Inside pass 2, OBS is a **team or service** — matching casting's own perimeter values (DBM, Risk, BTM, Wayside…) — not the same thing pass 1's TK OBS names. The two are never both labelled "OBS" anywhere in the UI.
+- **Most activities have no allocation model.** Only the activities large enough to be tender types in their own right have one (SIG confirmed; the ticket's own "Open" section leaves the rest to be collected). A requirement routed to an activity with no model sits in a clear, filterable, first-class state — activity known, fine allocation done by hand by that activity's own contributors — not an error or an exception to work around.
+- **Confidence is per level, at both passes**, never collapsed into one row-level signal: PBS, ABS and OBS each carry their own, and pass 1's TK OBS carries its own too — being unsure *which activity* a requirement belongs to is a distinct and consequential kind of doubt from being unsure of the team within it.
+- **Both passes can branch.** Pass 1 can assign several activities to one requirement; pass 2 can assign several teams within one activity. Allocation is therefore a **two-level tree** (requirement → activities → teams), not a chain of allocated activities — §1's "one allocated activity per activity" now reads as one *activity branch* per activity, itself holding one or more *team* leaves.
+
+## 4. Consolidation — "most restrictive wins," applied at both levels
+
+**Correction (2026-09-04) — `TICKET-two-pass-allocation.md` §6:** §4.1 and §5 below described a single level of consolidation and a lock that applied to an allocated activity. Both are superseded now that allocation is a two-level tree. The rule itself — most restrictive wins, pending until every answer is in, a lock excluded from input but never from output — is unchanged; it is now **applied twice**, and the lock **moves to the top**. Kept below for the parts that still hold (the shape of the rule, the original-verdict/visibility requirements), with the now-wrong "allocated activity" framing superseded by this note.
+
+The **team** level derives the **activity's** verdict; the **activity** level derives the **requirement's**. An activity's verdict is therefore never entered by anyone — it is computed from its teams exactly as the requirement's is computed from its activities. Two things follow mechanically:
+
+- **Pending propagates upward.** An activity stays pending until every one of its teams has answered; the requirement stays pending until every activity is resolved. One silent team blocks its activity, and therefore the final verdict.
+- **The lock applies only at the top — the requirement's final verdict. Never a leaf (a team), never an activity.** Locking anywhere else would freeze a value nobody reads as "the answer" (the compliance matrix sent to the client is built from the requirement-level verdict, not from an individual team's). A locked requirement's verdict counts as a fixed input wherever it is read, and is excluded only from being *re-derived* by activities/teams changing underneath it — the tree below keeps computing normally; the final verdict simply stops following it.
+
+For a single-activity, single-team requirement (still the common case), the two derivation steps collapse to one and read the same as before this ticket: the sole team's verdict is the sole activity's, which is the requirement's.
 
 ### 4.1 Locked verdicts are excluded from consolidation input, not from its output (B3)
 
-The project manager can **override and lock** an allocated activity's compliance verdict (see §5). A locked verdict is a **decision**, not a pending data point — it must never be re-derived or re-ranked against sibling allocated activities as if it were still an open answer. Concretely:
+A locked verdict is a **decision**, not a pending data point — it must never be re-derived as if it were still an open answer, at whichever level it sits (now: only the requirement's top-level verdict, per the correction above).
 
-- A locked allocated activity's verdict **counts toward the consolidated result** at its locked value (it is not dropped from the rollup).
-- What it is excluded from is **being overridden by "most restrictive wins" logic reacting to a sibling allocated activity's later or worse answer**. Once locked, no other allocated activity's verdict — however restrictive — can change what the locked allocated activity itself reports. The consolidation still takes the most restrictive value among allocated activities, but a locked allocated activity supplies a fixed input to that comparison, not a live one.
-- In short: **locking freezes that one allocated activity's contribution to the derivation; it does not freeze or bypass the derivation itself.** Without this rule, a locked "Compliant" could be silently dragged to "Not Compliant" by an unrelated allocated activity's answer arriving later — exactly the loophole the project manager's lock is meant to close.
+- A locked verdict **counts as the consolidated result** at its locked value wherever it's read (it is not dropped).
+- What it is excluded from is **being overridden by "most restrictive wins" logic reacting to a sibling's later or worse answer** underneath it. The tree below the lock keeps deriving normally — an activity's or team's own verdict still updates — but none of that can change what the locked top-level verdict itself reports.
+- In short: **locking freezes the top level's contribution to derivation; it does not freeze or bypass derivation itself.** Without this rule, a locked "Compliant" could be silently dragged to "Not Compliant" by an unrelated team's answer arriving later — exactly the loophole the lock exists to close.
 
-This prototype does not compute the rollup live (`rollupCompliance` is hand-authored per requirement, as elsewhere in this codebase) — this section documents the rule the eventual derivation must follow, and the seed data assumes it.
+This prototype now computes the rollup live from the seed tree (`consolidateCompliance`/`deriveActivityCompliance`/`deriveRequirementCompliance` in `revue-documentaire.html`) rather than hand-authoring `rollupCompliance` per requirement — the derivation this section describes is implemented, not just documented.
 
 ## 5. Compliance override, lock & unlock (project manager only)
 
-- The project manager may **replace** an allocated activity's verdict and then **lock** it. No comment/reason is required for either the override or the lock.
-- **Only the project manager can lock or unlock a verdict** — no other role (activity manager, expert) ever has access to these controls. Unlocking is confirmed and in scope: the project manager can unlock an allocated activity they previously locked, which returns it to a normal, freely-editable verdict (the compliance value itself is unchanged by unlocking — only its editability).
-- The allocated activity retains its **original (expert-submitted) verdict** separately from the current (possibly overridden) one — surfaced only in the **detail panel**, never in the table row, so the row stays uncluttered. This original value is preserved across lock/unlock/re-lock cycles — only the *first* override after the expert's answer is recorded as "original."
-- The lock must be **visible to whoever owns the allocated activity** — currently the activity manager (no dedicated expert view exists yet). **When the expert's own view is built, it must surface the same lock state and the reason the allocated activity is no longer actionable** — this was explicitly deferred, not forgotten.
+- The project manager may **replace** the requirement's final verdict and then **lock** it. No comment/reason is required for either.
+- **Only the project manager can lock or unlock a verdict** — no other role ever has access to these controls; the ticket does not reopen who may lock, only where the lock lives. Unlocking returns it to a normal, freely-editable (i.e., freely re-derived) verdict — the compliance value itself is unchanged by unlocking, only its editability, and it immediately catches up to whatever the tree currently computes.
+- The requirement retains its **original derived verdict** separately from the current (possibly locked) one — surfaced in the detail panel as what the tree currently computes underneath the lock, distinct from the frozen value shown as the final verdict.
+- **The lock is visible to everyone allocated on that requirement** — not just the project manager, and not just whoever answered last. Several contributors may be working underneath a verdict that no longer reflects their input, and they need to know: the locked state shows in the table row's compliance pill and in every contributor's own detail-panel view of that requirement, not only the project manager's.
 
 ## 6. Casting is asynchronous and ongoing, not a one-shot creation-time step (B2)
 

@@ -112,9 +112,15 @@ function seedProjects(){
     // SIG, Mainline and Safety, and only a Turnkey tender distributes across
     // activities like that (a SIG tender is already scoped to SIG). Turnkey
     // also makes pass 1 demonstrable on the one fully-built demo project.
+    // SPEC-translation.md §2 — one source language per tender, captured at
+    // creation. French here so the demo has a real, reviewable non-English
+    // source to show the original/English split against (revue-documentaire's
+    // seedDemoSections() carries the matching French originals). The real
+    // capture dataset (data.js, gitignored — not this repo's problem to
+    // translate) stays English; see TENDER_LANGUAGE's own fallback.
     {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Turnkey", days:23, deadline:1,
      status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager", builtOut:true,
-     health:"on_track", healthNote:"On pace — 2 items need attention"},
+     health:"on_track", healthNote:"On pace — 2 items need attention", language:"fr"},
     {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"SIG", days:9, deadline:1,
      status:"expert_review", done:34, total:41, updated:"2h ago", role:"Signalling manager", builtOut:false,
      health:"at_risk", healthNote:"9 days left, 7 requirements still open"},
@@ -131,6 +137,18 @@ let PROJECTS = seedProjects();
 let currentProjectId = "stb2026";
 window.getProjects = ()=>PROJECTS;
 window.getCurrentProject = ()=>PROJECTS.find(p=>p.id===currentProjectId)||null;
+
+// TICKETS-prototype-batch6.md "Prepare the login for SSO" — there is no login
+// screen in this prototype (the app opens straight on My tenders), so there
+// is no form to remove. What there WAS: every screen's avatar had "Thibaud
+// Breton"/"TB" typed literally into its own markup — six independent copies
+// of a hand-entered identity, no single source of truth. This is that source:
+// shaped like what an SSO/directory lookup returns (id, name, title, email,
+// initials), fetched by every screen the same way getCurrentProject() already
+// is. No real SSO integration — prototype-level, per the ticket — but the
+// screens and the user model now assume an identity handed to them, not typed.
+const CURRENT_USER = {id:"admin", name:"Thibaud Breton", title:"Bid Director", email:"thibaud.breton@company.com", init:"TB"};
+window.getCurrentUser = ()=>CURRENT_USER;
 // manual-mode project creation routes straight to "review", skipping the
 // workspace click that would normally call openProject() — this is the
 // direct way to make a just-created project "current" without also
@@ -151,6 +169,13 @@ function startProcLoop(){
           p.progress=100; p.status="requirement_review";
           p.done=0; p.total=p.total|| (60+Math.floor(Math.random()*40));
           p.updated="just now";
+        }else if(p.language && p.language!=="en"){
+          // SPEC-translation.md §2/§7 — translation runs after capture, before
+          // characterisation, on any tender whose source language isn't English.
+          if(p.progress<25) p.procLabel="Capturing requirements…";
+          else if(p.progress<50) p.procLabel="Translating requirements…";
+          else if(p.progress<75) p.procLabel="Characterising requirements…";
+          else p.procLabel="Allocating to experts…";
         }else{
           if(p.progress<35) p.procLabel="Capturing requirements…";
           else if(p.progress<70) p.procLabel="Characterising requirements…";
@@ -183,6 +208,7 @@ window.addProject = function(meta){
     // `builtOut` flag is set here on purpose — wizard-created projects are
     // exempt from TA1's demo-only block.
     experts: [],
+    language: meta.language||"en",  // SPEC-translation.md §2 — captured at creation, one per tender
     pmTeam: Array.isArray(meta.pmTeam) ? meta.pmTeam : [] };  // whoever creates the tender owns it
   if(manual){ p.status="requirement_review"; p.done=0; p.total=0; }
   else { p.status="processing"; p.progress=3; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); }
