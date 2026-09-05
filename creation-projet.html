@@ -321,6 +321,10 @@ header .btn-ghost{margin-left:auto}
                now." These are placeholder acronyms, not confirmed values. Swap for the real
                regional codes once collected. -->
           <div class="frow"><div class="fl"><div class="flt">Region</div></div><div class="fc"><select class="sel" id="f-region"><option>EUR — Europe</option><option>MEA — Middle East</option><option>APAC — Asia Pacific</option><option>AME — Americas</option><option>AFR — Africa</option></select></div></div>
+          <!-- SPEC-translation.md §2 — one source language per tender, captured
+               here at creation. English skips translation entirely; anything
+               else runs it automatically after capture, before characterisation. -->
+          <div class="frow"><div class="fl"><div class="flt">Source language</div><div class="fld">The language the tender's own documents are written in.</div></div><div class="fc"><select class="sel" id="f-language"><option value="en">English</option><option value="fr">French</option><option value="de">German</option><option value="es">Spanish</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Tender issuer</div><div class="fld">The organization that published the tender.</div></div><div class="fc"><input class="inp" id="f-issuer" placeholder="e.g. Regional Transport Authority"></div></div>
           <div class="frow"><div class="fl"><div class="flt">Submission deadline</div></div><div class="fc"><input class="inp" type="date" id="f-deadline" value="2026-08-12"></div></div>
         </section>
@@ -484,6 +488,7 @@ function validate(n){
     // P.line is already kept live by the line-picker's own click handler
     P.system=document.getElementById("f-system").value;
     P.region=document.getElementById("f-region").value;
+    P.language=document.getElementById("f-language").value;
     P.issuer=document.getElementById("f-issuer").value.trim();
     P.deadline=document.getElementById("f-deadline").value;
     if(!P.name||!P.ref){toast("Project name and BO-ID are required","warn");return false;}
@@ -670,6 +675,7 @@ function renderSummary(){
     ["Product line",P.line],
     ["System",P.system],
     ["Region",P.region],
+    ["Source language",{en:"English",fr:"French",de:"German",es:"Spanish"}[P.language]||P.language],
     ["Issuer",P.issuer||"—"],
     ["Deadline",P.deadline||"—"],
     ["Documents",P.docs&&P.docs.length?`${P.docs.length} document${P.docs.length>1?"s":""}`:"<span class='miss'>None attached</span>"],
@@ -704,7 +710,7 @@ function createProject(){
       if(window.parent.setReviewValidated)window.parent.setReviewValidated(false);
       if(window.parent.setProjectMeta)window.parent.setProjectMeta({name:P.name,ref:P.ref,line:P.line,deadline:P.deadline});
       let days=30; try{ days=Math.max(0,Math.round((new Date(P.deadline)-new Date())/86400000)); }catch(e){}
-      newId = window.parent.addProject ? window.parent.addProject({name:P.name,ref:P.ref,line:P.line,system:P.system,region:P.region,mode,days,
+      newId = window.parent.addProject ? window.parent.addProject({name:P.name,ref:P.ref,line:P.line,system:P.system,region:P.region,language:P.language,mode,days,
         pmTeam:P.pmTeam}) : null;
       if(newId && window.parent.setCurrentProject) window.parent.setCurrentProject(newId);
     }

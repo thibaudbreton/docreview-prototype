@@ -344,6 +344,23 @@ html[data-theme="light"] .logo-mark-light{display:block}
     if(av){ av.textContent=u.init; av.title=u.title?`${u.name} — ${u.title}`:u.name; }
   }catch(e){}
 })();
+/* SPEC-translation.md §2 — decided: a document added mid-project gets the
+   same capture -> translate -> characterise treatment as initial capture,
+   not silently skipped. Read the same way TENDER_LANGUAGE is in
+   revue-documentaire.html. */
+const TENDER_LANGUAGE=(function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return "en";
+    const p=window.parent.getCurrentProject();
+    return (p&&p.language)||"en";
+  }catch(e){ return "en"; }
+})();
+const LANGUAGE_LABEL={en:"English", fr:"French", de:"German", es:"Spanish"};
+(function(){
+  if(TENDER_LANGUAGE==="en") return;
+  const d=document.querySelector(".upload-d");
+  if(d) d.textContent=`Drop a PDF here. Capture, then translation (from ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE}) and characterisation, run on it after the fact — it joins the existing material rather than starting a separate project. You can leave and come back while it processes.`;
+})();
 /* =====================================================
    DATA — TICKET-three-support-screens.md, screen 2.
 
@@ -605,9 +622,19 @@ function addDocument(){
   DOCS.push(doc);
   renderSummary(); renderDocs(); fillExportDocs();
   toast(`${doc.name} added — AI processing started`,"ok");
-  const steps=[
+  // SPEC-translation.md §2 — a document added mid-project is not assumed to
+  // be in the tender's own source language and skipped; it runs the same
+  // capture -> translate -> characterise chain the tender itself ran at
+  // creation, translation only inserted when there's a source language to
+  // translate from.
+  const steps = TENDER_LANGUAGE==="en" ? [
     {p:35, l:"Capture — splitting the document into blocks…"},
     {p:70, l:"Characterisation — class, activity and type…"},
+    {p:100, l:"Done"},
+  ] : [
+    {p:25, l:"Capture — splitting the document into blocks…"},
+    {p:55, l:`Translation — from ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} to the tool's working English…`},
+    {p:80, l:"Characterisation — class, activity and type…"},
     {p:100, l:"Done"},
   ];
   let k=0;

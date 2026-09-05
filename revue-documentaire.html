@@ -675,6 +675,11 @@ body.mode-review .doc-scroll{display:none}
 .exp-scope{font-size:var(--text-sm);color:var(--text-2);background:var(--panel-3);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-2);line-height:1.5}
 .exp-scope b{color:var(--text)}
 .exp-scope.zero{color:var(--warn)}
+/* SPEC-translation.md §6 — stated plainly in the panel, not left implicit:
+   requirement text goes out in the original, contributions go out in
+   English. Only shown when the tender actually has a non-English original —
+   nothing to say here on an English-source tender. */
+.exp-lang-note{font-size:var(--text-xs);color:var(--text-2);line-height:1.5;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--accent-soft);border-radius:var(--radius-sm)}
 .doc-filter{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);color:var(--text);font-size:var(--text-sm);padding:var(--space-1) var(--space-2);max-width:200px}
 .rcell.c-id{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-2);white-space:nowrap}
 .rcell.c-sec{color:var(--text-3);font-size:var(--text-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:var(--rrow-h)}
@@ -5843,6 +5848,7 @@ function renderExportPanel(){
     <div class="exp-sec-lbl">Document</div>
     <select id="exp-doc" class="exp-format">${docOptions}</select>
     <div id="exp-scope">${exportScopeHTML()}</div>
+    ${TENDER_LANGUAGE!=="en"?`<div class="exp-lang-note">🌐 Requirement text exports in ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} — the original, never a round trip through English. Comments and non-compliance categories export in English, as written.</div>`:""}
     <div class="exp-sec-lbl">Include steps</div>
     ${EXPORT_STEPS.map(s=>`<label class="exp-row"><input type="checkbox" data-estep="${s.k}" ${exportState.steps.has(s.k)?"checked":""}><span><span class="exp-t">${s.label}</span><span class="exp-d">${s.desc}</span></span></label>`).join("")}
     <div class="exp-sec-lbl">Target format</div>
@@ -5926,7 +5932,8 @@ let EXPORT_STATS = {total:0, expertCount:0};
 function renderExportModal(){
   const all = reqs();
   document.getElementById("eo-xls-desc").textContent =
-    `${all.length} requirement${all.length>1?"s":""} · characterization, assignment, status, source section, traceability ID and link to original passage.`;
+    `${all.length} requirement${all.length>1?"s":""} · characterization, assignment, status, source section, traceability ID and link to original passage.`
+    + (TENDER_LANGUAGE!=="en" ? ` Requirement text in ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} (the original); comments and categories in English.` : "");
   const sendable = all.filter(b=>!b.sourceImage);
   const counts = {};
   sendable.forEach(b=>{ if(b.alloc) counts[b.alloc]=(counts[b.alloc]||0)+1; });

@@ -741,6 +741,16 @@ textarea.resp-in:focus{border-color:var(--accent)}
     if(av){ av.textContent=u.init; av.title=u.title?`${u.name} — ${u.title}`:u.name; }
   }catch(e){}
 })();
+/* SPEC-translation.md §6 — this is the client-facing compliance register
+   export. Read the same way TENDER_LANGUAGE is read elsewhere. */
+const TENDER_LANGUAGE=(function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return "en";
+    const p=window.parent.getCurrentProject();
+    return (p&&p.language)||"en";
+  }catch(e){ return "en"; }
+})();
+const LANGUAGE_LABEL={en:"English", fr:"French", de:"German", es:"Spanish"};
 /* @include table-engine.js */
 /* =====================================================
    SHARED DATA
@@ -1839,6 +1849,7 @@ document.getElementById("export2-btn").addEventListener("click",()=>{
   const pend=REQS.filter(r=>consolidate(r).pending).length;
   toast("Compliance register STB-2026_qualification.xlsx generated","ok");
   setTimeout(()=>toast(`Risk summary included: ${non} non-compliant · ${pend} still pending consolidation`,"warn"),800);
+  if(TENDER_LANGUAGE!=="en") setTimeout(()=>toast(`Requirement text in ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} (the original) · comments and categories in English`,"ok"),1600);
 });
 /* Keyboard — table view (B5: shared active-cell row×column nav via TE, see
    revue-documentaire.html for the same behaviour). j/k alias arrows; r/q stay

@@ -169,6 +169,13 @@ function startProcLoop(){
           p.progress=100; p.status="requirement_review";
           p.done=0; p.total=p.total|| (60+Math.floor(Math.random()*40));
           p.updated="just now";
+        }else if(p.language && p.language!=="en"){
+          // SPEC-translation.md §2/§7 — translation runs after capture, before
+          // characterisation, on any tender whose source language isn't English.
+          if(p.progress<25) p.procLabel="Capturing requirements…";
+          else if(p.progress<50) p.procLabel="Translating requirements…";
+          else if(p.progress<75) p.procLabel="Characterising requirements…";
+          else p.procLabel="Allocating to experts…";
         }else{
           if(p.progress<35) p.procLabel="Capturing requirements…";
           else if(p.progress<70) p.procLabel="Characterising requirements…";
@@ -201,6 +208,7 @@ window.addProject = function(meta){
     // `builtOut` flag is set here on purpose — wizard-created projects are
     // exempt from TA1's demo-only block.
     experts: [],
+    language: meta.language||"en",  // SPEC-translation.md §2 — captured at creation, one per tender
     pmTeam: Array.isArray(meta.pmTeam) ? meta.pmTeam : [] };  // whoever creates the tender owns it
   if(manual){ p.status="requirement_review"; p.done=0; p.total=0; }
   else { p.status="processing"; p.progress=3; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); }
