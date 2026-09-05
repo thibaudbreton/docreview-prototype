@@ -4493,14 +4493,6 @@ function renderSettings(){
         ${b.duplicatedFrom?`<button class="mini-btn" id="panel-deldup" title="Delete this duplicate">🗑 Delete</button>`:""}
       </div>`:""}
       ${es.reviewReason&&es.val==="doubt"?`<div class="review-why">⚠ ${es.reviewReason}${es.doubtField==="type"?` — reclassify to resolve: ${natureTag(b)}`:""}</div>`:""}
-      ${b.textOriginal!==undefined?(()=>{
-        const opts=langReadOptions();
-        return `<div class="lang-bar">
-          <span class="lang-bar-ic">🌐</span>
-          <select class="ui-select is-compact is-inline" id="lang-view-select">${opts.map(o=>`<option value="${o.code}">${o.label}</option>`).join("")}</select>
-          <span class="lang-bar-note" id="lang-bar-note"></span>
-        </div>`;
-      })():""}
       <div class="set-title" id="set-title-text" title="${b.text.replace(/<[^>]+>/g,"").replace(/"/g,'&quot;')}">${b.text.replace(/<[^>]+>/g,"")}</div>
     </div>
     <div class="set-tabs">
@@ -4519,12 +4511,6 @@ function renderSettings(){
   // when doubtField==="type" (see above), so guard for its absence.
   const reviewWhyEl = panel.querySelector(".review-why");
   if(reviewWhyEl) attachReclassify(reviewWhyEl, b);
-  panel.querySelector("#lang-view-select")?.addEventListener("change",e=>{
-    const {text,note}=readInLanguage(b,e.target.value);
-    const titleEl=panel.querySelector("#set-title-text"), noteEl=panel.querySelector("#lang-bar-note");
-    titleEl.textContent=text; titleEl.title=text;
-    if(noteEl) noteEl.textContent=note||"";
-  });
   panel.querySelector("#back-to-container")?.addEventListener("click",()=>{ setMode("document"); selectBlock(b.sourceImage,{scroll:true}); });
   panel.querySelector("#panel-dup")?.addEventListener("click",()=>{ const dup=duplicateSourceRow(b.id); if(dup) selectBlock(dup.id); });
   panel.querySelector("#panel-deldup")?.addEventListener("click",()=>{
@@ -4792,13 +4778,32 @@ function renderSettings(){
     body.querySelectorAll("[data-rex]").forEach(it=>it.addEventListener("click",()=>toast(`Opening ${it.dataset.rex} in the REX base…`,"ok")));
   } else if(state.tab==="translate"){
     const plain=s=>(s||"").replace(/<[^>]+>/g,"");
+    // §4's reading selector lives here too, at the top of the tab that's
+    // about this row's languages generally — moved off the header, where it
+    // sat on every tab whether or not the row had anything to correct.
+    const langBar=(()=>{
+      const opts=langReadOptions();
+      return `<div class="lang-bar">
+        <span class="lang-bar-ic">🌐</span>
+        <select class="ui-select is-compact is-inline" id="lang-view-select">${opts.map(o=>`<option value="${o.code}">${o.label}</option>`).join("")}</select>
+        <span class="lang-bar-note" id="lang-bar-note"></span>
+      </div>`;
+    })();
+    const bindLangBar=()=>body.querySelector("#lang-view-select")?.addEventListener("change",e=>{
+      const {text,note}=readInLanguage(b,e.target.value);
+      const titleEl=panel.querySelector("#set-title-text"), noteEl=body.querySelector("#lang-bar-note");
+      titleEl.textContent=text; titleEl.title=text;
+      if(noteEl) noteEl.textContent=note||"";
+    });
     if(TENDER_LANGUAGE==="en"){
-      body.innerHTML = `<div class="corr-empty">This tender's source language is English — there is no translation to correct.</div>`;
+      body.innerHTML = langBar+`<div class="corr-empty">This tender's source language is English — there is no translation to correct.</div>`;
+      bindLangBar();
     } else if(!b.textOriginal || b.textOriginal===b.text){
-      body.innerHTML = `<div class="corr-empty">No original was captured in a different language for this row — nothing to check the English against.</div>`;
+      body.innerHTML = langBar+`<div class="corr-empty">No original was captured in a different language for this row — nothing to check the English against.</div>`;
+      bindLangBar();
     } else {
       const log=b.translationLog||[];
-      body.innerHTML = `
+      body.innerHTML = langBar+`
         <div class="corr-langs">
           <div>
             <div class="corr-col-lbl">Original — ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE}</div>
@@ -4815,6 +4820,7 @@ function renderSettings(){
           ${log.length?log.map(l=>`<div class="corr-log-row"><span class="corr-log-who">${escHtml(l.who)}</span> <span class="corr-log-time">— ${l.time}</span><br>"${escHtml(l.before)}" → "${escHtml(l.after)}"</div>`).join("")
                        :`<div class="corr-empty">No corrections yet.</div>`}
         </div>`;
+      bindLangBar();
       body.querySelector("#corr-save").addEventListener("click",()=>{
         const ta=body.querySelector("#corr-en-text");
         const after=ta.value.trim();
