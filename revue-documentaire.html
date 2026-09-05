@@ -2593,7 +2593,12 @@ function ensureBranches(b){
    adds what's missing beyond that, one fresh (unassigned) branch per newly
    added activity. */
 function syncBranchesFromPerim(b){
-  if(!b.perim || b.perim.length<2) return;
+  // Used to require 2+ activities — a single-activity requirement never got a
+  // branches[] entry at all, so the panel's "Allocations" block (which reads
+  // b.branches, not b.perim) had nothing to show and stayed hidden for the
+  // overwhelming majority of requirements. One activity is one allocation,
+  // same as several — it should render the same way, just with one row.
+  if(!b.perim || !b.perim.length) return;
   ensureBranches(b);
   const have=new Set(b.branches.map(br=>br.typology));
   b.perim.forEach(t=>{
@@ -4316,13 +4321,13 @@ function renderSettings(){
 
   const suggestion = TYPE_SUGGEST[b.id];
   const isReq = blockNature(b)==="requirement";
-  const hasBranches = isReq && (b.branches||[]).length>1;
+  const hasBranches = isReq && (b.branches||[]).length>=1;
   const rmView = hasBranches && isAdmin();
   const myBranch = hasBranches && !isAdmin() ? myBranchOf(b) : null;
   // B10 — a reassignment request (or a B1 add-activity proposal) needs the project
   // manager's approve/reject card even when the requirement still has only one
   // allocated activity; hasBranches/rmView alone would hide it until a second allocated activity exists.
-  const showBranchPanel = isReq && isAdmin() && ((b.branches||[]).length>1 || (b.branches||[]).some(br=>br.proposal||br.reassignRequest));
+  const showBranchPanel = isReq && isAdmin() && ((b.branches||[]).length>=1 || (b.branches||[]).some(br=>br.proposal||br.reassignRequest));
   /* The project manager's two-pass view of a Turnkey tender. Everything else —
      a contributor, or any non-Turnkey tender — keeps the single-pass panel it
      already had, since there is no distribution to explain there. */
@@ -4342,7 +4347,7 @@ function renderSettings(){
       <div class="set-id-row">
         <span class="set-id">${b.id}</span>
         ${es.val?`<span class="status-pill s-${es.val}" style="cursor:default">${STATUS_LABEL[es.val]}</span>`:""}
-        ${rmView?`<span class="assignments-badge" title="${b.branches.length} parallel allocations">🔀 ${b.branches.length} assignments</span>`:""}
+        ${rmView&&b.branches.length>1?`<span class="assignments-badge" title="${b.branches.length} parallel allocations">🔀 ${b.branches.length} assignments</span>`:""}
         ${b.sourceImage?`<button class="mini-btn" id="back-to-container" style="margin-left:auto" title="Back to ${b.sourceImage}">← Image</button>`:""}
       </div>
       ${b.sourceImage?`<div class="prov-hint" style="color:var(--human);margin-bottom:4px;display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap">
