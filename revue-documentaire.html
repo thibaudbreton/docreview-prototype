@@ -850,6 +850,15 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .mini-btn:disabled{opacity:.4;cursor:default}
 .mini-btn:hover{border-color:var(--accent);color:var(--text)}
 .set-title{font-size:var(--text-base);font-weight:600;line-height:1.4;margin-bottom:var(--space-3);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* SPEC-translation.md §4 — reading. One control does both jobs the spec asks
+   for: the original is one of its options (so it's never more than a click
+   away, never buried in a menu or a separate tab), and it doubles as the
+   "read in another language" convenience for anyone more comfortable there.
+   Always visible under the title, not hidden behind anything. */
+.lang-bar{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.lang-bar-ic{font-size:var(--text-xs);opacity:.6;flex-shrink:0}
+.lang-bar select{width:auto;max-width:220px}
+.lang-bar-note{font-size:var(--text-xs);color:var(--text-3);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px}
 .set-tabs button{
   padding:8px var(--space-3);font-size:var(--text-base);font-weight:500;color:var(--text-3);
@@ -2120,6 +2129,31 @@ const LANGUAGE_LABEL={en:"English", fr:"French", de:"German", es:"Spanish"};
 function pushTranslationLog(b,who,before,after){
   b.translationLog=b.translationLog||[];
   b.translationLog.unshift({who,before,after,time:"Today"});
+}
+/* §4 — a few extra reading languages beyond the tender's own original, purely
+   for the "more comfortable reading in X" convenience. Demo-only: this
+   prototype has no real translation engine, same convention as casting's
+   simulated SSO directory — a language that isn't "en" or TENDER_LANGUAGE
+   never had a real translation captured or generated, so it's rendered as an
+   explicitly-labelled simulation, never presented as if it were real. */
+const LANG_READ_EXTRA=[{code:"de",label:"German"},{code:"es",label:"Spanish"}];
+function langReadOptions(){
+  const opts=[{code:"en",label:"English — working text"}];
+  if(TENDER_LANGUAGE!=="en") opts.push({code:TENDER_LANGUAGE, label:`${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} — original`});
+  LANG_READ_EXTRA.forEach(l=>{ if(l.code!==TENDER_LANGUAGE) opts.push(l); });
+  return opts;
+}
+/* Reading only — never assigns to b.text or b.textOriginal, never touches
+   what characterisation/allocation/export read. */
+function readInLanguage(b,code){
+  const plain=s=>(s||"").replace(/<[^>]+>/g,"");
+  if(code==="en") return {text:plain(b.text), note:null};
+  if(code===TENDER_LANGUAGE){
+    if(b.textOriginal && b.textOriginal!==b.text) return {text:plain(b.textOriginal), note:"Original text — reading only, never fed back into the pipeline."};
+    return {text:plain(b.text), note:"No original captured in this language for this row — showing the working text."};
+  }
+  const label=LANGUAGE_LABEL[code]||code;
+  return {text:`[${label}] ${plain(b.text)}`, note:`✦ Simulated machine translation (${label}) — reading only. No real translation engine in this prototype.`};
 }
 /* Every block gets textOriginal/translationCorrected/translationLog exactly
    once, regardless of which source built SECTIONS. seedDemoSections() below
@@ -4439,7 +4473,15 @@ function renderSettings(){
         ${b.duplicatedFrom?`<button class="mini-btn" id="panel-deldup" title="Delete this duplicate">🗑 Delete</button>`:""}
       </div>`:""}
       ${es.reviewReason&&es.val==="doubt"?`<div class="review-why">⚠ ${es.reviewReason}${es.doubtField==="type"?` — reclassify to resolve: ${natureTag(b)}`:""}</div>`:""}
-      <div class="set-title" title="${b.text.replace(/<[^>]+>/g,"").replace(/"/g,'&quot;')}">${b.text.replace(/<[^>]+>/g,"")}</div>
+      ${b.textOriginal!==undefined?(()=>{
+        const opts=langReadOptions();
+        return `<div class="lang-bar">
+          <span class="lang-bar-ic">🌐</span>
+          <select class="ui-select is-compact is-inline" id="lang-view-select">${opts.map(o=>`<option value="${o.code}">${o.label}</option>`).join("")}</select>
+          <span class="lang-bar-note" id="lang-bar-note"></span>
+        </div>`;
+      })():""}
+      <div class="set-title" id="set-title-text" title="${b.text.replace(/<[^>]+>/g,"").replace(/"/g,'&quot;')}">${b.text.replace(/<[^>]+>/g,"")}</div>
     </div>
     <div class="set-tabs">
       <button data-tab="details" class="${state.tab==="details"?"active":""}">Details</button>
@@ -4457,6 +4499,12 @@ function renderSettings(){
   // when doubtField==="type" (see above), so guard for its absence.
   const reviewWhyEl = panel.querySelector(".review-why");
   if(reviewWhyEl) attachReclassify(reviewWhyEl, b);
+  panel.querySelector("#lang-view-select")?.addEventListener("change",e=>{
+    const {text,note}=readInLanguage(b,e.target.value);
+    const titleEl=panel.querySelector("#set-title-text"), noteEl=panel.querySelector("#lang-bar-note");
+    titleEl.textContent=text; titleEl.title=text;
+    if(noteEl) noteEl.textContent=note||"";
+  });
   panel.querySelector("#back-to-container")?.addEventListener("click",()=>{ setMode("document"); selectBlock(b.sourceImage,{scroll:true}); });
   panel.querySelector("#panel-dup")?.addEventListener("click",()=>{ const dup=duplicateSourceRow(b.id); if(dup) selectBlock(dup.id); });
   panel.querySelector("#panel-deldup")?.addEventListener("click",()=>{
