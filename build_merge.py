@@ -112,9 +112,15 @@ function seedProjects(){
     // SIG, Mainline and Safety, and only a Turnkey tender distributes across
     // activities like that (a SIG tender is already scoped to SIG). Turnkey
     // also makes pass 1 demonstrable on the one fully-built demo project.
+    // SPEC-translation.md §2 — one source language per tender, captured at
+    // creation. French here so the demo has a real, reviewable non-English
+    // source to show the original/English split against (revue-documentaire's
+    // seedDemoSections() carries the matching French originals). The real
+    // capture dataset (data.js, gitignored — not this repo's problem to
+    // translate) stays English; see TENDER_LANGUAGE's own fallback.
     {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Turnkey", days:23, deadline:1,
      status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager", builtOut:true,
-     health:"on_track", healthNote:"On pace — 2 items need attention"},
+     health:"on_track", healthNote:"On pace — 2 items need attention", language:"fr"},
     {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"SIG", days:9, deadline:1,
      status:"expert_review", done:34, total:41, updated:"2h ago", role:"Signalling manager", builtOut:false,
      health:"at_risk", healthNote:"9 days left, 7 requirements still open"},

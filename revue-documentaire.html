@@ -1837,16 +1837,19 @@ function seedDemoSections(){
     id:"s1", docId:"d1", num:"1", title:"Scope and purpose",
     blocks:[
       {id:"SRM-00001", kind:"text", status:"allocated",
+       textOriginal:"Le présent cahier des charges techniques définit les exigences applicables au système de supervision énergétique multi-sites (EMS) destiné à l'exploitation des installations de production et de distribution du groupe.",
        text:"This technical requirements specification defines the requirements applicable to the multi-site energy monitoring system (EMS) intended for the operation of the group's production and distribution facilities."},
       {id:"SRM-00002", kind:"text", status:"allocated",
+       textOriginal:"Il s'applique à l'ensemble des lots logiciels et matériels compris dans le périmètre, à l'exclusion des équipements de comptage couverts par le document STB-2026-CPT.",
        text:"It applies to all software and hardware lots within scope, excluding metering equipment covered in document STB-2026-CPT."},
     ]
   },
   {
     id:"s2", docId:"d1", num:"2", title:"Functional requirements",
     blocks:[
-      {id:"SRM-00003", kind:"heading", level:2, text:"2.1 Data acquisition and visualization"},
+      {id:"SRM-00003", kind:"heading", level:2, textOriginal:"2.1 Acquisition et visualisation des données", text:"2.1 Data acquisition and visualization"},
       {id:"SRM-00004", kind:"text", status:"allocated",
+       textOriginal:"Les exigences de la présente sous-section s'appliquent au sous-système d'acquisition et d'affichage. Les valeurs de seuil sont indicatives et seront affinées lors de la conception détaillée.",
        text:"The requirements in this subsection apply to the acquisition and display subsystem. Threshold values are indicative and refined during detailed design."},
       // B9 — new image model (UI-only demo): the image itself is never a requirement — detecting
       // it auto-creates exactly one requirement row (SRM-00005), attached via sourceImage. SRM-00006
@@ -1855,14 +1858,18 @@ function seedDemoSections(){
       // document stay read-only either way; no container, no nesting.
       {id:"IMG-1", kind:"image",
        caption:"Figure 1 — System architecture: site gateways feeding the central monitoring platform.",
-       text:"Figure 1 — System architecture: site gateways feeding the central monitoring platform."},
+       text:"Figure 1 — System architecture: site gateways feeding the central monitoring platform."}, // caption, not source-document body text — left out of the translation model, see ensureTranslationFields
       {id:"SRM-00005", kind:"requirement", sourceImage:"IMG-1", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:90}, abs:{v:"Design & Engineering",c:86}, obs:{v:"Monitoring & Supervision — FR",c:88}, manager:"m_sig", type:"Functional", domain:"Architecture", status:"toreview", alloc:"sup", comments:0,
+       textOriginal:"Le système DOIT acheminer la télémétrie de chaque passerelle de site via son agrégateur régional avant qu'elle n'atteigne la plateforme de supervision centrale.",
        text:"The system SHALL route telemetry from each site gateway through its regional aggregator before reaching the central monitoring platform."},
       {id:"SRM-00006", kind:"requirement", sourceImage:"IMG-1", duplicatedFrom:"SRM-00005", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:85}, abs:{v:"Design & Engineering",c:80}, obs:{v:"Monitoring & Supervision — FR",c:82}, manager:null, type:"Functional", domain:"Architecture", status:"toreview", alloc:null, comments:0,
+       textOriginal:"Chaque passerelle de site DOIT se connecter à un seul agrégateur régional, avec basculement automatique vers un agrégateur secondaire en cas de perte de liaison.",
        text:"Each site gateway SHALL connect to exactly one regional aggregator, with automatic failover to a secondary aggregator on link loss."},
       {id:"SRM-00007", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Data acquisition",c:96}, abs:{v:"Design & Engineering",c:91}, obs:{v:"Monitoring & Supervision — FR",c:93}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
+       textOriginal:"Le système DOIT collecter en continu les mesures de consommation, de production et de qualité d'énergie de chaque site raccordé, avec un intervalle d'acquisition configurable par famille d'équipements.",
        text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family."},
       {id:"SRM-00008", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Supervision / Dashboard",c:94}, abs:{v:"Design & Engineering",c:88}, obs:{v:"Monitoring & Supervision — FR",c:90}, manager:"m_sig", type:"Functional", domain:"Monitoring", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
+       textOriginal:"Le système DOIT fournir une visualisation consolidée des données multi-sites sur un tableau de bord unique, avec agrégation par site, région et type d'installation.",
        text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type."},
       {id:"SRM-00009", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln","sys"], perimAI:true, pbs:{v:"Supervision / Alerting",c:89}, abs:{v:"Design & Engineering",c:74}, obs:{v:"Monitoring & Supervision — FR",c:61}, manager:"m_sig", type:"Functional", domain:"Alerting", status:"toreview", alloc:"sup", comments:0,
        // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the allocated activities.
@@ -1889,16 +1896,20 @@ function seedDemoSections(){
        rollupCompliance:"pending",
        blockingBranch:"Safety — reassignment needed",
        change:"modified",
+       textOriginal:'Le système DOIT générer une alerte lorsque la consommation d\'un site dépasse le seuil configuré pendant plus de <span class="diff-del">15 minutes</span><span class="diff-ins">5 minutes consécutives</span>, et notifier l\'opérateur conformément à la matrice d\'escalade.',
        text:'The system SHALL generate an alert when a site\'s consumption exceeds the configured threshold for more than <span class="diff-del">15 minutes</span><span class="diff-ins">5 consecutive minutes</span>, and notify the operator according to the escalation matrix.',
        changeDesc:"Alert trigger delay changed from 15 to 5 consecutive minutes. Probable impact on notification chain sizing."},
       {id:"SRM-00010", kind:"requirement", tech:"nontech", techAI:true, perim:["mln"], perimAI:false, pbs:{v:"Supervision / Reporting",c:82}, abs:{v:"Design & Engineering",c:69}, obs:{v:"Monitoring & Supervision — FR",c:54}, manager:null, type:"Functional", domain:"Reporting", status:"suggested", alloc:null, comments:0, uncertain:true,
+       textOriginal:"Le système DOIT produire un rapport mensuel de performance énergétique par site, exportable aux formats PDF et XLSX, incluant l'écart par rapport aux objectifs contractuels.",
        text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets."},
-      {id:"SRM-00011", kind:"heading", level:2, text:"2.2 External interfaces"},
+      {id:"SRM-00011", kind:"heading", level:2, textOriginal:"2.2 Interfaces externes", text:"2.2 External interfaces"},
       {id:"TBL-1", kind:"table", gran:"row", title:"Table 1 — External interfaces (AI-detected: one requirement per row)",
        rows:[
         {id:"SRM-00012", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Interfaces / Open API",c:91}, abs:{v:"Design & Engineering",c:85}, obs:{v:"Infrastructure & Platform — FR",c:88}, manager:"m_sig", ref:"INT-A", proto:"HTTPS", type:"Interface", domain:"Interfaces", status:"suggested", alloc:null, comments:0,
+         textOriginal:"Le système DOIT exposer la télémétrie des sites à des outils tiers via une API REST documentée.",
          text:"The system SHALL expose site telemetry to third-party tools through a documented REST API."},
         {id:"SRM-00013", kind:"requirement", tech:"nontech", techAI:false, perim:["tlc"], perimAI:true, pbs:{v:"Interfaces / External feeds",c:76}, abs:{v:"Integration",c:58}, obs:{v:"Infrastructure & Platform — FR",c:47}, manager:null, ref:"INT-B", proto:"SFTP", type:"Interface", domain:"Interfaces", status:"suggested", alloc:null, comments:0, uncertain:true,
+         textOriginal:"Le système DOIT importer des flux de prévisions météorologiques. Le flux DOIT être actualisé toutes les 15 minutes.",
          text:"The system SHALL import weather forecast feeds. The feed SHALL be refreshed every 15 minutes."},
        ]},
     ]
@@ -1906,13 +1917,15 @@ function seedDemoSections(){
   {
     id:"s3", docId:"d2", num:"3", title:"Performance requirements",
     blocks:[
-      {id:"SRM-00014", kind:"heading", level:2, text:"3.1 Real-time and history"},
+      {id:"SRM-00014", kind:"heading", level:2, textOriginal:"3.1 Temps réel et historique", text:"3.1 Real-time and history"},
       {id:"SRM-00015", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / Real-time",c:95}, abs:{v:"Performance & Validation",c:90}, obs:{v:"Infrastructure & Platform — FR",c:92}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"allocated", allocStatus:"allocated", alloc:"infra", comments:0,
+       textOriginal:"Le rafraîchissement de la vue temps réel NE DOIT PAS dépasser 3 secondes entre l'acquisition de la mesure et son affichage, pour un parc de 200 sites simultanés.",
        text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites."},
-      {id:"SRM-00016", kind:"heading", level:3, text:"3.1.1 Historical queries"},
+      {id:"SRM-00016", kind:"heading", level:3, textOriginal:"3.1.1 Requêtes historiques", text:"3.1.1 Historical queries"},
       {id:"SRM-00017", kind:"requirement", tech:"tech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Platform / History",c:93}, abs:{v:"Performance & Validation",c:87}, obs:{v:"Infrastructure & Platform — FR",c:89}, manager:"m_inf", type:"Performance", domain:"Real-time", status:"edited", alloc:"infra", comments:2,
+       textOriginal:"Le temps de réponse des requêtes historiques DOIT rester inférieur à 2 secondes pour une profondeur d'un an, au 95e percentile.",
        text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile."},
-      {id:"SRM-00018", kind:"heading", level:2, text:"3.2 Availability"},
+      {id:"SRM-00018", kind:"heading", level:2, textOriginal:"3.2 Disponibilité", text:"3.2 Availability"},
       {id:"SRM-00019", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln"], perimAI:true, pbs:{v:"Platform / Availability",c:88}, abs:{v:"Operations",c:71}, obs:{v:"Infrastructure & Platform — FR",c:63}, manager:"m_mln", type:"Performance", domain:"Availability", status:"suggested", alloc:null, comments:0,
        // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the allocated activities.
        branches:[
@@ -1925,6 +1938,7 @@ function seedDemoSections(){
        rollupCompliance:"pending",
        blockingBranch:"SIG & Urban — awaiting expert answer",
        change:"added",
+       textOriginal:"Le système DOIT garantir une disponibilité de 99,7 % pendant les heures ouvrées, mesurée mensuellement, hors fenêtres de maintenance planifiée.",
        text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.",
        changeDesc:"New availability requirement introduced in v2.1. No existing assignment — needs allocation."},
       {id:"GHOST-1", kind:"ghost",
@@ -1936,10 +1950,13 @@ function seedDemoSections(){
     id:"s4", docId:"d2", num:"4", title:"Security requirements",
     blocks:[
       {id:"SRM-00020", kind:"requirement", tech:"tech", techAI:false, perim:["tky","sig","mln"], perimAI:false, pbs:{v:"Security / Access control",c:97}, abs:{v:"Design & Engineering",c:93}, obs:{v:"Cybersecurity — Group",c:95}, manager:"m_sig", type:"Security", domain:"Access", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
+       textOriginal:"L'accès au système DOIT exiger une authentification multifacteur pour tout profil disposant de droits d'écriture ou d'administration.",
        text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges."},
       {id:"SRM-00021", kind:"requirement", tech:"nontech", techAI:false, perim:["mln"], perimAI:false, pbs:{v:"Security / Audit trail",c:92}, abs:{v:"Compliance",c:84}, obs:{v:"Cybersecurity — Group",c:88}, manager:"m_mln", type:"Security", domain:"Traceability", status:"toreview", alloc:"cyber", comments:1,
+       textOriginal:"Toute modification d'un paramètre de supervision DOIT être journalisée avec l'identité de l'auteur, l'horodatage et les valeurs avant/après, et conservée pendant 3 ans.",
        text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years."},
       {id:"SRM-00022", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false, pbs:{v:"Security / Data flows",c:94}, abs:{v:"Design & Engineering",c:90}, obs:{v:"Cybersecurity — Group",c:91}, manager:"m_sig", type:"Security", domain:"Data", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
+       textOriginal:"Les flux de données entre les sites et la plateforme centrale DOIVENT être chiffrés selon les standards de l'état de l'art (TLS 1.3 minimum) et faire l'objet d'une revue annuelle.",
        text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review."},
     ]
   },
@@ -2069,6 +2086,57 @@ const TENDER_LINE=(function(){
 })();
 const runsPassOne=()=>TENDER_LINE==="Turnkey";
 
+/* =====================================================
+   LANGUAGE & TRANSLATION — SPEC-translation.md
+
+   One source language per tender (§2), read the same way TENDER_LINE is.
+   Two texts live on every heading/information/requirement block:
+     b.text          — the working text, English, everything reads this
+                        exactly as before (characterisation, allocation,
+                        search, export defaults, all of it — unchanged).
+     b.textOriginal  — captured text, in the tender's source language.
+                        Immutable (§3) — nothing in this file ever assigns
+                        to it after the sweep below sets it once.
+   §1/§7 — the pipeline runs on b.text (the trusted translation), not on
+   b.textOriginal, and it runs immediately: this tender's own decision was
+   to NOT gate characterisation on a translation-review step. That means
+   §5's "no stale-work flagging" claim — which explicitly rests on
+   correction happening before work starts — no longer holds here, since
+   work starts immediately and a correction can arrive after. Accepted
+   trade-off, not rebuilt: no staleness mechanism added for this case,
+   per the decision to trust the translation rather than gate on review.
+===================================================== */
+const TENDER_LANGUAGE=(function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return "en";
+    const p=window.parent.getCurrentProject();
+    return (p&&p.language)||"en";
+  }catch(e){ return "en"; }
+})();
+const LANGUAGE_LABEL={en:"English", fr:"French", de:"German", es:"Spanish"};
+/* §5 — every correction is recorded: who, when, what changed. Same shape as
+   pushBranchLog's own log, for the same reason (a plain human-readable
+   trail, not an audit system). */
+function pushTranslationLog(b,who,before,after){
+  b.translationLog=b.translationLog||[];
+  b.translationLog.unshift({who,before,after,time:"Today"});
+}
+/* Every block gets textOriginal/translationCorrected/translationLog exactly
+   once, regardless of which source built SECTIONS. seedDemoSections() below
+   already carries real French originals (hand-translated, matching
+   TENDER_LANGUAGE:"fr" on the stb2026 project) for headings/information/
+   requirements — the block kinds a source language actually applies to.
+   Real capture data (data.js, gitignored, genuinely captured in English) has
+   no original to fall back to, so textOriginal mirrors text there: an
+   honest "nothing to translate", not a fabricated one. Images/tables/ghosts
+   are UI constructs (captions, diff narration), not literal single-language
+   document text, so they're left out of this model entirely. */
+function ensureTranslationFields(b){
+  if(b.textOriginal===undefined) b.textOriginal=b.text;
+  if(b.translationCorrected===undefined) b.translationCorrected=false;
+  if(!b.translationLog) b.translationLog=[];
+}
+
 /* Which activities have an allocation model of their own. SIG and RST are
    large enough to be tender types in their own right, so their models were
    built for those standalone tenders; Turnkey reuses them when it routes
@@ -2103,14 +2171,12 @@ SECTIONS.forEach(s=>s.blocks.forEach(b=>{
   const arr=(b.kind==="table")?b.rows:[b];
   arr.forEach(r=>{ if(r.kind==="requirement") syncBranchesFromPerim(r); });
 }));
-/* TICKET-two-pass-allocation.md §6 — derive every requirement's verdict from
-   its tree once at init, so the hand-authored rollupCompliance values stop
-   being the source of truth and start being checked against the teams
-   underneath them. Runs after syncBranchesFromPerim so every activity has a
-   branch to derive from. */
+/* SPEC-translation.md — every heading/information/requirement gets its
+   original/English pair, once, regardless of which source built SECTIONS.
+   Images/tables/ghosts are UI constructs, not literal source-document text. */
 SECTIONS.forEach(s=>s.blocks.forEach(b=>{
-  const arr=(b.kind==="table")?b.rows:[b];
-  arr.forEach(r=>{ if(r.kind==="requirement" && (r.branches||[]).length) deriveRequirementCompliance(r); });
+  if(b.kind==="table"){ b.rows.forEach(r=>{ if(r.kind==="requirement") ensureTranslationFields(r); }); return; }
+  if(b.kind==="requirement"||b.kind==="heading"||b.kind==="text") ensureTranslationFields(b);
 }));
 // Cycled the same way creation-projet.html cycles expert-avatar colors
 // (COLORS[i % COLORS.length]) — 16 real codes, 6 base colors, some repeats.
@@ -2681,6 +2747,23 @@ function deriveRequirementCompliance(b){
   if(!b.complianceLocked) b.rollupCompliance=derived;
   return b.rollupCompliance;
 }
+/* TICKET-two-pass-allocation.md §6 — derive every requirement's verdict from
+   its tree once at init, so the hand-authored rollupCompliance values stop
+   being the source of truth and start being checked against the teams
+   underneath them. Runs after syncBranchesFromPerim so every activity has a
+   branch to derive from.
+   This has to sit AFTER deriveRequirementCompliance/consolidateCompliance/
+   CMP_RANK are declared, not just after they're USED elsewhere — CMP_RANK is
+   a const, and this sweep calls into it at top level, at parse/init time.
+   Declared earlier in the file, it tripped a temporal-dead-zone
+   ReferenceError on every load; it only went unnoticed because it requires
+   (r.branches||[]).length>0 at sweep time, which used to be rare (2+
+   activities only) until syncBranchesFromPerim started running from one
+   activity up. */
+SECTIONS.forEach(s=>s.blocks.forEach(b=>{
+  const arr=(b.kind==="table")?b.rows:[b];
+  arr.forEach(r=>{ if(r.kind==="requirement" && (r.branches||[]).length) deriveRequirementCompliance(r); });
+}));
 
 /* The pass-2 allocation status, at ACTIVITY level — "has this activity done its
    allocation yet?". Derived from its teams the same way its verdict is, so
