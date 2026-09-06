@@ -17,7 +17,7 @@
 - If it is English, no translation step runs at all.
 - If it isn't, translation runs automatically **after capture**, before characterisation.
 
-**Open:** what happens if a document added mid-project turns out to be in a different language. Rare, but the current rule assumes it can't happen. Worth deciding rather than discovering.
+**Decided (2026-09-05), during `prototype: language & translation lots 4 & 5`:** a document added mid-project is not assumed to already be in the tender's language. It runs the same capture → translate → characterise chain as initial capture; the translation step is only inserted when there's a source language to translate from (i.e. skipped for an English-source tender, same as §2's rule above). No per-document language detection — the tender's one source language still applies to whatever is added to it.
 
 ## 3. What gets stored
 
@@ -46,9 +46,11 @@ A short, deliberate process, in its own tab in the detail column.
 
 ### No stale-work flagging
 
+**Correction (2026-09-05), decided during `prototype: language & translation lot 1`:** there is no translation-review gate. Translation runs automatically and the rest of the pipeline proceeds immediately on the machine translation — work does not wait for a human to review or correct it first. The paragraph below assumed the opposite sequencing; kept for the record, superseded by this note.
+
 Corrections are typically **minor**, and in practice **work on a requirement doesn't begin until the translation has been reviewed**. So the situation where a correction invalidates existing characterisation, allocation or compliance doesn't arise, and there is no need for the staleness mechanism used elsewhere.
 
-**This rests entirely on the sequencing** — correction first, work after. See §7 for the open question about how that window actually exists.
+**This rested entirely on the sequencing** — correction first, work after — which is not how it was built. No staleness mechanism exists: a correction made after work has already started does not flag or invalidate whatever characterisation, allocation or compliance was already produced from the uncorrected translation. Accepted as a trade-off, not treated as a gap still to close — see §7.
 
 ## 6. Exporting to the client
 
@@ -68,11 +70,10 @@ The consequence, stated plainly: **a translation error becomes a classification 
 
 Two things follow:
 
-- The correction process in §5 is not a nicety. It is the mechanism that keeps the pipeline honest on non-English tenders.
-- **The pipeline order creates a timing question.** Translation runs after capture and before characterisation. If characterisation follows automatically, the AI has already worked from an unreviewed translation — which contradicts the assumption in §5 that correction comes first. Either the pipeline pauses for a translation review, or correction happens alongside characterisation and some AI decisions rest on uncorrected text. Needs deciding; it determines whether the no-staleness rule holds.
-- **Translation quality is worth measuring**, at least as a count of corrections per tender. If it's high, the trust placed in automatic translation needs revisiting — and that's better learned from a number than from a growing sense that the AI is unreliable.
+- The correction process in §5 is not a nicety. It is the mechanism that keeps the pipeline honest on non-English tenders — after the fact, not as a gate.
+- **Decided (2026-09-05):** the pipeline does not pause for translation review. Characterisation runs immediately on the automatic translation; correction happens alongside it, whenever a human gets to it, and some AI decisions may rest on since-corrected text with no flag raised when that happens. This is the trade-off §5 now states plainly, rather than assuming the timing away.
+- **Translation quality is worth measuring**, at least as a count of corrections per tender. If it's high, the trust placed in automatic translation needs revisiting — and that's better learned from a number than from a growing sense that the AI is unreliable. This matters more now that corrections don't gate anything downstream.
 
 ## 8. Open questions
 
-1. **When translation review happens relative to characterisation** (§7). This is the one that matters — the no-staleness rule in §5 depends on it.
-2. A document added mid-project in a different language (§2).
+Both of this section's original questions were resolved during the build (see §2 and §7 above, both dated 2026-09-05). None open at time of writing.
