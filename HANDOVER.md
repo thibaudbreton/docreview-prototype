@@ -1,3 +1,5 @@
+> **Référence documentaire mise à jour le 8 septembre 2026 : [docs/current/README.md](docs/current/README.md).** Le texte historique ci-dessous reste conservé ; ses mentions de six écrans, Expert Space et Follow-up séparés ne décrivent plus l’assemblage actuel à sept sources. Les divergences métier sont recensées dans le registre d’arbitrages.
+
 # Smart Requirement Manager / SRM (iSenS) — Prototype Handover
 
 > Paste this into the new environment (e.g. as `HANDOVER.md` or the start of a `CLAUDE.md`). It is the single source of truth for picking the project back up.

@@ -1,6 +1,8 @@
 # Tickets — Continuity & consistency fixes
 
-> **COMPLETED — all tickets done as of 2026-08-13.** Kept for historical reference; decisions that changed a spec are indexed in `docs/decisions/DECISIONS.md`. Do not treat anything below as open work.
+> **Groups A–G: COMPLETED, done as of 2026-08-13.** Kept for historical reference; decisions that changed a spec are indexed in `docs/decisions/DECISIONS.md`. Do not treat anything in Groups A–G as open work.
+>
+> **Group H (added 2026-08-20) is a separate, currently OPEN batch** — a vertical-space/UX-density audit, unrelated to the continuity/consistency fixes above. It reuses this file only because its ticket-queue heading is what the unattended nightly routine (`docs/prompts/PROMPT-nightly-ticket-routine.md`) matches on. Treat Group H's unchecked boxes as live work the routine may pick up.
 
 > **Note (automated queue routine, 2026-08-13):** added `- [ ]`/`- [x]` checkboxes to each ticket below so this queue can drive the automated routine. Checked state mirrors the existing "DONE" markers; nothing about ticket content changed.
 
@@ -166,8 +168,45 @@ Original ticket text, for reference:
 
 ---
 
+## Group H — Vertical space / UX density (prototype audit, 2026-08-20)
+
+Test participants run the prototype on laptops with limited vertical screen real estate (Windows taskbar + Chrome tab/URL/bookmarks bars eating ~150-180px before the page even starts). Audited every screen and several reusable sub-components in a Chrome viewport of 1366×650 — a realistic worst case for this environment — measuring actual DOM heights rather than eyeballing. Two full audit passes: one across the six main screens, one across shared components (nav columns, detail panels, dropdowns, bulk-action bar, form fields). Findings below are ordered by how much visible content they cost on a constrained screen; Follow-up (TH3) is by far the worst offender. Not itself a continuity/consistency issue like Groups A–G — a straight information-density problem.
+
+- [ ] **TH1 — Drop the unjustified 80px bottom padding on Home and Dashboard**
+  Files: `accueil.html` (`.wrap`, line 58), `dashboard-et-config.html` (`.wrap`, line 100).
+  `.wrap{padding:...80px}` on both files reserves 80px of trailing whitespace at the end of every scroll. That padding value is copied from `revue-documentaire.html`/`suivi-experts-et-versions.html`'s `.doc-scroll`, where it's load-bearing — it stops the last table row from being hidden behind the floating `.sel-bar` bulk-action bar. Neither Home nor Dashboard has any floating element covering their bottom edge, so on these two screens it's just 80px of dead space. Measured on Dashboard: total content is 949px against 598px of usable height (header deducted) on a 650px-tall viewport — this padding alone is ~9% of that overflow.
+  Fix: reduce to `var(--space-6)` (24px) or `var(--space-8)` (32px) on both files' `.wrap`.
+
+- [ ] **TH2 — Remove the redundant "Requirements review" title block**
+  File: `revue-documentaire.html` (`.review-head`, ~line 1334).
+  The H2 "Requirements review" + subtitle ("820 shown — verify class, activity, managers, experts and statuses") duplicate information already on screen: the active mode tab already reads "Review", and the triage stats bar directly above already shows "820 requirements" plus the incomplete/to-review/to-validate/allocated counts. Costs 35px (19px content + 16px margin-bottom) in a layout where the table itself gets only 416px (64%) of a 650px viewport to show ~9-10 rows.
+  Fix: delete the block, or fold its subtitle into the `.rtoolbar` row as a small caption next to the search box.
+
+- [ ] **TH3 — Collapse the Follow-up screen's stacked chrome above the table**
+  File: `suivi-experts-et-versions.html` (`#screen2`, the `view-head` → `export-ready` → `needs-you` → `f10-tools` → `rtoolbar` chain, ~lines 636-666).
+  Measured on a 1366×650 viewport: the table body (`#frgrid-body`) doesn't start until y=475 — **73% of the viewport** consumed by chrome before the first data row, leaving room for only 3-4 rows. Breakdown: triage bar 44px, view-head title + "Viewing as" selector 71px (the title wraps to 3 lines because the selector crowds it into a narrow column), `export-ready` banner 58px, `needs-you` row 62px, `f10-tools` search/filter row 88px, `rtoolbar` 40px (holds nothing but a single "▤ View" button). Worse, `export-ready` and `needs-you` duplicate counts already shown as clickable pills in the triage bar directly above (13 reassignment-needed / 3 Q&A-ready appear in both places). For comparison, `expert-space.html` reaches its own equivalent table (same kind of requirement-status data) in just 122px of chrome — use it as the reference target.
+  Fix: merge `export-ready` + `needs-you` into the triage pills (or cut one of the two duplicated banners entirely), move the lone "▤ View" button into the `f10-tools` row instead of giving it a dedicated `rtoolbar`, and keep the view-head title on one line (shorten the copy, or stop letting "Viewing as" claim most of the row's width). Target: chrome under ~270px, roughly doubling visible rows (3-4 → 7-8) on a constrained viewport.
+
+- [ ] **TH4 — Tighten `.set-sep` divider spacing in detail panels**
+  File: `revue-documentaire.html` (`.set-sep`, ~line 911); same class reused by the equivalent panel in `suivi-experts-et-versions.html`.
+  `.set-sep{height:1px;margin:6px 0 18px}` spends 25px of pure whitespace to draw a single 1px divider line. The Review detail panel (`#settings-body`) has 3 of them — 75px total spent on separators alone.
+  Fix: reduce to `margin:8px 0` (~17px footprint per divider) or tighter.
+
+- [ ] **TH5 — Fix badge-row wrapping in the Follow-up detail panel header**
+  File: `suivi-experts-et-versions.html` (`#settings2 .set-head` / `.set-id-row`).
+  The equivalent detail-panel header block (ID/status/version badges + requirement title) is 159px tall in the Follow-up panel vs. 73px in the Review panel for the same kind of content, because the badge row (e.g. "EXG-003 · Pending consolidation · ⚠ outdated version") wraps to 2 lines in the narrower Follow-up panel width.
+  Fix: shorten badge text (e.g. an icon + tooltip for "outdated version" instead of a full pill) so the row fits on one line, matching Review's header height.
+
+- [ ] **TH6 — (low priority) Persistent hint text under every form field**
+  Files: `creation-projet.html` (wizard step 1), `dashboard-et-config.html` (Config screens, e.g. General).
+  Every field shows a permanent help line under its label (e.g. "Displayed across all screens.", "Sets the countdown and overdue thresholds baseline.") — on Config > General alone, 4 fields with hint text cost roughly 100px. Lower priority than TH1-TH5: these are low-frequency setup screens, not screens a tester scrolls through repeatedly, and neither currently forces a scroll at 650px.
+  Fix (optional, for consistency): move the hint text to a tooltip on focus/hover instead of always-on body text.
+
+---
+
 ## Notes
 
 - Groups C, D and F surface the same underlying, already-accepted convention (per `SPEC-domain-model.md`'s closing note): every screen hand-authors its own `MANAGERS`/`EXPERTS`/`TYPO` rather than sharing a data layer. That's a deliberate prototype choice, not itself a ticket — but TA2, TD1–TD3, TF2 are all places where that choice currently produces a *visible* inconsistency rather than just a maintenance cost, which is why they're worth fixing even in a throwaway build.
 - TE1 is explicitly self-flagged in the code (`// TEMP (dev/demo)`) — treat it as the one item in this list that's a *known*, not an *oversight*, but it should still close before any moderated session that walks the allocation→follow-up transition.
 - Severity read across all three source audits, for prioritization: **TA1, TA2, TC1** block the credibility of the demo outright (a tester hits them within minutes of free exploration). **TB1–TB4, TC2, TE1** are the next tier — they don't stop a scripted task but will surface the moment a participant cross-checks two screens. **TD*, TF*, TG*** are consistency/spec-hygiene items — real, but lower urgency for a moderated 1-on-1 session that follows a scenario rather than free-roaming.
+- **Group H** is from a separate, later audit (vertical-space/UX density, 2026-08-20) — not part of the three source audits above, and not a continuity/consistency issue. Within it: **TH3** (Follow-up screen chrome) is the standout, worth fixing before any session that spends real time in Follow-up on a laptop-sized window. **TH1, TH2, TH4, TH5** are smaller, low-risk, high-confidence wins. **TH6** is explicitly lower priority (see its own entry).

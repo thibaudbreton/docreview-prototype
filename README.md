@@ -1,3 +1,5 @@
+> **Référence documentaire mise à jour le 8 septembre 2026 : [docs/current/README.md](docs/current/README.md).** Le texte historique ci-dessous reste conservé ; ses mentions de six écrans, Expert Space et Follow-up séparés ne décrivent plus l’assemblage actuel à sept sources. Les divergences métier sont recensées dans le registre d’arbitrages.
+
 # Smart Requirement Manager (SRM) — interactive prototype
 
 A clickable, single-file prototype of an AI-assisted review experience for rail-industry
