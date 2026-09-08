@@ -1,3 +1,5 @@
-# stories/
+# Stories et tâches
 
-Intentionally empty as of the 2026-08-16 docs cleanup. See `docs/CLEANUP-REPORT.md` ("Files intentionally left out of `docs/`") — the only user-stories content found anywhere in the corpus is a single section embedded in `docs/specs/SPEC-backend-requirements.md`, and splitting it out into a standalone file wasn't done here since it would mean inventing a new document rather than reorganizing an existing one. Flagged for a human to decide.
+La référence fonctionnelle est [docs/current](../current/README.md). Les user stories sont facultatives dans le backlog et résument la valeur utilisateur. Les règles communes et critères d'acceptation font autorité pour les nouvelles tâches, sous réserve des décisions ouvertes.
+
+Utiliser le [modèle de tâche](../current/TASK-TEMPLATE.md). L'ancienne section User Stories du backend est préservée dans [l'archive](../archive/specs-2026-09-08/SPEC-backend-requirements.md).

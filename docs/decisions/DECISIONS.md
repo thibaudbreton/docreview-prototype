@@ -1,3 +1,5 @@
+> **Historique des décisions antérieures à la consolidation du 8 septembre 2026.** Pour la référence actuelle et les réponses utilisateur récentes, lire [le registre courant](../current/OPEN-QUESTIONS.md). Les décisions contradictoires ci-dessous restent des sources historiques.
+
 # Decisions log
 
 Append-only. Each entry: what was decided, what it replaced (if anything), why (when known — "reason not recorded" is used rather than invented), and where the full detail lives. This log indexes decisions that **changed a previously-written spec or model**; day-to-day feature build tickets that didn't overturn anything stay in their own ticket files rather than being duplicated here (see `docs/tickets/` and `docs/archive/`).

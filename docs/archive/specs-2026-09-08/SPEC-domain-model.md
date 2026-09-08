@@ -1,0 +1,180 @@
+# Spec — Domain model (allocated activities, statuses, compliance)
+
+> Referenced by `TICKETS-followup-workflow.md` and the review-table allocated activity work but never written down until now. Scopes the concepts shared across the review table, the follow-up screen and (eventually) the expert's own view. Prototype / UI-only — this describes the model the UI simulates, not a backend implementation.
+
+---
+
+## 1. Allocated activities, not requirements
+
+The unit of assignment is the **allocated activity**: one activity, on one requirement, handled by one manager and one expert. A single-activity requirement has exactly one allocated activity; a multi-activity (multi-allocation) requirement has one allocated activity per activity.
+
+Each allocated activity carries: requirement ref, activity, manager, expert, allocated-activity status, compliance verdict (or null).
+
+## 2. Allocated activity status (progress axis)
+
+`proposed` / `assigned` / `awaiting_answer` / `awaiting_qa` / `reassignment_needed` / `answered`
+
+Status and compliance are **two separate axes** — status is progress, compliance is result. `awaiting_qa` is a progress status, never a verdict, and blocks consolidation (see §4) same as any other not-yet-`answered` state.
+
+`reassignment_needed` is reused for **both** directions of escalation the model currently supports:
+- **Expert → manager** (T5, internal reassignment loop): the expert judges the allocation wrong and returns it.
+- **Manager → project manager** (B1, allocation-change proposal): an activity manager proposes a reassignment, or proposes an entirely new activity/allocated activity the requirement may be missing. No new status was introduced for this — the same `reassignment_needed` state carries both, distinguished in the UI by who raised it and who is expected to act on it next.
+
+### 2.1 Where an Expert Space reassignment lands (TC1–TC3)
+
+An expert-raised request (`byRole:"expert"`) routes to **both** the review table (`revue-documentaire.html`) and the follow-up screen (`suivi-experts-et-versions.html`) — not one or the other. Each screen independently pulls the pending request off the shared shell mailbox (`pushReassignRequest`/`getReassignRequests`/`updateReassignRequest`) and resolves it against its own hand-authored allocated activity data, consistent with the no-shared-data-layer convention (Notes, below). The **resolution owner** is the allocated activity's own manager, in whichever of the two screens they're working from — not the admin; a `byRole:"manager"` request is the separate B1 escalation and stays admin-only, resolved only in the review table's admin allocated activity panel.
+
+Resolving in one screen calls `updateReassignRequest` so the mailbox entry stops being `pending`, which stops the *other* screen from applying it fresh on its next sync — but it does **not** retract an already-rendered "action needed" card if the other screen had synced it in before the resolution happened. That staleness window is accepted for this prototype: the two screens hold independent copies of the data by design (Notes, below), a live re-push isn't part of the mailbox contract, and closing it would mean building the shared data layer this project has deliberately avoided elsewhere. A demo walkthrough should resolve a given request from one screen only, not both.
+
+## 3. Compliance verdict (result axis)
+
+Only meaningful once the allocated activity is `answered`. Scale: **Compliant** / **R&D Needed** / **Not Compliant**. Null/`pending` = not yet answered.
+
+### 3.1 Canonical keys and wording (TD1)
+
+The code-level keys are `compliant` / `rnd_needed` / `not_compliant` (optionally `pending`), with exactly the labels above. This is the canonical set — `revue-documentaire.html`'s `COMPLIANCE_DEFS` and `expert-space.html`'s `COMPLIANCE_LABELS` already used it; `suivi-experts-et-versions.html` used to diverge (`compliant_rnd`/`non_compliant`, "Compliant with R&D"/"Non compliant") and has been reconciled to match. `TICKETS-followup-workflow.md`'s T2 wording ("Compliant with R&D" / "Non compliant") is **superseded** by this section — treat this spec as the source of truth for compliance vocabulary going forward.
+
+## 3.2 Two-pass allocation — the chain is sequential, not crossed (`TICKET-two-pass-allocation.md`)
+
+**Corrects a long-standing assumption in this corpus**, which described allocation as ABS × PBS → OBS or as "three assignment dimensions" feeding one derivation (§3.1 above, and `GLOSSARY.md`'s old ABS/PBS/OBS entry). That was wrong. The chain is sequential:
+
+**PBS → ABS → OBS**, each step derived from the one before it. Correcting a step invalidates what follows it — the interface must make that consequence visible (clear the downstream fields) rather than leaving stale values sitting there still looking valid.
+
+**A Turnkey tender runs two passes; every other tender type runs one.**
+
+- **Pass 1 (Turnkey only) — distribution across activities.** Characterisation feeds a single dimension, chosen by the requirement's technical/non-technical classification: non-technical reads the **ABS**, technical reads the **PBS** — never both in the same pass. That dimension produces the **TK OBS, which is an activity** (SIG, RST, INFRA…), and the TK OBS routes the requirement into that activity's own allocation model.
+- **Pass 2 (every tender) — the activity's own model.** A SIG tender is already scoped to SIG, so it feeds straight into pass 2 with nothing to distribute. Inside pass 2, OBS is a **team or service** — matching casting's own perimeter values (DBM, Risk, BTM, Wayside…) — not the same thing pass 1's TK OBS names. The two are never both labelled "OBS" anywhere in the UI.
+- **Most activities have no allocation model.** Only the activities large enough to be tender types in their own right have one (SIG confirmed; the ticket's own "Open" section leaves the rest to be collected). A requirement routed to an activity with no model sits in a clear, filterable, first-class state — activity known, fine allocation done by hand by that activity's own contributors — not an error or an exception to work around.
+- **Confidence is per level, at both passes**, never collapsed into one row-level signal: PBS, ABS and OBS each carry their own, and pass 1's TK OBS carries its own too — being unsure *which activity* a requirement belongs to is a distinct and consequential kind of doubt from being unsure of the team within it.
+- **Both passes can branch.** Pass 1 can assign several activities to one requirement; pass 2 can assign several teams within one activity. Allocation is therefore a **two-level tree** (requirement → activities → teams), not a chain of allocated activities — §1's "one allocated activity per activity" now reads as one *activity branch* per activity, itself holding one or more *team* leaves.
+
+## 4. Consolidation — "most restrictive wins," applied at both levels
+
+**Correction (2026-09-04) — `TICKET-two-pass-allocation.md` §6:** §4.1 and §5 below described a single level of consolidation and a lock that applied to an allocated activity. Both are superseded now that allocation is a two-level tree. The rule itself — most restrictive wins, pending until every answer is in, a lock excluded from input but never from output — is unchanged; it is now **applied twice**, and the lock **moves to the top**. Kept below for the parts that still hold (the shape of the rule, the original-verdict/visibility requirements), with the now-wrong "allocated activity" framing superseded by this note.
+
+The **team** level derives the **activity's** verdict; the **activity** level derives the **requirement's**. An activity's verdict is therefore never entered by anyone — it is computed from its teams exactly as the requirement's is computed from its activities. Two things follow mechanically:
+
+- **Pending propagates upward.** An activity stays pending until every one of its teams has answered; the requirement stays pending until every activity is resolved. One silent team blocks its activity, and therefore the final verdict.
+- **The lock applies only at the top — the requirement's final verdict. Never a leaf (a team), never an activity.** Locking anywhere else would freeze a value nobody reads as "the answer" (the compliance matrix sent to the client is built from the requirement-level verdict, not from an individual team's). A locked requirement's verdict counts as a fixed input wherever it is read, and is excluded only from being *re-derived* by activities/teams changing underneath it — the tree below keeps computing normally; the final verdict simply stops following it.
+
+For a single-activity, single-team requirement (still the common case), the two derivation steps collapse to one and read the same as before this ticket: the sole team's verdict is the sole activity's, which is the requirement's.
+
+### 4.1 Locked verdicts are excluded from consolidation input, not from its output (B3)
+
+A locked verdict is a **decision**, not a pending data point — it must never be re-derived as if it were still an open answer, at whichever level it sits (now: only the requirement's top-level verdict, per the correction above).
+
+- A locked verdict **counts as the consolidated result** at its locked value wherever it's read (it is not dropped).
+- What it is excluded from is **being overridden by "most restrictive wins" logic reacting to a sibling's later or worse answer** underneath it. The tree below the lock keeps deriving normally — an activity's or team's own verdict still updates — but none of that can change what the locked top-level verdict itself reports.
+- In short: **locking freezes the top level's contribution to derivation; it does not freeze or bypass derivation itself.** Without this rule, a locked "Compliant" could be silently dragged to "Not Compliant" by an unrelated team's answer arriving later — exactly the loophole the lock exists to close.
+
+This prototype now computes the rollup live from the seed tree (`consolidateCompliance`/`deriveActivityCompliance`/`deriveRequirementCompliance` in `revue-documentaire.html`) rather than hand-authoring `rollupCompliance` per requirement — the derivation this section describes is implemented, not just documented.
+
+## 5. Compliance override, lock & unlock (project manager only)
+
+- The project manager may **replace** the requirement's final verdict and then **lock** it. No comment/reason is required for either.
+- **Only the project manager can lock or unlock a verdict** — no other role ever has access to these controls; the ticket does not reopen who may lock, only where the lock lives. Unlocking returns it to a normal, freely-editable (i.e., freely re-derived) verdict — the compliance value itself is unchanged by unlocking, only its editability, and it immediately catches up to whatever the tree currently computes.
+- The requirement retains its **original derived verdict** separately from the current (possibly locked) one — surfaced in the detail panel as what the tree currently computes underneath the lock, distinct from the frozen value shown as the final verdict.
+- **The lock is visible to everyone allocated on that requirement** — not just the project manager, and not just whoever answered last. Several contributors may be working underneath a verdict that no longer reflects their input, and they need to know: the locked state shows in the table row's compliance pill and in every contributor's own detail-panel view of that requirement, not only the project manager's.
+
+## 6. Casting is asynchronous and ongoing, not a one-shot creation-time step (B2)
+
+**This overrides an earlier, undocumented assumption** that casting — assigning an activity manager and an expert to each activity — was filled in a single pass at project creation. It is not. Casting is a genuinely **asynchronous, ongoing, editable object**, not a snapshot taken once and left alone:
+
+- At project creation, the project manager assigns one **activity manager per activity**. This part is synchronous — it happens in the creation wizard, before the project exists.
+- The project manager may also assign the **expert directly**, but only for activities where they cast *themselves* as the activity manager. For every other activity, expert assignment is **delegated**: the activity manager fills it in later, at their own pace, from the Team management screen (§7) — not during creation, and not necessarily soon after.
+- Each delegated activity manager receives a **notification** (simulated as an email trigger in this prototype) prompting them to complete their team.
+- **This delays the start of analysis for those activities, and that delay is intentional** — not a gap to design around or a bug to fix. An activity manager can add or change experts on their team **at any time**, not just once during an initial casting window.
+
+Practical consequence for anything built on top of this model: never assume every activity has a fully-cast team by the time a project exists. "Casting complete" is a state a project moves *into* over time, tracked per activity manager (see §7), not a precondition of project creation.
+
+**Correction (2026-08-30) — `TICKET-tender-creation-rework.md`:** the second bullet above is superseded. Creation no longer assigns an activity manager to anything — casting left the creation wizard entirely, not just the expert-assignment half of it. The wizard's only remaining people-related step seeds the project management team (creator first, others optional; `SPEC-project-creation.md` §6). Every activity starts with no manager cast at all, from the moment the project exists — not a synchronous first pass followed by asynchronous delegation.
+
+## 7. Team management (B4)
+
+A per-project roster, scoped by role — never global, and never showing another project's people:
+
+- **An activity manager** sees and manages **only their own team** (the experts they've attached), and can add to it at any time, independent of where the project is in the casting timeline.
+- **The project manager** sees **everyone** — an overview across every activity manager together with the experts currently attached to them. This is where "N of M managers have completed their team" (§6) is observable in detail, not just as a dashboard count.
+- "Completed their team" means the activity manager has attached **at least one expert** — it is not a statement about whether that team is *sufficient* for the activity's actual workload, only that casting has moved past "nobody assigned yet."
+
+**Correction (2026-08-30) — `TICKET-casting-screen-redesign.md`:**
+- The project manager's overview is no longer read-only: a PM may staff any activity that already has a manager cast (an activity with none stays blocked for everyone — a data-integrity gate, not a permission one).
+- "The project manager" is a **role several people can hold at once**, not one fixed identity — a `PM_TEAM`, whole-project scope, no activity restriction, visible and editable on the casting overview itself. The project's creator is the first member; any member can add another. A project always keeps at least one. See `docs/specs/SPEC-team-management.md` §3.
+
+## 8. Characterisation/allocation progression (B6/B7)
+
+### 8.1 Requirements and allocated activities progress independently, asynchronously (B6)
+
+Requirements are independent entities, and — within a multi-activity requirement — so are allocated activities once allocation starts. Nothing in the UI gates one requirement's or allocated activity's progress on another reaching the same point; there is no "move to next phase" action waiting on 100% completion. An expert (or manager) can validate an already-processed row while a sibling row is still `Incomplete`.
+
+This is a UI discipline, not a new rule about §4's consolidation: within one requirement, the compliance rollup ("most restrictive wins, pending until every allocated activity has answered") is unchanged. B6 is about requirements/allocated activities relative to *each other*; §4 is about allocated activities *within* one requirement's compliance verdict. The two must not be conflated.
+
+### 8.2 The status vocabulary: Incomplete → To review → To validate → Allocated
+
+This lives directly in `status` (characterisation) / `allocStatus` (allocation) — not as a separate "needs review" axis alongside them. Compliance (§3) stays a separate axis because it's an independent, once-computed verdict; this progression is a step in the same workflow the requirement/allocated activity already moves through, so it belongs in the status itself.
+
+- **Incomplete** (red) — nothing usable yet: the AI produced no value, or there's a true gap a human must fill from scratch.
+- **To review** (amber) — the AI produced a value, but at least one field carries doubt. On the characterisation axis that's Class or Activity (`techAI`/`perimAI`); on the allocation axis it's ABS, PBS or OBS (whichever is the `weakestLink()`, below the confidence threshold) — all five fields are treated identically, this state is reached regardless of which one.
+- **To validate** (purple) — the AI produced a complete value with no doubt at all, but no human has acted on it yet. This is where freshly-processed requirements sit, including on first arrival.
+- **Allocated** (green) — reached only through an explicit human validate action (individual or bulk), never automatically from AI confidence alone — whether it arrived via To review (corrected) or straight from To validate (a trusting click).
+
+Internally the field/status value keeps the shorter name `doubt` (`status:"doubt"`, `doubtField`, `allocDoubtField`) — only the label shown to users is "To review"; this was a deliberate rename (the original "Doubt" label read as visually and conceptually too close to the unrelated "unassigned"/OBS-assignment concept, which is why that concept was dropped from this screen's quick-filter bar entirely — see §8.6).
+
+`Allocated` is a deliberately distinct name from the pipeline's later, unrelated "Validated" milestone (§4's compliance-consolidation rollup, reached only after every allocated activity is `answered` in Expert Review). The two must never be confused: this section's `Allocated` is what gets an allocated activity *into* Expert Review; the later `Validated` rollup is what comes *out* of it.
+
+#### 8.2.1 An unassigned OBS is an absolute floor — "most restrictive wins" across both axes
+
+A row's pill (and every filter/count that reads it) never shows the characterisation axis's status in isolation once allocation has something worse to report. For a single-activity row (or a real allocated activity), the two axes are combined by rank — `Incomplete < To review < To validate < Allocated` — and the **lower** rank always wins, exactly the same principle as §4's compliance consolidation. Concretely: `computeAllocStatus` treats an unassigned OBS (`alloc`/`expert` empty) as `Incomplete` regardless of how confident the AI's PBS/ABS/OBS *suggestions* were — a suggestion nobody accepted isn't a completed field. So a row can never display "To review" or "To validate" while its OBS assignment reads "— Unassigned —", even if Class and Activity are both fine. The reverse holds too: if characterisation itself is the weaker axis, that's what shows. Only when *both* axes are at least as far along as `Allocated` does the row's pill actually read `Allocated`. This combining only applies to a single allocated activity's own two axes — it is unrelated to, and must not be confused with, §4's cross-allocated activity compliance rollup or §8.1's cross-row independence.
+
+### 8.3 Derivation is sticky — recomputed once, then frozen
+
+`status`/`allocStatus` are derived from the AI's own confidence signals (`techAI`, `perimAI`, `weakestLink()`) rather than hand-authored per item. This derivation runs once, at data load, and never re-runs once a human has explicitly reached `Allocated` — a later edit to an already-allocated field does not silently reopen it. A manual correction on a field that hasn't yet reached `Allocated` moves its axis back to `To validate` (not straight to `Allocated` — the human still has to hit validate), matching the habit this model supports: batch-validate the confident "To validate" items first, then work `To review` (inspect, correct), then `Incomplete` (fill in) — each ending in the same action, validate.
+
+### 8.6 Triage bar shows exactly these four states, nothing else
+
+The table's top quick-filter bar was originally seeded with two unrelated pills carried over from before this vocabulary existed — "unassigned" (OBS/expert not assigned) and "uncertain segmentation" (a document-parsing confidence flag). Both were dropped from this bar: keeping them alongside the four status pills read as if they were more status values, when they're really a different axis each (OBS assignment; document segmentation), and "unassigned" in particular was easy to mistake for "To review" once both existed as quick filters. The bar now shows exactly the four states above plus "Changes v2.0 → v2.1" (blue, a version-diff flag, not a workflow state) — nothing else. The underlying "unassigned" and "uncertain segmentation" concepts still exist and are still surfaced elsewhere (the OBS column filter's "Unassigned" option; the per-row uncertain-segmentation warning banner) — only their top-bar quick-filter shortcut was removed.
+
+### 8.4 Granularity: characterisation is per-requirement, allocation is per-activity
+
+Confirmed rather than assumed, because it changes how allocated activities are tracked: characterisation (Class, Activity) progresses once per requirement, on `status`. Allocation (ABS, PBS, OBS) progresses independently **per allocated activity** on `allocStatus` — a single-activity requirement's sole (implicit) allocated activity reaches its own `Allocated`; a multi-activity requirement's allocated activities each reach `Allocated` on their own schedule, consistent with §8.1. A multi-activity requirement's row only ever shows its characterisation status at the requirement level — once that's `Allocated`, the row's pill shows each allocated activity's own progress, tracked on the allocated-activity sub-row instead.
+
+### 8.5 Validating allocation is also the send to Expert Review
+
+Reaching `Allocated` on the allocation axis is not a status change followed by a separate manual "send" step — the same action does both at once, because this is what actually makes §8.1's asynchronous per-activity progression meaningful (an allocated activity's own validation is what lets it move on independent of its siblings). Since control genuinely leaves this screen, the UI states this plainly rather than treating it as a silent side effect: the validate button reads "Validate & send to Expert Review" once that's the action it's about to take, and the resulting toast repeats it. Validating characterisation alone (before allocation is reached) does not trigger this — only the allocation-axis validate does.
+
+## 9. Activity hierarchy — a permissions-only concept (Expert Space)
+
+Surfaced while designing the expert's own screen, and applicable wherever activity-scoped access is checked:
+
+- Activities can **nest**, to **arbitrary depth** — an activity's `parent` field points to another activity, or is `null` at the root.
+- The nesting affects **permissions only**. It has **no effect** on characterisation, allocation, or compliance consolidation (§4) — a requirement's activity tag doesn't inherit or cascade anything from the hierarchy for those purposes. A child activity's requirements are characterised/allocated/consolidated exactly as if the hierarchy didn't exist; only *who can see and act on them* changes.
+- A manager **or** expert assigned to a **parent** activity automatically gets **view + modify** rights on every **descendant** activity's requirements, recursively (a grandchild inherits from its parent's parent too).
+- This is **additive**, not a replacement: a child activity can still carry its own directly-assigned manager/expert. The inherited parent access stacks on top of that — it doesn't override or hide the child's own assignment.
+- This refines §7 (team management): a manager's "own team" scope must include their child activities' requirements, not just requirements tagged with their exact activity.
+
+### 9.0 Implementation scope (TF2): Expert Space only, for this build
+
+Only `expert-space.html`'s `TYPO` carries a `parent` field and cascade logic (`descendantsOf()`). `revue-documentaire.html`, `suivi-experts-et-versions.html` and `creation-projet.html` each hold their own independently-authored, **flat** activity vocabulary (per this project's no-shared-data-layer convention — Notes, below) — extending the hierarchy to all three, plus `dashboard-et-config.html`'s `expertsOf()` (currently a flat match) to do recursive cascade, is a real feature addition across four files' data models, not a display-only fix. That's out of scope for this prototype phase: **§9's parent/cascade hierarchy is implemented in Expert Space only.** Elsewhere in the app, activity stays flat and §7's "own team" scope means exact-activity match, not descendant-inclusive. Revisit if/when team management itself needs the hierarchy for a user-testing scenario — until then, this line is not an unmet requirement, it's a scoping decision.
+
+### 9.1 The expert's restriction is enforced, not a UI default
+
+For the expert's own screen specifically: access is a **strict restriction**, confirmed directly ("ne peut pas voir les autres"). An expert's visible-requirement set is *their own activities' union with every descendant activity*, computed once and applied at every read path (row list, counts, search) — there is no "show all" toggle, admin override, or filter that widens it back out. The manager follow-up view's own restricted-view behavior (`suivi-experts-et-versions.html`, redact vs. hide, configured in §7's Team & experts screen) is a **separate, already-implemented mechanism** — it predates this section and isn't unified with it; whether the two should eventually share one restriction model is open, but nothing here is blocked on deciding that.
+
+_(TG2 — this subsection used to cite `SPEC-expert-space.md` and `SPEC-backend-requirements.md` §12 for the "filter-vs-restriction... still open" framing and the restricted-view precedent; neither file exists in this repo, and no record of their content survived. Rather than leave a dangling citation, the paragraph above states plainly what's actually known/decided and flags what's genuinely still open, without attributing it to a source that can't be checked.)_
+
+_(Docs cleanup, 2026-08-16 — TG2's search was scoped to this repo's own git history, which is accurate: neither file was ever committed here. A wider search of files outside the repo (Desktop/Downloads) later turned up strong content candidates for both — now at `docs/specs/SPEC-expert-space.md` and `docs/specs/SPEC-backend-requirements.md`. This isn't confirmed as the exact original source TG2's citations pointed to, so TG2's substantive rewrite above is left as-is rather than re-attributed; the recovered files are noted here for anyone who goes looking.)_
+
+### 9.2 R&D Needed stays a countable verdict (TF3 — resolved, was self-contradictory)
+
+This section previously asserted the expert verdict form was "already final at two values: Compliant / Not compliant" while in the same breath calling R&D Needed's status "still open — do not guess an answer into either spec." Both couldn't be true at once, and `expert-space.html` had already shipped the two-value form the caution was warning against committing to.
+
+**Decision:** R&D Needed stays a first-class, countable compliance value all the way through, including at the point of expert entry — not text folded into a Compliant comment. This is the option consistent with §3/§3.1's canonical 3-value scale (`compliant`/`rnd_needed`/`not_compliant`), which `revue-documentaire.html` and `suivi-experts-et-versions.html` already implement structurally (rollup, `CMP_ORDER`, consolidation). Letting the expert's own entry point silently drop it to free text would have made those two screens' structured handling pointless downstream — a rail-tender compliance matrix commercially needs to distinguish "compliant as-is" from "compliant pending R&D investment," which is exactly the kind of figure a countable value serves and free text doesn't.
+
+`expert-space.html`'s verdict form now has a third **R&D Needed** button alongside Compliant/Not compliant, with its own comment field ("what R&D work is needed for compliance?"); `COMPLIANCE_LABELS` carries the `rnd_needed` key. (This subsection used to also cite `SPEC-backend-requirements.md` §11 for the compliance-matrix export's needs — that file doesn't exist in this repo; see TG2's note in §9.1 for how the missing-file citations across this spec were handled, and the docs-cleanup follow-up note immediately below it about a recovered candidate copy.)
+
+---
+
+## Notes
+- Two escalation loops must never be confused: expert→manager (internal, T5) and manager→project-manager (B1) both reuse `reassignment_needed` but have different actors and different reviewers.
+- All data in the current build is hand-authored; nothing here describes live backend derivation.
+- Casting (§6) and team management (§7) are prototype-local per screen: the project-creation wizard, the dashboard progress indicator and the Team management screen each hold their own hand-authored `MANAGERS`/`EXPERTS`, consistent with how the rest of this codebase avoids a shared data layer — they tell the same demo story, but are not wired to a single source of truth. Expert Space (§9) adds its own `EXPERTS`/`TYPO` too, for the same reason.
