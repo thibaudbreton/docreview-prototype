@@ -1232,7 +1232,6 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .psearch-opt.active,.psearch-opt:hover{background:var(--panel-3)}
 .psearch-opt .exp-avatar{width:22px;height:22px;font-size:10px}
 .psearch-empty{padding:var(--space-3);font-size:var(--text-sm);color:var(--text-3);font-style:italic}
-.psearch-stack{display:flex;flex-direction:column;gap:var(--space-3)}
 /* role recap (Activity) */
 .role-recap{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);margin-bottom:18px}
 .role-row{display:flex;align-items:center;gap:10px}
@@ -1671,8 +1670,8 @@ body.restricted .restrict-banner{display:flex}
             <div class="rcell c-abs" data-col="abs" data-sortcol="abs"><span class="cl">ABS<span class="sort-arrow"></span></span></div>
             <div class="rcell c-type" data-col="type" data-sortcol="type"><span class="cl">PBS<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="type" title="Filter this column">⏷</button></div>
             <div class="rcell c-tkobs" data-col="tkobs" data-sortcol="tkobs" title="The activity this requirement is routed to — Turnkey tenders only."><span class="cl">TK OBS<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="The team or service within the activity — this is what casting staffs."><span class="cl">OBS · team<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="obs" title="Filter this column">⏷</button></div>
-            <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Manager<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="mgr" title="Filter this column">⏷</button></div>
+            <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="The team or service within the activity — informational, not a separate person to assign."><span class="cl">OBS · team<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Assigned to<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="mgr" title="Filter this column">⏷</button></div>
             <div class="rcell c-status" data-col="status" data-sortcol="status"><span class="cl">Status<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="status" title="Filter this column">⏷</button></div>
             <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
           </div>
@@ -1739,8 +1738,7 @@ body.restricted .restrict-banner{display:flex}
   <div class="sel-drop">
     <button class="sel-btn" id="sel-assign-btn">Assign<span class="caret">▾</span></button>
     <div class="sel-menu sel-menu-form" id="sel-assign-menu">
-      <div class="sel-f"><label for="sel-mgr-sel">Manager</label><select id="sel-mgr-sel"></select></div>
-      <div class="sel-f"><label for="sel-exp-sel">OBS</label><select id="sel-exp-sel"></select></div>
+      <div class="sel-f"><label for="sel-mgr-sel">Assigned to</label><select id="sel-mgr-sel"></select></div>
       <div class="sel-f"><label for="sel-typo-sel">Activity</label><select id="sel-typo-sel"></select></div>
       <div class="sel-f"><label for="sel-type-sel">PBS</label><select id="sel-type-sel"></select></div>
     </div>
@@ -1805,60 +1803,61 @@ const FLAGS = { captureCorrection:false };
 /* =====================================================
    DATA — single model feeding all three views
 ===================================================== */
-const ALLOCS = [
-  {id:"sup", label:"Monitoring Team — S. Lang"},
-  {id:"infra", label:"Infrastructure Team — K. Benali"},
-  {id:"cyber", label:"Cybersecurity — C. Moreau"},
-];
-/* Managers handle requirements: verify/correct the OBS and pick the final expert.
-   Distinct from experts. One manager per requirement. Admin (project lead) sees all. */
+/* There is no manager/expert split: one requirement, one activity, one
+   assigned person — never two roles standing in for each other. MANAGERS is
+   the single roster; the three former ALLOCS entries (sup/infra/cyber) live
+   here now as ordinary people, same shape as everyone else, so every id that
+   demo data already hands out still resolves through MGR(). Admin (project
+   lead) sees all. */
 const MANAGERS = [
   {id:"admin", name:"Thibaud Breton", role:"Project lead (admin)", init:"TB", color:"#6e7bf2", admin:true},
   {id:"m_sig", name:"Louis Renaud", role:"SIG manager", init:"LR", color:"#3fb27f"},
   {id:"m_mln", name:"Amina Cherif", role:"Mainline manager", init:"AC", color:"#e0a43c"},
   {id:"m_inf", name:"Paolo Ferri", role:"Infrastructure manager", init:"PF", color:"#a06ef2"},
+  {id:"sup", name:"Sophie Lang", role:"Monitoring Team", init:"SL", color:"#3fa9b2"},
+  {id:"infra", name:"Karim Benali", role:"Infrastructure Team", init:"KB", color:"#c46bd6"},
+  {id:"cyber", name:"Claire Moreau", role:"Cybersecurity", init:"CM", color:"#5c9ee0"},
 ];
 const MGR = id => MANAGERS.find(m=>m.id===id);
-/* Assigning a manager or expert used to mean picking from MANAGERS/ALLOCS —
-   3-4 fixed people, full stop. A contributor needing to bring in someone who
-   isn't cast yet had no path at all. This is the searchable pool behind the
-   free-text assign flow below: simulated company directory, same convention
-   as casting's own "search a person via SSO" (dashboard-et-config.html) —
-   no real directory service in this prototype, represented not implemented.
-   Picking someone not already in MANAGERS/ALLOCS adds them there on the
-   spot (see assignPerson()), the same way casting grows its own roster. */
+/* Assigning someone used to mean picking from a fixed 4-7 person MANAGERS
+   list, full stop. A contributor needing to bring in someone who isn't cast
+   yet had no path at all. This is the searchable pool behind the free-text
+   assign flow below: simulated company directory, same convention as
+   casting's own "search a person via SSO" (dashboard-et-config.html) — no
+   real directory service in this prototype, represented not implemented.
+   Picking someone not already in MANAGERS adds them there on the spot (see
+   assignPerson()), the same way casting grows its own roster. */
 const PSEARCH_COLORS=["#6e7bf2","#3fb27f","#e0a43c","#a06ef2","#e5544b","#3fa9b2","#c46bd6","#5c9ee0"];
 const PSEARCH_NAMES=["Sophie Lang","Karim Benali","Claire Moreau","Marc Dubois","Fatima Zahra","Thomas Weber","Léa Girard","Omar Saidi","Anaïs Petit","Hugo Bernard","Ines Kaya","Nicolas Roux","Camille Fontaine","Youssef Amrani","Elodie Simon","Pierre Lefevre","Sara Nasri","Antoine Girardin","Meryem El Idrissi","Julien Marchal"];
 const DIRECTORY = PSEARCH_NAMES.map((name,i)=>({
   id:"dir"+i, name, init:name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(), color:PSEARCH_COLORS[i%PSEARCH_COLORS.length],
 }));
-/* Assigns `personId` as manager or expert on `target` (a requirement or a
-   branch — both shapes carry .manager/.expert). If the person isn't already
-   in MANAGERS (manager) or ALLOCS (expert), adds them — same "growing the
-   roster from a search pick" behaviour casting already has, so every later
-   label/filter that reads MGR()/ALLOCS still resolves. */
-function registerPerson(kind, personId){
-  const p = DIRECTORY.find(d=>d.id===personId) || MANAGERS.find(m=>m.id===personId) || {id:personId,name:(ALLOCS.find(a=>a.id===personId)||{}).label};
-  if(kind==="manager"){
-    if(!MGR(personId)) MANAGERS.push({id:p.id, name:p.name, role:"Assigned from search", init:p.init||p.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(), color:p.color||PSEARCH_COLORS[MANAGERS.length%PSEARCH_COLORS.length]});
-  } else if(!ALLOCS.find(a=>a.id===personId)) ALLOCS.push({id:p.id, label:p.name});
+/* Assigns `personId` on `target` (a requirement or a branch — both shapes
+   carry .manager, the one field either has). If the person isn't already in
+   MANAGERS, adds them — same "growing the roster from a search pick"
+   behaviour casting already has, so every later label/filter that reads
+   MGR() still resolves. */
+function registerPerson(personId){
+  if(MGR(personId)) return;
+  const p = DIRECTORY.find(d=>d.id===personId) || {id:personId, name:personId};
+  MANAGERS.push({id:p.id, name:p.name, role:"Assigned from search", init:p.init||p.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(), color:p.color||PSEARCH_COLORS[MANAGERS.length%PSEARCH_COLORS.length]});
 }
-function assignPerson(kind, target, personId){
-  registerPerson(kind, personId);
-  if(kind==="manager") target.manager = personId; else target.expert = personId;
+function assignPerson(target, personId){
+  registerPerson(personId);
+  target.manager = personId;
 }
-function personLabel(kind, id){
+function personLabel(id){
   if(!id) return null;
-  return kind==="manager" ? (MGR(id)||{}).name : (ALLOCS.find(a=>a.id===id)||{}).label;
+  return (MGR(id)||{}).name;
 }
-/* One search-to-pick control for both Manager and Expert fields — same
+/* One search-to-pick control for the assigned-person field — same
    view/edit toggle every other field in this panel uses (.mgr-view/.mgr-edit),
    with a typeahead in edit mode instead of a fixed <select>: DIRECTORY plus
-   whoever is already in MANAGERS/ALLOCS, so someone already assigned
-   elsewhere on this tender shows up too, not just the simulated directory. */
-function personSearchHTML(kind, addr, currentId){
-  const label = personLabel(kind, currentId);
-  const you = kind==="manager" && currentId===VIEWER && !isAdmin();
+   whoever is already in MANAGERS, so someone already assigned elsewhere on
+   this tender shows up too, not just the simulated directory. */
+function personSearchHTML(addr, currentId){
+  const label = personLabel(currentId);
+  const you = currentId===VIEWER && !isAdmin();
   return `<div class="psearch" data-psearch="${addr}">
     <div class="mgr-view" id="psearch-view-${addr}">
       ${label?`<div class="fval">${escHtml(label)}${you?' <span class="mgr-you">you</span>':''}</div>`:`<div class="fval" style="color:var(--text-3)">— Unassigned —</div>`}
@@ -1870,13 +1869,11 @@ function personSearchHTML(kind, addr, currentId){
     </div>
   </div>`;
 }
-function bindPersonSearch(container, kind, addr, onPick){
+function bindPersonSearch(container, addr, onPick){
   const wrap=container.querySelector(`[data-psearch="${addr}"]`); if(!wrap) return;
   const view=wrap.querySelector(`#psearch-view-${addr}`), edit=wrap.querySelector(`#psearch-edit-${addr}`);
   const input=wrap.querySelector(`#psearch-input-${addr}`), results=wrap.querySelector(`#psearch-results-${addr}`);
-  const pool = kind==="manager"
-    ? [...MANAGERS.filter(m=>!m.admin).map(m=>({id:m.id,name:m.name,init:m.init,color:m.color})), ...DIRECTORY]
-    : [...ALLOCS.map(a=>({id:a.id,name:a.label})), ...DIRECTORY];
+  const pool = [...MANAGERS.filter(m=>!m.admin).map(m=>({id:m.id,name:m.name,init:m.init,color:m.color})), ...DIRECTORY];
   const seen=new Set(); const searchPool=pool.filter(p=>seen.has(p.id)?false:(seen.add(p.id),true));
   let matches=[], active=0;
   const open=()=>{ view.style.display="none"; edit.style.display="flex"; input.value=""; input.focus(); };
@@ -2169,7 +2166,6 @@ function isFreshProject(){
     arr.forEach(x=>{
       if(x.kind==="requirement"){
         x.status="incomplete"; x.allocStatus="incomplete"; // no AI ran — nothing usable yet, per definition
-        x.alloc=null;
         x.perim=[]; x.perimAI=false; x.manager=null; x.tech=null; x.techAI=false;
         x.pbs=null; x.abs=null; x.obs=null;
         if(MODE==="manual"){ x.uncertain=false; }
@@ -2411,13 +2407,11 @@ function computeCharStatus(x){
 }
 function computeAllocStatus(target){
   if(target.allocStatus==="allocated") return;
-  /* An unassigned OBS (target.alloc for a single-activity block, target.expert
-     for a real branch) is missing data — full stop. It can never read as
-     "To review" or "To validate" no matter how confident the AI's OBS
-     *suggestion* is, because a suggestion nobody accepted isn't a completed
-     field — it's still Incomplete. */
-  const assignedTo = target.alloc!==undefined ? target.alloc : target.expert;
-  if(!assignedTo || (!target.pbs && !target.abs && !target.obs)){ target.allocStatus="incomplete"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
+  /* An unassigned target.manager is missing data — full stop. It can never
+     read as "To review" or "To validate" no matter how confident the AI's
+     OBS *suggestion* is, because a suggestion nobody accepted isn't a
+     completed field — it's still Incomplete. */
+  if(!target.manager || (!target.pbs && !target.abs && !target.obs)){ target.allocStatus="incomplete"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
   const weak=weakestLink(target);
   if(weak){ target.allocStatus="doubt"; target.allocDoubtField=weak.k.toLowerCase(); target.allocReviewReason=`Weak ${weak.k} derivation (${weak.c}%) — the proposed assignment may be wrong`; return; }
   target.allocStatus="tovalidate"; target.allocDoubtField=null; target.allocReviewReason=null;
@@ -2472,23 +2466,21 @@ function applyCaptureDemoStatuses(){
       // Independent of the confidence model — an absolute floor, same rule
       // as everywhere else in this app — not something the AI was ever
       // "confident" or "unsure" about, it just never ran.
-      x.alloc = null; x.pbs = null; x.abs = null; x.obs = null;
+      x.manager = null; x.pbs = null; x.abs = null; x.obs = null;
     } else {
-      x.alloc = ALLOCS[h % ALLOCS.length].id;
       x.pbs = {v:"", c: conf.pbs!=null ? conf.pbs : 90+(h%9)};
       x.abs = {v:"", c: conf.abs!=null ? conf.abs : 88+(h%10)};
       x.obs = {v:"", c: conf.obs!=null ? conf.obs : 90+(h%9)};
     }
     // A multi-typology row already has real b.branches by this point (the
     // syncBranchesFromPerim sweep above runs before this function) — each
-    // one needs its own manager/expert/pbs/abs/obs, or computeAllocStatus()
-    // (which runs per-branch, never on the parent, once a row has branches)
-    // finds nothing to derive a doubt from and every branch reads Incomplete
+    // one needs its own manager/pbs/abs/obs, or computeAllocStatus() (which
+    // runs per-branch, never on the parent, once a row has branches) finds
+    // nothing to derive a doubt from and every branch reads Incomplete
     // regardless of how confident the AI actually was. Confidence itself is
     // per ROW, not per branch (data.js has one confidence object per
-    // requirement) — every branch shares it; only manager/expert vary per
-    // branch, so a 3-activity row doesn't route all three to the same
-    // person.
+    // requirement) — every branch shares it; the assigned person varies per
+    // branch, so a 3-activity row doesn't route all three to the same one.
     // branch.manager specifically was ALSO stuck permanently null/undefined
     // for single-activity rows: ensureBranches() mirrors b.manager onto the
     // branch once, at branch-CREATION time — which is the earlier
@@ -2500,18 +2492,15 @@ function applyCaptureDemoStatuses(){
     // theirs.
     if(x.branches && x.branches.length){
       x.branches.forEach(br=>{
-        if(bucket<2){ br.manager=null; br.expert=null; br.pbs=null; br.abs=null; br.obs=null; br.tkObs=null; }
+        if(bucket<2){ br.manager=null; br.pbs=null; br.abs=null; br.obs=null; br.tkObs=null; }
         else {
           const bh = hashId(x.id+":"+br.typology);
-          // Manager mirrors x.manager rather than hashing independently —
-          // visibleTo(b) (the restricted-view filter) reads b.manager, and
-          // myBranchOf(b) reads branch.manager; picking those two apart
-          // would show a manager a requirement their OWN branch didn't
-          // think was theirs. Expert genuinely does vary per branch (one
-          // requirement, several activities, different specialists) — that
-          // divergence stays.
+          // One activity, one assigned person — mirrors x.manager rather
+          // than hashing independently: visibleTo(b) (the restricted-view
+          // filter) reads b.manager, and myBranchOf(b) reads branch.manager;
+          // picking those two apart would show a manager a requirement
+          // their OWN branch didn't think was theirs.
           if(!br.manager) br.manager = x.manager;
-          if(!br.expert) br.expert = ALLOCS[bh % ALLOCS.length].id;
           br.pbs = {v:"", c: x.pbs.c};
           br.abs = {v:"", c: x.abs.c};
           br.obs = {v:"", c: x.obs.c};
@@ -2590,15 +2579,15 @@ function applyFreshProjectStatuses(){
   const reviewPicks = [reviewCandidates[0], reviewCandidates[Math.floor(reviewCandidates.length/2)]].filter(Boolean);
   items.forEach(x=>{
     if(unassignedIds.includes(x.id)){
-      x.alloc=null; x.techAI=false; x.perimAI=false;
+      x.manager=null; x.techAI=false; x.perimAI=false;
       x.status="incomplete"; x.doubtField=null; x.reviewReason=null;
       x.allocStatus="incomplete"; x.allocDoubtField=null; x.allocReviewReason=null;
       return;
     }
-    // every other bucket needs a real OBS assignment — an unassigned OBS is
-    // an absolute floor to Incomplete (§8.2.1), and only the 2 picks above
+    // every other bucket needs a real assignment — an unassigned requirement
+    // is an absolute floor to Incomplete (§8.2.1), and only the 2 picks above
     // are meant to read Incomplete in this story.
-    if(!x.alloc && ALLOCS[0]) x.alloc = ALLOCS[0].id;
+    if(!x.manager && MANAGERS[0]) x.manager = MANAGERS.filter(m=>!m.admin)[0].id;
     const pickIdx = reviewPicks.findIndex(p=>p&&p.id===x.id);
     if(pickIdx>=0){
       const [field,reason]=reviewFields[pickIdx];
@@ -2774,7 +2763,7 @@ function deleteAllocationData(b){
   delete b.status; delete b.allocStatus; delete b.doubtField; delete b.allocDoubtField;
   delete b.reviewReason; delete b.allocReviewReason;
   delete b.type; delete b.tech; delete b.techAI; delete b.perim; delete b.perimAI;
-  delete b.alloc; delete b.manager; delete b.branches; delete b.branchStatus;
+  delete b.manager; delete b.branches; delete b.branchStatus;
   delete b.rollupCompliance; delete b.rollupStatus; delete b.blockingBranch;
   delete b.pbs; delete b.abs; delete b.obs; delete b.domain;
 }
@@ -2803,7 +2792,7 @@ function reclassify(id, nature){
       b.kind="requirement";
       // B8 — information → requirement always lands on Incomplete: nothing is filled in yet.
       b.allocStatus="incomplete"; b.type=b.type||"Functional";
-      b.tech=b.tech||"tech"; b.perim=b.perim||[]; b.alloc=b.alloc||null; b.manager=b.manager||null;
+      b.tech=b.tech||"tech"; b.perim=b.perim||[]; b.manager=b.manager||null;
     }
   }
   computeCharStatus(b);
@@ -2839,15 +2828,15 @@ function ensureBranches(b){
   if(!(b.branches&&b.branches.length)){
     const t=(b.perim&&b.perim[0])||"sig";
     // Mirrors every field a single-activity requirement already carries at
-    // top level — not just manager/expert. Without pbs/abs/obs the
-    // derivation chain's own confidence badges went blank on a freshly-
-    // materialized branch even though the real values were sitting right
-    // there on b; without allocStatus/allocDoubtField/allocReviewReason a
-    // contributor's own status pill (myBranch.allocStatus) read "Incomplete"
-    // for activities that were actually long since Allocated.
-    b.branches=[{typology:t,label:TY(t).label,manager:b.manager||null,expert:b.alloc||null,branchStatus:b.alloc?"answered":"proposed",compliance:"pending",
+    // top level — not just manager. Without pbs/abs/obs the derivation
+    // chain's own confidence badges went blank on a freshly-materialized
+    // branch even though the real values were sitting right there on b;
+    // without allocStatus/allocDoubtField/allocReviewReason a contributor's
+    // own status pill (myBranch.allocStatus) read "Incomplete" for
+    // activities that were actually long since Allocated.
+    b.branches=[{typology:t,label:TY(t).label,manager:b.manager||null,branchStatus:b.manager?"answered":"proposed",compliance:"pending",
       pbs:b.pbs||null,abs:b.abs||null,obs:b.obs||null,tkObs:b.tkObs||null,
-      allocStatus:b.allocStatus||null,allocDoubtField:b.allocDoubtField||null,allocReviewReason:b.allocReviewReason||null}]; // TD2 — no expert yet when b.alloc is null
+      allocStatus:b.allocStatus||null,allocDoubtField:b.allocDoubtField||null,allocReviewReason:b.allocReviewReason||null}]; // TD2 — no one assigned yet when b.manager is null
     if(!b.rollupStatus) b.rollupStatus=STATUS_LABEL[b.status];
     if(!b.rollupCompliance) b.rollupCompliance="pending";
     if(!(b.perim&&b.perim.length)) b.perim=[t];
@@ -2872,7 +2861,7 @@ function syncBranchesFromPerim(b){
   ensureBranches(b);
   const have=new Set(b.branches.map(br=>br.typology));
   b.perim.forEach(t=>{
-    if(!have.has(t)) b.branches.push({typology:t, label:TY(t).label, manager:null, expert:null, branchStatus:"proposed", compliance:"pending"});
+    if(!have.has(t)) b.branches.push({typology:t, label:TY(t).label, manager:null, branchStatus:"proposed", compliance:"pending"});
   });
 }
 
@@ -2883,7 +2872,7 @@ function syncBranchesFromPerim(b){
    -> each with M teams. `b.branches[]` was already the activity level, so it
    keeps that role; what's new is `branch.teams[]` beneath it.
 
-   The per-branch allocation fields (manager, expert, branchStatus, allocStatus,
+   The per-branch allocation fields (manager, branchStatus, allocStatus,
    pbs/abs/obs) belong to a TEAM, not to the activity — an activity with two
    teams has two of each. They stay mirrored onto the branch for the single-team
    case, which is the overwhelming majority and what every existing consumer
@@ -2914,7 +2903,7 @@ function ensureTeams(branch){
   if(!(branch.teams&&branch.teams.length)){
     branch.teams=[{
       team: branch.team||null,
-      manager: branch.manager||null, expert: branch.expert||null,
+      manager: branch.manager||null,
       branchStatus: branch.branchStatus||"proposed",
       allocStatus: branch.allocStatus||"incomplete",
       compliance: branch.compliance||"pending",
@@ -2978,7 +2967,7 @@ SECTIONS.forEach(s=>s.blocks.forEach(b=>{
 const ACT_ALLOC_LABEL={notstarted:"Not started", inprogress:"In progress", allocated:"Allocated"};
 function activityAllocStatus(branch){
   const teams=ensureTeams(branch);
-  const resolved=teams.filter(t=>t.expert||t.obs).length;
+  const resolved=teams.filter(t=>t.manager||t.obs).length;
   if(!resolved) return "notstarted";
   return resolved===teams.length ? "allocated" : "inprogress";
 }
@@ -2988,7 +2977,7 @@ function activityAllocStatus(branch){
 function needsManualAllocation(branch){
   if(!branch) return false;
   if(activityHasModel(branch.typology)) return false;
-  return ensureTeams(branch).some(t=>!t.obs && !t.expert);
+  return ensureTeams(branch).some(t=>!t.obs && !t.manager);
 }
 function reqNeedsManualAllocation(b){
   return (b.branches||[]).some(needsManualAllocation);
@@ -3145,7 +3134,7 @@ function renderNav(){
       const label = b.text.replace(/<[^>]+>/g,"").trim().slice(0,46)+"…";
       const badges = [];
       if(b.status==="doubt") badges.push('<span class="nbadge b-ia" title="To review — AI confidence is low"></span>');
-      if(!b.alloc) badges.push('<span class="nbadge b-unalloc" title="Unassigned"></span>');
+      if(!b.manager) badges.push('<span class="nbadge b-unalloc" title="Unassigned"></span>');
       if(b.comments) badges.push('<span class="nbadge b-comment" title="Comments"></span>');
       if(b.uncertain) badges.push('<span class="nbadge" style="background:var(--warn)" title="Uncertain segmentation"></span>');
       if(b.change) badges.push('<span class="nbadge b-change" title="Changed in v2.1"></span>');
@@ -3247,7 +3236,7 @@ function renderDoc(){
         const restricted = !visibleTo(b);
         if(restricted && state.redactMode==="hide"){ return; }
         const nat = blockNature(b);
-        el.className = `blk nat-${nat} st-${b.status||""}`+(nat==="requirement"&&!b.alloc?" unallocated":"")+(b.uncertain?" uncertain":"")+(b.change?" ch-"+b.change:"")+(state.selected===b.id?" selected":"")+(pass?"":" dimmed")+(restricted?" redacted":"");
+        el.className = `blk nat-${nat} st-${b.status||""}`+(nat==="requirement"&&!b.manager?" unallocated":"")+(b.uncertain?" uncertain":"")+(b.change?" ch-"+b.change:"")+(state.selected===b.id?" selected":"")+(pass?"":" dimmed")+(restricted?" redacted":"");
         el.dataset.id = b.id;
         if(restricted){
           el.innerHTML = `<span class="redact-fill">${(b.text||"").replace(/<[^>]+>/g,"")}</span><span class="redact-note">Restricted</span>`;
@@ -3319,7 +3308,7 @@ function renderTable(tb){
   else{
     const b=tb.rows[0];
     const one=document.createElement("div");
-    one.className=`blk st-${b.status}`+(b.alloc?"":" unallocated")+(state.selected===b.id?" selected":"");
+    one.className=`blk st-${b.status}`+(b.manager?"":" unallocated")+(state.selected===b.id?" selected":"");
     one.dataset.id=b.id;
     one.innerHTML=`<span class="type-chip">${b.type} · ${STATUS_LABEL[b.status]} · Whole table</span>`+
       tb.rows.map(r=>`<div class="tbl-r"><span>${r.ref}</span><span>${r.text}</span><span>${r.proto}</span></div>`).join("");
@@ -3332,7 +3321,7 @@ function renderTable(tb){
 function rowBlock(r){
   const el=document.createElement("div");
   const pass=matchesFilter(r)&&matchesSearch(r);
-  el.className=`blk tbl-r st-${r.status}`+(r.alloc?"":" unallocated")+(r.uncertain?" uncertain":"")+(state.selected===r.id?" selected":"")+(pass?"":" dimmed");
+  el.className=`blk tbl-r st-${r.status}`+(r.manager?"":" unallocated")+(r.uncertain?" uncertain":"")+(state.selected===r.id?" selected":"")+(pass?"":" dimmed");
   el.dataset.id=r.id;
   el.innerHTML=`<span class="type-chip">${r.type} · ${STATUS_LABEL[r.status]}${r.uncertain?" · Check boundaries":""}</span>
     <span>${r.ref}</span><span>${r.text}${state.seg?segTools(r.id):""}</span><span>${r.proto}</span>`;
@@ -3401,12 +3390,6 @@ function bulkSetTypology(pid){
   state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){
     f.b.perim=f.b.perim||[]; if(!f.b.perim.includes(pid)){ f.b.perim=[...f.b.perim,pid].sort((x,y)=>TYPO.findIndex(t=>t.id===x)-TYPO.findIndex(t=>t.id===y)); } f.b.perimAI=false; c++; } });
   toast(`${TY(pid).label} added to ${c} requirement${c>1?"s":""}`,"ok");
-  state.selection.clear(); lastSel=null; refresh();
-}
-function bulkAssignExpert(aid){
-  let c=0;
-  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.alloc=aid; markAllocEdited(f.b); c++; } });
-  toast(`${c} requirement${c>1?"s":""} → ${aid?ALLOCS.find(a=>a.id===aid).label.split("—")[0].trim():"Unassigned"}`,"ok");
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkSetType(t){
@@ -3478,8 +3461,6 @@ function renderViewAs(){
 
 function rowInnerHTML(b){
   const plain = (b.text||"").replace(/<[^>]+>/g,"");
-  const allocOptions = ['<option value="">— Unassigned —</option>']
-    .concat(ALLOCS.map(a=>`<option value="${a.id}" ${b.alloc===a.id?"selected":""}>${a.label}</option>`)).join("");
   const mgrOptions = ['<option value="">— Unassigned —</option>']
     .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${b.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
   const typeOptions = ["Functional","Performance","Security","Interface","Regulatory"]
@@ -3515,8 +3496,8 @@ function rowInnerHTML(b){
         ? `<span class="tkobs-val${b.tkObs.c<OBS_THRESHOLD?" weak":""}" title="Routed to ${escHtml(b.tkObs.v)} · ${b.tkObs.c}% confidence${b.tkObs.c<OBS_THRESHOLD?" (below threshold — which activity this belongs to is uncertain)":""}">${escHtml(b.tkObs.v)}<span class="tkobs-c">${b.tkObs.c}%</span></span>`
         : `<span class="ph">—</span>`);
   const obsCellHTML = hasBranches
-    ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see experts per branch">Multiple (${b.branches.length})</span>`
-    : `<select class="cell-select${!b.alloc&&TYPE_SUGGEST[b.id]?" is-ia":""}${b.alloc?"":" empty"}" data-alloc="${b.id}">${allocOptions}</select>`;
+    ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see the team per branch">Multiple (${b.branches.length})</span>`
+    : `<span class="fval">${escHtml((b.obs&&b.obs.v)||"—")}</span>`;
   /* B7 — status pill: characterisation (Class/Activity, on b) and allocation
      (ABS/PBS/OBS) combine "most restrictive wins" via effectiveStatus() — per
      branch for multi-branch rows (shown on the branch sub-row instead, see
@@ -3596,8 +3577,6 @@ function infoRowHTML(b){
 function branchRowHTML(parent, branch, idx){
   const mgrOptions = ['<option value="">— Unassigned —</option>']
     .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${branch.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
-  const allocOptions = ['<option value="">— Unassigned —</option>']
-    .concat(ALLOCS.map(a=>`<option value="${a.id}" ${branch.expert===a.id?"selected":""}>${a.label}</option>`)).join("");
   const complianceOptions = COMPLIANCE_DEFS.map(c=>`<option value="${c.k}" ${branch.compliance===c.k?"selected":""}>${c.label}</option>`).join("");
   /* B7 — per-allocated-activity allocation status (B6: each allocated activity progresses on its own,
      independent of its siblings) — once allocated, falls through to whatever
@@ -3640,7 +3619,7 @@ function branchRowHTML(parent, branch, idx){
     <div class="rcell c-tkobs">${tkObsCell}</div>
     <div class="rcell c-obs">${multiTeam
       ? `<span class="multi-ph" title="${teams.length} teams within this activity — expand to see each">Multiple (${teams.length})</span>`
-      : `<select class="cell-select branch-edit${branch.expert?"":" empty"}" data-branchexp="${parent.id}::${idx}">${allocOptions}</select>`}</div>
+      : `<span class="fval">${escHtml((branch.obs&&branch.obs.v)||TEAM(teams[0]&&teams[0].team).label||"—")}</span>`}</div>
     <div class="rcell c-mgr">${multiTeam
       ? `<span class="multi-ph">Multiple (${teams.length})</span>`
       : `<select class="cell-select branch-edit${branch.manager?"":" empty"}" data-branchmgr="${parent.id}::${idx}">${mgrOptions}</select>`}</div>
@@ -3657,8 +3636,6 @@ function branchRowHTML(parent, branch, idx){
 function teamRowHTML(parent, branch, bidx, team, tidx){
   const mgrOptions = ['<option value="">— Unassigned —</option>']
     .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${team.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
-  const allocOptions = ['<option value="">— Unassigned —</option>']
-    .concat(ALLOCS.map(a=>`<option value="${a.id}" ${team.expert===a.id?"selected":""}>${a.label}</option>`)).join("");
   const complianceOptions = COMPLIANCE_DEFS.map(c=>`<option value="${c.k}" ${team.compliance===c.k?"selected":""}>${c.label}</option>`).join("");
   const key=`${parent.id}::${bidx}::${tidx}`;
   return `<div class="rrow branch-row team-row" data-teamof="${parent.id}" data-teambranch="${bidx}" data-teamidx="${tidx}">
@@ -3670,7 +3647,7 @@ function teamRowHTML(parent, branch, bidx, team, tidx){
     <div class="rcell c-abs"></div>
     <div class="rcell c-type"></div>
     <div class="rcell c-tkobs"></div>
-    <div class="rcell c-obs"><select class="cell-select branch-edit${team.expert?"":" empty"}" data-teamexp="${key}">${allocOptions}</select></div>
+    <div class="rcell c-obs"><span class="fval">${escHtml((team.obs&&team.obs.v)||TEAM(team.team).label||"—")}</span></div>
     <div class="rcell c-mgr"><select class="cell-select branch-edit${team.manager?"":" empty"}" data-teammgr="${key}">${mgrOptions}</select></div>
     <div class="rcell c-status"><span class="status-pill branch-status-${team.branchStatus}">${BRANCH_STATUS_LABEL[team.branchStatus]||team.branchStatus}</span></div>
     <div class="rcell c-compliance"><select class="cell-select branch-edit compliance-${team.compliance}" data-teamcompl="${key}">${complianceOptions}</select></div>
@@ -3687,7 +3664,7 @@ const SORT_KEYS={
   abs:b=>b.domain||"",
   type:b=>b.type||"",
   mgr:b=>b.manager?(MGR(b.manager)?.name||""):"",
-  obs:b=>b.alloc?(ALLOCS.find(a=>a.id===b.alloc)?.label||""):"",
+  obs:b=>(b.obs&&b.obs.v)||"",
   status:b=>({incomplete:0,doubt:1,tovalidate:2,allocated:3}[effectiveStatus(b).val]??9),
 };
 function sortRows(rows){
@@ -3703,8 +3680,7 @@ const COL_FILTER_DEFS={
   class:{label:"Class",options:[{v:"tech",l:"Technical"},{v:"nontech",l:"Non-technical"}],get:b=>[b.tech||""]},
   typo:{label:"Activity",options:[...TYPO.map(t=>({v:t.id,l:t.label})),{v:"",l:"— none set —"}],get:b=>(b.perim&&b.perim.length)?b.perim:[""]},
   type:{label:"PBS",options:["Functional","Performance","Security","Interface","Regulatory"].map(t=>({v:t,l:t})),get:b=>[b.type||""]},
-  mgr:{label:"Manager",options:[...MANAGERS.filter(m=>!m.admin).map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
-  obs:{label:"OBS",options:[...ALLOCS.map(a=>({v:a.id,l:a.label})),{v:"",l:"Unassigned"}],get:b=>[b.alloc||""]},
+  mgr:{label:"Assigned to",options:[...MANAGERS.filter(m=>!m.admin).map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
   status:{label:"Status",options:Object.keys(STATUS_LABEL).map(k=>({v:k,l:STATUS_LABEL[k]})),get:b=>[effectiveStatus(b).val]},
   doubtfield:{label:"Review field",options:[...Object.keys(DOUBT_FIELD_LABEL).map(k=>({v:k,l:DOUBT_FIELD_LABEL[k]})),{v:"",l:"— nothing to review —"}],get:b=>{const es=effectiveStatus(b); return [es.val==="doubt"?(es.doubtField||""):""];}},
 };
@@ -3751,8 +3727,8 @@ const ADV_FILTER_FIELDS={
   typo:{type:"enum",label:COL_FILTER_DEFS.typo.label,options:COL_FILTER_DEFS.typo.options,get:COL_FILTER_DEFS.typo.get},
   abs:{label:"ABS",type:"text",get:b=>[b.domain||""]},
   type:{type:"enum",label:COL_FILTER_DEFS.type.label,options:COL_FILTER_DEFS.type.options,get:COL_FILTER_DEFS.type.get},
-  obs:{type:"enum",label:COL_FILTER_DEFS.obs.label,options:COL_FILTER_DEFS.obs.options,get:COL_FILTER_DEFS.obs.get},
-  mgr:{label:"Manager",type:"enum",options:COL_FILTER_DEFS.mgr.options,get:COL_FILTER_DEFS.mgr.get},
+  obs:{label:"OBS",type:"text",get:b=>[(b.obs&&b.obs.v)||""]},
+  mgr:{label:"Assigned to",type:"enum",options:COL_FILTER_DEFS.mgr.options,get:COL_FILTER_DEFS.mgr.get},
   doc:{label:"Document",type:"enum",options:DOCS.map(d=>({v:d.id,l:d.name})),get:b=>[b.section&&b.section.docId||""]},
   section:{label:"Section",type:"text",get:b=>[b.section?`${b.section.num||""} ${b.section.title||""}`.trim():""]},
   doubtfield:{type:"enum",label:COL_FILTER_DEFS.doubtfield.label,options:COL_FILTER_DEFS.doubtfield.options,get:COL_FILTER_DEFS.doubtfield.get},
@@ -3994,10 +3970,6 @@ function bindVRows(win){
     e.stopPropagation(); const t=teamAt(sel.dataset.teammgr); if(!t)return;
     t.team.manager=sel.value||null; refresh();
   }));
-  win.querySelectorAll("[data-teamexp]").forEach(sel=>sel.addEventListener("change",e=>{
-    e.stopPropagation(); const t=teamAt(sel.dataset.teamexp); if(!t)return;
-    t.team.expert=sel.value||null; refresh();
-  }));
   win.querySelectorAll("[data-teamcompl]").forEach(sel=>sel.addEventListener("change",e=>{
     e.stopPropagation(); const t=teamAt(sel.dataset.teamcompl); if(!t)return;
     t.team.compliance=sel.value;
@@ -4018,14 +3990,6 @@ function bindVRows(win){
     toast(`${branch.label}: manager ${branch.manager?"— "+MGR(branch.manager).name:"unassigned"}`,"ok");
     refresh();
   }));
-  win.querySelectorAll("[data-branchexp]").forEach(sel=>sel.addEventListener("change",e=>{
-    e.stopPropagation();
-    const [id,idx]=sel.dataset.branchexp.split("::"); const f=findBlock(id); if(!f)return;
-    const branch=f.b.branches[+idx]; branch.expert=sel.value||null;
-    markAllocEdited(branch);
-    toast(`${branch.label}: expert ${branch.expert?"— "+ALLOCS.find(a=>a.id===branch.expert).label.split("—")[0].trim():"unassigned"}`,"ok");
-    refresh();
-  }));
   win.querySelectorAll("[data-branchcompl]").forEach(sel=>sel.addEventListener("change",e=>{
     e.stopPropagation();
     const [id,idx]=sel.dataset.branchcompl.split("::"); const f=findBlock(id); if(!f)return;
@@ -4043,13 +4007,16 @@ function bindVRows(win){
       locked?"warn":"ok");
     refresh();
   }));
-  win.querySelectorAll("[data-alloc]").forEach(sel=>sel.addEventListener("change",e=>{e.stopPropagation();setAlloc(sel.dataset.alloc, sel.value||null);}));
   win.querySelectorAll("[data-type]").forEach(sel=>sel.addEventListener("change",e=>{ e.stopPropagation(); const f=findBlock(sel.dataset.type); if(f){ f.b.type=sel.value; markAllocEdited(f.b); refresh(); } }));
   win.querySelectorAll("[data-abs]").forEach(inp=>{
     inp.addEventListener("click",e=>e.stopPropagation());
     inp.addEventListener("change",e=>{ const f=findBlock(inp.dataset.abs); if(f){ f.b.domain=inp.value.trim(); markAllocEdited(f.b); refresh(); } });
   });
-  win.querySelectorAll("[data-mgr]").forEach(sel=>sel.addEventListener("change",e=>{ e.stopPropagation(); const f=findBlock(sel.dataset.mgr); if(f){ f.b.manager=sel.value||null; refresh(); } }));
+  win.querySelectorAll("[data-mgr]").forEach(sel=>sel.addEventListener("change",e=>{
+    e.stopPropagation(); const f=findBlock(sel.dataset.mgr); if(!f) return;
+    const before=f.b.manager; f.b.manager=sel.value||null; markAllocEdited(f.b); refresh();
+    toast(f.b.manager?`${sel.dataset.mgr} assigned to ${MGR(f.b.manager).name}`:`${sel.dataset.mgr} unassigned`,"ok",()=>{f.b.manager=before;refresh()});
+  }));
   win.querySelectorAll("[data-cycle]").forEach(btn=>btn.addEventListener("click",e=>{ e.stopPropagation(); validateBlock(btn.dataset.cycle); }));
   win.querySelectorAll("[data-branchcycle]").forEach(btn=>btn.addEventListener("click",e=>{
     e.stopPropagation();
@@ -4204,14 +4171,14 @@ function renderReassignForm(b,body){
   ensureBranches(b);
   const target = myBranchOf(b) || b.branches[0];
   if(!target){ toast("No allocation to request a reassignment on","warn"); return; }
-  const expertOptions = ALLOCS.filter(a=>a.id!==target.expert);
+  const expertOptions = MANAGERS.filter(m=>!m.admin && m.id!==target.manager);
   const typoOptions = TYPO.filter(t=>t.id!=="tky" && t.id!==target.typology);
   form.dataset.branchTypology = target.typology;
   form.innerHTML = `
     <div class="reassign-reasons">
       ${Object.entries(REASON_LABEL).map(([k,label])=>`<label class="reassign-reason"><input type="radio" name="reassign-reason" value="${k}" ${k==="wrong_person"?"checked":""}> ${label}</label>`).join("")}
     </div>
-    <select id="reassign-expert" style="display:block">${expertOptions.map(a=>`<option value="${a.id}">${a.label}</option>`).join("")}</select>
+    <select id="reassign-expert" style="display:block">${expertOptions.map(m=>`<option value="${m.id}">${m.name}</option>`).join("")}</select>
     <select id="reassign-typo" style="display:none">${typoOptions.map(t=>`<option value="${t.id}">${t.code} — ${t.label}</option>`).join("")}</select>
     <textarea id="propose-note" placeholder="Why should this be reassigned?"></textarea>
     <div class="propose-form-actions"><button class="mini-btn" id="propose-cancel">Cancel</button><button class="mgr-done" id="propose-submit">Submit request</button></div>`;
@@ -4231,7 +4198,7 @@ function submitReassignRequest(b,target,form){
   const reason = form.querySelector('input[name="reassign-reason"]:checked').value;
   const replacementExpert = reason==="wrong_person" ? form.querySelector("#reassign-expert").value : null;
   const replacementTypology = reason!=="wrong_person" ? form.querySelector("#reassign-typo").value : null;
-  const replacementExpertLabel = replacementExpert ? (ALLOCS.find(a=>a.id===replacementExpert)||{}).label : null;
+  const replacementExpertLabel = replacementExpert ? (MGR(replacementExpert)||{}).name : null;
   const replacementTypologyLabel = replacementTypology ? TY(replacementTypology).label : null;
   const mgrName = MGR(VIEWER).name;
   const req = {
@@ -4250,7 +4217,7 @@ function submitReassignRequest(b,target,form){
 }
 function approveProposal(b,idx){
   const branch=b.branches[idx]; const prop=branch.proposal; if(!prop) return;
-  branch.branchStatus = "proposed"; // TD2 — no expert assigned yet at approval time
+  branch.branchStatus = "proposed"; // TD2 — nobody assigned yet at approval time
   branch.proposal=null;
   pushBranchLog(b, MGR("admin").name, `Approved — ${TY(branch.typology).label} added as a new activity.`, "ok");
   toast("Proposal approved","ok");
@@ -4273,20 +4240,20 @@ function approveReassign(b,idx){
   const branch=b.branches[idx]; const req=branch.reassignRequest; if(!req) return;
   const actor = MGR(VIEWER).name;
   if(req.reason==="wrong_person"){
-    // the replacement may have been named from Expert Space, whose expert ids
-    // (individual people) live in a different namespace than this screen's ALLOCS
-    // (team-level OBS) — only apply it to the OBS field when it actually resolves
-    // locally; otherwise the team-level OBS was already correct, so just clear the request.
-    const localMatch = ALLOCS.find(a=>a.id===req.replacementExpert);
-    const newExpertLabel = req.replacementExpertLabel || (localMatch||{}).label || "—";
-    if(localMatch) branch.expert = req.replacementExpert;
-    branch.branchStatus = "awaiting_answer"; // TD2 — sent back to (the possibly reassigned) expert
+    // the replacement may have been named from Expert Space, whose ids live
+    // in a different namespace than this screen's MANAGERS — only apply it
+    // when it actually resolves locally; otherwise the assignment was
+    // already correct, so just clear the request.
+    const localMatch = MGR(req.replacementExpert);
+    const newExpertLabel = req.replacementExpertLabel || (localMatch||{}).name || "—";
+    if(localMatch) branch.manager = req.replacementExpert;
+    branch.branchStatus = "awaiting_answer"; // TD2 — sent back to whoever's now assigned
     branch.reassignRequest = null;
     pushBranchLog(b, actor, `Approved — ${TY(branch.typology).label} reassigned to ${newExpertLabel.split("—")[0].trim()}.`, "ok");
   } else {
     const oldLabel = TY(branch.typology).label, newTypo = req.replacementTypology;
     const newLabel = req.replacementTypologyLabel || TY(newTypo).label;
-    const newBranch = {typology:newTypo, label:newLabel, manager:null, expert:null, branchStatus:"proposed", compliance:"pending"}; // TD2 — no expert yet
+    const newBranch = {typology:newTypo, label:newLabel, manager:null, branchStatus:"proposed", compliance:"pending"}; // TD2 — nobody assigned yet
     b.branches.splice(idx,1,newBranch);
     if(!b.branches.some(x=>x.typology===branch.typology)) b.perim=(b.perim||[]).filter(p=>p!==branch.typology);
     if(!(b.perim||[]).includes(newTypo)) b.perim=[...(b.perim||[]), newTypo];
@@ -4330,13 +4297,10 @@ function syncReassignRequestsFromShell(){
     pushBranchLog(b, req.byName, `Requested reassignment for ${TY(req.typology).label} — ${REASON_LABEL[req.reason]}: "${req.note}"`);
   });
 }
-/* roles recap for the Activity tab: Admin, Manager, Expert */
+/* roles recap for the Activity tab: Admin, Assigned to — one person, one row */
 function roleRecapHTML(b){
   const admin = MANAGERS.find(m=>m.admin);
   const mgr = b.manager?MGR(b.manager):null;
-  const exp = b.alloc?ALLOCS.find(a=>a.id===b.alloc):null;
-  const expName = exp?exp.label.split("—")[1]?.trim()||exp.label:null;
-  const expTeam = exp?exp.label.split("—")[0].trim():null;
   const row = (label, name, sub, color, init, missing) =>
     `<div class="role-row${missing?" role-missing":""}">
       <div class="role-tag">${label}</div>
@@ -4346,8 +4310,7 @@ function roleRecapHTML(b){
     </div>`;
   return `<div class="role-recap">
     ${row("Admin", admin.name, admin.role, admin.color, admin.init, false)}
-    ${row("Manager", mgr?mgr.name:null, mgr?mgr.role:null, mgr?mgr.color:null, mgr?mgr.init:null, !mgr)}
-    ${row("Expert", expName, expTeam?("Expert · "+expTeam):"Expert", "#3fa9b2", expName?expName.replace(/[^A-Za-z]/g,"").slice(0,2).toUpperCase():"", !exp)}
+    ${row("Assigned to", mgr?mgr.name:null, mgr?mgr.role:null, mgr?mgr.color:null, mgr?mgr.init:null, !mgr)}
   </div>`;
 }
 /* =====================================================
@@ -4432,9 +4395,9 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
       "Derived from the PBS above — correcting the PBS clears this and the OBS.")}
     ${!rmView?`<div class="deriv-arrow small">↓</div>
     ${derivStepHTML(`OBS · team${myBranch?` <span class="deriv-scope">· your allocated activity</span>`:""}`,
-      personSearchHTML("expert","req-expert",myBranch?myBranch.expert:b.alloc),
+      `<div class="fval">${escHtml(personLabel(myBranch?myBranch.manager:b.manager)||"— Unassigned —")}</div>`,
       derivSrc.obs,
-      "The team or service within the activity — this is what casting staffs.")}`:""}
+      "The team or service within the activity — assigned below, not picked here.")}`:""}
   </div>`;
   return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that activity's own model">routes into</div>`:"") + modelHTML;
 }
@@ -4460,11 +4423,8 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
       `<div class="fval">${escHtml(obsVal)}</div>`,
       derivSrc.obs,
       "The organisation — the team or service within the activity. This is what casting staffs, not a person to pick here.")}
-    <div class="field"><label>Manager / expert</label>
-      <div class="psearch-stack">
-        ${personSearchHTML("manager","req-manager",myBranch.manager)}
-        ${personSearchHTML("expert","req-expert",myBranch.expert)}
-      </div>
+    <div class="field"><label>Assigned to</label>
+      ${personSearchHTML("req-manager",myBranch.manager)}
     </div>
     <div class="set-sep"></div>
     ${finalVerdictHTML(b)}
@@ -4578,11 +4538,7 @@ function activityBlocksHTML(b){
     ${acts.map((branch,bidx)=>{
       const st=activityAllocStatus(branch);
       const teams=ensureTeams(branch);
-      const who=teams.map(t=>{
-        const e=t.expert?(ALLOCS.find(a=>a.id===t.expert)||{}).label:null;
-        const m=t.manager?(MGR(t.manager)||{}).name:null;
-        return [m,e].filter(Boolean).join(" / ")||"Unassigned";
-      }).join(" · ");
+      const who=teams.map(t=>t.manager?(MGR(t.manager)||{}).name:"Unassigned").join(" · ");
       const obs=teams.map(t=>t.obs&&t.obs.v?t.obs.v:TEAM(t.team).label).filter(Boolean).join(", ");
       return `<div class="branch-sec">
         <div class="branch-sec-head">
@@ -4592,7 +4548,7 @@ function activityBlocksHTML(b){
         </div>
         <div class="branch-sec-body">
           <div class="act-line"><span class="act-k">OBS · team</span><span class="act-v">${escHtml(obs)||"—"}</span></div>
-          <div class="act-line"><span class="act-k">Manager / expert</span><span class="act-v">${escHtml(who)}</span></div>
+          <div class="act-line"><span class="act-k">Assigned to</span><span class="act-v">${escHtml(who)}</span></div>
           <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this activity's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
           <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open activity detail →</button></div>
         </div>
@@ -4605,7 +4561,6 @@ function activityDetailHTML(b,bidx){
   if(!branch) return `<div class="deriv-hint">That activity is gone.</div>`;
   const teams=ensureTeams(branch);
   const t=teams[0];
-  const person=t.expert?(ALLOCS.find(a=>a.id===t.expert)||{}).label:null;
   const mgr=t.manager?(MGR(t.manager)||{}).name:null;
   /* Specialty = the sub-activity inside the activity (Urban, Mainline…), the
      level the casting model already has between activity and perimeter. Read
@@ -4630,7 +4585,7 @@ function activityDetailHTML(b,bidx){
     </div>
     <div class="set-sep"></div>
     <div class="field"><label>Assigned to</label>
-      <div class="fval">${escHtml(person||"— nobody yet —")}${mgr?` <span class="deriv-scope">· manager ${escHtml(mgr)}</span>`:""}</div></div>
+      <div class="fval">${escHtml(mgr||"— nobody yet —")}</div></div>
     <div class="set-sep"></div>
     <div class="propose-block">
       <label class="propose-lbl">Raise a problem</label>
@@ -4648,7 +4603,7 @@ function renderSettings(){
     panel.innerHTML = `<div class="set-empty">
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
       <div class="big">No block selected</div>
-      <div>Click a block in the document or a table row to view its settings.<br><br><b style="color:var(--text-2)">${v}/${reqs().length}</b> requirements allocated · <b style="color:var(--text-2)">${reqs().filter(b=>!b.alloc).length}</b> to assign.</div>
+      <div>Click a block in the document or a table row to view its settings.<br><br><b style="color:var(--text-2)">${v}/${reqs().length}</b> requirements allocated · <b style="color:var(--text-2)">${reqs().filter(b=>!b.manager).length}</b> to assign.</div>
     </div>`;
     return;
   }
@@ -4736,10 +4691,10 @@ function renderSettings(){
         <div class="ia-head" style="color:var(--warn)">⚠ Uncertain segmentation</div>
         <div class="ia-text">The AI is not confident about this block's boundaries.${FLAGS.captureCorrection?" Use <b>Edit segmentation</b> to split, merge or adjust before validating.":" Review the content before validating."}</div></div>`;
     }
-    if(!b.alloc && suggestion){
+    if(!b.manager && suggestion){
       html += `<div class="ia-suggestion">
         <div class="ia-head">✦ AI Suggestion — needs confirmation</div>
-        <div class="ia-text">Proposed assignment: <b>${ALLOCS.find(a=>a.id===suggestion.alloc).label}</b><br><span style="font-size:var(--text-xs)">${suggestion.reason}</span></div>
+        <div class="ia-text">Proposed assignment: <b>${MGR(suggestion.alloc).name}</b><br><span style="font-size:var(--text-xs)">${suggestion.reason}</span></div>
         <div class="ia-actions">
           <button class="accept" id="ia-accept">Accept assignment</button>
           <button class="reject" id="ia-reject">Reject</button>
@@ -4814,12 +4769,8 @@ function renderSettings(){
             </div>`:""}
             <div class="branch-sec-body">
               <div class="branch-sec-field">
-                <label>Manager</label>
+                <label>Assigned to</label>
                 <select class="branch-sec-select${branch.manager?"":" empty"}" data-panelbranchmgr="${bidx}">${['<option value="">— Unassigned —</option>'].concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${branch.manager===m.id?"selected":""}>${m.name} — ${m.role}</option>`)).join("")}</select>
-              </div>
-              <div class="branch-sec-field">
-                <label>Expert</label>
-                <select class="branch-sec-select${branch.expert?"":" empty"}" data-panelbranchexp="${bidx}">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${branch.expert===a.id?"selected":""}>${a.label}</option>`)).join("")}</select>
               </div>
             </div>
           </div>`).join("")}
@@ -4831,20 +4782,16 @@ function renderSettings(){
         <div class="fval">${s.num}. ${s.title} · <button class="peek-btn" id="goto-doc">View in document →</button></div></div>
       ${isReq&&!rmView&&!actView?`<div class="set-sep"></div>
       <div class="mgr-block" id="mgr-block">
-        <label class="mgr-lbl">Manager <span>· handles this requirement</span></label>
-        ${personSearchHTML("manager","req-manager",b.manager)}
+        <label class="mgr-lbl">Assigned to <span>· handles this requirement</span></label>
+        ${personSearchHTML("req-manager",b.manager)}
       </div>`:""}
       ${isReq && !isAdmin() ? proposeBlockHTML(b,hasBranches,myBranch) : ""}
       ${isReq ? validateCtaHTML(b,hasBranches,es) : ""}`;
     body.innerHTML = html;
-    bindPersonSearch(body,"expert","req-expert",id=>{
-      if(myBranch){ assignPerson("expert",myBranch,id); toast(`${myBranch.label}: expert ${id?"— "+personLabel("expert",id).split("—")[0].trim():"unassigned"}`,"ok"); refresh(); }
-      else { if(id) registerPerson("expert",id); setAlloc(b.id,id); } // setAlloc owns b.alloc + its own feedback/undo toast
-    });
-    bindPersonSearch(body,"manager","req-manager",id=>{
+    bindPersonSearch(body,"req-manager",id=>{
       const target=myBranch||b;
-      if(id) assignPerson("manager",target,id); else target.manager=null;
-      refresh(); toast(id?`Manager: ${personLabel("manager",id)}`:"Manager unassigned","ok");
+      if(id) assignPerson(target,id); else target.manager=null;
+      refresh(); toast(id?`Assigned to ${personLabel(id)}`:"Unassigned","ok");
     });
     body.querySelector("#f-tech")?.addEventListener("change",e=>{
       const before=b.tech, was=b.techAI;
@@ -4918,17 +4865,11 @@ function renderSettings(){
     body.querySelectorAll("[data-panelbranchmgr]").forEach(sel=>sel.addEventListener("change",e=>{
       const branch=b.branches[+sel.dataset.panelbranchmgr];
       branch.manager=e.target.value||null;
-      toast(branch.manager?`${branch.label}: manager — ${MGR(branch.manager).name}`:`${branch.label}: manager unassigned`,"ok");
-      refresh();
-    }));
-    body.querySelectorAll("[data-panelbranchexp]").forEach(sel=>sel.addEventListener("change",e=>{
-      const branch=b.branches[+sel.dataset.panelbranchexp];
-      branch.expert=e.target.value||null;
-      toast(branch.expert?`${branch.label}: expert — ${ALLOCS.find(a=>a.id===branch.expert).label.split("—")[0].trim()}`:`${branch.label}: expert unassigned`,"ok");
+      toast(branch.manager?`${branch.label}: assigned to ${MGR(branch.manager).name}`:`${branch.label}: unassigned`,"ok");
       refresh();
     }));
     body.querySelector("#validate-btn")?.addEventListener("click",()=>validateBlock(b.id));
-    body.querySelector("#ia-accept")?.addEventListener("click",()=>{setAlloc(b.id,suggestion.alloc);toast("AI assignment accepted","ok")});
+    body.querySelector("#ia-accept")?.addEventListener("click",()=>{setManagerAssignment(b.id,suggestion.alloc);toast("AI assignment accepted","ok")});
     body.querySelector("#ia-reject")?.addEventListener("click",()=>{logFeedback("alloc",b.id,"AI suggestion","rejected",null);delete TYPE_SUGGEST[b.id];refresh();toast("Suggestion rejected — manual assignment required","ok")});
     body.querySelector("#goto-doc")?.addEventListener("click",()=>{setMode("document");selectBlock(b.id,{scroll:true})});
     body.querySelectorAll("[data-perim]").forEach(btn=>btn.addEventListener("click",e=>{
@@ -5199,37 +5140,36 @@ function selectBlock(id,{scroll=false}={}){
   const row = document.querySelector(`.rrow[data-id="${id}"],.rgrid-sub[data-id="${id}"]`);
   if(row && state.mode==="review") row.scrollIntoView({block:"nearest",behavior:"smooth"});
 }
-function setAlloc(id,alloc){
+function setManagerAssignment(id,mid){
   const f = findBlock(id); if(!f) return;
-  const before = f.b.alloc;
+  const before = f.b.manager;
   const wasSuggested = !!(f.b.obs);
-  f.b.alloc = alloc;
+  f.b.manager = mid;
   markAllocEdited(f.b);
   refresh();
-  if(alloc){
-    if(wasSuggested && before!==alloc){
+  if(mid){
+    if(wasSuggested && before!==mid){
       const conf = f.b.obs ? f.b.obs.c : null;
-      logFeedback("alloc", id, before?(ALLOCS.find(a=>a.id===before)||{}).label||before:"AI proposal", ALLOCS.find(a=>a.id===alloc).label, conf);
+      logFeedback("alloc", id, before?(MGR(before)||{}).name||before:"AI proposal", MGR(mid).name, conf);
       if(conf!=null && conf>=HICONF){
-        askWhy("alloc", id, "AI-proposed assignment", ALLOCS.find(a=>a.id===alloc).label.split("—")[0].trim(), conf);
+        askWhy("alloc", id, "AI-proposed assignment", MGR(mid).name, conf);
       }
     }
-    toast(`${id} assigned to ${ALLOCS.find(a=>a.id===alloc).label.split("—")[0].trim()}`,"ok",()=>{f.b.alloc=before;refresh()});
+    toast(`${id} assigned to ${MGR(mid).name}`,"ok",()=>{f.b.manager=before;refresh()});
   }
 }
 /* B7 — Class/Activity (characterisation) and ABS/PBS/OBS (allocation) are two
    separate axes now; a manual correction on one never touches the other, and
    neither ever downgrades an item that already reached Allocated. */
 function markCharEdited(b){ if(b.status!=="allocated") b.status="tovalidate"; }
-/* An unassigned OBS is an absolute floor: no edit to PBS/ABS/OBS can move the
-   row past Incomplete while the actual assignment (target.alloc / .expert)
-   is still empty — a confident AI suggestion nobody has accepted isn't a
-   completed field. Only once something is actually assigned does a manual
-   edit count as "a human touched this, it's ready to validate". */
+/* An unassigned target.manager is an absolute floor: no edit to PBS/ABS/OBS
+   can move the row past Incomplete while nobody is assigned yet — a
+   confident AI suggestion nobody has accepted isn't a completed field. Only
+   once someone is actually assigned does a manual edit count as "a human
+   touched this, it's ready to validate". */
 function markAllocEdited(target){
   if(!target || target.allocStatus==="allocated") return;
-  const assignedTo = target.alloc!==undefined ? target.alloc : target.expert;
-  target.allocStatus = assignedTo ? "tovalidate" : "incomplete";
+  target.allocStatus = target.manager ? "tovalidate" : "incomplete";
   target.allocDoubtField=null; target.allocReviewReason=null;
 }
 /* B6/B7 — the one validate action: the row's status-pill click, each allocated activity's
@@ -5427,7 +5367,6 @@ document.querySelectorAll("[data-selcls]").forEach(b=>b.addEventListener("click"
    and every field snaps back to it after applying. */
 [
   {id:"sel-mgr-sel", opts:MANAGERS.filter(m=>!m.admin).map(m=>({v:m.id,l:`${m.name} · ${m.role}`})), unassign:true,  apply:v=>bulkAssignManager(v||null)},
-  {id:"sel-exp-sel", opts:ALLOCS.map(a=>({v:a.id,l:a.label})),                                       unassign:true,  apply:v=>bulkAssignExpert(v||null)},
   {id:"sel-typo-sel",opts:TYPO.map(t=>({v:t.id,l:`${t.code} — ${t.label}`})),                        unassign:false, apply:v=>bulkSetTypology(v)},
   {id:"sel-type-sel",opts:["Functional","Performance","Security","Interface","Regulatory"].map(t=>({v:t,l:t})), unassign:false, apply:v=>bulkSetType(v)},
 ].forEach(f=>{
@@ -5953,7 +5892,7 @@ document.getElementById("filter-btn")?.addEventListener("click",e=>{
 const colsPanelState={open:false};
 const COLUMN_TOGGLE_DEFS=[
   {k:"class",label:"Class"},{k:"typo",label:"Activity"},{k:"abs",label:"ABS"},{k:"type",label:"PBS"},
-  {k:"tkobs",label:"TK OBS (activity)"},{k:"obs",label:"OBS (team)"},{k:"mgr",label:"Manager"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
+  {k:"tkobs",label:"TK OBS (activity)"},{k:"obs",label:"OBS (team)"},{k:"mgr",label:"Assigned to"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
 ];
 function renderColumnsPanel(){
   const p=document.getElementById("cols-panel"); if(!p) return;
@@ -6124,9 +6063,10 @@ notifDrop.querySelectorAll(".nd-item").forEach(i=>i.addEventListener("click",()=
   state.tab="activity"; renderSettings();
 }));
 
-/* TB3 — expert display metadata for the Finalize modal's per-expert breakdown.
-   Mirrors ALLOCS' id->name mapping above with the avatar init/color already used
-   elsewhere on this screen; kept separate since ALLOCS is label-only. */
+/* TB3 — display metadata for the Finalize modal's per-person breakdown.
+   Mirrors three of MANAGERS' entries with the avatar init/color already used
+   elsewhere on this screen; kept as its own small dict for the modal's demo
+   scope rather than pulling in the whole roster. */
 const EXPORT_EXPERTS = {
   sup:{name:"Sophie Lang",team:"Monitoring Team",init:"SL",color:"#6e7bf2"},
   infra:{name:"Karim Benali",team:"Infrastructure Team",init:"KB",color:"#3fb27f"},
@@ -6145,7 +6085,7 @@ function renderExportModal(){
     + (TENDER_LANGUAGE!=="en" ? ` Requirement text in ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} (the original); comments and categories in English.` : "");
   const sendable = all.filter(b=>!b.sourceImage);
   const counts = {};
-  sendable.forEach(b=>{ if(b.alloc) counts[b.alloc]=(counts[b.alloc]||0)+1; });
+  sendable.forEach(b=>{ if(b.manager) counts[b.manager]=(counts[b.manager]||0)+1; });
   const list = document.getElementById("eo-expert-list");
   list.innerHTML = Object.keys(counts).map(id=>{
     const e = EXPORT_EXPERTS[id]; if(!e) return "";
