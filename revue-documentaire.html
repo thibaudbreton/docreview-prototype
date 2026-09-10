@@ -1098,11 +1098,14 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .deriv-pass{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);background:var(--panel-2)}
 .deriv-pass-h{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-3)}
 .deriv-dim{font-size:var(--text-xs);color:var(--text-3);line-height:1.5;margin-bottom:var(--space-2)}
-/* The compact routing note a contributor sees under their own activity's
-   model — visible (they can want to know where this came from) but
-   secondary: no card, no border, a single muted line. */
-.deriv-distrib-compact{display:flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--text-3);margin-top:var(--space-2);line-height:1.4}
-.deriv-distrib-lbl{font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--text-3);flex-shrink:0}
+/* The compact distribution card a contributor sees under their own
+   activity — visible (they can want to know where this came from) but
+   secondary: a small chip row, not the full per-activity list. */
+.distrib-compact{padding:var(--space-2) var(--space-3)}
+.distrib-compact .deriv-pass-h{margin-bottom:6px}
+.distrib-chips{display:flex;flex-wrap:wrap;gap:6px}
+.distrib-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border:1px solid var(--line-2);border-radius:var(--radius-sm);background:var(--panel);font-size:var(--text-xs)}
+.distrib-chip.manual{opacity:.7}
 .deriv-dim b{color:var(--text-2)}
 .deriv-act{display:flex;align-items:center;gap:var(--space-2);padding:6px 0;border-top:1px solid var(--line);flex-wrap:wrap}
 .deriv-act:first-of-type{border-top:none}
@@ -1155,6 +1158,13 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 /* B1 — allocation-change proposal: manager trigger + project-manager review */
 .propose-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:9px}
 .propose-actions{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.propose-btn{
+  flex:1;min-width:150px;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);
+  border:1px solid var(--accent);color:var(--accent);background:var(--accent-soft);
+  font-size:var(--text-sm);font-weight:600;transition:all .15s;display:inline-flex;gap:var(--space-1);align-items:center;justify-content:center;
+}
+.propose-btn:hover{background:var(--accent);color:#fff}
+.propose-btn:disabled{opacity:.4;cursor:default;background:var(--panel-2);border-color:var(--line-2);color:var(--text-3)}
 .propose-form{margin-top:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2)}
 .propose-form select,.propose-form textarea{width:100%;font-family:var(--font-ui);font-size:var(--text-sm);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none}
 .propose-form textarea{resize:vertical;min-height:56px}
@@ -1223,10 +1233,6 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .psearch-opt .exp-avatar{width:22px;height:22px;font-size:10px}
 .psearch-empty{padding:var(--space-3);font-size:var(--text-sm);color:var(--text-3);font-style:italic}
 .psearch-stack{display:flex;flex-direction:column;gap:var(--space-3)}
-/* "Info: model used" — a plain note, not a field: nothing to edit, just why
-   ABS/PBS/OBS below are (or aren't) pre-filled. */
-.model-info{display:flex;align-items:flex-start;gap:8px;font-size:var(--text-xs);color:var(--text-2);background:var(--panel-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-3);line-height:1.5}
-.model-info-ic{flex-shrink:0;opacity:.6}
 /* role recap (Activity) */
 .role-recap{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);margin-bottom:18px}
 .role-row{display:flex;align-items:center;gap:10px}
@@ -4159,8 +4165,8 @@ function proposeBlockHTML(b, hasBranches, myBranch){
         ${reassignPending.map(p=>`<div class="propose-pending-t">↩ Reassignment requested — <b>${TY(p.typology).label}</b> · ${REASON_LABEL[p.reassignRequest.reason]}: "${escHtml(p.reassignRequest.note)}" <span style="color:var(--text-3)">· awaiting project-manager review</span></div>`).join("")}
       </div>`:""}
       <div class="propose-actions">
-        <button class="mini-btn" id="propose-reassign-btn" ${reassignBlocked?"disabled":""} title="${reassignBlocked?"Already flagged for reassignment":"Ask the project manager to reassign this allocation"}">↩ Request reassignment</button>
-        <button class="mini-btn" id="propose-add-btn" title="Ask the project manager to add an activity you think was missed">+ Missing activity</button>
+        <button class="propose-btn" id="propose-reassign-btn" ${reassignBlocked?"disabled":""} title="${reassignBlocked?"Already flagged for reassignment":"Ask the project manager to reassign this allocation"}">↩ Request reassignment</button>
+        <button class="propose-btn" id="propose-add-btn" title="Ask the project manager to add an activity you think was missed">+ Missing activity</button>
       </div>
       <div class="propose-form" id="propose-form" style="display:none"></div>
     </div>`;
@@ -4376,12 +4382,26 @@ function derivStepHTML(label,control,conf,hint,info){
    activity this requirement touches, not just one. Used for the PM/no-
    activity-yet path here, and reused as the contributor's own (lower,
    de-emphasized but real) "Distribution across activities" block. */
-function distributionBlockHTML(b){
+function distributionBlockHTML(b, compact){
   if(!runsPassOne()) return "";
   const dim=passOneDimension(b);
   const acts = (b.branches&&b.branches.length)
     ? b.branches
     : ((b.perim||[]).length ? [{typology:b.perim[0], label:TY(b.perim[0]).label, tkObs:b.tkObs}] : []);
+  if(compact){
+    return `<div class="deriv-pass distrib-compact">
+      <div class="deriv-pass-h">Distribution across activities</div>
+      <div class="distrib-chips">
+        ${acts.length?acts.map(a=>{
+          const hasModel=activityHasModel(a.typology);
+          const label=escHtml(a.label||TY(a.typology).label);
+          return `<span class="distrib-chip${hasModel?"":" manual"}" title="${label}${hasModel?" — has a model":" — allocated manually"}">
+            <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>${confBadgeHTML(a.tkObs)}
+          </span>`;
+        }).join(""):`<span class="deriv-hint">No activity yet.</span>`}
+      </div>
+    </div>`;
+  }
   return `<div class="deriv-pass">
     <div class="deriv-pass-h">Distribution across activities</div>
     ${dim?`<div class="deriv-dim">${b.tech==="nontech"?"Non-technical":"Technical"} — a single dimension is read, the <b>${dim.dim}</b>. The other one takes no part in this step.</div>`
@@ -4419,37 +4439,20 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
   return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that activity's own model">routes into</div>`:"") + modelHTML;
 }
 /* A contributor's own view of one activity — fixed order, explicitly
-   specified: Classification, a plain separator, what the allocation model
-   is doing, ABS, PBS, OBS (the organisation, not a person), who's assigned
+   specified: ABS, PBS, OBS (the organisation, not a person), who's assigned
    (manager and expert together), a separator, the verdict, a separator, the
-   full distribution block (visible, just not first), any pending
-   reassignment request, propose-a-change, and finally source section.
-   Everything else that used to show here is gone — this replaces the
-   scattered Classification/Activity-field/derivationChainHTML/mgr-block
+   distribution block (visible, just not first, and compact here), any
+   pending reassignment request, propose-a-change, and finally source
+   section. Everything else that used to show here is gone — this replaces
+   the scattered Classification/Activity-field/derivationChainHTML/mgr-block
    sequence entirely for the myBranch case, rather than threading one more
    condition through each of those. */
 function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx){
-  const hasModel = activityHasModel(myBranch.typology);
   const obsVal = (myBranch.obs&&myBranch.obs.v) || TEAM(myBranch.team).label || "—";
   return `
-    <div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
-      <select class="ui-select" id="f-tech">
-        <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
-        <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
-      </select>
-      <div class="tech-hint">${b.tech==="tech"?"Technical requirement — routed through the PBS allocated activity.":"Non-technical requirement — routed through the ABS allocated activity."}</div>
-    </div>
-    <div class="set-sep"></div>
-    <div class="model-info">
-      <span class="model-info-ic">ⓘ</span>
-      ${hasModel
-        ? `<span><b>${escHtml(TY(myBranch.typology).label)}</b> has an allocation model — ABS, PBS and OBS below are derived automatically.</span>`
-        : `<span>No allocation model for <b>${escHtml(TY(myBranch.typology).label)}</b> — ABS, PBS and OBS below are filled in by hand. A routine way of working, not a failure.</span>`}
-    </div>
     ${derivStepHTML("ABS",
       `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
-      derivSrc.abs,
-      "Correcting this clears the PBS and OBS below — they're derived from it.")}
+      derivSrc.abs)}
     ${derivStepHTML("PBS",
       `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
       derivSrc.pbs)}
@@ -4466,7 +4469,7 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     <div class="set-sep"></div>
     ${finalVerdictHTML(b)}
     <div class="set-sep"></div>
-    ${distributionBlockHTML(b)}
+    ${distributionBlockHTML(b, true)}
     ${myReassignBranch?`<div class="branch-proposal">
       <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(expert)</span></div>
       <div class="branch-proposal-note">${REASON_LABEL[myReassignBranch.reassignRequest.reason]} — "${escHtml(myReassignBranch.reassignRequest.note)}"</div>
