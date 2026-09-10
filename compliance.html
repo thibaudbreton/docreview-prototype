@@ -671,12 +671,12 @@ textarea.resp-in:focus{border-color:var(--accent)}
           <div class="export-ready" id="export-ready"></div>
           <div class="f10-tools" id="f10-tools">
             <input id="f10-search" placeholder="Search requirement ref or text…" autocomplete="off">
-            <select id="f10-expert"><option value="">All experts</option></select>
+            <select id="f10-expert"><option value="">All contributors</option></select>
             <select id="f10-typo"><option value="">All activities</option></select>
             <select id="f10-sort">
               <option value="action">Sort: action needed first</option>
               <option value="status">Sort: status</option>
-              <option value="expert">Sort: expert</option>
+              <option value="expert">Sort: contributor</option>
               <option value="req">Sort: requirement ref</option>
             </select>
             <button class="f10-needsme" id="f10-needsme">⚡ Needs my action</button>
@@ -691,8 +691,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <div class="rcell c-id"><span class="cl">ID</span></div>
               <div class="rcell c-req"><span class="cl">Requirement / assignment</span></div>
               <div class="rcell c-typo" data-col="typo"><span class="cl">Activity</span></div>
-              <div class="rcell c-expert" data-col="expert"><span class="cl">Expert</span></div>
-              <div class="rcell c-mgr" data-col="mgr"><span class="cl">Manager</span></div>
+              <div class="rcell c-expert" data-col="expert"><span class="cl">Assigned to</span></div>
               <div class="rcell c-status" data-col="status"><span class="cl">Status</span></div>
               <div class="rcell c-comment" data-col="comment"><span class="cl">Compliance comment</span></div>
               <div class="rcell c-lastfu" data-col="lastfu"><span class="cl">Last follow-up</span></div>
@@ -755,21 +754,19 @@ const LANGUAGE_LABEL={en:"English", fr:"French", de:"German", es:"Spanish"};
 /* =====================================================
    SHARED DATA
 ===================================================== */
-const EXPERTS=[
-  {id:"sup",name:"Sophie Lang",team:"Monitoring Team",init:"SL",color:"#6e7bf2"},
-  {id:"infra",name:"Karim Benali",team:"Infrastructure Team",init:"KB",color:"#3fb27f"},
-  {id:"cyber",name:"Claire Moreau",team:"Cybersecurity",init:"CM",color:"#e0a43c"},
-];
 /* TICKET-merge-expert-space-into-compliance.md — "manager" and "expert" collapse into
-   one in-tool role, contributor, scoped by activity rather than by person. MANAGERS/
-   EXPERTS/VIEWER keep their identifiers internally (renaming every reference across
-   this data model is a separate, larger pass — see the session notes), but every
-   place a viewer picks who they are now picks an activity's contributor, not "a
+   one in-tool role, contributor, scoped by activity rather than by person. This is
+   that deferred "separate, larger pass": MANAGERS is now the single roster, and the
+   three former EXPERTS entries (sup/infra/cyber) live in it as ordinary contributors
+   — every place a viewer picks who they are picks an activity's contributor, not "a
    manager" or "an expert". `typology` is what that scoping keys off. */
 const MANAGERS=[
   {id:"m_sig",name:"Louis Renaud",role:"SIG contributor",typology:"sig",init:"LR",color:"#3fb27f"},
   {id:"m_mln",name:"Amina Cherif",role:"Mainline contributor",typology:"mln",init:"AC",color:"#e0a43c"},
   {id:"m_inf",name:"Paolo Ferri",role:"Infrastructure contributor",typology:"inf",init:"PF",color:"#a06ef2"},
+  {id:"sup",name:"Sophie Lang",role:"Monitoring Team contributor",typology:"sig",init:"SL",color:"#6e7bf2"},
+  {id:"infra",name:"Karim Benali",role:"Infrastructure Team contributor",typology:"inf",init:"KB",color:"#3fb27f"},
+  {id:"cyber",name:"Claire Moreau",role:"Cybersecurity contributor",typology:"sys",init:"CM",color:"#e0a43c"},
 ];
 const TYPOS={
   sig:{code:"SIG",label:"SIG & Urban"},
@@ -836,85 +833,85 @@ const REQS_HAND=[
   {id:"SRM-00001",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL route telemetry from each site gateway through its regional aggregator before reaching the central monitoring platform.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"sup",status:"awaiting_answer",compliance:null,age:3},
+     {typology:"sig",manager:"m_sig",status:"awaiting_answer",compliance:null,age:3},
    ]},
   {id:"SRM-00002",sec:"2. Functional requirements",type:"Functional",
    text:"Each site gateway SHALL connect to exactly one regional aggregator, with automatic failover to a secondary aggregator on link loss.",
    branches:[
-     {typology:"sig",manager:null,expert:null,status:"proposed",compliance:null,age:3},
+     {typology:"sig",manager:null,status:"proposed",compliance:null,age:3},
    ]},
   {id:"SRM-00003",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"compliant",age:9,
+     {typology:"sig",manager:"m_sig",status:"answered",compliance:"compliant",age:9,
       resp:{note:"Standard acquisition stack covers all listed measurement families. No deviation from the requirement.",att:0,date:"Jul 12"}},
    ]},
   {id:"SRM-00004",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"compliant",age:9,
+     {typology:"sig",manager:"m_sig",status:"answered",compliance:"compliant",age:9,
       resp:{note:"Dashboard aggregation (site / region / type) is available out of the box.",att:1,date:"Jul 12"}},
    ]},
   {id:"SRM-00005",sec:"2. Functional requirements",type:"Functional",outdated:true,
    text:"The system SHALL generate an alert when a site's consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"not_compliant",age:8,
+     {typology:"sig",manager:"m_sig",status:"answered",compliance:"not_compliant",age:8,
       resp:{note:"The 5-minute alerting threshold is achievable, but integrating the issuer's escalation matrix falls outside the proposed scope and budget envelope. Not compliant as specified.",att:0,date:"Jul 13"}},
-     {typology:"mln",manager:"m_mln",expert:"infra",status:"awaiting_answer",compliance:null,age:4,lastFollowup:"Jul 14"},
-     {typology:"sys",manager:null,expert:null,status:"reassignment_needed",compliance:null,age:3,
+     {typology:"mln",manager:"m_mln",status:"awaiting_answer",compliance:null,age:4,lastFollowup:"Jul 14"},
+     {typology:"sys",manager:null,status:"reassignment_needed",compliance:null,age:3,
       reassignComment:"Alerting escalation is a safety-critical chain — this should sit with the Safety authority, not with my perimeter. Please reallocate."},
    ]},
   {id:"SRM-00006",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets.",
    branches:[
-     {typology:"mln",manager:"m_mln",expert:"sup",status:"awaiting_answer",compliance:null,age:6},
+     {typology:"mln",manager:"m_mln",status:"awaiting_answer",compliance:null,age:6},
    ]},
   {id:"SRM-00007",sec:"2. Functional requirements",type:"Interface",
    text:"The system SHALL expose site telemetry to third-party tools through a documented REST API.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"infra",status:"answered",compliance:"not_compliant",age:7,
+     {typology:"sig",manager:"m_sig",status:"answered",compliance:"not_compliant",age:7,
       resp:{note:"Current API rate limits are below the implied third-party load. Meeting the requirement would need a gateway rework — not feasible within the proposed budget envelope.",att:1,date:"Jul 14"}},
    ]},
   {id:"SRM-00008",sec:"2. Functional requirements",type:"Interface",
    text:"The system SHALL import weather forecast feeds, refreshed every 15 minutes.",
    branches:[
-     {typology:"tlc",manager:"m_mln",expert:"infra",status:"awaiting_answer",compliance:null,age:2},
+     {typology:"tlc",manager:"m_mln",status:"awaiting_answer",compliance:null,age:2},
    ]},
   {id:"SRM-00009",sec:"3. Performance requirements",type:"Performance",
    text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites.",
    branches:[
-     {typology:"mln",manager:"m_inf",expert:"infra",status:"answered",compliance:"compliant",age:8,
+     {typology:"mln",manager:"m_inf",status:"answered",compliance:"compliant",age:8,
       resp:{note:"3 s refresh validated in load test for 250 simultaneous sites.",att:1,date:"Jul 12"}},
    ]},
   {id:"SRM-00010",sec:"3. Performance requirements",type:"Performance",
    text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile.",
    branches:[
-     {typology:"mln",manager:"m_inf",expert:"infra",status:"awaiting_qa",compliance:null,age:7,qaRef:"QA-01",
+     {typology:"mln",manager:"m_inf",status:"awaiting_qa",compliance:null,age:7,qaRef:"QA-01",
       qaNote:"Cannot commit without knowing whether the one-year depth is a rolling year or a calendar year — the storage strategy differs."},
    ]},
   {id:"SRM-00011",sec:"3. Performance requirements",type:"Performance",
    text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:null,status:"proposed",compliance:null,age:7},
-     {typology:"mln",manager:"m_mln",expert:"infra",status:"answered",compliance:"compliant",age:5,
+     {typology:"sig",manager:"m_sig",status:"proposed",compliance:null,age:7},
+     {typology:"mln",manager:"m_mln",status:"answered",compliance:"compliant",age:5,
       resp:{note:"99.7% business-hours availability is met by the standard redundant deployment; maintenance windows are already excluded contractually.",att:0,date:"Jul 15"}},
    ]},
   {id:"SRM-00012",sec:"4. Security requirements",type:"Security",
    text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"cyber",status:"awaiting_qa",compliance:null,age:5,qaRef:"QA-04",
+     {typology:"sig",manager:"m_sig",status:"awaiting_qa",compliance:null,age:5,qaRef:"QA-04",
       qaNote:"MFA is enforced through the corporate IdP, but I need to know whether TLS 1.3 is mandatory on gateways already deployed on existing sites before I can commit."},
    ]},
   {id:"SRM-00013",sec:"4. Security requirements",type:"Security",
    text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years.",
    branches:[
-     {typology:"mln",manager:"m_mln",expert:"cyber",status:"awaiting_qa",compliance:null,age:6,qaRef:"QA-02",
+     {typology:"mln",manager:"m_mln",status:"awaiting_qa",compliance:null,age:6,qaRef:"QA-02",
       qaNote:"Logging is fully supported, but the 3-year retention conflicts with the group policy (5 years) — needs issuer confirmation before commitment."},
    ]},
   {id:"SRM-00014",sec:"4. Security requirements",type:"Security",
    text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"cyber",status:"awaiting_qa",compliance:null,age:4,qaRef:"QA-03",
+     {typology:"sig",manager:"m_sig",status:"awaiting_qa",compliance:null,age:4,qaRef:"QA-03",
       qaNote:"TLS 1.3 is supported end-to-end on new deployments, but I cannot commit until the issuer states which TLS version applies to legacy site gateways."},
    ]},
 ];
@@ -933,16 +930,14 @@ const GEN_SEC=["2. Functional requirements","3. Performance requirements","4. Se
 const GEN_TYPE={"2. Functional requirements":"Functional","3. Performance requirements":"Performance","4. Security requirements":"Security"};
 const GEN_TYPO=["sig","mln","tlc","inf","sys"];
 const GEN_TYPO_MGR={sig:"m_sig",mln:"m_mln",tlc:"m_mln",inf:"m_inf",sys:null};
-const GEN_EXPERT=["sup","infra","cyber"];
 const GEN_RESP=["Standard configuration covers this out of the box, no deviation.","Achievable with the current architecture; validated in the last integration test.","Meets the requirement as written, no exception noted.","Supported natively; no additional development required.","Confirmed against the reference deployment — compliant as specified."];
 const GEN_STATUS_CYCLE=["answered","answered","answered","answered","answered","awaiting_answer","awaiting_answer","awaiting_qa","proposed","reassignment_needed"];
 const GEN_CMP_CYCLE=["compliant","compliant","compliant","compliant","compliant","not_compliant"];
 function genBranch(i,typo){
   const status=GEN_STATUS_CYCLE[i%GEN_STATUS_CYCLE.length];
   const mgr=GEN_TYPO_MGR[typo];
-  const expert=(status==="proposed"||!mgr)?null:GEN_EXPERT[i%GEN_EXPERT.length];
   const age=1+((i*3)%10);
-  const b={typology:typo,manager:mgr,expert,status,compliance:null,age};
+  const b={typology:typo,manager:mgr,status,compliance:null,age};
   if(status==="answered"){
     b.compliance=GEN_CMP_CYCLE[i%GEN_CMP_CYCLE.length];
     b.resp={note:GEN_RESP[i%GEN_RESP.length],att:i%4===0?1:0,date:"Jul "+(1+(i%20))};
@@ -1001,8 +996,8 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
   search:"",sortBy:"action",fExpert:"",fTypo:"",needsMe:false,
   /* B5 — shared table engine state (see table-engine.js / TE) */
   selection:new Set(),colFilters:{},filterToSelection:false,savedColFilters:null,
-  activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","mgr","age"]),
-  colOrder:["typo","expert","mgr","status","comment","lastfu","age"],
+  activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","age"]),
+  colOrder:["typo","expert","status","comment","lastfu","age"],
   docNavCollapsed:new Set(),
   navPanelCollapsed:false,detailPanelCollapsed:false,
   ownTeamOnly:true};
@@ -1014,7 +1009,6 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
    filter would. Defaults to the first manager so the screen opens pre-scoped. */
 let VIEWER=MANAGERS[0].id;
 
-const expOf=id=>EXPERTS.find(e=>e.id===id);
 const mgrOf=id=>MANAGERS.find(m=>m.id===id);
 const TY=id=>TYPOS[id]||{code:String(id||"—").toUpperCase(),label:id||"—"};
 const findR=id=>REQS.find(r=>r.id===id);
@@ -1047,8 +1041,6 @@ function consolidate(r){
   return {compliance:worst,pending:false,blocking:null,remaining:0,comment:worstBranch?.resp?.note||null};
 }
 const isConsolidated=r=>!consolidate(r).pending;
-/* experts available for (re)allocation — same pool everywhere */
-const ALLOC_EXPERTS=()=>EXPERTS;
 
 /* =====================================================
    TOASTS
@@ -1080,7 +1072,7 @@ function passesB(b){
   if(state.filter==="qa")return isAwaitingQA(b);
   if(state.filter==="reassign")return needsReassign(b);
   if(state.filter==="over")return isOverB(b);
-  if(state.fExpert&&b.expert!==state.fExpert)return false;
+  if(state.fExpert&&b.manager!==state.fExpert)return false;
   if(state.fTypo&&b.typology!==state.fTypo)return false;
   if(state.needsMe&&!needsMyAction(b))return false;
   return true;
@@ -1090,7 +1082,7 @@ function matchesSearch(r){
   if(!state.search)return true;
   const q=state.search.toLowerCase();
   if(r.id.toLowerCase().includes(q)||r.text.toLowerCase().includes(q))return true;
-  return (r.branches||[]).some(b=>TY(b.typology).label.toLowerCase().includes(q)||(b.expert&&expOf(b.expert).name.toLowerCase().includes(q)));
+  return (r.branches||[]).some(b=>TY(b.typology).label.toLowerCase().includes(q)||(b.manager&&mgrOf(b.manager).name.toLowerCase().includes(q)));
 }
 /* …and a requirement passes when it matches the search AND at least one of its allocated activities
    passes the status/expert/typology/needs-me filters (the "out" filter is requirement-level:
@@ -1138,11 +1130,11 @@ function renderNav2(){
       });
     });
   }else{
-    // by expert — counts are per ALLOCATED ACTIVITY now (an expert holds allocated activities, not requirements)
-    EXPERTS.forEach(e=>{
-      // T11 — per-expert progress broken into the three states a manager needs to
-      // tell apart: answered, pending (with the expert), blocked (with the issuer)
-      const mine=allBranches().filter(b=>b.expert===e.id);
+    // by contributor — counts are per ALLOCATED ACTIVITY now (a contributor holds allocated activities, not requirements)
+    MANAGERS.forEach(e=>{
+      // T11 — per-contributor progress broken into the three states a manager needs to
+      // tell apart: answered, pending (with the contributor), blocked (with the issuer)
+      const mine=allBranches().filter(b=>b.manager===e.id);
       const done=mine.filter(isAnswered).length;
       const pending=mine.filter(isAwaitingAnswer).length;
       const blocked=mine.filter(isAwaitingQA).length;
@@ -1153,7 +1145,7 @@ function renderNav2(){
       card.innerHTML=`
         <div class="exp-top">
           <div class="exp-avatar" style="background:${e.color}">${e.init}</div>
-          <div><div class="exp-name">${e.name}</div><div class="exp-team">${e.team}</div></div>
+          <div><div class="exp-name">${e.name}</div><div class="exp-team">${e.role}</div></div>
           <button class="exp-remind" data-remind="${e.id}" ${pending?"":"disabled"}>🔔 Remind</button>
         </div>
         <div class="exp-bar"><div style="width:${mine.length?done/mine.length*100:0}%"></div></div>
@@ -1175,7 +1167,7 @@ function renderNav2(){
   }
 }
 function remindExpert(e){
-  const open=allBranches().filter(b=>b.expert===e.id&&isAwaitingAnswer(b));
+  const open=allBranches().filter(b=>b.manager===e.id&&isAwaitingAnswer(b));
   toast(`Reminder sent to ${e.name} — ${open.length} pending assignment${open.length>1?"s":""}`,"ok");
 }
 
@@ -1195,7 +1187,7 @@ function actionScore(r){
 /* T10 — sort options. "action" is the default (reassignments/Q&A/overdue first); the
    others are plain manager conveniences layered on top of the same filtered set. */
 function statusScore(r){ const st=r.branches.map(b=>b.status); return BLOCK_PRIORITY.findIndex(s=>st.includes(s))+ (st.includes("answered")?0:100); }
-function firstExpertName(r){ const b=r.branches.find(x=>x.expert); return b?expOf(b.expert).name:"~"; }
+function firstExpertName(r){ const b=r.branches.find(x=>x.manager); return b?mgrOf(b.manager).name:"~"; }
 function tableRows(){
   const rows=REQS.filter(passes);
   if(state.sortBy==="status") return rows.sort((a,b)=>statusScore(a)-statusScore(b)||a.id.localeCompare(b.id));
@@ -1227,8 +1219,8 @@ function branchStatusHTML(b){
   return `<span class="vpill none pending-pill">Pending</span>`;
 }
 function branchWhoHTML(b){
-  const e=b.expert?expOf(b.expert):null;
-  if(!e) return `<span class="exp-mini none">— no expert —</span>`;
+  const e=b.manager?mgrOf(b.manager):null;
+  if(!e) return `<span class="exp-mini none">— unassigned —</span>`;
   return `<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name.split(" ")[0]}</span>`;
 }
 /* T12 — consolidation & export readiness: the follow-up screen's end state is a
@@ -1270,15 +1262,15 @@ function renderExportReady(){
    Status goes back to just the pill, so it no longer needs the extra width. */
 const F_RCOLS=[
   {k:"sel",w:"32px"},{k:"id",w:"84px"},{k:"req",w:"minmax(240px,1.4fr)"},
-  {k:"typo",w:"90px"},{k:"expert",w:"140px"},{k:"mgr",w:"110px"},
+  {k:"typo",w:"90px"},{k:"expert",w:"140px"},
   {k:"status",w:"150px"},{k:"comment",w:"minmax(200px,1fr)"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
 ];
 const F_COLUMN_TOGGLE_DEFS=[
-  {k:"typo",label:"Activity"},{k:"expert",label:"Expert"},{k:"mgr",label:"Manager"},
+  {k:"typo",label:"Activity"},{k:"expert",label:"Assigned to"},
   {k:"status",label:"Status"},{k:"comment",label:"Compliance comment"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
 ];
 const F_RCOLS_BY_KEY=Object.fromEntries(F_RCOLS.map(c=>[c.k,c]));
-const F_NAV_COLS=["sel","id","req","typo","expert","mgr","status","comment","lastfu","age"];
+const F_NAV_COLS=["sel","id","req","typo","expert","status","comment","lastfu","age"];
 function fNavCols(){ return F_NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
 /* USER-TEST-session-3.md §1.4 — full removal + reorder, same technique as
    revue-documentaire.html's applyCols(): --ord-* customs properties on .rgrid,
@@ -1334,21 +1326,18 @@ function fRowInnerHTML(r){
     <div class="rcell c-req"><div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div>${r.outdated?'<span class="flag-out">Δ outdated</span>':""}</div>
     <div class="rcell c-typo">${single?`<span class="ptag">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} activities</span>`}</div>
     <div class="rcell c-expert">${single?branchWhoHTML(single):`<span class="multi-ph">Multiple (${r.branches.length})</span>`}</div>
-    <div class="rcell c-mgr">${single?(single.manager?`<span>${mgrOf(single.manager).name.split(" ")[0]}</span>`:'<span class="none">—</span>'):`<span class="multi-ph">Multiple</span>`}</div>
     <div class="rcell c-status">${consolidatedStatusHTML(c)}</div>
     <div class="rcell c-comment">${verdictCommentHTML(c.comment)}</div>
     <div class="rcell c-lastfu">${fLastFollowupHTML({lastFollowup})}</div>
     <div class="rcell c-age ${single&&isOverB(single)?"over":""}">${single?(isAnswered(single)?"":single.age+" d"):""}</div>`;
 }
 function fBranchRowHTML(parent,b,idx){
-  const m=b.manager?mgrOf(b.manager):null;
   return `<div class="rrow branch-row" data-branchof="${parent.id}" data-branchidx="${idx}">
     <div class="rcell c-sel"></div>
     <div class="rcell c-id"></div>
     <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${TY(b.typology).label}</span></div>
     <div class="rcell c-typo"><span class="ptag">${TY(b.typology).code}</span></div>
     <div class="rcell c-expert">${branchWhoHTML(b)}</div>
-    <div class="rcell c-mgr">${m?m.name.split(" ")[0]:'<span class="none">—</span>'}</div>
     <div class="rcell c-status">${branchStatusHTML(b)}</div>
     <div class="rcell c-comment">${verdictCommentHTML(b.resp?.note)}</div>
     <div class="rcell c-lastfu">${fLastFollowupHTML(b)}</div>
@@ -1490,8 +1479,7 @@ function renderPanel2(){
   const c=consolidate(r);
   const idx=Math.min(state.selBranch||0, r.branches.length-1);
   const br=r.branches[idx];
-  const e=br.expert?expOf(br.expert):null;
-  const m=br.manager?mgrOf(br.manager):null;
+  const e=br.manager?mgrOf(br.manager):null;
   p.innerHTML=`
     <div class="set-head">
       <div class="set-id-row"><span class="set-id">${r.id}</span>
@@ -1520,8 +1508,7 @@ function renderPanel2(){
 
   const whoBlock=`
     <div class="field"><label>Assignment · ${TY(br.typology).label}</label>
-      <div class="fval">${e?`<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.team}</span>`:`<span class="exp-mini none">No expert assigned yet</span>`}</div>
-      <div class="branch-mgr" style="margin-top:6px">Activity manager: ${m?m.name:"<span class='none'>unassigned</span>"}</div></div>
+      <div class="fval">${e?`<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.role}</span>`:`<span class="exp-mini none">Nobody assigned yet</span>`}</div></div>
     <div class="field"><label>Status</label><div class="fval"><span class="spill ${br.status}">${BST[br.status]}</span></div></div>`;
 
   if(state.tab==="response"){
@@ -1550,18 +1537,16 @@ function renderPanel2(){
           <div class="reassign-t">${esc(br.reassignComment||"The expert judged this allocation wrong and returned it.")}</div></div>
         <div class="fval" style="font-size:var(--text-sm);color:var(--text-3);margin-bottom:12px">Internal action — this stays inside the company and comes back to you as the manager.</div>
         <div class="field"><label>Reallocate to</label>
-          <select id="ra-mgr">${['<option value="">— Activity manager —</option>'].concat(MANAGERS.map(x=>`<option value="${x.id}" ${br.manager===x.id?"selected":""}>${x.name} — ${x.role}</option>`)).join("")}</select></div>
-        <div class="field"><label>Expert</label>
-          <select id="ra-exp">${['<option value="">— Expert —</option>'].concat(ALLOC_EXPERTS().map(x=>`<option value="${x.id}" ${br.expert===x.id?"selected":""}>${x.name} — ${x.team}</option>`)).join("")}</select></div>
+          <select id="ra-mgr">${['<option value="">— Nobody —</option>'].concat(MANAGERS.map(x=>`<option value="${x.id}" ${br.manager===x.id?"selected":""}>${x.name} — ${x.role}</option>`)).join("")}</select></div>
         <button class="cta ok" id="a-reassign">↪ Reassign and send back out</button>`;
       b.querySelector("#a-reassign").addEventListener("click",()=>{
-        const nm=b.querySelector("#ra-mgr").value||null, nx=b.querySelector("#ra-exp").value||null;
-        if(!nx){ toast("Pick an expert before reassigning","warn"); return; }
+        const nm=b.querySelector("#ra-mgr").value||null;
+        if(!nm){ toast("Pick someone before reassigning","warn"); return; }
         const requestId=br.reassignRequest&&br.reassignRequest.requestId;
-        br.manager=nm; br.expert=nx; br.status="awaiting_answer"; br.age=0;
+        br.manager=nm; br.status="awaiting_answer"; br.age=0;
         br.reassignComment=null; br.reassignRequest=null; br.reassignedAt="Today";
         try{ if(window.parent!==window && window.parent.updateReassignRequest && requestId) window.parent.updateReassignRequest(requestId, {requestStatus:"approved"}); }catch(e){}
-        toast(`${r.id} · ${TY(br.typology).label} reassigned to ${expOf(nx).name} — awaiting answer`,"ok");
+        toast(`${r.id} · ${TY(br.typology).label} reassigned to ${mgrOf(nm).name} — awaiting answer`,"ok");
         refreshAll();
       });
     }else if(canAnswer(br)){
@@ -1588,7 +1573,7 @@ function renderPanel2(){
       // Rendering a verdict isn't the only answer: the allocation itself may be
       // wrong. Restored from expert-space.html's action set, which lost this on
       // the merge — a contributor could only ever say yes, never "not mine".
-      const otherExperts=EXPERTS.filter(x=>x.id!==br.expert);
+      const otherExperts=MANAGERS.filter(x=>x.id!==br.manager);
       const otherTypos=Object.keys(TYPOS).filter(t=>t!==br.typology);
       const reassignHTML=state.openForm!=="reassign"?`<button class="cta line" id="a-reassign" style="margin-top:8px">↩ Request reassignment</button>`:`
         <div class="inline-form" id="reassign-form">
@@ -1597,7 +1582,7 @@ function renderPanel2(){
             ${Object.entries(REASON_LABEL).map(([k,label])=>`<label class="reassign-reason"><input type="radio" name="reassign-reason" value="${k}" ${k==="wrong_person"?"checked":""}> ${label}</label>`).join("")}
           </div>
           <div class="field" id="reassign-expert-field"><label>Reassign to</label>
-            <select id="reassign-expert">${otherExperts.length?otherExperts.map(x=>`<option value="${x.id}">${x.name} — ${x.team}</option>`).join(""):'<option value="">Nobody else available</option>'}</select></div>
+            <select id="reassign-expert">${otherExperts.length?otherExperts.map(x=>`<option value="${x.id}">${x.name} — ${x.role}</option>`).join(""):'<option value="">Nobody else available</option>'}</select></div>
           <div class="field" id="reassign-typo-field" style="display:none"><label>Correct activity</label>
             <select id="reassign-typo">${otherTypos.map(t=>`<option value="${t}">${TY(t).label}</option>`).join("")}</select></div>
           <div class="field"><label>Why</label><textarea id="reassign-text" rows="3" placeholder="Required — why should this be reassigned?"></textarea></div>
@@ -1630,7 +1615,7 @@ function renderPanel2(){
           // of the wider vocabulary pass, not this change.
           byRole:"expert", at:"Today",
           replacementExpert, replacementTypology,
-          replacementExpertLabel: replacementExpert?(EXPERTS.find(x=>x.id===replacementExpert)||{}).name:null,
+          replacementExpertLabel: replacementExpert?(mgrOf(replacementExpert)||{}).name:null,
           replacementTypologyLabel: replacementTypology?TY(replacementTypology).label:null,
           prevStatus:br.status,
         };
@@ -1811,7 +1796,7 @@ document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("cli
 /* T9/T10 toolbar — populate the expert/activity selects once, then wire up live filtering */
 (function initF10(){
   const expSel=document.getElementById("f10-expert"), tySel=document.getElementById("f10-typo");
-  EXPERTS.forEach(e=>expSel.insertAdjacentHTML("beforeend",`<option value="${e.id}">${e.name}</option>`));
+  MANAGERS.forEach(m=>expSel.insertAdjacentHTML("beforeend",`<option value="${m.id}">${m.name}</option>`));
   [...new Set(allBranches().map(b=>b.typology))].forEach(t=>tySel.insertAdjacentHTML("beforeend",`<option value="${t}">${TY(t).label}</option>`));
   document.getElementById("f10-search").addEventListener("input",e=>{state.search=e.target.value;renderTable2();});
   expSel.addEventListener("change",e=>{state.fExpert=e.target.value;refreshAll();});
@@ -1841,7 +1826,7 @@ document.getElementById("clear2").addEventListener("click",()=>{
 document.getElementById("remind-all").addEventListener("click",()=>{
   const over=allBranches().filter(isOverB);
   if(!over.length){toast("Nothing overdue — all good","ok");return;}
-  const exps=[...new Set(over.map(b=>b.expert).filter(Boolean))].map(id=>expOf(id).name);
+  const exps=[...new Set(over.map(b=>b.manager).filter(Boolean))].map(id=>mgrOf(id).name);
   toast(`Reminders sent to ${exps.join(" and ")} — ${over.length} overdue assignment${over.length>1?"s":""}`,"ok");
 });
 document.getElementById("export2-btn").addEventListener("click",()=>{
@@ -1861,8 +1846,8 @@ document.addEventListener("keydown",e=>{
   if(TE.handleNavKeydown({key:navKey},state,fNavAdapter)){ e.preventDefault(); return; }
   if((e.key==="r"||e.key==="R")&&state.sel){
     const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
-    if(br&&br.expert){ br.lastFollowup="Today"; toast(`Reminder sent to ${expOf(br.expert).name} for ${r.id} · ${TY(br.typology).label}`,"ok"); refreshAll(); }
-    else toast(`No expert assigned yet on this branch`,"warn");
+    if(br&&br.manager){ br.lastFollowup="Today"; toast(`Reminder sent to ${mgrOf(br.manager).name} for ${r.id} · ${TY(br.typology).label}`,"ok"); refreshAll(); }
+    else toast(`Nobody assigned yet on this branch`,"warn");
   }
   if((e.key==="q"||e.key==="Q")&&state.sel){
     const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
