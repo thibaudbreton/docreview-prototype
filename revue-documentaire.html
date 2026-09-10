@@ -1222,6 +1222,11 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .psearch-opt.active,.psearch-opt:hover{background:var(--panel-3)}
 .psearch-opt .exp-avatar{width:22px;height:22px;font-size:10px}
 .psearch-empty{padding:var(--space-3);font-size:var(--text-sm);color:var(--text-3);font-style:italic}
+.psearch-stack{display:flex;flex-direction:column;gap:var(--space-3)}
+/* "Info: model used" — a plain note, not a field: nothing to edit, just why
+   ABS/PBS/OBS below are (or aren't) pre-filled. */
+.model-info{display:flex;align-items:flex-start;gap:8px;font-size:var(--text-xs);color:var(--text-2);background:var(--panel-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-3);line-height:1.5}
+.model-info-ic{flex-shrink:0;opacity:.6}
 /* role recap (Activity) */
 .role-recap{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);margin-bottom:18px}
 .role-row{display:flex;align-items:center;gap:10px}
@@ -2470,19 +2475,36 @@ function applyCaptureDemoStatuses(){
     }
     // A multi-typology row already has real b.branches by this point (the
     // syncBranchesFromPerim sweep above runs before this function) — each
-    // one needs its own expert/pbs/abs/obs, or computeAllocStatus() (which
-    // runs per-branch, never on the parent, once a row has branches) finds
-    // nothing to derive a doubt from and every branch reads Incomplete
+    // one needs its own manager/expert/pbs/abs/obs, or computeAllocStatus()
+    // (which runs per-branch, never on the parent, once a row has branches)
+    // finds nothing to derive a doubt from and every branch reads Incomplete
     // regardless of how confident the AI actually was. Confidence itself is
     // per ROW, not per branch (data.js has one confidence object per
-    // requirement) — every branch shares it; only the expert varies per
+    // requirement) — every branch shares it; only manager/expert vary per
     // branch, so a 3-activity row doesn't route all three to the same
     // person.
+    // branch.manager specifically was ALSO stuck permanently null/undefined
+    // for single-activity rows: ensureBranches() mirrors b.manager onto the
+    // branch once, at branch-CREATION time — which is the earlier
+    // syncBranchesFromPerim sweep, running before this function has set
+    // x.manager at all. myBranchOf(b) reads branch.manager, not b.manager,
+    // so a manager's own requirement never matched their own branch — the
+    // contributor's whole detail view (status pill, this section, all of
+    // it) silently fell back to the PM's, even on a requirement genuinely
+    // theirs.
     if(x.branches && x.branches.length){
       x.branches.forEach(br=>{
-        if(bucket<2){ br.expert=null; br.pbs=null; br.abs=null; br.obs=null; br.tkObs=null; }
+        if(bucket<2){ br.manager=null; br.expert=null; br.pbs=null; br.abs=null; br.obs=null; br.tkObs=null; }
         else {
           const bh = hashId(x.id+":"+br.typology);
+          // Manager mirrors x.manager rather than hashing independently —
+          // visibleTo(b) (the restricted-view filter) reads b.manager, and
+          // myBranchOf(b) reads branch.manager; picking those two apart
+          // would show a manager a requirement their OWN branch didn't
+          // think was theirs. Expert genuinely does vary per branch (one
+          // requirement, several activities, different specialists) — that
+          // divergence stays.
+          if(!br.manager) br.manager = x.manager;
           if(!br.expert) br.expert = ALLOCS[bh % ALLOCS.length].id;
           br.pbs = {v:"", c: x.pbs.c};
           br.abs = {v:"", c: x.abs.c};
@@ -4350,50 +4372,37 @@ function derivStepHTML(label,control,conf,hint,info){
     ${hint?`<div class="deriv-hint">${hint}</div>`:""}
   </div>`;
 }
-function derivationChainHTML(b,myBranch,derivSrc,rmView){
+/* The full "who else is on this requirement, and where" card — every
+   activity this requirement touches, not just one. Used for the PM/no-
+   activity-yet path here, and reused as the contributor's own (lower,
+   de-emphasized but real) "Distribution across activities" block. */
+function distributionBlockHTML(b){
+  if(!runsPassOne()) return "";
   const dim=passOneDimension(b);
-  // A contributor with their own activity doesn't need "Pass 1" / "Pass 2" —
-  // that framing is an implementation detail (how routing gets computed
-  // internally), not something they should have to parse. They need: their
-  // own work first, and — since they CAN want to know where this requirement
-  // came from — a compact, secondary note about that routing, not a full
-  // table of every activity on the tender. The fuller table stays for the
-  // no-activity-yet case (nothing of theirs to lead with).
-  const contributorView = !!myBranch;
-
-  /* ---- distribution across activities (Turnkey only) ---- */
-  let distribHTML="";
-  if(runsPassOne()){
-    const acts = (b.branches&&b.branches.length)
-      ? b.branches
-      : ((b.perim||[]).length ? [{typology:b.perim[0], label:TY(b.perim[0]).label, tkObs:b.tkObs}] : []);
-    if(contributorView){
-      const dimTxt = dim ? `${b.tech==="nontech"?"Non-technical":"Technical"} — read from the ${dim.dim}` : "Not classified yet";
-      distribHTML = `<div class="deriv-distrib-compact" title="How this requirement was routed to your activity — for reference, not something you need to act on">
-        <span class="deriv-distrib-lbl">Routed here</span>${escHtml(dimTxt)}${myBranch.tkObs?confBadgeHTML(myBranch.tkObs):""}
+  const acts = (b.branches&&b.branches.length)
+    ? b.branches
+    : ((b.perim||[]).length ? [{typology:b.perim[0], label:TY(b.perim[0]).label, tkObs:b.tkObs}] : []);
+  return `<div class="deriv-pass">
+    <div class="deriv-pass-h">Distribution across activities</div>
+    ${dim?`<div class="deriv-dim">${b.tech==="nontech"?"Non-technical":"Technical"} — a single dimension is read, the <b>${dim.dim}</b>. The other one takes no part in this step.</div>`
+          :`<div class="deriv-dim">Not classified yet — routing needs the technical / non-technical call before it can read a dimension.</div>`}
+    ${acts.length?acts.map(a=>{
+      const hasModel=activityHasModel(a.typology);
+      return `<div class="deriv-act">
+        <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>
+        <span class="deriv-act-label">${escHtml(a.label||TY(a.typology).label)}</span>
+        ${confBadgeHTML(a.tkObs)}
+        <span class="deriv-act-model${hasModel?"":" none"}" title="${hasModel?"Routed into this activity's own model automatically.":"No allocation model for this activity. Its contributors allocate within it by hand — a routine way of working, not a failure."}">${hasModel?"→ has a model":"→ allocate manually"}</span>
       </div>`;
-    } else {
-      distribHTML = `<div class="deriv-pass">
-        <div class="deriv-pass-h">Distribution across activities</div>
-        ${dim?`<div class="deriv-dim">${b.tech==="nontech"?"Non-technical":"Technical"} — a single dimension is read, the <b>${dim.dim}</b>. The other one takes no part in this step.</div>`
-              :`<div class="deriv-dim">Not classified yet — routing needs the technical / non-technical call before it can read a dimension.</div>`}
-        ${acts.length?acts.map(a=>{
-          const hasModel=activityHasModel(a.typology);
-          return `<div class="deriv-act">
-            <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>
-            <span class="deriv-act-label">${escHtml(a.label||TY(a.typology).label)}</span>
-            ${confBadgeHTML(a.tkObs)}
-            <span class="deriv-act-model${hasModel?"":" none"}" title="${hasModel?"Routed into this activity's own model automatically.":"No allocation model for this activity. Its contributors allocate within it by hand — a routine way of working, not a failure."}">${hasModel?"→ has a model":"→ allocate manually"}</span>
-          </div>`;
-        }).join(""):`<div class="deriv-hint">No activity yet — nothing to route into.</div>`}
-      </div>`;
-    }
-  }
-
+    }).join(""):`<div class="deriv-hint">No activity yet — nothing to route into.</div>`}
+  </div>`;
+}
+function derivationChainHTML(b,myBranch,derivSrc,rmView){
+  const distribHTML = distributionBlockHTML(b);
   /* ---- the activity's own model, PBS -> ABS -> OBS ---- */
   const scope = myBranch ? `${TY(myBranch.typology).label}` : (runsPassOne()?"The activity's own model":`${escHtml(TENDER_LINE)}'s model`);
   const modelHTML = `<div class="deriv-pass">
-    ${contributorView?"":`<div class="deriv-pass-h">${escHtml(scope)}</div>`}
+    <div class="deriv-pass-h">${escHtml(scope)}</div>
     ${derivStepHTML("PBS",
       `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
       derivSrc.pbs)}
@@ -4407,13 +4416,73 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
       derivSrc.obs,
       "The team or service within the activity — this is what casting staffs.")}`:""}
   </div>`;
-
-  // Contributor with an activity already: their model leads, the routing
-  // note trails underneath, small. Everyone else (nothing assigned yet, or
-  // the rare non-Turnkey path through this function): routing comes first,
-  // since there's no "their work" yet to lead with.
-  if(contributorView) return modelHTML + distribHTML;
   return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that activity's own model">routes into</div>`:"") + modelHTML;
+}
+/* A contributor's own view of one activity — fixed order, explicitly
+   specified: Classification, a plain separator, what the allocation model
+   is doing, ABS, PBS, OBS (the organisation, not a person), who's assigned
+   (manager and expert together), a separator, the verdict, a separator, the
+   full distribution block (visible, just not first), any pending
+   reassignment request, propose-a-change, and finally source section.
+   Everything else that used to show here is gone — this replaces the
+   scattered Classification/Activity-field/derivationChainHTML/mgr-block
+   sequence entirely for the myBranch case, rather than threading one more
+   condition through each of those. */
+function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx){
+  const hasModel = activityHasModel(myBranch.typology);
+  const obsVal = (myBranch.obs&&myBranch.obs.v) || TEAM(myBranch.team).label || "—";
+  return `
+    <div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
+      <select class="ui-select" id="f-tech">
+        <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
+        <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
+      </select>
+      <div class="tech-hint">${b.tech==="tech"?"Technical requirement — routed through the PBS allocated activity.":"Non-technical requirement — routed through the ABS allocated activity."}</div>
+    </div>
+    <div class="set-sep"></div>
+    <div class="model-info">
+      <span class="model-info-ic">ⓘ</span>
+      ${hasModel
+        ? `<span><b>${escHtml(TY(myBranch.typology).label)}</b> has an allocation model — ABS, PBS and OBS below are derived automatically.</span>`
+        : `<span>No allocation model for <b>${escHtml(TY(myBranch.typology).label)}</b> — ABS, PBS and OBS below are filled in by hand. A routine way of working, not a failure.</span>`}
+    </div>
+    ${derivStepHTML("ABS",
+      `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
+      derivSrc.abs,
+      "Correcting this clears the PBS and OBS below — they're derived from it.")}
+    ${derivStepHTML("PBS",
+      `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
+      derivSrc.pbs)}
+    ${derivStepHTML("OBS",
+      `<div class="fval">${escHtml(obsVal)}</div>`,
+      derivSrc.obs,
+      "The organisation — the team or service within the activity. This is what casting staffs, not a person to pick here.")}
+    <div class="field"><label>Manager / expert</label>
+      <div class="psearch-stack">
+        ${personSearchHTML("manager","req-manager",myBranch.manager)}
+        ${personSearchHTML("expert","req-expert",myBranch.expert)}
+      </div>
+    </div>
+    <div class="set-sep"></div>
+    ${finalVerdictHTML(b)}
+    <div class="set-sep"></div>
+    ${distributionBlockHTML(b)}
+    ${myReassignBranch?`<div class="branch-proposal">
+      <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(expert)</span></div>
+      <div class="branch-proposal-note">${REASON_LABEL[myReassignBranch.reassignRequest.reason]} — "${escHtml(myReassignBranch.reassignRequest.note)}"</div>
+      <div class="branch-proposal-note" style="font-style:normal">${myReassignBranch.reassignRequest.reason==="wrong_person"
+        ? `Proposed: reassign to <b>${(myReassignBranch.reassignRequest.replacementExpertLabel||"—").split("—")[0].trim()}</b>`
+        : `Proposed: replace with <b>${myReassignBranch.reassignRequest.replacementTypologyLabel||TY(myReassignBranch.reassignRequest.replacementTypology).label}</b>`}</div>
+      <div class="branch-proposal-actions">
+        <button class="approve" data-approve-reassign="${myReassignIdx}">✓ Approve</button>
+        <button class="reject" data-reject-reassign="${myReassignIdx}">✕ Reject</button>
+      </div>
+    </div>`:""}
+    ${proposeBlockHTML(b,true,myBranch)}
+    <div class="set-sep"></div>
+    <div class="field"><label>Source section</label>
+      <div class="fval">${s.num}. ${s.title} · <button class="peek-btn" id="goto-doc">View in document →</button></div>
+    </div>`;
 }
 /* =====================================================
    DETAIL PANEL — two views, one panel
@@ -4680,23 +4749,22 @@ function renderSettings(){
     html += pmTurnkey
       ? (actView ? activityDetailHTML(b,state.panelActivity)
                  : pmClassificationHTML(b)+activityBlocksHTML(b))
-      : "";
-    html += `
+      : (isReq && myBranch)
+        ? contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx)
+        : "";
+    if(!pmTurnkey && !(isReq && myBranch)) html += `
       ${!isReq?`<div class="field"><label>Type</label>
         <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
       </div>`:""}
-      ${!pmTurnkey&&isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
+      ${isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <select class="ui-select" id="f-tech">
           <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
           <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
         </select>
         <div class="tech-hint">${b.tech==="tech"?"Technical requirement — routed through the PBS allocated activity.":"Non-technical requirement — routed through the ABS allocated activity."}</div>
       </div>`:""}
-      ${!pmTurnkey&&isReq&&myBranch?`<div class="field"><label>Activity <span style="font-weight:600;letter-spacing:0;text-transform:none;color:var(--text-3)"> · your allocated activity</span></label>
-        <div class="fval"><span class="ptag${myBranch.typology==="tky"?" tky":""}">${TY(myBranch.typology).code}</span> ${TY(myBranch.typology).label}</div>
-      </div>`:""}
-      ${!pmTurnkey&&isReq&&hasBranches?finalVerdictHTML(b):""}
-      ${!pmTurnkey&&isReq&&!myBranch?`<div class="field"><label>Activity ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
+      ${isReq&&hasBranches?finalVerdictHTML(b):""}
+      ${isReq&&!myBranch?`<div class="field"><label>Activity ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <div class="msel ${state.typoOpen?"open":""}" id="typo-msel">
           <button class="msel-btn" id="typo-btn">
             <span class="mval">${(b.perim||[]).length?(b.perim||[]).map(p=>`<span class="ptag${p==="tky"?" tky":""}">${TY(p).code}</span>`).join(""):'<span class="placeholder">Select activities…</span>'}</span>
@@ -4711,19 +4779,7 @@ function renderSettings(){
         ${isTurnkey(b)?`<div class="tky-note"><b>Turnkey.</b> Supervises the whole scope — needs a coordinating owner plus one specialist per perimeter.</div>`:""}
       </div>`:""}
 
-      ${!pmTurnkey&&isReq?`<div class="set-sep"></div>${derivationChainHTML(b,myBranch,derivSrc,rmView)}`:""}
-      ${myReassignBranch?`<div class="set-sep"></div>
-      <div class="branch-proposal">
-        <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(expert)</span></div>
-        <div class="branch-proposal-note">${REASON_LABEL[myReassignBranch.reassignRequest.reason]} — "${escHtml(myReassignBranch.reassignRequest.note)}"</div>
-        <div class="branch-proposal-note" style="font-style:normal">${myReassignBranch.reassignRequest.reason==="wrong_person"
-          ? `Proposed: reassign to <b>${(myReassignBranch.reassignRequest.replacementExpertLabel||"—").split("—")[0].trim()}</b>`
-          : `Proposed: replace with <b>${myReassignBranch.reassignRequest.replacementTypologyLabel||TY(myReassignBranch.reassignRequest.replacementTypology).label}</b>`}</div>
-        <div class="branch-proposal-actions">
-          <button class="approve" data-approve-reassign="${myReassignIdx}">✓ Approve</button>
-          <button class="reject" data-reject-reassign="${myReassignIdx}">✕ Reject</button>
-        </div>
-      </div>`:""}
+      ${isReq?`<div class="set-sep"></div>${derivationChainHTML(b,myBranch,derivSrc,rmView)}`:""}
 
       ${showBranchPanel&&!pmTurnkey?`<div class="set-sep"></div>
       <div class="branch-sections">
@@ -4772,8 +4828,8 @@ function renderSettings(){
         <div class="fval">${s.num}. ${s.title} · <button class="peek-btn" id="goto-doc">View in document →</button></div></div>
       ${isReq&&!rmView&&!actView?`<div class="set-sep"></div>
       <div class="mgr-block" id="mgr-block">
-        <label class="mgr-lbl">Manager <span>· ${myBranch?"handles your allocated activity":"handles this requirement"}</span></label>
-        ${personSearchHTML("manager","req-manager",myBranch?myBranch.manager:b.manager)}
+        <label class="mgr-lbl">Manager <span>· handles this requirement</span></label>
+        ${personSearchHTML("manager","req-manager",b.manager)}
       </div>`:""}
       ${isReq && !isAdmin() ? proposeBlockHTML(b,hasBranches,myBranch) : ""}
       ${isReq ? validateCtaHTML(b,hasBranches,es) : ""}`;
