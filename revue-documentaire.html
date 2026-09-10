@@ -1206,6 +1206,22 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .mgr-edit select{flex:1;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base)}
 .mgr-done{font-size:var(--text-sm);font-weight:600;color:var(--ok);border:1px solid rgba(63,178,127,.5);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);white-space:nowrap}
 .mgr-done:hover{background:var(--ok);color:#fff}
+/* Free-text assign — search a person, pick, done. position:relative here is
+   load-bearing: .psearch-results is position:absolute, and without a
+   positioned ancestor it anchors against whatever ancestor happens to be
+   positioned instead and lands off-screen (see the identical casting-screen
+   bug fixed earlier — same mistake, not repeating it here). */
+.psearch{position:relative}
+.psearch .mgr-view{display:flex;align-items:center;gap:var(--space-2)}
+.psearch .mgr-view .fval{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.psearch-edit{flex-direction:column;align-items:stretch;gap:6px}
+.psearch-input{width:100%}
+.psearch-results{position:absolute;top:100%;left:0;right:0;z-index:30;max-height:220px;overflow-y:auto;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);box-shadow:0 12px 34px rgba(0,0,0,.5);display:none;margin-top:4px}
+.psearch-results.open{display:block}
+.psearch-opt{display:flex;align-items:center;gap:var(--space-2);padding:7px var(--space-3);cursor:pointer;font-size:var(--text-sm)}
+.psearch-opt.active,.psearch-opt:hover{background:var(--panel-3)}
+.psearch-opt .exp-avatar{width:22px;height:22px;font-size:10px}
+.psearch-empty{padding:var(--space-3);font-size:var(--text-sm);color:var(--text-3);font-style:italic}
 /* role recap (Activity) */
 .role-recap{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);margin-bottom:18px}
 .role-row{display:flex;align-items:center;gap:10px}
@@ -1792,6 +1808,90 @@ const MANAGERS = [
   {id:"m_inf", name:"Paolo Ferri", role:"Infrastructure manager", init:"PF", color:"#a06ef2"},
 ];
 const MGR = id => MANAGERS.find(m=>m.id===id);
+/* Assigning a manager or expert used to mean picking from MANAGERS/ALLOCS —
+   3-4 fixed people, full stop. A contributor needing to bring in someone who
+   isn't cast yet had no path at all. This is the searchable pool behind the
+   free-text assign flow below: simulated company directory, same convention
+   as casting's own "search a person via SSO" (dashboard-et-config.html) —
+   no real directory service in this prototype, represented not implemented.
+   Picking someone not already in MANAGERS/ALLOCS adds them there on the
+   spot (see assignPerson()), the same way casting grows its own roster. */
+const PSEARCH_COLORS=["#6e7bf2","#3fb27f","#e0a43c","#a06ef2","#e5544b","#3fa9b2","#c46bd6","#5c9ee0"];
+const PSEARCH_NAMES=["Sophie Lang","Karim Benali","Claire Moreau","Marc Dubois","Fatima Zahra","Thomas Weber","Léa Girard","Omar Saidi","Anaïs Petit","Hugo Bernard","Ines Kaya","Nicolas Roux","Camille Fontaine","Youssef Amrani","Elodie Simon","Pierre Lefevre","Sara Nasri","Antoine Girardin","Meryem El Idrissi","Julien Marchal"];
+const DIRECTORY = PSEARCH_NAMES.map((name,i)=>({
+  id:"dir"+i, name, init:name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(), color:PSEARCH_COLORS[i%PSEARCH_COLORS.length],
+}));
+/* Assigns `personId` as manager or expert on `target` (a requirement or a
+   branch — both shapes carry .manager/.expert). If the person isn't already
+   in MANAGERS (manager) or ALLOCS (expert), adds them — same "growing the
+   roster from a search pick" behaviour casting already has, so every later
+   label/filter that reads MGR()/ALLOCS still resolves. */
+function registerPerson(kind, personId){
+  const p = DIRECTORY.find(d=>d.id===personId) || MANAGERS.find(m=>m.id===personId) || {id:personId,name:(ALLOCS.find(a=>a.id===personId)||{}).label};
+  if(kind==="manager"){
+    if(!MGR(personId)) MANAGERS.push({id:p.id, name:p.name, role:"Assigned from search", init:p.init||p.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(), color:p.color||PSEARCH_COLORS[MANAGERS.length%PSEARCH_COLORS.length]});
+  } else if(!ALLOCS.find(a=>a.id===personId)) ALLOCS.push({id:p.id, label:p.name});
+}
+function assignPerson(kind, target, personId){
+  registerPerson(kind, personId);
+  if(kind==="manager") target.manager = personId; else target.expert = personId;
+}
+function personLabel(kind, id){
+  if(!id) return null;
+  return kind==="manager" ? (MGR(id)||{}).name : (ALLOCS.find(a=>a.id===id)||{}).label;
+}
+/* One search-to-pick control for both Manager and Expert fields — same
+   view/edit toggle every other field in this panel uses (.mgr-view/.mgr-edit),
+   with a typeahead in edit mode instead of a fixed <select>: DIRECTORY plus
+   whoever is already in MANAGERS/ALLOCS, so someone already assigned
+   elsewhere on this tender shows up too, not just the simulated directory. */
+function personSearchHTML(kind, addr, currentId){
+  const label = personLabel(kind, currentId);
+  const you = kind==="manager" && currentId===VIEWER && !isAdmin();
+  return `<div class="psearch" data-psearch="${addr}">
+    <div class="mgr-view" id="psearch-view-${addr}">
+      ${label?`<div class="fval">${escHtml(label)}${you?' <span class="mgr-you">you</span>':''}</div>`:`<div class="fval" style="color:var(--text-3)">— Unassigned —</div>`}
+      <button class="mgr-change" id="psearch-change-${addr}" style="opacity:1">${label?"Change":"Assign"}</button>
+    </div>
+    <div class="mgr-edit psearch-edit" id="psearch-edit-${addr}" style="display:none">
+      <input class="ui-input psearch-input" id="psearch-input-${addr}" placeholder="Search a person…" autocomplete="off">
+      <div class="psearch-results" id="psearch-results-${addr}"></div>
+    </div>
+  </div>`;
+}
+function bindPersonSearch(container, kind, addr, onPick){
+  const wrap=container.querySelector(`[data-psearch="${addr}"]`); if(!wrap) return;
+  const view=wrap.querySelector(`#psearch-view-${addr}`), edit=wrap.querySelector(`#psearch-edit-${addr}`);
+  const input=wrap.querySelector(`#psearch-input-${addr}`), results=wrap.querySelector(`#psearch-results-${addr}`);
+  const pool = kind==="manager"
+    ? [...MANAGERS.filter(m=>!m.admin).map(m=>({id:m.id,name:m.name,init:m.init,color:m.color})), ...DIRECTORY]
+    : [...ALLOCS.map(a=>({id:a.id,name:a.label})), ...DIRECTORY];
+  const seen=new Set(); const searchPool=pool.filter(p=>seen.has(p.id)?false:(seen.add(p.id),true));
+  let matches=[], active=0;
+  const open=()=>{ view.style.display="none"; edit.style.display="flex"; input.value=""; input.focus(); };
+  const close=()=>{ edit.style.display="none"; view.style.display="flex"; results.classList.remove("open"); results.innerHTML=""; };
+  const draw=q=>{
+    const ql=(q||"").toLowerCase().trim();
+    matches = ql ? searchPool.filter(p=>p.name.toLowerCase().includes(ql)).slice(0,8) : [];
+    active=0;
+    if(!ql){ results.classList.remove("open"); results.innerHTML=""; return; }
+    results.innerHTML = matches.length
+      ? matches.map((p,i)=>`<div class="psearch-opt${i===0?" active":""}" data-pick="${p.id}"><div class="exp-avatar" style="background:${p.color||"#5f6675"}">${p.init||p.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase()}</div>${escHtml(p.name)}</div>`).join("")
+      : `<div class="psearch-empty">No match in the directory.</div>`;
+    results.classList.add("open");
+    results.querySelectorAll("[data-pick]").forEach(o=>o.addEventListener("mousedown",e=>{ e.preventDefault(); onPick(o.dataset.pick); close(); }));
+  };
+  wrap.querySelector(`#psearch-change-${addr}`).addEventListener("click",open);
+  input.addEventListener("input",()=>draw(input.value));
+  input.addEventListener("keydown",e=>{
+    if(e.key==="Escape"){ close(); return; }
+    if(!results.classList.contains("open")) return;
+    if(e.key==="ArrowDown"){ e.preventDefault(); active=Math.min(active+1,matches.length-1); results.querySelectorAll(".psearch-opt").forEach((o,i)=>o.classList.toggle("active",i===active)); }
+    else if(e.key==="ArrowUp"){ e.preventDefault(); active=Math.max(active-1,0); results.querySelectorAll(".psearch-opt").forEach((o,i)=>o.classList.toggle("active",i===active)); }
+    else if(e.key==="Enter"){ e.preventDefault(); if(matches[active]){ onPick(matches[active].id); close(); } }
+  });
+  document.addEventListener("click",e=>{ if(!e.target.closest(`[data-psearch="${addr}"]`)) close(); });
+}
 /* Current viewer — admin by default; "View as" switches to a manager's restricted view */
 let VIEWER = "admin";
 function isAdmin(){ return (MGR(VIEWER)||{}).admin; }
@@ -4020,20 +4120,6 @@ function togglePeek(id, tr){
 /* =====================================================
    RENDER — RIGHT PANEL
 ===================================================== */
-/* manager read-view (option B): photo + name + role, "Change" on hover */
-function managerViewHTML(b){
-  const m = b.manager?MGR(b.manager):null;
-  if(!m){
-    return `<div class="mgr-none-row"><div class="exp-avatar mgr-empty">?</div>
-      <div class="mgr-txt"><div class="mgr-name">No manager assigned</div><div class="mgr-role">Nobody handles this requirement yet</div></div>
-      <button class="mgr-cta" id="mgr-assign">Assign</button></div>`;
-  }
-  const you = (b.manager===VIEWER && !isAdmin());
-  return `<div class="mgr-row">
-    <div class="exp-avatar" style="background:${m.color}">${m.init}</div>
-    <div class="mgr-txt"><div class="mgr-name">${m.name}${you?' <span class="mgr-you">you</span>':''}</div><div class="mgr-role">${m.role}</div></div>
-    <button class="mgr-change" id="mgr-change">Change</button></div>`;
-}
 /* B1/B10 — activity manager's "propose a change" trigger: a reassignment request
    (one of three reasons, B10) or a missing typology, both route to the existing
    reassignment_needed state for the project manager to review */
@@ -4317,7 +4403,7 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
       "Derived from the PBS above — correcting the PBS clears this and the OBS.")}
     ${!rmView?`<div class="deriv-arrow small">↓</div>
     ${derivStepHTML(`OBS · team${myBranch?` <span class="deriv-scope">· your allocated activity</span>`:""}`,
-      `<select class="ui-select${(myBranch?myBranch.expert:b.alloc)?"":" is-empty"}" id="f-alloc">${['<option value="">— Unassigned —</option>'].concat(ALLOCS.map(a=>`<option value="${a.id}" ${(myBranch?myBranch.expert:b.alloc)===a.id?"selected":""}>${a.label}</option>`)).join("")}</select>`,
+      personSearchHTML("expert","req-expert",myBranch?myBranch.expert:b.alloc),
       derivSrc.obs,
       "The team or service within the activity — this is what casting staffs.")}`:""}
   </div>`;
@@ -4687,27 +4773,19 @@ function renderSettings(){
       ${isReq&&!rmView&&!actView?`<div class="set-sep"></div>
       <div class="mgr-block" id="mgr-block">
         <label class="mgr-lbl">Manager <span>· ${myBranch?"handles your allocated activity":"handles this requirement"}</span></label>
-        <div class="mgr-view" id="mgr-view">${managerViewHTML(myBranch||b)}</div>
-        <div class="mgr-edit" id="mgr-edit" style="display:none">
-          <select id="f-manager">${['<option value="">— Unassigned —</option>'].concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${(myBranch?myBranch.manager:b.manager)===m.id?"selected":""}>${m.name} — ${m.role}</option>`)).join("")}</select>
-          <button class="mgr-done" id="mgr-done">Done</button>
-        </div>
+        ${personSearchHTML("manager","req-manager",myBranch?myBranch.manager:b.manager)}
       </div>`:""}
       ${isReq && !isAdmin() ? proposeBlockHTML(b,hasBranches,myBranch) : ""}
       ${isReq ? validateCtaHTML(b,hasBranches,es) : ""}`;
     body.innerHTML = html;
-    body.querySelector("#f-alloc")?.addEventListener("change",e=>{
-      if(myBranch){ myBranch.expert=e.target.value||null; toast(`${myBranch.label}: expert ${myBranch.expert?"— "+ALLOCS.find(a=>a.id===myBranch.expert).label.split("—")[0].trim():"unassigned"}`,"ok"); refresh(); }
-      else setAlloc(b.id,e.target.value||null);
+    bindPersonSearch(body,"expert","req-expert",id=>{
+      if(myBranch){ assignPerson("expert",myBranch,id); toast(`${myBranch.label}: expert ${id?"— "+personLabel("expert",id).split("—")[0].trim():"unassigned"}`,"ok"); refresh(); }
+      else { if(id) registerPerson("expert",id); setAlloc(b.id,id); } // setAlloc owns b.alloc + its own feedback/undo toast
     });
-    // manager: option B — read view, click "Change" to edit inline
-    const mgrView=body.querySelector("#mgr-view"), mgrEdit=body.querySelector("#mgr-edit");
-    body.querySelector("#mgr-change")?.addEventListener("click",()=>{ mgrView.style.display="none"; mgrEdit.style.display="flex"; body.querySelector("#f-manager").focus(); });
-    body.querySelector("#mgr-assign")?.addEventListener("click",()=>{ mgrView.style.display="none"; mgrEdit.style.display="flex"; body.querySelector("#f-manager").focus(); });
-    body.querySelector("#mgr-done")?.addEventListener("click",()=>{ mgrEdit.style.display="none"; mgrView.style.display="flex"; });
-    body.querySelector("#f-manager")?.addEventListener("change",e=>{
-      if(myBranch){ myBranch.manager=e.target.value||null; refresh(); toast(e.target.value?`Manager: ${MGR(e.target.value).name}`:"Manager unassigned","ok"); }
-      else{ b.manager=e.target.value||null; refresh(); toast(e.target.value?`Manager: ${MGR(e.target.value).name}`:"Manager unassigned","ok"); }
+    bindPersonSearch(body,"manager","req-manager",id=>{
+      const target=myBranch||b;
+      if(id) assignPerson("manager",target,id); else target.manager=null;
+      refresh(); toast(id?`Manager: ${personLabel("manager",id)}`:"Manager unassigned","ok");
     });
     body.querySelector("#f-tech")?.addEventListener("change",e=>{
       const before=b.tech, was=b.techAI;
