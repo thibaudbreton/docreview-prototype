@@ -4406,8 +4406,7 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
       derivSrc.pbs)}
     ${derivStepHTML("ABS",
       `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
-      derivSrc.abs,
-      "Derived from the PBS above — correcting the PBS clears this and the OBS.")}
+      derivSrc.abs)}
     ${!rmView?`<div class="deriv-arrow small">↓</div>
     ${derivStepHTML(`OBS · team${myBranch?` <span class="deriv-scope">· your allocated activity</span>`:""}`,
       `<div class="fval">${escHtml(personLabel(myBranch?myBranch.manager:b.manager)||"— Unassigned —")}</div>`,
@@ -4728,13 +4727,6 @@ function renderSettings(){
     if(!pmTurnkey && !(isReq && myBranch)) html += `
       ${!isReq?`<div class="field"><label>Type</label>
         <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
-      </div>`:""}
-      ${isReq?`<div class="field"><label>Classification ${b.techAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
-        <select class="ui-select" id="f-tech">
-          <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
-          <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
-        </select>
-        <div class="tech-hint">${b.tech==="tech"?"Technical requirement — routed through the PBS allocated activity.":"Non-technical requirement — routed through the ABS allocated activity."}</div>
       </div>`:""}
       ${isReq&&hasBranches?finalVerdictHTML(b):""}
       ${isReq&&!myBranch?`<div class="field"><label>Activity ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
