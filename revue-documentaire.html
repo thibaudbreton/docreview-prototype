@@ -2137,7 +2137,14 @@ const BRANCH_STATUS_LABEL = {proposed:"Proposed", assigned:"Assigned", awaiting_
    requirement can never end up with zero activities) — reason 3 still names a
    replacement typology, it doesn't just remove the branch. */
 const REASON_LABEL = {wrong_person:"Right typology, wrong person", wrong_typology:"Wrong typology", not_applicable:"This activity doesn't apply here"};
-function hasPendingReassign(b){ return !!b.reassignRequest || (b.branches||[]).some(br=>br.reassignRequest); }
+/* B1/B10 — which of this requirement's branches, if any, is stuck waiting on
+   the project manager. Reads branchStatus itself, not "does a .reassignRequest
+   object exist" — a missing-activity proposal (submitPropose) also lands a
+   branch on "reassignment_needed" but carries a .proposal, not a
+   .reassignRequest, so checking for the request object alone silently missed
+   half of what actually needs PM attention. */
+function blockedBranchOf(b){ return (b.branches||[]).find(br=>br.branchStatus==="reassignment_needed")||null; }
+function hasPendingReassign(b){ return !!blockedBranchOf(b); }
 const TYPE_SUGGEST = {"SRM-00010":{type:"Functional", alloc:"sup", reason:'"Reporting" domain historically owned by the Monitoring team; source passage detected in section 2.'},
                       "SRM-00019":{type:"Performance", alloc:"infra", reason:"Monthly availability requirement; Infrastructure team owns platform SLAs."}};
 
@@ -3467,7 +3474,15 @@ function rowInnerHTML(b){
     .map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("");
   const hasBranches = (b.branches||[]).length>1;
   const branchBadge = hasBranches?`<span class="cbadge branch-count-badge" title="${b.branches.length} parallel allocations">⑂ ${b.branches.length}</span>`:"";
-  const blockingBadge = hasBranches&&b.blockingBranch?`<span class="cbadge blocking-badge" title="${b.blockingBranch.replace(/"/g,'&quot;')}">⚠ Blocked</span>`:"";
+  // B1/B10 — computed live from branchStatus (blockedBranchOf), not just the
+  // hand-typed demo field: any row with a branch stuck on "reassignment
+  // needed" shows this on the COLLAPSED row, single-activity or not — that's
+  // the overwhelming majority of requirements, and before this it was
+  // invisible there entirely (only visible by expanding a multi-activity
+  // row, which single-activity rows don't even have).
+  const blockedBranch = blockedBranchOf(b);
+  const blockingLabel = b.blockingBranch || (blockedBranch?`${blockedBranch.label||TY(blockedBranch.typology).label} — reassignment needed`:null);
+  const blockingBadge = blockingLabel?`<span class="cbadge blocking-badge" title="${escHtml(blockingLabel)}">⚠ Blocked</span>`:"";
   // B9 — image-sourced rows never carry typed text; the text cell shows the same
   // small image-jump button as before, just promoted to the row's main content
   // (see below), plus Duplicate / Delete-duplicate actions instead of an excerpt.
