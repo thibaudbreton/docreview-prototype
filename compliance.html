@@ -280,6 +280,24 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .colf-handle{cursor:grab;color:var(--text-3);font-size:var(--text-sm);flex-shrink:0;line-height:1;padding:0 4px}
 .colf-row.dragging{opacity:.4}
 .rgrid-head .rcell{position:relative}
+/* Per-column Excel-style filters, ported from revue-documentaire.html's own
+   header treatment — a ⏷ on the header opens that column's own values,
+   instead of a toolbar dropdown disconnected from the column it narrows. */
+.colf-actions{display:flex;gap:8px}
+.colf-actions span{color:var(--accent);cursor:pointer;font-weight:600;text-transform:none;letter-spacing:0}
+.colf-actions span:hover{text-decoration:underline}
+.colf-btn{margin-left:auto;width:18px;height:18px;border-radius:var(--radius-sm);color:var(--text-3);font-size:9px;display:grid;place-items:center;flex-shrink:0}
+.rgrid-head .rcell:hover .colf-btn{color:var(--text-2);background:var(--panel-3)}
+.colf-btn:hover{color:var(--text)!important;background:var(--line)!important}
+.colf-btn.on{color:#fff!important;background:var(--accent)!important}
+.colf-pop{position:fixed;z-index:70;width:236px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);padding:var(--space-2);display:none;text-transform:none;letter-spacing:0;font-weight:400}
+.colf-pop.on{display:block}
+.colf-pop-head{display:flex;align-items:center;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);padding:2px 4px 6px}
+.colf-pop-head .colf-actions{margin-left:auto;display:flex;gap:8px}
+.colf-pop-list{max-height:260px;overflow-y:auto}
+.colf-pop-foot{border-top:1px solid var(--line);margin-top:6px;padding-top:6px;display:flex;align-items:center;gap:8px}
+.colf-pop-foot .n{font-size:var(--text-xs);color:var(--text-3)}
+.colf-pop-foot .mini-btn{margin-left:auto}
 .empty-rows{padding:40px;text-align:center;color:var(--text-3);font-size:var(--text-base)}
 .multi-ph{color:var(--text-3);font-size:var(--text-xs);font-style:italic}
 .lastfu-date{font-size:var(--text-xs);color:var(--text-2);font-variant-numeric:tabular-nums}
@@ -757,8 +775,6 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <span class="active-filter-t" id="adv-filter-banner-text"></span>
               <button id="adv-filter-banner-clear" title="Clear every filter">✕</button>
             </div>
-            <select id="f10-expert"><option value="">All contributors</option></select>
-            <select id="f10-typo"><option value="">All activities</option></select>
             <select id="f10-sort">
               <option value="action">Sort: action needed first</option>
               <option value="status">Sort: status</option>
@@ -780,8 +796,8 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" id="f-sel-all" title="Select all in view"></label></div>
               <div class="rcell c-id"><span class="cl">ID</span></div>
               <div class="rcell c-req"><span class="cl">Requirement / assignment</span></div>
-              <div class="rcell c-typo" data-col="typo"><span class="cl">Activity</span></div>
-              <div class="rcell c-expert" data-col="expert"><span class="cl">Assigned to</span></div>
+              <div class="rcell c-typo" data-col="typo"><span class="cl">Activity</span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
+              <div class="rcell c-expert" data-col="expert"><span class="cl">Assigned to</span><button class="colf-btn" data-colf="expert" title="Filter this column">⏷</button></div>
               <div class="rcell c-status" data-col="status"><span class="cl">Status</span></div>
               <div class="rcell c-comment" data-col="comment"><span class="cl">Compliance comment</span></div>
               <div class="rcell c-lastfu" data-col="lastfu"><span class="cl">Last follow-up</span></div>
@@ -789,6 +805,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
             </div>
             <div class="rgrid-body" id="frgrid-body"><div class="rgrid-window" id="frgrid-window"></div></div>
           </div>
+          <div class="colf-pop" id="colf-pop"></div>
         </div>
         <div class="view doc-scroll" id="view-doc"></div>
       </section>
@@ -1096,10 +1113,12 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
      manager lands on everything, a contributor lands on their own activity only.
      contribTypo is which activity a contributor is currently viewing as. */
   role:"pm",contribTypo:"sig",openForm:null,verdictPick:null,externalPick:null,
-  search:"",sortBy:"action",fExpert:"",fTypo:"",needsMe:false,
+  search:"",sortBy:"action",needsMe:false,
   advFilter:{op:"AND",items:[]}, advFilterDraft:null, advFilterOpen:false,
-  /* B5 — shared table engine state (see table-engine.js / TE) */
-  selection:new Set(),colFilters:{},filterToSelection:false,savedColFilters:null,
+  /* B5 — shared table engine state (see table-engine.js / TE). colFilters holds
+     EXCLUDED values per column (empty Set = show all) — §4.2's Excel-style
+     header filters, replacing the old toolbar's contributor/activity selects. */
+  selection:new Set(),colFilters:{typo:new Set(),expert:new Set()},filterToSelection:false,savedColFilters:null,
   activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","age"]),
   colOrder:["typo","expert","status","comment","lastfu","age"],
   docNavCollapsed:new Set(),
@@ -1179,6 +1198,22 @@ const needsMyAction=b=>needsReassign(b)||!!(b.unblockedAt&&b.status==="awaiting_
    an activity), not "my own team": a contributor sees every allocated activity that
    matches theirs, regardless of who it's assigned to. */
 function canAnswer(b){ return state.role==="contributor"&&b.typology===state.contribTypo; }
+/* §4.2 — per-column Excel-style filters, ported from revue-documentaire.html:
+   state.colFilters[col] holds EXCLUDED values (empty Set = show all), edited
+   from a popover opened on the column's own header rather than a toolbar
+   select disconnected from the column it narrows. */
+const COL_FILTER_DEFS={
+  typo:{label:"Activity",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:b=>[b.typology]},
+  expert:{label:"Assigned to",options:[...MANAGERS.map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
+};
+function passesColFilters(b){
+  for(const col in state.colFilters){
+    const excluded=state.colFilters[col]; if(!excluded||!excluded.size) continue;
+    const vals=COL_FILTER_DEFS[col].get(b);
+    if(!vals.some(v=>!excluded.has(v))) return false;
+  }
+  return true;
+}
 function passesB(b){
   if(state.role==="contributor"&&b.typology!==state.contribTypo)return false;
   if(state.role==="pm"&&state.ownTeamOnly&&b.manager!==VIEWER)return false;
@@ -1187,8 +1222,7 @@ function passesB(b){
   if(state.filter==="qa")return isAwaitingQA(b);
   if(state.filter==="reassign")return needsReassign(b);
   if(state.filter==="over")return isOverB(b);
-  if(state.fExpert&&b.manager!==state.fExpert)return false;
-  if(state.fTypo&&b.typology!==state.fTypo)return false;
+  if(!passesColFilters(b))return false;
   if(state.needsMe&&!needsMyAction(b))return false;
   return true;
 }
@@ -1708,7 +1742,7 @@ function buildFVRows(){
   rows.forEach(r=>{
     fVROWS.push({type:"row",r});
     if(r.branches.length<2) return; // one activity concerned — stays on a single line, no sub-row
-    const branchFilterActive=(state.filter&&state.filter!=="out")||state.fExpert||state.fTypo||state.needsMe||state.ownTeamOnly;
+    const branchFilterActive=(state.filter&&state.filter!=="out")||colFilterActiveCount()||state.needsMe||state.ownTeamOnly;
     r.branches.forEach((b,i)=>{
       if(!passesB(b) && branchFilterActive) return;
       fVROWS.push({type:"branch",parent:r,branch:b,idx:i});
@@ -2276,16 +2310,72 @@ function refreshAll(){
   syncReassignRequestsFromShell();
   renderNav2();renderTable2();renderDoc2();renderPanel2();renderTriage2();renderExportReady();
   renderAdvFilterBanner();
+  renderColFilterIndicators();
 }
 document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
-/* T9/T10 toolbar — populate the expert/activity selects once, then wire up live filtering */
+/* ---------- Column filters: on the column header, not in the toolbar ----------
+   §4.2 — same treatment as revue-documentaire.html's Allocation table: a ⏷ on
+   the header opens that column's own values, replacing the old toolbar's
+   "All contributors"/"All activities" selects, which were disconnected from
+   the columns they narrowed. */
+const colfPop={open:null};
+function openColFilterPop(col, anchor){
+  colfPop.open=col;
+  const p=document.getElementById("colf-pop"); if(!p) return;
+  const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
+  const kept=def.options.filter(o=>!excluded.has(o.v)).length;
+  p.innerHTML=`
+    <div class="colf-pop-head">${def.label}<div class="colf-actions"><span data-viewall="${col}">All</span><span data-viewnone="${col}">None</span></div></div>
+    <div class="colf-pop-list">${def.options.map(o=>`<label class="colf-opt"><input type="checkbox" data-viewval="${col}::${o.v}" ${excluded.has(o.v)?"":"checked"}>${o.l}</label>`).join("")}</div>
+    <div class="colf-pop-foot"><span class="n">${kept} of ${def.options.length} shown</span>${excluded.size?`<button class="mini-btn" data-clearcol="${col}">Clear</button>`:""}</div>`;
+  p.classList.add("on");
+  // Fixed positioning against the header cell: the grid header scrolls
+  // horizontally on its own, so an absolutely-positioned popover inside it
+  // would be clipped by the scroller on the right-hand columns.
+  const r=anchor.getBoundingClientRect();
+  p.style.top=(r.bottom+4)+"px";
+  p.style.left=Math.max(8, Math.min(r.left-180, window.innerWidth-236-8))+"px";
+  p.querySelectorAll("[data-viewval]").forEach(cb=>cb.addEventListener("change",()=>{
+    const [c,v]=cb.dataset.viewval.split("::");
+    state.colFilters[c].has(v)?state.colFilters[c].delete(v):state.colFilters[c].add(v);
+    updateColfFoot(p,c);
+    refreshAll();
+  }));
+  p.querySelectorAll("[data-viewall]").forEach(el=>el.addEventListener("click",()=>{ state.colFilters[col].clear(); openColFilterPop(col,anchor); refreshAll(); }));
+  p.querySelectorAll("[data-viewnone]").forEach(el=>el.addEventListener("click",()=>{ def.options.forEach(o=>state.colFilters[col].add(o.v)); openColFilterPop(col,anchor); refreshAll(); }));
+  p.querySelector("[data-clearcol]")?.addEventListener("click",()=>{ state.colFilters[col].clear(); openColFilterPop(col,anchor); refreshAll(); });
+}
+function updateColfFoot(p,col){
+  const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
+  const foot=p.querySelector(".colf-pop-foot"); if(!foot) return;
+  foot.innerHTML=`<span class="n">${def.options.length-excluded.size} of ${def.options.length} shown</span>${excluded.size?`<button class="mini-btn" data-clearcol="${col}">Clear</button>`:""}`;
+  foot.querySelector("[data-clearcol]")?.addEventListener("click",()=>{
+    state.colFilters[col].clear();
+    p.querySelectorAll("[data-viewval]").forEach(cb=>{ cb.checked=true; });
+    updateColfFoot(p,col); refreshAll();
+  });
+}
+function closeColFilterPop(){
+  colfPop.open=null;
+  const p=document.getElementById("colf-pop"); if(p){ p.classList.remove("on"); p.innerHTML=""; }
+}
+function colFilterActiveCount(){ return Object.values(state.colFilters).filter(s=>s.size).length; }
+function renderColFilterIndicators(){
+  document.querySelectorAll("[data-colf]").forEach(btn=>{
+    const set=state.colFilters[btn.dataset.colf];
+    const on=!!(set&&set.size);
+    btn.classList.toggle("on",on);
+    btn.title=on?`Filtered — ${COL_FILTER_DEFS[btn.dataset.colf].label}`:"Filter this column";
+  });
+}
+document.querySelectorAll("[data-colf]").forEach(btn=>btn.addEventListener("click",e=>{
+  e.stopPropagation(); // the header cell itself collapses the column — the funnel must not
+  const col=btn.dataset.colf;
+  colfPop.open===col ? closeColFilterPop() : openColFilterPop(col,btn);
+}));
+/* T9/T10 toolbar */
 (function initF10(){
-  const expSel=document.getElementById("f10-expert"), tySel=document.getElementById("f10-typo");
-  MANAGERS.forEach(m=>expSel.insertAdjacentHTML("beforeend",`<option value="${m.id}">${m.name}</option>`));
-  [...new Set(allBranches().map(b=>b.typology))].forEach(t=>tySel.insertAdjacentHTML("beforeend",`<option value="${t}">${TY(t).label}</option>`));
   document.getElementById("f10-search").addEventListener("input",e=>{state.search=e.target.value;renderTable2();});
-  expSel.addEventListener("change",e=>{state.fExpert=e.target.value;refreshAll();});
-  tySel.addEventListener("change",e=>{state.fTypo=e.target.value;refreshAll();});
   document.getElementById("f10-sort").addEventListener("change",e=>{state.sortBy=e.target.value;renderTable2();});
   document.getElementById("f10-needsme").addEventListener("click",function(){
     state.needsMe=!state.needsMe;this.classList.toggle("on",state.needsMe);refreshAll();
@@ -2307,8 +2397,10 @@ document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("cli
     const path=e.composedPath?e.composedPath():[];
     const insidePanel=path.some(el=>el.id==="adv-filter-panel"||el.id==="filter-btn");
     if(state.advFilterOpen && !insidePanel) closeAdvFilterPanel();
+    if(colfPop.open && !path.some(el=>el.id==="colf-pop"||el.dataset&&el.dataset.colf)) closeColFilterPop();
   });
   renderAdvFilterBanner();
+  renderColFilterIndicators();
 })();
 document.querySelectorAll(".nav-toggle button").forEach(b=>b.addEventListener("click",()=>{
   state.navBy=b.dataset.by;
@@ -2360,8 +2452,8 @@ document.addEventListener("keydown",e=>{
 });
 /* B5 — Filter to Selection, Bulk Action Bar actions, Column Visibility Menu,
    drag-select and "my team only" scope. Shared mechanics live in table-engine.js. */
-document.getElementById("f-sel-show-only").addEventListener("click",()=>{ TE.enterFilterToSelection(state,()=>({})); renderTable2(); });
-document.getElementById("fsb-show-all").addEventListener("click",()=>{ TE.exitFilterToSelection(state); renderTable2(); });
+document.getElementById("f-sel-show-only").addEventListener("click",()=>{ TE.enterFilterToSelection(state,()=>({typo:new Set(),expert:new Set()})); renderTable2(); renderColFilterIndicators(); });
+document.getElementById("fsb-show-all").addEventListener("click",()=>{ TE.exitFilterToSelection(state); renderTable2(); renderColFilterIndicators(); });
 document.getElementById("f-sel-clear").addEventListener("click",()=>{ state.selection.clear(); renderTable2(); });
 document.getElementById("f-sel-remind").addEventListener("click",sendReminderToSelection);
 document.getElementById("f-sel-reassign").addEventListener("click",()=>{
