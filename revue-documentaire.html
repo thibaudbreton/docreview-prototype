@@ -4887,10 +4887,40 @@ function renderSettings(){
     body.querySelectorAll("[data-perim]").forEach(btn=>btn.addEventListener("click",e=>{
       e.stopPropagation();
       const p=btn.dataset.perim;
-      const wasAI=b.perimAI, prevPerim=(b.perim||[]).slice();
       b.perim = b.perim || [];
-      if(b.perim.includes(p)) b.perim = b.perim.filter(x=>x!==p);
-      else b.perim = [...b.perim,p].sort((x,y)=>TYPO.findIndex(t=>t.id===x)-TYPO.findIndex(t=>t.id===y));
+      const removing = b.perim.includes(p);
+      // §3.4 — removing the LAST activity can't just empty b.perim: per B10, a
+      // requirement can never end up with zero activities.
+      if(removing && b.perim.length===1){
+        state.typoOpen=false;
+        if(isAdmin()){
+          // Admin has no request-to-approve here — they decide directly — but
+          // "decide directly" still can't mean "leave zero activities" (there's
+          // no #propose-form for them to route into either, that's a
+          // non-admin-only trigger). Add-then-remove keeps the same invariant
+          // without inventing a second UI just for this edge case.
+          toast("Add a replacement activity first, then remove this one — a requirement can't have zero activities","warn");
+        } else {
+          // A manager already has the request/approval flow (B10) for exactly
+          // this: swap a wrong activity for the right one via PM review,
+          // rather than a second, parallel way of doing the same thing.
+          toast("This is the last activity — request a replacement instead of removing it outright","warn");
+          renderReassignForm(b, body);
+        }
+        return;
+      }
+      const wasAI=b.perimAI, prevPerim=(b.perim||[]).slice();
+      if(removing){
+        // Not the last activity — remove it, and the branch it created with
+        // it (syncBranchesFromPerim only ever ADDS a missing branch; nothing
+        // previously removed the orphaned one when a typology was unchecked).
+        const branch=(b.branches||[]).find(br=>br.typology===p);
+        if(branch && hasAnsweredWork(branch) && !confirm(`${TY(p).label} already has an expert's answer recorded on this requirement. Removing it permanently deletes that work — this can't be undone. Continue?`)) return;
+        b.perim = b.perim.filter(x=>x!==p);
+        if(b.branches) b.branches = b.branches.filter(br=>br.typology!==p);
+      } else {
+        b.perim = [...b.perim,p].sort((x,y)=>TYPO.findIndex(t=>t.id===x)-TYPO.findIndex(t=>t.id===y));
+      }
       b.perimAI=false; markCharEdited(b);
       if(wasAI) logFeedback("typo", b.id, prevPerim.map(x=>TY(x).code).join("+")||"none", b.perim.map(x=>TY(x).code).join("+")||"none", null);
       syncBranchesFromPerim(b);
