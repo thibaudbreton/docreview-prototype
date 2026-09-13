@@ -56,10 +56,13 @@ html[data-theme="light"] .logo-mark-light{display:block}
 
 .scroll{flex:1;overflow-y:auto}
 .wrap{max-width:1120px;margin:0 auto;padding:var(--space-8) var(--space-6) 80px}
-.home-hero{display:flex;align-items:flex-end;gap:var(--space-4);margin-bottom:22px}
+.home-hero{display:flex;align-items:flex-end;gap:var(--space-4);margin-bottom:14px}
 .home-hero h1{font-size:var(--text-xl);font-weight:700;letter-spacing:-.4px}
 .home-hero .sub{font-size:var(--text-base);color:var(--text-3);margin-top:5px}
 .home-hero .btn-primary{margin-left:auto}
+.home-nav-intro{margin-bottom:22px}
+.home-nav-intro .nav-title{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
+.home-nav-intro .sub{font-size:var(--text-base);color:var(--text-3);margin-top:3px}
 .tabs{display:flex;gap:6px;margin-bottom:var(--space-5);border-bottom:1px solid var(--line)}
 .tab{padding:var(--space-2) var(--space-4);font-size:var(--text-base);color:var(--text-3);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
 .tab:hover{color:var(--text-2)}
@@ -87,15 +90,16 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .b-neutral{background:var(--panel-3);color:var(--text-2)}
 .b-info{background:var(--accent-soft);color:var(--accent)}
 .pc-name{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px;line-height:1.3}
-.pc-meta{font-size:var(--text-sm);color:var(--text-3);display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-1) 12px}
-.pc-meta b{color:var(--text-2);font-weight:600}
-.pc-health{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-3);margin-top:6px}
-.pc-health .hdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--text-3)}
-.pc-health .hdot.on_track{background:var(--ok)}
-.pc-health .hdot.at_risk{background:var(--ia)}
-.pc-health .hdot.behind{background:var(--warn)}
-.pc-body{margin-top:auto}
-.pc-prog{display:flex;flex-direction:column;gap:7px}
+.pc-stack{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+.pc-stack-row{display:flex;align-items:center;gap:7px;font-size:var(--text-sm);color:var(--text-2)}
+.pc-sysbar{width:3px;height:12px;border-radius:2px;background:var(--text-2);flex-shrink:0;display:inline-block}
+.pc-stack-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--text-3)}
+.pc-stack-dot.b-processing{background:var(--accent)}
+.pc-stack-dot.b-req{background:var(--ia)}
+.pc-stack-dot.b-exp{background:var(--accent)}
+.pc-stack-dot.b-qa{background:var(--human)}
+.pc-stack-dot.b-sub{background:var(--ok)}
+.pc-prog{display:flex;flex-direction:column;gap:7px;margin-top:2px}
 .pc-prog-top{display:flex;justify-content:space-between;font-size:var(--text-xs);color:var(--text-2)}
 .pc-prog-top .pct{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600}
 .pc-bar{height:6px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
@@ -103,13 +107,10 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .pc-stat{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2)}
 .pc-stat .mini-bar{flex:1;height:5px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
 .pc-stat .mini-bar>div{height:100%;border-radius:var(--radius-xs);background:var(--ok)}
-.pc-foot{display:flex;align-items:center;font-size:var(--text-xs);color:var(--text-3);margin-top:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--line)}
+.pc-foot{display:flex;align-items:center;font-size:var(--text-xs);color:var(--text-3);margin-top:auto;padding-top:var(--space-3);border-top:1px solid var(--line)}
 .pc-foot .open{margin-left:auto;color:var(--accent);opacity:0;transition:opacity .15s}
 .pcard:hover .pc-foot .open{opacity:1}
 .pc-processing-note{font-size:var(--text-xs);color:var(--text-3)}
-.deadline-chip{font-weight:600}
-.deadline-chip.soon{color:var(--ia)}
-.deadline-chip.urgent{color:var(--warn)}
 .empty{grid-column:1/-1;border:1px dashed var(--line-2);border-radius:var(--radius-lg);padding:40px;text-align:center;color:var(--text-3);font-size:var(--text-base)}
 
 #toast-zone{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:var(--space-2);align-items:center}
@@ -153,12 +154,17 @@ html[data-theme="light"] .logo-mark-light{display:block}
 
   <div class="scroll">
     <div class="wrap">
+      <!-- §1.1 — split intro: tool intro block, then navigation intro block below it. Copy is placeholder, flagged. -->
       <div class="home-hero">
         <div>
-          <h1>My tenders</h1>
-          <div class="sub" id="home-sub">Tenders you lead as Bid Director</div>
+          <h1>Smart Requirement Manager</h1>
+          <div class="sub">Placeholder copy — capture, allocate and track compliance for every requirement across your tenders.</div>
         </div>
         <button class="btn-primary" id="new-btn-2">＋ New tender</button>
+      </div>
+      <div class="home-nav-intro">
+        <div class="nav-title">My tenders</div>
+        <div class="sub" id="home-sub">Tenders you lead as Bid Director</div>
       </div>
 
       <div class="tabs" id="tabs"></div>
@@ -198,10 +204,6 @@ const STATUS={
   qa_versioning:{label:"Q&A & Versioning", cls:"b-qa"},
   submitted:    {label:"Submitted",        cls:"b-sub"},
 };
-// SPEC-dashboard-statistics.md §2.1 — the "one compact indicator per project" for the
-// stakeholder list view; see seedProjects()'s health/healthNote comment for why these
-// are hand-set rather than computed.
-const HEALTH_LABEL={on_track:"On track",at_risk:"At risk",behind:"Behind"};
 const TAB_DEFS=[
   {id:"all",label:"All"},
   {id:"processing",label:"Processing"},
@@ -221,40 +223,51 @@ function inTab(p){
   if(activeTab==="active") return p.status!=="processing" && p.status!=="submitted";
   return true;
 }
-function deadlineChip(days){
-  if(days==null) return "";
-  const cls = days<=10?"urgent":(days<=25?"soon":"");
-  const txt = days<0?"overdue":`${days} days left`;
-  return `<span class="deadline-chip ${cls}">${txt}</span>`;
+/* Your role on this tender, normalized to exactly two labels (§1.4) — one role per person per project. */
+function roleLabel(role){
+  return /project\s*manager/i.test(role||"") ? "Project Manager" : "Contributor";
 }
-/* Your role on this tender — one role per person per project. */
-function roleBadge(role){
-  if(!role) return "";
-  return `<span class="pc-badge b-neutral" title="Your role on this tender">${role}</span>`;
-}
-function cardHTML(p){
-  const s=STATUS[p.status]||STATUS.requirement_review;
-  let body="";
+/* §1.2 — exactly two gauges: Allocation (requirements still to allocate) and Compliance
+   (requirements with internal compliance filled in). Switches automatically once allocation
+   hits 100%, no manual toggle. "At risk"/health is gone — this gauge is the health signal now. */
+function gaugeHTML(p){
   if(p.status==="processing"){
-    body=`<div class="pc-prog">
+    return `<div class="pc-prog">
       <div class="pc-prog-top"><span>${p.procLabel||"AI capturing & characterising…"}</span><span class="pct">${Math.round(p.progress||0)}%</span></div>
       <div class="pc-bar"><div style="width:${p.progress||0}%"></div></div></div>`;
-  }else if(p.status==="submitted"){
-    body=`<div class="pc-stat">Response submitted · ${p.reqs||0} requirements</div>`;
-  }else{
-    const pctv = p.total?Math.round((p.done/p.total)*100):0;
-    const lbl = p.status==="requirement_review" ? `${p.done}/${p.total} validated`
-      : p.status==="expert_review" ? `${p.done}/${p.total} answered`
-      : `${p.done}/${p.total} resolved`;
-    body=`<div class="pc-stat"><span>${lbl}</span><span class="mini-bar"><div style="width:${pctv}%"></div></span></div>`;
   }
-  const health = p.health ? `<div class="pc-health" title="${p.healthNote||""}"><span class="hdot ${p.health}"></span>${HEALTH_LABEL[p.health]||p.health}${p.healthNote?" — "+p.healthNote:""}</div>` : "";
+  if(p.status==="submitted"){
+    return `<div class="pc-stat">Response submitted · ${p.reqs||0} requirements</div>`;
+  }
+  const total=p.total||0;
+  const allocated=Math.min(p.allocated||0,total);
+  if(total>0 && allocated>=total){
+    const filled=Math.min(p.complianceFilled||0,total);
+    const pct=total?Math.round((filled/total)*100):0;
+    return `<div class="pc-prog">
+      <div class="pc-prog-top"><span>Compliance</span><span class="pct">${filled}/${total}</span></div>
+      <div class="pc-bar"><div style="width:${pct}%"></div></div></div>`;
+  }
+  const pct=total?Math.round((allocated/total)*100):0;
+  return `<div class="pc-prog">
+    <div class="pc-prog-top"><span>Allocation</span><span class="pct">${allocated}/${total}</span></div>
+    <div class="pc-bar"><div style="width:${pct}%"></div></div></div>`;
+}
+/* §1.4 — System / Status / Role, one consistent style, in this order. */
+function stackHTML(p){
+  const s=STATUS[p.status]||STATUS.requirement_review;
+  return `<div class="pc-stack">
+    <div class="pc-stack-row"><span class="pc-sysbar"></span><span>${p.line}</span></div>
+    <div class="pc-stack-row"><span class="pc-stack-dot ${s.cls}"></span><span>${s.label}</span></div>
+    <div class="pc-stack-row"><span class="pc-stack-dot"></span><span>${roleLabel(p.role)}</span></div>
+  </div>`;
+}
+function cardHTML(p){
   return `<div class="pcard ${p.status}" data-id="${p.id}">
-    <div class="pc-top"><span class="pc-ref">${p.ref}</span><span class="pc-badge push ${s.cls}"><span class="bdot"></span>${s.label}</span></div>
+    <div class="pc-top"><span class="pc-ref">${p.ref}</span></div>
     <div class="pc-name">${p.name}</div>
-    <div class="pc-meta">${roleBadge(p.role)}<span><b>${p.line}</b></span>${p.deadline!=null?"<span>"+deadlineChip(p.days)+"</span>":""}</div>
-    ${health}
-    <div class="pc-body">${body}</div>
+    ${gaugeHTML(p)}
+    ${stackHTML(p)}
     <div class="pc-foot"><span>${p.status==="processing"?'<span class="pc-processing-note">Opens when processing completes</span>':(p.builtOut===false?'<span class="pc-processing-note">Demo project — list &amp; status only</span>':"Updated "+(p.updated||"recently"))}</span>
       ${(p.status!=="processing"&&p.builtOut!==false)?'<span class="open">Open →</span>':""}</div>
   </div>`;

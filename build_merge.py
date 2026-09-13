@@ -100,13 +100,13 @@ const frame = document.getElementById('frame');
    all — they're intentionally exempt from the block, see addProject below. */
 function seedProjects(){
   return [
-    // SPEC-dashboard-statistics.md §2.1 — `health`/`healthNote` are the "one compact
-    // indicator per project" for the stakeholder list view. The spec explicitly leaves
-    // the composite's exact formula an open decision ("needs a real decision rather than
-    // a formula picked for convenience"), so these are hand-set per project like the rest
-    // of this seed data, not computed — and only set on projects with enough real progress
-    // data to assess (skipped for `processing`, which has nothing yet, and `submitted`,
-    // which is already closed rather than "on track/at risk").
+    // TICKETS-prototype-corrections-consolidated.md §1.2 — the old `health`/`healthNote`
+    // ("on track"/"at risk"/"behind") is gone; MyTenders now shows exactly two gauges,
+    // Allocation (`allocated`/`total`) and Compliance (`complianceFilled`/`total`,
+    // counting internal compliance per §6.1), switching automatically once `allocated`
+    // reaches `total`. `done` is kept only as the legacy figure other screens may still
+    // read; `allocated`/`complianceFilled` are the new, distinct counts the ticket asked
+    // for instead of overloading `done` with two different meanings.
     // TICKET-two-pass-allocation.md — line was "SIG", which contradicted this
     // project's own seed data: its requirements are already distributed across
     // SIG, Mainline and Safety, and only a Turnkey tender distributes across
@@ -119,16 +119,14 @@ function seedProjects(){
     // capture dataset (data.js, gitignored — not this repo's problem to
     // translate) stays English; see TENDER_LANGUAGE's own fallback.
     {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Turnkey", days:23, deadline:1,
-     status:"requirement_review", done:10, total:12, updated:"today", primary:true, role:"Project manager", builtOut:true,
-     health:"on_track", healthNote:"On pace — 2 items need attention", language:"fr"},
+     status:"requirement_review", done:10, total:12, allocated:10, complianceFilled:0, updated:"today", primary:true, role:"Project manager", builtOut:true,
+     language:"fr"},
     {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"SIG", days:9, deadline:1,
-     status:"expert_review", done:34, total:41, updated:"2h ago", role:"Signalling manager", builtOut:false,
-     health:"at_risk", healthNote:"9 days left, 7 requirements still open"},
+     status:"expert_review", done:34, total:41, allocated:41, complianceFilled:34, updated:"2h ago", role:"Signalling manager", builtOut:false},
     {id:"ao088", ref:"AO-2026-088", name:"Depot Maintenance Systems", line:"Services", days:41, deadline:1,
      status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now", role:"Project manager", builtOut:false},
     {id:"stb133", ref:"STB-2026-133", name:"Regional Fleet Telemetry", line:"Rolling Stock", days:5, deadline:1,
-     status:"qa_versioning", done:58, total:63, updated:"yesterday", role:"Expert", builtOut:false,
-     health:"on_track", healthNote:"92% resolved, on pace for the deadline"},
+     status:"qa_versioning", done:58, total:63, allocated:63, complianceFilled:58, updated:"yesterday", role:"Expert", builtOut:false},
     {id:"stb2025", ref:"STB-2025-071", name:"Metro Depot Power Supply", line:"INFRA", days:-12, deadline:1,
      status:"submitted", reqs:88, updated:"Jun 3", role:"Expert", builtOut:false},
   ];
@@ -210,8 +208,8 @@ window.addProject = function(meta){
     experts: [],
     language: meta.language||"en",  // SPEC-translation.md §2 — captured at creation, one per tender
     pmTeam: Array.isArray(meta.pmTeam) ? meta.pmTeam : [] };  // whoever creates the tender owns it
-  if(manual){ p.status="requirement_review"; p.done=0; p.total=0; }
-  else { p.status="processing"; p.progress=3; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); }
+  if(manual){ p.status="requirement_review"; p.done=0; p.total=0; p.allocated=0; p.complianceFilled=0; }
+  else { p.status="processing"; p.progress=3; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); p.allocated=0; p.complianceFilled=0; }
   PROJECTS.unshift(p);
   startProcLoop();
   return id;
