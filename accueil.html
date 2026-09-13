@@ -94,11 +94,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .pc-stack-row{display:flex;align-items:center;gap:7px;font-size:var(--text-sm);color:var(--text-2)}
 .pc-sysbar{width:3px;height:12px;border-radius:2px;background:var(--text-2);flex-shrink:0;display:inline-block}
 .pc-stack-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--text-3)}
-.pc-stack-dot.b-processing{background:var(--accent)}
-.pc-stack-dot.b-req{background:var(--ia)}
-.pc-stack-dot.b-exp{background:var(--accent)}
-.pc-stack-dot.b-qa{background:var(--human)}
-.pc-stack-dot.b-sub{background:var(--ok)}
 .pc-prog{display:flex;flex-direction:column;gap:7px;margin-top:2px}
 .pc-prog-top{display:flex;justify-content:space-between;font-size:var(--text-xs);color:var(--text-2)}
 .pc-prog-top .pct{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600}
@@ -197,13 +192,6 @@ function toast(msg,kind="ok"){
   z.appendChild(t);
   setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},2600);
 }
-const STATUS={
-  processing:   {label:"Processing",       cls:"b-processing"},
-  requirement_review:{label:"Allocation", cls:"b-req"},
-  expert_review:{label:"Expert review",    cls:"b-exp"},
-  qa_versioning:{label:"Q&A & Versioning", cls:"b-qa"},
-  submitted:    {label:"Submitted",        cls:"b-sub"},
-};
 const TAB_DEFS=[
   {id:"all",label:"All"},
   {id:"processing",label:"Processing"},
@@ -226,6 +214,16 @@ function inTab(p){
 /* Your role on this tender, normalized to exactly two labels (§1.4) — one role per person per project. */
 function roleLabel(role){
   return /project\s*manager/i.test(role||"") ? "Project Manager" : "Contributor";
+}
+/* §1.2 — the only two statuses a requirement-bearing card can be in, same
+   switching rule as the gauge below (100% allocated ⇒ Compliance). Processing
+   and Submitted are separate lifecycle states outside that two-status model. */
+function statusPill(p){
+  if(p.status==="processing") return {cls:"b-processing", label:"Processing"};
+  if(p.status==="submitted") return {cls:"b-sub", label:"Submitted"};
+  const total=p.total||0;
+  const allocated=Math.min(p.allocated||0,total);
+  return (total>0 && allocated>=total) ? {cls:"b-exp", label:"Compliance"} : {cls:"b-req", label:"Allocation"};
 }
 /* §1.2 — exactly two gauges: Allocation (requirements still to allocate) and Compliance
    (requirements with internal compliance filled in). Switches automatically once allocation
@@ -253,18 +251,18 @@ function gaugeHTML(p){
     <div class="pc-prog-top"><span>Allocation</span><span class="pct">${allocated}/${total}</span></div>
     <div class="pc-bar"><div style="width:${pct}%"></div></div></div>`;
 }
-/* §1.4 — System / Status / Role, one consistent style, in this order. */
+/* §1.4 — System / Role, one consistent style — Status now sits as a badge in the
+   card's top-right corner instead, alongside the other two rows it used to share a style with. */
 function stackHTML(p){
-  const s=STATUS[p.status]||STATUS.requirement_review;
   return `<div class="pc-stack">
     <div class="pc-stack-row"><span class="pc-sysbar"></span><span>${p.line}</span></div>
-    <div class="pc-stack-row"><span class="pc-stack-dot ${s.cls}"></span><span>${s.label}</span></div>
     <div class="pc-stack-row"><span class="pc-stack-dot"></span><span>${roleLabel(p.role)}</span></div>
   </div>`;
 }
 function cardHTML(p){
+  const s=statusPill(p);
   return `<div class="pcard ${p.status}" data-id="${p.id}">
-    <div class="pc-top"><span class="pc-ref">${p.ref}</span></div>
+    <div class="pc-top"><span class="pc-ref">${p.ref}</span><span class="pc-badge push ${s.cls}"><span class="bdot"></span>${s.label}</span></div>
     <div class="pc-name">${p.name}</div>
     ${gaugeHTML(p)}
     ${stackHTML(p)}
