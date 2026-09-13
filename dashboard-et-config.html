@@ -119,6 +119,12 @@ html[data-theme="light"] .logo-mark-light{display:block}
 /* phase rail */
 .rail-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
 .rail-label span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3);opacity:.8}
+/* §2.2 — KPI row above navigation */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi-row.kpi-3{grid-template-columns:repeat(3,1fr)}
+.kpi-tile{border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);padding:var(--space-3) var(--space-4)}
+.kpi-tile .kpi-num{font-size:var(--text-xl);font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kpi-tile .kpi-lbl{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
 /* Dashboard redesign — the process is TWO steps, and the dashboard's job on
    arrival is to make it obvious which one to click. So the rail carries only
    Allocation and Compliance, full size; Versions & Q&A joined Team casting in
@@ -141,6 +147,8 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .phase.done-phase .ph-num{background:var(--ok);color:#fff}
 .ph-info{flex:1;min-width:0}
 .ph-name{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
+/* §2.1 — one-line explanation under each nav block's title. Placeholder copy. */
+.ph-desc{font-size:var(--text-xs);color:var(--text-3);margin-top:2px;line-height:1.4}
 .ph-stat{font-size:var(--text-sm);color:var(--text-2);margin-top:var(--space-2);display:flex;align-items:baseline;gap:6px}
 .ph-stat .big{font-size:var(--text-xl);font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
 .ph-bar{height:5px;border-radius:var(--radius-xs);background:var(--panel-3);margin-top:var(--space-2);overflow:hidden}
@@ -245,12 +253,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .att .att-sub{font-size:var(--text-xs);color:var(--text-3);margin-top:var(--space-1);line-height:1.4}
 .att .att-go{margin-left:auto;font-size:var(--text-xs);color:var(--accent);white-space:nowrap;align-self:center;opacity:0;transition:opacity .12s}
 .att:hover .att-go{opacity:1}
-
-/* health stats */
-.health-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.hstat .hs-num{font-size:var(--text-xl);font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
-.hstat .hs-slash{font-size:var(--text-base);color:var(--text-3);font-weight:600}
-.hstat .hs-lbl{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
 
 /* compliance */
 .comp-bar{display:flex;height:24px;border-radius:var(--radius-md);overflow:hidden;background:var(--panel-3);margin-bottom:12px}
@@ -568,6 +570,13 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         phase, rather than data of its own. Team casting above <i>is</i> this project's own, from the creation wizard.
       </div>
 
+      <!-- §2.2 — KPI block above navigation. Four counts on a Turnkey tender
+           (pass-1/pass-2 per TICKET-two-pass-allocation.md are genuinely
+           different questions — Turnkey's activity-level distribution vs. the
+           system-specific model each activity routes into); three, no
+           placeholder, on a non-Turnkey one, which skips pass 1 entirely. -->
+      <div class="kpi-row" id="tender-kpi-row"></div>
+
       <!-- phase rail — the two steps, and only the two steps -->
       <div class="rail-label">Process <span>· two steps · click one to open it</span></div>
       <div class="phase-rail">
@@ -575,6 +584,8 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-num">1</div>
           <div class="ph-info">
             <div class="ph-name">Allocation</div>
+            <!-- §2.1 — placeholder copy, flagged per the ticket's own instruction -->
+            <div class="ph-desc">Route each requirement to the activity and team responsible for answering it.</div>
             <div class="ph-stat" id="ph-review-stat"><span class="big" id="ph-review-n">5</span><span id="ph-review-txt">/ 14 requirements validated</span></div>
             <div class="ph-bar"><div id="ph-review-bar" style="width:36%;background:var(--ia)"></div></div>
           </div>
@@ -585,6 +596,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-num">2</div>
           <div class="ph-info">
             <div class="ph-name">Compliance</div>
+            <div class="ph-desc">Record whether each requirement is met, and declare the result to the client.</div>
             <div class="ph-stat" id="ph-followup-body"><span class="big">0</span><span>/ 0 answered</span></div>
             <div class="ph-bar"><div id="ph-followup-bar" style="width:0%;background:var(--ia)"></div></div>
           </div>
@@ -605,6 +617,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-num transversal">◉</div>
           <div class="ph-info">
             <div class="ph-name">Team casting</div>
+            <div class="ph-desc">Assign a manager and staff to each activity.</div>
             <div class="ph-stat"><span class="big" id="ph-team-n">2</span><span id="ph-team-txt">/ 3 managers have completed their team</span></div>
             <div class="ph-bar"><div id="ph-team-bar" style="width:67%;background:var(--ok)"></div></div>
           </div>
@@ -615,6 +628,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-num transversal">▤</div>
           <div class="ph-info">
             <div class="ph-name">Documents &amp; versions</div>
+            <div class="ph-desc">Upload tender documents and track what changed between versions.</div>
             <div class="ph-stat"><span class="big">3</span><span>documents · 1 processing</span></div>
           </div>
           <span class="ph-badge wait">Open</span>
@@ -624,6 +638,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-num transversal">↻</div>
           <div class="ph-info">
             <div class="ph-name">Q&amp;A</div>
+            <div class="ph-desc">Ask the issuer questions and track their answers.</div>
             <div class="ph-stat"><span class="big">5</span><span>questions · 1 answered</span></div>
           </div>
           <span class="ph-badge wait">Open</span>
@@ -636,6 +651,13 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
            real life (they arrive from an email/notification link). The entry point for
            a moderated walkthrough is now the small "DEMO" link in the header instead —
            see #demo-contributor-link. -->
+
+      <!-- §2.4 — change-request/reassignment rollup, tender level. Only ever
+           rendered when there's something pending (renderReassignRollup). -->
+      <div class="card" id="reassign-rollup-card" style="display:none;margin-bottom:18px">
+        <h3>Pending reassignment requests <span class="count" id="reassign-rollup-count">0</span></h3>
+        <div id="reassign-rollup-list"></div>
+      </div>
 
       <!-- main: attention (primary) + health (secondary) -->
       <div class="dash-main">
@@ -674,14 +696,18 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         </div>
 
         <aside class="health">
+          <!-- §2.3/§2.5 — Project Health is gone from this screen (health as a
+               concept survives in SPEC-dashboard-statistics.md §2.1 for the VIP
+               cross-project view, a different screen/audience). A tender-wide
+               comments feed takes its place: reassignment items are live
+               (window.parent.getReassignRequests(), the same B10 mailbox §2.4
+               below reads), compliance/risk items are hand-authored — no
+               shared store for those exists yet, same "independently
+               hand-authored per screen" convention this file's own "Recent
+               activity" feed further down already uses. -->
           <div class="card">
-            <h3>Project health</h3>
-            <div class="health-stats">
-              <div class="hstat"><div class="hs-num" id="hs-total-reqs">14</div><div class="hs-lbl">Requirements</div></div>
-              <div class="hstat"><div class="hs-num">100%</div><div class="hs-lbl">Managers assigned</div></div>
-              <div class="hstat p1only"><div class="hs-num" id="hs-validated">5<span class="hs-slash">/14</span></div><div class="hs-lbl">Validated</div></div>
-              <div class="hstat p2only"><div class="hs-num" id="hs-response-rate">37.5%</div><div class="hs-lbl">Response rate</div></div>
-            </div>
+            <h3>Recent comments</h3>
+            <div class="feed" id="comments-feed"></div>
           </div>
 
           <div class="card p2only">
@@ -1796,16 +1822,33 @@ const FOLLOWUP_REQS=[
   {id:"SRM-00013",compliance:null,branchesAnswered:0,branchesTotal:1},
   {id:"SRM-00014",compliance:null,branchesAnswered:0,branchesTotal:1},
 ];
+/* §2.2 — Turnkey-ness read from the same project object accueil.html seeds
+   (CURRENT_PROJECT.line) rather than a second, disconnected flag — a real
+   project field, not invented for this KPI row alone. No project (this
+   screen opened standalone) defaults to Turnkey, matching STB-2026's own
+   demo. */
+const IS_TURNKEY_TENDER = !CURRENT_PROJECT || CURRENT_PROJECT.line==="Turnkey";
+function renderTenderKPIs(){
+  const el=document.getElementById("tender-kpi-row"); if(!el) return;
+  const total=REVIEW_REQS.length;
+  const pass1=REVIEW_REQS.filter(r=>r.status!=="suggested").length;
+  const pass2=REVIEW_REQS.filter(r=>r.status==="allocated").length;
+  const complianceFilled=FOLLOWUP_REQS.filter(r=>r.compliance!=null).length;
+  const tiles=[{n:total,l:"Total requirements"}];
+  if(IS_TURNKEY_TENDER) tiles.push({n:pass1,l:"Confirmed by Turnkey"});
+  tiles.push({n:pass2,l:"Confirmed by the systems"});
+  tiles.push({n:complianceFilled,l:"Compliance filled in (internal)"});
+  el.className="kpi-row"+(IS_TURNKEY_TENDER?"":" kpi-3");
+  el.innerHTML=tiles.map(t=>`<div class="kpi-tile"><div class="kpi-num">${t.n}</div><div class="kpi-lbl">${t.l}</div></div>`).join("");
+}
 function renderReviewKPIs(){
   const total=REVIEW_REQS.length;
   const validated=REVIEW_REQS.filter(r=>r.status==="allocated").length;
   const pct=Math.round(validated/total*100);
-  document.getElementById("hs-total-reqs").textContent=total;
   document.getElementById("ph-review-n").textContent=validated;
   document.getElementById("ph-review-txt").textContent=`/ ${total} requirements validated`;
   document.getElementById("ph-review-bar").style.width=pct+"%";
   document.getElementById("att-review-sub").textContent=`${total-validated} requirements still to validate`;
-  document.getElementById("hs-validated").innerHTML=`${validated}<span class="hs-slash">/${total}</span>`;
 }
 function renderComplianceKPIs(){
   const total=FOLLOWUP_REQS.length;
@@ -1820,9 +1863,6 @@ function renderComplianceKPIs(){
     document.getElementById(`compseg-${k}`).textContent=n||"";
     document.getElementById(`compleg-${k}`).textContent=n;
   });
-  const branchesAnswered=FOLLOWUP_REQS.reduce((s,r)=>s+r.branchesAnswered,0);
-  const branchesTotal=FOLLOWUP_REQS.reduce((s,r)=>s+r.branchesTotal,0);
-  document.getElementById("hs-response-rate").textContent=(Math.round(branchesAnswered/branchesTotal*1000)/10)+"%";
 }
 /* TB2 — mirrors the activity-level detail behind compliance.html's
    isOverB() (awaiting_answer && age >= OVERDUE_DAYS): only a branch actually waiting
@@ -1843,9 +1883,58 @@ function renderOverdueCard(){
     : `${first.expert} — ${first.reqId} unopened for ${first.days} days`;
   document.getElementById("att-overdue-sub").textContent=sub;
 }
+/* §2.3 — tender-wide feed of the most recently added comments, replacing
+   Project Health's slot. Reassignment items are live off the same B10
+   shared mailbox §2.4 below reads (window.parent.getReassignRequests) —
+   compliance verdict and risk-field comments have no equivalent shared
+   store yet (compliance.html's REQS stays local to that screen, per this
+   project's own "independently hand-authored per screen" convention), so
+   those are hand-authored here, same as this screen's existing "Recent
+   activity" feed further down. All merged and shown most-recent-first. */
+const COMMENT_FEED_DEMO=[
+  {kind:"ok",who:"Claire Moreau",what:"responded on <b>SRM-00013</b> — verdict Needs clarification",when:"Jul 15, 4:20 PM",sortKey:"2026-07-15T16:20"},
+  {kind:"warn",who:"Paolo Ferri",what:"flagged a risk on <b>SRM-00007</b> — external compliance declared despite internal Not compliant",when:"Jul 14, 11:05 AM",sortKey:"2026-07-14T11:05"},
+  {kind:"ok",who:"Sophie Lang",what:"commented on <b>SRM-00006</b> — evidence attached, awaiting review",when:"Jul 12, 9:15 AM",sortKey:"2026-07-12T09:15"},
+];
+function renderCommentsFeed(){
+  const el=document.getElementById("comments-feed"); if(!el) return;
+  let shared=[];
+  try{ shared=(window.parent!==window && window.parent.getReassignRequests) ? window.parent.getReassignRequests() : []; }catch(e){ shared=[]; }
+  const reassignItems=shared.map(r=>({
+    kind:"ia", who:r.byName||"Someone",
+    what:`requested a reassignment on <b>${r.reqId}</b> — "${(r.note||"").slice(0,80)}"`,
+    when:r.at||"Today", sortKey:r.at==="Today"?"9999":"0000",
+  }));
+  const items=[...reassignItems, ...COMMENT_FEED_DEMO].sort((a,b)=>b.sortKey.localeCompare(a.sortKey)).slice(0,6);
+  el.innerHTML = items.length
+    ? items.map(i=>`<div class="feed-item ${i.kind}"><div class="feed-w"><b>${i.who}</b> ${i.what}</div><div class="feed-t">${i.when}</div></div>`).join("")
+    : `<div class="feed-item"><div class="feed-w">No comments yet.</div></div>`;
+}
+/* §2.4 — pending change/reassignment requests rolled up at tender level,
+   same data the per-table reassignment filter (B10) already reads — only
+   rendered when there's at least one pending request. */
+function renderReassignRollup(){
+  const card=document.getElementById("reassign-rollup-card"); if(!card) return;
+  let shared=[];
+  try{ shared=(window.parent!==window && window.parent.getReassignRequests) ? window.parent.getReassignRequests() : []; }catch(e){ shared=[]; }
+  const pending=shared.filter(r=>r.requestStatus==="pending");
+  if(!pending.length){ card.style.display="none"; return; }
+  card.style.display="";
+  card.querySelector("#reassign-rollup-count").textContent=pending.length;
+  card.querySelector("#reassign-rollup-list").innerHTML=pending.slice(0,5).map(r=>
+    `<div class="att" data-go="revue-documentaire.html">
+      <div class="att-ic warn">↩</div>
+      <div><div class="att-t"><b>${r.reqId}</b> — reassignment requested</div><div class="att-sub">${r.byName||"Someone"}: "${(r.note||"").slice(0,90)}"</div></div>
+      <span class="att-go">Review →</span>
+    </div>`).join("");
+  card.querySelectorAll("[data-go]").forEach(el=>el.addEventListener("click",()=>goRoute(el.dataset.go)));
+}
 renderReviewKPIs();
 renderComplianceKPIs();
+renderTenderKPIs();
 renderOverdueCard();
+renderCommentsFeed();
+renderReassignRollup();
 
 /* =====================================================
    SPEC-dashboard-statistics.md — statistics panel
