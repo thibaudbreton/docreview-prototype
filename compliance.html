@@ -251,6 +251,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rrow.branch-row{background:var(--panel-2);cursor:pointer}
 .rrow.branch-row:hover{background:var(--panel-3)}
 .rrow.branch-row .c-req{padding-left:var(--space-6);gap:6px}
+/* §4.4 — level 2 (team) rows, indented past the activity row they belong to */
+.rrow.branch-row.team-row .c-req{padding-left:calc(var(--space-6) + var(--space-5))}
+.rrow.branch-row.team-row{background:var(--bg)}
+.rrow.branch-row.team-row:hover{background:var(--bg)}
+.team-connector{opacity:.55}
 .sel-hit{display:flex;align-items:center;justify-content:center;width:100%;height:100%;cursor:pointer}
 .rowsel{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
 .rcell.active-cell{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius-xs);position:relative;z-index:1}
@@ -547,6 +552,77 @@ textarea.resp-in:focus{border-color:var(--accent)}
 .toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.34,1.3,.64,1)}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .toast .t-ok{color:var(--ok)}
+
+/* @include components.css */
+/* §4.2 — advanced filter, wired against table-engine.js's shared matching
+   engine. Panel/chip CSS ported from revue-documentaire.html's own (not a
+   shared component — only the JS engine is shared). */
+.mini-btn{
+  padding:4px var(--space-2);border-radius:var(--radius-sm);border:1px solid var(--line-2);
+  font-size:var(--text-xs);color:var(--text-2);transition:all .15s;display:inline-flex;gap:var(--space-1);align-items:center;
+}
+.mini-btn:disabled{opacity:.4;cursor:default}
+.mini-btn:hover{border-color:var(--accent);color:var(--text)}
+.adv-panel{position:absolute;top:calc(100% + 6px);right:0;z-index:61;width:560px;max-height:min(76vh,640px);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);display:none;flex-direction:column;overflow:hidden}
+.adv-panel.on{display:flex}
+.adv-head{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-3) var(--space-2);border-bottom:1px solid var(--line);flex-shrink:0}
+.adv-head-t{font-size:var(--text-base);font-weight:600;color:var(--text)}
+.adv-head .mini-btn{margin-left:auto}
+.adv-body{flex:1;min-height:0;overflow-y:auto;padding:var(--space-3)}
+.adv-toplevel{display:flex;align-items:center;gap:6px;font-size:var(--text-sm);color:var(--text-2);margin-bottom:var(--space-2)}
+.adv-toplevel .gseg{margin:0 2px}
+.adv-list{display:flex;flex-direction:column;gap:6px;margin-bottom:var(--space-2)}
+.adv-row{display:flex;gap:6px;align-items:flex-start;padding:6px;border-radius:var(--radius-md);border:1px solid transparent}
+.adv-row .ui-select,.adv-row .ui-input{font-size:var(--text-xs);padding:5px 22px 5px 7px}
+.adv-row .ui-input{padding-right:7px}
+.adv-row .adv-field{flex:0 0 132px}
+.adv-row .adv-op{flex:0 0 118px}
+.adv-row .adv-value{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.adv-row .adv-value>.ui-input,.adv-row .adv-value>.ui-select{width:100%}
+.adv-row .adv-value .adv-nofield{font-size:var(--text-xs);color:var(--text-3);font-style:italic;padding:5px 0}
+.adv-row.is-incomplete{border-color:var(--line-2);background:var(--warn-soft)}
+.adv-row.is-incomplete .adv-value .ui-input,.adv-row.is-incomplete .adv-value .ui-select{border-style:dashed;border-color:var(--warn)}
+.adv-need{font-size:var(--text-xs);color:var(--warn);white-space:nowrap;padding:5px 0}
+.advv-chip{font-size:var(--text-xs);padding:3px 8px;border-radius:var(--radius-pill);border:1px solid var(--line-2);color:var(--text-2);background:var(--panel-3)}
+.advv-chip:hover{border-color:var(--accent);color:var(--text)}
+.advv-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.adv-remove{flex-shrink:0;width:24px;height:26px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center}
+.adv-remove:hover{background:var(--panel-3);color:var(--warn)}
+.adv-group{border:1px solid var(--line-2);border-left:3px solid var(--accent);border-radius:var(--radius-md);padding:8px;background:var(--panel)}
+.adv-group-head{display:flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--text-3);margin-bottom:6px}
+.adv-group-head .adv-remove{margin-left:auto}
+.adv-group .adv-list{margin-bottom:6px}
+.adv-addrow{display:flex;gap:8px}
+.adv-foot{flex-shrink:0;border-top:1px solid var(--line);padding:var(--space-3);background:var(--panel-2)}
+.adv-summary{font-size:var(--text-xs);color:var(--text-2);background:var(--panel-3);border-radius:var(--radius-sm);padding:6px var(--space-2);margin-bottom:6px;line-height:1.5}
+.adv-summary b{color:var(--text);font-weight:600}
+.adv-countrow{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2)}
+.adv-count{font-size:var(--text-sm);color:var(--text-2)}
+.adv-count b{color:var(--text);font-weight:600}
+.adv-count.zero{color:var(--warn)}
+.adv-blocked{font-size:var(--text-xs);color:var(--warn);margin-left:auto}
+.adv-actions{display:flex;gap:8px;justify-content:flex-end}
+.adv-saved{border-top:1px solid var(--line);margin-top:var(--space-3);padding-top:var(--space-2)}
+.adv-saved-head{display:flex;align-items:center;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:4px}
+.adv-saved-head span{margin-left:auto;font-weight:400;letter-spacing:0;text-transform:none}
+.adv-saved-row{display:flex;align-items:center;gap:6px;padding:4px 2px;font-size:var(--text-sm)}
+.adv-saved-row .n{flex:1;color:var(--text-2);cursor:pointer}
+.adv-saved-row .n:hover{color:var(--text);text-decoration:underline}
+.adv-saved-row button{color:var(--text-3);font-size:var(--text-xs)}
+.adv-saved-row button:hover{color:var(--warn)}
+.adv-save-row{display:flex;gap:6px;margin-top:6px}
+.adv-save-row[hidden]{display:none}
+.adv-save-row .ui-input{flex:1;font-size:var(--text-xs);padding:5px 7px}
+/* §3.5 treatment: never compressed, never hidden — wraps to its own row via
+   the parent's flex-wrap instead of truncating with ellipsis. */
+.active-filter{display:flex;align-items:center;gap:6px;flex:1 1 260px;min-width:240px;padding:4px 6px 4px 10px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-pill);font-size:var(--text-xs);color:var(--text)}
+.active-filter-t{white-space:normal}
+.active-filter button{flex-shrink:0;width:18px;height:18px;border-radius:50%;color:var(--text-2);font-size:10px;display:grid;place-items:center}
+.active-filter button:hover{background:var(--accent);color:#fff}
+.gseg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-pill);padding:2px}
+.gseg button{padding:4px var(--space-3);border-radius:var(--radius-pill);font-size:var(--text-sm);color:var(--text-3);font-weight:600}
+.gseg button.on{background:var(--panel-3);color:var(--text)}
+
 @media(max-width:1100px){.settings{width:290px}.nav{width:236px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -672,7 +748,15 @@ textarea.resp-in:focus{border-color:var(--accent)}
           </div>
           <div class="export-ready" id="export-ready"></div>
           <div class="f10-tools" id="f10-tools">
+            <!-- §3.5 treatment, applied here too (§4.2): the search bar is the
+                 anchor and never moves; the active-filter chip sits right after
+                 it and wraps to its own row when there isn't room, rather than
+                 being compressed or hidden. -->
             <input id="f10-search" placeholder="Search requirement ref or text…" autocomplete="off">
+            <div class="active-filter" id="adv-filter-banner" style="display:none">
+              <span class="active-filter-t" id="adv-filter-banner-text"></span>
+              <button id="adv-filter-banner-clear" title="Clear every filter">✕</button>
+            </div>
             <select id="f10-expert"><option value="">All contributors</option></select>
             <select id="f10-typo"><option value="">All activities</option></select>
             <select id="f10-sort">
@@ -682,6 +766,10 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <option value="req">Sort: requirement ref</option>
             </select>
             <button class="f10-needsme" id="f10-needsme">⚡ Needs my action</button>
+            <div class="view-wrap" style="position:relative;margin-left:auto">
+              <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once">⏷ Filter ▾</button>
+              <div class="adv-panel" id="adv-filter-panel"></div>
+            </div>
           </div>
           <div class="filter-sel-banner" id="filter-sel-banner" style="display:none">
             <span>Showing <b id="fsb-n">0</b> of <b id="fsb-total">0</b> requirements — selected</span>
@@ -898,8 +986,18 @@ const REQS_HAND=[
    text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.",
    branches:[
      {typology:"sig",manager:"m_sig",status:"proposed",internal:null,age:7},
-     {typology:"mln",manager:"m_mln",status:"answered",internal:"compliant",age:5,
-      resp:{note:"99.7% business-hours availability is met by the standard redundant deployment; maintenance windows are already excluded contractually.",att:0,date:"Jul 15"}},
+     // §4.4 — two teams within one activity: most restrictive wins, so the
+     // activity itself reads not_compliant even though the primary cluster
+     // alone would have passed. Hand-authored, same convention as the rest
+     // of this seed (nothing derived at load time).
+     {typology:"mln",manager:"m_mln",status:"answered",internal:"not_compliant",age:6,
+      resp:{note:"Primary site cluster meets the target; the secondary depot cluster falls short — see teams below.",att:0,date:"Jul 16"},
+      teams:[
+        {manager:"m_mln",status:"answered",internal:"compliant",age:5,
+         resp:{note:"99.7% business-hours availability is met by the standard redundant deployment; maintenance windows are already excluded contractually.",att:0,date:"Jul 15"}},
+        {manager:"infra",status:"answered",internal:"not_compliant",age:6,
+         resp:{note:"Secondary depot cluster runs on older hardware — measured 99.4% over the last quarter, short of the 99.7% target.",att:0,date:"Jul 16"}},
+      ]},
    ]},
   {id:"SRM-00012",sec:"4. Security requirements",type:"Security",
    text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges.",
@@ -999,12 +1097,17 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
      contribTypo is which activity a contributor is currently viewing as. */
   role:"pm",contribTypo:"sig",openForm:null,verdictPick:null,externalPick:null,
   search:"",sortBy:"action",fExpert:"",fTypo:"",needsMe:false,
+  advFilter:{op:"AND",items:[]}, advFilterDraft:null, advFilterOpen:false,
   /* B5 — shared table engine state (see table-engine.js / TE) */
   selection:new Set(),colFilters:{},filterToSelection:false,savedColFilters:null,
   activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","age"]),
   colOrder:["typo","expert","status","comment","lastfu","age"],
   docNavCollapsed:new Set(),
-  navPanelCollapsed:false,detailPanelCollapsed:false,
+  // §4.1/6.4 — the requirement-list nav collapses by default; the toggle
+  // (nav2-toggle) is always visible so it's reopenable in one action. Casting/
+  // Documents/Q&A are unaffected — they live in the header's own icon-cluster,
+  // not this panel, so nothing about reaching them changes.
+  navPanelCollapsed:true,detailPanelCollapsed:false,
   ownTeamOnly:true};
 /* B5 — this screen has no admin/view-as switcher yet (unlike revue-documentaire.html);
    VIEWER simulates whichever branch manager is currently using their own follow-up
@@ -1103,7 +1206,273 @@ function passes(r){
   if(state.filterToSelection) return state.selection.has(r.id);
   if(!matchesSearch(r))return false;
   if(state.filter==="out")return !!r.outdated;
-  return (r.branches||[]).some(passesB);
+  return (r.branches||[]).some(passesB) && passesAdvFilter(r);
+}
+
+/* =====================================================
+   ADVANCED FILTER (SPEC-advanced-filters.md §4.2) — wired against the shared
+   engine table-engine.js already provides (TE.matchesFilter/describeFilter/
+   OPS_BY_TYPE), same treatment as revue-documentaire.html's Allocation table.
+   The panel-rendering code below is a straight port of that screen's own
+   (table-engine.js only ships the matching engine, not a shared panel
+   component) — field defs adapted to what this screen actually has:
+   activity/internal/external/status/contributor/age instead of Allocation's
+   characterisation fields. */
+const ADV_FILTER_FIELDS={
+  id:{label:"ID",type:"text",get:r=>[r.id||""]},
+  text:{label:"Text",type:"text",get:r=>[r.text||""]},
+  typo:{label:"Activity",type:"enum",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:r=>(r.branches||[]).map(b=>b.typology)},
+  internal:{label:"Internal compliance",type:"enum",options:[{v:"compliant",l:"Compliant"},{v:"not_compliant",l:"Not Compliant"},{v:"",l:"Pending"}],get:r=>(r.branches||[]).map(b=>b.internal||"")},
+  external:{label:"External compliance",type:"enum",options:[{v:"compliant",l:"Compliant"},{v:"not_compliant",l:"Not Compliant"},{v:"",l:"Not declared"}],get:r=>(r.branches||[]).map(b=>b.external||"")},
+  status:{label:"Status",type:"enum",options:Object.keys(BST).map(k=>({v:k,l:BST[k]})),get:r=>(r.branches||[]).map(b=>b.status)},
+  contributor:{label:"Contributor",type:"enum",options:MANAGERS.map(m=>({v:m.id,l:m.name})),get:r=>(r.branches||[]).map(b=>b.manager||"")},
+  age:{label:"Age (days)",type:"text",get:r=>(r.branches||[]).map(b=>String(b.age??""))},
+  outdated:{label:"Outdated version",type:"boolean",get:r=>[!!r.outdated]},
+  doc:{label:"Document",type:"enum",options:DOCS.map(d=>({v:d.id,l:d.name})),get:r=>[SEC_DOC[r.sec]||""]},
+  section:{label:"Section",type:"text",get:r=>[r.sec||""]},
+};
+const ADV_FIELD_GROUPS=[
+  {g:"Progress",       fields:["status","internal","external"]},
+  {g:"Assignment",     fields:["typo","contributor","age"]},
+  {g:"Content & source", fields:["id","text","section","doc","outdated"]},
+];
+const ADV_FIELD_ORDER=ADV_FIELD_GROUPS.reduce((a,g)=>a.concat(g.fields),[]);
+function passesAdvFilter(r){ return TE.matchesFilter(ADV_FILTER_FIELDS, state.advFilter, r); }
+const ADV_NO_VALUE_OPS=["is_empty","is_not_empty","is_true","is_false"];
+function advCondComplete(cond){
+  const def=ADV_FILTER_FIELDS[cond.field]; if(!def) return false;
+  if(ADV_NO_VALUE_OPS.includes(cond.op)) return true;
+  if(cond.op==="is_any_of"||cond.op==="is_none_of") return Array.isArray(cond.value)&&cond.value.length>0;
+  if(cond.op==="between") return !!(cond.value&&cond.value.from&&cond.value.to);
+  return cond.value!==""&&cond.value!=null;
+}
+function advPruned(filter){
+  if(!filter||!filter.items) return {op:"AND",items:[]};
+  const items=[];
+  filter.items.forEach(it=>{
+    if(it.items){ const g=advPruned(it); if(g.items.length) items.push(g); }
+    else if(advCondComplete(it)) items.push(it);
+  });
+  return {op:filter.op,items};
+}
+function advIncompleteCount(filter){
+  if(!filter||!filter.items) return 0;
+  return filter.items.reduce((n,it)=>n+(it.items?advIncompleteCount(it):(advCondComplete(it)?0:1)),0);
+}
+function advFlatConditions(filter){
+  if(!filter||!filter.items) return [];
+  return filter.items.reduce((a,it)=>a.concat(it.items?advFlatConditions(it):[it]),[]);
+}
+function advDefaultValue(def,op){
+  if(op==="is_any_of"||op==="is_none_of") return [];
+  if(op==="between") return {from:"",to:""};
+  if(op==="in_last") return "7";
+  if(op==="is_empty"||op==="is_not_empty"||op==="is_true"||op==="is_false") return null;
+  return "";
+}
+function advNewCondition(){
+  const field=ADV_FIELD_ORDER[0], def=ADV_FILTER_FIELDS[field], op=TE.OPS_BY_TYPE[def.type][0];
+  return {field, op, value:advDefaultValue(def,op)};
+}
+let advInheritedCount=0;
+function openAdvFilterPanel(){
+  advInheritedCount=0;
+  if(!state.advFilter.items.length) state.advFilterDraft={op:state.advFilter.op, items:[]};
+  else state.advFilterDraft=JSON.parse(JSON.stringify(state.advFilter));
+  state.advFilterOpen=true;
+  renderAdvFilterPanel();
+}
+function closeAdvFilterPanel(){
+  state.advFilterOpen=false; state.advFilterDraft=null;
+  renderAdvFilterPanel();
+}
+function advGetItemByAddr(addr){
+  const parts=String(addr).split(".").map(Number);
+  return parts.length===1 ? state.advFilterDraft.items[parts[0]] : state.advFilterDraft.items[parts[0]].items[parts[1]];
+}
+function advValueEditorHTML(def, cond, addr){
+  const op=cond.op;
+  if(ADV_NO_VALUE_OPS.includes(op)) return "";
+  if(op==="is_any_of"||op==="is_none_of"){
+    const sel=new Set(cond.value||[]);
+    return (def.options||[]).map(o=>
+      `<button type="button" class="advv-chip${sel.has(o.v)?" on":""}" data-addr="${addr}" data-chip="${esc(String(o.v))}">${esc(o.l)}</button>`).join("");
+  }
+  if(def.type==="enum") return `<select class="ui-select adv-val${cond.value?"":" is-empty"}" data-addr="${addr}"><option value="">— choose a value —</option>${(def.options||[]).map(o=>`<option value="${o.v}" ${cond.value===o.v?"selected":""}>${o.l}</option>`).join("")}</select>`;
+  return `<input type="text" class="ui-input adv-val" data-addr="${addr}" placeholder="Type a value…" value="${esc(cond.value||"")}">`;
+}
+function advConditionRowHTML(cond, addr){
+  const def=ADV_FILTER_FIELDS[cond.field]||ADV_FILTER_FIELDS[ADV_FIELD_ORDER[0]];
+  const ops=TE.OPS_BY_TYPE[def.type];
+  const incomplete=!advCondComplete(cond);
+  const fieldOpts=ADV_FIELD_GROUPS.map(g=>
+    `<optgroup label="${g.g}">${g.fields.map(k=>`<option value="${k}" ${k===cond.field?"selected":""}>${ADV_FILTER_FIELDS[k].label}</option>`).join("")}</optgroup>`).join("");
+  return `<div class="adv-row${incomplete?" is-incomplete":""}">
+    <select class="ui-select adv-field" data-addr="${addr}">${fieldOpts}</select>
+    <select class="ui-select adv-op" data-addr="${addr}">${ops.map(o=>`<option value="${o}" ${o===cond.op?"selected":""}>${TE.OP_LABEL[o]}</option>`).join("")}</select>
+    <span class="adv-value">${advValueEditorHTML(def,cond,addr)||`<span class="adv-nofield">no value needed</span>`}</span>
+    ${incomplete?`<span class="adv-need" title="This condition is ignored until it has a value">needs a value</span>`:""}
+    <button class="adv-remove" data-addr="${addr}" title="Remove this condition">✕</button>
+  </div>`;
+}
+function advMatchSwitchHTML(op, attrs){
+  return `Match <span class="gseg" style="display:inline-flex"><button class="${attrs.cls} ${op==="AND"?"on":""}" ${attrs.data} data-gop="AND">all</button><button class="${attrs.cls} ${op==="OR"?"on":""}" ${attrs.data} data-gop="OR">any</button></span> of:`;
+}
+function advGroupHTML(group, topIdx){
+  return `<div class="adv-group">
+    <div class="adv-group-head">${advMatchSwitchHTML(group.op,{cls:"adv-gop",data:`data-top="${topIdx}"`})}
+      <button class="adv-remove" data-addr="${topIdx}" data-removegroup="1" title="Remove this group">✕</button>
+    </div>
+    <div class="adv-list">${group.items.map((it,i)=>advConditionRowHTML(it,`${topIdx}.${i}`)).join("")}</div>
+    <button class="mini-btn" data-addgroupitem="${topIdx}">+ Add condition</button>
+  </div>`;
+}
+function advLiveMatch(){
+  const d=advPruned(state.advFilterDraft);
+  const baseline=REQS.filter(r=>(r.branches||[]).some(passesB));
+  const matched=baseline.filter(r=>TE.matchesFilter(ADV_FILTER_FIELDS,d,r));
+  let culprit=null;
+  if(!matched.length && d.items.length){
+    const conds=advFlatConditions(d);
+    if(conds.length>1){
+      const alone=conds.map(c=>({c,n:baseline.filter(r=>TE.matchesCondition(ADV_FILTER_FIELDS,c,r)).length}));
+      const worst=alone.reduce((a,x)=>x.n<a.n?x:a,alone[0]);
+      if(worst.n===0) culprit=TE.describeCondition(ADV_FILTER_FIELDS,worst.c);
+    }
+  }
+  return {matched:matched.length, total:baseline.length, culprit};
+}
+function renderAdvFilterPanel(){
+  const p=document.getElementById("adv-filter-panel"); if(!p) return;
+  p.classList.toggle("on", state.advFilterOpen);
+  if(!state.advFilterOpen){ p.innerHTML=""; return; }
+  const d=state.advFilterDraft;
+  const itemsHTML=d.items.map((it,i)=>it.items?advGroupHTML(it,i):advConditionRowHTML(it,String(i))).join("");
+  const saved=TE.loadSavedFilters("compliance");
+  const pruned=advPruned(d);
+  p.innerHTML=`
+    <div class="adv-head">
+      <span class="adv-head-t">Filter</span>
+      <button class="mini-btn" id="adv-close">Close</button>
+    </div>
+    <div class="adv-body">
+      ${d.items.length>1?`<div class="adv-toplevel">${advMatchSwitchHTML(d.op,{cls:"adv-topop",data:""})}</div>`:""}
+      <div class="adv-list">${itemsHTML||`<div class="field-hint" style="margin-bottom:8px">No conditions yet — add one below.</div>`}</div>
+      <div class="adv-addrow"><button class="mini-btn" id="adv-add-cond">+ Add condition</button><button class="mini-btn" id="adv-add-group">+ Add group</button></div>
+      <div class="adv-saved">
+        <div class="adv-saved-head">Saved filters<span>${saved.length?`${saved.length} saved · reusable on any tender`:""}</span></div>
+        ${saved.length?saved.map((sf,i)=>`<div class="adv-saved-row"><span class="n" data-loadsaved="${i}">${esc(sf.name)}</span><button data-delsaved="${i}" title="Delete">✕</button></div>`).join(""):`<div class="field-hint">None yet — build a filter and save it to reuse later.</div>`}
+        <div class="adv-save-row" id="adv-save-row" ${pruned.items.length?"":"hidden"}><input type="text" class="ui-input" id="adv-save-name" placeholder="Save current as…"><button class="mini-btn" id="adv-save-btn">Save</button></div>
+      </div>
+    </div>
+    <div class="adv-foot">${advFootHTML()}</div>`;
+  bindAdvFilterPanel(p);
+}
+function advFootHTML(){
+  const d=state.advFilterDraft;
+  const pruned=advPruned(d);
+  const {matched,total,culprit}=advLiveMatch();
+  const missing=advIncompleteCount(d);
+  let count;
+  if(!pruned.items.length) count=`<div class="adv-count">No conditions yet — all <b>${total.toLocaleString()}</b> requirements</div>`;
+  else if(!matched) count=`<div class="adv-count zero">Nothing matches${culprit?` — <b>${esc(culprit)}</b> alone matches 0`:""}</div>`;
+  else count=`<div class="adv-count"><b>${matched.toLocaleString()}</b> of <b>${total.toLocaleString()}</b> requirements</div>`;
+  return `${pruned.items.length?`<div class="adv-summary">Showing requirements where ${esc(TE.describeFilter(ADV_FILTER_FIELDS,pruned))}</div>`:""}
+    <div class="adv-countrow">${count}${missing?`<span class="adv-blocked">${missing} condition${missing>1?"s":""} still need${missing>1?"":"s"} a value</span>`:""}</div>
+    <div class="adv-actions">
+      <button class="btn-cancel" id="adv-cancel">Cancel</button>
+      <button class="btn-submit ok" id="adv-apply" ${missing?"disabled":""} title="${missing?"Finish or remove the incomplete conditions first":""}">${pruned.items.length?"Apply":"Clear filter"}</button>
+    </div>`;
+}
+function bindAdvFilterPanel(p){
+  p.querySelector("#adv-close").addEventListener("click",closeAdvFilterPanel);
+  p.querySelector("#adv-cancel").addEventListener("click",closeAdvFilterPanel);
+  p.querySelector("#adv-apply").addEventListener("click",()=>{
+    state.advFilter=advPruned(state.advFilterDraft);
+    closeAdvFilterPanel();
+    refreshAll();
+  });
+  p.querySelector("#adv-add-cond").addEventListener("click",()=>{ state.advFilterDraft.items.push(advNewCondition()); renderAdvFilterPanel(); });
+  p.querySelector("#adv-add-group").addEventListener("click",()=>{ state.advFilterDraft.items.push({op:"AND",items:[advNewCondition()]}); renderAdvFilterPanel(); });
+  p.querySelectorAll("[data-addgroupitem]").forEach(b=>b.addEventListener("click",()=>{
+    state.advFilterDraft.items[+b.dataset.addgroupitem].items.push(advNewCondition()); renderAdvFilterPanel();
+  }));
+  p.querySelectorAll("[data-removegroup]").forEach(b=>b.addEventListener("click",()=>{
+    state.advFilterDraft.items.splice(+b.dataset.addr,1); renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".adv-topop").forEach(b=>b.addEventListener("click",()=>{ state.advFilterDraft.op=b.dataset.gop; renderAdvFilterPanel(); }));
+  p.querySelectorAll(".adv-gop").forEach(b=>b.addEventListener("click",()=>{ state.advFilterDraft.items[+b.dataset.top].op=b.dataset.gop; renderAdvFilterPanel(); }));
+  p.querySelectorAll(".adv-remove").forEach(b=>b.addEventListener("click",()=>{
+    const addr=b.dataset.addr;
+    if(addr.includes(".")){
+      const [gi,ii]=addr.split(".").map(Number);
+      state.advFilterDraft.items[gi].items.splice(ii,1);
+      if(!state.advFilterDraft.items[gi].items.length) state.advFilterDraft.items.splice(gi,1);
+    }else state.advFilterDraft.items.splice(+addr,1);
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".adv-field").forEach(s=>s.addEventListener("change",()=>{
+    const cond=advGetItemByAddr(s.dataset.addr), def=ADV_FILTER_FIELDS[s.value];
+    cond.field=s.value; cond.op=TE.OPS_BY_TYPE[def.type][0]; cond.value=advDefaultValue(def,cond.op);
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".adv-op").forEach(s=>s.addEventListener("change",()=>{
+    const cond=advGetItemByAddr(s.dataset.addr), def=ADV_FILTER_FIELDS[cond.field];
+    cond.op=s.value; cond.value=advDefaultValue(def,cond.op);
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".advv-chip").forEach(el=>el.addEventListener("click",()=>{
+    const cond=advGetItemByAddr(el.dataset.addr);
+    const set=new Set(cond.value||[]);
+    set.has(el.dataset.chip)?set.delete(el.dataset.chip):set.add(el.dataset.chip);
+    cond.value=[...set];
+    el.classList.toggle("on");
+    renderAdvFilterCountAndSummaryOnly(p);
+  }));
+  p.querySelectorAll(".adv-val").forEach(el=>el.addEventListener("input",()=>{
+    const cond=advGetItemByAddr(el.dataset.addr);
+    cond.value=el.value;
+    renderAdvFilterCountAndSummaryOnly(p);
+  }));
+  p.querySelectorAll("[data-loadsaved]").forEach(el=>el.addEventListener("click",()=>{
+    const saved=TE.loadSavedFilters("compliance")[+el.dataset.loadsaved];
+    if(saved) state.advFilterDraft=JSON.parse(JSON.stringify(saved.filter));
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll("[data-delsaved]").forEach(el=>el.addEventListener("click",()=>{
+    const list=TE.loadSavedFilters("compliance");
+    list.splice(+el.dataset.delsaved,1);
+    TE.saveSavedFilters("compliance",list);
+    renderAdvFilterPanel();
+  }));
+  p.querySelector("#adv-save-btn")?.addEventListener("click",()=>{
+    const name=(p.querySelector("#adv-save-name").value||"").trim();
+    if(!name){ toast("Name this filter before saving","warn"); return; }
+    const list=TE.loadSavedFilters("compliance");
+    list.push({name, filter:advPruned(state.advFilterDraft)});
+    TE.saveSavedFilters("compliance",list);
+    toast(`Filter "${name}" saved`,"ok");
+    renderAdvFilterPanel();
+  });
+}
+function renderAdvFilterCountAndSummaryOnly(p){
+  const foot=p.querySelector(".adv-foot"); if(!foot) return;
+  const saveRow=p.querySelector("#adv-save-row");
+  if(saveRow) saveRow.hidden=!advPruned(state.advFilterDraft).items.length;
+  foot.innerHTML=advFootHTML();
+  foot.querySelector("#adv-cancel").addEventListener("click",closeAdvFilterPanel);
+  foot.querySelector("#adv-apply").addEventListener("click",()=>{
+    state.advFilter=advPruned(state.advFilterDraft);
+    closeAdvFilterPanel();
+    refreshAll();
+  });
+}
+function renderAdvFilterBanner(){
+  const banner=document.getElementById("adv-filter-banner"); if(!banner) return;
+  const pruned=advPruned(state.advFilter);
+  banner.style.display = pruned.items.length ? "flex" : "none";
+  if(pruned.items.length) banner.querySelector("#adv-filter-banner-text").textContent =
+    "Showing requirements where "+TE.describeFilter(ADV_FILTER_FIELDS,pruned);
 }
 
 /* =====================================================
@@ -1310,6 +1679,28 @@ document.querySelectorAll("#frgrid-head [data-col]").forEach(cell=>cell.addEvent
 })();
 let currentVisIds=[];
 let fVROWS=[];
+/* T2-level, §4.4 — "make multi-allocation visible at both levels": one row per
+   activity (existing branch rows, always shown for a multi-activity requirement,
+   no collapse), and within each activity one row per contributor/team involved
+   (TICKET-two-pass-allocation.md §6's pass-2 multiplicity). Mirrors
+   revue-documentaire.html's ensureTeams(): promotes an already-answered branch's
+   own fields into teams[0] the first time this touches it, so an ordinary
+   single-team branch (the overwhelming majority) needs no data migration — only
+   a branch seeded with >1 team (SRM-00011's "mln" activity) actually shows the
+   level-2 breakdown. Shown always, same as level 1 here, not behind an expand
+   toggle — this file never collapsed branch rows either. */
+function ensureFTeams(branch){
+  if(!branch) return [];
+  if(!(branch.teams&&branch.teams.length)){
+    branch.teams=[{
+      manager:branch.manager||null, status:branch.status||"proposed",
+      internal:branch.internal||null, external:branch.external||null,
+      externalLocked:branch.externalLocked||false, externalRisk:branch.externalRisk||null,
+      resp:branch.resp||null, age:branch.age||0,
+    }];
+  }
+  return branch.teams;
+}
 function buildFVRows(){
   const rows=tableRows();
   currentVisIds=rows.map(r=>r.id);
@@ -1321,6 +1712,8 @@ function buildFVRows(){
     r.branches.forEach((b,i)=>{
       if(!passesB(b) && branchFilterActive) return;
       fVROWS.push({type:"branch",parent:r,branch:b,idx:i});
+      const teams=ensureFTeams(b);
+      if(teams.length>1) teams.forEach((t,ti)=>fVROWS.push({type:"team",parent:r,branch:b,bidx:i,team:t,tidx:ti}));
     });
   });
   return rows;
@@ -1344,16 +1737,35 @@ function fRowInnerHTML(r){
     <div class="rcell c-age ${single&&isOverB(single)?"over":""}">${single?(isAnswered(single)?"":single.age+" d"):""}</div>`;
 }
 function fBranchRowHTML(parent,b,idx){
+  const teams=ensureFTeams(b), multiTeam=teams.length>1;
   return `<div class="rrow branch-row" data-branchof="${parent.id}" data-branchidx="${idx}">
     <div class="rcell c-sel"></div>
     <div class="rcell c-id"></div>
-    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${TY(b.typology).label}</span></div>
+    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${TY(b.typology).label}</span>${multiTeam?`<span class="nav-brn" title="${teams.length} teams within this activity — most restrictive wins">${teams.length} teams</span>`:""}</div>
     <div class="rcell c-typo"><span class="ptag">${TY(b.typology).code}</span></div>
-    <div class="rcell c-expert">${branchWhoHTML(b)}</div>
+    <div class="rcell c-expert">${multiTeam?`<span class="multi-ph">Multiple (${teams.length})</span>`:branchWhoHTML(b)}</div>
     <div class="rcell c-status">${branchStatusHTML(b)}</div>
     <div class="rcell c-comment">${verdictCommentHTML(b.resp?.note)}</div>
     <div class="rcell c-lastfu">${fLastFollowupHTML(b)}</div>
     <div class="rcell c-age ${isOverB(b)?"over":""}">${isAnswered(b)?"":b.age+" d"}</div>
+  </div>`;
+}
+/* Level 2 — one contributor/team within an activity, per §4.4. */
+function fTeamRowHTML(parent,branch,bidx,team,tidx){
+  // Clicking a team row selects its parent ACTIVITY (data-branchof/-branchidx,
+  // same attributes the generic .rrow.branch-row click handler already reads)
+  // — the detail panel works at the activity level, per the branch-level
+  // verdict form above; there's no separate per-team panel to route to.
+  return `<div class="rrow branch-row team-row" data-branchof="${parent.id}" data-branchidx="${bidx}" data-teamidx="${tidx}">
+    <div class="rcell c-sel"></div>
+    <div class="rcell c-id"></div>
+    <div class="rcell c-req"><span class="branch-connector team-connector">↳</span><span class="branch-label">${team.manager?mgrOf(team.manager).name:"Unassigned"}</span></div>
+    <div class="rcell c-typo"></div>
+    <div class="rcell c-expert">${branchWhoHTML(team)}</div>
+    <div class="rcell c-status">${branchStatusHTML(team)}</div>
+    <div class="rcell c-comment">${verdictCommentHTML(team.resp?.note)}</div>
+    <div class="rcell c-lastfu">${fLastFollowupHTML(team)}</div>
+    <div class="rcell c-age ${isOverB(team)?"over":""}">${isAnswered(team)?"":team.age+" d"}</div>
   </div>`;
 }
 const fNavAdapter={
@@ -1413,6 +1825,7 @@ function renderTable2(){
   } else {
     win.innerHTML=fVROWS.map(it=>{
       if(it.type==="branch") return fBranchRowHTML(it.parent,it.branch,it.idx);
+      if(it.type==="team") return fTeamRowHTML(it.parent,it.branch,it.bidx,it.team,it.tidx);
       const r=it.r;
       return `<div class="rrow${state.sel===r.id?" active":""}${state.selection.has(r.id)?" bulk-sel":""}" data-id="${r.id}">${fRowInnerHTML(r)}</div>`;
     }).join("");
@@ -1862,6 +2275,7 @@ document.getElementById("settings2-toggle")?.addEventListener("click",()=>{ stat
 function refreshAll(){
   syncReassignRequestsFromShell();
   renderNav2();renderTable2();renderDoc2();renderPanel2();renderTriage2();renderExportReady();
+  renderAdvFilterBanner();
 }
 document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 /* T9/T10 toolbar — populate the expert/activity selects once, then wire up live filtering */
@@ -1876,6 +2290,25 @@ document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("cli
   document.getElementById("f10-needsme").addEventListener("click",function(){
     state.needsMe=!state.needsMe;this.classList.toggle("on",state.needsMe);refreshAll();
   });
+  document.getElementById("filter-btn").addEventListener("click",()=>{
+    state.advFilterOpen ? closeAdvFilterPanel() : openAdvFilterPanel();
+  });
+  document.getElementById("adv-filter-banner-clear").addEventListener("click",()=>{
+    state.advFilter={op:"AND",items:[]};
+    refreshAll();
+  });
+  document.addEventListener("click",e=>{
+    // composedPath(), not e.target.closest(): a click inside the panel that
+    // triggers a re-render (e.g. "+ Add condition") replaces the panel's
+    // innerHTML mid-dispatch, detaching e.target from the document before
+    // this listener runs — .closest() on a detached node can't find its old
+    // ancestors and the panel closes on its own clicks. composedPath() is
+    // captured at dispatch time and stays correct regardless.
+    const path=e.composedPath?e.composedPath():[];
+    const insidePanel=path.some(el=>el.id==="adv-filter-panel"||el.id==="filter-btn");
+    if(state.advFilterOpen && !insidePanel) closeAdvFilterPanel();
+  });
+  renderAdvFilterBanner();
 })();
 document.querySelectorAll(".nav-toggle button").forEach(b=>b.addEventListener("click",()=>{
   state.navBy=b.dataset.by;
