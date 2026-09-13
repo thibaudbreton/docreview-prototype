@@ -1123,6 +1123,11 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .deriv-conf.weak{color:var(--ia);background:var(--ia-soft);font-weight:700}
 .deriv-hint{font-size:var(--text-xs);color:var(--text-3);margin-top:5px;line-height:1.45}
 .deriv-hint b{color:var(--text-2)}
+/* §3.6 — OBS-as-list row remove + inline add form */
+.ui-list-rm{flex-shrink:0;width:20px;height:20px;border-radius:50%;color:var(--text-3);display:grid;place-items:center;font-size:11px}
+.ui-list-rm:hover{background:var(--warn-soft);color:var(--warn)}
+.obs-add-form{display:flex;gap:var(--space-2);align-items:center;padding:var(--space-2) var(--space-3);background:var(--panel-2)}
+.obs-add-form .ui-input{flex:1}
 /* an explanation that used to sit permanently under the field it was about —
    costing space on every view — now lives behind a small ⓘ next to the
    label of the step it actually explains, on hover only. Native title
@@ -2950,6 +2955,67 @@ function deriveRequirementCompliance(b){
   if(!b.complianceLocked) b.rollupCompliance=derived;
   return b.rollupCompliance;
 }
+/* §3.6 — OBS is a list of organisations now, not a single value: reuses
+   ensureTeams()/teams[] wholesale rather than building a second, parallel
+   multi-entry structure — a branch with several organisations IS a branch
+   with several teams, which this file already knows how to consolidate
+   (most restrictive wins, pending until all answer, per deriveActivityCompliance
+   above). Editable in the contributor's own view only, same +Add/✕ pattern
+   as the Activity list (.ui-list/.ui-list-add, components.css). */
+function obsListHTML(myBranch){
+  const teams=ensureTeams(myBranch);
+  const rows=teams.map((t,i)=>{
+    const val=(t.obs&&t.obs.v)||TEAM(t.team).label||"—";
+    const c=t.obs&&t.obs.c;
+    return `<div class="ui-list-row">
+      <span class="ui-list-main">${escHtml(val)}</span>
+      ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence">${c}%</span>`:""}
+      ${teams.length>1?`<button class="ui-list-rm" data-obsrm="${i}" title="Remove this organisation">✕</button>`:""}
+    </div>`;
+  }).join("");
+  return `<div class="deriv-step">
+    <div class="deriv-head"><span class="deriv-label">OBS</span></div>
+    <div class="ui-list is-compact">
+      ${rows}
+      <div id="obs-add-row"><button class="ui-list-add" id="obs-add-btn">+ Add organisation</button></div>
+    </div>
+    <div class="deriv-hint">The organisation(s) — the team or service within the activity. This is what casting staffs, not a person to pick here.${teams.length>1?" Several organisations means several verdicts to consolidate — most restrictive wins, pending until all answer.":""}</div>
+  </div>`;
+}
+function bindObsList(body,myBranch,b){
+  body.querySelector("#obs-add-btn")?.addEventListener("click",()=>{
+    const row=body.querySelector("#obs-add-row");
+    row.innerHTML=`<div class="obs-add-form">
+      <input class="ui-input" type="text" id="obs-add-input" placeholder="Organisation name…" autocomplete="off">
+      <button class="mini-btn" id="obs-add-cancel">Cancel</button>
+      <button class="mgr-done" id="obs-add-confirm">Add</button>
+    </div>`;
+    const input=row.querySelector("#obs-add-input");
+    input.focus();
+    row.querySelector("#obs-add-cancel").addEventListener("click",()=>refresh());
+    const doAdd=()=>{
+      const val=(input.value||"").trim();
+      if(!val){ toast("Enter an organisation name","warn"); return; }
+      ensureTeams(myBranch).push({team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",obs:{v:val,c:null}});
+      deriveRequirementCompliance(b);
+      toast(`${val} added`,"ok");
+      refresh();
+    };
+    row.querySelector("#obs-add-confirm").addEventListener("click",doAdd);
+    input.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doAdd(); } });
+  });
+  body.querySelectorAll("[data-obsrm]").forEach(btn=>btn.addEventListener("click",()=>{
+    const idx=+btn.dataset.obsrm;
+    const teams=ensureTeams(myBranch);
+    if(teams.length<=1){ toast("At least one organisation is required","warn"); return; }
+    const team=teams[idx];
+    if(team.branchStatus==="answered" && !confirm("This organisation already has a recorded answer. Removing it permanently deletes that work — this can't be undone. Continue?")) return;
+    teams.splice(idx,1);
+    deriveRequirementCompliance(b);
+    toast("Organisation removed","ok");
+    refresh();
+  }));
+}
 /* TICKET-two-pass-allocation.md §6 — derive every requirement's verdict from
    its tree once at init, so the hand-authored rollupCompliance values stop
    being the source of truth and start being checked against the teams
@@ -4431,7 +4497,6 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
    sequence entirely for the myBranch case, rather than threading one more
    condition through each of those. */
 function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx){
-  const obsVal = (myBranch.obs&&myBranch.obs.v) || TEAM(myBranch.team).label || "—";
   return `
     ${derivStepHTML("ABS",
       `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
@@ -4439,10 +4504,7 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     ${derivStepHTML("PBS",
       `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
       derivSrc.pbs)}
-    ${derivStepHTML("OBS",
-      `<div class="fval">${escHtml(obsVal)}</div>`,
-      derivSrc.obs,
-      "The organisation — the team or service within the activity. This is what casting staffs, not a person to pick here.")}
+    ${obsListHTML(myBranch)}
     <div class="field"><label>Assigned to</label>
       ${personSearchHTML("req-manager",myBranch.manager)}
     </div>
@@ -4527,6 +4589,33 @@ function pmClassificationHTML(b){
         <button class="ui-list-add" id="pm-add-activity">+ Add activity</button>
       </div>
     </div>`;
+}
+/* §3.6 — "a new component, not an edit": a PM overview of every organisation
+   across every activity on a Turnkey requirement, one row per (activity ×
+   organisation) pair, complementing rather than replacing the per-activity
+   OBS summary already shown lower in activityBlocksHTML's own cards. Reads
+   the same ensureTeams()/teams[] this file already consolidates — nothing
+   new to derive, just a different, flatter view of it. */
+function turnkeyObsRecapHTML(b){
+  const acts=b.branches||[];
+  const rows=acts.flatMap(br=>ensureTeams(br).map(t=>({
+    actCode:TY(br.typology).code,
+    org:(t.obs&&t.obs.v)||TEAM(t.team).label||"—",
+    c:t.obs&&t.obs.c,
+    status:BRANCH_STATUS_LABEL[t.branchStatus]||t.branchStatus,
+  })));
+  if(rows.length<2) return ""; // one activity, one org — nothing to recap across
+  return `<div class="deriv-step">
+    <div class="deriv-head"><span class="deriv-label">OBS recap — all activities</span></div>
+    <div class="ui-list is-compact">
+      ${rows.map(r=>`<div class="ui-list-row">
+        <span class="ui-list-tag">${r.actCode}</span>
+        <span class="ui-list-main">${escHtml(r.org)}</span>
+        ${r.c!=null?`<span class="ui-list-badge${r.c<OBS_THRESHOLD?" is-warn":""}">${r.c}%</span>`:""}
+        <span class="ui-list-note">${escHtml(r.status)}</span>
+      </div>`).join("")}
+    </div>
+  </div>`;
 }
 /* §6 — "the lock applies only at the top level — the requirement's final
    verdict. Never a leaf, never an activity." This is that control: shown to
@@ -4725,7 +4814,7 @@ function renderSettings(){
        the propose block below them belong to every view and stay shared. */
     html += pmTurnkey
       ? (actView ? activityDetailHTML(b,state.panelActivity)
-                 : pmClassificationHTML(b)+activityBlocksHTML(b))
+                 : pmClassificationHTML(b)+turnkeyObsRecapHTML(b)+activityBlocksHTML(b))
       : (isReq && myBranch)
         ? contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx)
         : "";
@@ -4800,6 +4889,7 @@ function renderSettings(){
       ${isReq && !isAdmin() ? proposeBlockHTML(b,hasBranches,myBranch) : ""}
       ${isReq ? validateCtaHTML(b,hasBranches,es) : ""}`;
     body.innerHTML = html;
+    if(isReq && myBranch) bindObsList(body,myBranch,b);
     bindPersonSearch(body,"req-manager",id=>{
       const target=myBranch||b;
       if(id) assignPerson(target,id); else target.manager=null;
