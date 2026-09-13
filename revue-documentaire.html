@@ -4590,30 +4590,28 @@ function pmClassificationHTML(b){
       </div>
     </div>`;
 }
-/* §3.6 — "a new component, not an edit": a PM overview of every organisation
-   across every activity on a Turnkey requirement, one row per (activity ×
-   organisation) pair, complementing rather than replacing the per-activity
-   OBS summary already shown lower in activityBlocksHTML's own cards. Reads
-   the same ensureTeams()/teams[] this file already consolidates — nothing
-   new to derive, just a different, flatter view of it. */
-function turnkeyObsRecapHTML(b){
-  const acts=b.branches||[];
-  const rows=acts.flatMap(br=>ensureTeams(br).map(t=>({
-    actCode:TY(br.typology).code,
-    org:(t.obs&&t.obs.v)||TEAM(t.team).label||"—",
-    c:t.obs&&t.obs.c,
-    status:BRANCH_STATUS_LABEL[t.branchStatus]||t.branchStatus,
-  })));
-  if(rows.length<2) return ""; // one activity, one org — nothing to recap across
-  return `<div class="deriv-step">
-    <div class="deriv-head"><span class="deriv-label">OBS recap — all activities</span></div>
-    <div class="ui-list is-compact">
-      ${rows.map(r=>`<div class="ui-list-row">
-        <span class="ui-list-tag">${r.actCode}</span>
-        <span class="ui-list-main">${escHtml(r.org)}</span>
-        ${r.c!=null?`<span class="ui-list-badge${r.c<OBS_THRESHOLD?" is-warn":""}">${r.c}%</span>`:""}
-        <span class="ui-list-note">${escHtml(r.status)}</span>
-      </div>`).join("")}
+/* Per-activity OBS breakdown — one row per organisation on that activity,
+   used inside activityBlocksHTML's own card rather than as a separate
+   cross-activity recap. Falls back to the plain single-line form when the
+   activity only has one team, since there's nothing to break down. */
+function obsBreakdownHTML(teams){
+  if(teams.length<=1){
+    const t=teams[0];
+    const val=(t&&t.obs&&t.obs.v)||(t&&TEAM(t.team).label)||"—";
+    return `<div class="act-line"><span class="act-k">OBS · team</span><span class="act-v">${escHtml(val)}</span></div>`;
+  }
+  return `<div class="act-line act-line-obs">
+    <span class="act-k">OBS · team</span>
+    <div class="ui-list is-compact is-flush act-v">
+      ${teams.map(t=>{
+        const val=(t.obs&&t.obs.v)||TEAM(t.team).label||"—";
+        const c=t.obs&&t.obs.c;
+        const status=BRANCH_STATUS_LABEL[t.branchStatus]||t.branchStatus;
+        return `<div class="ui-list-row" title="${escHtml(status)}">
+          <span class="ui-list-main">${escHtml(val)}</span>
+          ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence">${c}%</span>`:""}
+        </div>`;
+      }).join("")}
     </div>
   </div>`;
 }
@@ -4648,7 +4646,6 @@ function activityBlocksHTML(b){
       const st=activityAllocStatus(branch);
       const teams=ensureTeams(branch);
       const who=teams.map(t=>t.manager?(MGR(t.manager)||{}).name:"Unassigned").join(" · ");
-      const obs=teams.map(t=>t.obs&&t.obs.v?t.obs.v:TEAM(t.team).label).filter(Boolean).join(", ");
       return `<div class="branch-sec">
         <div class="branch-sec-head">
           <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}">${TY(branch.typology).code}</span>
@@ -4656,7 +4653,7 @@ function activityBlocksHTML(b){
           <span class="act-alloc-pill s-${st}" title="Derived from this activity's ${teams.length} team${teams.length>1?"s":""} — nobody enters it">${ACT_ALLOC_LABEL[st]}</span>
         </div>
         <div class="branch-sec-body">
-          <div class="act-line"><span class="act-k">OBS · team</span><span class="act-v">${escHtml(obs)||"—"}</span></div>
+          ${obsBreakdownHTML(teams)}
           <div class="act-line"><span class="act-k">Assigned to</span><span class="act-v">${escHtml(who)}</span></div>
           <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this activity's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
           <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open activity detail →</button></div>
@@ -4814,7 +4811,7 @@ function renderSettings(){
        the propose block below them belong to every view and stay shared. */
     html += pmTurnkey
       ? (actView ? activityDetailHTML(b,state.panelActivity)
-                 : pmClassificationHTML(b)+turnkeyObsRecapHTML(b)+activityBlocksHTML(b))
+                 : pmClassificationHTML(b)+activityBlocksHTML(b))
       : (isReq && myBranch)
         ? contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx)
         : "";
