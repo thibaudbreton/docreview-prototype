@@ -9,45 +9,53 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-07T00:00Z (covered commits from `c4d246b` through
-  `31eb00a`)
+- Last run: 2026-09-08T00:00Z (covered commits from `31eb00a` through
+  `6221a15`, i.e. one substantive commit: `7f50eda`). This entry was
+  drafted the same day in PR #16, which sat unmerged for six days; landed
+  directly on 2026-09-14 after re-confirming nothing below had moved in
+  the meantime (see the 2026-09-14 note at the end of this entry).
 - Findings this run:
-  - `TICKET-two-pass-allocation.md`'s implementation (`77fa82f` ...
-    `055f438`, "two-pass allocation" lots 1-6) corrected
-    `SPEC-domain-model.md` (new §3.2, dated corrections to §4/§4.1/§5) and
-    `SPEC-advanced-filters.md`/`GLOSSARY.md` in the same commit as the code
-    (`055f438`). Checked the diff against the ticket's definition-of-done
-    line by line — sequential PBS→ABS→OBS, per-level confidence, two-level
-    tree, consolidation applied twice with the lock at the top only, and
-    the old crossed-derivation/single-level framing all correctly
-    superseded rather than silently overwritten. `SPEC-review-table.md`
-    doesn't name ABS/PBS/OBS at all, so it wasn't left stale by this
-    change. No action needed.
-  - **Opened issue #15**: the "language & translation" work (`2b4b594`,
-    `900381f`, `7e4ae81` — lots 1, 3, 4, 2026-09-05) implements the
-    feature that `TICKETS-prototype-batch6.md` had explicitly left
-    **blocked**, on the grounds that whether the AI pipeline runs on the
-    original text or a translation "has to be answered by a human" first.
-    The lot-1 commit message states this was "decided" (no review gate,
-    pipeline trusts translation and runs immediately) and lot-3/lot-4
-    commit messages both refer back to that decision — but
-    `SPEC-translation.md` §7/§8 still lists the same question as **open**
-    ("Needs deciding... this is the one that matters"), while its own §5
-    still asserts a no-staleness guarantee that the lot-1 message says "no
-    longer holds." Three inconsistent answers in one document, and no
-    `docs/decisions/` record of the call being made. This is the
-    architectural fork the ticket said only a human should resolve, not a
-    wording drift — flagged rather than edited, per the routine's own
-    ambiguous/core-behaviour rule. Spec left untouched pending the
-    decision.
-  - Issues #10, #11, #12 (opened 2026-08-30) are all still open and
-    unaddressed. Re-checked rather than re-flagged: none of this window's
-    commits touch the retired expert-space specs, add a spec for
-    `documents.html`, or resolve the stray `docs/` files.
-  - `e686af7`/PR #13 (component manifest) and this window's UI-only
-    prototype fixes (SSO dropdown, filter builder rework, header identity,
-    export scoping, etc.) don't describe product decisions a spec or user
-    story needs to track — out of scope for this routine.
-- Baseline for the next run: commits after `31eb00a` (2026-09-05T16:25Z),
-  and issue #15 (opened this run) plus #10/#11/#12 (2026-08-30), all
-  still open — check whether any have been resolved before re-flagging.
+  - `7f50eda` ("docs: consolidate specs into docs/current, archive
+    originals") is a manual documentation review, not a ticket/issue/PR
+    describing a product decision, and not this routine's own commit —
+    its message says so directly, and its own two-paragraph preamble at
+    the top of this file states the edition is "not fully approved for
+    implementation." Treated it as in scope anyway because it rewrote the
+    entire spec corpus this routine checks against, and it bears directly
+    on two open issues from the previous run.
+  - **Closed #10 and #11.** Both were about live specs describing things
+    that no longer match the shipped app (stale Expert Space references;
+    no spec for `documents.html`). `docs/specs/*.md` is now pointer stubs
+    into `docs/current/`, so the specific stale text both issues quoted
+    no longer exists as current truth — `docs/current/README.md` states
+    directly that Expert Space isn't in the active-screens list, and
+    `docs/current/LIFECYCLE.md` (LIFE-004, LIFE-006/007) covers
+    `documents.html`'s functional rules, just in a rule-based shape
+    rather than the old screen-walkthrough format. Commented on each with
+    the specific citations before closing — this was a factual check
+    (does the coverage gap still exist), not a judgment call.
+  - **Did not close #15.** `docs/current/AI.md` (AI-003) and
+    `docs/current/LIFECYCLE.md` (LANG-001/002) now give one consistent
+    answer to the pipeline-timing question — matching what the lot-1/3/4
+    commits actually shipped, and the three-way contradiction in the old
+    `SPEC-translation.md` is gone along with the file itself. But the
+    consolidation's own "not fully approved for implementation" line
+    means the human sign-off the batch-6 ticket required still isn't on
+    record anywhere (no `docs/decisions/` entry). Commented on #15 with
+    both facts and left it open for a human to confirm the sign-off
+    before closing. Also flagged PR #14 in the same comment: it edits the
+    now-archived `SPEC-translation.md` directly and has real merge
+    conflicts against `main` as of this run — superseded either way.
+  - **#12 still open, unaddressed** (`docs/Faire`,
+    `docs/SPEC-qa-screen.md`, `docs/TICKET-casting-screen-redesign.md`,
+    `docs/USER-TEST-session-3_2.md` all still present, untouched by
+    `7f50eda`). Re-checked, not re-flagged.
+- 2026-09-14 note: no commits landed on `main` after `6221a15` in the
+  interim (`git log 6221a15..HEAD` is empty), and #12, #15, and PR #14
+  are all still open/unresolved exactly as described above — re-checked
+  rather than re-flagged. PR #16 (which had carried this update since
+  2026-09-08) is superseded by this direct commit and should be closed.
+- Baseline for the next run: commits after `6221a15` (2026-09-08T14:54Z),
+  and #12 (still open, 2026-08-30) plus #15 (still open, 2026-09-07) and
+  PR #14 (still open, conflicting) — check whether any have moved before
+  re-flagging.
