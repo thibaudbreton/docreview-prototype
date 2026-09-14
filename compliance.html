@@ -244,6 +244,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rrow .c-sel{padding:0}
 .rrow .c-req{gap:8px}
 .rrow .c-req .excerpt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.45}
+/* one caret expands every activity row for that requirement (and, inside each,
+   its teams — §4.4 never gave teams a collapse of their own) */
+.branch-caret{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:var(--radius-sm);border:1px solid var(--line-2);background:var(--panel-3);color:var(--text-2);transition:all .15s;flex-shrink:0;font-size:var(--text-xs);font-weight:700;cursor:pointer}
+.branch-caret:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.branch-caret.open{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);transform:rotate(90deg)}
 /* USER-TEST-session-3.md §1.5 — the compliance comment sits under the verdict pill,
    visible at a glance instead of behind an interaction. */
 /* the comment is its own column now, so Status is back to a single centred pill */
@@ -1170,7 +1175,15 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
   // activity but the viewer's own team on a multi-branch requirement, which is
   // exactly the case this table exists to surface. False here, narrowed only
   // via the "My team only" chip, matches the documented default.
-  ownTeamOnly:false};
+  ownTeamOnly:false,
+  // Sub-rows collapsed by default — a multi-activity requirement can carry a
+  // multi-team activity underneath it, and showing every one of those rows for
+  // every multi-activity requirement at once ate the table. Same convention as
+  // revue-documentaire.html's own expandedBranches: collapsed until asked for,
+  // one caret per requirement. Teams stay un-collapsible on their own (§4.4's
+  // "shown always" once the activity is open) — collapsing hides all of an
+  // activity's rows together, never just some of its teams.
+  expandedBranches:new Set()};
 /* B5 — this screen has no admin/view-as switcher yet (unlike revue-documentaire.html);
    VIEWER simulates whichever branch manager is currently using their own follow-up
    view. "My team only" (state.ownTeamOnly) is the OPEN question's resolution: a
@@ -1870,6 +1883,7 @@ function buildFVRows(){
   rows.forEach(r=>{
     fVROWS.push({type:"row",r});
     if(r.branches.length<2) return; // one activity concerned — stays on a single line, no sub-row
+    if(!state.expandedBranches.has(r.id)) return; // collapsed — caret not opened yet
     const branchFilterActive=(state.filter&&state.filter!=="out")||colFilterActiveCount()||state.needsMe||state.ownTeamOnly;
     r.branches.forEach((b,i)=>{
       if(!passesB(b) && branchFilterActive) return;
@@ -1886,11 +1900,16 @@ function fLastFollowupHTML(entity){
 function fRowInnerHTML(r){
   const c=consolidate(r);
   const single=r.branches.length===1?r.branches[0]:null;
+  const multi=r.branches.length>1;
+  const expanded=multi&&state.expandedBranches.has(r.id);
+  const caretHTML=multi
+    ? `<button class="branch-caret${expanded?" open":""}" data-branchtoggle="${r.id}" title="${expanded?"Collapse activities":`Expand ${r.branches.length} activities`}">▸</button>`
+    : "";
   const lastFollowup=r.branches.reduce((latest,b)=>b.lastFollowup?b.lastFollowup:latest,null);
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${r.id}" ${state.selection.has(r.id)?"checked":""}></label></div>
     <div class="rcell c-id">${r.id}</div>
-    <div class="rcell c-req"><div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div>${r.outdated?'<span class="flag-out">Δ outdated</span>':""}</div>
+    <div class="rcell c-req">${caretHTML}<div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div>${r.outdated?'<span class="flag-out">Δ outdated</span>':""}</div>
     <div class="rcell c-typo">${single?`<span class="ptag">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} activities</span>`}</div>
     <div class="rcell c-expert">${single?branchWhoHTML(single):`<span class="multi-ph">Multiple (${r.branches.length})</span>`}</div>
     <div class="rcell c-status">${consolidatedProgressHTML(c)}</div>
@@ -1962,6 +1981,12 @@ function bindFRows(win){
   win.querySelectorAll(".rowsel").forEach(cb=>cb.addEventListener("click",e=>{
     e.stopPropagation();
     TE.toggleSelect(state.selection,cb.dataset.sel);
+    renderTable2();
+  }));
+  win.querySelectorAll("[data-branchtoggle]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    const id=btn.dataset.branchtoggle;
+    state.expandedBranches.has(id) ? state.expandedBranches.delete(id) : state.expandedBranches.add(id);
     renderTable2();
   }));
   win.querySelectorAll(".rrow").forEach(tr=>{
