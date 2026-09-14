@@ -678,17 +678,17 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             <div><div class="att-t"><b>2 uncertain segmentations</b></div><div class="att-sub">Table rows in section 2 flagged by the AI — confirm boundaries before validating</div></div>
             <span class="att-go">Fix in review →</span>
           </div>
-          <div class="att p2only" id="att-overdue" data-go="compliance.html">
+          <div class="att" id="att-overdue" data-go="compliance.html">
             <div class="att-ic warn">🔔</div>
             <div><div class="att-t"><b id="att-overdue-t">1 contributor response overdue</b></div><div class="att-sub" id="att-overdue-sub">Sophie Lang — SRM-00006 unopened for 6 days</div></div>
             <span class="att-go">Remind →</span>
           </div>
-          <div class="att p2only" data-go="compliance.html">
+          <div class="att" data-go="compliance.html">
             <div class="att-ic accent">⇗</div>
             <div><div class="att-t"><b>2 questions awaiting internal review</b></div><div class="att-sub">A possible duplicate was detected (TLS on legacy gateways) — merge before sending</div></div>
             <span class="att-go">Open Q&amp;A →</span>
           </div>
-          <div class="att p2only" data-go="compliance.html">
+          <div class="att" data-go="compliance.html">
             <div class="att-ic warn">⚠</div>
             <div><div class="att-t"><b>1 non-compliant requirement</b></div><div class="att-sub">SRM-00007 — REST API rate limits below third-party load (Infrastructure)</div></div>
             <span class="att-go">See verdict →</span>
@@ -710,7 +710,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             <div class="feed" id="comments-feed"></div>
           </div>
 
-          <div class="card p2only">
+          <div class="card">
             <h3>Compliance</h3>
             <div class="comp-bar">
               <div class="comp-seg compliant" id="compseg-compliant" style="width:25%">3</div>
@@ -726,17 +726,13 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             </div>
           </div>
 
-          <div class="card p2only">
-            <h3>Experts</h3>
+          <div class="card">
+            <h3>Contributors</h3>
             <div class="exp-list">
               <div class="exp-line"><div class="exp-av" style="background:#6e7bf2">SL</div><div class="exp-ln">Sophie L.<span>Monitoring</span></div><div class="exp-lbar"><div style="width:75%"></div></div><div class="exp-lm">3/4</div></div>
               <div class="exp-line"><div class="exp-av" style="background:#3fb27f">KB</div><div class="exp-ln">Karim B.<span>Infra</span></div><div class="exp-lbar"><div style="width:60%;background:var(--ia)"></div></div><div class="exp-lm over">2 late</div></div>
               <div class="exp-line"><div class="exp-av" style="background:#e0a43c">CM</div><div class="exp-ln">Claire M.<span>Cybersec</span></div><div class="exp-lbar"><div style="width:100%"></div></div><div class="exp-lm">3/3</div></div>
             </div>
-          </div>
-
-          <div class="card locked-hint p1only">
-            Compliance, experts and response tracking appear here once allocation is finalized.
           </div>
         </aside>
       </div>
@@ -759,7 +755,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="stats-grid">
             <div class="stat-block stat-bottlenecks">
               <div class="stat-h">Bottlenecks by perimeter</div>
-              <div class="stat-sub">Awaiting an expert answer — ranked by age of the oldest, not by count</div>
+              <div class="stat-sub">Awaiting a contributor answer — ranked by age of the oldest, not by count</div>
               <div id="stats-bottlenecks" class="bn-list"></div>
             </div>
 
@@ -822,7 +818,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="feed-item warn v22only hidden"><div class="feed-w"><b>SRM-00009</b> flagged as answered on outdated version after v2.2</div><div class="feed-t">Today, 10:46 AM</div></div>
           <div class="feed-item ok"><div class="feed-w"><b>Claire Moreau</b> responded on SRM-00013 — verdict Needs clarification</div><div class="feed-t">Jul 15, 4:20 PM</div></div>
           <div class="feed-item send"><div class="feed-w"><b>Q&amp;A batch</b> — 1 question sent to the issuer (retention period)</div><div class="feed-t">Jul 15, 2:10 PM</div></div>
-          <div class="feed-item ok"><div class="feed-w"><b>Allocation</b> milestone reached — register exported, 3 experts notified</div><div class="feed-t">Jul 12, 9:30 AM</div></div>
+          <div class="feed-item ok"><div class="feed-w"><b>Allocation</b> milestone reached — register exported, 3 contributors notified</div><div class="feed-t">Jul 12, 9:30 AM</div></div>
         </div>
       </div>
     </div>
@@ -832,7 +828,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
   <div class="cfg-layout" id="cfg-screen" style="display:none">
     <aside class="cfg-nav" id="cfg-nav">
       <div class="cfg-nav-item on" data-sec="general"><span class="ci">◈</span> General</div>
-      <div class="cfg-nav-item" data-sec="team"><span class="ci">◉</span> Team &amp; experts</div>
+      <div class="cfg-nav-item" data-sec="team"><span class="ci">◉</span> Team &amp; contributors</div>
       <div class="cfg-nav-item" data-sec="workflow"><span class="ci">⇄</span> Workflow &amp; milestones</div>
       <div class="cfg-nav-item" data-sec="appearance"><span class="ci">◐</span> Appearance</div>
       <div class="cfg-nav-item" data-sec="ai"><span class="ci">✦</span> AI &amp; segmentation</div>
@@ -848,7 +844,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec on" data-sec="general">
           <div class="cfg-h">General</div>
           <div class="cfg-sub">Project identity and key dates. The submission deadline drives the countdown and the overdue calculations.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: these fields aren't wired to the rest of the app in this build. The Dashboard/Review/Follow-up screens keep their own hand-authored project identity, and the deadline shown here doesn't drive any real countdown or overdue calculation.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: these fields aren't wired to the rest of the app in this build. The Dashboard/Allocation/Compliance screens keep their own hand-authored project identity, and the deadline shown here doesn't drive any real countdown or overdue calculation.</div>
           <div class="frow"><div class="fl"><div class="flt">Project name</div><div class="fld">Displayed across all screens.</div></div><div class="fc"><input class="inp" value="Energy Monitoring System"></div></div>
           <div class="frow"><div class="fl"><div class="flt">BO-ID</div></div><div class="fc"><input class="inp" value="STB-2026"></div></div>
           <!-- USER-TEST-session-3.md §1.3 — Turnkey/RCS/SIG/INFRA confirmed; Rolling Stock/
@@ -860,10 +856,10 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 
         <!-- Team -->
         <section class="cfg-sec" data-sec="team">
-          <div class="cfg-h">Team &amp; experts</div>
-          <div class="cfg-sub">Experts available for requirement assignment during allocation. Each can be assigned requirements and receives a qualification link.</div>
+          <div class="cfg-h">Team &amp; contributors</div>
+          <div class="cfg-sub">Contributors available for requirement assignment during allocation. Each can be assigned requirements and receives a qualification link.</div>
           <div id="exp-editor"></div>
-          <div class="add-exp"><input class="inp" id="new-exp-name" placeholder="Full name"><input class="inp" id="new-exp-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="add-exp-btn">Add expert</button></div>
+          <div class="add-exp"><input class="inp" id="new-exp-name" placeholder="Full name"><input class="inp" id="new-exp-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="add-exp-btn">Add contributor</button></div>
           <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria <span style="font-weight:400;color:var(--text-3);font-size:var(--text-xs)">(TE2 — demo only, doesn't change what the review table actually offers)</span></div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (activity)</span><span class="chip-tog on">OBS (organization)</span><span class="chip-tog">Discipline</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Restricted view</div><div class="fld">What a manager sees for requirements outside their assignments (the admin/project lead always sees everything).</div></div><div class="fc"><div class="segc" data-seg="redact"><button class="on" data-redact="redact">Redacted</button><button data-redact="hide">Hidden</button></div><div class="opt-desc"><b>Redacted:</b> the manager sees blacked-out passages — they perceive the volume and context but not the content. <b>Hidden:</b> out-of-scope passages disappear entirely.</div></div></div>
         </section>
@@ -872,10 +868,10 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="workflow">
           <div class="cfg-h">Workflow &amp; milestones</div>
           <div class="cfg-sub">Rules that govern phase transitions, reminders and the review gate.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls change real behavior in this build. Follow-up's lock (see the phase card on the Dashboard) is driven by whether allocation is actually finalized, not by the toggle below; the overdue threshold used by Follow-up's own overdue logic is a fixed constant, not this slider.</div>
-          <div class="frow"><div class="fl"><div class="flt">Review milestone gate</div><div class="fld">Requires 100% of requirements assigned and validated before export to the follow-up phase.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="gate"></span><span class="tl">Enforce full validation before export</span></div></div></div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls change real behavior in this build. Allocation and Compliance run side by side — finalizing Allocation doesn't gate Compliance, and this toggle doesn't enforce anything on export; the overdue threshold Compliance's own overdue logic uses is a fixed constant, not this slider.</div>
+          <div class="frow"><div class="fl"><div class="flt">Allocation completeness gate</div><div class="fld">Requires 100% of requirements assigned and validated before Finalize allocation can export the register.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="gate"></span><span class="tl">Enforce full validation before export</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Overdue threshold</div><div class="fld">Days without a contributor response before a request is flagged overdue.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="1" max="14" value="5" id="over-range"><span class="range-val" id="over-val">5 days</span></div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Maximum reminder cadence</div><div class="fld">Prevents reminder spam to experts.</div></div><div class="fc"><select class="sel"><option>Once every 2 days</option><option>Daily</option><option>Once every 3 days</option><option>Manual only</option></select></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Maximum reminder cadence</div><div class="fld">Prevents reminder spam to contributors.</div></div><div class="fc"><select class="sel"><option>Once every 2 days</option><option>Daily</option><option>Once every 3 days</option><option>Manual only</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Outdated-response re-flag</div><div class="fld">When a new version changes a requirement that already had a response.</div></div><div class="fc"><div class="segc" data-seg="reflag"><button class="on">Substantive changes only</button><button>Any change</button></div><div class="opt-desc"><b>Substantive changes only:</b> typo-level edits don't invalidate an existing contributor response — a human arbitrates borderline cases.</div></div></div>
         </section>
 
@@ -895,9 +891,9 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="qa">
           <div class="cfg-h">Q&amp;A &amp; submission</div>
           <div class="cfg-sub">How clarification questions are consolidated and transmitted to the tender issuer.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect Q&amp;A behavior in the Follow-up screen in this build.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect Q&amp;A behavior in the Compliance screen in this build.</div>
           <div class="frow"><div class="fl"><div class="flt">Issuer channel</div><div class="fld">Determines whether the batch is a simple export or a formatted submission.</div></div><div class="fc"><div class="segc" data-seg="channel"><button class="on">Buyer portal</button><button>Standard form</button><button>Free document</button></div><div class="opt-desc"><b>Buyer portal:</b> the batch is exported to the issuer's imposed format/template. <b>Free document:</b> a plain export you attach yourself.</div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">AI duplicate detection</div><div class="fld">Proposes merging near-identical questions raised by different experts, keeping all requirement links.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="dedup"></span><span class="tl">Suggest merges before submission</span></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">AI duplicate detection</div><div class="fld">Proposes merging near-identical questions raised by different contributors, keeping all requirement links.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="dedup"></span><span class="tl">Suggest merges before submission</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Internal review before sending</div><div class="fld">Questions pass through an internal-review stage before leaving the team.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="review"></span><span class="tl">Require internal review stage</span></div></div></div>
         </section>
 
@@ -905,10 +901,10 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="versions">
           <div class="cfg-h">Versions</div>
           <div class="cfg-sub">How incoming AO document versions are numbered and handled.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how version handling actually works in the Follow-up screen in this build — that's driven by the "Simulate upload — v2.2" button there.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how version handling actually works in the Compliance screen in this build — that's driven by the "Simulate upload — v2.2" button there.</div>
           <div class="frow"><div class="fl"><div class="flt">Numbering</div><div class="fld">Auto-increment with an optional free alias is recommended.</div></div><div class="fc"><div class="segc" data-seg="numbering"><button class="on">Auto-increment + alias</button><button>Free entry</button></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Detect addendum-as-answer</div><div class="fld">When an issuer response actually amends the document, propose treating it as a new version.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="addendum"></span><span class="tl">AI suggests requalifying as a version</span></div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Expert notification on version switch</div><div class="fld">When the active review switches to a newer version.</div></div><div class="fc"><div class="segc" data-seg="notif"><button>Immediate</button><button class="on">Grouped at change-review validation</button></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Contributor notification on version switch</div><div class="fld">When the active review switches to a newer version.</div></div><div class="fc"><div class="segc" data-seg="notif"><button>Immediate</button><button class="on">Grouped at change-review validation</button></div></div></div>
         </section>
 
         <!-- Language -->
@@ -969,7 +965,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
       <div class="view-head" style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:6px">
         <h1 style="font-size:var(--text-xl);font-weight:600;letter-spacing:-.2px" id="team-h1">Team casting</h1>
       </div>
-      <div class="cfg-sub" id="team-sub" style="margin-bottom:16px">Every expert is staffed against an activity and, where the activity uses one, a perimeter within it — the perimeter is optional, not a required step.</div>
+      <div class="cfg-sub" id="team-sub" style="margin-bottom:16px">Every contributor is staffed against an activity and, where the activity uses one, a perimeter within it — the perimeter is optional, not a required step.</div>
       <div class="team-scope">
         <span style="font-size:var(--text-sm);color:var(--text-3)">Viewing as</span>
         <select id="team-viewer"></select>
@@ -1061,7 +1057,7 @@ const CURRENT_PROJECT = (function(){ try{ return (window.parent!==window && wind
 /* Phase gating — reads shared state from the shell (merged app) */
 function reviewDone(){ try{ return !!(window.parent!==window && window.parent.isReviewValidated && window.parent.isReviewValidated()); }catch(e){ return false; } }
 // TB5 — v2.2's gap analysis is narrated as fact; gate it on the real trigger
-// (Follow-up's "Simulate upload — v2.2" button) instead of asserting it on load.
+// (Compliance's "Simulate upload — v2.2" button) instead of asserting it on load.
 function v22Done(){ try{ return !!(window.parent!==window && window.parent.isV22Uploaded && window.parent.isV22Uploaded()); }catch(e){ return false; } }
 function goRoute(url){
   try{ if(window.parent!==window && window.parent.routeUrl){ window.parent.routeUrl(url); return; } }catch(e){}
@@ -1070,8 +1066,11 @@ function goRoute(url){
 function applyGating(){
   const done=reviewDone();
   document.body.classList.toggle("review-done",done);
-  // phase 2 dependent blocks
-  document.querySelectorAll(".p2only").forEach(el=>el.classList.toggle("hidden",!done));
+  // DEC-035 — Allocation and Compliance run side by side; finalizing Allocation
+  // no longer hides or reveals anything Compliance-related (that used to be
+  // what ".p2only" did here). ".p1only" still means what it always did — hide
+  // this once its own condition (allocation not yet finalized) resolves, not a
+  // Compliance-gating concept.
   document.querySelectorAll(".p1only").forEach(el=>el.classList.toggle("hidden",done));
   document.querySelectorAll(".v22only").forEach(el=>el.classList.toggle("hidden",!v22Done()));
   // allocation phase card
@@ -1084,9 +1083,9 @@ function applyGating(){
     document.getElementById("ph-review-bar").style.width="100%";
     document.getElementById("ph-review-bar").style.background="var(--ok)";
   }
-  // follow-up phase card — TE2: gate removed. The workflow no longer requires
-  // Allocation to be finalized before Follow-up is reachable; the two run
-  // side by side now, so this always renders the live-progress state (used
+  // compliance phase card — TE2/DEC-035: gate removed. The workflow no longer
+  // requires Allocation to be finalized before Compliance is reachable; the two
+  // run side by side now, so this always renders the live-progress state (used
   // to be gated on `done`, see TE1 for the now-reverted version of this).
   const f=document.getElementById("ph-followup"),fb=document.getElementById("ph-followup-badge"),fbody=document.getElementById("ph-followup-body");
   f.className="phase active-phase"; f.style.cursor="pointer";
@@ -2031,7 +2030,7 @@ function renderStatsInvalidated(){
   const stale=FOLLOWUP_REQS.filter(r=>r.id==="SRM-00009"&&v22Done());
   if(!stale.length){ block.classList.add("hidden"); return; }
   block.classList.remove("hidden");
-  el.innerHTML=`<div class="invalidated-row" id="stats-invalidated-link">⇄ ${stale.length} expert answer${stale.length>1?"s":""} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
+  el.innerHTML=`<div class="invalidated-row" id="stats-invalidated-link">⇄ ${stale.length} contributor answer${stale.length>1?"s":""} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
   document.getElementById("stats-invalidated-link")?.addEventListener("click",()=>goRoute("documents.html"));
 }
 

@@ -1621,7 +1621,7 @@ body.restricted .restrict-banner{display:flex}
       <div class="doc-scroll" id="doc-scroll"></div>
       <div class="review-wrap">
         <div class="review-head">
-          <h2>Requirements review</h2>
+          <h2>Allocation</h2>
           <span class="sub" id="review-sub"></span>
         </div>
         <div class="filter-sel-banner" id="filter-sel-banner" style="display:none">
@@ -1704,7 +1704,7 @@ body.restricted .restrict-banner{display:flex}
   <div class="modal">
     <div class="modal-head">
       <h3>Finalize allocation</h3>
-      <p>This closes the allocation phase: generates the register and notifies assigned experts.</p>
+      <p>This closes the allocation phase: generates the register and notifies assigned contributors.</p>
     </div>
     <div class="modal-body">
       <div class="export-opt" id="opt-xls">
@@ -1717,8 +1717,8 @@ body.restricted .restrict-banner{display:flex}
       <div class="export-opt" id="opt-send">
         <div class="eo-icon send">✉</div>
         <div style="flex:1">
-          <div class="eo-title">Send to assigned experts</div>
-          <div class="eo-desc">Each expert receives their requirements with a link to the qualification screen.</div>
+          <div class="eo-title">Send to assigned contributors</div>
+          <div class="eo-desc">Each contributor receives their requirements with a link to the qualification screen.</div>
           <div class="expert-list" id="eo-expert-list"></div>
         </div>
       </div>
@@ -2082,7 +2082,7 @@ function seedDemoSections(){
        ],
        rollupStatus:"Awaiting 1 of 2",
        rollupCompliance:"pending",
-       blockingBranch:"SIG & Urban — awaiting expert answer",
+       blockingBranch:"SIG & Urban — awaiting contributor answer",
        change:"added",
        textOriginal:"Le système DOIT garantir une disponibilité de 99,7 % pendant les heures ouvrées, mesurée mensuellement, hors fenêtres de maintenance planifiée.",
        text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.",
@@ -2115,7 +2115,7 @@ const SECTIONS = buildDataFromCapture() || seedDemoSections();
    confident" with "a human confirmed it", which is exactly the paradox this
    ticket resolves — see SPEC-domain-model.md §8. "Allocated" is reached only
    through an explicit human action (validate), never from AI confidence
-   alone; reaching it also sends the item on to Expert Review. */
+   alone; reaching it also sends the item on to Contributor Review. */
 const STATUS_LABEL = {incomplete:"Incomplete", doubt:"To review", tovalidate:"To validate", allocated:"Allocated"};
 /* which field(s) carry the doubt, when status is "doubt" — same five fields
    across both axes (Class/Activity on the requirement, ABS/PBS/OBS per
@@ -2660,9 +2660,9 @@ function validateCtaHTML(b,hasBranches,es){
     if(b.status!=="allocated") return `<button class="validate-cta" id="validate-btn">✓ Validate characterisation</button>`;
     return `<div class="set-hint" style="opacity:.7;font-size:var(--text-xs);padding:8px 0">Characterisation allocated — each allocated activity below validates its own allocation individually.</div>`;
   }
-  if(es.val==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Expert Review</button>`;
+  if(es.val==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Contributor Review</button>`;
   if(b.status!=="allocated") return `<button class="validate-cta" id="validate-btn">✓ Validate characterisation</button>`;
-  return `<button class="validate-cta" id="validate-btn">✓ Validate & send to Expert Review</button>`;
+  return `<button class="validate-cta" id="validate-btn">✓ Validate & send to Contributor Review</button>`;
 }
 
 /* =====================================================
@@ -3586,7 +3586,7 @@ function rowInnerHTML(b){
      (ABS/PBS/OBS) combine "most restrictive wins" via effectiveStatus() — per
      branch for multi-branch rows (shown on the branch sub-row instead, see
      branchRowHTML), or on b itself for the common single-branch case — then
-     whatever the branch already shows once in Expert Review. Multi-branch
+     whatever the branch already shows once in Contributor Review. Multi-branch
      parents only ever show characterisation here; B6 is why the allocation
      stage moved to each branch individually. */
   let statusCls, statusLbl, statusTitle, statusEligible=false;
@@ -3604,10 +3604,10 @@ function rowInnerHTML(b){
     statusCls="s-"+es.val; statusLbl=STATUS_LABEL[es.val];
     statusEligible = es.val!=="incomplete";
     if(es.val==="allocated"){
-      statusTitle="Allocated — sent to Expert Review";
+      statusTitle="Allocated — sent to Contributor Review";
     } else {
       const nextIsAlloc = b.status==="allocated"; // characterisation already done — the next click acts on allocation
-      statusTitle=(es.reviewReason?es.reviewReason+" — ":"")+(statusEligible?("Click to validate"+(nextIsAlloc?" — sends to Expert Review":"")):"Nothing to validate yet");
+      statusTitle=(es.reviewReason?es.reviewReason+" — ":"")+(statusEligible?("Click to validate"+(nextIsAlloc?" — sends to Contributor Review":"")):"Nothing to validate yet");
     }
   }
   // §6 — the lock is visible to everyone allocated on the requirement, not
@@ -3664,14 +3664,14 @@ function branchRowHTML(parent, branch, idx){
   const complianceOptions = COMPLIANCE_DEFS.map(c=>`<option value="${c.k}" ${branch.compliance===c.k?"selected":""}>${c.label}</option>`).join("");
   /* B7 — per-allocated-activity allocation status (B6: each allocated activity progresses on its own,
      independent of its siblings) — once allocated, falls through to whatever
-     the existing branch-tracking status already shows (Expert Review). */
+     the existing branch-tracking status already shows (Contributor Review). */
   const branchStatusHTML = (branch.allocStatus && branch.allocStatus!=="allocated")
     ? (()=>{
         const eligible = branch.allocStatus!=="incomplete";
-        const title=(branch.allocReviewReason?branch.allocReviewReason+" — ":"")+(eligible?"Click to validate — sends to Expert Review":"Nothing to validate yet");
+        const title=(branch.allocReviewReason?branch.allocReviewReason+" — ":"")+(eligible?"Click to validate — sends to Contributor Review":"Nothing to validate yet");
         return `<button class="status-pill s-${branch.allocStatus}" data-branchcycle="${parent.id}::${idx}" title="${title.replace(/"/g,'&quot;')}">${STATUS_LABEL[branch.allocStatus]}</button>`;
       })()
-    : `<span class="status-pill branch-status-${branch.branchStatus}" title="In Expert Review">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>`;
+    : `<span class="status-pill branch-status-${branch.branchStatus}" title="In Contributor Review">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>`;
   /* TICKET-two-pass-allocation.md §6 — an activity that branches again at pass 2
      stops being editable in place: its manager/team/verdict belong to the teams
      underneath it, and its own verdict is DERIVED, never entered. A single-team
@@ -3795,7 +3795,7 @@ function passesColFilters(b){
    - ABS is free text (b.domain), not a closed list — the live data has no
      fixed ABS vocabulary, so it gets contains/is/starts-with, not is-any-of.
    - "Compliance comment" and "Last follow-up" don't exist on this screen's
-     data at all (they're compliance.html/Follow-up concepts) — omitted per
+     data at all (they're compliance.html/Compliance-screen concepts) — omitted per
      §2's rule, not just left as dead options. "Responsible person" is
      Manager here — the single-responsible-person model session 3 asked for
      isn't built yet; this is the closest live field until it is. */
@@ -3926,7 +3926,7 @@ function renderReview(){
     t.textContent=sentence; t.title=sentence;   // truncated inline, full on hover
   }
   document.getElementById("review-sub").innerHTML =
-    `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, activity, managers, experts and statuses`;
+    `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, activity, assignments and statuses`;
   renderSortIndicators();
   renderColFilterIndicators();
 
@@ -4513,7 +4513,7 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     <div class="set-sep"></div>
     ${distributionBlockHTML(b, true)}
     ${myReassignBranch?`<div class="branch-proposal">
-      <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(expert)</span></div>
+      <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(contributor)</span></div>
       <div class="branch-proposal-note">${REASON_LABEL[myReassignBranch.reassignRequest.reason]} — "${escHtml(myReassignBranch.reassignRequest.note)}"</div>
       <div class="branch-proposal-note" style="font-style:normal">${myReassignBranch.reassignRequest.reason==="wrong_person"
         ? `Proposed: reassign to <b>${(myReassignBranch.reassignRequest.replacementExpertLabel||"—").split("—")[0].trim()}</b>`
@@ -4855,7 +4855,7 @@ function renderSettings(){
               </div>
             </div>`:""}
             ${branch.reassignRequest?`<div class="branch-proposal">
-              <div class="branch-proposal-h">↩ Reassignment requested by <b>${branch.reassignRequest.byName}</b>${branch.reassignRequest.byRole==="expert"?' <span style="font-weight:400;color:var(--text-3)">(expert)</span>':""}</div>
+              <div class="branch-proposal-h">↩ Reassignment requested by <b>${branch.reassignRequest.byName}</b>${branch.reassignRequest.byRole==="expert"?' <span style="font-weight:400;color:var(--text-3)">(contributor)</span>':""}</div>
               <div class="branch-proposal-note">${REASON_LABEL[branch.reassignRequest.reason]} — "${escHtml(branch.reassignRequest.note)}"</div>
               <div class="branch-proposal-note" style="font-style:normal">${branch.reassignRequest.reason==="wrong_person"
                 ? `Proposed: reassign to <b>${(branch.reassignRequest.replacementExpertLabel||"—").split("—")[0].trim()}</b>`
@@ -5176,7 +5176,7 @@ function activityFor(b){
       {k:"human",who:"Thibaud Breton",what:'Criterion text clarified.<span class="before-after"><span class="ba-del">under 2 seconds</span> → <span class="ba-ins">under 2 seconds … at the 95th percentile</span></span>',time:"Yesterday, 5:40 PM"},
     );
   }
-  if(isFullyAllocated(b)) base.unshift({k:"ok",who:"Thibaud Breton",what:"Requirement allocated — characterisation and assignment confirmed, sent to Expert Review.",time:"Jul 15, 2026, 11:02 AM"});
+  if(isFullyAllocated(b)) base.unshift({k:"ok",who:"Thibaud Breton",what:"Requirement allocated — characterisation and assignment confirmed, sent to Contributor Review.",time:"Jul 15, 2026, 11:02 AM"});
   if(b.id==="SRM-00021") base.unshift({k:"comment",who:"Claire Moreau",what:'"Is the 3-year retention period aligned with group policy (5 years)?"',time:"Jul 14, 2026, 4:20 PM"});
   return base;
 }
@@ -5312,7 +5312,7 @@ function markAllocEdited(target){
 function validateAllocTarget(target, isRealBranch){
   if(!target || target.allocStatus==="allocated" || target.allocStatus==="incomplete") return false;
   target.allocStatus="allocated"; target.allocDoubtField=null; delete target.allocReviewReason;
-  if(isRealBranch && !target.branchStatus) target.branchStatus="awaiting_answer"; // TD2 — sent to Expert Review, expert already assigned (allocStatus just became "allocated")
+  if(isRealBranch && !target.branchStatus) target.branchStatus="awaiting_answer"; // TD2 — sent to Contributor Review, contributor already assigned (allocStatus just became "allocated")
   return true;
 }
 function validateProgress(id, branchIdx){
@@ -5332,7 +5332,7 @@ function validateProgress(id, branchIdx){
 /* Individual validate — always a real human gesture (B7): this is the only
    way anything reaches Allocated, whether it came from To review (corrected)
    or straight from To validate (a quick, trusting click). Reaching Allocated on
-   the allocation axis is what sends the branch on to Expert Review — the UI
+   the allocation axis is what sends the branch on to Contributor Review — the UI
    says so plainly rather than burying it as a silent side effect. */
 function validateBlock(id, branchIdx){
   const f = findBlock(id); if(!f) return;
@@ -5348,7 +5348,7 @@ function validateBlock(id, branchIdx){
   refresh();
   if(wasWeak && stage==="alloc"){ logFeedback("deriv", id, `weak OBS ${target.obs.c}%`, "validated as-is", target.obs.c); setTimeout(()=>toast("Weak derivation confirmed by you — recorded as AI feedback","ok"),700); }
   const label = branchIdx!=null ? `${id} · ${TY(target.typology).label}` : id;
-  const msg = stage==="alloc" ? `${label} allocated — sent to Expert Review` : `${label} characterisation validated`;
+  const msg = stage==="alloc" ? `${label} allocated — sent to Contributor Review` : `${label} characterisation validated`;
   toast(msg,"ok",()=>{
     b.status=snap.status; b.doubtField=snap.doubtField; b.reviewReason=snap.reviewReason;
     target.allocStatus=snap.allocStatus; target.allocDoubtField=snap.allocDoubtField; target.allocReviewReason=snap.allocReviewReason; target.branchStatus=snap.branchStatus;
@@ -6082,7 +6082,7 @@ function matchesDoc(b){ return state.docFilter==="all" || (b.section && b.sectio
 const EXPORT_STEPS=[
   {k:"capture",label:"Capture",desc:"Document structure, segments and tables"},
   {k:"charac",label:"Characterization",desc:"Class, typology, type and status"},
-  {k:"alloc",label:"Allocation",desc:"Managers and expert assignments"},
+  {k:"alloc",label:"Allocation",desc:"Managers and contributor assignments"},
 ];
 const EXPORT_FORMATS=[
   {k:"xlsx",label:"Excel (.xlsx)"},{k:"csv",label:"CSV (.csv)"},
@@ -6201,9 +6201,9 @@ const EXPORT_EXPERTS = {
   cyber:{name:"Claire Moreau",team:"Cybersecurity",init:"CM",color:"#e0a43c"},
 };
 /* TB3 — compute the Finalize modal's totals from the live requirement set instead
-   of typing them into the markup. The per-expert breakdown excludes image-sourced
-   requirements (b.sourceImage) — they don't sync into the expert-facing Follow-up
-   screen yet (see TD3), so counting them here would overstate what experts actually
+   of typing them into the markup. The per-contributor breakdown excludes image-sourced
+   requirements (b.sourceImage) — they don't sync into the contributor-facing Compliance
+   screen yet (see TD3), so counting them here would overstate what contributors actually
    receive. */
 let EXPORT_STATS = {total:0, expertCount:0};
 function renderExportModal(){
@@ -6243,10 +6243,10 @@ document.getElementById("modal-cancel").addEventListener("click",()=>overlay.cla
 overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.classList.remove("open")});
 document.getElementById("modal-confirm").addEventListener("click",()=>{
   overlay.classList.remove("open");
-  toast("Review finalized — register STB-2026_requirements.xlsx generated","ok");
+  toast("Allocation finalized — register STB-2026_requirements.xlsx generated","ok");
   try{ if(window.parent!==window && window.parent.setReviewValidated) window.parent.setReviewValidated(true); }catch(e){}
   const n=EXPORT_STATS.expertCount;
-  setTimeout(()=>toast(`${n} expert${n>1?"s":""} notified`,"ok"),900);
+  setTimeout(()=>toast(`${n} contributor${n>1?"s":""} notified`,"ok"),900);
   setTimeout(()=>{ try{ if(window.parent!==window && window.parent.route) window.parent.route("dashboard"); }catch(e){} },1900);
 });
 document.getElementById("opt-xls").addEventListener("click",()=>toast(`Preview: ${EXPORT_STATS.total} rows · 8 columns · traceability links included`,"ok"));

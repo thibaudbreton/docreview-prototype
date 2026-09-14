@@ -90,7 +90,7 @@ function b64utf8(s){return decodeURIComponent(Array.prototype.map.call(atob(s),c
 const frame = document.getElementById('frame');
 
 /* ============ WORKSPACE — project list + background processing ============ */
-/* builtOut:true = the project's Dashboard/Review/Follow-up/Expert Space screens show
+/* builtOut:true = the project's Dashboard/Allocation/Compliance screens show
    real, hand-authored content for this project specifically. Only "stb2026" qualifies —
    see HANDOVER.md ("Only one project is fully navigable... steer test participants to
    the EMS project for task scenarios"). The other four seeds exist only to illustrate
@@ -126,9 +126,9 @@ function seedProjects(){
     {id:"ao088", ref:"AO-2026-088", name:"Depot Maintenance Systems", line:"Services", days:41, deadline:1,
      status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now", role:"Project manager", builtOut:false},
     {id:"stb133", ref:"STB-2026-133", name:"Regional Fleet Telemetry", line:"Rolling Stock", days:5, deadline:1,
-     status:"qa_versioning", done:58, total:63, allocated:63, complianceFilled:58, updated:"yesterday", role:"Expert", builtOut:false},
+     status:"qa_versioning", done:58, total:63, allocated:63, complianceFilled:58, updated:"yesterday", role:"Contributor", builtOut:false},
     {id:"stb2025", ref:"STB-2025-071", name:"Metro Depot Power Supply", line:"INFRA", days:-12, deadline:1,
-     status:"submitted", reqs:88, updated:"Jun 3", role:"Expert", builtOut:false},
+     status:"submitted", reqs:88, updated:"Jun 3", role:"Contributor", builtOut:false},
   ];
 }
 let PROJECTS = seedProjects();
@@ -173,11 +173,11 @@ function startProcLoop(){
           if(p.progress<25) p.procLabel="Capturing requirements…";
           else if(p.progress<50) p.procLabel="Translating requirements…";
           else if(p.progress<75) p.procLabel="Characterising requirements…";
-          else p.procLabel="Allocating to experts…";
+          else p.procLabel="Allocating to contributors…";
         }else{
           if(p.progress<35) p.procLabel="Capturing requirements…";
           else if(p.progress<70) p.procLabel="Characterising requirements…";
-          else p.procLabel="Allocating to experts…";
+          else p.procLabel="Allocating to contributors…";
         }
       }
     });
@@ -201,7 +201,7 @@ window.addProject = function(meta){
     // (that screen owns its own independent PM_TEAM, per this project's
     // no-shared-data-layer convention) — stored here for completeness, same
     // treatment `experts` got before it. Configuration's own "Team &
-    // experts" section already falls back to its own seed list when this is
+    // contributors" section already falls back to its own seed list when this is
     // empty, which it always will be now — no change needed there. No
     // `builtOut` flag is set here on purpose — wizard-created projects are
     // exempt from TA1's demo-only block.
@@ -236,7 +236,7 @@ let reviewValidated = false;
 window.isReviewValidated = ()=>reviewValidated;
 window.setReviewValidated = (v)=>{ reviewValidated = !!v; };
 // TB5 — has v2.2's gap analysis actually run? The dashboard narrates it as
-// already-arrived; this flag lets it gate that on the real trigger (Follow-up's
+// already-arrived; this flag lets it gate that on the real trigger (Compliance's
 // "Simulate upload — v2.2" button) instead of asserting it as fact on load.
 let v22Uploaded = false;
 window.isV22Uploaded = ()=>v22Uploaded;

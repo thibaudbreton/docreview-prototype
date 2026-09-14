@@ -764,7 +764,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
       <button class="clear-filter" id="clear2">✕ Clear filter</button>
       <div class="triage-right">
         <button class="btn-ghost" id="remind-all">🔔 Remind all overdue</button>
-        <div class="nav-toggle"><button data-by="section" class="on">By section</button><button data-by="expert">By expert</button></div>
+        <div class="nav-toggle"><button data-by="section" class="on">By section</button><button data-by="expert">By contributor</button></div>
         <div class="kbd-hint"><span><kbd>J</kbd>/<kbd>K</kbd></span><span><kbd>R</kbd> remind</span><span><kbd>Q</kbd> to Q&amp;A</span></div>
       </div>
     </div>
@@ -846,7 +846,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
 
       <span class="sel-sep"></span>
 
-      <button class="sel-btn" id="f-sel-reassign">↪ Reassign expert</button>
+      <button class="sel-btn" id="f-sel-reassign">↪ Reassign contributor</button>
       <button class="sel-btn primary" id="f-sel-remind">🔔 Send reminder</button>
 
       <button class="sel-clear" id="f-sel-clear" title="Clear selection" aria-label="Clear selection">✕</button>
@@ -2093,7 +2093,7 @@ function renderPanel2(){
     const consolidated=REQS.filter(isConsolidated).length;
     p.innerHTML=`<div class="set-empty"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
       <div class="big">No assignment selected</div>
-      <div>Select a requirement or one of its assignments to see the expert response.<br><br><b style="color:var(--text-2)">${consolidated}/${REQS.length}</b> requirements consolidated · <b style="color:var(--text-2)">${allBranches().filter(isOverB).length}</b> overdue assignments.</div></div>`;
+      <div>Select a requirement or one of its assignments to see the contributor's response.<br><br><b style="color:var(--text-2)">${consolidated}/${REQS.length}</b> requirements consolidated · <b style="color:var(--text-2)">${allBranches().filter(isOverB).length}</b> overdue assignments.</div></div>`;
     return;
   }
   const r=findR(state.sel);
@@ -2174,16 +2174,16 @@ function renderPanel2(){
     }else if(br.status==="awaiting_qa"){
       b.innerHTML=whoBlock+`
         <div class="qa-block"><div class="qa-block-h">⇗ Blocked on the issuer</div>
-          <div class="qa-block-t">${esc(br.qaNote||"The expert needs a precision from the tender issuer before answering.")}</div>
+          <div class="qa-block-t">${esc(br.qaNote||"The contributor needs a precision from the tender issuer before answering.")}</div>
           ${br.qaRef?`<div class="qa-block-ref">Question <b>${br.qaRef}</b> — see the Q&amp;A register</div>`:""}</div>
         <div class="fval" style="font-size:var(--text-sm);color:var(--text-3);margin-bottom:12px">This assignment cannot be answered yet and counts as not answered, so it blocks consolidation of ${r.id}.</div>
         <a class="cta line" id="a-goqa" href="javascript:parent.route('qa')">→ Open the Q&amp;A register</a>`;
     }else if(br.status==="reassignment_needed"){
-      // T5 — internal loop: the manager reallocates, the allocated activity goes back out to an expert.
+      // T5 — internal loop: the manager reallocates, the allocated activity goes back out to a contributor.
       // Nothing leaves the company here (contrast with the Q&A loop above).
       b.innerHTML=whoBlock+`
-        <div class="reassign-block"><div class="reassign-h">↩ Returned by the expert</div>
-          <div class="reassign-t">${esc(br.reassignComment||"The expert judged this allocation wrong and returned it.")}</div></div>
+        <div class="reassign-block"><div class="reassign-h">↩ Returned by the contributor</div>
+          <div class="reassign-t">${esc(br.reassignComment||"The contributor judged this allocation wrong and returned it.")}</div></div>
         <div class="fval" style="font-size:var(--text-sm);color:var(--text-3);margin-bottom:12px">Internal action — this stays inside the company and comes back to you as the manager.</div>
         <div class="field"><label>Reallocate to</label>
           <select id="ra-mgr">${['<option value="">— Nobody —</option>'].concat(MANAGERS.map(x=>`<option value="${x.id}" ${br.manager===x.id?"selected":""}>${x.name} — ${x.role}</option>`)).join("")}</select></div>
@@ -2299,7 +2299,7 @@ function renderPanel2(){
     }else{
       b.innerHTML=whoBlock+`
         <div class="field"><label>Waiting</label>
-          <div class="fval">${br.status==="proposed"?"Allocation proposed — not dispatched to an expert yet.":`No response yet — sent <b class="${isOverB(br)?"age over":""}">${br.age} days ago</b>.${isOverB(br)?" Above the "+OVERDUE_DAYS+"-day threshold.":""}`}</div></div>
+          <div class="fval">${br.status==="proposed"?"Allocation proposed — not dispatched to a contributor yet.":`No response yet — sent <b class="${isOverB(br)?"age over":""}">${br.age} days ago</b>.${isOverB(br)?" Above the "+OVERDUE_DAYS+"-day threshold.":""}`}</div></div>
         ${e?`<button class="cta blue" id="a-remind">🔔 Send a reminder <kbd style="font-family:var(--font-mono);font-size:var(--text-xs);opacity:.7">R</kbd></button>`:""}`;
       b.querySelector("#a-remind")?.addEventListener("click",()=>toast(`Reminder sent to ${e.name} for ${r.id} · ${TY(br.typology).label}`,"ok"));
     }
@@ -2308,7 +2308,7 @@ function renderPanel2(){
     const items=[];
     if(br.status==="answered"&&br.resp)items.push({k:"tl-ok",who,what:`Responded — compliance "${CMP[br.internal]||"—"}".`,time:br.resp.date});
     if(br.status==="awaiting_qa")items.push({k:"tl-send",who,what:`Raised a question to the issuer — assignment blocked until answered.`,time:`${br.age} d ago`});
-    if(br.status==="reassignment_needed")items.push({k:"tl-warn",who:"Expert",what:`Returned the assignment — wrong allocation.`,time:`${br.age} d ago`});
+    if(br.status==="reassignment_needed")items.push({k:"tl-warn",who:"Contributor",what:`Returned the assignment — wrong allocation.`,time:`${br.age} d ago`});
     if(isOverB(br))items.push({k:"tl-warn",who:"System",what:`Overdue threshold reached (${OVERDUE_DAYS} days without response).`,time:`${Math.max(1,br.age-OVERDUE_DAYS+1)} d ago`});
     items.push({k:"tl-send",who:"Thibaud Breton",what:`Assignment created for ${TY(br.typology).label}${e?` and sent to ${e.name}`:""}.`,time:`${br.age} d ago (export from Allocation)`});
     b.innerHTML=`<div class="timeline">${items.map(i=>`<div class="tl-item ${i.k}"><div class="tl-who">${i.who}</div><div class="tl-what">${i.what}</div><div class="tl-time">${i.time}</div></div>`).join("")}</div>`;
@@ -2406,9 +2406,9 @@ function select(id,branchIdx){
   const el=document.querySelector(`.dblk[data-id="${id}"]`);
   if(state.view==="doc"&&el)el.scrollIntoView({block:"center",behavior:"smooth"});
 }
-// TE2 — gate removed: Follow-up and Allocation now run side by side instead of
-// Follow-up unlocking only once Allocation is finalized (was TE1's reinstated
-// review→follow-up gate).
+// TE2 — gate removed: Compliance and Allocation now run side by side instead of
+// Compliance unlocking only once Allocation is finalized (was TE1's reinstated
+// allocation→compliance gate).
 // TICKET-three-support-screens.md — Versions & Q&A left this file for their own
 // screens (documents.html / qa.html), so screen 3 is gone and this is a no-op
 // kept only because build_merge.py's shell calls it when routing here.
@@ -2424,7 +2424,7 @@ function setView(v){
 }
 /* TC2 — pull in reassignment requests raised in Expert Space via the shared shell
    mailbox (mirrors revue-documentaire.html's syncReassignRequestsFromShell), so a
-   live request an expert just raised shows up here as "Returned by the expert"
+   live request a contributor just raised shows up here as "Returned by the contributor"
    instead of only the hand-authored seed comment. Manager-raised (byRole:"manager")
    requests are a B1 escalation to the admin and stay out of scope here. */
 function syncReassignRequestsFromShell(){
@@ -2607,7 +2607,7 @@ document.getElementById("f-sel-reassign").addEventListener("click",()=>{
   const id=[...state.selection][0];
   select(id);
   setView("table");
-  toast("Jump to the branch below to reassign its expert/manager","ok");
+  toast("Jump to the branch below to reassign its contributor","ok");
 });
 document.getElementById("f-sel-all").addEventListener("change",e=>{
   const ids=tableRows().map(r=>r.id);
