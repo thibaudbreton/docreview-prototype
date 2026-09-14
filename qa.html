@@ -305,13 +305,16 @@ html[data-theme="light"] .logo-mark-light{display:block}
 /* Own copy of the demo story, per the convention every screen here follows.
    Requirement links are plain refs — this screen shows and answers questions;
    the consolidation-blocking side of Awaiting Q&A stays in compliance.html. */
-const TYPOS={sig:{code:"SIG",label:"SIG & Urban"},mln:{code:"MLN",label:"Mainline Wayside"},sys:{code:"SYS",label:"Safety"},tlc:{code:"TLC",label:"Telecom"},inf:{code:"INF",label:"Infrastructure"}};
+/* DEC-032 — same 16-code activity list as revue-documentaire.html's TYPO /
+   compliance.html's TYPOS, replacing this screen's own invented 5-way split.
+   label intentionally equals code — no real legend for these exists yet. */
+const TYPOS={afc:{code:"AFC",label:"AFC"},cjv:{code:"CJV",label:"CJV"},com:{code:"COM",label:"COM"},cyb:{code:"CYB",label:"CYB"},deq:{code:"DEQ",label:"DEQ"},ils:{code:"ILS",label:"ILS"},ocs:{code:"OCS",label:"OCS"},pos:{code:"POS",label:"POS"},psd:{code:"PSD",label:"PSD"},rams:{code:"RAMS",label:"RAMS"},rst:{code:"RST",label:"RST"},scada:{code:"SCADA",label:"SCADA"},sen:{code:"SEN",label:"SEN"},sig:{code:"SIG",label:"SIG"},spm:{code:"SPM",label:"SPM"},trk:{code:"TRK",label:"TRK"}};
 const TY=id=>TYPOS[id]||{code:String(id||"—").toUpperCase(),label:id||"—"};
 let QA=[
   {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",
-   refs:[{req:"SRM-00010",typology:"mln"}],from:"Karim Benali",date:"Jul 14"},
+   refs:[{req:"SRM-00010",typology:"trk"}],from:"Karim Benali",date:"Jul 14"},
   {id:"QA-02",st:"draft",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
-   refs:[{req:"SRM-00013",typology:"mln"}],from:"Claire Moreau",date:"Jul 15"},
+   refs:[{req:"SRM-00013",typology:"trk"}],from:"Claire Moreau",date:"Jul 15"},
   {id:"QA-03",st:"draft",q:"Which TLS version applies to legacy site gateways?",
    refs:[{req:"SRM-00014",typology:"sig"}],from:"Claire Moreau",date:"Jul 16",dup:"QA-04"},
   {id:"QA-04",st:"draft",q:"Is TLS 1.3 mandatory for gateways already deployed on existing sites?",

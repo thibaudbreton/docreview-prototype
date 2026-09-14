@@ -894,18 +894,33 @@ const LANGUAGE_LABEL={en:"English", fr:"French", de:"German", es:"Spanish"};
    manager" or "an expert". `typology` is what that scoping keys off. */
 const MANAGERS=[
   {id:"m_sig",name:"Louis Renaud",role:"SIG contributor",typology:"sig",init:"LR",color:"#3fb27f"},
-  {id:"m_mln",name:"Amina Cherif",role:"Mainline contributor",typology:"mln",init:"AC",color:"#e0a43c"},
-  {id:"m_inf",name:"Paolo Ferri",role:"Infrastructure contributor",typology:"inf",init:"PF",color:"#a06ef2"},
+  {id:"m_mln",name:"Amina Cherif",role:"TRK contributor",typology:"trk",init:"AC",color:"#e0a43c"},
+  {id:"m_inf",name:"Paolo Ferri",role:"OCS contributor",typology:"ocs",init:"PF",color:"#a06ef2"},
   {id:"sup",name:"Sophie Lang",role:"Monitoring Team contributor",typology:"sig",init:"SL",color:"#6e7bf2"},
-  {id:"infra",name:"Karim Benali",role:"Infrastructure Team contributor",typology:"inf",init:"KB",color:"#3fb27f"},
-  {id:"cyber",name:"Claire Moreau",role:"Cybersecurity contributor",typology:"sys",init:"CM",color:"#e0a43c"},
+  {id:"infra",name:"Karim Benali",role:"OCS Team contributor",typology:"ocs",init:"KB",color:"#3fb27f"},
+  {id:"cyber",name:"Claire Moreau",role:"Cybersecurity contributor",typology:"rams",init:"CM",color:"#e0a43c"},
 ];
+/* DEC-032 — activity list aligned to revue-documentaire.html's TYPO: the
+   capture's real codes, not this screen's own invented 5-way split. label
+   intentionally equals code, same reasoning as TYPO's own comment there —
+   no legend for these exists yet. */
 const TYPOS={
-  sig:{code:"SIG",label:"SIG & Urban"},
-  mln:{code:"MLN",label:"Mainline Wayside"},
-  sys:{code:"SYS",label:"Safety"},
-  tlc:{code:"TLC",label:"Telecom"},
-  inf:{code:"INF",label:"Infrastructure"},
+  afc:{code:"AFC",label:"AFC"},
+  cjv:{code:"CJV",label:"CJV"},
+  com:{code:"COM",label:"COM"},
+  cyb:{code:"CYB",label:"CYB"},
+  deq:{code:"DEQ",label:"DEQ"},
+  ils:{code:"ILS",label:"ILS"},
+  ocs:{code:"OCS",label:"OCS"},
+  pos:{code:"POS",label:"POS"},
+  psd:{code:"PSD",label:"PSD"},
+  rams:{code:"RAMS",label:"RAMS"},
+  rst:{code:"RST",label:"RST"},
+  scada:{code:"SCADA",label:"SCADA"},
+  sen:{code:"SEN",label:"SEN"},
+  sig:{code:"SIG",label:"SIG"},
+  spm:{code:"SPM",label:"SPM"},
+  trk:{code:"TRK",label:"TRK"},
 };
 /* T2 — two separate axes.
    BST = progress (where the assignment stands). CMP = result (only meaningful once answered).
@@ -1007,14 +1022,14 @@ const REQS_HAND=[
    branches:[
      {typology:"sig",manager:"m_sig",status:"answered",internal:"not_compliant",age:8,
       resp:{note:"The 5-minute alerting threshold is achievable, but integrating the issuer's escalation matrix falls outside the proposed scope and budget envelope. Not compliant as specified.",att:0,date:"Jul 13"}},
-     {typology:"mln",manager:"m_mln",status:"awaiting_answer",internal:null,age:4,lastFollowup:"Jul 14"},
-     {typology:"sys",manager:null,status:"reassignment_needed",internal:null,age:3,
+     {typology:"trk",manager:"m_mln",status:"awaiting_answer",internal:null,age:4,lastFollowup:"Jul 14"},
+     {typology:"rams",manager:null,status:"reassignment_needed",internal:null,age:3,
       reassignComment:"Alerting escalation is a safety-critical chain — this should sit with the Safety authority, not with my perimeter. Please reallocate."},
    ]},
   {id:"SRM-00006",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets.",
    branches:[
-     {typology:"mln",manager:"m_mln",status:"awaiting_answer",internal:null,age:6},
+     {typology:"trk",manager:"m_mln",status:"awaiting_answer",internal:null,age:6},
    ]},
   // the textbook case for the risk field: fully consolidated Not compliant, declared
   // Compliant to the client anyway — the one move the risk note is mandatory for
@@ -1028,18 +1043,18 @@ const REQS_HAND=[
   {id:"SRM-00008",sec:"2. Functional requirements",type:"Interface",
    text:"The system SHALL import weather forecast feeds, refreshed every 15 minutes.",
    branches:[
-     {typology:"tlc",manager:"m_mln",status:"awaiting_answer",internal:null,age:2},
+     {typology:"com",manager:"m_mln",status:"awaiting_answer",internal:null,age:2},
    ]},
   {id:"SRM-00009",sec:"3. Performance requirements",type:"Performance",
    text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites.",
    branches:[
-     {typology:"mln",manager:"m_inf",status:"answered",internal:"compliant",age:8,
+     {typology:"trk",manager:"m_inf",status:"answered",internal:"compliant",age:8,
       resp:{note:"3 s refresh validated in load test for 250 simultaneous sites.",att:1,date:"Jul 12"}},
    ]},
   {id:"SRM-00010",sec:"3. Performance requirements",type:"Performance",
    text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile.",
    branches:[
-     {typology:"mln",manager:"m_inf",status:"awaiting_qa",internal:null,age:7,qaRef:"QA-01",
+     {typology:"trk",manager:"m_inf",status:"awaiting_qa",internal:null,age:7,qaRef:"QA-01",
       qaNote:"Cannot commit without knowing whether the one-year depth is a rolling year or a calendar year — the storage strategy differs."},
    ]},
   {id:"SRM-00011",sec:"3. Performance requirements",type:"Performance",
@@ -1050,7 +1065,7 @@ const REQS_HAND=[
      // activity itself reads not_compliant even though the primary cluster
      // alone would have passed. Hand-authored, same convention as the rest
      // of this seed (nothing derived at load time).
-     {typology:"mln",manager:"m_mln",status:"answered",internal:"not_compliant",age:6,
+     {typology:"trk",manager:"m_mln",status:"answered",internal:"not_compliant",age:6,
       resp:{note:"Primary site cluster meets the target; the secondary depot cluster falls short — see teams below.",att:0,date:"Jul 16"},
       teams:[
         {manager:"m_mln",status:"answered",internal:"compliant",age:5,
@@ -1068,7 +1083,7 @@ const REQS_HAND=[
   {id:"SRM-00013",sec:"4. Security requirements",type:"Security",
    text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years.",
    branches:[
-     {typology:"mln",manager:"m_mln",status:"awaiting_qa",internal:null,age:6,qaRef:"QA-02",
+     {typology:"trk",manager:"m_mln",status:"awaiting_qa",internal:null,age:6,qaRef:"QA-02",
       qaNote:"Logging is fully supported, but the 3-year retention conflicts with the group policy (5 years) — needs issuer confirmation before commitment."},
    ]},
   {id:"SRM-00014",sec:"4. Security requirements",type:"Security",
@@ -1091,8 +1106,8 @@ const GEN_OBJ=["site-level consumption data","regional aggregation reports","ope
 const GEN_QUAL=["within the configured retention window","across all connected sites","for every registered operator profile","without manual intervention","in compliance with the applicable security policy","within 2 seconds of the triggering event","for a fleet of up to 300 sites","independently of network conditions","with a full audit trail","on a rolling 24-month basis"];
 const GEN_SEC=["2. Functional requirements","3. Performance requirements","4. Security requirements"];
 const GEN_TYPE={"2. Functional requirements":"Functional","3. Performance requirements":"Performance","4. Security requirements":"Security"};
-const GEN_TYPO=["sig","mln","tlc","inf","sys"];
-const GEN_TYPO_MGR={sig:"m_sig",mln:"m_mln",tlc:"m_mln",inf:"m_inf",sys:null};
+const GEN_TYPO=["sig","trk","com","ocs","rams"];
+const GEN_TYPO_MGR={sig:"m_sig",trk:"m_mln",com:"m_mln",ocs:"m_inf",rams:null};
 const GEN_RESP=["Standard configuration covers this out of the box, no deviation.","Achievable with the current architecture; validated in the last integration test.","Meets the requirement as written, no exception noted.","Supported natively; no additional development required.","Confirmed against the reference deployment — compliant as specified."];
 const GEN_STATUS_CYCLE=["answered","answered","answered","answered","answered","awaiting_answer","awaiting_answer","awaiting_qa","proposed","reassignment_needed"];
 const GEN_CMP_CYCLE=["compliant","compliant","compliant","compliant","compliant","not_compliant"];
@@ -1128,9 +1143,9 @@ const OVERDUE_DAYS=5;
    branch (reqId + typology), and that branch sits in `awaiting_qa` until an answer lands. */
 let QA=[
   {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",
-   reqs:["SRM-00010"],branch:{req:"SRM-00010",typology:"mln"},expert:"infra",from:"Karim Benali",date:"Jul 14"},
+   reqs:["SRM-00010"],branch:{req:"SRM-00010",typology:"trk"},expert:"infra",from:"Karim Benali",date:"Jul 14"},
   {id:"QA-02",st:"internal",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
-   reqs:["SRM-00013"],branch:{req:"SRM-00013",typology:"mln"},expert:"cyber",from:"Claire Moreau",date:"Jul 15"},
+   reqs:["SRM-00013"],branch:{req:"SRM-00013",typology:"trk"},expert:"cyber",from:"Claire Moreau",date:"Jul 15"},
   {id:"QA-03",st:"draft",q:"Which TLS version applies to legacy site gateways?",
    reqs:["SRM-00014"],branch:{req:"SRM-00014",typology:"sig"},expert:"cyber",from:"Claire Moreau",date:"Jul 16",dup:"QA-04"},
   {id:"QA-04",st:"draft",q:"Is TLS 1.3 mandatory for gateways already deployed on existing sites?",
