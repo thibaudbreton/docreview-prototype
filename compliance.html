@@ -1143,13 +1143,21 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
   // Documents/Q&A are unaffected — they live in the header's own icon-cluster,
   // not this panel, so nothing about reaching them changes.
   navPanelCollapsed:true,detailPanelCollapsed:false,
-  ownTeamOnly:true};
+  // §4.4/multi-activity visibility — the PM default is "sees everything" (see
+  // initViewer()'s own comment below); starting this true silently hid every
+  // activity but the viewer's own team on a multi-branch requirement, which is
+  // exactly the case this table exists to surface. False here, narrowed only
+  // via the "My team only" chip, matches the documented default.
+  ownTeamOnly:false};
 /* B5 — this screen has no admin/view-as switcher yet (unlike revue-documentaire.html);
    VIEWER simulates whichever branch manager is currently using their own follow-up
    view. "My team only" (state.ownTeamOnly) is the OPEN question's resolution: a
-   liftable UI filter on top of the same passesB() mechanism, not a real access
-   restriction — clearing it shows every team, same as picking a different column
-   filter would. Defaults to the first manager so the screen opens pre-scoped. */
+   narrowing UI filter on top of the same passesB() mechanism, not a real access
+   restriction — applying it (or picking a different "view as" person) scopes down
+   to that team, clearing it shows every team again. VIEWER still defaults to the
+   first manager for the "view as" picker's own default selection, but the table
+   itself opens unscoped (state.ownTeamOnly:false) — a multi-activity requirement
+   shows every one of its activities until the PM narrows it, not before. */
 let VIEWER=MANAGERS[0].id;
 
 const mgrOf=id=>MANAGERS.find(m=>m.id===id);
