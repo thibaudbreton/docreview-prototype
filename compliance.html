@@ -248,6 +248,9 @@ html[data-theme="light"] .logo-mark-light{display:block}
    visible at a glance instead of behind an interaction. */
 /* the comment is its own column now, so Status is back to a single centred pill */
 .verdict-comment{font-size:var(--text-sm);color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* the justification for declaring Compliant over a Not compliant assessment —
+   same shape as the comment beside it, weighted so it doesn't read as a note */
+.risk-note{font-size:var(--text-sm);color:var(--warn);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .rrow.branch-row{background:var(--panel-2);cursor:pointer}
 .rrow.branch-row:hover{background:var(--panel-3)}
 .rrow.branch-row .c-req{padding-left:var(--space-6);gap:6px}
@@ -263,7 +266,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 /* column visibility + order — USER-TEST-session-3.md §1.4. A hidden column disappears
    entirely; position comes from --ord-* custom properties set on .rgrid by
    applyFCols() and inherited by every .rcell, current rows and future ones alike. */
-.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance,.rgrid[data-cc~="comment"] .c-comment,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{display:none}
+.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance,.rgrid[data-cc~="comment"] .c-comment,.rgrid[data-cc~="external"] .c-external,.rgrid[data-cc~="risk"] .c-risk,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{display:none}
 .rcell.c-sel{order:var(--ord-sel,0)}
 .rcell.c-id{order:var(--ord-id,1)}
 .rcell.c-req{order:var(--ord-req,2)}
@@ -273,8 +276,10 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rcell.c-status{order:var(--ord-status,6)}
 .rcell.c-compliance{order:var(--ord-compliance,7)}
 .rcell.c-comment{order:var(--ord-comment,8)}
-.rcell.c-lastfu{order:var(--ord-lastfu,9)}
-.rcell.c-age{order:var(--ord-age,10)}
+.rcell.c-external{order:var(--ord-external,9)}
+.rcell.c-risk{order:var(--ord-risk,10)}
+.rcell.c-lastfu{order:var(--ord-lastfu,11)}
+.rcell.c-age{order:var(--ord-age,12)}
 /* column menu — drag-to-reorder rows */
 .colf-row{display:flex;align-items:center;gap:4px}
 .colf-row .colf-opt{flex:1}
@@ -369,8 +374,10 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .vpill.not_compliant{background:var(--warn-soft);color:var(--warn)}
 .vpill.none{color:var(--text-3)}
 .vpill-ico{font-weight:700}
-/* external compliance is locked once declared — internal never is */
-.vpill.locked{border-color:var(--warn);opacity:.9}
+/* an external verdict nobody declared — it's the internal one travelling outward
+   by default, so it must never read as a decision someone took */
+.vpill.inherited{background:transparent;border:1px dashed var(--line-2);color:var(--text-3);font-weight:500}
+.vpill.inherited .vpill-ico{opacity:.7}
 /* pending is NOT a verdict — dashed outline, muted, italic, never reads as decided */
 .vpill.pending-pill{border:1px dashed var(--line-2);color:var(--text-3);font-style:italic;font-weight:500;background:transparent}
 /* T3 — requirement parent row vs allocated activity child rows */
@@ -384,6 +391,12 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .branch-cell .none,.exp-mini.none{color:var(--text-3);font-style:italic;font-size:var(--text-sm)}
 .ptag{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;letter-spacing:.6px;padding:1px var(--space-1);border:1px solid var(--line-2);border-radius:var(--radius-xs);color:var(--text-3);white-space:nowrap}
 .nav-brn{margin-left:auto;font-size:var(--text-xs);font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:var(--radius-lg);padding:1px 6px}
+/* the PM's declaration to the client — requirement-level, so it sits in the panel
+   header with the consolidated verdict, above the per-activity tabs */
+.ext-band{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.ext-band-k{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-3)}
+.ext-diverge{font-size:var(--text-xs);font-weight:700;color:var(--warn);white-space:nowrap}
+.ext-risk-line{margin-top:8px}
 /* panel — allocated activity switcher + the two loops, kept visually distinct (internal vs external) */
 .branch-switch{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .branch-switch button{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-2);border:1px solid var(--line-2);border-radius:var(--radius-md);background:var(--panel-2);transition:all .13s}
@@ -805,6 +818,8 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <div class="rcell c-status" data-col="status"><span class="cl">Status</span></div>
               <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
               <div class="rcell c-comment" data-col="comment"><span class="cl">Compliance comment</span></div>
+              <div class="rcell c-external" data-col="external"><span class="cl">External compliance</span></div>
+              <div class="rcell c-risk" data-col="risk"><span class="cl">Risk accepted</span></div>
               <div class="rcell c-lastfu" data-col="lastfu"><span class="cl">Last follow-up</span></div>
               <div class="rcell c-age" data-col="age"><span class="cl">Age</span></div>
             </div>
@@ -963,12 +978,14 @@ const REQS_HAND=[
    branches:[
      {typology:"sig",manager:null,status:"proposed",internal:null,age:3},
    ]},
-  {id:"SRM-00003",sec:"2. Functional requirements",type:"Functional",
+  // external/externalRisk are REQUIREMENT-level (see externalOf): one declaration to
+  // the client per requirement, never one per activity. Here it simply confirms the
+  // internal verdict — declared explicitly (solid pill) rather than inherited (dashed).
+  {id:"SRM-00003",sec:"2. Functional requirements",type:"Functional",external:"compliant",
    text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family.",
    branches:[
      {typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:9,
-      resp:{note:"Standard acquisition stack covers all listed measurement families. No deviation from the requirement.",att:0,date:"Jul 12"},
-      external:"compliant",externalLocked:true},
+      resp:{note:"Standard acquisition stack covers all listed measurement families. No deviation from the requirement.",att:0,date:"Jul 12"}},
    ]},
   {id:"SRM-00004",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type.",
@@ -976,13 +993,15 @@ const REQS_HAND=[
      {typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:9,
       resp:{note:"Dashboard aggregation (site / region / type) is available out of the box.",att:1,date:"Jul 12"}},
    ]},
+  // declared ahead of full consolidation: two activities are still open, but the PM
+  // has already committed an answer to the client and carries the risk for it
   {id:"SRM-00005",sec:"2. Functional requirements",type:"Functional",outdated:true,
+   external:"compliant",
+   externalRisk:"Escalation matrix gap accepted for bid purposes — a mitigation plan will be finalized during contract negotiation. Client informed of the residual risk.",
    text:"The system SHALL generate an alert when a site's consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.",
    branches:[
      {typology:"sig",manager:"m_sig",status:"answered",internal:"not_compliant",age:8,
-      resp:{note:"The 5-minute alerting threshold is achievable, but integrating the issuer's escalation matrix falls outside the proposed scope and budget envelope. Not compliant as specified.",att:0,date:"Jul 13"},
-      external:"compliant",externalLocked:true,
-      externalRisk:"Escalation matrix gap accepted for bid purposes — a mitigation plan will be finalized during contract negotiation. Client informed of the residual risk."},
+      resp:{note:"The 5-minute alerting threshold is achievable, but integrating the issuer's escalation matrix falls outside the proposed scope and budget envelope. Not compliant as specified.",att:0,date:"Jul 13"}},
      {typology:"mln",manager:"m_mln",status:"awaiting_answer",internal:null,age:4,lastFollowup:"Jul 14"},
      {typology:"sys",manager:null,status:"reassignment_needed",internal:null,age:3,
       reassignComment:"Alerting escalation is a safety-critical chain — this should sit with the Safety authority, not with my perimeter. Please reallocate."},
@@ -992,7 +1011,10 @@ const REQS_HAND=[
    branches:[
      {typology:"mln",manager:"m_mln",status:"awaiting_answer",internal:null,age:6},
    ]},
-  {id:"SRM-00007",sec:"2. Functional requirements",type:"Interface",
+  // the textbook case for the risk field: fully consolidated Not compliant, declared
+  // Compliant to the client anyway — the one move the risk note is mandatory for
+  {id:"SRM-00007",sec:"2. Functional requirements",type:"Interface",external:"compliant",
+   externalRisk:"Rate-limit shortfall accepted at bid stage — the gateway rework is priced as a contract option, and the client is told the documented API is delivered without the implied third-party load guarantee.",
    text:"The system SHALL expose site telemetry to third-party tools through a documented REST API.",
    branches:[
      {typology:"sig",manager:"m_sig",status:"answered",internal:"not_compliant",age:7,
@@ -1136,7 +1158,7 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
      header filters, replacing the old toolbar's contributor/activity selects. */
   selection:new Set(),colFilters:{typo:new Set(),expert:new Set()},filterToSelection:false,savedColFilters:null,
   activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","age"]),
-  colOrder:["typo","expert","status","compliance","comment","lastfu","age"],
+  colOrder:["typo","expert","status","compliance","comment","external","risk","lastfu","age"],
   docNavCollapsed:new Set(),
   // §4.1/6.4 — the requirement-list nav collapses by default; the toggle
   // (nav2-toggle) is always visible so it's reopenable in one action. Casting/
@@ -1199,6 +1221,78 @@ function consolidate(r){
   return {internal:worst,pending:false,blocking:null,remaining:0,comment:worstBranch?.resp?.note||null};
 }
 const isConsolidated=r=>!consolidate(r).pending;
+
+/* ---- EXTERNAL compliance — the declaration that leaves the company ----
+   The verdict the client actually receives, and the one thing that can say
+   Compliant when the technical assessment underneath says otherwise. Three
+   decisions shape it, all deliberate:
+
+   1. ONE PER REQUIREMENT, not one per activity. The client gets a single answer
+      per requirement, so this is the project manager's call at the top level —
+      it sits on `r`, never on a branch. This replaces the per-branch declaration
+      AND the old `externalLocked` flag: nothing is frozen any more, the column
+      itself (plus the risk beside it) is what makes the deviation visible.
+   2. UNDECLARED MEANS INHERITED. With nothing declared, the requirement goes out
+      with its consolidated internal verdict, so the export is always complete and
+      the PM only intervenes to deviate. Shown dimmed/dashed so an inherited value
+      never reads as a decision somebody took.
+   3. THE RISK IS THE PRICE OF ONE SPECIFIC MOVE. Required only in the dangerous
+      direction — declaring Compliant over a Not compliant internal verdict.
+      Deviating the other way (telling the client no when the teams said yes) is
+      conservative and needs no justification to be safe. */
+function externalOf(r){
+  const c=consolidate(r);
+  if(r.external) return {v:r.external, declared:true, internal:c.internal, pending:c.pending};
+  return {v:c.pending?null:c.internal, declared:false, internal:c.internal, pending:c.pending};
+}
+const externalNeedsRisk=(r,pick)=>consolidate(r).internal==="not_compliant"&&pick==="compliant";
+/* diverging from the internal verdict is the thing worth spotting in a table of
+   104 rows — not the declaration itself, most of which just confirm */
+const externalDiverges=r=>{ const x=externalOf(r); return x.declared && !x.pending && x.v!==x.internal; };
+function externalPillHTML(r){
+  const x=externalOf(r);
+  if(!x.v) return `<span class="vpill none">—</span>`;
+  return x.declared
+    ? cmpPillHTML(x.v,null,` title="Declared to the client by the project manager"`)
+    : cmpPillHTML(x.v,"inherited",` title="Not declared — the requirement goes out with its internal verdict"`);
+}
+function riskCellHTML(r){
+  if(!r.externalRisk) return "";
+  return `<span class="risk-note" title="${esc(r.externalRisk)}">${esc(r.externalRisk)}</span>`;
+}
+/* The declaration is requirement-level, so it belongs in the panel HEADER, beside
+   the consolidated internal verdict it may deviate from — not in the Assignment
+   tab, which is scoped to a single activity. Only the project manager can operate
+   it (SPEC-domain-model.md §5's existing rule on who declares to the client). */
+function externalBandHTML(r){
+  const x=externalOf(r);
+  const canDeclare=state.role==="pm";
+  const open=state.openForm==="external";
+  const pick=open?state.externalPick:null;
+  const riskRequired=externalNeedsRisk(r,pick);
+  const form=!open?"":`
+    <div class="inline-form" id="external-form">
+      <div class="if-label">${r.external?"Update":"Declare"} external compliance — this is the verdict the client receives</div>
+      <div class="verdict-toggle">
+        <button class="v-compliant${pick==="compliant"?" on":""}" data-extpick="compliant">Compliant</button>
+        <button class="v-not_compliant${pick==="not_compliant"?" on":""}" data-extpick="not_compliant">Not compliant</button>
+      </div>
+      ${riskRequired?`<div class="field"><label>Risk <span>· required — the internal verdict is Not compliant and this declares Compliant</span></label><textarea id="ext-risk" rows="3" placeholder="Required — describe the risk being accepted and why">${esc(r.externalRisk||"")}</textarea></div>`:""}
+      <div class="form-actions">
+        ${r.external?`<button class="btn-cancel" id="ext-clear" title="Stop deviating — the internal verdict travels to the client again">Clear</button>`:""}
+        <button class="btn-cancel" id="ext-cancel">Cancel</button>
+        <button class="btn-submit ok" id="ext-submit" ${pick?"":"disabled"}>Save declaration</button>
+      </div>
+    </div>`;
+  return `<div class="ext-band">
+      <span class="ext-band-k">External · to the client</span>
+      ${externalPillHTML(r)}
+      ${externalDiverges(r)?`<span class="ext-diverge" title="Deviates from the internal verdict (${CMP[x.internal]||"—"})">≠ internal</span>`:""}
+      ${canDeclare&&!open?`<button class="mini-btn" id="ext-declare">${r.external?"Edit":"Declare"}</button>`:""}
+    </div>
+    ${r.externalRisk?`<div class="vimpact ext-risk-line">⚠ <b>Risk accepted:</b> ${esc(r.externalRisk)}</div>`:""}
+    ${form}`;
+}
 
 /* =====================================================
    TOASTS
@@ -1281,7 +1375,10 @@ const ADV_FILTER_FIELDS={
   text:{label:"Text",type:"text",get:r=>[r.text||""]},
   typo:{label:"Activity",type:"enum",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:r=>(r.branches||[]).map(b=>b.typology)},
   internal:{label:"Internal compliance",type:"enum",options:[{v:"compliant",l:"Compliant"},{v:"not_compliant",l:"Not Compliant"},{v:"",l:"Pending"}],get:r=>(r.branches||[]).map(b=>b.internal||"")},
-  external:{label:"External compliance",type:"enum",options:[{v:"compliant",l:"Compliant"},{v:"not_compliant",l:"Not Compliant"},{v:"",l:"Not declared"}],get:r=>(r.branches||[]).map(b=>b.external||"")},
+  // the EFFECTIVE value, inherited one included — filtering on "what the client
+  // gets" is the question people actually ask, not "what was typed in"
+  external:{label:"External compliance",type:"enum",options:[{v:"compliant",l:"Compliant"},{v:"not_compliant",l:"Not Compliant"},{v:"",l:"Nothing yet"}],get:r=>[externalOf(r).v||""]},
+  risk:{label:"Risk accepted",type:"boolean",get:r=>[!!r.externalRisk]},
   status:{label:"Status",type:"enum",options:Object.keys(BST).map(k=>({v:k,l:BST[k]})),get:r=>(r.branches||[]).map(b=>b.status)},
   contributor:{label:"Contributor",type:"enum",options:MANAGERS.map(m=>({v:m.id,l:m.name})),get:r=>(r.branches||[]).map(b=>b.manager||"")},
   age:{label:"Age (days)",type:"text",get:r=>(r.branches||[]).map(b=>String(b.age??""))},
@@ -1290,7 +1387,7 @@ const ADV_FILTER_FIELDS={
   section:{label:"Section",type:"text",get:r=>[r.sec||""]},
 };
 const ADV_FIELD_GROUPS=[
-  {g:"Progress",       fields:["status","internal","external"]},
+  {g:"Progress",       fields:["status","internal","external","risk"]},
   {g:"Assignment",     fields:["typo","contributor","age"]},
   {g:"Content & source", fields:["id","text","section","doc","outdated"]},
 ];
@@ -1702,17 +1799,22 @@ function renderExportReady(){
    under the verdict pill: the reasoning is what a reviewer actually reads, and
    it needs room to be sortable/hideable/reorderable like any other field.
    Status goes back to just the pill, so it no longer needs the extra width. */
+/* Each verdict is followed by its own justification: internal compliance then the
+   contributor's comment, external compliance then the risk the PM accepted to
+   declare it. Reading left to right is reading the reasoning in order. */
 const F_RCOLS=[
   {k:"sel",w:"32px"},{k:"id",w:"84px"},{k:"req",w:"minmax(240px,1.4fr)"},
   {k:"typo",w:"90px"},{k:"expert",w:"140px"},
-  {k:"status",w:"150px"},{k:"compliance",w:"150px"},{k:"comment",w:"minmax(200px,1fr)"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
+  {k:"status",w:"150px"},{k:"compliance",w:"150px"},{k:"comment",w:"minmax(200px,1fr)"},
+  {k:"external",w:"150px"},{k:"risk",w:"minmax(180px,1fr)"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
 ];
 const F_COLUMN_TOGGLE_DEFS=[
   {k:"typo",label:"Activity"},{k:"expert",label:"Assigned to"},
-  {k:"status",label:"Status"},{k:"compliance",label:"Compliance"},{k:"comment",label:"Compliance comment"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
+  {k:"status",label:"Status"},{k:"compliance",label:"Compliance"},{k:"comment",label:"Compliance comment"},
+  {k:"external",label:"External compliance"},{k:"risk",label:"Risk accepted"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
 ];
 const F_RCOLS_BY_KEY=Object.fromEntries(F_RCOLS.map(c=>[c.k,c]));
-const F_NAV_COLS=["sel","id","req","typo","expert","status","compliance","comment","lastfu","age"];
+const F_NAV_COLS=["sel","id","req","typo","expert","status","compliance","comment","external","risk","lastfu","age"];
 function fNavCols(){ return F_NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
 /* USER-TEST-session-3.md §1.4 — full removal + reorder, same technique as
    revue-documentaire.html's applyCols(): --ord-* customs properties on .rgrid,
@@ -1755,8 +1857,7 @@ function ensureFTeams(branch){
   if(!(branch.teams&&branch.teams.length)){
     branch.teams=[{
       manager:branch.manager||null, status:branch.status||"proposed",
-      internal:branch.internal||null, external:branch.external||null,
-      externalLocked:branch.externalLocked||false, externalRisk:branch.externalRisk||null,
+      internal:branch.internal||null,
       resp:branch.resp||null, age:branch.age||0,
     }];
   }
@@ -1795,6 +1896,8 @@ function fRowInnerHTML(r){
     <div class="rcell c-status">${consolidatedProgressHTML(c)}</div>
     <div class="rcell c-compliance">${consolidatedComplianceHTML(c)}</div>
     <div class="rcell c-comment">${verdictCommentHTML(c.comment)}</div>
+    <div class="rcell c-external">${externalPillHTML(r)}</div>
+    <div class="rcell c-risk">${riskCellHTML(r)}</div>
     <div class="rcell c-lastfu">${fLastFollowupHTML({lastFollowup})}</div>
     <div class="rcell c-age ${single&&isOverB(single)?"over":""}">${single?(isAnswered(single)?"":single.age+" d"):""}</div>`;
 }
@@ -1809,6 +1912,8 @@ function fBranchRowHTML(parent,b,idx){
     <div class="rcell c-status">${branchProgressHTML(b)}</div>
     <div class="rcell c-compliance">${branchComplianceHTML(b)}</div>
     <div class="rcell c-comment">${verdictCommentHTML(b.resp?.note)}</div>
+    <div class="rcell c-external"></div>
+    <div class="rcell c-risk"></div>
     <div class="rcell c-lastfu">${fLastFollowupHTML(b)}</div>
     <div class="rcell c-age ${isOverB(b)?"over":""}">${isAnswered(b)?"":b.age+" d"}</div>
   </div>`;
@@ -1828,6 +1933,8 @@ function fTeamRowHTML(parent,branch,bidx,team,tidx){
     <div class="rcell c-status">${branchProgressHTML(team)}</div>
     <div class="rcell c-compliance">${branchComplianceHTML(team)}</div>
     <div class="rcell c-comment">${verdictCommentHTML(team.resp?.note)}</div>
+    <div class="rcell c-external"></div>
+    <div class="rcell c-risk"></div>
     <div class="rcell c-lastfu">${fLastFollowupHTML(team)}</div>
     <div class="rcell c-age ${isOverB(team)?"over":""}">${isAnswered(team)?"":team.age+" d"}</div>
   </div>`;
@@ -1981,6 +2088,7 @@ function renderPanel2(){
         ${r.branches.map((x,i)=>`<button data-bi="${i}" class="${i===idx?"on":""}" title="${TY(x.typology).label} · ${BST[x.status]}">
           <span class="ptag">${TY(x.typology).code}</span><span class="bs-dot ${x.status}"></span></button>`).join("")}
       </div>`:""}
+      ${externalBandHTML(r)}
     </div>
     <div class="set-tabs">
       <button data-t="response" class="${state.tab==="response"?"active":""}">Assignment</button>
@@ -1993,6 +2101,27 @@ function renderPanel2(){
     <div class="set-body" id="set2-body"></div>`;
   p.querySelectorAll("[data-t]").forEach(t=>t.addEventListener("click",()=>{state.tab=t.dataset.t;renderPanel2()}));
   p.querySelectorAll("[data-bi]").forEach(t=>t.addEventListener("click",()=>{state.selBranch=+t.dataset.bi;renderPanel2()}));
+  // external declaration — header-level, so it stays reachable whichever tab is open
+  p.querySelector("#ext-declare")?.addEventListener("click",()=>{ state.openForm="external"; state.externalPick=r.external||null; renderPanel2(); });
+  p.querySelector("#ext-cancel")?.addEventListener("click",()=>{ state.openForm=null; state.externalPick=null; renderPanel2(); });
+  p.querySelectorAll("[data-extpick]").forEach(btn=>btn.addEventListener("click",()=>{ state.externalPick=btn.dataset.extpick; renderPanel2(); }));
+  p.querySelector("#ext-clear")?.addEventListener("click",()=>{
+    r.external=null; r.externalRisk=null;
+    state.openForm=null; state.externalPick=null;
+    toast(`${r.id} — declaration cleared, the internal verdict goes to the client`,"warn");
+    refreshAll();
+  });
+  p.querySelector("#ext-submit")?.addEventListener("click",()=>{
+    const pick=state.externalPick;
+    if(!pick){ toast("Pick Compliant or Not compliant","warn"); return; }
+    const needsRisk=externalNeedsRisk(r,pick);
+    const risk=(p.querySelector("#ext-risk")?.value||"").trim();
+    if(needsRisk&&!risk){ toast("A risk note is required — the internal verdict is Not compliant and this declares Compliant","warn"); return; }
+    r.external=pick; r.externalRisk=needsRisk?risk:null;
+    state.openForm=null; state.externalPick=null;
+    toast(`${r.id} — external compliance declared to the client`,"ok");
+    refreshAll();
+  });
   const b=p.querySelector("#set2-body");
 
   const whoBlock=`
@@ -2002,60 +2131,21 @@ function renderPanel2(){
 
   if(state.tab==="response"){
     if(br.status==="answered"&&br.resp){
-      // SPEC-internal-external-compliance.md (§4.7) — internal is the contributor's
-      // technical assessment (what the verdict form above always meant); external is
-      // the PM's own declaration to the client, entered separately and allowed to
-      // diverge deliberately. The lock applies to external only — internal keeps
-      // getting corrected freely as work continues, external doesn't move once
-      // declared without an explicit re-declare. A risk note is mandatory the one
-      // way divergence is actually risky: declaring Compliant externally over a
-      // Not compliant internal assessment.
-      const canDeclareExternal = state.role==="pm";
-      const extPick = state.openForm==="external" ? state.externalPick : null;
-      const riskRequired = br.internal==="not_compliant" && extPick==="compliant";
-      const extFormHTML = state.openForm!=="external" ? "" : `
-        <div class="inline-form" id="external-form">
-          <div class="if-label">${br.external?"Update":"Declare"} external compliance</div>
-          <div class="verdict-toggle">
-            <button class="v-compliant${extPick==="compliant"?" on":""}" data-extpick="compliant">Compliant</button>
-            <button class="v-not_compliant${extPick==="not_compliant"?" on":""}" data-extpick="not_compliant">Not compliant</button>
-          </div>
-          ${riskRequired?`<div class="field"><label>Risk <span>· required — internal is Not compliant, external would be Compliant</span></label><textarea id="ext-risk" rows="3" placeholder="Required — describe the risk being accepted and why">${esc(br.externalRisk||"")}</textarea></div>`:""}
-          <div class="form-actions"><button class="btn-cancel" id="ext-cancel">Cancel</button><button class="btn-submit ok" id="ext-submit" ${extPick?"":"disabled"}>Save declaration</button></div>
-        </div>`;
+      // Internal only here: this tab is scoped to ONE activity, and internal is the
+      // only verdict that lives at that level. External is the PM's declaration for
+      // the whole requirement and sits in the panel header (externalBandHTML), next
+      // to the consolidated verdict it may deviate from.
       b.innerHTML=whoBlock+`
         <div class="field"><label>Response · ${br.resp.date}</label>
           <div class="resp-note">${esc(br.resp.note)}</div>
           ${br.resp.att?`<span class="attach">📎 evidence-${r.id.toLowerCase()}-${TY(br.typology).code.toLowerCase()}.pdf</span>`:""}</div>
         <div class="field"><label>Internal compliance <span>· technical assessment</span></label>
           <div class="fval">${cmpPillHTML(br.internal)}</div></div>
-        <div class="field"><label>External compliance <span>· declared to the client</span></label>
-          <div class="fval">${br.external?`<span class="vpill${br.externalLocked?" locked":""} ${br.external}" title="${br.externalLocked?"Locked — Edit to change":""}">${br.externalLocked?"🔒 ":""}${CMP_ICON[br.external]?`<span class="vpill-ico">${CMP_ICON[br.external]}</span>`:""}${CMP[br.external]}</span>`:'<span class="vpill none">Not declared</span>'}</div>
-          ${br.externalRisk?`<div class="vimpact" style="margin-top:8px">⚠ <b>Risk accepted:</b> ${esc(br.externalRisk)}</div>`:""}
-          ${canDeclareExternal&&state.openForm!=="external"?`<button class="mini-btn" id="ext-declare" style="margin-top:8px">${br.external?"Edit declaration":"Declare external compliance"}</button>`:""}
-        </div>
-        ${extFormHTML}
         ${r.outdated?`<div class="vimpact" style="margin-bottom:12px"><b>Answered on outdated version.</b> The requirement text changed in a later document version.</div>
         <button class="cta line" id="a-reset-version" style="margin-bottom:12px">↺ Reset for new version — back to Allocation</button>`:""}
         <button class="cta blue" id="a-escalate">⇗ Escalate to client Q&amp;A <kbd style="font-family:var(--font-mono);font-size:var(--text-xs);opacity:.7">Q</kbd></button>`;
       b.querySelector("#a-escalate")?.addEventListener("click",()=>escalate(r,br));
       b.querySelector("#a-reset-version")?.addEventListener("click",()=>resetForNewVersion(r,br));
-      b.querySelector("#ext-declare")?.addEventListener("click",()=>{ state.openForm="external"; state.externalPick=br.external||null; renderPanel2(); });
-      b.querySelector("#ext-cancel")?.addEventListener("click",()=>{ state.openForm=null; state.externalPick=null; renderPanel2(); });
-      b.querySelectorAll("[data-extpick]").forEach(btn=>btn.addEventListener("click",()=>{ state.externalPick=btn.dataset.extpick; renderPanel2(); }));
-      b.querySelector("#ext-submit")?.addEventListener("click",()=>{
-        const pick=state.externalPick;
-        if(!pick){ toast("Pick Compliant or Not compliant","warn"); return; }
-        let risk=null;
-        if(br.internal==="not_compliant"&&pick==="compliant"){
-          risk=(b.querySelector("#ext-risk")?.value||"").trim();
-          if(!risk){ toast("A risk note is required — internal is Not compliant, external would be Compliant","warn"); return; }
-        }
-        br.external=pick; br.externalRisk=risk; br.externalLocked=true;
-        state.openForm=null; state.externalPick=null;
-        toast(`${r.id} · ${TY(br.typology).label} — external compliance declared`,"ok");
-        refreshAll();
-      });
     }else if(br.status==="awaiting_qa"){
       b.innerHTML=whoBlock+`
         <div class="qa-block"><div class="qa-block-h">⇗ Blocked on the issuer</div>
@@ -2246,12 +2336,13 @@ function escalate(r,br){
    flag-only rule for the same "new version arrived" moment — confirmed with the user
    as the deliberate, deviating exception). Both internal and external are wiped —
    external is a PM's deliberate declaration, but it was made against text that no
-   longer exists, so it doesn't survive either. The branch goes back through
-   Allocation (awaiting_answer, age reset) for full re-verification, not just a flag
-   a human might skip past. */
+   longer exists, so it doesn't survive either (and it's requirement-level now, so
+   it clears on `r`, not on the branch). The branch goes back through Allocation
+   (awaiting_answer, age reset) for full re-verification, not just a flag a human
+   might skip past. */
 function resetForNewVersion(r,br){
-  br.internal=null; br.external=null; br.externalLocked=false; br.externalRisk=null;
-  br.resp=null; br.status="awaiting_answer"; br.age=0;
+  br.internal=null; br.resp=null; br.status="awaiting_answer"; br.age=0;
+  r.external=null; r.externalRisk=null;
   toast(`${r.id} · ${TY(br.typology).label} — reset for the new version, back to Allocation`,"warn");
   refreshAll();
 }
