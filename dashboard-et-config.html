@@ -1153,11 +1153,11 @@ cR.addEventListener("input",()=>cV.textContent=cR.value+"%");
    richer coverage demo — see CAST_ACTIVITIES below. */
 const MANAGERS=[
   {id:"m_sig",name:"Louis Renaud",role:"SIG manager",init:"LR",color:"#3fb27f"},
-  {id:"m_mln",name:"Amina Cherif",role:"Mainline manager",init:"AC",color:"#e0a43c"},
-  {id:"m_inf",name:"Paolo Ferri",role:"Infrastructure manager",init:"PF",color:"#a06ef2"},
-  {id:"m_pwr",name:"Nadia Haddad",role:"Power Supply manager",init:"NH",color:"#e5544b"},
-  {id:"m_tlc",name:"Julien Roche",role:"Telecom manager",init:"JR",color:"#3fa9b2"},
-  {id:"m_sys",name:"Elena Popescu",role:"Systems Integration manager",init:"EP",color:"#c46bd6"},
+  {id:"m_mln",name:"Amina Cherif",role:"TRK manager",init:"AC",color:"#e0a43c"},
+  {id:"m_inf",name:"Paolo Ferri",role:"OCS manager",init:"PF",color:"#a06ef2"},
+  {id:"m_pwr",name:"Nadia Haddad",role:"POS manager",init:"NH",color:"#e5544b"},
+  {id:"m_tlc",name:"Julien Roche",role:"COM manager",init:"JR",color:"#3fa9b2"},
+  {id:"m_sys",name:"Elena Popescu",role:"RAMS manager",init:"EP",color:"#c46bd6"},
 ];
 const MGR=id=>MANAGERS.find(m=>m.id===id);
 /* TICKET-casting-screen-redesign.md — "the project management team": several
@@ -1234,71 +1234,58 @@ renderExperts();
    at all, which is itself a real, intended case, not a gap.
 ===================================================== */
 /* TICKET-two-pass-allocation.md §3 — `hasModel` marks the activities that have
-   an allocation model of their own. Only SIG does here: it's large enough to
-   be a tender type in its own right, so its model was built for those
-   standalone tenders and Turnkey reuses it when it routes there. Everything
-   else allocates manually, which is the ORDINARY case, not a failure.
-   (The ticket also names "RSC" as modelled; this screen's activity vocabulary
-   has no such entry — see revue-documentaire.html's ACTIVITY_MODEL for the
-   same open question. The two screens hold independent vocabularies by
-   convention, and they do not currently match.) */
+   an allocation model of their own: SIG and RST, matching revue-documentaire.html's
+   ACTIVITY_MODEL exactly now that both screens share the same activity list
+   (DEC-032/036) — this used to be a "these vocabularies don't match" caveat,
+   now it's just a lookup. Everything else allocates manually, which is the
+   ORDINARY case, not a failure. */
+/* DEC-032/036 — same 16-code activity list as revue-documentaire.html's TYPO
+   and compliance.html/qa.html's TYPOS, replacing this screen's own invented
+   7-activity set. RST takes over the "not yet cast" empty-state slot CVL
+   used to demonstrate (a real code from the list, not a stand-in). */
 const CAST_ACTIVITIES=[
-  {id:"sig",code:"SIG",label:"Signalling & Urban",managerId:"m_sig",hasModel:true},
-  {id:"mln",code:"MLN",label:"Mainline",managerId:"m_mln"},
-  {id:"inf",code:"INF",label:"Infrastructure",managerId:"m_inf"},
-  {id:"pwr",code:"PWR",label:"Power Supply",managerId:"m_pwr"},
-  {id:"tlc",code:"TLC",label:"Telecom",managerId:"m_tlc"},
-  {id:"cvl",code:"CVL",label:"Civil Works",managerId:null}, // not yet cast to a manager — a real, distinct empty state
-  {id:"sys",code:"SYS",label:"Systems Integration",managerId:"m_sys"},
+  {id:"sig",code:"SIG",label:"SIG",managerId:"m_sig",hasModel:true},
+  {id:"trk",code:"TRK",label:"TRK",managerId:"m_mln"},
+  {id:"ocs",code:"OCS",label:"OCS",managerId:"m_inf"},
+  {id:"pos",code:"POS",label:"POS",managerId:"m_pwr"},
+  {id:"com",code:"COM",label:"COM",managerId:"m_tlc"},
+  {id:"rst",code:"RST",label:"RST",managerId:null,hasModel:true}, // not yet cast to a manager — a real, distinct empty state
+  {id:"rams",code:"RAMS",label:"RAMS",managerId:"m_sys"},
 ];
 /* TICKET-casting-screen-redesign.md — "the rest of the reference list is
    noise and should be secondary or collapsed": CAST_ACTIVITIES above is what
    characterisation found relevant on THIS tender, not the full activity
    vocabulary. batch-6 "Add activities from the team screen" is exactly that
-   secondary list surfacing on demand — activities this project hasn't cast
-   yet, offered from the reference list rather than typed freehand (an
-   ad-hoc activity would need its own decision — see the ticket's own open
-   question — so this only ever adds from here). Added with no manager cast
-   yet, same empty state "cvl" already demonstrates above. */
+   secondary list surfacing on demand — the remaining codes from the same
+   16-code list, offered from the reference list rather than typed freehand
+   (DEC-036 — no ad-hoc activity, only from here). Added with no manager cast
+   yet, same empty state RST already demonstrates above. */
 const REFERENCE_ACTIVITIES=[
-  {id:"rst",code:"RST",label:"Rolling Stock"},
-  {id:"com",code:"COM",label:"Communications"},
-  {id:"saf",code:"SAF",label:"Safety & RAMS"},
-  {id:"arc",code:"ARC",label:"Architecture & Buildings"},
+  {id:"afc",code:"AFC",label:"AFC"},
+  {id:"cjv",code:"CJV",label:"CJV"},
+  {id:"cyb",code:"CYB",label:"CYB"},
+  {id:"deq",code:"DEQ",label:"DEQ"},
+  {id:"ils",code:"ILS",label:"ILS"},
+  {id:"psd",code:"PSD",label:"PSD"},
+  {id:"scada",code:"SCADA",label:"SCADA"},
+  {id:"sen",code:"SEN",label:"SEN"},
+  {id:"spm",code:"SPM",label:"SPM"},
 ];
 const CAST_ACT=id=>CAST_ACTIVITIES.find(a=>a.id===id);
-/* perimeter = [] means this activity is staffed directly, no breakdown — a
-   valid, ordinary outcome per the ticket, not a placeholder for a missing list */
-const PERIMETERS={
-  sig:[{id:"sig-ilk",label:"Interlocking"},{id:"sig-atp",label:"ATP / ATC"},{id:"sig-trk",label:"Trackside equipment"},{id:"sig-sca",label:"SCADA / Supervision"}],
-  mln:[{id:"mln-civ",label:"Civil interfaces"},{id:"mln-rst",label:"Rolling stock interfaces"}],
-  inf:[],
-  pwr:[{id:"pwr-tr",label:"Traction power"},{id:"pwr-aux",label:"Auxiliary power"}],
-  tlc:[],
-  cvl:[{id:"cvl-str",label:"Structures"},{id:"cvl-trk",label:"Trackworks"},{id:"cvl-sta",label:"Stations"}],
-  sys:[{id:"sys-saf",label:"Safety case"},{id:"sys-vv",label:"V&V"}],
-};
-/* TICKET-casting-screen-redesign follow-up: the perimeter list is a starting
-   point, not a closed vocabulary — PERIMETERS[activityId] can grow at add
-   time (see resolvePerimeter below). If it's empty, the array itself is
-   still created lazily so pushes have somewhere to land. */
-const perimetersOf=activityId=>{ if(!PERIMETERS[activityId]) PERIMETERS[activityId]=[]; return PERIMETERS[activityId]; };
-const perimeterLabel=(activityId,perimeterId)=>{ const p=perimetersOf(activityId).find(x=>x.id===perimeterId); return p?p.label:null; };
-/* Resolves whatever the user typed/picked for perimeter into a real
-   perimeter id: reuse an existing one on a case-insensitive label match
-   (so "interlocking" finds "Interlocking" instead of creating a near-
-   duplicate), otherwise create a new one on the fly. Blank input is a
-   deliberate, valid outcome — direct activity staffing, not an error. */
-function resolvePerimeter(activityId,typed){
-  const label=(typed||"").trim();
-  if(!label) return null;
-  const list=perimetersOf(activityId);
-  const existing=list.find(p=>p.label.toLowerCase()===label.toLowerCase());
-  if(existing) return existing.id;
-  const id=activityId+"-custom-"+Math.random().toString(36).slice(2,7);
-  list.push({id,label,custom:true});
-  return id;
-}
+/* DEC-036 — perimeter and OBS · team are the same list: what pass 2 derives
+   in revue-documentaire.html/compliance.html IS the perimeter here, not a
+   second, disconnected vocabulary invented per activity. One shared list,
+   identical to revue-documentaire.html's TEAMS, available to every activity
+   alike — staffing under Wayside means the same Wayside pass-2 resolves to. */
+const PERIMETERS=[
+  {id:"dbm",label:"DBM"},{id:"risk",label:"Risk"},{id:"btm",label:"BTM"},
+  {id:"wayside",label:"Wayside"},{id:"design",label:"Design"},{id:"vv",label:"V&V"},
+];
+/* Kept as perimetersOf(activityId) for every existing call site even though
+   the list no longer varies by activity — direct staffing (no perimeter) is
+   still a per-person choice, just not a per-activity one any more. */
+const perimetersOf=()=>PERIMETERS;
+const perimeterLabel=(activityId,perimeterId)=>{ const p=PERIMETERS.find(x=>x.id===perimeterId); return p?p.label:null; };
 
 /* Simulated SSO company directory — the searchable pool for "search a person
    via SSO"; distinct from ROSTER below, which is who's actually staffed on
@@ -1319,29 +1306,33 @@ const personByName=name=>DIRECTORY.find(p=>p.name===name);
    used elsewhere), which is what makes removal require reassignment instead
    of a plain delete. addedBy/addedAt is the attribution the ticket asks for. */
 let ROSTER=[
-  {personId:personByName("Sophie Lang").id,activityId:"sig",perimeterId:"sig-ilk",addedBy:"Louis Renaud",addedAt:"Jul 14",count:3},
-  {personId:personByName("Karim Benali").id,activityId:"sig",perimeterId:"sig-atp",addedBy:"Louis Renaud",addedAt:"Jul 14",count:0},
-  {personId:personByName("Claire Moreau").id,activityId:"sig",perimeterId:"sig-sca",addedBy:"Louis Renaud",addedAt:"Jul 15",count:0},
-  {personId:personByName("Marc Dubois").id,activityId:"mln",perimeterId:"mln-civ",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
-  {personId:personByName("Fatima Zahra").id,activityId:"mln",perimeterId:"mln-rst",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
-  {personId:personByName("Thomas Weber").id,activityId:"inf",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 13",count:1},
-  {personId:personByName("Léa Girard").id,activityId:"inf",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 16",count:0},
-  {personId:personByName("Omar Saidi").id,activityId:"pwr",perimeterId:"pwr-tr",addedBy:"Nadia Haddad",addedAt:"Jul 15",count:0},
-  {personId:personByName("Anaïs Petit").id,activityId:"sys",perimeterId:"sys-saf",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
-  {personId:personByName("Hugo Bernard").id,activityId:"sys",perimeterId:"sys-saf",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
-  {personId:personByName("Ines Kaya").id,activityId:"sys",perimeterId:"sys-vv",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
+  {personId:personByName("Sophie Lang").id,activityId:"sig",perimeterId:"wayside",addedBy:"Louis Renaud",addedAt:"Jul 14",count:3},
+  {personId:personByName("Karim Benali").id,activityId:"sig",perimeterId:"design",addedBy:"Louis Renaud",addedAt:"Jul 14",count:0},
+  {personId:personByName("Claire Moreau").id,activityId:"sig",perimeterId:"vv",addedBy:"Louis Renaud",addedAt:"Jul 15",count:0},
+  {personId:personByName("Marc Dubois").id,activityId:"trk",perimeterId:"btm",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
+  {personId:personByName("Fatima Zahra").id,activityId:"trk",perimeterId:"dbm",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
+  {personId:personByName("Thomas Weber").id,activityId:"ocs",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 13",count:1},
+  {personId:personByName("Léa Girard").id,activityId:"ocs",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 16",count:0},
+  {personId:personByName("Omar Saidi").id,activityId:"pos",perimeterId:"wayside",addedBy:"Nadia Haddad",addedAt:"Jul 15",count:0},
+  {personId:personByName("Anaïs Petit").id,activityId:"rams",perimeterId:"risk",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
+  {personId:personByName("Hugo Bernard").id,activityId:"rams",perimeterId:"risk",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
+  {personId:personByName("Ines Kaya").id,activityId:"rams",perimeterId:"vv",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
 ];
 const rosterFor=(activityId,perimeterId)=>ROSTER.filter(r=>r.activityId===activityId && r.perimeterId===(perimeterId===undefined?null:perimeterId));
 const rosterOfActivity=activityId=>ROSTER.filter(r=>r.activityId===activityId);
 
+/* DEC-036 — the perimeter list is now shared across every activity (the same
+   6 teams, not a closed set specific to this one), so "fully staffed" counts
+   every perimeter PLUS the "staffed directly, no perimeter" slot — that slot
+   is still a real, ordinary outcome per person, just no longer the whole
+   activity's only option the way an empty per-activity list used to force. */
 function activityCoverage(a){
   const perims=perimetersOf(a.id);
-  if(perims.length){
-    const staffed=perims.filter(p=>rosterFor(a.id,p.id).length>0).length;
-    return {kind:staffed===0?"unstaffed":(staffed===perims.length?"staffed":"partial"),staffed,total:perims.length};
-  }
-  const direct=rosterFor(a.id,null);
-  return {kind:direct.length?"staffed":"unstaffed",staffed:direct.length?1:0,total:1};
+  const groups=perims.length+1;
+  const staffedPerims=perims.filter(p=>rosterFor(a.id,p.id).length>0).length;
+  const direct=rosterFor(a.id,null).length>0;
+  const staffed=staffedPerims+(direct?1:0);
+  return {kind:staffed===0?"unstaffed":(staffed===groups?"staffed":"partial"),staffed,total:groups};
 }
 
 let TEAM_VIEWER="admin";
@@ -1408,11 +1399,10 @@ function castPersonRowHTML(r,editable){
 
 /* ---------- add row: SSO-style typeahead, scoped to one activity+perimeter ---------- */
 /* Single combined add-flow per activity (not per perimeter): search the
-   person first, THEN say where — pick an existing perimeter, type a new
-   one freely, or leave it blank for direct-activity staffing. The
-   perimeter list was never meant to be a closed vocabulary someone else
-   imposes; resolvePerimeter() (above) creates a new one on the fly the
-   first time it's typed, so it's usable from then on for this activity. */
+   person first, THEN say where — pick an existing perimeter from the shared
+   list, or leave it on "No perimeter" for direct-activity staffing. DEC-036 —
+   no free-text perimeter creation any more: the list is OBS · team, a closed
+   vocabulary, not something Casting invents a new entry into. */
 function castAddFlowHTML(activityId){
   return `<div class="cast-add-flow" data-add-act="${activityId}">
     <div class="cast-add-flow-title">+ Add someone</div>
@@ -1435,19 +1425,21 @@ function bindCastAddFlow(container,activityId){
     slot.querySelector("input").focus();
   }
   function toPerimStep(p){
-    const dlId=`castdl-${activityId}`;
-    const opts=perimetersOf(activityId).map(x=>`<option value="${x.label.replace(/"/g,"&quot;")}">`).join("");
+    // DEC-036 — perimeter is picked from the shared list, never typed: it's
+    // the same vocabulary OBS · team already resolves to, not a place to
+    // invent a new one on the fly.
+    const opts=['<option value="">— No perimeter — staffed directly —</option>']
+      .concat(perimetersOf(activityId).map(x=>`<option value="${x.id}">${x.label}</option>`)).join("");
     slot.innerHTML=`<div class="cast-add-picked"><div class="exp-av" style="width:22px;height:22px;font-size:10px;background:${p.color}">${p.init}</div>${p.name}<span class="x" data-cancel-pick>✕ change</span></div>
       <div class="cast-add-step2">
-        <input class="cast-add-perim-input" list="${dlId}" placeholder="Perimeter — pick existing, type a new one, or leave blank" data-add-perim>
-        <datalist id="${dlId}">${opts}</datalist>
+        <select class="cast-add-perim-input" data-add-perim>${opts}</select>
         <button class="cast-add-confirm" type="button" data-add-confirm>Add</button>
       </div>
-      <div class="cast-add-hint">Leave blank to staff ${CAST_ACT(activityId).label} directly, with no perimeter — that's a valid, ordinary choice, not a skipped step.</div>`;
+      <div class="cast-add-hint">Leave on "No perimeter" to staff ${CAST_ACT(activityId).label} directly — that's a valid, ordinary choice, not a skipped step.</div>`;
     const perimInput=slot.querySelector("[data-add-perim]");
     slot.querySelector("[data-cancel-pick]").addEventListener("click",toPersonStep);
     function doConfirm(){
-      const perimeterId=resolvePerimeter(activityId,perimInput.value);
+      const perimeterId=perimInput.value||null;
       const dup=ROSTER.find(r=>r.personId===p.id && r.activityId===activityId && r.perimeterId===perimeterId);
       if(dup){ toast(`${p.name} is already staffed here — pick a different perimeter, or search someone else`,"warn"); return; }
       ROSTER.push({personId:p.id,activityId,perimeterId,addedBy:viewerInfo(TEAM_VIEWER).name,addedAt:"Today",count:0});
@@ -1458,7 +1450,6 @@ function bindCastAddFlow(container,activityId){
       requestAnimationFrame(()=>{ document.querySelector(`[data-add-input="${activityId}"]`)?.focus(); });
     }
     slot.querySelector("[data-add-confirm]").addEventListener("click",doConfirm);
-    perimInput.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doConfirm(); } });
     perimInput.focus();
   }
   function bindPersonInput(){
@@ -1669,7 +1660,7 @@ function renderAddActivityPop(){
   pop.querySelector("#cast-add-act-confirm").addEventListener("click",()=>{
     const id=pop.querySelector("#cast-add-act-select").value;
     const ref=REFERENCE_ACTIVITIES.find(r=>r.id===id); if(!ref) return;
-    // No manager cast yet — the same real, distinct empty state "cvl" already
+    // No manager cast yet — the same real, distinct empty state RST already
     // demonstrates (castGroupHTML's !a.managerId branch), not a special case.
     CAST_ACTIVITIES.push({id:ref.id,code:ref.code,label:ref.label,managerId:null});
     castExpanded.add(ref.id);
