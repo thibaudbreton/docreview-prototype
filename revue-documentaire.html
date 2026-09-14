@@ -765,26 +765,8 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 /* compliance — Pending must never read as a decided verdict: dashed outline, muted, no fill */
 .compliance-pill{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-2);border-radius:var(--radius-xs);font-size:var(--text-xs);font-weight:600;white-space:nowrap;border:1px solid transparent}
 .compliance-pill.c-compliant{background:var(--ok-soft);color:var(--ok)}
-.compliance-pill.c-rnd_needed{background:var(--ia-soft);color:var(--ia)}
 .compliance-pill.c-not_compliant{background:var(--warn-soft);color:var(--warn)}
 .compliance-pill.c-pending{background:transparent;border-style:dashed;border-color:var(--line-2);color:var(--text-3);font-style:italic;font-weight:500}
-.compliance-compliant{color:var(--ok)}
-/* B3 — project-manager compliance override + lock */
-.compliance-pill.locked{border-color:var(--warn);opacity:.9}
-/* TICKET-two-pass-allocation.md §6 — the requirement's own final verdict,
-   distinct from the activity blocks below it: a light warm tint when locked
-   so it reads as "this is the answer, whatever the tree computes" without
-   needing the tooltip to find out. */
-.final-verdict{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:var(--space-3);background:var(--panel-2)}
-.final-verdict.is-locked{border-color:rgba(224,164,60,.4);background:var(--ia-soft)}
-.final-verdict-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
-.final-verdict-drift{font-size:var(--text-xs);color:var(--ia);font-style:italic}
-.final-verdict-btn{margin-left:auto}
-.final-verdict-note{margin-left:auto;font-size:var(--text-xs);color:var(--text-3);font-style:italic}
-.lock-badge{display:inline-flex;align-items:center;gap:4px;font-size:var(--text-xs);font-weight:700;color:var(--warn);background:var(--warn-soft);padding:2px var(--space-2);border-radius:var(--radius-pill);white-space:nowrap}
-.compliance-rnd_needed{color:var(--ia)}
-.compliance-not_compliant{color:var(--warn)}
-.compliance-pending{color:var(--text-3);font-style:italic}
 /* expand/collapse caret + "Multiple (N)" placeholder on multi-allocation rows */
 /* multi-allocation expand/collapse — real button chrome (background + border) so it reads
    as clickable at a glance, not just a faint glyph next to the ID */
@@ -2126,7 +2108,6 @@ const DOUBT_FIELD_LABEL = {type:"Type", class:"Class", typo:"Activity", abs:"ABS
    Nothing here is derived: rollupStatus / rollupCompliance / blockingBranch are written by hand per requirement. */
 const COMPLIANCE_DEFS=[
   {k:"compliant",label:"Compliant"},
-  {k:"rnd_needed",label:"R&D Needed"},
   {k:"not_compliant",label:"Not Compliant"},
   {k:"pending",label:"Pending"},
 ];
@@ -2929,7 +2910,7 @@ function ensureTeams(branch){
 }
 /* most restrictive wins, pending until everyone has answered — the ticket's
    one rule, used at both levels (§6). Order is COMPLIANCE_DEFS' own. */
-const CMP_RANK={not_compliant:3, rnd_needed:2, compliant:1};
+const CMP_RANK={not_compliant:2, compliant:1};
 function consolidateCompliance(values){
   if(!values.length) return "pending";
   if(values.some(v=>!v||v==="pending")) return "pending"; // one silent leaf blocks its parent
@@ -2944,15 +2925,13 @@ function deriveActivityCompliance(branch){
   branch.compliance=v;
   return v;
 }
-/* The requirement's verdict, one level up. A LOCKED verdict is excluded from
-   recalculation — otherwise the lock would mean nothing (§6). Locking only
-   ever happens here, at the top; never a team, never an activity. */
+/* The requirement's verdict, one level up. */
 function deriveRequirementCompliance(b){
   if(!b.branches||!b.branches.length) return b.rollupCompliance||"pending";
   const per=b.branches.map(deriveActivityCompliance);
   const derived=consolidateCompliance(per);
   b.derivedCompliance=derived;                 // always kept, shown in the panel
-  if(!b.complianceLocked) b.rollupCompliance=derived;
+  b.rollupCompliance=derived;
   return b.rollupCompliance;
 }
 /* §3.6 — OBS is a list of organisations now, not a single value: reuses
@@ -3610,10 +3589,8 @@ function rowInnerHTML(b){
       statusTitle=(es.reviewReason?es.reviewReason+" — ":"")+(statusEligible?("Click to validate"+(nextIsAlloc?" — sends to Contributor Review":"")):"Nothing to validate yet");
     }
   }
-  // §6 — the lock is visible to everyone allocated on the requirement, not
-  // just whoever opens the panel; the row is where every one of them sees it.
   const complianceHTML = hasBranches
-    ? `<span class="compliance-pill${b.complianceLocked?" locked":""} c-${b.rollupCompliance}" title="${b.complianceLocked?`Locked by ${MGR(b.lockedBy||VIEWER).name} — no longer follows the activities below`:""}">${b.complianceLocked?"🔒 ":""}${complianceLabel(b.rollupCompliance)}</span>`
+    ? `<span class="compliance-pill c-${b.rollupCompliance}">${complianceLabel(b.rollupCompliance)}</span>`
     : `<span class="ph">—</span>`;
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
@@ -3661,7 +3638,6 @@ function infoRowHTML(b){
 function branchRowHTML(parent, branch, idx){
   const mgrOptions = ['<option value="">— Unassigned —</option>']
     .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${branch.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
-  const complianceOptions = COMPLIANCE_DEFS.map(c=>`<option value="${c.k}" ${branch.compliance===c.k?"selected":""}>${c.label}</option>`).join("");
   /* B7 — per-allocated-activity allocation status (B6: each allocated activity progresses on its own,
      independent of its siblings) — once allocated, falls through to whatever
      the existing branch-tracking status already shows (Contributor Review). */
@@ -3708,9 +3684,7 @@ function branchRowHTML(parent, branch, idx){
       ? `<span class="multi-ph">Multiple (${teams.length})</span>`
       : `<select class="cell-select branch-edit${branch.manager?"":" empty"}" data-branchmgr="${parent.id}::${idx}">${mgrOptions}</select>`}</div>
     <div class="rcell c-status">${branchStatusHTML}</div>
-    <div class="rcell c-compliance">${multiTeam
-      ? `<span class="compliance-pill c-${branch.compliance}" title="Derived from ${teams.length} teams — most restrictive wins, pending until all have answered. Never entered directly.">${complianceLabel(branch.compliance)}</span>`
-      : `<select class="cell-select branch-edit compliance-${branch.compliance}" data-branchcompl="${parent.id}::${idx}">${complianceOptions}</select>`}</div>
+    <div class="rcell c-compliance"><span class="compliance-pill c-${branch.compliance}" title="${multiTeam?`Derived from ${teams.length} teams — most restrictive wins, pending until all have answered.`:"Set on Compliance — read-only here."}">${complianceLabel(branch.compliance)}</span></div>
   </div>`;
 }
 
@@ -3720,7 +3694,6 @@ function branchRowHTML(parent, branch, idx){
 function teamRowHTML(parent, branch, bidx, team, tidx){
   const mgrOptions = ['<option value="">— Unassigned —</option>']
     .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${team.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
-  const complianceOptions = COMPLIANCE_DEFS.map(c=>`<option value="${c.k}" ${team.compliance===c.k?"selected":""}>${c.label}</option>`).join("");
   const key=`${parent.id}::${bidx}::${tidx}`;
   return `<div class="rrow branch-row team-row" data-teamof="${parent.id}" data-teambranch="${bidx}" data-teamidx="${tidx}">
     <div class="rcell c-sel"></div>
@@ -3734,7 +3707,7 @@ function teamRowHTML(parent, branch, bidx, team, tidx){
     <div class="rcell c-obs"><span class="fval">${escHtml((team.obs&&team.obs.v)||TEAM(team.team).label||"—")}</span></div>
     <div class="rcell c-mgr"><select class="cell-select branch-edit${team.manager?"":" empty"}" data-teammgr="${key}">${mgrOptions}</select></div>
     <div class="rcell c-status"><span class="status-pill branch-status-${team.branchStatus}">${BRANCH_STATUS_LABEL[team.branchStatus]||team.branchStatus}</span></div>
-    <div class="rcell c-compliance"><select class="cell-select branch-edit compliance-${team.compliance}" data-teamcompl="${key}">${complianceOptions}</select></div>
+    <div class="rcell c-compliance"><span class="compliance-pill c-${team.compliance}" title="Set on Compliance — read-only here.">${complianceLabel(team.compliance)}</span></div>
   </div>`;
 }
 
@@ -3789,9 +3762,8 @@ function passesColFilters(b){
    - Status options are the live STATUS_LABEL values (…/Allocated), not the
      spec's literal "Valid" — matching real data, not spec prose, per §2's own
      rule that a field with nothing behind it shouldn't appear.
-   - Compliance reflects this screen's actual 4-value scale (still
-     compliant/rnd_needed/not_compliant/pending here — compliance.html moved to
-     2-value, this screen hasn't; that's a separate, already-flagged drift).
+   - Compliance uses the same two-verdict scale as compliance.html
+     (compliant/not_compliant/pending) — set only there, read-only here.
    - ABS is free text (b.domain), not a closed list — the live data has no
      fixed ABS vocabulary, so it gets contains/is/starts-with, not is-any-of.
    - "Compliance comment" and "Last follow-up" don't exist on this screen's
@@ -4054,15 +4026,6 @@ function bindVRows(win){
     e.stopPropagation(); const t=teamAt(sel.dataset.teammgr); if(!t)return;
     t.team.manager=sel.value||null; refresh();
   }));
-  win.querySelectorAll("[data-teamcompl]").forEach(sel=>sel.addEventListener("change",e=>{
-    e.stopPropagation(); const t=teamAt(sel.dataset.teamcompl); if(!t)return;
-    t.team.compliance=sel.value;
-    deriveRequirementCompliance(t.b);
-    toast(`${TEAM(t.team.team).label}: ${complianceLabel(t.team.compliance)} — ${t.branch.label} now ${complianceLabel(t.branch.compliance)}`
-      +(t.b.complianceLocked?` (final verdict locked at ${complianceLabel(t.b.rollupCompliance)})`:""),
-      t.b.complianceLocked?"warn":"ok");
-    refresh();
-  }));
   win.querySelectorAll("[data-gotoimg]").forEach(btn=>btn.addEventListener("click",e=>{
     e.stopPropagation();
     setMode("document"); selectBlock(btn.dataset.gotoimg,{scroll:true});
@@ -4072,23 +4035,6 @@ function bindVRows(win){
     const [id,idx]=sel.dataset.branchmgr.split("::"); const f=findBlock(id); if(!f)return;
     const branch=f.b.branches[+idx]; branch.manager=sel.value||null;
     toast(`${branch.label}: manager ${branch.manager?"— "+MGR(branch.manager).name:"unassigned"}`,"ok");
-    refresh();
-  }));
-  win.querySelectorAll("[data-branchcompl]").forEach(sel=>sel.addEventListener("change",e=>{
-    e.stopPropagation();
-    const [id,idx]=sel.dataset.branchcompl.split("::"); const f=findBlock(id); if(!f)return;
-    const branch=f.b.branches[+idx];
-    // TICKET-two-pass-allocation.md §6 — a verdict is entered on a TEAM. The
-    // activity's verdict and the requirement's are derived from it, never typed:
-    // this used to write branch.compliance directly and leave the parent's
-    // rollup hand-authored and stale.
-    const teams=ensureTeams(branch);
-    teams[0].compliance=sel.value;
-    deriveRequirementCompliance(f.b);
-    const locked=f.b.complianceLocked;
-    toast(`${branch.label}: compliance set to ${complianceLabel(branch.compliance)}`
-      +(locked?` — final verdict stays locked at ${complianceLabel(f.b.rollupCompliance)}`:""),
-      locked?"warn":"ok");
     refresh();
   }));
   win.querySelectorAll("[data-type]").forEach(sel=>sel.addEventListener("change",e=>{ e.stopPropagation(); const f=findBlock(sel.dataset.type); if(f){ f.b.type=sel.value; markAllocEdited(f.b); refresh(); } }));
@@ -4509,8 +4455,6 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
       ${personSearchHTML("req-manager",myBranch.manager)}
     </div>
     <div class="set-sep"></div>
-    ${finalVerdictHTML(b)}
-    <div class="set-sep"></div>
     ${distributionBlockHTML(b, true)}
     ${myReassignBranch?`<div class="branch-proposal">
       <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(contributor)</span></div>
@@ -4613,27 +4557,6 @@ function obsBreakdownHTML(teams){
         </div>`;
       }).join("")}
     </div>
-  </div>`;
-}
-/* §6 — "the lock applies only at the top level — the requirement's final
-   verdict. Never a leaf, never an activity." This is that control: shown to
-   EVERY allocated contributor (§6 — "several contributors may be working
-   underneath a verdict that no longer reflects their input, and they need to
-   know"), but only the project manager can operate it, per
-   SPEC-domain-model.md §5's existing "only the project manager" rule — the
-   ticket doesn't reopen who may lock, only where the lock lives. */
-function finalVerdictHTML(b){
-  const locked=b.complianceLocked;
-  const admin=isAdmin();
-  // §5 — there's nothing to freeze yet while the tree hasn't produced a real
-  // answer. The button says so up front rather than being clickable and
-  // rejecting the click after the fact.
-  const nothingToLock = !locked && b.rollupCompliance==="pending";
-  return `<div class="final-verdict${locked?" is-locked":""}">
-    <div class="final-verdict-label">Final verdict</div>
-    <span class="compliance-pill${locked?" locked":""} c-${b.rollupCompliance}" title="${locked?`Locked by ${MGR(b.lockedBy||VIEWER).name} — the tree below keeps computing, this stays put until unlocked`:"Derived from every activity below — most restrictive wins, pending until all have answered"}">${locked?"🔒 ":""}${complianceLabel(b.rollupCompliance)}</span>
-    ${locked&&b.derivedCompliance&&b.derivedCompliance!==b.rollupCompliance?`<span class="final-verdict-drift" title="What the tree currently computes underneath the lock">tree now says ${complianceLabel(b.derivedCompliance)}</span>`:""}
-    ${admin?`<button class="mini-btn final-verdict-btn" id="final-verdict-toggle" ${nothingToLock?"disabled":""} title="${nothingToLock?"Every activity needs to answer before there's a verdict to lock":""}">${locked?"Unlock":"Lock"}</button>`:(locked?`<span class="final-verdict-note">Locked — contact the project management team to change it</span>`:"")}
   </div>`;
 }
 function activityBlocksHTML(b){
@@ -4819,7 +4742,6 @@ function renderSettings(){
       ${!isReq?`<div class="field"><label>Type</label>
         <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
       </div>`:""}
-      ${isReq&&hasBranches?finalVerdictHTML(b):""}
       ${isReq&&!myBranch?`<div class="field"><label>Activity ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <div class="msel ${state.typoOpen?"open":""}" id="typo-msel">
           <button class="msel-btn" id="typo-btn">
@@ -4839,7 +4761,6 @@ function renderSettings(){
 
       ${showBranchPanel&&!pmTurnkey?`<div class="set-sep"></div>
       <div class="branch-sections">
-        ${finalVerdictHTML(b)}
         <label class="branch-sections-lbl">Allocations (${b.branches.length})</label>
         ${b.branches.map((branch,bidx)=>`<div class="branch-sec">
             <div class="branch-sec-head">
@@ -4936,26 +4857,6 @@ function renderSettings(){
     body.querySelector("#act-missing")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });
-    body.querySelector("#final-verdict-toggle")?.addEventListener("click",()=>{
-      if(b.complianceLocked){
-        b.complianceLocked=false; b.lockedBy=null;
-        deriveRequirementCompliance(b); // catch up on anything that changed while locked
-        toast(`${b.id} unlocked — the final verdict now follows the tree again`,"ok");
-      } else {
-        // §5 — the lock exists to say "this is our answer, whatever the tree
-        // computes underneath." Pending isn't an answer, it's the absence of
-        // one — locking it would freeze "no verdict yet" as if it were the
-        // decision sent to the client. Block it here, at the one place a lock
-        // actually gets created, rather than just fixing how it looks after.
-        if(b.rollupCompliance==="pending"){
-          toast(`${b.id} — nothing to lock yet. Every activity needs to answer before there's a verdict to freeze.`,"warn");
-          return;
-        }
-        b.complianceLocked=true; b.lockedBy=VIEWER;
-        toast(`${b.id} locked at ${complianceLabel(b.rollupCompliance)} — visible to everyone allocated on it`,"warn");
-      }
-      refresh();
-    });
     body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
     body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
