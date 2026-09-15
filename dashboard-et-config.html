@@ -689,7 +689,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           </div>
           <div class="att" data-go="compliance.html">
             <div class="att-ic warn">⚠</div>
-            <div><div class="att-t"><b>1 non-compliant requirement</b></div><div class="att-sub">SRM-00007 — REST API rate limits below third-party load (Infrastructure)</div></div>
+            <div><div class="att-t"><b>1 non-compliant requirement</b></div><div class="att-sub">SRM-00007 — REST API rate limits below third-party load (SIG)</div></div>
             <span class="att-go">See verdict →</span>
           </div>
         </div>
@@ -1938,10 +1938,10 @@ document.querySelectorAll(".stats-tab").forEach(b=>b.addEventListener("click",()
 // 1.1 — bottlenecks by perimeter (data gap: real age-in-status needs a status-transition
 // history the backend doesn't track yet)
 const STATS_BOTTLENECKS=[
-  {code:"MLN",label:"Mainline Wayside",count:3,oldestDays:14},
-  {code:"SIG",label:"SIG & Urban",count:2,oldestDays:9},
-  {code:"INF",label:"Infrastructure",count:2,oldestDays:6},
-  {code:"TLC",label:"Telecom",count:1,oldestDays:2},
+  {code:"TRK",label:"TRK",count:3,oldestDays:14},
+  {code:"SIG",label:"SIG",count:2,oldestDays:9},
+  {code:"OCS",label:"OCS",count:2,oldestDays:6},
+  {code:"COM",label:"COM",count:1,oldestDays:2},
 ];
 function renderStatsBottlenecks(){
   const el=document.getElementById("stats-bottlenecks"); if(!el) return;

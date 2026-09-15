@@ -2120,7 +2120,7 @@ const BRANCH_STATUS_LABEL = {proposed:"Proposed", assigned:"Assigned", awaiting_
    resolved by the project manager. Reallocation is always a replacement (a
    requirement can never end up with zero activities) — reason 3 still names a
    replacement typology, it doesn't just remove the branch. */
-const REASON_LABEL = {wrong_person:"Right typology, wrong person", wrong_typology:"Wrong typology", not_applicable:"This activity doesn't apply here"};
+const REASON_LABEL = {wrong_person:"Right activity, wrong person", wrong_typology:"Wrong activity", not_applicable:"This activity doesn't apply here"};
 /* B1/B10 — which of this requirement's branches, if any, is stuck waiting on
    the project manager. Reads branchStatus itself, not "does a .reassignRequest
    object exist" — a missing-activity proposal (submitPropose) also lands a
@@ -2357,7 +2357,7 @@ function perimHTML(b){
   return `<span class="perim">${out}</span>`;
 }
 function groupKey(b){ return (b.perim&&b.perim[0])||"none"; }
-function groupTitle(g){ return g==="tky"?"TURNKEY":(g==="none"?"NO TYPOLOGY":TY(g).label.toUpperCase()); }
+function groupTitle(g){ return g==="tky"?"TURNKEY":(g==="none"?"NO ACTIVITY":TY(g).label.toUpperCase()); }
 function groupDesc(g){ return g==="tky"?"Supervises the whole scope — needs a coordinating owner":(g==="none"?"Activity not set":TY(g).label+" perimeter"); }
 function groupColor(g){ return GROUP_COLOR[g]||"#5f6675"; }
 function weakestLink(b){
@@ -4173,7 +4173,7 @@ function renderProposeForm(kind,b,body){
   const used = new Set([...(b.perim||[]), ...(b.branches||[]).map(br=>br.typology)]);
   const options = TYPO.filter(t=>t.id!=="tky" && !used.has(t.id));
   form.innerHTML = `<select id="propose-typo">${options.length?options.map(t=>`<option value="${t.id}">${t.code} — ${t.label}</option>`).join(""):'<option value="">No activity left to propose</option>'}</select>
-       <textarea id="propose-note" placeholder="Why do you think this typology is missing?"></textarea>`
+       <textarea id="propose-note" placeholder="Why do you think this activity is missing?"></textarea>`
     + `<div class="propose-form-actions"><button class="mini-btn" id="propose-cancel">Cancel</button><button class="mgr-done" id="propose-submit"${!options.length?" disabled":""}>Submit proposal</button></div>`;
   form.style.display = "flex";
   form.querySelector("#propose-cancel").addEventListener("click",()=>{ form.style.display="none"; form.innerHTML=""; });
@@ -4184,12 +4184,12 @@ function submitPropose(kind,b,form){
   if(!note){ toast("Add a short reason before submitting","warn"); return; }
   const mgrName = MGR(VIEWER).name;
   const typo = form.querySelector("#propose-typo").value;
-  if(!typo){ toast("Pick a typology first","warn"); return; }
+  if(!typo){ toast("Pick an activity first","warn"); return; }
   ensureBranches(b);
   b.branches.push({typology:typo, label:TY(typo).label, manager:null, expert:null, branchStatus:"reassignment_needed", compliance:"pending", proposal:{kind:"add", note, by:VIEWER, at:"Today"}});
   if(!(b.perim||[]).includes(typo)) b.perim=[...(b.perim||[]), typo];
-  pushBranchLog(b, mgrName, `Proposed adding ${TY(typo).label} as a missing typology — "${note}"`);
-  toast("New typology proposed — sent to the project manager","ok");
+  pushBranchLog(b, mgrName, `Proposed adding ${TY(typo).label} as a missing activity — "${note}"`);
+  toast("New activity proposed — sent to the project manager","ok");
   refresh();
 }
 /* B10 — reassignment request form: pick one of the three reasons, name the
@@ -4287,7 +4287,7 @@ function approveReassign(b,idx){
     b.branches.splice(idx,1,newBranch);
     if(!b.branches.some(x=>x.typology===branch.typology)) b.perim=(b.perim||[]).filter(p=>p!==branch.typology);
     if(!(b.perim||[]).includes(newTypo)) b.perim=[...(b.perim||[]), newTypo];
-    pushBranchLog(b, actor, `Approved — ${oldLabel} replaced with ${newLabel} (${req.reason==="not_applicable"?"activity didn't apply":"wrong typology"}).`, "ok");
+    pushBranchLog(b, actor, `Approved — ${oldLabel} replaced with ${newLabel} (${req.reason==="not_applicable"?"activity didn't apply":"wrong activity"}).`, "ok");
   }
   try{ if(window.parent!==window && window.parent.updateReassignRequest && req.requestId) window.parent.updateReassignRequest(req.requestId, {requestStatus:"approved"}); }catch(e){}
   toast("Reassignment approved","ok");
@@ -5982,7 +5982,7 @@ function matchesDoc(b){ return state.docFilter==="all" || (b.section && b.sectio
 /* ---------- modular export ---------- */
 const EXPORT_STEPS=[
   {k:"capture",label:"Capture",desc:"Document structure, segments and tables"},
-  {k:"charac",label:"Characterization",desc:"Class, typology, type and status"},
+  {k:"charac",label:"Characterization",desc:"Class, activity, type and status"},
   {k:"alloc",label:"Allocation",desc:"Managers and contributor assignments"},
 ];
 const EXPORT_FORMATS=[
