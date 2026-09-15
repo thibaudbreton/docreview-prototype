@@ -210,7 +210,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
    component, this screen's own column config + adapter, table-engine.js for
    the interaction behaviour). Copied CSS conventions, not a shared stylesheet
    (this project has no bundler — CSS is duplicated per file by convention). */
-:root{ --rrow-h:44px; --frgrid-cols:32px 84px minmax(240px,1.4fr) 90px 140px 110px 150px minmax(200px,1fr) 110px 70px; }
+:root{ --rrow-h:44px; --frgrid-cols:32px 84px minmax(240px,1.4fr) 90px 140px 110px 150px minmax(200px,1fr) 110px 70px 150px; }
 .rgrid{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
 /* TH2 — align-self:flex-start (mirrors the original intent in
    revue-documentaire.html: let the header's box grow to fit its columns so
@@ -244,13 +244,26 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rrow .c-sel{padding:0}
 .rrow .c-req{gap:8px}
 .rrow .c-req .excerpt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.45}
+/* one caret expands every activity row for that requirement (and, inside each,
+   its teams — §4.4 never gave teams a collapse of their own) */
+.branch-caret{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:var(--radius-sm);border:1px solid var(--line-2);background:var(--panel-3);color:var(--text-2);transition:all .15s;flex-shrink:0;font-size:var(--text-xs);font-weight:700;cursor:pointer}
+.branch-caret:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.branch-caret.open{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);transform:rotate(90deg)}
 /* USER-TEST-session-3.md §1.5 — the compliance comment sits under the verdict pill,
    visible at a glance instead of behind an interaction. */
 /* the comment is its own column now, so Status is back to a single centred pill */
 .verdict-comment{font-size:var(--text-sm);color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* the justification for declaring Compliant over a Not compliant assessment —
+   same shape as the comment beside it, weighted so it doesn't read as a note */
+.risk-note{font-size:var(--text-sm);color:var(--warn);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .rrow.branch-row{background:var(--panel-2);cursor:pointer}
 .rrow.branch-row:hover{background:var(--panel-3)}
 .rrow.branch-row .c-req{padding-left:var(--space-6);gap:6px}
+/* §4.4 — level 2 (team) rows, indented past the activity row they belong to */
+.rrow.branch-row.team-row .c-req{padding-left:calc(var(--space-6) + var(--space-5))}
+.rrow.branch-row.team-row{background:var(--bg)}
+.rrow.branch-row.team-row:hover{background:var(--bg)}
+.team-connector{opacity:.55}
 .sel-hit{display:flex;align-items:center;justify-content:center;width:100%;height:100%;cursor:pointer}
 .rowsel{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
 .rcell.active-cell{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius-xs);position:relative;z-index:1}
@@ -258,7 +271,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 /* column visibility + order — USER-TEST-session-3.md §1.4. A hidden column disappears
    entirely; position comes from --ord-* custom properties set on .rgrid by
    applyFCols() and inherited by every .rcell, current rows and future ones alike. */
-.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="comment"] .c-comment,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{display:none}
+.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="expert"] .c-expert,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance,.rgrid[data-cc~="comment"] .c-comment,.rgrid[data-cc~="external"] .c-external,.rgrid[data-cc~="risk"] .c-risk,.rgrid[data-cc~="lastfu"] .c-lastfu,.rgrid[data-cc~="age"] .c-age{display:none}
 .rcell.c-sel{order:var(--ord-sel,0)}
 .rcell.c-id{order:var(--ord-id,1)}
 .rcell.c-req{order:var(--ord-req,2)}
@@ -266,15 +279,36 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rcell.c-expert{order:var(--ord-expert,4)}
 .rcell.c-mgr{order:var(--ord-mgr,5)}
 .rcell.c-status{order:var(--ord-status,6)}
-.rcell.c-comment{order:var(--ord-comment,7)}
-.rcell.c-lastfu{order:var(--ord-lastfu,8)}
-.rcell.c-age{order:var(--ord-age,9)}
+.rcell.c-compliance{order:var(--ord-compliance,7)}
+.rcell.c-comment{order:var(--ord-comment,8)}
+.rcell.c-external{order:var(--ord-external,9)}
+.rcell.c-risk{order:var(--ord-risk,10)}
+.rcell.c-lastfu{order:var(--ord-lastfu,11)}
+.rcell.c-age{order:var(--ord-age,12)}
 /* column menu — drag-to-reorder rows */
 .colf-row{display:flex;align-items:center;gap:4px}
 .colf-row .colf-opt{flex:1}
 .colf-handle{cursor:grab;color:var(--text-3);font-size:var(--text-sm);flex-shrink:0;line-height:1;padding:0 4px}
 .colf-row.dragging{opacity:.4}
 .rgrid-head .rcell{position:relative}
+/* Per-column Excel-style filters, ported from revue-documentaire.html's own
+   header treatment — a ⏷ on the header opens that column's own values,
+   instead of a toolbar dropdown disconnected from the column it narrows. */
+.colf-actions{display:flex;gap:8px}
+.colf-actions span{color:var(--accent);cursor:pointer;font-weight:600;text-transform:none;letter-spacing:0}
+.colf-actions span:hover{text-decoration:underline}
+.colf-btn{margin-left:auto;width:18px;height:18px;border-radius:var(--radius-sm);color:var(--text-3);font-size:9px;display:grid;place-items:center;flex-shrink:0}
+.rgrid-head .rcell:hover .colf-btn{color:var(--text-2);background:var(--panel-3)}
+.colf-btn:hover{color:var(--text)!important;background:var(--line)!important}
+.colf-btn.on{color:#fff!important;background:var(--accent)!important}
+.colf-pop{position:fixed;z-index:70;width:236px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);padding:var(--space-2);display:none;text-transform:none;letter-spacing:0;font-weight:400}
+.colf-pop.on{display:block}
+.colf-pop-head{display:flex;align-items:center;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);padding:2px 4px 6px}
+.colf-pop-head .colf-actions{margin-left:auto;display:flex;gap:8px}
+.colf-pop-list{max-height:260px;overflow-y:auto}
+.colf-pop-foot{border-top:1px solid var(--line);margin-top:6px;padding-top:6px;display:flex;align-items:center;gap:8px}
+.colf-pop-foot .n{font-size:var(--text-xs);color:var(--text-3)}
+.colf-pop-foot .mini-btn{margin-left:auto}
 .empty-rows{padding:40px;text-align:center;color:var(--text-3);font-size:var(--text-base)}
 .multi-ph{color:var(--text-3);font-size:var(--text-xs);font-style:italic}
 .lastfu-date{font-size:var(--text-xs);color:var(--text-2);font-variant-numeric:tabular-nums}
@@ -334,18 +368,25 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .spill.proposed,.spill.assigned{background:var(--panel-3);color:var(--text-2)}
 .spill.awaiting_answer{background:var(--panel-3);color:var(--text-2)}
 .spill.awaiting_qa{background:var(--accent-soft);color:var(--accent)}
-.spill.reassignment_needed{background:var(--warn-soft);color:var(--warn)}
-.spill.answered{background:var(--ok-soft);color:var(--ok)}
+/* Green and red are reserved for the Compliance column's verdict (Compliant/Not
+   Compliant) on this screen — progress statuses use a different palette so
+   neither colour is ever ambiguous between "the result" and "where it stands". */
+.spill.reassignment_needed{background:var(--ia-soft);color:var(--ia)}
+.spill.answered{background:var(--human-soft);color:var(--human)}
 /* compliance (T2 — result axis) */
-.vpill{display:inline-flex;align-items:center;gap:6px;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:700;white-space:nowrap}
+.vpill{display:inline-flex;align-items:center;gap:5px;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:700;white-space:nowrap;border:1px solid transparent}
 .vpill.compliant{background:var(--ok-soft);color:var(--ok)}
 .vpill.not_compliant{background:var(--warn-soft);color:var(--warn)}
 .vpill.none{color:var(--text-3)}
+.vpill-ico{font-weight:700}
+/* an external verdict nobody declared — it's the internal one travelling outward
+   by default, so it must never read as a decision someone took */
+.vpill.inherited{background:transparent;border:1px dashed var(--line-2);color:var(--text-3);font-weight:500}
+.vpill.inherited .vpill-ico{opacity:.7}
 /* pending is NOT a verdict — dashed outline, muted, italic, never reads as decided */
 .vpill.pending-pill{border:1px dashed var(--line-2);color:var(--text-3);font-style:italic;font-weight:500;background:transparent}
 /* T3 — requirement parent row vs allocated activity child rows */
 .branch-n{font-size:var(--text-xs);color:var(--text-3);font-style:italic;white-space:nowrap}
-.blocking-chip{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:700;background:var(--warn-soft);color:var(--warn);white-space:nowrap}
 tr.branch-row>td{background:var(--panel-2)}
 tr.branch-row:hover>td{background:var(--panel-3)}
 .branch-ind{color:var(--text-3);text-align:right;padding-right:10px!important}
@@ -355,15 +396,21 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .branch-cell .none,.exp-mini.none{color:var(--text-3);font-style:italic;font-size:var(--text-sm)}
 .ptag{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;letter-spacing:.6px;padding:1px var(--space-1);border:1px solid var(--line-2);border-radius:var(--radius-xs);color:var(--text-3);white-space:nowrap}
 .nav-brn{margin-left:auto;font-size:var(--text-xs);font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:var(--radius-lg);padding:1px 6px}
+/* the PM's declaration to the client — requirement-level, so it sits in the panel
+   header with the consolidated verdict, above the per-activity tabs */
+.ext-band{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.ext-band-k{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-3)}
+.ext-diverge{font-size:var(--text-xs);font-weight:700;color:var(--warn);white-space:nowrap}
+.ext-risk-line{margin-top:8px}
 /* panel — allocated activity switcher + the two loops, kept visually distinct (internal vs external) */
-.branch-switch{display:flex;gap:6px;margin-top:10px}
+.branch-switch{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .branch-switch button{display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-2);border:1px solid var(--line-2);border-radius:var(--radius-md);background:var(--panel-2);transition:all .13s}
 .branch-switch button:hover{border-color:var(--accent)}
 .branch-switch button.on{border-color:var(--accent);background:var(--accent-soft)}
 .bs-dot{width:6px;height:6px;border-radius:50%;background:var(--text-3)}
-.bs-dot.answered{background:var(--ok)}
+.bs-dot.answered{background:var(--human)}
 .bs-dot.awaiting_qa{background:var(--accent)}
-.bs-dot.reassignment_needed{background:var(--warn)}
+.bs-dot.reassignment_needed{background:var(--ia)}
 /* external loop — to the client */
 .qa-block{border:1px solid var(--line-2);border-left:3px solid var(--accent);border-radius:var(--radius-md);padding:var(--space-3) var(--space-3);margin-bottom:var(--space-3);background:var(--accent-soft)}
 .qa-block-h{font-size:var(--text-sm);font-weight:700;color:var(--accent);margin-bottom:6px}
@@ -545,6 +592,77 @@ textarea.resp-in:focus{border-color:var(--accent)}
 .toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.34,1.3,.64,1)}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .toast .t-ok{color:var(--ok)}
+
+/* @include components.css */
+/* §4.2 — advanced filter, wired against table-engine.js's shared matching
+   engine. Panel/chip CSS ported from revue-documentaire.html's own (not a
+   shared component — only the JS engine is shared). */
+.mini-btn{
+  padding:4px var(--space-2);border-radius:var(--radius-sm);border:1px solid var(--line-2);
+  font-size:var(--text-xs);color:var(--text-2);transition:all .15s;display:inline-flex;gap:var(--space-1);align-items:center;
+}
+.mini-btn:disabled{opacity:.4;cursor:default}
+.mini-btn:hover{border-color:var(--accent);color:var(--text)}
+.adv-panel{position:absolute;top:calc(100% + 6px);right:0;z-index:61;width:560px;max-height:min(76vh,640px);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 44px rgba(0,0,0,.55);display:none;flex-direction:column;overflow:hidden}
+.adv-panel.on{display:flex}
+.adv-head{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-3) var(--space-2);border-bottom:1px solid var(--line);flex-shrink:0}
+.adv-head-t{font-size:var(--text-base);font-weight:600;color:var(--text)}
+.adv-head .mini-btn{margin-left:auto}
+.adv-body{flex:1;min-height:0;overflow-y:auto;padding:var(--space-3)}
+.adv-toplevel{display:flex;align-items:center;gap:6px;font-size:var(--text-sm);color:var(--text-2);margin-bottom:var(--space-2)}
+.adv-toplevel .gseg{margin:0 2px}
+.adv-list{display:flex;flex-direction:column;gap:6px;margin-bottom:var(--space-2)}
+.adv-row{display:flex;gap:6px;align-items:flex-start;padding:6px;border-radius:var(--radius-md);border:1px solid transparent}
+.adv-row .ui-select,.adv-row .ui-input{font-size:var(--text-xs);padding:5px 22px 5px 7px}
+.adv-row .ui-input{padding-right:7px}
+.adv-row .adv-field{flex:0 0 132px}
+.adv-row .adv-op{flex:0 0 118px}
+.adv-row .adv-value{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.adv-row .adv-value>.ui-input,.adv-row .adv-value>.ui-select{width:100%}
+.adv-row .adv-value .adv-nofield{font-size:var(--text-xs);color:var(--text-3);font-style:italic;padding:5px 0}
+.adv-row.is-incomplete{border-color:var(--line-2);background:var(--warn-soft)}
+.adv-row.is-incomplete .adv-value .ui-input,.adv-row.is-incomplete .adv-value .ui-select{border-style:dashed;border-color:var(--warn)}
+.adv-need{font-size:var(--text-xs);color:var(--warn);white-space:nowrap;padding:5px 0}
+.advv-chip{font-size:var(--text-xs);padding:3px 8px;border-radius:var(--radius-pill);border:1px solid var(--line-2);color:var(--text-2);background:var(--panel-3)}
+.advv-chip:hover{border-color:var(--accent);color:var(--text)}
+.advv-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.adv-remove{flex-shrink:0;width:24px;height:26px;border-radius:var(--radius-sm);color:var(--text-3);display:grid;place-items:center}
+.adv-remove:hover{background:var(--panel-3);color:var(--warn)}
+.adv-group{border:1px solid var(--line-2);border-left:3px solid var(--accent);border-radius:var(--radius-md);padding:8px;background:var(--panel)}
+.adv-group-head{display:flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--text-3);margin-bottom:6px}
+.adv-group-head .adv-remove{margin-left:auto}
+.adv-group .adv-list{margin-bottom:6px}
+.adv-addrow{display:flex;gap:8px}
+.adv-foot{flex-shrink:0;border-top:1px solid var(--line);padding:var(--space-3);background:var(--panel-2)}
+.adv-summary{font-size:var(--text-xs);color:var(--text-2);background:var(--panel-3);border-radius:var(--radius-sm);padding:6px var(--space-2);margin-bottom:6px;line-height:1.5}
+.adv-summary b{color:var(--text);font-weight:600}
+.adv-countrow{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2)}
+.adv-count{font-size:var(--text-sm);color:var(--text-2)}
+.adv-count b{color:var(--text);font-weight:600}
+.adv-count.zero{color:var(--warn)}
+.adv-blocked{font-size:var(--text-xs);color:var(--warn);margin-left:auto}
+.adv-actions{display:flex;gap:8px;justify-content:flex-end}
+.adv-saved{border-top:1px solid var(--line);margin-top:var(--space-3);padding-top:var(--space-2)}
+.adv-saved-head{display:flex;align-items:center;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:4px}
+.adv-saved-head span{margin-left:auto;font-weight:400;letter-spacing:0;text-transform:none}
+.adv-saved-row{display:flex;align-items:center;gap:6px;padding:4px 2px;font-size:var(--text-sm)}
+.adv-saved-row .n{flex:1;color:var(--text-2);cursor:pointer}
+.adv-saved-row .n:hover{color:var(--text);text-decoration:underline}
+.adv-saved-row button{color:var(--text-3);font-size:var(--text-xs)}
+.adv-saved-row button:hover{color:var(--warn)}
+.adv-save-row{display:flex;gap:6px;margin-top:6px}
+.adv-save-row[hidden]{display:none}
+.adv-save-row .ui-input{flex:1;font-size:var(--text-xs);padding:5px 7px}
+/* §3.5 treatment: never compressed, never hidden — wraps to its own row via
+   the parent's flex-wrap instead of truncating with ellipsis. */
+.active-filter{display:flex;align-items:center;gap:6px;flex:1 1 260px;min-width:240px;padding:4px 6px 4px 10px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-pill);font-size:var(--text-xs);color:var(--text)}
+.active-filter-t{white-space:normal}
+.active-filter button{flex-shrink:0;width:18px;height:18px;border-radius:50%;color:var(--text-2);font-size:10px;display:grid;place-items:center}
+.active-filter button:hover{background:var(--accent);color:#fff}
+.gseg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-pill);padding:2px}
+.gseg button{padding:4px var(--space-3);border-radius:var(--radius-pill);font-size:var(--text-sm);color:var(--text-3);font-weight:600}
+.gseg button.on{background:var(--panel-3);color:var(--text)}
+
 @media(max-width:1100px){.settings{width:290px}.nav{width:236px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -646,7 +764,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
       <button class="clear-filter" id="clear2">✕ Clear filter</button>
       <div class="triage-right">
         <button class="btn-ghost" id="remind-all">🔔 Remind all overdue</button>
-        <div class="nav-toggle"><button data-by="section" class="on">By section</button><button data-by="expert">By expert</button></div>
+        <div class="nav-toggle"><button data-by="section" class="on">By section</button><button data-by="expert">By contributor</button></div>
         <div class="kbd-hint"><span><kbd>J</kbd>/<kbd>K</kbd></span><span><kbd>R</kbd> remind</span><span><kbd>Q</kbd> to Q&amp;A</span></div>
       </div>
     </div>
@@ -670,16 +788,26 @@ textarea.resp-in:focus{border-color:var(--accent)}
           </div>
           <div class="export-ready" id="export-ready"></div>
           <div class="f10-tools" id="f10-tools">
+            <!-- §3.5 treatment, applied here too (§4.2): the search bar is the
+                 anchor and never moves; the active-filter chip sits right after
+                 it and wraps to its own row when there isn't room, rather than
+                 being compressed or hidden. -->
             <input id="f10-search" placeholder="Search requirement ref or text…" autocomplete="off">
-            <select id="f10-expert"><option value="">All experts</option></select>
-            <select id="f10-typo"><option value="">All activities</option></select>
+            <div class="active-filter" id="adv-filter-banner" style="display:none">
+              <span class="active-filter-t" id="adv-filter-banner-text"></span>
+              <button id="adv-filter-banner-clear" title="Clear every filter">✕</button>
+            </div>
             <select id="f10-sort">
               <option value="action">Sort: action needed first</option>
               <option value="status">Sort: status</option>
-              <option value="expert">Sort: expert</option>
+              <option value="expert">Sort: contributor</option>
               <option value="req">Sort: requirement ref</option>
             </select>
             <button class="f10-needsme" id="f10-needsme">⚡ Needs my action</button>
+            <div class="view-wrap" style="position:relative;margin-left:auto">
+              <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once">⏷ Filter ▾</button>
+              <div class="adv-panel" id="adv-filter-panel"></div>
+            </div>
           </div>
           <div class="filter-sel-banner" id="filter-sel-banner" style="display:none">
             <span>Showing <b id="fsb-n">0</b> of <b id="fsb-total">0</b> requirements — selected</span>
@@ -690,16 +818,19 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" id="f-sel-all" title="Select all in view"></label></div>
               <div class="rcell c-id"><span class="cl">ID</span></div>
               <div class="rcell c-req"><span class="cl">Requirement / assignment</span></div>
-              <div class="rcell c-typo" data-col="typo"><span class="cl">Activity</span></div>
-              <div class="rcell c-expert" data-col="expert"><span class="cl">Expert</span></div>
-              <div class="rcell c-mgr" data-col="mgr"><span class="cl">Manager</span></div>
+              <div class="rcell c-typo" data-col="typo"><span class="cl">Activity</span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
+              <div class="rcell c-expert" data-col="expert"><span class="cl">Assigned to</span><button class="colf-btn" data-colf="expert" title="Filter this column">⏷</button></div>
               <div class="rcell c-status" data-col="status"><span class="cl">Status</span></div>
+              <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
               <div class="rcell c-comment" data-col="comment"><span class="cl">Compliance comment</span></div>
+              <div class="rcell c-external" data-col="external"><span class="cl">External compliance</span></div>
+              <div class="rcell c-risk" data-col="risk"><span class="cl">Risk accepted</span></div>
               <div class="rcell c-lastfu" data-col="lastfu"><span class="cl">Last follow-up</span></div>
               <div class="rcell c-age" data-col="age"><span class="cl">Age</span></div>
             </div>
             <div class="rgrid-body" id="frgrid-body"><div class="rgrid-window" id="frgrid-window"></div></div>
           </div>
+          <div class="colf-pop" id="colf-pop"></div>
         </div>
         <div class="view doc-scroll" id="view-doc"></div>
       </section>
@@ -715,7 +846,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
 
       <span class="sel-sep"></span>
 
-      <button class="sel-btn" id="f-sel-reassign">↪ Reassign expert</button>
+      <button class="sel-btn" id="f-sel-reassign">↪ Reassign contributor</button>
       <button class="sel-btn primary" id="f-sel-remind">🔔 Send reminder</button>
 
       <button class="sel-clear" id="f-sel-clear" title="Clear selection" aria-label="Clear selection">✕</button>
@@ -755,28 +886,41 @@ const LANGUAGE_LABEL={en:"English", fr:"French", de:"German", es:"Spanish"};
 /* =====================================================
    SHARED DATA
 ===================================================== */
-const EXPERTS=[
-  {id:"sup",name:"Sophie Lang",team:"Monitoring Team",init:"SL",color:"#6e7bf2"},
-  {id:"infra",name:"Karim Benali",team:"Infrastructure Team",init:"KB",color:"#3fb27f"},
-  {id:"cyber",name:"Claire Moreau",team:"Cybersecurity",init:"CM",color:"#e0a43c"},
-];
 /* TICKET-merge-expert-space-into-compliance.md — "manager" and "expert" collapse into
-   one in-tool role, contributor, scoped by activity rather than by person. MANAGERS/
-   EXPERTS/VIEWER keep their identifiers internally (renaming every reference across
-   this data model is a separate, larger pass — see the session notes), but every
-   place a viewer picks who they are now picks an activity's contributor, not "a
+   one in-tool role, contributor, scoped by activity rather than by person. This is
+   that deferred "separate, larger pass": MANAGERS is now the single roster, and the
+   three former EXPERTS entries (sup/infra/cyber) live in it as ordinary contributors
+   — every place a viewer picks who they are picks an activity's contributor, not "a
    manager" or "an expert". `typology` is what that scoping keys off. */
 const MANAGERS=[
   {id:"m_sig",name:"Louis Renaud",role:"SIG contributor",typology:"sig",init:"LR",color:"#3fb27f"},
-  {id:"m_mln",name:"Amina Cherif",role:"Mainline contributor",typology:"mln",init:"AC",color:"#e0a43c"},
-  {id:"m_inf",name:"Paolo Ferri",role:"Infrastructure contributor",typology:"inf",init:"PF",color:"#a06ef2"},
+  {id:"m_mln",name:"Amina Cherif",role:"TRK contributor",typology:"trk",init:"AC",color:"#e0a43c"},
+  {id:"m_inf",name:"Paolo Ferri",role:"OCS contributor",typology:"ocs",init:"PF",color:"#a06ef2"},
+  {id:"sup",name:"Sophie Lang",role:"Monitoring Team contributor",typology:"sig",init:"SL",color:"#6e7bf2"},
+  {id:"infra",name:"Karim Benali",role:"OCS Team contributor",typology:"ocs",init:"KB",color:"#3fb27f"},
+  {id:"cyber",name:"Claire Moreau",role:"Cybersecurity contributor",typology:"rams",init:"CM",color:"#e0a43c"},
 ];
+/* DEC-032 — activity list aligned to revue-documentaire.html's TYPO: the
+   capture's real codes, not this screen's own invented 5-way split. label
+   intentionally equals code, same reasoning as TYPO's own comment there —
+   no legend for these exists yet. */
 const TYPOS={
-  sig:{code:"SIG",label:"SIG & Urban"},
-  mln:{code:"MLN",label:"Mainline Wayside"},
-  sys:{code:"SYS",label:"Safety"},
-  tlc:{code:"TLC",label:"Telecom"},
-  inf:{code:"INF",label:"Infrastructure"},
+  afc:{code:"AFC",label:"AFC"},
+  cjv:{code:"CJV",label:"CJV"},
+  com:{code:"COM",label:"COM"},
+  cyb:{code:"CYB",label:"CYB"},
+  deq:{code:"DEQ",label:"DEQ"},
+  ils:{code:"ILS",label:"ILS"},
+  ocs:{code:"OCS",label:"OCS"},
+  pos:{code:"POS",label:"POS"},
+  psd:{code:"PSD",label:"PSD"},
+  rams:{code:"RAMS",label:"RAMS"},
+  rst:{code:"RST",label:"RST"},
+  scada:{code:"SCADA",label:"SCADA"},
+  sen:{code:"SEN",label:"SEN"},
+  sig:{code:"SIG",label:"SIG"},
+  spm:{code:"SPM",label:"SPM"},
+  trk:{code:"TRK",label:"TRK"},
 };
 /* T2 — two separate axes.
    BST = progress (where the assignment stands). CMP = result (only meaningful once answered).
@@ -787,6 +931,17 @@ const BST={proposed:"Proposed",assigned:"Assigned",awaiting_answer:"Awaiting ans
    comment. This reverses TF3 (expert-space.html), which had made it a first-class
    verdict — the new ticket explicitly voids that. */
 const CMP={compliant:"Compliant",not_compliant:"Not Compliant"};
+/* The verdict is the one thing on this screen that gets an icon — a green
+   check for Compliant, a red cross for Not Compliant, on the existing
+   discreet .vpill background. Every other status (progress, reassignment,
+   locked, pending…) stays text-only, so the icon reads as "this is the
+   compliance result" and nothing else competes with it. */
+const CMP_ICON={compliant:"✓",not_compliant:"✕"};
+function cmpPillHTML(v,extraClass,extraAttrs){
+  if(!v) return `<span class="vpill none${extraClass?" "+extraClass:""}">—</span>`;
+  const ico=CMP_ICON[v]?`<span class="vpill-ico">${CMP_ICON[v]}</span>`:"";
+  return `<span class="vpill ${v}${extraClass?" "+extraClass:""}"${extraAttrs||""}>${ico}${CMP[v]||v}</span>`;
+}
 /* TICKET-merge-expert-space-into-compliance.md §2 — "the Category list has no defined
    values yet... use an obvious placeholder and mark it as such." These are NOT real
    values — swap for the real non-compliance category list once it exists. */
@@ -836,85 +991,105 @@ const REQS_HAND=[
   {id:"SRM-00001",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL route telemetry from each site gateway through its regional aggregator before reaching the central monitoring platform.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"sup",status:"awaiting_answer",compliance:null,age:3},
+     {typology:"sig",manager:"m_sig",status:"awaiting_answer",internal:null,age:3},
    ]},
   {id:"SRM-00002",sec:"2. Functional requirements",type:"Functional",
    text:"Each site gateway SHALL connect to exactly one regional aggregator, with automatic failover to a secondary aggregator on link loss.",
    branches:[
-     {typology:"sig",manager:null,expert:null,status:"proposed",compliance:null,age:3},
+     {typology:"sig",manager:null,status:"proposed",internal:null,age:3},
    ]},
-  {id:"SRM-00003",sec:"2. Functional requirements",type:"Functional",
+  // external/externalRisk are REQUIREMENT-level (see externalOf): one declaration to
+  // the client per requirement, never one per activity. Here it simply confirms the
+  // internal verdict — declared explicitly (solid pill) rather than inherited (dashed).
+  {id:"SRM-00003",sec:"2. Functional requirements",type:"Functional",external:"compliant",
    text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"compliant",age:9,
+     {typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:9,
       resp:{note:"Standard acquisition stack covers all listed measurement families. No deviation from the requirement.",att:0,date:"Jul 12"}},
    ]},
   {id:"SRM-00004",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"compliant",age:9,
+     {typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:9,
       resp:{note:"Dashboard aggregation (site / region / type) is available out of the box.",att:1,date:"Jul 12"}},
    ]},
+  // declared ahead of full consolidation: two activities are still open, but the PM
+  // has already committed an answer to the client and carries the risk for it
   {id:"SRM-00005",sec:"2. Functional requirements",type:"Functional",outdated:true,
+   external:"compliant",
+   externalRisk:"Escalation matrix gap accepted for bid purposes — a mitigation plan will be finalized during contract negotiation. Client informed of the residual risk.",
    text:"The system SHALL generate an alert when a site's consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"sup",status:"answered",compliance:"not_compliant",age:8,
+     {typology:"sig",manager:"m_sig",status:"answered",internal:"not_compliant",age:8,
       resp:{note:"The 5-minute alerting threshold is achievable, but integrating the issuer's escalation matrix falls outside the proposed scope and budget envelope. Not compliant as specified.",att:0,date:"Jul 13"}},
-     {typology:"mln",manager:"m_mln",expert:"infra",status:"awaiting_answer",compliance:null,age:4,lastFollowup:"Jul 14"},
-     {typology:"sys",manager:null,expert:null,status:"reassignment_needed",compliance:null,age:3,
+     {typology:"trk",manager:"m_mln",status:"awaiting_answer",internal:null,age:4,lastFollowup:"Jul 14"},
+     {typology:"rams",manager:null,status:"reassignment_needed",internal:null,age:3,
       reassignComment:"Alerting escalation is a safety-critical chain — this should sit with the Safety authority, not with my perimeter. Please reallocate."},
    ]},
   {id:"SRM-00006",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets.",
    branches:[
-     {typology:"mln",manager:"m_mln",expert:"sup",status:"awaiting_answer",compliance:null,age:6},
+     {typology:"trk",manager:"m_mln",status:"awaiting_answer",internal:null,age:6},
    ]},
-  {id:"SRM-00007",sec:"2. Functional requirements",type:"Interface",
+  // the textbook case for the risk field: fully consolidated Not compliant, declared
+  // Compliant to the client anyway — the one move the risk note is mandatory for
+  {id:"SRM-00007",sec:"2. Functional requirements",type:"Interface",external:"compliant",
+   externalRisk:"Rate-limit shortfall accepted at bid stage — the gateway rework is priced as a contract option, and the client is told the documented API is delivered without the implied third-party load guarantee.",
    text:"The system SHALL expose site telemetry to third-party tools through a documented REST API.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"infra",status:"answered",compliance:"not_compliant",age:7,
+     {typology:"sig",manager:"m_sig",status:"answered",internal:"not_compliant",age:7,
       resp:{note:"Current API rate limits are below the implied third-party load. Meeting the requirement would need a gateway rework — not feasible within the proposed budget envelope.",att:1,date:"Jul 14"}},
    ]},
   {id:"SRM-00008",sec:"2. Functional requirements",type:"Interface",
    text:"The system SHALL import weather forecast feeds, refreshed every 15 minutes.",
    branches:[
-     {typology:"tlc",manager:"m_mln",expert:"infra",status:"awaiting_answer",compliance:null,age:2},
+     {typology:"com",manager:"m_mln",status:"awaiting_answer",internal:null,age:2},
    ]},
   {id:"SRM-00009",sec:"3. Performance requirements",type:"Performance",
    text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites.",
    branches:[
-     {typology:"mln",manager:"m_inf",expert:"infra",status:"answered",compliance:"compliant",age:8,
+     {typology:"trk",manager:"m_inf",status:"answered",internal:"compliant",age:8,
       resp:{note:"3 s refresh validated in load test for 250 simultaneous sites.",att:1,date:"Jul 12"}},
    ]},
   {id:"SRM-00010",sec:"3. Performance requirements",type:"Performance",
    text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile.",
    branches:[
-     {typology:"mln",manager:"m_inf",expert:"infra",status:"awaiting_qa",compliance:null,age:7,qaRef:"QA-01",
+     {typology:"trk",manager:"m_inf",status:"awaiting_qa",internal:null,age:7,qaRef:"QA-01",
       qaNote:"Cannot commit without knowing whether the one-year depth is a rolling year or a calendar year — the storage strategy differs."},
    ]},
   {id:"SRM-00011",sec:"3. Performance requirements",type:"Performance",
    text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:null,status:"proposed",compliance:null,age:7},
-     {typology:"mln",manager:"m_mln",expert:"infra",status:"answered",compliance:"compliant",age:5,
-      resp:{note:"99.7% business-hours availability is met by the standard redundant deployment; maintenance windows are already excluded contractually.",att:0,date:"Jul 15"}},
+     {typology:"sig",manager:"m_sig",status:"proposed",internal:null,age:7},
+     // §4.4 — two teams within one activity: most restrictive wins, so the
+     // activity itself reads not_compliant even though the primary cluster
+     // alone would have passed. Hand-authored, same convention as the rest
+     // of this seed (nothing derived at load time).
+     {typology:"trk",manager:"m_mln",status:"answered",internal:"not_compliant",age:6,
+      resp:{note:"Primary site cluster meets the target; the secondary depot cluster falls short — see teams below.",att:0,date:"Jul 16"},
+      teams:[
+        {manager:"m_mln",status:"answered",internal:"compliant",age:5,
+         resp:{note:"99.7% business-hours availability is met by the standard redundant deployment; maintenance windows are already excluded contractually.",att:0,date:"Jul 15"}},
+        {manager:"infra",status:"answered",internal:"not_compliant",age:6,
+         resp:{note:"Secondary depot cluster runs on older hardware — measured 99.4% over the last quarter, short of the 99.7% target.",att:0,date:"Jul 16"}},
+      ]},
    ]},
   {id:"SRM-00012",sec:"4. Security requirements",type:"Security",
    text:"System access SHALL require multi-factor authentication for any profile with write or administration privileges.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"cyber",status:"awaiting_qa",compliance:null,age:5,qaRef:"QA-04",
+     {typology:"sig",manager:"m_sig",status:"awaiting_qa",internal:null,age:5,qaRef:"QA-04",
       qaNote:"MFA is enforced through the corporate IdP, but I need to know whether TLS 1.3 is mandatory on gateways already deployed on existing sites before I can commit."},
    ]},
   {id:"SRM-00013",sec:"4. Security requirements",type:"Security",
    text:"Any modification to a monitoring parameter SHALL be logged with the author's identity, timestamp and before/after values, and retained for 3 years.",
    branches:[
-     {typology:"mln",manager:"m_mln",expert:"cyber",status:"awaiting_qa",compliance:null,age:6,qaRef:"QA-02",
+     {typology:"trk",manager:"m_mln",status:"awaiting_qa",internal:null,age:6,qaRef:"QA-02",
       qaNote:"Logging is fully supported, but the 3-year retention conflicts with the group policy (5 years) — needs issuer confirmation before commitment."},
    ]},
   {id:"SRM-00014",sec:"4. Security requirements",type:"Security",
    text:"Data flows between sites and the central platform SHALL be encrypted using state-of-the-art standards (TLS 1.3 minimum) and subject to annual review.",
    branches:[
-     {typology:"sig",manager:"m_sig",expert:"cyber",status:"awaiting_qa",compliance:null,age:4,qaRef:"QA-03",
+     {typology:"sig",manager:"m_sig",status:"awaiting_qa",internal:null,age:4,qaRef:"QA-03",
       qaNote:"TLS 1.3 is supported end-to-end on new deployments, but I cannot commit until the issuer states which TLS version applies to legacy site gateways."},
    ]},
 ];
@@ -931,20 +1106,18 @@ const GEN_OBJ=["site-level consumption data","regional aggregation reports","ope
 const GEN_QUAL=["within the configured retention window","across all connected sites","for every registered operator profile","without manual intervention","in compliance with the applicable security policy","within 2 seconds of the triggering event","for a fleet of up to 300 sites","independently of network conditions","with a full audit trail","on a rolling 24-month basis"];
 const GEN_SEC=["2. Functional requirements","3. Performance requirements","4. Security requirements"];
 const GEN_TYPE={"2. Functional requirements":"Functional","3. Performance requirements":"Performance","4. Security requirements":"Security"};
-const GEN_TYPO=["sig","mln","tlc","inf","sys"];
-const GEN_TYPO_MGR={sig:"m_sig",mln:"m_mln",tlc:"m_mln",inf:"m_inf",sys:null};
-const GEN_EXPERT=["sup","infra","cyber"];
+const GEN_TYPO=["sig","trk","com","ocs","rams"];
+const GEN_TYPO_MGR={sig:"m_sig",trk:"m_mln",com:"m_mln",ocs:"m_inf",rams:null};
 const GEN_RESP=["Standard configuration covers this out of the box, no deviation.","Achievable with the current architecture; validated in the last integration test.","Meets the requirement as written, no exception noted.","Supported natively; no additional development required.","Confirmed against the reference deployment — compliant as specified."];
 const GEN_STATUS_CYCLE=["answered","answered","answered","answered","answered","awaiting_answer","awaiting_answer","awaiting_qa","proposed","reassignment_needed"];
 const GEN_CMP_CYCLE=["compliant","compliant","compliant","compliant","compliant","not_compliant"];
 function genBranch(i,typo){
   const status=GEN_STATUS_CYCLE[i%GEN_STATUS_CYCLE.length];
   const mgr=GEN_TYPO_MGR[typo];
-  const expert=(status==="proposed"||!mgr)?null:GEN_EXPERT[i%GEN_EXPERT.length];
   const age=1+((i*3)%10);
-  const b={typology:typo,manager:mgr,expert,status,compliance:null,age};
+  const b={typology:typo,manager:mgr,status,internal:null,age};
   if(status==="answered"){
-    b.compliance=GEN_CMP_CYCLE[i%GEN_CMP_CYCLE.length];
+    b.internal=GEN_CMP_CYCLE[i%GEN_CMP_CYCLE.length];
     b.resp={note:GEN_RESP[i%GEN_RESP.length],att:i%4===0?1:0,date:"Jul "+(1+(i%20))};
   }
   return b;
@@ -970,9 +1143,9 @@ const OVERDUE_DAYS=5;
    branch (reqId + typology), and that branch sits in `awaiting_qa` until an answer lands. */
 let QA=[
   {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",
-   reqs:["SRM-00010"],branch:{req:"SRM-00010",typology:"mln"},expert:"infra",from:"Karim Benali",date:"Jul 14"},
+   reqs:["SRM-00010"],branch:{req:"SRM-00010",typology:"trk"},expert:"infra",from:"Karim Benali",date:"Jul 14"},
   {id:"QA-02",st:"internal",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
-   reqs:["SRM-00013"],branch:{req:"SRM-00013",typology:"mln"},expert:"cyber",from:"Claire Moreau",date:"Jul 15"},
+   reqs:["SRM-00013"],branch:{req:"SRM-00013",typology:"trk"},expert:"cyber",from:"Claire Moreau",date:"Jul 15"},
   {id:"QA-03",st:"draft",q:"Which TLS version applies to legacy site gateways?",
    reqs:["SRM-00014"],branch:{req:"SRM-00014",typology:"sig"},expert:"cyber",from:"Claire Moreau",date:"Jul 16",dup:"QA-04"},
   {id:"QA-04",st:"draft",q:"Is TLS 1.3 mandatory for gateways already deployed on existing sites?",
@@ -997,24 +1170,46 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
   /* TICKET-merge-expert-space-into-compliance.md — role default scope: the project
      manager lands on everything, a contributor lands on their own activity only.
      contribTypo is which activity a contributor is currently viewing as. */
-  role:"pm",contribTypo:"sig",openForm:null,verdictPick:null,
-  search:"",sortBy:"action",fExpert:"",fTypo:"",needsMe:false,
-  /* B5 — shared table engine state (see table-engine.js / TE) */
-  selection:new Set(),colFilters:{},filterToSelection:false,savedColFilters:null,
-  activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","mgr","age"]),
-  colOrder:["typo","expert","mgr","status","comment","lastfu","age"],
+  role:"pm",contribTypo:"sig",openForm:null,verdictPick:null,externalPick:null,
+  search:"",sortBy:"action",needsMe:false,
+  advFilter:{op:"AND",items:[]}, advFilterDraft:null, advFilterOpen:false,
+  /* B5 — shared table engine state (see table-engine.js / TE). colFilters holds
+     EXCLUDED values per column (empty Set = show all) — §4.2's Excel-style
+     header filters, replacing the old toolbar's contributor/activity selects. */
+  selection:new Set(),colFilters:{typo:new Set(),expert:new Set()},filterToSelection:false,savedColFilters:null,
+  activeCell:{id:null,bidx:null,col:null},colCollapsed:new Set(["typo","age"]),
+  colOrder:["typo","expert","status","compliance","comment","external","risk","lastfu","age"],
   docNavCollapsed:new Set(),
-  navPanelCollapsed:false,detailPanelCollapsed:false,
-  ownTeamOnly:true};
+  // §4.1/6.4 — the requirement-list nav collapses by default; the toggle
+  // (nav2-toggle) is always visible so it's reopenable in one action. Casting/
+  // Documents/Q&A are unaffected — they live in the header's own icon-cluster,
+  // not this panel, so nothing about reaching them changes.
+  navPanelCollapsed:true,detailPanelCollapsed:false,
+  // §4.4/multi-activity visibility — the PM default is "sees everything" (see
+  // initViewer()'s own comment below); starting this true silently hid every
+  // activity but the viewer's own team on a multi-branch requirement, which is
+  // exactly the case this table exists to surface. False here, narrowed only
+  // via the "My team only" chip, matches the documented default.
+  ownTeamOnly:false,
+  // Sub-rows collapsed by default — a multi-activity requirement can carry a
+  // multi-team activity underneath it, and showing every one of those rows for
+  // every multi-activity requirement at once ate the table. Same convention as
+  // revue-documentaire.html's own expandedBranches: collapsed until asked for,
+  // one caret per requirement. Teams stay un-collapsible on their own (§4.4's
+  // "shown always" once the activity is open) — collapsing hides all of an
+  // activity's rows together, never just some of its teams.
+  expandedBranches:new Set()};
 /* B5 — this screen has no admin/view-as switcher yet (unlike revue-documentaire.html);
    VIEWER simulates whichever branch manager is currently using their own follow-up
    view. "My team only" (state.ownTeamOnly) is the OPEN question's resolution: a
-   liftable UI filter on top of the same passesB() mechanism, not a real access
-   restriction — clearing it shows every team, same as picking a different column
-   filter would. Defaults to the first manager so the screen opens pre-scoped. */
+   narrowing UI filter on top of the same passesB() mechanism, not a real access
+   restriction — applying it (or picking a different "view as" person) scopes down
+   to that team, clearing it shows every team again. VIEWER still defaults to the
+   first manager for the "view as" picker's own default selection, but the table
+   itself opens unscoped (state.ownTeamOnly:false) — a multi-activity requirement
+   shows every one of its activities until the PM narrows it, not before. */
 let VIEWER=MANAGERS[0].id;
 
-const expOf=id=>EXPERTS.find(e=>e.id===id);
 const mgrOf=id=>MANAGERS.find(m=>m.id===id);
 const TY=id=>TYPOS[id]||{code:String(id||"—").toUpperCase(),label:id||"—"};
 const findR=id=>REQS.find(r=>r.id===id);
@@ -1032,23 +1227,100 @@ const isOverB=b=>isAwaitingAnswer(b)&&b.age>=OVERDUE_DAYS;
 
 /* T3 — requirement-level consolidation, DERIVED (unlike the review table, where the
    rollup is hand-written). Rule: pending until every branch is answered, then the most
-   restrictive verdict wins. `awaiting_qa` counts as not-yet-answered, so it blocks. */
+   restrictive verdict wins. `awaiting_qa` counts as not-yet-answered, so it blocks.
+   SPEC-internal-external-compliance.md (§4.7) — this consolidates INTERNAL compliance
+   (the contributor's technical assessment), which is what every existing consumer of
+   this function already means by "the verdict": nav dots, the table's status pill,
+   exports, the requirement tab's frozen summary. EXTERNAL is a separate, per-branch
+   PM declaration that can deliberately diverge from internal — it's shown alongside
+   internal in the detail panel, not rolled up here, since nothing upstream of a
+   branch enters it except the PM looking at that one branch. */
 function consolidate(r){
   const brs=r.branches||[];
   const unfinished=brs.filter(b=>!isAnswered(b));
   if(unfinished.length){
     const blocking=BLOCK_PRIORITY.map(s=>unfinished.find(b=>b.status===s)).find(Boolean)||unfinished[0];
-    return {compliance:null,pending:true,blocking,remaining:unfinished.length};
+    return {internal:null,pending:true,blocking,remaining:unfinished.length};
   }
-  const worst=CMP_ORDER.find(c=>brs.some(b=>b.compliance===c))||null;
+  const worst=CMP_ORDER.find(c=>brs.some(b=>b.internal===c))||null;
   // USER-TEST-session-3.md §1.5 — the comment travels with the verdict so the table
   // can show it inline, not just the compliance colour.
-  const worstBranch=brs.find(b=>b.compliance===worst)||null;
-  return {compliance:worst,pending:false,blocking:null,remaining:0,comment:worstBranch?.resp?.note||null};
+  const worstBranch=brs.find(b=>b.internal===worst)||null;
+  return {internal:worst,pending:false,blocking:null,remaining:0,comment:worstBranch?.resp?.note||null};
 }
 const isConsolidated=r=>!consolidate(r).pending;
-/* experts available for (re)allocation — same pool everywhere */
-const ALLOC_EXPERTS=()=>EXPERTS;
+
+/* ---- EXTERNAL compliance — the declaration that leaves the company ----
+   The verdict the client actually receives, and the one thing that can say
+   Compliant when the technical assessment underneath says otherwise. Three
+   decisions shape it, all deliberate:
+
+   1. ONE PER REQUIREMENT, not one per activity. The client gets a single answer
+      per requirement, so this is the project manager's call at the top level —
+      it sits on `r`, never on a branch. This replaces the per-branch declaration
+      AND the old `externalLocked` flag: nothing is frozen any more, the column
+      itself (plus the risk beside it) is what makes the deviation visible.
+   2. UNDECLARED MEANS INHERITED. With nothing declared, the requirement goes out
+      with its consolidated internal verdict, so the export is always complete and
+      the PM only intervenes to deviate. Shown dimmed/dashed so an inherited value
+      never reads as a decision somebody took.
+   3. THE RISK IS THE PRICE OF ONE SPECIFIC MOVE. Required only in the dangerous
+      direction — declaring Compliant over a Not compliant internal verdict.
+      Deviating the other way (telling the client no when the teams said yes) is
+      conservative and needs no justification to be safe. */
+function externalOf(r){
+  const c=consolidate(r);
+  if(r.external) return {v:r.external, declared:true, internal:c.internal, pending:c.pending};
+  return {v:c.pending?null:c.internal, declared:false, internal:c.internal, pending:c.pending};
+}
+const externalNeedsRisk=(r,pick)=>consolidate(r).internal==="not_compliant"&&pick==="compliant";
+/* diverging from the internal verdict is the thing worth spotting in a table of
+   104 rows — not the declaration itself, most of which just confirm */
+const externalDiverges=r=>{ const x=externalOf(r); return x.declared && !x.pending && x.v!==x.internal; };
+function externalPillHTML(r){
+  const x=externalOf(r);
+  if(!x.v) return `<span class="vpill none">—</span>`;
+  return x.declared
+    ? cmpPillHTML(x.v,null,` title="Declared to the client by the project manager"`)
+    : cmpPillHTML(x.v,"inherited",` title="Not declared — the requirement goes out with its internal verdict"`);
+}
+function riskCellHTML(r){
+  if(!r.externalRisk) return "";
+  return `<span class="risk-note" title="${esc(r.externalRisk)}">${esc(r.externalRisk)}</span>`;
+}
+/* The declaration is requirement-level, so it belongs in the panel HEADER, beside
+   the consolidated internal verdict it may deviate from — not in the Assignment
+   tab, which is scoped to a single activity. Only the project manager can operate
+   it (SPEC-domain-model.md §5's existing rule on who declares to the client). */
+function externalBandHTML(r){
+  const x=externalOf(r);
+  const canDeclare=state.role==="pm";
+  const open=state.openForm==="external";
+  const pick=open?state.externalPick:null;
+  const riskRequired=externalNeedsRisk(r,pick);
+  const form=!open?"":`
+    <div class="inline-form" id="external-form">
+      <div class="if-label">${r.external?"Update":"Declare"} external compliance — this is the verdict the client receives</div>
+      <div class="verdict-toggle">
+        <button class="v-compliant${pick==="compliant"?" on":""}" data-extpick="compliant">Compliant</button>
+        <button class="v-not_compliant${pick==="not_compliant"?" on":""}" data-extpick="not_compliant">Not compliant</button>
+      </div>
+      ${riskRequired?`<div class="field"><label>Risk <span>· required — the internal verdict is Not compliant and this declares Compliant</span></label><textarea id="ext-risk" rows="3" placeholder="Required — describe the risk being accepted and why">${esc(r.externalRisk||"")}</textarea></div>`:""}
+      <div class="form-actions">
+        ${r.external?`<button class="btn-cancel" id="ext-clear" title="Stop deviating — the internal verdict travels to the client again">Clear</button>`:""}
+        <button class="btn-cancel" id="ext-cancel">Cancel</button>
+        <button class="btn-submit ok" id="ext-submit" ${pick?"":"disabled"}>Save declaration</button>
+      </div>
+    </div>`;
+  return `<div class="ext-band">
+      <span class="ext-band-k">External · to the client</span>
+      ${externalPillHTML(r)}
+      ${externalDiverges(r)?`<span class="ext-diverge" title="Deviates from the internal verdict (${CMP[x.internal]||"—"})">≠ internal</span>`:""}
+      ${canDeclare&&!open?`<button class="mini-btn" id="ext-declare">${r.external?"Edit":"Declare"}</button>`:""}
+    </div>
+    ${r.externalRisk?`<div class="vimpact ext-risk-line">⚠ <b>Risk accepted:</b> ${esc(r.externalRisk)}</div>`:""}
+    ${form}`;
+}
 
 /* =====================================================
    TOASTS
@@ -1072,6 +1344,22 @@ const needsMyAction=b=>needsReassign(b)||!!(b.unblockedAt&&b.status==="awaiting_
    an activity), not "my own team": a contributor sees every allocated activity that
    matches theirs, regardless of who it's assigned to. */
 function canAnswer(b){ return state.role==="contributor"&&b.typology===state.contribTypo; }
+/* §4.2 — per-column Excel-style filters, ported from revue-documentaire.html:
+   state.colFilters[col] holds EXCLUDED values (empty Set = show all), edited
+   from a popover opened on the column's own header rather than a toolbar
+   select disconnected from the column it narrows. */
+const COL_FILTER_DEFS={
+  typo:{label:"Activity",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:b=>[b.typology]},
+  expert:{label:"Assigned to",options:[...MANAGERS.map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
+};
+function passesColFilters(b){
+  for(const col in state.colFilters){
+    const excluded=state.colFilters[col]; if(!excluded||!excluded.size) continue;
+    const vals=COL_FILTER_DEFS[col].get(b);
+    if(!vals.some(v=>!excluded.has(v))) return false;
+  }
+  return true;
+}
 function passesB(b){
   if(state.role==="contributor"&&b.typology!==state.contribTypo)return false;
   if(state.role==="pm"&&state.ownTeamOnly&&b.manager!==VIEWER)return false;
@@ -1080,8 +1368,7 @@ function passesB(b){
   if(state.filter==="qa")return isAwaitingQA(b);
   if(state.filter==="reassign")return needsReassign(b);
   if(state.filter==="over")return isOverB(b);
-  if(state.fExpert&&b.expert!==state.fExpert)return false;
-  if(state.fTypo&&b.typology!==state.fTypo)return false;
+  if(!passesColFilters(b))return false;
   if(state.needsMe&&!needsMyAction(b))return false;
   return true;
 }
@@ -1090,7 +1377,7 @@ function matchesSearch(r){
   if(!state.search)return true;
   const q=state.search.toLowerCase();
   if(r.id.toLowerCase().includes(q)||r.text.toLowerCase().includes(q))return true;
-  return (r.branches||[]).some(b=>TY(b.typology).label.toLowerCase().includes(q)||(b.expert&&expOf(b.expert).name.toLowerCase().includes(q)));
+  return (r.branches||[]).some(b=>TY(b.typology).label.toLowerCase().includes(q)||(b.manager&&mgrOf(b.manager).name.toLowerCase().includes(q)));
 }
 /* …and a requirement passes when it matches the search AND at least one of its allocated activities
    passes the status/expert/typology/needs-me filters (the "out" filter is requirement-level:
@@ -1099,7 +1386,276 @@ function passes(r){
   if(state.filterToSelection) return state.selection.has(r.id);
   if(!matchesSearch(r))return false;
   if(state.filter==="out")return !!r.outdated;
-  return (r.branches||[]).some(passesB);
+  return (r.branches||[]).some(passesB) && passesAdvFilter(r);
+}
+
+/* =====================================================
+   ADVANCED FILTER (SPEC-advanced-filters.md §4.2) — wired against the shared
+   engine table-engine.js already provides (TE.matchesFilter/describeFilter/
+   OPS_BY_TYPE), same treatment as revue-documentaire.html's Allocation table.
+   The panel-rendering code below is a straight port of that screen's own
+   (table-engine.js only ships the matching engine, not a shared panel
+   component) — field defs adapted to what this screen actually has:
+   activity/internal/external/status/contributor/age instead of Allocation's
+   characterisation fields. */
+const ADV_FILTER_FIELDS={
+  id:{label:"ID",type:"text",get:r=>[r.id||""]},
+  text:{label:"Text",type:"text",get:r=>[r.text||""]},
+  typo:{label:"Activity",type:"enum",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:r=>(r.branches||[]).map(b=>b.typology)},
+  internal:{label:"Internal compliance",type:"enum",options:[{v:"compliant",l:"Compliant"},{v:"not_compliant",l:"Not Compliant"},{v:"",l:"Pending"}],get:r=>(r.branches||[]).map(b=>b.internal||"")},
+  // the EFFECTIVE value, inherited one included — filtering on "what the client
+  // gets" is the question people actually ask, not "what was typed in"
+  external:{label:"External compliance",type:"enum",options:[{v:"compliant",l:"Compliant"},{v:"not_compliant",l:"Not Compliant"},{v:"",l:"Nothing yet"}],get:r=>[externalOf(r).v||""]},
+  risk:{label:"Risk accepted",type:"boolean",get:r=>[!!r.externalRisk]},
+  status:{label:"Status",type:"enum",options:Object.keys(BST).map(k=>({v:k,l:BST[k]})),get:r=>(r.branches||[]).map(b=>b.status)},
+  contributor:{label:"Contributor",type:"enum",options:MANAGERS.map(m=>({v:m.id,l:m.name})),get:r=>(r.branches||[]).map(b=>b.manager||"")},
+  age:{label:"Age (days)",type:"text",get:r=>(r.branches||[]).map(b=>String(b.age??""))},
+  outdated:{label:"Outdated version",type:"boolean",get:r=>[!!r.outdated]},
+  doc:{label:"Document",type:"enum",options:DOCS.map(d=>({v:d.id,l:d.name})),get:r=>[SEC_DOC[r.sec]||""]},
+  section:{label:"Section",type:"text",get:r=>[r.sec||""]},
+};
+const ADV_FIELD_GROUPS=[
+  {g:"Progress",       fields:["status","internal","external","risk"]},
+  {g:"Assignment",     fields:["typo","contributor","age"]},
+  {g:"Content & source", fields:["id","text","section","doc","outdated"]},
+];
+const ADV_FIELD_ORDER=ADV_FIELD_GROUPS.reduce((a,g)=>a.concat(g.fields),[]);
+function passesAdvFilter(r){ return TE.matchesFilter(ADV_FILTER_FIELDS, state.advFilter, r); }
+const ADV_NO_VALUE_OPS=["is_empty","is_not_empty","is_true","is_false"];
+function advCondComplete(cond){
+  const def=ADV_FILTER_FIELDS[cond.field]; if(!def) return false;
+  if(ADV_NO_VALUE_OPS.includes(cond.op)) return true;
+  if(cond.op==="is_any_of"||cond.op==="is_none_of") return Array.isArray(cond.value)&&cond.value.length>0;
+  if(cond.op==="between") return !!(cond.value&&cond.value.from&&cond.value.to);
+  return cond.value!==""&&cond.value!=null;
+}
+function advPruned(filter){
+  if(!filter||!filter.items) return {op:"AND",items:[]};
+  const items=[];
+  filter.items.forEach(it=>{
+    if(it.items){ const g=advPruned(it); if(g.items.length) items.push(g); }
+    else if(advCondComplete(it)) items.push(it);
+  });
+  return {op:filter.op,items};
+}
+function advIncompleteCount(filter){
+  if(!filter||!filter.items) return 0;
+  return filter.items.reduce((n,it)=>n+(it.items?advIncompleteCount(it):(advCondComplete(it)?0:1)),0);
+}
+function advFlatConditions(filter){
+  if(!filter||!filter.items) return [];
+  return filter.items.reduce((a,it)=>a.concat(it.items?advFlatConditions(it):[it]),[]);
+}
+function advDefaultValue(def,op){
+  if(op==="is_any_of"||op==="is_none_of") return [];
+  if(op==="between") return {from:"",to:""};
+  if(op==="in_last") return "7";
+  if(op==="is_empty"||op==="is_not_empty"||op==="is_true"||op==="is_false") return null;
+  return "";
+}
+function advNewCondition(){
+  const field=ADV_FIELD_ORDER[0], def=ADV_FILTER_FIELDS[field], op=TE.OPS_BY_TYPE[def.type][0];
+  return {field, op, value:advDefaultValue(def,op)};
+}
+let advInheritedCount=0;
+function openAdvFilterPanel(){
+  advInheritedCount=0;
+  if(!state.advFilter.items.length) state.advFilterDraft={op:state.advFilter.op, items:[]};
+  else state.advFilterDraft=JSON.parse(JSON.stringify(state.advFilter));
+  state.advFilterOpen=true;
+  renderAdvFilterPanel();
+}
+function closeAdvFilterPanel(){
+  state.advFilterOpen=false; state.advFilterDraft=null;
+  renderAdvFilterPanel();
+}
+function advGetItemByAddr(addr){
+  const parts=String(addr).split(".").map(Number);
+  return parts.length===1 ? state.advFilterDraft.items[parts[0]] : state.advFilterDraft.items[parts[0]].items[parts[1]];
+}
+function advValueEditorHTML(def, cond, addr){
+  const op=cond.op;
+  if(ADV_NO_VALUE_OPS.includes(op)) return "";
+  if(op==="is_any_of"||op==="is_none_of"){
+    const sel=new Set(cond.value||[]);
+    return (def.options||[]).map(o=>
+      `<button type="button" class="advv-chip${sel.has(o.v)?" on":""}" data-addr="${addr}" data-chip="${esc(String(o.v))}">${esc(o.l)}</button>`).join("");
+  }
+  if(def.type==="enum") return `<select class="ui-select adv-val${cond.value?"":" is-empty"}" data-addr="${addr}"><option value="">— choose a value —</option>${(def.options||[]).map(o=>`<option value="${o.v}" ${cond.value===o.v?"selected":""}>${o.l}</option>`).join("")}</select>`;
+  return `<input type="text" class="ui-input adv-val" data-addr="${addr}" placeholder="Type a value…" value="${esc(cond.value||"")}">`;
+}
+function advConditionRowHTML(cond, addr){
+  const def=ADV_FILTER_FIELDS[cond.field]||ADV_FILTER_FIELDS[ADV_FIELD_ORDER[0]];
+  const ops=TE.OPS_BY_TYPE[def.type];
+  const incomplete=!advCondComplete(cond);
+  const fieldOpts=ADV_FIELD_GROUPS.map(g=>
+    `<optgroup label="${g.g}">${g.fields.map(k=>`<option value="${k}" ${k===cond.field?"selected":""}>${ADV_FILTER_FIELDS[k].label}</option>`).join("")}</optgroup>`).join("");
+  return `<div class="adv-row${incomplete?" is-incomplete":""}">
+    <select class="ui-select adv-field" data-addr="${addr}">${fieldOpts}</select>
+    <select class="ui-select adv-op" data-addr="${addr}">${ops.map(o=>`<option value="${o}" ${o===cond.op?"selected":""}>${TE.OP_LABEL[o]}</option>`).join("")}</select>
+    <span class="adv-value">${advValueEditorHTML(def,cond,addr)||`<span class="adv-nofield">no value needed</span>`}</span>
+    ${incomplete?`<span class="adv-need" title="This condition is ignored until it has a value">needs a value</span>`:""}
+    <button class="adv-remove" data-addr="${addr}" title="Remove this condition">✕</button>
+  </div>`;
+}
+function advMatchSwitchHTML(op, attrs){
+  return `Match <span class="gseg" style="display:inline-flex"><button class="${attrs.cls} ${op==="AND"?"on":""}" ${attrs.data} data-gop="AND">all</button><button class="${attrs.cls} ${op==="OR"?"on":""}" ${attrs.data} data-gop="OR">any</button></span> of:`;
+}
+function advGroupHTML(group, topIdx){
+  return `<div class="adv-group">
+    <div class="adv-group-head">${advMatchSwitchHTML(group.op,{cls:"adv-gop",data:`data-top="${topIdx}"`})}
+      <button class="adv-remove" data-addr="${topIdx}" data-removegroup="1" title="Remove this group">✕</button>
+    </div>
+    <div class="adv-list">${group.items.map((it,i)=>advConditionRowHTML(it,`${topIdx}.${i}`)).join("")}</div>
+    <button class="mini-btn" data-addgroupitem="${topIdx}">+ Add condition</button>
+  </div>`;
+}
+function advLiveMatch(){
+  const d=advPruned(state.advFilterDraft);
+  const baseline=REQS.filter(r=>(r.branches||[]).some(passesB));
+  const matched=baseline.filter(r=>TE.matchesFilter(ADV_FILTER_FIELDS,d,r));
+  let culprit=null;
+  if(!matched.length && d.items.length){
+    const conds=advFlatConditions(d);
+    if(conds.length>1){
+      const alone=conds.map(c=>({c,n:baseline.filter(r=>TE.matchesCondition(ADV_FILTER_FIELDS,c,r)).length}));
+      const worst=alone.reduce((a,x)=>x.n<a.n?x:a,alone[0]);
+      if(worst.n===0) culprit=TE.describeCondition(ADV_FILTER_FIELDS,worst.c);
+    }
+  }
+  return {matched:matched.length, total:baseline.length, culprit};
+}
+function renderAdvFilterPanel(){
+  const p=document.getElementById("adv-filter-panel"); if(!p) return;
+  p.classList.toggle("on", state.advFilterOpen);
+  if(!state.advFilterOpen){ p.innerHTML=""; return; }
+  const d=state.advFilterDraft;
+  const itemsHTML=d.items.map((it,i)=>it.items?advGroupHTML(it,i):advConditionRowHTML(it,String(i))).join("");
+  const saved=TE.loadSavedFilters("compliance");
+  const pruned=advPruned(d);
+  p.innerHTML=`
+    <div class="adv-head">
+      <span class="adv-head-t">Filter</span>
+      <button class="mini-btn" id="adv-close">Close</button>
+    </div>
+    <div class="adv-body">
+      ${d.items.length>1?`<div class="adv-toplevel">${advMatchSwitchHTML(d.op,{cls:"adv-topop",data:""})}</div>`:""}
+      <div class="adv-list">${itemsHTML||`<div class="field-hint" style="margin-bottom:8px">No conditions yet — add one below.</div>`}</div>
+      <div class="adv-addrow"><button class="mini-btn" id="adv-add-cond">+ Add condition</button><button class="mini-btn" id="adv-add-group">+ Add group</button></div>
+      <div class="adv-saved">
+        <div class="adv-saved-head">Saved filters<span>${saved.length?`${saved.length} saved · reusable on any tender`:""}</span></div>
+        ${saved.length?saved.map((sf,i)=>`<div class="adv-saved-row"><span class="n" data-loadsaved="${i}">${esc(sf.name)}</span><button data-delsaved="${i}" title="Delete">✕</button></div>`).join(""):`<div class="field-hint">None yet — build a filter and save it to reuse later.</div>`}
+        <div class="adv-save-row" id="adv-save-row" ${pruned.items.length?"":"hidden"}><input type="text" class="ui-input" id="adv-save-name" placeholder="Save current as…"><button class="mini-btn" id="adv-save-btn">Save</button></div>
+      </div>
+    </div>
+    <div class="adv-foot">${advFootHTML()}</div>`;
+  bindAdvFilterPanel(p);
+}
+function advFootHTML(){
+  const d=state.advFilterDraft;
+  const pruned=advPruned(d);
+  const {matched,total,culprit}=advLiveMatch();
+  const missing=advIncompleteCount(d);
+  let count;
+  if(!pruned.items.length) count=`<div class="adv-count">No conditions yet — all <b>${total.toLocaleString()}</b> requirements</div>`;
+  else if(!matched) count=`<div class="adv-count zero">Nothing matches${culprit?` — <b>${esc(culprit)}</b> alone matches 0`:""}</div>`;
+  else count=`<div class="adv-count"><b>${matched.toLocaleString()}</b> of <b>${total.toLocaleString()}</b> requirements</div>`;
+  return `${pruned.items.length?`<div class="adv-summary">Showing requirements where ${esc(TE.describeFilter(ADV_FILTER_FIELDS,pruned))}</div>`:""}
+    <div class="adv-countrow">${count}${missing?`<span class="adv-blocked">${missing} condition${missing>1?"s":""} still need${missing>1?"":"s"} a value</span>`:""}</div>
+    <div class="adv-actions">
+      <button class="btn-cancel" id="adv-cancel">Cancel</button>
+      <button class="btn-submit ok" id="adv-apply" ${missing?"disabled":""} title="${missing?"Finish or remove the incomplete conditions first":""}">${pruned.items.length?"Apply":"Clear filter"}</button>
+    </div>`;
+}
+function bindAdvFilterPanel(p){
+  p.querySelector("#adv-close").addEventListener("click",closeAdvFilterPanel);
+  p.querySelector("#adv-cancel").addEventListener("click",closeAdvFilterPanel);
+  p.querySelector("#adv-apply").addEventListener("click",()=>{
+    state.advFilter=advPruned(state.advFilterDraft);
+    closeAdvFilterPanel();
+    refreshAll();
+  });
+  p.querySelector("#adv-add-cond").addEventListener("click",()=>{ state.advFilterDraft.items.push(advNewCondition()); renderAdvFilterPanel(); });
+  p.querySelector("#adv-add-group").addEventListener("click",()=>{ state.advFilterDraft.items.push({op:"AND",items:[advNewCondition()]}); renderAdvFilterPanel(); });
+  p.querySelectorAll("[data-addgroupitem]").forEach(b=>b.addEventListener("click",()=>{
+    state.advFilterDraft.items[+b.dataset.addgroupitem].items.push(advNewCondition()); renderAdvFilterPanel();
+  }));
+  p.querySelectorAll("[data-removegroup]").forEach(b=>b.addEventListener("click",()=>{
+    state.advFilterDraft.items.splice(+b.dataset.addr,1); renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".adv-topop").forEach(b=>b.addEventListener("click",()=>{ state.advFilterDraft.op=b.dataset.gop; renderAdvFilterPanel(); }));
+  p.querySelectorAll(".adv-gop").forEach(b=>b.addEventListener("click",()=>{ state.advFilterDraft.items[+b.dataset.top].op=b.dataset.gop; renderAdvFilterPanel(); }));
+  p.querySelectorAll(".adv-remove").forEach(b=>b.addEventListener("click",()=>{
+    const addr=b.dataset.addr;
+    if(addr.includes(".")){
+      const [gi,ii]=addr.split(".").map(Number);
+      state.advFilterDraft.items[gi].items.splice(ii,1);
+      if(!state.advFilterDraft.items[gi].items.length) state.advFilterDraft.items.splice(gi,1);
+    }else state.advFilterDraft.items.splice(+addr,1);
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".adv-field").forEach(s=>s.addEventListener("change",()=>{
+    const cond=advGetItemByAddr(s.dataset.addr), def=ADV_FILTER_FIELDS[s.value];
+    cond.field=s.value; cond.op=TE.OPS_BY_TYPE[def.type][0]; cond.value=advDefaultValue(def,cond.op);
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".adv-op").forEach(s=>s.addEventListener("change",()=>{
+    const cond=advGetItemByAddr(s.dataset.addr), def=ADV_FILTER_FIELDS[cond.field];
+    cond.op=s.value; cond.value=advDefaultValue(def,cond.op);
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll(".advv-chip").forEach(el=>el.addEventListener("click",()=>{
+    const cond=advGetItemByAddr(el.dataset.addr);
+    const set=new Set(cond.value||[]);
+    set.has(el.dataset.chip)?set.delete(el.dataset.chip):set.add(el.dataset.chip);
+    cond.value=[...set];
+    el.classList.toggle("on");
+    renderAdvFilterCountAndSummaryOnly(p);
+  }));
+  p.querySelectorAll(".adv-val").forEach(el=>el.addEventListener("input",()=>{
+    const cond=advGetItemByAddr(el.dataset.addr);
+    cond.value=el.value;
+    renderAdvFilterCountAndSummaryOnly(p);
+  }));
+  p.querySelectorAll("[data-loadsaved]").forEach(el=>el.addEventListener("click",()=>{
+    const saved=TE.loadSavedFilters("compliance")[+el.dataset.loadsaved];
+    if(saved) state.advFilterDraft=JSON.parse(JSON.stringify(saved.filter));
+    renderAdvFilterPanel();
+  }));
+  p.querySelectorAll("[data-delsaved]").forEach(el=>el.addEventListener("click",()=>{
+    const list=TE.loadSavedFilters("compliance");
+    list.splice(+el.dataset.delsaved,1);
+    TE.saveSavedFilters("compliance",list);
+    renderAdvFilterPanel();
+  }));
+  p.querySelector("#adv-save-btn")?.addEventListener("click",()=>{
+    const name=(p.querySelector("#adv-save-name").value||"").trim();
+    if(!name){ toast("Name this filter before saving","warn"); return; }
+    const list=TE.loadSavedFilters("compliance");
+    list.push({name, filter:advPruned(state.advFilterDraft)});
+    TE.saveSavedFilters("compliance",list);
+    toast(`Filter "${name}" saved`,"ok");
+    renderAdvFilterPanel();
+  });
+}
+function renderAdvFilterCountAndSummaryOnly(p){
+  const foot=p.querySelector(".adv-foot"); if(!foot) return;
+  const saveRow=p.querySelector("#adv-save-row");
+  if(saveRow) saveRow.hidden=!advPruned(state.advFilterDraft).items.length;
+  foot.innerHTML=advFootHTML();
+  foot.querySelector("#adv-cancel").addEventListener("click",closeAdvFilterPanel);
+  foot.querySelector("#adv-apply").addEventListener("click",()=>{
+    state.advFilter=advPruned(state.advFilterDraft);
+    closeAdvFilterPanel();
+    refreshAll();
+  });
+}
+function renderAdvFilterBanner(){
+  const banner=document.getElementById("adv-filter-banner"); if(!banner) return;
+  const pruned=advPruned(state.advFilter);
+  banner.style.display = pruned.items.length ? "flex" : "none";
+  if(pruned.items.length) banner.querySelector("#adv-filter-banner-text").textContent =
+    "Showing requirements where "+TE.describeFilter(ADV_FILTER_FIELDS,pruned);
 }
 
 /* =====================================================
@@ -1132,17 +1688,17 @@ function renderNav2(){
         const el=document.createElement("div");
         el.className="nav-item"+(state.sel===r.id?" active":"")+(passes(r)?"":" dimmed");
         const c=consolidate(r);
-        el.innerHTML=`<span class="vdot ${c.pending?"none":c.compliance}"></span><span class="nid">${r.id}</span><span class="nlabel">${esc(r.text.slice(0,46))}…</span>${r.branches.length>1?`<span class="nav-brn">${r.branches.length}</span>`:""}`;
+        el.innerHTML=`<span class="vdot ${c.pending?"none":c.internal}"></span><span class="nid">${r.id}</span><span class="nlabel">${esc(r.text.slice(0,46))}…</span>${r.branches.length>1?`<span class="nav-brn">${r.branches.length}</span>`:""}`;
         el.addEventListener("click",()=>select(r.id));
         docTarget.appendChild(el);
       });
     });
   }else{
-    // by expert — counts are per ALLOCATED ACTIVITY now (an expert holds allocated activities, not requirements)
-    EXPERTS.forEach(e=>{
-      // T11 — per-expert progress broken into the three states a manager needs to
-      // tell apart: answered, pending (with the expert), blocked (with the issuer)
-      const mine=allBranches().filter(b=>b.expert===e.id);
+    // by contributor — counts are per ALLOCATED ACTIVITY now (a contributor holds allocated activities, not requirements)
+    MANAGERS.forEach(e=>{
+      // T11 — per-contributor progress broken into the three states a manager needs to
+      // tell apart: answered, pending (with the contributor), blocked (with the issuer)
+      const mine=allBranches().filter(b=>b.manager===e.id);
       const done=mine.filter(isAnswered).length;
       const pending=mine.filter(isAwaitingAnswer).length;
       const blocked=mine.filter(isAwaitingQA).length;
@@ -1153,7 +1709,7 @@ function renderNav2(){
       card.innerHTML=`
         <div class="exp-top">
           <div class="exp-avatar" style="background:${e.color}">${e.init}</div>
-          <div><div class="exp-name">${e.name}</div><div class="exp-team">${e.team}</div></div>
+          <div><div class="exp-name">${e.name}</div><div class="exp-team">${e.role}</div></div>
           <button class="exp-remind" data-remind="${e.id}" ${pending?"":"disabled"}>🔔 Remind</button>
         </div>
         <div class="exp-bar"><div style="width:${mine.length?done/mine.length*100:0}%"></div></div>
@@ -1175,7 +1731,7 @@ function renderNav2(){
   }
 }
 function remindExpert(e){
-  const open=allBranches().filter(b=>b.expert===e.id&&isAwaitingAnswer(b));
+  const open=allBranches().filter(b=>b.manager===e.id&&isAwaitingAnswer(b));
   toast(`Reminder sent to ${e.name} — ${open.length} pending assignment${open.length>1?"s":""}`,"ok");
 }
 
@@ -1195,7 +1751,7 @@ function actionScore(r){
 /* T10 — sort options. "action" is the default (reassignments/Q&A/overdue first); the
    others are plain manager conveniences layered on top of the same filtered set. */
 function statusScore(r){ const st=r.branches.map(b=>b.status); return BLOCK_PRIORITY.findIndex(s=>st.includes(s))+ (st.includes("answered")?0:100); }
-function firstExpertName(r){ const b=r.branches.find(x=>x.expert); return b?expOf(b.expert).name:"~"; }
+function firstExpertName(r){ const b=r.branches.find(x=>x.manager); return b?mgrOf(b.manager).name:"~"; }
 function tableRows(){
   const rows=REQS.filter(passes);
   if(state.sortBy==="status") return rows.sort((a,b)=>statusScore(a)-statusScore(b)||a.id.localeCompare(b.id));
@@ -1203,32 +1759,35 @@ function tableRows(){
   if(state.sortBy==="req") return rows.sort((a,b)=>a.id.localeCompare(b.id));
   return rows.sort((a,b)=>actionScore(a)-actionScore(b)||a.id.localeCompare(b.id));
 }
-/* One status per row (PM ask — progress and result used to be two separate columns,
-   which just duplicated the same "not answered yet" read twice). Once answered, the
-   cell shows the verdict directly; every other waiting state — proposed, assigned,
-   awaiting the expert, awaiting the issuer — collapses to a flat "Pending". A branch
-   stuck on reassignment is the one exception kept distinct, since it's an action item
-   for the manager, not just a wait. Used for the consolidated row (single branch or
-   the aggregate across several); pending must never read as a decided verdict. */
+/* Two columns, not one (reverses the earlier "one status per row" merge — the PM
+   now wants the verdict split back out, on its own, iconed, so it reads at a glance
+   instead of competing with progress text in the same cell). Status stays the plain
+   progress axis (BST, .spill) for every branch state including reassignment_needed —
+   no icon there any more, just the existing colour-coded pill. Compliance is the
+   result axis (CMP, .vpill via cmpPillHTML) and ONLY it gets an icon: a check for
+   Compliant, a cross for Not Compliant. Before an activity has answered, its
+   Compliance cell has nothing to show yet — a muted "—", never a verdict. */
 function verdictCommentHTML(note){
   if(!note) return "";
   return `<span class="verdict-comment" title="${esc(note)}">${esc(note)}</span>`;
 }
-function consolidatedStatusHTML(c){
-  if(!c.pending) return `<span class="vpill ${c.compliance}">${CMP[c.compliance]||"—"}</span>`;
-  if(c.blocking && c.blocking.status==="reassignment_needed")
-    return `<span class="blocking-chip" title="${TY(c.blocking.typology).label} needs reassignment">⛔ Reassignment needed</span>`;
-  return `<span class="vpill none pending-pill">Pending${c.remaining>1?` · ${c.remaining} allocated activities`:""}</span>`;
+function consolidatedProgressHTML(c){
+  if(!c.pending) return `<span class="spill answered">${BST.answered}</span>`;
+  return `<span class="spill ${c.blocking.status}">${BST[c.blocking.status]}${c.remaining>1?` · ${c.remaining} allocated activities`:""}</span>`;
 }
-/* same merge, per individual allocated activity (multi-activity sub-rows) */
-function branchStatusHTML(b){
-  if(isAnswered(b)) return `<span class="vpill ${b.compliance}">${CMP[b.compliance]||"—"}</span>`;
-  if(b.status==="reassignment_needed") return `<span class="blocking-chip" title="Needs reassignment">⛔ Reassignment needed</span>`;
-  return `<span class="vpill none pending-pill">Pending</span>`;
+function consolidatedComplianceHTML(c){
+  return c.pending ? `<span class="vpill none">—</span>` : cmpPillHTML(c.internal);
+}
+/* same split, per individual allocated activity (multi-activity sub-rows) */
+function branchProgressHTML(b){
+  return `<span class="spill ${b.status}">${BST[b.status]}</span>`;
+}
+function branchComplianceHTML(b){
+  return isAnswered(b) ? cmpPillHTML(b.internal) : `<span class="vpill none">—</span>`;
 }
 function branchWhoHTML(b){
-  const e=b.expert?expOf(b.expert):null;
-  if(!e) return `<span class="exp-mini none">— no expert —</span>`;
+  const e=b.manager?mgrOf(b.manager):null;
+  if(!e) return `<span class="exp-mini none">— unassigned —</span>`;
   return `<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name.split(" ")[0]}</span>`;
 }
 /* T12 — consolidation & export readiness: the follow-up screen's end state is a
@@ -1268,17 +1827,22 @@ function renderExportReady(){
    under the verdict pill: the reasoning is what a reviewer actually reads, and
    it needs room to be sortable/hideable/reorderable like any other field.
    Status goes back to just the pill, so it no longer needs the extra width. */
+/* Each verdict is followed by its own justification: internal compliance then the
+   contributor's comment, external compliance then the risk the PM accepted to
+   declare it. Reading left to right is reading the reasoning in order. */
 const F_RCOLS=[
   {k:"sel",w:"32px"},{k:"id",w:"84px"},{k:"req",w:"minmax(240px,1.4fr)"},
-  {k:"typo",w:"90px"},{k:"expert",w:"140px"},{k:"mgr",w:"110px"},
-  {k:"status",w:"150px"},{k:"comment",w:"minmax(200px,1fr)"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
+  {k:"typo",w:"90px"},{k:"expert",w:"140px"},
+  {k:"status",w:"150px"},{k:"compliance",w:"150px"},{k:"comment",w:"minmax(200px,1fr)"},
+  {k:"external",w:"150px"},{k:"risk",w:"minmax(180px,1fr)"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
 ];
 const F_COLUMN_TOGGLE_DEFS=[
-  {k:"typo",label:"Activity"},{k:"expert",label:"Expert"},{k:"mgr",label:"Manager"},
-  {k:"status",label:"Status"},{k:"comment",label:"Compliance comment"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
+  {k:"typo",label:"Activity"},{k:"expert",label:"Assigned to"},
+  {k:"status",label:"Status"},{k:"compliance",label:"Compliance"},{k:"comment",label:"Compliance comment"},
+  {k:"external",label:"External compliance"},{k:"risk",label:"Risk accepted"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
 ];
 const F_RCOLS_BY_KEY=Object.fromEntries(F_RCOLS.map(c=>[c.k,c]));
-const F_NAV_COLS=["sel","id","req","typo","expert","mgr","status","comment","lastfu","age"];
+const F_NAV_COLS=["sel","id","req","typo","expert","status","compliance","comment","external","risk","lastfu","age"];
 function fNavCols(){ return F_NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
 /* USER-TEST-session-3.md §1.4 — full removal + reorder, same technique as
    revue-documentaire.html's applyCols(): --ord-* customs properties on .rgrid,
@@ -1306,6 +1870,27 @@ document.querySelectorAll("#frgrid-head [data-col]").forEach(cell=>cell.addEvent
 })();
 let currentVisIds=[];
 let fVROWS=[];
+/* T2-level, §4.4 — "make multi-allocation visible at both levels": one row per
+   activity (existing branch rows, always shown for a multi-activity requirement,
+   no collapse), and within each activity one row per contributor/team involved
+   (TICKET-two-pass-allocation.md §6's pass-2 multiplicity). Mirrors
+   revue-documentaire.html's ensureTeams(): promotes an already-answered branch's
+   own fields into teams[0] the first time this touches it, so an ordinary
+   single-team branch (the overwhelming majority) needs no data migration — only
+   a branch seeded with >1 team (SRM-00011's "mln" activity) actually shows the
+   level-2 breakdown. Shown always, same as level 1 here, not behind an expand
+   toggle — this file never collapsed branch rows either. */
+function ensureFTeams(branch){
+  if(!branch) return [];
+  if(!(branch.teams&&branch.teams.length)){
+    branch.teams=[{
+      manager:branch.manager||null, status:branch.status||"proposed",
+      internal:branch.internal||null,
+      resp:branch.resp||null, age:branch.age||0,
+    }];
+  }
+  return branch.teams;
+}
 function buildFVRows(){
   const rows=tableRows();
   currentVisIds=rows.map(r=>r.id);
@@ -1313,10 +1898,13 @@ function buildFVRows(){
   rows.forEach(r=>{
     fVROWS.push({type:"row",r});
     if(r.branches.length<2) return; // one activity concerned — stays on a single line, no sub-row
-    const branchFilterActive=(state.filter&&state.filter!=="out")||state.fExpert||state.fTypo||state.needsMe||state.ownTeamOnly;
+    if(!state.expandedBranches.has(r.id)) return; // collapsed — caret not opened yet
+    const branchFilterActive=(state.filter&&state.filter!=="out")||colFilterActiveCount()||state.needsMe||state.ownTeamOnly;
     r.branches.forEach((b,i)=>{
       if(!passesB(b) && branchFilterActive) return;
       fVROWS.push({type:"branch",parent:r,branch:b,idx:i});
+      const teams=ensureFTeams(b);
+      if(teams.length>1) teams.forEach((t,ti)=>fVROWS.push({type:"team",parent:r,branch:b,bidx:i,team:t,tidx:ti}));
     });
   });
   return rows;
@@ -1327,32 +1915,62 @@ function fLastFollowupHTML(entity){
 function fRowInnerHTML(r){
   const c=consolidate(r);
   const single=r.branches.length===1?r.branches[0]:null;
+  const multi=r.branches.length>1;
+  const expanded=multi&&state.expandedBranches.has(r.id);
+  const caretHTML=multi
+    ? `<button class="branch-caret${expanded?" open":""}" data-branchtoggle="${r.id}" title="${expanded?"Collapse activities":`Expand ${r.branches.length} activities`}">▸</button>`
+    : "";
   const lastFollowup=r.branches.reduce((latest,b)=>b.lastFollowup?b.lastFollowup:latest,null);
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${r.id}" ${state.selection.has(r.id)?"checked":""}></label></div>
     <div class="rcell c-id">${r.id}</div>
-    <div class="rcell c-req"><div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div>${r.outdated?'<span class="flag-out">Δ outdated</span>':""}</div>
+    <div class="rcell c-req">${caretHTML}<div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div>${r.outdated?'<span class="flag-out">Δ outdated</span>':""}</div>
     <div class="rcell c-typo">${single?`<span class="ptag">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} activities</span>`}</div>
     <div class="rcell c-expert">${single?branchWhoHTML(single):`<span class="multi-ph">Multiple (${r.branches.length})</span>`}</div>
-    <div class="rcell c-mgr">${single?(single.manager?`<span>${mgrOf(single.manager).name.split(" ")[0]}</span>`:'<span class="none">—</span>'):`<span class="multi-ph">Multiple</span>`}</div>
-    <div class="rcell c-status">${consolidatedStatusHTML(c)}</div>
+    <div class="rcell c-status">${consolidatedProgressHTML(c)}</div>
+    <div class="rcell c-compliance">${consolidatedComplianceHTML(c)}</div>
     <div class="rcell c-comment">${verdictCommentHTML(c.comment)}</div>
+    <div class="rcell c-external">${externalPillHTML(r)}</div>
+    <div class="rcell c-risk">${riskCellHTML(r)}</div>
     <div class="rcell c-lastfu">${fLastFollowupHTML({lastFollowup})}</div>
     <div class="rcell c-age ${single&&isOverB(single)?"over":""}">${single?(isAnswered(single)?"":single.age+" d"):""}</div>`;
 }
 function fBranchRowHTML(parent,b,idx){
-  const m=b.manager?mgrOf(b.manager):null;
+  const teams=ensureFTeams(b), multiTeam=teams.length>1;
   return `<div class="rrow branch-row" data-branchof="${parent.id}" data-branchidx="${idx}">
     <div class="rcell c-sel"></div>
     <div class="rcell c-id"></div>
-    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${TY(b.typology).label}</span></div>
+    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${TY(b.typology).label}</span>${multiTeam?`<span class="nav-brn" title="${teams.length} teams within this activity — most restrictive wins">${teams.length} teams</span>`:""}</div>
     <div class="rcell c-typo"><span class="ptag">${TY(b.typology).code}</span></div>
-    <div class="rcell c-expert">${branchWhoHTML(b)}</div>
-    <div class="rcell c-mgr">${m?m.name.split(" ")[0]:'<span class="none">—</span>'}</div>
-    <div class="rcell c-status">${branchStatusHTML(b)}</div>
+    <div class="rcell c-expert">${multiTeam?`<span class="multi-ph">Multiple (${teams.length})</span>`:branchWhoHTML(b)}</div>
+    <div class="rcell c-status">${branchProgressHTML(b)}</div>
+    <div class="rcell c-compliance">${branchComplianceHTML(b)}</div>
     <div class="rcell c-comment">${verdictCommentHTML(b.resp?.note)}</div>
+    <div class="rcell c-external"></div>
+    <div class="rcell c-risk"></div>
     <div class="rcell c-lastfu">${fLastFollowupHTML(b)}</div>
     <div class="rcell c-age ${isOverB(b)?"over":""}">${isAnswered(b)?"":b.age+" d"}</div>
+  </div>`;
+}
+/* Level 2 — one contributor/team within an activity, per §4.4. */
+function fTeamRowHTML(parent,branch,bidx,team,tidx){
+  // Clicking a team row selects its parent ACTIVITY (data-branchof/-branchidx,
+  // same attributes the generic .rrow.branch-row click handler already reads)
+  // — the detail panel works at the activity level, per the branch-level
+  // verdict form above; there's no separate per-team panel to route to.
+  return `<div class="rrow branch-row team-row" data-branchof="${parent.id}" data-branchidx="${bidx}" data-teamidx="${tidx}">
+    <div class="rcell c-sel"></div>
+    <div class="rcell c-id"></div>
+    <div class="rcell c-req"><span class="branch-connector team-connector">↳</span><span class="branch-label">${team.manager?mgrOf(team.manager).name:"Unassigned"}</span></div>
+    <div class="rcell c-typo"></div>
+    <div class="rcell c-expert">${branchWhoHTML(team)}</div>
+    <div class="rcell c-status">${branchProgressHTML(team)}</div>
+    <div class="rcell c-compliance">${branchComplianceHTML(team)}</div>
+    <div class="rcell c-comment">${verdictCommentHTML(team.resp?.note)}</div>
+    <div class="rcell c-external"></div>
+    <div class="rcell c-risk"></div>
+    <div class="rcell c-lastfu">${fLastFollowupHTML(team)}</div>
+    <div class="rcell c-age ${isOverB(team)?"over":""}">${isAnswered(team)?"":team.age+" d"}</div>
   </div>`;
 }
 const fNavAdapter={
@@ -1378,6 +1996,12 @@ function bindFRows(win){
   win.querySelectorAll(".rowsel").forEach(cb=>cb.addEventListener("click",e=>{
     e.stopPropagation();
     TE.toggleSelect(state.selection,cb.dataset.sel);
+    renderTable2();
+  }));
+  win.querySelectorAll("[data-branchtoggle]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    const id=btn.dataset.branchtoggle;
+    state.expandedBranches.has(id) ? state.expandedBranches.delete(id) : state.expandedBranches.add(id);
     renderTable2();
   }));
   win.querySelectorAll(".rrow").forEach(tr=>{
@@ -1412,6 +2036,7 @@ function renderTable2(){
   } else {
     win.innerHTML=fVROWS.map(it=>{
       if(it.type==="branch") return fBranchRowHTML(it.parent,it.branch,it.idx);
+      if(it.type==="team") return fTeamRowHTML(it.parent,it.branch,it.bidx,it.team,it.tidx);
       const r=it.r;
       return `<div class="rrow${state.sel===r.id?" active":""}${state.selection.has(r.id)?" bulk-sel":""}" data-id="${r.id}">${fRowInnerHTML(r)}</div>`;
     }).join("");
@@ -1459,9 +2084,9 @@ function renderDoc2(){
     paper+=`<div class="doc-h2">${sec}</div>`;
     REQS.filter(r=>r.sec===sec).forEach(r=>{
       const c=consolidate(r);
-      paper+=`<div class="dblk ${c.pending?"none":c.compliance}${state.sel===r.id?" selected":""}" data-id="${r.id}">
+      paper+=`<div class="dblk ${c.pending?"none":c.internal}${state.sel===r.id?" selected":""}" data-id="${r.id}">
         <span class="blk-id">${r.id}</span>
-        <span class="vtag">${c.pending?(c.blocking?BST[c.blocking.status]:"Pending"):CMP[c.compliance]}</span>${esc(r.text)}</div>`;
+        <span class="vtag">${c.pending?(c.blocking?BST[c.blocking.status]:"Pending"):CMP[c.internal]}</span>${esc(r.text)}</div>`;
     });
   });
   paper+=`</div>`;
@@ -1483,27 +2108,27 @@ function renderPanel2(){
     const consolidated=REQS.filter(isConsolidated).length;
     p.innerHTML=`<div class="set-empty"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
       <div class="big">No assignment selected</div>
-      <div>Select a requirement or one of its assignments to see the expert response.<br><br><b style="color:var(--text-2)">${consolidated}/${REQS.length}</b> requirements consolidated · <b style="color:var(--text-2)">${allBranches().filter(isOverB).length}</b> overdue assignments.</div></div>`;
+      <div>Select a requirement or one of its assignments to see the contributor's response.<br><br><b style="color:var(--text-2)">${consolidated}/${REQS.length}</b> requirements consolidated · <b style="color:var(--text-2)">${allBranches().filter(isOverB).length}</b> overdue assignments.</div></div>`;
     return;
   }
   const r=findR(state.sel);
   const c=consolidate(r);
   const idx=Math.min(state.selBranch||0, r.branches.length-1);
   const br=r.branches[idx];
-  const e=br.expert?expOf(br.expert):null;
-  const m=br.manager?mgrOf(br.manager):null;
+  const e=br.manager?mgrOf(br.manager):null;
   p.innerHTML=`
     <div class="set-head">
       <div class="set-id-row"><span class="set-id">${r.id}</span>
         ${c.pending
           ? `<span class="vpill none pending-pill">Pending consolidation</span>`
-          : `<span class="vpill ${c.compliance}">${CMP[c.compliance]}</span>`}
+          : cmpPillHTML(c.internal)}
         ${r.outdated?'<span class="flag-out">Δ outdated version</span>':""}</div>
       <div class="set-title">${esc(r.text.slice(0,90))}…</div>
       ${r.branches.length>1?`<div class="branch-switch" id="branch-switch">
         ${r.branches.map((x,i)=>`<button data-bi="${i}" class="${i===idx?"on":""}" title="${TY(x.typology).label} · ${BST[x.status]}">
           <span class="ptag">${TY(x.typology).code}</span><span class="bs-dot ${x.status}"></span></button>`).join("")}
       </div>`:""}
+      ${externalBandHTML(r)}
     </div>
     <div class="set-tabs">
       <button data-t="response" class="${state.tab==="response"?"active":""}">Assignment</button>
@@ -1516,52 +2141,76 @@ function renderPanel2(){
     <div class="set-body" id="set2-body"></div>`;
   p.querySelectorAll("[data-t]").forEach(t=>t.addEventListener("click",()=>{state.tab=t.dataset.t;renderPanel2()}));
   p.querySelectorAll("[data-bi]").forEach(t=>t.addEventListener("click",()=>{state.selBranch=+t.dataset.bi;renderPanel2()}));
+  // external declaration — header-level, so it stays reachable whichever tab is open
+  p.querySelector("#ext-declare")?.addEventListener("click",()=>{ state.openForm="external"; state.externalPick=r.external||null; renderPanel2(); });
+  p.querySelector("#ext-cancel")?.addEventListener("click",()=>{ state.openForm=null; state.externalPick=null; renderPanel2(); });
+  p.querySelectorAll("[data-extpick]").forEach(btn=>btn.addEventListener("click",()=>{ state.externalPick=btn.dataset.extpick; renderPanel2(); }));
+  p.querySelector("#ext-clear")?.addEventListener("click",()=>{
+    r.external=null; r.externalRisk=null;
+    state.openForm=null; state.externalPick=null;
+    toast(`${r.id} — declaration cleared, the internal verdict goes to the client`,"warn");
+    refreshAll();
+  });
+  p.querySelector("#ext-submit")?.addEventListener("click",()=>{
+    const pick=state.externalPick;
+    if(!pick){ toast("Pick Compliant or Not compliant","warn"); return; }
+    const needsRisk=externalNeedsRisk(r,pick);
+    const risk=(p.querySelector("#ext-risk")?.value||"").trim();
+    if(needsRisk&&!risk){ toast("A risk note is required — the internal verdict is Not compliant and this declares Compliant","warn"); return; }
+    r.external=pick; r.externalRisk=needsRisk?risk:null;
+    state.openForm=null; state.externalPick=null;
+    toast(`${r.id} — external compliance declared to the client`,"ok");
+    refreshAll();
+  });
   const b=p.querySelector("#set2-body");
 
   const whoBlock=`
     <div class="field"><label>Assignment · ${TY(br.typology).label}</label>
-      <div class="fval">${e?`<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.team}</span>`:`<span class="exp-mini none">No expert assigned yet</span>`}</div>
-      <div class="branch-mgr" style="margin-top:6px">Activity manager: ${m?m.name:"<span class='none'>unassigned</span>"}</div></div>
+      <div class="fval">${e?`<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.role}</span>`:`<span class="exp-mini none">Nobody assigned yet</span>`}</div></div>
     <div class="field"><label>Status</label><div class="fval"><span class="spill ${br.status}">${BST[br.status]}</span></div></div>`;
 
   if(state.tab==="response"){
     if(br.status==="answered"&&br.resp){
+      // Internal only here: this tab is scoped to ONE activity, and internal is the
+      // only verdict that lives at that level. External is the PM's declaration for
+      // the whole requirement and sits in the panel header (externalBandHTML), next
+      // to the consolidated verdict it may deviate from.
       b.innerHTML=whoBlock+`
         <div class="field"><label>Response · ${br.resp.date}</label>
           <div class="resp-note">${esc(br.resp.note)}</div>
           ${br.resp.att?`<span class="attach">📎 evidence-${r.id.toLowerCase()}-${TY(br.typology).code.toLowerCase()}.pdf</span>`:""}</div>
-        <div class="field"><label>Compliance for this allocated activity</label>
-          <div class="fval">${br.compliance?`<span class="vpill ${br.compliance}">${CMP[br.compliance]}</span>`:'<span class="vpill none">—</span>'}</div></div>
-        ${r.outdated?`<div class="vimpact" style="margin-bottom:12px"><b>Answered on outdated version.</b> The requirement text changed in a later document version — the expert must confirm or update this response.</div>`:""}
+        <div class="field"><label>Internal compliance <span>· technical assessment</span></label>
+          <div class="fval">${cmpPillHTML(br.internal)}</div></div>
+        ${r.outdated?`<div class="vimpact" style="margin-bottom:12px"><b>Answered on outdated version.</b> The requirement text changed in a later document version.</div>
+        <button class="cta line" id="a-reset-version" style="margin-bottom:12px">↺ Reset for new version — back to Allocation</button>`:""}
         <button class="cta blue" id="a-escalate">⇗ Escalate to client Q&amp;A <kbd style="font-family:var(--font-mono);font-size:var(--text-xs);opacity:.7">Q</kbd></button>`;
       b.querySelector("#a-escalate")?.addEventListener("click",()=>escalate(r,br));
+      b.querySelector("#a-reset-version")?.addEventListener("click",()=>resetForNewVersion(r,br));
     }else if(br.status==="awaiting_qa"){
       b.innerHTML=whoBlock+`
         <div class="qa-block"><div class="qa-block-h">⇗ Blocked on the issuer</div>
-          <div class="qa-block-t">${esc(br.qaNote||"The expert needs a precision from the tender issuer before answering.")}</div>
+          <div class="qa-block-t">${esc(br.qaNote||"The contributor needs a precision from the tender issuer before answering.")}</div>
           ${br.qaRef?`<div class="qa-block-ref">Question <b>${br.qaRef}</b> — see the Q&amp;A register</div>`:""}</div>
         <div class="fval" style="font-size:var(--text-sm);color:var(--text-3);margin-bottom:12px">This assignment cannot be answered yet and counts as not answered, so it blocks consolidation of ${r.id}.</div>
         <a class="cta line" id="a-goqa" href="javascript:parent.route('qa')">→ Open the Q&amp;A register</a>`;
     }else if(br.status==="reassignment_needed"){
-      // T5 — internal loop: the manager reallocates, the allocated activity goes back out to an expert.
+      // T5 — internal loop: the manager reallocates, the allocated activity goes back out to a contributor.
       // Nothing leaves the company here (contrast with the Q&A loop above).
       b.innerHTML=whoBlock+`
-        <div class="reassign-block"><div class="reassign-h">↩ Returned by the expert</div>
-          <div class="reassign-t">${esc(br.reassignComment||"The expert judged this allocation wrong and returned it.")}</div></div>
+        <div class="reassign-block"><div class="reassign-h">↩ Returned by the contributor</div>
+          <div class="reassign-t">${esc(br.reassignComment||"The contributor judged this allocation wrong and returned it.")}</div></div>
         <div class="fval" style="font-size:var(--text-sm);color:var(--text-3);margin-bottom:12px">Internal action — this stays inside the company and comes back to you as the manager.</div>
         <div class="field"><label>Reallocate to</label>
-          <select id="ra-mgr">${['<option value="">— Activity manager —</option>'].concat(MANAGERS.map(x=>`<option value="${x.id}" ${br.manager===x.id?"selected":""}>${x.name} — ${x.role}</option>`)).join("")}</select></div>
-        <div class="field"><label>Expert</label>
-          <select id="ra-exp">${['<option value="">— Expert —</option>'].concat(ALLOC_EXPERTS().map(x=>`<option value="${x.id}" ${br.expert===x.id?"selected":""}>${x.name} — ${x.team}</option>`)).join("")}</select></div>
+          <select id="ra-mgr">${['<option value="">— Nobody —</option>'].concat(MANAGERS.map(x=>`<option value="${x.id}" ${br.manager===x.id?"selected":""}>${x.name} — ${x.role}</option>`)).join("")}</select></div>
         <button class="cta ok" id="a-reassign">↪ Reassign and send back out</button>`;
       b.querySelector("#a-reassign").addEventListener("click",()=>{
-        const nm=b.querySelector("#ra-mgr").value||null, nx=b.querySelector("#ra-exp").value||null;
-        if(!nx){ toast("Pick an expert before reassigning","warn"); return; }
+        const nm=b.querySelector("#ra-mgr").value||null;
+        if(!nm){ toast("Pick someone before reassigning","warn"); return; }
         const requestId=br.reassignRequest&&br.reassignRequest.requestId;
-        br.manager=nm; br.expert=nx; br.status="awaiting_answer"; br.age=0;
+        br.manager=nm; br.status="awaiting_answer"; br.age=0;
         br.reassignComment=null; br.reassignRequest=null; br.reassignedAt="Today";
         try{ if(window.parent!==window && window.parent.updateReassignRequest && requestId) window.parent.updateReassignRequest(requestId, {requestStatus:"approved"}); }catch(e){}
-        toast(`${r.id} · ${TY(br.typology).label} reassigned to ${expOf(nx).name} — awaiting answer`,"ok");
+        toast(`${r.id} · ${TY(br.typology).label} reassigned to ${mgrOf(nm).name} — awaiting answer`,"ok");
         refreshAll();
       });
     }else if(canAnswer(br)){
@@ -1577,7 +2226,7 @@ function renderPanel2(){
             <button class="v-not_compliant${pick==="not_compliant"?" on":""}" data-pick="not_compliant">Not compliant</button>
           </div>
           ${pick==="compliant"?`
-            <div class="field"><label>Comment</label><textarea id="v-comment" rows="3" placeholder="Free comment, optional. Say so here if R&amp;D work is needed for compliance.">${br.compliance==="compliant"&&br.resp?esc(br.resp.note):""}</textarea></div>
+            <div class="field"><label>Comment</label><textarea id="v-comment" rows="3" placeholder="Free comment, optional. Say so here if R&amp;D work is needed for compliance.">${br.internal==="compliant"&&br.resp?esc(br.resp.note):""}</textarea></div>
             <div class="form-actions"><button class="btn-cancel" id="v-cancel">Cancel</button><button class="btn-submit ok" id="v-submit-compliant">Save verdict</button></div>
           `:pick==="not_compliant"?`
             <div class="field"><label>Category</label><select id="v-category">${CATEGORY_LIST.map(c=>`<option>${c}</option>`).join("")}</select><div class="field-hint">Placeholder list — the real categories aren't defined yet.</div></div>
@@ -1588,7 +2237,7 @@ function renderPanel2(){
       // Rendering a verdict isn't the only answer: the allocation itself may be
       // wrong. Restored from expert-space.html's action set, which lost this on
       // the merge — a contributor could only ever say yes, never "not mine".
-      const otherExperts=EXPERTS.filter(x=>x.id!==br.expert);
+      const otherExperts=MANAGERS.filter(x=>x.id!==br.manager);
       const otherTypos=Object.keys(TYPOS).filter(t=>t!==br.typology);
       const reassignHTML=state.openForm!=="reassign"?`<button class="cta line" id="a-reassign" style="margin-top:8px">↩ Request reassignment</button>`:`
         <div class="inline-form" id="reassign-form">
@@ -1597,7 +2246,7 @@ function renderPanel2(){
             ${Object.entries(REASON_LABEL).map(([k,label])=>`<label class="reassign-reason"><input type="radio" name="reassign-reason" value="${k}" ${k==="wrong_person"?"checked":""}> ${label}</label>`).join("")}
           </div>
           <div class="field" id="reassign-expert-field"><label>Reassign to</label>
-            <select id="reassign-expert">${otherExperts.length?otherExperts.map(x=>`<option value="${x.id}">${x.name} — ${x.team}</option>`).join(""):'<option value="">Nobody else available</option>'}</select></div>
+            <select id="reassign-expert">${otherExperts.length?otherExperts.map(x=>`<option value="${x.id}">${x.name} — ${x.role}</option>`).join(""):'<option value="">Nobody else available</option>'}</select></div>
           <div class="field" id="reassign-typo-field" style="display:none"><label>Correct activity</label>
             <select id="reassign-typo">${otherTypos.map(t=>`<option value="${t}">${TY(t).label}</option>`).join("")}</select></div>
           <div class="field"><label>Why</label><textarea id="reassign-text" rows="3" placeholder="Required — why should this be reassigned?"></textarea></div>
@@ -1630,7 +2279,7 @@ function renderPanel2(){
           // of the wider vocabulary pass, not this change.
           byRole:"expert", at:"Today",
           replacementExpert, replacementTypology,
-          replacementExpertLabel: replacementExpert?(EXPERTS.find(x=>x.id===replacementExpert)||{}).name:null,
+          replacementExpertLabel: replacementExpert?(mgrOf(replacementExpert)||{}).name:null,
           replacementTypologyLabel: replacementTypology?TY(replacementTypology).label:null,
           prevStatus:br.status,
         };
@@ -1646,7 +2295,7 @@ function renderPanel2(){
       b.querySelector("#v-cancel")?.addEventListener("click",()=>{ state.openForm=null; state.verdictPick=null; renderPanel2(); });
       b.querySelectorAll("[data-pick]").forEach(btn=>btn.addEventListener("click",()=>{ state.verdictPick=btn.dataset.pick; renderPanel2(); }));
       b.querySelector("#v-submit-compliant")?.addEventListener("click",()=>{
-        br.status="answered"; br.compliance="compliant";
+        br.status="answered"; br.internal="compliant";
         br.resp={note:b.querySelector("#v-comment").value.trim(),att:0,date:"Today"};
         state.openForm=null; state.verdictPick=null;
         toast(`${r.id} · ${TY(br.typology).label} — verdict recorded`,"ok");
@@ -1655,7 +2304,7 @@ function renderPanel2(){
       b.querySelector("#v-submit-notcompliant")?.addEventListener("click",()=>{
         const topic=b.querySelector("#v-topic").value.trim();
         if(!topic){ toast("Describe the topic before saving","warn"); return; }
-        br.status="answered"; br.compliance="not_compliant";
+        br.status="answered"; br.internal="not_compliant";
         br.resp={note:`${b.querySelector("#v-category").value} — ${topic}`,att:0,date:"Today"};
         state.openForm=null; state.verdictPick=null;
         toast(`${r.id} · ${TY(br.typology).label} — verdict recorded`,"ok");
@@ -1665,16 +2314,16 @@ function renderPanel2(){
     }else{
       b.innerHTML=whoBlock+`
         <div class="field"><label>Waiting</label>
-          <div class="fval">${br.status==="proposed"?"Allocation proposed — not dispatched to an expert yet.":`No response yet — sent <b class="${isOverB(br)?"age over":""}">${br.age} days ago</b>.${isOverB(br)?" Above the "+OVERDUE_DAYS+"-day threshold.":""}`}</div></div>
+          <div class="fval">${br.status==="proposed"?"Allocation proposed — not dispatched to a contributor yet.":`No response yet — sent <b class="${isOverB(br)?"age over":""}">${br.age} days ago</b>.${isOverB(br)?" Above the "+OVERDUE_DAYS+"-day threshold.":""}`}</div></div>
         ${e?`<button class="cta blue" id="a-remind">🔔 Send a reminder <kbd style="font-family:var(--font-mono);font-size:var(--text-xs);opacity:.7">R</kbd></button>`:""}`;
       b.querySelector("#a-remind")?.addEventListener("click",()=>toast(`Reminder sent to ${e.name} for ${r.id} · ${TY(br.typology).label}`,"ok"));
     }
   }else if(state.tab==="activity"){
     const who=e?e.name:"—";
     const items=[];
-    if(br.status==="answered"&&br.resp)items.push({k:"tl-ok",who,what:`Responded — compliance "${CMP[br.compliance]||"—"}".`,time:br.resp.date});
+    if(br.status==="answered"&&br.resp)items.push({k:"tl-ok",who,what:`Responded — compliance "${CMP[br.internal]||"—"}".`,time:br.resp.date});
     if(br.status==="awaiting_qa")items.push({k:"tl-send",who,what:`Raised a question to the issuer — assignment blocked until answered.`,time:`${br.age} d ago`});
-    if(br.status==="reassignment_needed")items.push({k:"tl-warn",who:"Expert",what:`Returned the assignment — wrong allocation.`,time:`${br.age} d ago`});
+    if(br.status==="reassignment_needed")items.push({k:"tl-warn",who:"Contributor",what:`Returned the assignment — wrong allocation.`,time:`${br.age} d ago`});
     if(isOverB(br))items.push({k:"tl-warn",who:"System",what:`Overdue threshold reached (${OVERDUE_DAYS} days without response).`,time:`${Math.max(1,br.age-OVERDUE_DAYS+1)} d ago`});
     items.push({k:"tl-send",who:"Thibaud Breton",what:`Assignment created for ${TY(br.typology).label}${e?` and sent to ${e.name}`:""}.`,time:`${br.age} d ago (export from Allocation)`});
     b.innerHTML=`<div class="timeline">${items.map(i=>`<div class="tl-item ${i.k}"><div class="tl-who">${i.who}</div><div class="tl-what">${i.what}</div><div class="tl-time">${i.time}</div></div>`).join("")}</div>`;
@@ -1683,7 +2332,7 @@ function renderPanel2(){
       <div class="lock-note">🔒 Frozen at review export — editable only through a new document version (Versions &amp; exchanges).</div>
       <div class="frozen"><div class="fk">Type</div><div class="fv">${r.type}</div></div>
       <div class="frozen"><div class="fk">Assignments</div><div class="fv">${r.branches.map(x=>TY(x.typology).label).join(", ")}</div></div>
-      <div class="frozen"><div class="fk">Consolidated</div><div class="fv">${c.pending?`Pending — blocked by ${TY(c.blocking.typology).label} (${BST[c.blocking.status]})`:CMP[c.compliance]}</div></div>
+      <div class="frozen"><div class="fk">Consolidated</div><div class="fv">${c.pending?`Pending — blocked by ${TY(c.blocking.typology).label} (${BST[c.blocking.status]})`:CMP[c.internal]}</div></div>
       <div class="frozen"><div class="fk">Source section</div><div class="fv">${r.sec}</div></div>
       <div class="field" style="margin-top:14px"><label>Source passage (read-only)</label>
         <div class="fval" style="font-family:var(--font-doc);background:var(--paper);color:var(--paper-ink);padding:var(--space-3) var(--space-3);border-radius:var(--radius-sm);line-height:1.55">${esc(r.text)}</div></div>`;
@@ -1722,6 +2371,21 @@ function escalate(r,br){
   toast(`${r.id}${br?` · ${TY(br.typology).label}`:""} escalated — draft question ${id} created`,"ok");
   refreshAll();
 }
+/* SPEC-internal-external-compliance.md §4.3 — a hard reset, not a stale-work flag
+   (this is stronger than SPEC-translation.md §5 and TICKET-three-support-screens.md's
+   flag-only rule for the same "new version arrived" moment — confirmed with the user
+   as the deliberate, deviating exception). Both internal and external are wiped —
+   external is a PM's deliberate declaration, but it was made against text that no
+   longer exists, so it doesn't survive either (and it's requirement-level now, so
+   it clears on `r`, not on the branch). The branch goes back through Allocation
+   (awaiting_answer, age reset) for full re-verification, not just a flag a human
+   might skip past. */
+function resetForNewVersion(r,br){
+  br.internal=null; br.resp=null; br.status="awaiting_answer"; br.age=0;
+  r.external=null; r.externalRisk=null;
+  toast(`${r.id} · ${TY(br.typology).label} — reset for the new version, back to Allocation`,"warn");
+  refreshAll();
+}
 
 /* =====================================================
    TRIAGE (screen 2)
@@ -1757,9 +2421,9 @@ function select(id,branchIdx){
   const el=document.querySelector(`.dblk[data-id="${id}"]`);
   if(state.view==="doc"&&el)el.scrollIntoView({block:"center",behavior:"smooth"});
 }
-// TE2 — gate removed: Follow-up and Allocation now run side by side instead of
-// Follow-up unlocking only once Allocation is finalized (was TE1's reinstated
-// review→follow-up gate).
+// TE2 — gate removed: Compliance and Allocation now run side by side instead of
+// Compliance unlocking only once Allocation is finalized (was TE1's reinstated
+// allocation→compliance gate).
 // TICKET-three-support-screens.md — Versions & Q&A left this file for their own
 // screens (documents.html / qa.html), so screen 3 is gone and this is a no-op
 // kept only because build_merge.py's shell calls it when routing here.
@@ -1775,7 +2439,7 @@ function setView(v){
 }
 /* TC2 — pull in reassignment requests raised in Expert Space via the shared shell
    mailbox (mirrors revue-documentaire.html's syncReassignRequestsFromShell), so a
-   live request an expert just raised shows up here as "Returned by the expert"
+   live request a contributor just raised shows up here as "Returned by the contributor"
    instead of only the hand-authored seed comment. Manager-raised (byRole:"manager")
    requests are a B1 escalation to the admin and stay out of scope here. */
 function syncReassignRequestsFromShell(){
@@ -1806,20 +2470,98 @@ document.getElementById("settings2-toggle")?.addEventListener("click",()=>{ stat
 function refreshAll(){
   syncReassignRequestsFromShell();
   renderNav2();renderTable2();renderDoc2();renderPanel2();renderTriage2();renderExportReady();
+  renderAdvFilterBanner();
+  renderColFilterIndicators();
 }
 document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
-/* T9/T10 toolbar — populate the expert/activity selects once, then wire up live filtering */
+/* ---------- Column filters: on the column header, not in the toolbar ----------
+   §4.2 — same treatment as revue-documentaire.html's Allocation table: a ⏷ on
+   the header opens that column's own values, replacing the old toolbar's
+   "All contributors"/"All activities" selects, which were disconnected from
+   the columns they narrowed. */
+const colfPop={open:null};
+function openColFilterPop(col, anchor){
+  colfPop.open=col;
+  const p=document.getElementById("colf-pop"); if(!p) return;
+  const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
+  const kept=def.options.filter(o=>!excluded.has(o.v)).length;
+  p.innerHTML=`
+    <div class="colf-pop-head">${def.label}<div class="colf-actions"><span data-viewall="${col}">All</span><span data-viewnone="${col}">None</span></div></div>
+    <div class="colf-pop-list">${def.options.map(o=>`<label class="colf-opt"><input type="checkbox" data-viewval="${col}::${o.v}" ${excluded.has(o.v)?"":"checked"}>${o.l}</label>`).join("")}</div>
+    <div class="colf-pop-foot"><span class="n">${kept} of ${def.options.length} shown</span>${excluded.size?`<button class="mini-btn" data-clearcol="${col}">Clear</button>`:""}</div>`;
+  p.classList.add("on");
+  // Fixed positioning against the header cell: the grid header scrolls
+  // horizontally on its own, so an absolutely-positioned popover inside it
+  // would be clipped by the scroller on the right-hand columns.
+  const r=anchor.getBoundingClientRect();
+  p.style.top=(r.bottom+4)+"px";
+  p.style.left=Math.max(8, Math.min(r.left-180, window.innerWidth-236-8))+"px";
+  p.querySelectorAll("[data-viewval]").forEach(cb=>cb.addEventListener("change",()=>{
+    const [c,v]=cb.dataset.viewval.split("::");
+    state.colFilters[c].has(v)?state.colFilters[c].delete(v):state.colFilters[c].add(v);
+    updateColfFoot(p,c);
+    refreshAll();
+  }));
+  p.querySelectorAll("[data-viewall]").forEach(el=>el.addEventListener("click",()=>{ state.colFilters[col].clear(); openColFilterPop(col,anchor); refreshAll(); }));
+  p.querySelectorAll("[data-viewnone]").forEach(el=>el.addEventListener("click",()=>{ def.options.forEach(o=>state.colFilters[col].add(o.v)); openColFilterPop(col,anchor); refreshAll(); }));
+  p.querySelector("[data-clearcol]")?.addEventListener("click",()=>{ state.colFilters[col].clear(); openColFilterPop(col,anchor); refreshAll(); });
+}
+function updateColfFoot(p,col){
+  const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
+  const foot=p.querySelector(".colf-pop-foot"); if(!foot) return;
+  foot.innerHTML=`<span class="n">${def.options.length-excluded.size} of ${def.options.length} shown</span>${excluded.size?`<button class="mini-btn" data-clearcol="${col}">Clear</button>`:""}`;
+  foot.querySelector("[data-clearcol]")?.addEventListener("click",()=>{
+    state.colFilters[col].clear();
+    p.querySelectorAll("[data-viewval]").forEach(cb=>{ cb.checked=true; });
+    updateColfFoot(p,col); refreshAll();
+  });
+}
+function closeColFilterPop(){
+  colfPop.open=null;
+  const p=document.getElementById("colf-pop"); if(p){ p.classList.remove("on"); p.innerHTML=""; }
+}
+function colFilterActiveCount(){ return Object.values(state.colFilters).filter(s=>s.size).length; }
+function renderColFilterIndicators(){
+  document.querySelectorAll("[data-colf]").forEach(btn=>{
+    const set=state.colFilters[btn.dataset.colf];
+    const on=!!(set&&set.size);
+    btn.classList.toggle("on",on);
+    btn.title=on?`Filtered — ${COL_FILTER_DEFS[btn.dataset.colf].label}`:"Filter this column";
+  });
+}
+document.querySelectorAll("[data-colf]").forEach(btn=>btn.addEventListener("click",e=>{
+  e.stopPropagation(); // the header cell itself collapses the column — the funnel must not
+  const col=btn.dataset.colf;
+  colfPop.open===col ? closeColFilterPop() : openColFilterPop(col,btn);
+}));
+/* T9/T10 toolbar */
 (function initF10(){
-  const expSel=document.getElementById("f10-expert"), tySel=document.getElementById("f10-typo");
-  EXPERTS.forEach(e=>expSel.insertAdjacentHTML("beforeend",`<option value="${e.id}">${e.name}</option>`));
-  [...new Set(allBranches().map(b=>b.typology))].forEach(t=>tySel.insertAdjacentHTML("beforeend",`<option value="${t}">${TY(t).label}</option>`));
   document.getElementById("f10-search").addEventListener("input",e=>{state.search=e.target.value;renderTable2();});
-  expSel.addEventListener("change",e=>{state.fExpert=e.target.value;refreshAll();});
-  tySel.addEventListener("change",e=>{state.fTypo=e.target.value;refreshAll();});
   document.getElementById("f10-sort").addEventListener("change",e=>{state.sortBy=e.target.value;renderTable2();});
   document.getElementById("f10-needsme").addEventListener("click",function(){
     state.needsMe=!state.needsMe;this.classList.toggle("on",state.needsMe);refreshAll();
   });
+  document.getElementById("filter-btn").addEventListener("click",()=>{
+    state.advFilterOpen ? closeAdvFilterPanel() : openAdvFilterPanel();
+  });
+  document.getElementById("adv-filter-banner-clear").addEventListener("click",()=>{
+    state.advFilter={op:"AND",items:[]};
+    refreshAll();
+  });
+  document.addEventListener("click",e=>{
+    // composedPath(), not e.target.closest(): a click inside the panel that
+    // triggers a re-render (e.g. "+ Add condition") replaces the panel's
+    // innerHTML mid-dispatch, detaching e.target from the document before
+    // this listener runs — .closest() on a detached node can't find its old
+    // ancestors and the panel closes on its own clicks. composedPath() is
+    // captured at dispatch time and stays correct regardless.
+    const path=e.composedPath?e.composedPath():[];
+    const insidePanel=path.some(el=>el.id==="adv-filter-panel"||el.id==="filter-btn");
+    if(state.advFilterOpen && !insidePanel) closeAdvFilterPanel();
+    if(colfPop.open && !path.some(el=>el.id==="colf-pop"||el.dataset&&el.dataset.colf)) closeColFilterPop();
+  });
+  renderAdvFilterBanner();
+  renderColFilterIndicators();
 })();
 document.querySelectorAll(".nav-toggle button").forEach(b=>b.addEventListener("click",()=>{
   state.navBy=b.dataset.by;
@@ -1841,11 +2583,11 @@ document.getElementById("clear2").addEventListener("click",()=>{
 document.getElementById("remind-all").addEventListener("click",()=>{
   const over=allBranches().filter(isOverB);
   if(!over.length){toast("Nothing overdue — all good","ok");return;}
-  const exps=[...new Set(over.map(b=>b.expert).filter(Boolean))].map(id=>expOf(id).name);
+  const exps=[...new Set(over.map(b=>b.manager).filter(Boolean))].map(id=>mgrOf(id).name);
   toast(`Reminders sent to ${exps.join(" and ")} — ${over.length} overdue assignment${over.length>1?"s":""}`,"ok");
 });
 document.getElementById("export2-btn").addEventListener("click",()=>{
-  const non=REQS.filter(r=>consolidate(r).compliance==="not_compliant").length;
+  const non=REQS.filter(r=>consolidate(r).internal==="not_compliant").length;
   const pend=REQS.filter(r=>consolidate(r).pending).length;
   toast("Compliance register STB-2026_qualification.xlsx generated","ok");
   setTimeout(()=>toast(`Risk summary included: ${non} non-compliant · ${pend} still pending consolidation`,"warn"),800);
@@ -1861,8 +2603,8 @@ document.addEventListener("keydown",e=>{
   if(TE.handleNavKeydown({key:navKey},state,fNavAdapter)){ e.preventDefault(); return; }
   if((e.key==="r"||e.key==="R")&&state.sel){
     const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
-    if(br&&br.expert){ br.lastFollowup="Today"; toast(`Reminder sent to ${expOf(br.expert).name} for ${r.id} · ${TY(br.typology).label}`,"ok"); refreshAll(); }
-    else toast(`No expert assigned yet on this branch`,"warn");
+    if(br&&br.manager){ br.lastFollowup="Today"; toast(`Reminder sent to ${mgrOf(br.manager).name} for ${r.id} · ${TY(br.typology).label}`,"ok"); refreshAll(); }
+    else toast(`Nobody assigned yet on this branch`,"warn");
   }
   if((e.key==="q"||e.key==="Q")&&state.sel){
     const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
@@ -1871,8 +2613,8 @@ document.addEventListener("keydown",e=>{
 });
 /* B5 — Filter to Selection, Bulk Action Bar actions, Column Visibility Menu,
    drag-select and "my team only" scope. Shared mechanics live in table-engine.js. */
-document.getElementById("f-sel-show-only").addEventListener("click",()=>{ TE.enterFilterToSelection(state,()=>({})); renderTable2(); });
-document.getElementById("fsb-show-all").addEventListener("click",()=>{ TE.exitFilterToSelection(state); renderTable2(); });
+document.getElementById("f-sel-show-only").addEventListener("click",()=>{ TE.enterFilterToSelection(state,()=>({typo:new Set(),expert:new Set()})); renderTable2(); renderColFilterIndicators(); });
+document.getElementById("fsb-show-all").addEventListener("click",()=>{ TE.exitFilterToSelection(state); renderTable2(); renderColFilterIndicators(); });
 document.getElementById("f-sel-clear").addEventListener("click",()=>{ state.selection.clear(); renderTable2(); });
 document.getElementById("f-sel-remind").addEventListener("click",sendReminderToSelection);
 document.getElementById("f-sel-reassign").addEventListener("click",()=>{
@@ -1880,7 +2622,7 @@ document.getElementById("f-sel-reassign").addEventListener("click",()=>{
   const id=[...state.selection][0];
   select(id);
   setView("table");
-  toast("Jump to the branch below to reassign its expert/manager","ok");
+  toast("Jump to the branch below to reassign its contributor","ok");
 });
 document.getElementById("f-sel-all").addEventListener("change",e=>{
   const ids=tableRows().map(r=>r.id);

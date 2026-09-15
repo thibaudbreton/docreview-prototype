@@ -119,6 +119,12 @@ html[data-theme="light"] .logo-mark-light{display:block}
 /* phase rail */
 .rail-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
 .rail-label span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3);opacity:.8}
+/* §2.2 — KPI row above navigation */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi-row.kpi-3{grid-template-columns:repeat(3,1fr)}
+.kpi-tile{border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);padding:var(--space-3) var(--space-4)}
+.kpi-tile .kpi-num{font-size:var(--text-xl);font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kpi-tile .kpi-lbl{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
 /* Dashboard redesign — the process is TWO steps, and the dashboard's job on
    arrival is to make it obvious which one to click. So the rail carries only
    Allocation and Compliance, full size; Versions & Q&A joined Team casting in
@@ -141,6 +147,8 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .phase.done-phase .ph-num{background:var(--ok);color:#fff}
 .ph-info{flex:1;min-width:0}
 .ph-name{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
+/* §2.1 — one-line explanation under each nav block's title. Placeholder copy. */
+.ph-desc{font-size:var(--text-xs);color:var(--text-3);margin-top:2px;line-height:1.4}
 .ph-stat{font-size:var(--text-sm);color:var(--text-2);margin-top:var(--space-2);display:flex;align-items:baseline;gap:6px}
 .ph-stat .big{font-size:var(--text-xl);font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
 .ph-bar{height:5px;border-radius:var(--radius-xs);background:var(--panel-3);margin-top:var(--space-2);overflow:hidden}
@@ -246,23 +254,16 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .att .att-go{margin-left:auto;font-size:var(--text-xs);color:var(--accent);white-space:nowrap;align-self:center;opacity:0;transition:opacity .12s}
 .att:hover .att-go{opacity:1}
 
-/* health stats */
-.health-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.hstat .hs-num{font-size:var(--text-xl);font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
-.hstat .hs-slash{font-size:var(--text-base);color:var(--text-3);font-weight:600}
-.hstat .hs-lbl{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
-
 /* compliance */
 .comp-bar{display:flex;height:24px;border-radius:var(--radius-md);overflow:hidden;background:var(--panel-3);margin-bottom:12px}
 .comp-seg{display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:700;color:#fff;transition:width .5s}
 .comp-seg.compliant{background:var(--ok)}
-.comp-seg.partial{background:var(--ia)}
 .comp-seg.non{background:var(--warn)}
 .comp-seg.pending{background:var(--line-2);color:var(--text-2)}
 .comp-legend{display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2)}
 .comp-legend span{display:inline-flex;align-items:center;gap:7px}
 .comp-legend .dot{width:9px;height:9px;border-radius:var(--radius-xs);flex-shrink:0}
-.dot.compliant{background:var(--ok)}.dot.partial{background:var(--ia)}.dot.non{background:var(--warn)}.dot.pending{background:var(--line-2)}
+.dot.compliant{background:var(--ok)}.dot.non{background:var(--warn)}.dot.pending{background:var(--line-2)}
 
 /* experts compact list */
 .exp-list{display:flex;flex-direction:column;gap:11px}
@@ -568,6 +569,13 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         phase, rather than data of its own. Team casting above <i>is</i> this project's own, from the creation wizard.
       </div>
 
+      <!-- §2.2 — KPI block above navigation. Four counts on a Turnkey tender
+           (pass-1/pass-2 per TICKET-two-pass-allocation.md are genuinely
+           different questions — Turnkey's activity-level distribution vs. the
+           system-specific model each activity routes into); three, no
+           placeholder, on a non-Turnkey one, which skips pass 1 entirely. -->
+      <div class="kpi-row" id="tender-kpi-row"></div>
+
       <!-- phase rail — the two steps, and only the two steps -->
       <div class="rail-label">Process <span>· two steps · click one to open it</span></div>
       <div class="phase-rail">
@@ -575,6 +583,8 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-num">1</div>
           <div class="ph-info">
             <div class="ph-name">Allocation</div>
+            <!-- §2.1 — placeholder copy, flagged per the ticket's own instruction -->
+            <div class="ph-desc">Route each requirement to the activity and team responsible for answering it.</div>
             <div class="ph-stat" id="ph-review-stat"><span class="big" id="ph-review-n">5</span><span id="ph-review-txt">/ 14 requirements validated</span></div>
             <div class="ph-bar"><div id="ph-review-bar" style="width:36%;background:var(--ia)"></div></div>
           </div>
@@ -585,6 +595,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-num">2</div>
           <div class="ph-info">
             <div class="ph-name">Compliance</div>
+            <div class="ph-desc">Record whether each requirement is met, and declare the result to the client.</div>
             <div class="ph-stat" id="ph-followup-body"><span class="big">0</span><span>/ 0 answered</span></div>
             <div class="ph-bar"><div id="ph-followup-bar" style="width:0%;background:var(--ia)"></div></div>
           </div>
@@ -605,6 +616,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-num transversal">◉</div>
           <div class="ph-info">
             <div class="ph-name">Team casting</div>
+            <div class="ph-desc">Assign a manager and staff to each activity.</div>
             <div class="ph-stat"><span class="big" id="ph-team-n">2</span><span id="ph-team-txt">/ 3 managers have completed their team</span></div>
             <div class="ph-bar"><div id="ph-team-bar" style="width:67%;background:var(--ok)"></div></div>
           </div>
@@ -615,6 +627,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-num transversal">▤</div>
           <div class="ph-info">
             <div class="ph-name">Documents &amp; versions</div>
+            <div class="ph-desc">Upload tender documents and track what changed between versions.</div>
             <div class="ph-stat"><span class="big">3</span><span>documents · 1 processing</span></div>
           </div>
           <span class="ph-badge wait">Open</span>
@@ -624,6 +637,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-num transversal">↻</div>
           <div class="ph-info">
             <div class="ph-name">Q&amp;A</div>
+            <div class="ph-desc">Ask the issuer questions and track their answers.</div>
             <div class="ph-stat"><span class="big">5</span><span>questions · 1 answered</span></div>
           </div>
           <span class="ph-badge wait">Open</span>
@@ -636,6 +650,13 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
            real life (they arrive from an email/notification link). The entry point for
            a moderated walkthrough is now the small "DEMO" link in the header instead —
            see #demo-contributor-link. -->
+
+      <!-- §2.4 — change-request/reassignment rollup, tender level. Only ever
+           rendered when there's something pending (renderReassignRollup). -->
+      <div class="card" id="reassign-rollup-card" style="display:none;margin-bottom:18px">
+        <h3>Pending reassignment requests <span class="count" id="reassign-rollup-count">0</span></h3>
+        <div id="reassign-rollup-list"></div>
+      </div>
 
       <!-- main: attention (primary) + health (secondary) -->
       <div class="dash-main">
@@ -656,61 +677,59 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             <div><div class="att-t"><b>2 uncertain segmentations</b></div><div class="att-sub">Table rows in section 2 flagged by the AI — confirm boundaries before validating</div></div>
             <span class="att-go">Fix in review →</span>
           </div>
-          <div class="att p2only" id="att-overdue" data-go="compliance.html">
+          <div class="att" id="att-overdue" data-go="compliance.html">
             <div class="att-ic warn">🔔</div>
             <div><div class="att-t"><b id="att-overdue-t">1 contributor response overdue</b></div><div class="att-sub" id="att-overdue-sub">Sophie Lang — SRM-00006 unopened for 6 days</div></div>
             <span class="att-go">Remind →</span>
           </div>
-          <div class="att p2only" data-go="compliance.html">
+          <div class="att" data-go="compliance.html">
             <div class="att-ic accent">⇗</div>
             <div><div class="att-t"><b>2 questions awaiting internal review</b></div><div class="att-sub">A possible duplicate was detected (TLS on legacy gateways) — merge before sending</div></div>
             <span class="att-go">Open Q&amp;A →</span>
           </div>
-          <div class="att p2only" data-go="compliance.html">
+          <div class="att" data-go="compliance.html">
             <div class="att-ic warn">⚠</div>
-            <div><div class="att-t"><b>1 non-compliant requirement</b></div><div class="att-sub">SRM-00007 — REST API rate limits below third-party load (Infrastructure)</div></div>
+            <div><div class="att-t"><b>1 non-compliant requirement</b></div><div class="att-sub">SRM-00007 — REST API rate limits below third-party load (SIG)</div></div>
             <span class="att-go">See verdict →</span>
           </div>
         </div>
 
         <aside class="health">
+          <!-- §2.3/§2.5 — Project Health is gone from this screen (health as a
+               concept survives in SPEC-dashboard-statistics.md §2.1 for the VIP
+               cross-project view, a different screen/audience). A tender-wide
+               comments feed takes its place: reassignment items are live
+               (window.parent.getReassignRequests(), the same B10 mailbox §2.4
+               below reads), compliance/risk items are hand-authored — no
+               shared store for those exists yet, same "independently
+               hand-authored per screen" convention this file's own "Recent
+               activity" feed further down already uses. -->
           <div class="card">
-            <h3>Project health</h3>
-            <div class="health-stats">
-              <div class="hstat"><div class="hs-num" id="hs-total-reqs">14</div><div class="hs-lbl">Requirements</div></div>
-              <div class="hstat"><div class="hs-num">100%</div><div class="hs-lbl">Managers assigned</div></div>
-              <div class="hstat p1only"><div class="hs-num" id="hs-validated">5<span class="hs-slash">/14</span></div><div class="hs-lbl">Validated</div></div>
-              <div class="hstat p2only"><div class="hs-num" id="hs-response-rate">37.5%</div><div class="hs-lbl">Response rate</div></div>
-            </div>
+            <h3>Recent comments</h3>
+            <div class="feed" id="comments-feed"></div>
           </div>
 
-          <div class="card p2only">
+          <div class="card">
             <h3>Compliance</h3>
             <div class="comp-bar">
               <div class="comp-seg compliant" id="compseg-compliant" style="width:25%">3</div>
-              <div class="comp-seg partial" id="compseg-partial" style="width:0%"></div>
               <div class="comp-seg non" id="compseg-non" style="width:8.3%">1</div>
               <div class="comp-seg pending" id="compseg-pending" style="width:66.7%">8</div>
             </div>
             <div class="comp-legend">
               <span><span class="dot compliant"></span>Compliant · <span id="compleg-compliant">3</span></span>
-              <span><span class="dot partial"></span>Partial · <span id="compleg-partial">0</span></span>
               <span><span class="dot non"></span>Non-compliant · <span id="compleg-non">1</span></span>
               <span><span class="dot pending"></span>Awaiting · <span id="compleg-pending">8</span></span>
             </div>
           </div>
 
-          <div class="card p2only">
-            <h3>Experts</h3>
+          <div class="card">
+            <h3>Contributors</h3>
             <div class="exp-list">
               <div class="exp-line"><div class="exp-av" style="background:#6e7bf2">SL</div><div class="exp-ln">Sophie L.<span>Monitoring</span></div><div class="exp-lbar"><div style="width:75%"></div></div><div class="exp-lm">3/4</div></div>
               <div class="exp-line"><div class="exp-av" style="background:#3fb27f">KB</div><div class="exp-ln">Karim B.<span>Infra</span></div><div class="exp-lbar"><div style="width:60%;background:var(--ia)"></div></div><div class="exp-lm over">2 late</div></div>
               <div class="exp-line"><div class="exp-av" style="background:#e0a43c">CM</div><div class="exp-ln">Claire M.<span>Cybersec</span></div><div class="exp-lbar"><div style="width:100%"></div></div><div class="exp-lm">3/3</div></div>
             </div>
-          </div>
-
-          <div class="card locked-hint p1only">
-            Compliance, experts and response tracking appear here once allocation is finalized.
           </div>
         </aside>
       </div>
@@ -733,7 +752,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="stats-grid">
             <div class="stat-block stat-bottlenecks">
               <div class="stat-h">Bottlenecks by perimeter</div>
-              <div class="stat-sub">Awaiting an expert answer — ranked by age of the oldest, not by count</div>
+              <div class="stat-sub">Awaiting a contributor answer — ranked by age of the oldest, not by count</div>
               <div id="stats-bottlenecks" class="bn-list"></div>
             </div>
 
@@ -796,7 +815,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="feed-item warn v22only hidden"><div class="feed-w"><b>SRM-00009</b> flagged as answered on outdated version after v2.2</div><div class="feed-t">Today, 10:46 AM</div></div>
           <div class="feed-item ok"><div class="feed-w"><b>Claire Moreau</b> responded on SRM-00013 — verdict Needs clarification</div><div class="feed-t">Jul 15, 4:20 PM</div></div>
           <div class="feed-item send"><div class="feed-w"><b>Q&amp;A batch</b> — 1 question sent to the issuer (retention period)</div><div class="feed-t">Jul 15, 2:10 PM</div></div>
-          <div class="feed-item ok"><div class="feed-w"><b>Allocation</b> milestone reached — register exported, 3 experts notified</div><div class="feed-t">Jul 12, 9:30 AM</div></div>
+          <div class="feed-item ok"><div class="feed-w"><b>Allocation</b> milestone reached — register exported, 3 contributors notified</div><div class="feed-t">Jul 12, 9:30 AM</div></div>
         </div>
       </div>
     </div>
@@ -806,7 +825,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
   <div class="cfg-layout" id="cfg-screen" style="display:none">
     <aside class="cfg-nav" id="cfg-nav">
       <div class="cfg-nav-item on" data-sec="general"><span class="ci">◈</span> General</div>
-      <div class="cfg-nav-item" data-sec="team"><span class="ci">◉</span> Team &amp; experts</div>
+      <div class="cfg-nav-item" data-sec="team"><span class="ci">◉</span> Team &amp; contributors</div>
       <div class="cfg-nav-item" data-sec="workflow"><span class="ci">⇄</span> Workflow &amp; milestones</div>
       <div class="cfg-nav-item" data-sec="appearance"><span class="ci">◐</span> Appearance</div>
       <div class="cfg-nav-item" data-sec="ai"><span class="ci">✦</span> AI &amp; segmentation</div>
@@ -822,7 +841,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec on" data-sec="general">
           <div class="cfg-h">General</div>
           <div class="cfg-sub">Project identity and key dates. The submission deadline drives the countdown and the overdue calculations.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: these fields aren't wired to the rest of the app in this build. The Dashboard/Review/Follow-up screens keep their own hand-authored project identity, and the deadline shown here doesn't drive any real countdown or overdue calculation.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: these fields aren't wired to the rest of the app in this build. The Dashboard/Allocation/Compliance screens keep their own hand-authored project identity, and the deadline shown here doesn't drive any real countdown or overdue calculation.</div>
           <div class="frow"><div class="fl"><div class="flt">Project name</div><div class="fld">Displayed across all screens.</div></div><div class="fc"><input class="inp" value="Energy Monitoring System"></div></div>
           <div class="frow"><div class="fl"><div class="flt">BO-ID</div></div><div class="fc"><input class="inp" value="STB-2026"></div></div>
           <!-- USER-TEST-session-3.md §1.3 — Turnkey/RCS/SIG/INFRA confirmed; Rolling Stock/
@@ -834,10 +853,10 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 
         <!-- Team -->
         <section class="cfg-sec" data-sec="team">
-          <div class="cfg-h">Team &amp; experts</div>
-          <div class="cfg-sub">Experts available for requirement assignment during allocation. Each can be assigned requirements and receives a qualification link.</div>
+          <div class="cfg-h">Team &amp; contributors</div>
+          <div class="cfg-sub">Contributors available for requirement assignment during allocation. Each can be assigned requirements and receives a qualification link.</div>
           <div id="exp-editor"></div>
-          <div class="add-exp"><input class="inp" id="new-exp-name" placeholder="Full name"><input class="inp" id="new-exp-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="add-exp-btn">Add expert</button></div>
+          <div class="add-exp"><input class="inp" id="new-exp-name" placeholder="Full name"><input class="inp" id="new-exp-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="add-exp-btn">Add contributor</button></div>
           <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria <span style="font-weight:400;color:var(--text-3);font-size:var(--text-xs)">(TE2 — demo only, doesn't change what the review table actually offers)</span></div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (activity)</span><span class="chip-tog on">OBS (organization)</span><span class="chip-tog">Discipline</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Restricted view</div><div class="fld">What a manager sees for requirements outside their assignments (the admin/project lead always sees everything).</div></div><div class="fc"><div class="segc" data-seg="redact"><button class="on" data-redact="redact">Redacted</button><button data-redact="hide">Hidden</button></div><div class="opt-desc"><b>Redacted:</b> the manager sees blacked-out passages — they perceive the volume and context but not the content. <b>Hidden:</b> out-of-scope passages disappear entirely.</div></div></div>
         </section>
@@ -846,10 +865,10 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="workflow">
           <div class="cfg-h">Workflow &amp; milestones</div>
           <div class="cfg-sub">Rules that govern phase transitions, reminders and the review gate.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls change real behavior in this build. Follow-up's lock (see the phase card on the Dashboard) is driven by whether allocation is actually finalized, not by the toggle below; the overdue threshold used by Follow-up's own overdue logic is a fixed constant, not this slider.</div>
-          <div class="frow"><div class="fl"><div class="flt">Review milestone gate</div><div class="fld">Requires 100% of requirements assigned and validated before export to the follow-up phase.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="gate"></span><span class="tl">Enforce full validation before export</span></div></div></div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls change real behavior in this build. Allocation and Compliance run side by side — finalizing Allocation doesn't gate Compliance, and this toggle doesn't enforce anything on export; the overdue threshold Compliance's own overdue logic uses is a fixed constant, not this slider.</div>
+          <div class="frow"><div class="fl"><div class="flt">Allocation completeness gate</div><div class="fld">Requires 100% of requirements assigned and validated before Finalize allocation can export the register.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="gate"></span><span class="tl">Enforce full validation before export</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Overdue threshold</div><div class="fld">Days without a contributor response before a request is flagged overdue.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="1" max="14" value="5" id="over-range"><span class="range-val" id="over-val">5 days</span></div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Maximum reminder cadence</div><div class="fld">Prevents reminder spam to experts.</div></div><div class="fc"><select class="sel"><option>Once every 2 days</option><option>Daily</option><option>Once every 3 days</option><option>Manual only</option></select></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Maximum reminder cadence</div><div class="fld">Prevents reminder spam to contributors.</div></div><div class="fc"><select class="sel"><option>Once every 2 days</option><option>Daily</option><option>Once every 3 days</option><option>Manual only</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Outdated-response re-flag</div><div class="fld">When a new version changes a requirement that already had a response.</div></div><div class="fc"><div class="segc" data-seg="reflag"><button class="on">Substantive changes only</button><button>Any change</button></div><div class="opt-desc"><b>Substantive changes only:</b> typo-level edits don't invalidate an existing contributor response — a human arbitrates borderline cases.</div></div></div>
         </section>
 
@@ -869,9 +888,9 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="qa">
           <div class="cfg-h">Q&amp;A &amp; submission</div>
           <div class="cfg-sub">How clarification questions are consolidated and transmitted to the tender issuer.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect Q&amp;A behavior in the Follow-up screen in this build.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect Q&amp;A behavior in the Compliance screen in this build.</div>
           <div class="frow"><div class="fl"><div class="flt">Issuer channel</div><div class="fld">Determines whether the batch is a simple export or a formatted submission.</div></div><div class="fc"><div class="segc" data-seg="channel"><button class="on">Buyer portal</button><button>Standard form</button><button>Free document</button></div><div class="opt-desc"><b>Buyer portal:</b> the batch is exported to the issuer's imposed format/template. <b>Free document:</b> a plain export you attach yourself.</div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">AI duplicate detection</div><div class="fld">Proposes merging near-identical questions raised by different experts, keeping all requirement links.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="dedup"></span><span class="tl">Suggest merges before submission</span></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">AI duplicate detection</div><div class="fld">Proposes merging near-identical questions raised by different contributors, keeping all requirement links.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="dedup"></span><span class="tl">Suggest merges before submission</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Internal review before sending</div><div class="fld">Questions pass through an internal-review stage before leaving the team.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="review"></span><span class="tl">Require internal review stage</span></div></div></div>
         </section>
 
@@ -879,10 +898,10 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <section class="cfg-sec" data-sec="versions">
           <div class="cfg-h">Versions</div>
           <div class="cfg-sub">How incoming AO document versions are numbered and handled.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how version handling actually works in the Follow-up screen in this build — that's driven by the "Simulate upload — v2.2" button there.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how version handling actually works in the Compliance screen in this build — that's driven by the "Simulate upload — v2.2" button there.</div>
           <div class="frow"><div class="fl"><div class="flt">Numbering</div><div class="fld">Auto-increment with an optional free alias is recommended.</div></div><div class="fc"><div class="segc" data-seg="numbering"><button class="on">Auto-increment + alias</button><button>Free entry</button></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Detect addendum-as-answer</div><div class="fld">When an issuer response actually amends the document, propose treating it as a new version.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="addendum"></span><span class="tl">AI suggests requalifying as a version</span></div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Expert notification on version switch</div><div class="fld">When the active review switches to a newer version.</div></div><div class="fc"><div class="segc" data-seg="notif"><button>Immediate</button><button class="on">Grouped at change-review validation</button></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Contributor notification on version switch</div><div class="fld">When the active review switches to a newer version.</div></div><div class="fc"><div class="segc" data-seg="notif"><button>Immediate</button><button class="on">Grouped at change-review validation</button></div></div></div>
         </section>
 
         <!-- Language -->
@@ -943,7 +962,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
       <div class="view-head" style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:6px">
         <h1 style="font-size:var(--text-xl);font-weight:600;letter-spacing:-.2px" id="team-h1">Team casting</h1>
       </div>
-      <div class="cfg-sub" id="team-sub" style="margin-bottom:16px">Every expert is staffed against an activity and, where the activity uses one, a perimeter within it — the perimeter is optional, not a required step.</div>
+      <div class="cfg-sub" id="team-sub" style="margin-bottom:16px">Every contributor is staffed against an activity and, where the activity uses one, a perimeter within it — the perimeter is optional, not a required step.</div>
       <div class="team-scope">
         <span style="font-size:var(--text-sm);color:var(--text-3)">Viewing as</span>
         <select id="team-viewer"></select>
@@ -1035,7 +1054,7 @@ const CURRENT_PROJECT = (function(){ try{ return (window.parent!==window && wind
 /* Phase gating — reads shared state from the shell (merged app) */
 function reviewDone(){ try{ return !!(window.parent!==window && window.parent.isReviewValidated && window.parent.isReviewValidated()); }catch(e){ return false; } }
 // TB5 — v2.2's gap analysis is narrated as fact; gate it on the real trigger
-// (Follow-up's "Simulate upload — v2.2" button) instead of asserting it on load.
+// (Compliance's "Simulate upload — v2.2" button) instead of asserting it on load.
 function v22Done(){ try{ return !!(window.parent!==window && window.parent.isV22Uploaded && window.parent.isV22Uploaded()); }catch(e){ return false; } }
 function goRoute(url){
   try{ if(window.parent!==window && window.parent.routeUrl){ window.parent.routeUrl(url); return; } }catch(e){}
@@ -1044,8 +1063,11 @@ function goRoute(url){
 function applyGating(){
   const done=reviewDone();
   document.body.classList.toggle("review-done",done);
-  // phase 2 dependent blocks
-  document.querySelectorAll(".p2only").forEach(el=>el.classList.toggle("hidden",!done));
+  // DEC-035 — Allocation and Compliance run side by side; finalizing Allocation
+  // no longer hides or reveals anything Compliance-related (that used to be
+  // what ".p2only" did here). ".p1only" still means what it always did — hide
+  // this once its own condition (allocation not yet finalized) resolves, not a
+  // Compliance-gating concept.
   document.querySelectorAll(".p1only").forEach(el=>el.classList.toggle("hidden",done));
   document.querySelectorAll(".v22only").forEach(el=>el.classList.toggle("hidden",!v22Done()));
   // allocation phase card
@@ -1058,9 +1080,9 @@ function applyGating(){
     document.getElementById("ph-review-bar").style.width="100%";
     document.getElementById("ph-review-bar").style.background="var(--ok)";
   }
-  // follow-up phase card — TE2: gate removed. The workflow no longer requires
-  // Allocation to be finalized before Follow-up is reachable; the two run
-  // side by side now, so this always renders the live-progress state (used
+  // compliance phase card — TE2/DEC-035: gate removed. The workflow no longer
+  // requires Allocation to be finalized before Compliance is reachable; the two
+  // run side by side now, so this always renders the live-progress state (used
   // to be gated on `done`, see TE1 for the now-reverted version of this).
   const f=document.getElementById("ph-followup"),fb=document.getElementById("ph-followup-badge"),fbody=document.getElementById("ph-followup-body");
   f.className="phase active-phase"; f.style.cursor="pointer";
@@ -1131,11 +1153,11 @@ cR.addEventListener("input",()=>cV.textContent=cR.value+"%");
    richer coverage demo — see CAST_ACTIVITIES below. */
 const MANAGERS=[
   {id:"m_sig",name:"Louis Renaud",role:"SIG manager",init:"LR",color:"#3fb27f"},
-  {id:"m_mln",name:"Amina Cherif",role:"Mainline manager",init:"AC",color:"#e0a43c"},
-  {id:"m_inf",name:"Paolo Ferri",role:"Infrastructure manager",init:"PF",color:"#a06ef2"},
-  {id:"m_pwr",name:"Nadia Haddad",role:"Power Supply manager",init:"NH",color:"#e5544b"},
-  {id:"m_tlc",name:"Julien Roche",role:"Telecom manager",init:"JR",color:"#3fa9b2"},
-  {id:"m_sys",name:"Elena Popescu",role:"Systems Integration manager",init:"EP",color:"#c46bd6"},
+  {id:"m_mln",name:"Amina Cherif",role:"TRK manager",init:"AC",color:"#e0a43c"},
+  {id:"m_inf",name:"Paolo Ferri",role:"OCS manager",init:"PF",color:"#a06ef2"},
+  {id:"m_pwr",name:"Nadia Haddad",role:"POS manager",init:"NH",color:"#e5544b"},
+  {id:"m_tlc",name:"Julien Roche",role:"COM manager",init:"JR",color:"#3fa9b2"},
+  {id:"m_sys",name:"Elena Popescu",role:"RAMS manager",init:"EP",color:"#c46bd6"},
 ];
 const MGR=id=>MANAGERS.find(m=>m.id===id);
 /* TICKET-casting-screen-redesign.md — "the project management team": several
@@ -1212,71 +1234,58 @@ renderExperts();
    at all, which is itself a real, intended case, not a gap.
 ===================================================== */
 /* TICKET-two-pass-allocation.md §3 — `hasModel` marks the activities that have
-   an allocation model of their own. Only SIG does here: it's large enough to
-   be a tender type in its own right, so its model was built for those
-   standalone tenders and Turnkey reuses it when it routes there. Everything
-   else allocates manually, which is the ORDINARY case, not a failure.
-   (The ticket also names "RSC" as modelled; this screen's activity vocabulary
-   has no such entry — see revue-documentaire.html's ACTIVITY_MODEL for the
-   same open question. The two screens hold independent vocabularies by
-   convention, and they do not currently match.) */
+   an allocation model of their own: SIG and RST, matching revue-documentaire.html's
+   ACTIVITY_MODEL exactly now that both screens share the same activity list
+   (DEC-032/036) — this used to be a "these vocabularies don't match" caveat,
+   now it's just a lookup. Everything else allocates manually, which is the
+   ORDINARY case, not a failure. */
+/* DEC-032/036 — same 16-code activity list as revue-documentaire.html's TYPO
+   and compliance.html/qa.html's TYPOS, replacing this screen's own invented
+   7-activity set. RST takes over the "not yet cast" empty-state slot CVL
+   used to demonstrate (a real code from the list, not a stand-in). */
 const CAST_ACTIVITIES=[
-  {id:"sig",code:"SIG",label:"Signalling & Urban",managerId:"m_sig",hasModel:true},
-  {id:"mln",code:"MLN",label:"Mainline",managerId:"m_mln"},
-  {id:"inf",code:"INF",label:"Infrastructure",managerId:"m_inf"},
-  {id:"pwr",code:"PWR",label:"Power Supply",managerId:"m_pwr"},
-  {id:"tlc",code:"TLC",label:"Telecom",managerId:"m_tlc"},
-  {id:"cvl",code:"CVL",label:"Civil Works",managerId:null}, // not yet cast to a manager — a real, distinct empty state
-  {id:"sys",code:"SYS",label:"Systems Integration",managerId:"m_sys"},
+  {id:"sig",code:"SIG",label:"SIG",managerId:"m_sig",hasModel:true},
+  {id:"trk",code:"TRK",label:"TRK",managerId:"m_mln"},
+  {id:"ocs",code:"OCS",label:"OCS",managerId:"m_inf"},
+  {id:"pos",code:"POS",label:"POS",managerId:"m_pwr"},
+  {id:"com",code:"COM",label:"COM",managerId:"m_tlc"},
+  {id:"rst",code:"RST",label:"RST",managerId:null,hasModel:true}, // not yet cast to a manager — a real, distinct empty state
+  {id:"rams",code:"RAMS",label:"RAMS",managerId:"m_sys"},
 ];
 /* TICKET-casting-screen-redesign.md — "the rest of the reference list is
    noise and should be secondary or collapsed": CAST_ACTIVITIES above is what
    characterisation found relevant on THIS tender, not the full activity
    vocabulary. batch-6 "Add activities from the team screen" is exactly that
-   secondary list surfacing on demand — activities this project hasn't cast
-   yet, offered from the reference list rather than typed freehand (an
-   ad-hoc activity would need its own decision — see the ticket's own open
-   question — so this only ever adds from here). Added with no manager cast
-   yet, same empty state "cvl" already demonstrates above. */
+   secondary list surfacing on demand — the remaining codes from the same
+   16-code list, offered from the reference list rather than typed freehand
+   (DEC-036 — no ad-hoc activity, only from here). Added with no manager cast
+   yet, same empty state RST already demonstrates above. */
 const REFERENCE_ACTIVITIES=[
-  {id:"rst",code:"RST",label:"Rolling Stock"},
-  {id:"com",code:"COM",label:"Communications"},
-  {id:"saf",code:"SAF",label:"Safety & RAMS"},
-  {id:"arc",code:"ARC",label:"Architecture & Buildings"},
+  {id:"afc",code:"AFC",label:"AFC"},
+  {id:"cjv",code:"CJV",label:"CJV"},
+  {id:"cyb",code:"CYB",label:"CYB"},
+  {id:"deq",code:"DEQ",label:"DEQ"},
+  {id:"ils",code:"ILS",label:"ILS"},
+  {id:"psd",code:"PSD",label:"PSD"},
+  {id:"scada",code:"SCADA",label:"SCADA"},
+  {id:"sen",code:"SEN",label:"SEN"},
+  {id:"spm",code:"SPM",label:"SPM"},
 ];
 const CAST_ACT=id=>CAST_ACTIVITIES.find(a=>a.id===id);
-/* perimeter = [] means this activity is staffed directly, no breakdown — a
-   valid, ordinary outcome per the ticket, not a placeholder for a missing list */
-const PERIMETERS={
-  sig:[{id:"sig-ilk",label:"Interlocking"},{id:"sig-atp",label:"ATP / ATC"},{id:"sig-trk",label:"Trackside equipment"},{id:"sig-sca",label:"SCADA / Supervision"}],
-  mln:[{id:"mln-civ",label:"Civil interfaces"},{id:"mln-rst",label:"Rolling stock interfaces"}],
-  inf:[],
-  pwr:[{id:"pwr-tr",label:"Traction power"},{id:"pwr-aux",label:"Auxiliary power"}],
-  tlc:[],
-  cvl:[{id:"cvl-str",label:"Structures"},{id:"cvl-trk",label:"Trackworks"},{id:"cvl-sta",label:"Stations"}],
-  sys:[{id:"sys-saf",label:"Safety case"},{id:"sys-vv",label:"V&V"}],
-};
-/* TICKET-casting-screen-redesign follow-up: the perimeter list is a starting
-   point, not a closed vocabulary — PERIMETERS[activityId] can grow at add
-   time (see resolvePerimeter below). If it's empty, the array itself is
-   still created lazily so pushes have somewhere to land. */
-const perimetersOf=activityId=>{ if(!PERIMETERS[activityId]) PERIMETERS[activityId]=[]; return PERIMETERS[activityId]; };
-const perimeterLabel=(activityId,perimeterId)=>{ const p=perimetersOf(activityId).find(x=>x.id===perimeterId); return p?p.label:null; };
-/* Resolves whatever the user typed/picked for perimeter into a real
-   perimeter id: reuse an existing one on a case-insensitive label match
-   (so "interlocking" finds "Interlocking" instead of creating a near-
-   duplicate), otherwise create a new one on the fly. Blank input is a
-   deliberate, valid outcome — direct activity staffing, not an error. */
-function resolvePerimeter(activityId,typed){
-  const label=(typed||"").trim();
-  if(!label) return null;
-  const list=perimetersOf(activityId);
-  const existing=list.find(p=>p.label.toLowerCase()===label.toLowerCase());
-  if(existing) return existing.id;
-  const id=activityId+"-custom-"+Math.random().toString(36).slice(2,7);
-  list.push({id,label,custom:true});
-  return id;
-}
+/* DEC-036 — perimeter and OBS · team are the same list: what pass 2 derives
+   in revue-documentaire.html/compliance.html IS the perimeter here, not a
+   second, disconnected vocabulary invented per activity. One shared list,
+   identical to revue-documentaire.html's TEAMS, available to every activity
+   alike — staffing under Wayside means the same Wayside pass-2 resolves to. */
+const PERIMETERS=[
+  {id:"dbm",label:"DBM"},{id:"risk",label:"Risk"},{id:"btm",label:"BTM"},
+  {id:"wayside",label:"Wayside"},{id:"design",label:"Design"},{id:"vv",label:"V&V"},
+];
+/* Kept as perimetersOf(activityId) for every existing call site even though
+   the list no longer varies by activity — direct staffing (no perimeter) is
+   still a per-person choice, just not a per-activity one any more. */
+const perimetersOf=()=>PERIMETERS;
+const perimeterLabel=(activityId,perimeterId)=>{ const p=PERIMETERS.find(x=>x.id===perimeterId); return p?p.label:null; };
 
 /* Simulated SSO company directory — the searchable pool for "search a person
    via SSO"; distinct from ROSTER below, which is who's actually staffed on
@@ -1297,29 +1306,33 @@ const personByName=name=>DIRECTORY.find(p=>p.name===name);
    used elsewhere), which is what makes removal require reassignment instead
    of a plain delete. addedBy/addedAt is the attribution the ticket asks for. */
 let ROSTER=[
-  {personId:personByName("Sophie Lang").id,activityId:"sig",perimeterId:"sig-ilk",addedBy:"Louis Renaud",addedAt:"Jul 14",count:3},
-  {personId:personByName("Karim Benali").id,activityId:"sig",perimeterId:"sig-atp",addedBy:"Louis Renaud",addedAt:"Jul 14",count:0},
-  {personId:personByName("Claire Moreau").id,activityId:"sig",perimeterId:"sig-sca",addedBy:"Louis Renaud",addedAt:"Jul 15",count:0},
-  {personId:personByName("Marc Dubois").id,activityId:"mln",perimeterId:"mln-civ",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
-  {personId:personByName("Fatima Zahra").id,activityId:"mln",perimeterId:"mln-rst",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
-  {personId:personByName("Thomas Weber").id,activityId:"inf",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 13",count:1},
-  {personId:personByName("Léa Girard").id,activityId:"inf",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 16",count:0},
-  {personId:personByName("Omar Saidi").id,activityId:"pwr",perimeterId:"pwr-tr",addedBy:"Nadia Haddad",addedAt:"Jul 15",count:0},
-  {personId:personByName("Anaïs Petit").id,activityId:"sys",perimeterId:"sys-saf",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
-  {personId:personByName("Hugo Bernard").id,activityId:"sys",perimeterId:"sys-saf",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
-  {personId:personByName("Ines Kaya").id,activityId:"sys",perimeterId:"sys-vv",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
+  {personId:personByName("Sophie Lang").id,activityId:"sig",perimeterId:"wayside",addedBy:"Louis Renaud",addedAt:"Jul 14",count:3},
+  {personId:personByName("Karim Benali").id,activityId:"sig",perimeterId:"design",addedBy:"Louis Renaud",addedAt:"Jul 14",count:0},
+  {personId:personByName("Claire Moreau").id,activityId:"sig",perimeterId:"vv",addedBy:"Louis Renaud",addedAt:"Jul 15",count:0},
+  {personId:personByName("Marc Dubois").id,activityId:"trk",perimeterId:"btm",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
+  {personId:personByName("Fatima Zahra").id,activityId:"trk",perimeterId:"dbm",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
+  {personId:personByName("Thomas Weber").id,activityId:"ocs",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 13",count:1},
+  {personId:personByName("Léa Girard").id,activityId:"ocs",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 16",count:0},
+  {personId:personByName("Omar Saidi").id,activityId:"pos",perimeterId:"wayside",addedBy:"Nadia Haddad",addedAt:"Jul 15",count:0},
+  {personId:personByName("Anaïs Petit").id,activityId:"rams",perimeterId:"risk",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
+  {personId:personByName("Hugo Bernard").id,activityId:"rams",perimeterId:"risk",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
+  {personId:personByName("Ines Kaya").id,activityId:"rams",perimeterId:"vv",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
 ];
 const rosterFor=(activityId,perimeterId)=>ROSTER.filter(r=>r.activityId===activityId && r.perimeterId===(perimeterId===undefined?null:perimeterId));
 const rosterOfActivity=activityId=>ROSTER.filter(r=>r.activityId===activityId);
 
+/* DEC-036 — the perimeter list is now shared across every activity (the same
+   6 teams, not a closed set specific to this one), so "fully staffed" counts
+   every perimeter PLUS the "staffed directly, no perimeter" slot — that slot
+   is still a real, ordinary outcome per person, just no longer the whole
+   activity's only option the way an empty per-activity list used to force. */
 function activityCoverage(a){
   const perims=perimetersOf(a.id);
-  if(perims.length){
-    const staffed=perims.filter(p=>rosterFor(a.id,p.id).length>0).length;
-    return {kind:staffed===0?"unstaffed":(staffed===perims.length?"staffed":"partial"),staffed,total:perims.length};
-  }
-  const direct=rosterFor(a.id,null);
-  return {kind:direct.length?"staffed":"unstaffed",staffed:direct.length?1:0,total:1};
+  const groups=perims.length+1;
+  const staffedPerims=perims.filter(p=>rosterFor(a.id,p.id).length>0).length;
+  const direct=rosterFor(a.id,null).length>0;
+  const staffed=staffedPerims+(direct?1:0);
+  return {kind:staffed===0?"unstaffed":(staffed===groups?"staffed":"partial"),staffed,total:groups};
 }
 
 let TEAM_VIEWER="admin";
@@ -1386,11 +1399,10 @@ function castPersonRowHTML(r,editable){
 
 /* ---------- add row: SSO-style typeahead, scoped to one activity+perimeter ---------- */
 /* Single combined add-flow per activity (not per perimeter): search the
-   person first, THEN say where — pick an existing perimeter, type a new
-   one freely, or leave it blank for direct-activity staffing. The
-   perimeter list was never meant to be a closed vocabulary someone else
-   imposes; resolvePerimeter() (above) creates a new one on the fly the
-   first time it's typed, so it's usable from then on for this activity. */
+   person first, THEN say where — pick an existing perimeter from the shared
+   list, or leave it on "No perimeter" for direct-activity staffing. DEC-036 —
+   no free-text perimeter creation any more: the list is OBS · team, a closed
+   vocabulary, not something Casting invents a new entry into. */
 function castAddFlowHTML(activityId){
   return `<div class="cast-add-flow" data-add-act="${activityId}">
     <div class="cast-add-flow-title">+ Add someone</div>
@@ -1413,19 +1425,21 @@ function bindCastAddFlow(container,activityId){
     slot.querySelector("input").focus();
   }
   function toPerimStep(p){
-    const dlId=`castdl-${activityId}`;
-    const opts=perimetersOf(activityId).map(x=>`<option value="${x.label.replace(/"/g,"&quot;")}">`).join("");
+    // DEC-036 — perimeter is picked from the shared list, never typed: it's
+    // the same vocabulary OBS · team already resolves to, not a place to
+    // invent a new one on the fly.
+    const opts=['<option value="">— No perimeter — staffed directly —</option>']
+      .concat(perimetersOf(activityId).map(x=>`<option value="${x.id}">${x.label}</option>`)).join("");
     slot.innerHTML=`<div class="cast-add-picked"><div class="exp-av" style="width:22px;height:22px;font-size:10px;background:${p.color}">${p.init}</div>${p.name}<span class="x" data-cancel-pick>✕ change</span></div>
       <div class="cast-add-step2">
-        <input class="cast-add-perim-input" list="${dlId}" placeholder="Perimeter — pick existing, type a new one, or leave blank" data-add-perim>
-        <datalist id="${dlId}">${opts}</datalist>
+        <select class="cast-add-perim-input" data-add-perim>${opts}</select>
         <button class="cast-add-confirm" type="button" data-add-confirm>Add</button>
       </div>
-      <div class="cast-add-hint">Leave blank to staff ${CAST_ACT(activityId).label} directly, with no perimeter — that's a valid, ordinary choice, not a skipped step.</div>`;
+      <div class="cast-add-hint">Leave on "No perimeter" to staff ${CAST_ACT(activityId).label} directly — that's a valid, ordinary choice, not a skipped step.</div>`;
     const perimInput=slot.querySelector("[data-add-perim]");
     slot.querySelector("[data-cancel-pick]").addEventListener("click",toPersonStep);
     function doConfirm(){
-      const perimeterId=resolvePerimeter(activityId,perimInput.value);
+      const perimeterId=perimInput.value||null;
       const dup=ROSTER.find(r=>r.personId===p.id && r.activityId===activityId && r.perimeterId===perimeterId);
       if(dup){ toast(`${p.name} is already staffed here — pick a different perimeter, or search someone else`,"warn"); return; }
       ROSTER.push({personId:p.id,activityId,perimeterId,addedBy:viewerInfo(TEAM_VIEWER).name,addedAt:"Today",count:0});
@@ -1436,7 +1450,6 @@ function bindCastAddFlow(container,activityId){
       requestAnimationFrame(()=>{ document.querySelector(`[data-add-input="${activityId}"]`)?.focus(); });
     }
     slot.querySelector("[data-add-confirm]").addEventListener("click",doConfirm);
-    perimInput.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doConfirm(); } });
     perimInput.focus();
   }
   function bindPersonInput(){
@@ -1647,7 +1660,7 @@ function renderAddActivityPop(){
   pop.querySelector("#cast-add-act-confirm").addEventListener("click",()=>{
     const id=pop.querySelector("#cast-add-act-select").value;
     const ref=REFERENCE_ACTIVITIES.find(r=>r.id===id); if(!ref) return;
-    // No manager cast yet — the same real, distinct empty state "cvl" already
+    // No manager cast yet — the same real, distinct empty state RST already
     // demonstrates (castGroupHTML's !a.managerId branch), not a special case.
     CAST_ACTIVITIES.push({id:ref.id,code:ref.code,label:ref.label,managerId:null});
     castExpanded.add(ref.id);
@@ -1796,33 +1809,42 @@ const FOLLOWUP_REQS=[
   {id:"SRM-00013",compliance:null,branchesAnswered:0,branchesTotal:1},
   {id:"SRM-00014",compliance:null,branchesAnswered:0,branchesTotal:1},
 ];
+/* §2.2 — Turnkey-ness read from the same project object accueil.html seeds
+   (CURRENT_PROJECT.line) rather than a second, disconnected flag — a real
+   project field, not invented for this KPI row alone. No project (this
+   screen opened standalone) defaults to Turnkey, matching STB-2026's own
+   demo. */
+const IS_TURNKEY_TENDER = !CURRENT_PROJECT || CURRENT_PROJECT.line==="Turnkey";
+function renderTenderKPIs(){
+  const el=document.getElementById("tender-kpi-row"); if(!el) return;
+  const total=REVIEW_REQS.length;
+  const pass1=REVIEW_REQS.filter(r=>r.status!=="suggested").length;
+  const pass2=REVIEW_REQS.filter(r=>r.status==="allocated").length;
+  const complianceFilled=FOLLOWUP_REQS.filter(r=>r.compliance!=null).length;
+  const tiles=[{n:total,l:"Total requirements"}];
+  if(IS_TURNKEY_TENDER) tiles.push({n:pass1,l:"Confirmed by Turnkey"});
+  tiles.push({n:pass2,l:"Confirmed by the systems"});
+  tiles.push({n:complianceFilled,l:"Compliance filled in (internal)"});
+  el.className="kpi-row"+(IS_TURNKEY_TENDER?"":" kpi-3");
+  el.innerHTML=tiles.map(t=>`<div class="kpi-tile"><div class="kpi-num">${t.n}</div><div class="kpi-lbl">${t.l}</div></div>`).join("");
+}
 function renderReviewKPIs(){
   const total=REVIEW_REQS.length;
   const validated=REVIEW_REQS.filter(r=>r.status==="allocated").length;
   const pct=Math.round(validated/total*100);
-  document.getElementById("hs-total-reqs").textContent=total;
   document.getElementById("ph-review-n").textContent=validated;
   document.getElementById("ph-review-txt").textContent=`/ ${total} requirements validated`;
   document.getElementById("ph-review-bar").style.width=pct+"%";
   document.getElementById("att-review-sub").textContent=`${total-validated} requirements still to validate`;
-  document.getElementById("hs-validated").innerHTML=`${validated}<span class="hs-slash">/${total}</span>`;
 }
 function renderComplianceKPIs(){
-  const total=FOLLOWUP_REQS.length;
-  const compliant=FOLLOWUP_REQS.filter(r=>r.compliance==="compliant").length;
-  // TD1 — keys reconciled to canonical rnd_needed/not_compliant (were compliant_rnd/non_compliant).
-  const partial=FOLLOWUP_REQS.filter(r=>r.compliance==="rnd_needed").length;
-  const non=FOLLOWUP_REQS.filter(r=>r.compliance==="not_compliant").length;
-  const pending=total-compliant-partial-non;
+  const {total,compliant,non,pending}=complianceCounts();
   const pct=n=>total?Math.round(n/total*1000)/10+"%":"0%";
-  [["compliant",compliant],["partial",partial],["non",non],["pending",pending]].forEach(([k,n])=>{
+  [["compliant",compliant],["non",non],["pending",pending]].forEach(([k,n])=>{
     document.getElementById(`compseg-${k}`).style.width=pct(n);
     document.getElementById(`compseg-${k}`).textContent=n||"";
     document.getElementById(`compleg-${k}`).textContent=n;
   });
-  const branchesAnswered=FOLLOWUP_REQS.reduce((s,r)=>s+r.branchesAnswered,0);
-  const branchesTotal=FOLLOWUP_REQS.reduce((s,r)=>s+r.branchesTotal,0);
-  document.getElementById("hs-response-rate").textContent=(Math.round(branchesAnswered/branchesTotal*1000)/10)+"%";
 }
 /* TB2 — mirrors the activity-level detail behind compliance.html's
    isOverB() (awaiting_answer && age >= OVERDUE_DAYS): only a branch actually waiting
@@ -1843,9 +1865,58 @@ function renderOverdueCard(){
     : `${first.expert} — ${first.reqId} unopened for ${first.days} days`;
   document.getElementById("att-overdue-sub").textContent=sub;
 }
+/* §2.3 — tender-wide feed of the most recently added comments, replacing
+   Project Health's slot. Reassignment items are live off the same B10
+   shared mailbox §2.4 below reads (window.parent.getReassignRequests) —
+   compliance verdict and risk-field comments have no equivalent shared
+   store yet (compliance.html's REQS stays local to that screen, per this
+   project's own "independently hand-authored per screen" convention), so
+   those are hand-authored here, same as this screen's existing "Recent
+   activity" feed further down. All merged and shown most-recent-first. */
+const COMMENT_FEED_DEMO=[
+  {kind:"ok",who:"Claire Moreau",what:"responded on <b>SRM-00013</b> — verdict Needs clarification",when:"Jul 15, 4:20 PM",sortKey:"2026-07-15T16:20"},
+  {kind:"warn",who:"Paolo Ferri",what:"flagged a risk on <b>SRM-00007</b> — external compliance declared despite internal Not compliant",when:"Jul 14, 11:05 AM",sortKey:"2026-07-14T11:05"},
+  {kind:"ok",who:"Sophie Lang",what:"commented on <b>SRM-00006</b> — evidence attached, awaiting review",when:"Jul 12, 9:15 AM",sortKey:"2026-07-12T09:15"},
+];
+function renderCommentsFeed(){
+  const el=document.getElementById("comments-feed"); if(!el) return;
+  let shared=[];
+  try{ shared=(window.parent!==window && window.parent.getReassignRequests) ? window.parent.getReassignRequests() : []; }catch(e){ shared=[]; }
+  const reassignItems=shared.map(r=>({
+    kind:"ia", who:r.byName||"Someone",
+    what:`requested a reassignment on <b>${r.reqId}</b> — "${(r.note||"").slice(0,80)}"`,
+    when:r.at||"Today", sortKey:r.at==="Today"?"9999":"0000",
+  }));
+  const items=[...reassignItems, ...COMMENT_FEED_DEMO].sort((a,b)=>b.sortKey.localeCompare(a.sortKey)).slice(0,6);
+  el.innerHTML = items.length
+    ? items.map(i=>`<div class="feed-item ${i.kind}"><div class="feed-w"><b>${i.who}</b> ${i.what}</div><div class="feed-t">${i.when}</div></div>`).join("")
+    : `<div class="feed-item"><div class="feed-w">No comments yet.</div></div>`;
+}
+/* §2.4 — pending change/reassignment requests rolled up at tender level,
+   same data the per-table reassignment filter (B10) already reads — only
+   rendered when there's at least one pending request. */
+function renderReassignRollup(){
+  const card=document.getElementById("reassign-rollup-card"); if(!card) return;
+  let shared=[];
+  try{ shared=(window.parent!==window && window.parent.getReassignRequests) ? window.parent.getReassignRequests() : []; }catch(e){ shared=[]; }
+  const pending=shared.filter(r=>r.requestStatus==="pending");
+  if(!pending.length){ card.style.display="none"; return; }
+  card.style.display="";
+  card.querySelector("#reassign-rollup-count").textContent=pending.length;
+  card.querySelector("#reassign-rollup-list").innerHTML=pending.slice(0,5).map(r=>
+    `<div class="att" data-go="revue-documentaire.html">
+      <div class="att-ic warn">↩</div>
+      <div><div class="att-t"><b>${r.reqId}</b> — reassignment requested</div><div class="att-sub">${r.byName||"Someone"}: "${(r.note||"").slice(0,90)}"</div></div>
+      <span class="att-go">Review →</span>
+    </div>`).join("");
+  card.querySelectorAll("[data-go]").forEach(el=>el.addEventListener("click",()=>goRoute(el.dataset.go)));
+}
 renderReviewKPIs();
 renderComplianceKPIs();
+renderTenderKPIs();
 renderOverdueCard();
+renderCommentsFeed();
+renderReassignRollup();
 
 /* =====================================================
    SPEC-dashboard-statistics.md — statistics panel
@@ -1867,10 +1938,10 @@ document.querySelectorAll(".stats-tab").forEach(b=>b.addEventListener("click",()
 // 1.1 — bottlenecks by perimeter (data gap: real age-in-status needs a status-transition
 // history the backend doesn't track yet)
 const STATS_BOTTLENECKS=[
-  {code:"MLN",label:"Mainline Wayside",count:3,oldestDays:14},
-  {code:"SIG",label:"SIG & Urban",count:2,oldestDays:9},
-  {code:"INF",label:"Infrastructure",count:2,oldestDays:6},
-  {code:"TLC",label:"Telecom",count:1,oldestDays:2},
+  {code:"TRK",label:"TRK",count:3,oldestDays:14},
+  {code:"SIG",label:"SIG",count:2,oldestDays:9},
+  {code:"OCS",label:"OCS",count:2,oldestDays:6},
+  {code:"COM",label:"COM",count:1,oldestDays:2},
 ];
 function renderStatsBottlenecks(){
   const el=document.getElementById("stats-bottlenecks"); if(!el) return;
@@ -1891,17 +1962,16 @@ function renderStatsBottlenecks(){
 function complianceCounts(){
   const total=FOLLOWUP_REQS.length;
   const compliant=FOLLOWUP_REQS.filter(r=>r.compliance==="compliant").length;
-  const partial=FOLLOWUP_REQS.filter(r=>r.compliance==="rnd_needed").length;
   const non=FOLLOWUP_REQS.filter(r=>r.compliance==="not_compliant").length;
-  const pending=total-compliant-partial-non;
-  return {total,compliant,partial,non,pending};
+  const pending=total-compliant-non;
+  return {total,compliant,non,pending};
 }
 function renderStatsComplianceBar(barId,legendId){
   const bar=document.getElementById(barId), legend=document.getElementById(legendId);
   if(!bar||!legend) return;
-  const {total,compliant,partial,non,pending}=complianceCounts();
+  const {total,compliant,non,pending}=complianceCounts();
   const pct=n=>total?(Math.round(n/total*1000)/10)+"%":"0%";
-  const segs=[["compliant",compliant,"Compliant"],["partial",partial,"R&D needed"],["non",non,"Not compliant"],["pending",pending,"Pending"]];
+  const segs=[["compliant",compliant,"Compliant"],["non",non,"Not compliant"],["pending",pending,"Pending"]];
   bar.innerHTML=segs.map(([k,n])=>`<div class="comp-seg ${k}" style="width:${pct(n)}" title="${n} · ${pct(n)}">${n||""}</div>`).join("");
   legend.innerHTML=segs.map(([k,n,l])=>`<span><span class="dot ${k}"></span>${l} · ${n}</span>`).join("");
 }
@@ -1942,7 +2012,7 @@ function renderStatsInvalidated(){
   const stale=FOLLOWUP_REQS.filter(r=>r.id==="SRM-00009"&&v22Done());
   if(!stale.length){ block.classList.add("hidden"); return; }
   block.classList.remove("hidden");
-  el.innerHTML=`<div class="invalidated-row" id="stats-invalidated-link">⇄ ${stale.length} expert answer${stale.length>1?"s":""} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
+  el.innerHTML=`<div class="invalidated-row" id="stats-invalidated-link">⇄ ${stale.length} contributor answer${stale.length>1?"s":""} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
   document.getElementById("stats-invalidated-link")?.addEventListener("click",()=>goRoute("documents.html"));
 }
 
