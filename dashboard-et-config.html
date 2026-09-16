@@ -191,7 +191,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .stats-sec.on{display:block}
 .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4)}
 .stat-block{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4)}
-.stat-block.stat-trajectory,.stat-block.stat-bottlenecks{grid-column:1/-1}
+.stat-block.stat-wide,.stat-block.stat-bottlenecks{grid-column:1/-1}
 .stat-h{font-size:var(--text-sm);font-weight:600;margin-bottom:4px}
 .stat-sub{font-size:var(--text-xs);color:var(--text-3);margin-bottom:12px}
 
@@ -227,6 +227,88 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .ai-rel-bar{height:8px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
 .ai-rel-bar span{display:block;height:100%;background:var(--accent);border-radius:var(--radius-xs)}
 .ai-rel-pct{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
+
+/* --- shared stacked bar (allocation funnel, assignment funnel) --- */
+.sbar{display:flex;height:26px;border-radius:var(--radius-md);overflow:hidden;background:var(--panel-3);margin-bottom:12px;cursor:pointer}
+.sbar-seg{display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:700;color:#fff;transition:width .5s,filter .12s}
+.sbar:hover .sbar-seg{filter:brightness(1.12)}
+.sbar-seg.s-neutral{background:var(--line-2);color:var(--text-2)}
+.sbar-seg.s-ia{background:var(--ia)}
+.sbar-seg.s-accent{background:var(--accent)}
+.sbar-seg.s-ok{background:var(--ok)}
+.sbar-seg.s-warn{background:var(--warn)}
+.sbar-seg.s-human{background:var(--human)}
+.sbar-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(172px,1fr));gap:var(--space-2) var(--space-4)}
+.sbar-key{display:flex;align-items:center;gap:7px;font-size:var(--text-sm);color:var(--text-2);white-space:nowrap}
+.sbar-key .dot{width:9px;height:9px;border-radius:var(--radius-xs);flex-shrink:0}
+.dot.s-neutral{background:var(--line-2)}.dot.s-ia{background:var(--ia)}
+.dot.s-accent{background:var(--accent)}.dot.s-ok{background:var(--ok)}.dot.s-warn{background:var(--warn)}
+.dot.s-human{background:var(--human)}
+.sbar-key b{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--text)}
+.sbar-key .pct{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums;width:34px;text-align:right}
+
+/* --- pass 1 -> pass 2 funnel --- */
+.pf-stage{margin-bottom:var(--space-2)}
+.pf-head{display:flex;align-items:baseline;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2);margin-bottom:3px}
+.pf-head b{font-size:var(--text-base);color:var(--text);font-variant-numeric:tabular-nums}
+.pf-head .pct{margin-left:auto;font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums}
+.pf-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
+.pf-bar span{display:block;height:100%;border-radius:var(--radius-xs);transition:width .5s}
+.pf-drop{font-size:var(--text-xs);color:var(--warn);margin:0 0 var(--space-2) 2px}
+
+/* --- load by activity --- */
+.load-row{display:grid;grid-template-columns:52px 1fr 66px;align-items:center;gap:var(--space-3);padding:3px 0;cursor:pointer}
+.load-row:hover .load-code{color:var(--text)}
+.load-code{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-3);transition:color .12s}
+.load-code.none{font-family:var(--font-ui);font-style:italic;font-weight:500}
+.load-bar{display:flex;height:14px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
+.load-seg{transition:width .5s}
+.load-seg.done{background:var(--ok)}
+.load-seg.wip{background:var(--line-2)}
+.load-n{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
+.load-n b{color:var(--text)}
+.noact{margin-top:10px;padding:var(--space-2) var(--space-3);border:1px dashed var(--line-2);border-radius:var(--radius-md);font-size:var(--text-sm);color:var(--text-2);cursor:pointer}
+.noact b{color:var(--ia)}
+.noact.clear{color:var(--text-3);border-style:solid;cursor:default}
+
+/* --- derivation-quality ring gauges --- */
+.gq-wrap{display:flex;gap:var(--space-4);justify-content:space-around}
+.gq{text-align:center;flex:1}
+.gq svg{display:block;margin:0 auto}
+.gq-lbl{font-size:var(--text-xs);color:var(--text-3);line-height:1.35;margin-top:var(--space-2)}
+
+/* --- internal vs declared --- */
+.gap-side{margin-bottom:10px}
+.gap-side-h{font-size:var(--text-xs);color:var(--text-3);margin-bottom:4px}
+.gap-note{margin-top:10px;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);line-height:1.45;background:var(--warn-soft);color:var(--text-2);cursor:pointer}
+.gap-note b{color:var(--warn)}
+.gap-note.clear{background:var(--ok-soft);cursor:default}
+.gap-note.clear b{color:var(--ok)}
+
+/* --- consolidation --- */
+.cons-top{display:flex;align-items:baseline;gap:var(--space-2);margin-bottom:var(--space-2)}
+.cons-top .big{font-size:var(--text-xl);font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.cons-top span{font-size:var(--text-sm);color:var(--text-2)}
+.cons-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden;margin-bottom:12px}
+.cons-bar span{display:block;height:100%;background:var(--ok);border-radius:var(--radius-xs);transition:width .5s}
+.cons-split{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--space-2)}
+.cons-item{padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--panel-3);cursor:pointer;transition:filter .12s}
+.cons-item:hover{filter:brightness(1.1)}
+.cons-item .n{font-size:var(--text-lg);font-weight:700;font-variant-numeric:tabular-nums}
+.cons-item .k{font-size:var(--text-xs);color:var(--text-3);line-height:1.35}
+.cons-item.wait .n{color:var(--ia)}
+.cons-item.qa .n{color:var(--accent)}
+.cons-item.rea .n{color:var(--warn)}
+
+/* --- late by contributor --- */
+.late-row{display:grid;grid-template-columns:1fr 84px 52px;align-items:center;gap:var(--space-3);padding:4px 0}
+.late-name{font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.late-name small{color:var(--text-3)}
+.late-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
+.late-bar span{display:block;height:100%;border-radius:var(--radius-xs);background:var(--ia);transition:width .5s}
+.late-bar span.over{background:var(--warn)}
+.late-days{font-size:var(--text-xs);font-weight:600;color:var(--text-2);text-align:right;font-variant-numeric:tabular-nums}
+.late-empty{font-size:var(--text-sm);color:var(--ok)}
 
 /* main columns */
 .dash-main{display:grid;grid-template-columns:1.55fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);align-items:start}
@@ -734,38 +816,47 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         </aside>
       </div>
 
-      <!-- SPEC-dashboard-statistics.md — statistics panel. Two tabs for the two audiences
-           the spec splits on: the PM's operational "what's blocking me" and the
-           stakeholder's comparative "is this healthy". Always visible regardless of
-           allocation state, per the spec's "always show the unknown" principle — pending
-           is the honest majority early in a tender, not a state to hide. -->
+      <!-- SPEC-dashboard-statistics.md — statistics panel. Split by STEP, not by
+           audience: one tab per canonical step (DEC-029), matching the PROCESS cards
+           above and the two screens a reader would open next. The spec's original
+           PM/stakeholder split collapsed both steps into each tab, which meant the
+           same compliance bar was drawn twice and no tab ever answered "where is
+           allocation stuck". Always visible regardless of allocation state, per the
+           spec's "always show the unknown" principle — pending is the honest majority
+           early in a tender, not a state to hide. -->
       <div class="card stats-panel">
         <div class="stats-head">
           <h3>Statistics</h3>
           <div class="stats-tabs">
-            <button class="stats-tab on" data-stab="pm">For you</button>
-            <button class="stats-tab" data-stab="stake">For stakeholders</button>
+            <button class="stats-tab on" data-stab="alloc">Allocation</button>
+            <button class="stats-tab" data-stab="compl">Compliance</button>
           </div>
         </div>
 
-        <div class="stats-sec on" data-stab="pm">
+        <div class="stats-sec on" data-stab="alloc">
           <div class="stats-grid">
-            <div class="stat-block stat-bottlenecks">
-              <div class="stat-h">Bottlenecks by perimeter</div>
-              <div class="stat-sub">Awaiting a contributor answer — ranked by age of the oldest, not by count</div>
-              <div id="stats-bottlenecks" class="bn-list"></div>
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Allocation funnel</div>
+              <div class="stat-sub">Where the requirements are sitting — not just how many are done</div>
+              <div id="stats-alloc-funnel"></div>
             </div>
 
             <div class="stat-block">
-              <div class="stat-h">Compliance profile</div>
-              <div class="comp-bar" id="stats-comp-bar"></div>
-              <div class="comp-legend" id="stats-comp-legend"></div>
+              <div class="stat-h">Pass 1 → pass 2</div>
+              <div class="stat-sub">Where the drop-off happens between the two confirmations</div>
+              <div id="stats-pass-funnel"></div>
             </div>
 
             <div class="stat-block">
-              <div class="stat-h">Blocked on the client</div>
-              <div class="stat-sub">Awaiting Q&amp;A — not people to chase, a client to wait for</div>
-              <div id="stats-qa-blocked" class="qa-blocked-list"></div>
+              <div class="stat-h">Derivation quality</div>
+              <div class="stat-sub">What the AI proposed and nobody has confirmed yet</div>
+              <div id="stats-ai-quality"></div>
+            </div>
+
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Load by activity</div>
+              <div class="stat-sub">How the requirements spread across activities, and how much of each is allocated</div>
+              <div id="stats-activity-load"></div>
             </div>
 
             <div class="stat-block">
@@ -778,30 +869,62 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
               <div id="stats-invalidated"></div>
             </div>
 
-            <div class="stat-block stat-trajectory">
-              <div class="stat-h">Trajectory to deadline</div>
-              <div id="stats-trajectory"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="stats-sec" data-stab="stake">
-          <div class="stats-grid">
-            <div class="stat-block">
-              <div class="stat-h">Compliance profile</div>
-              <div class="comp-bar" id="stats-comp-bar2"></div>
-              <div class="comp-legend" id="stats-comp-legend2"></div>
-            </div>
-
-            <div class="stat-block">
-              <div class="stat-h">Progress against deadline</div>
-              <div id="stats-progress-deadline"></div>
-            </div>
-
             <div class="stat-block stat-ai-reliability">
               <div class="stat-h">AI reliability — correction rate by field</div>
               <div class="stat-sub">Share of AI-proposed values a human subsequently changed</div>
               <div id="stats-ai-reliability"></div>
+            </div>
+
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Trajectory to deadline</div>
+              <div id="stats-trajectory"></div>
+              <div id="stats-progress-deadline"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-sec" data-stab="compl">
+          <div class="stats-grid">
+            <div class="stat-block">
+              <div class="stat-h">Compliance profile</div>
+              <div class="comp-bar" id="stats-comp-bar"></div>
+              <div class="comp-legend" id="stats-comp-legend"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Internal vs declared to the client</div>
+              <div class="stat-sub">What we found, against what the client is told — the gap is the risk</div>
+              <div id="stats-external-gap"></div>
+            </div>
+
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Consolidation</div>
+              <div class="stat-sub">A requirement consolidates only once every one of its assignments has answered</div>
+              <div id="stats-consolidation"></div>
+            </div>
+
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Assignment funnel</div>
+              <div class="stat-sub">Every assignment across the tender, by where it stands</div>
+              <div id="stats-assign-funnel"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Late by contributor</div>
+              <div class="stat-sub">Who to chase, and how long they have been sitting on it</div>
+              <div id="stats-late"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Blocked on the client</div>
+              <div class="stat-sub">Awaiting Q&amp;A — not people to chase, a client to wait for</div>
+              <div id="stats-qa-blocked" class="qa-blocked-list"></div>
+            </div>
+
+            <div class="stat-block stat-bottlenecks">
+              <div class="stat-h">Bottlenecks by activity</div>
+              <div class="stat-sub">Awaiting a contributor answer — ranked by age of the oldest, not by count</div>
+              <div id="stats-bottlenecks" class="bn-list"></div>
             </div>
           </div>
         </div>
@@ -1783,32 +1906,54 @@ document.querySelectorAll('[data-redact]').forEach(b=>b.addEventListener("click"
    Allocation phase card, the "Requirements validated" health stat, the Compliance
    breakdown and the Response rate instead of typing the resulting numbers into the
    markup, so they can't silently drift from the screens that own that data. */
+/* `activity` mirrors the primary activity each requirement is routed to (the
+   16-code list shared with revue-documentaire.html's TYPO since DEC-032) —
+   null means pass 2 hasn't named one yet, which the Allocation tab shows as
+   its own figure rather than hiding. `aiActivity` marks an activity the AI
+   proposed, `obsWeak` an OBS derived below the confidence threshold: both
+   feed the derivation-quality gauges, and both are properties the Allocation
+   screen really carries (perimAI / OBS_THRESHOLD). */
 const REVIEW_REQS=[
-  {id:"SRM-00001",status:"toreview"},{id:"SRM-00002",status:"toreview"},
-  {id:"SRM-00003",status:"allocated"},{id:"SRM-00004",status:"allocated"},
-  {id:"SRM-00005",status:"toreview"},{id:"SRM-00006",status:"suggested"},
-  {id:"SRM-00007",status:"suggested"},{id:"SRM-00008",status:"suggested"},
-  {id:"SRM-00009",status:"allocated"},{id:"SRM-00010",status:"edited"},
-  {id:"SRM-00011",status:"suggested"},{id:"SRM-00012",status:"allocated"},
-  {id:"SRM-00013",status:"toreview"},{id:"SRM-00014",status:"allocated"},
+  {id:"SRM-00001",status:"toreview", activity:"sig"},
+  {id:"SRM-00002",status:"toreview", activity:"sig"},
+  {id:"SRM-00003",status:"allocated",activity:"sig"},
+  {id:"SRM-00004",status:"allocated",activity:"ocs", aiActivity:true},
+  {id:"SRM-00005",status:"toreview", activity:"sig", obsWeak:true},
+  {id:"SRM-00006",status:"suggested",activity:"trk", aiActivity:true},
+  {id:"SRM-00007",status:"suggested",activity:"sig", aiActivity:true},
+  {id:"SRM-00008",status:"suggested",activity:"com", aiActivity:true},
+  {id:"SRM-00009",status:"allocated",activity:"trk", aiActivity:true,obsWeak:true},
+  {id:"SRM-00010",status:"edited",   activity:"trk", aiActivity:true},
+  {id:"SRM-00011",status:"suggested",activity:null,  aiActivity:true,obsWeak:true},
+  {id:"SRM-00012",status:"allocated",activity:"sig"},
+  {id:"SRM-00013",status:"toreview", activity:"rams",aiActivity:true,obsWeak:true},
+  {id:"SRM-00014",status:"allocated",activity:"pos"},
 ];
+/* `branchStatuses` replaces the old branchesAnswered/branchesTotal pair: same
+   information, but per assignment, so the assignment funnel and the "what is
+   consolidation actually waiting on" split can be derived rather than typed.
+   Values are compliance.html's own BST keys. `external`/`risk` mirror the
+   external declaration and its accepted-risk note (DEC-028) — the only place
+   the gap between what we found and what the client is told gets measured. */
 const FOLLOWUP_REQS=[
   // TD3 — SRM-00001/SRM-00002 now exist in compliance.html's REQS; kept in sync here.
-  {id:"SRM-00001",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00002",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00003",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"SRM-00004",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"SRM-00005",compliance:null,branchesAnswered:1,branchesTotal:3},
-  {id:"SRM-00006",compliance:null,branchesAnswered:0,branchesTotal:1,overdueBranches:1},
-  {id:"SRM-00007",compliance:"not_compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"SRM-00008",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00009",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"SRM-00010",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00011",compliance:null,branchesAnswered:1,branchesTotal:2},
-  {id:"SRM-00012",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00013",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00014",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00001",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
+  {id:"SRM-00002",compliance:null,            branchStatuses:["proposed"]},
+  {id:"SRM-00003",compliance:"compliant",     branchStatuses:["answered"],external:"compliant"},
+  {id:"SRM-00004",compliance:"compliant",     branchStatuses:["answered"]},
+  {id:"SRM-00005",compliance:null,            branchStatuses:["answered","awaiting_answer","reassignment_needed"],external:"compliant",risk:true},
+  {id:"SRM-00006",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
+  {id:"SRM-00007",compliance:"not_compliant", branchStatuses:["answered"],external:"compliant",risk:true},
+  {id:"SRM-00008",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
+  {id:"SRM-00009",compliance:"compliant",     branchStatuses:["answered"]},
+  {id:"SRM-00010",compliance:null,            branchStatuses:["awaiting_qa"]},
+  {id:"SRM-00011",compliance:null,            branchStatuses:["answered","awaiting_answer"],overdueBranches:1},
+  {id:"SRM-00012",compliance:null,            branchStatuses:["awaiting_qa"]},
+  {id:"SRM-00013",compliance:null,            branchStatuses:["awaiting_qa"]},
+  {id:"SRM-00014",compliance:null,            branchStatuses:["awaiting_qa"]},
 ];
+const branchesOf=r=>r.branchStatuses||[];
+const answeredOf=r=>branchesOf(r).filter(s=>s==="answered").length;
 /* §2.2 — Turnkey-ness read from the same project object accueil.html seeds
    (CURRENT_PROJECT.line) rather than a second, disconnected flag — a real
    project field, not invented for this KPI row alone. No project (this
@@ -1852,7 +1997,12 @@ function renderComplianceKPIs(){
    for reassignment. Drives the "contributor response overdue" attention card instead
    of a hand-typed name/id/day-count that can silently point at the wrong person. */
 const OVERDUE_BRANCHES=[
+  // oldest first — renderOverdueCard leads with [0], and the Compliance tab's
+  // "late by contributor" chart groups these by person.
+  {reqId:"SRM-00001",expert:"Karim Benali",days:9},
+  {reqId:"SRM-00008",expert:"Karim Benali",days:7},
   {reqId:"SRM-00006",expert:"Sophie Lang",days:6},
+  {reqId:"SRM-00011",expert:"Marc Dubois",days:5},
 ];
 function renderOverdueCard(){
   const card=document.getElementById("att-overdue");
@@ -1949,7 +2099,7 @@ function renderStatsBottlenecks(){
   el.innerHTML = rows.map(r=>`
     <div class="bn-row" data-go="revue-documentaire.html">
       <span class="bn-code">${r.code}</span>
-      <span class="bn-label">${r.label}</span>
+      <span class="bn-label">${r.label===r.code?"":r.label}</span>
       <span class="bn-count">${r.count} awaiting</span>
       <span class="bn-age ${r.oldestDays>=10?"warn":""}">${r.oldestDays}d oldest</span>
     </div>`).join("");
@@ -1998,8 +2148,8 @@ function renderStatsQABlocked(){
 function renderStatsCasting(){
   const el=document.getElementById("stats-casting"); if(!el) return;
   const gaps=CAST_ACTIVITIES.filter(a=>!a.managerId);
-  if(!gaps.length){ el.innerHTML=`<div class="casting-ok">✓ Every perimeter has a manager cast</div>`; return; }
-  el.innerHTML=`<div class="casting-warn" id="stats-casting-link">⚠ ${gaps.length} perimeter${gaps.length>1?"s":""} unstaffed — ${gaps.map(g=>g.label).join(", ")}</div>`;
+  if(!gaps.length){ el.innerHTML=`<div class="casting-ok">✓ Every activity has a manager cast</div>`; return; }
+  el.innerHTML=`<div class="casting-warn" id="stats-casting-link">⚠ ${gaps.length} activit${gaps.length>1?"ies":"y"} with no manager cast — ${gaps.map(g=>g.label).join(", ")}</div>`;
   document.getElementById("stats-casting-link")?.addEventListener("click",()=>showScreen("team"));
 }
 
@@ -2072,16 +2222,226 @@ function renderStatsAIReliability(){
     </div>`).join("");
 }
 
+/* =====================================================
+   Statistics — Allocation tab
+   The panel is split by STEP (Allocation / Compliance), matching the two
+   canonical steps DEC-029 named and the PROCESS cards above, rather than by
+   audience: the same person reads both, but never at the same moment.
+===================================================== */
+/* The Allocation screen's own statuses (STATUS_LABEL there) in pipeline order.
+   REVIEW_REQS mirrors them under its own keys, so the mapping lives here once
+   instead of being re-guessed by each stat that needs it. */
+const ALLOC_STAGES=[
+  {k:"suggested",label:"Incomplete",  cls:"s-neutral"},
+  {k:"toreview", label:"To review",   cls:"s-ia"},
+  {k:"edited",   label:"To validate", cls:"s-accent"},
+  {k:"allocated",label:"Allocated",   cls:"s-ok"},
+];
+/* One stacked bar + legend, shared by the allocation and assignment funnels —
+   they answer the same shape of question at two different steps. */
+function stackedBarHTML(total,segs,route){
+  const pct=n=>total?Math.round(n/total*1000)/10:0;
+  const bar=segs.filter(s=>s.n).map(s=>
+    `<div class="sbar-seg ${s.cls}" style="width:${pct(s.n)}%" title="${s.label} · ${s.n} (${pct(s.n)}%)">${pct(s.n)>=7?s.n:""}</div>`).join("");
+  const legend=segs.map(s=>
+    `<span class="sbar-key"><span class="dot ${s.cls}"></span>${s.label}<b>${s.n}</b><span class="pct">${pct(s.n)}%</span></span>`).join("");
+  return `<div class="sbar"${route?` data-go="${route}"`:""}>${bar}</div><div class="sbar-legend">${legend}</div>`;
+}
+function bindGo(el){ el.querySelectorAll("[data-go]").forEach(n=>n.addEventListener("click",()=>goRoute(n.dataset.go))); }
+
+function renderStatsAllocFunnel(){
+  const el=document.getElementById("stats-alloc-funnel"); if(!el) return;
+  const segs=ALLOC_STAGES.map(s=>Object.assign({},s,{n:REVIEW_REQS.filter(r=>r.status===s.k).length}));
+  el.innerHTML=stackedBarHTML(REVIEW_REQS.length,segs,"revue-documentaire.html");
+  bindGo(el);
+}
+/* Pass 1 -> pass 2 as a descending funnel: the two KPI tiles at the top of the
+   page already carry these numbers, but side by side they never showed the
+   drop-off, which is the only part that tells you where to push. */
+function renderStatsPassFunnel(){
+  const el=document.getElementById("stats-pass-funnel"); if(!el) return;
+  const total=REVIEW_REQS.length;
+  const pass1=REVIEW_REQS.filter(r=>r.status!=="suggested").length;
+  const pass2=REVIEW_REQS.filter(r=>r.status==="allocated").length;
+  const stages=IS_TURNKEY_TENDER
+    ? [{l:"Captured",n:total,c:"var(--line-2)"},{l:"Confirmed by Turnkey",n:pass1,c:"var(--ia)"},{l:"Confirmed by the systems",n:pass2,c:"var(--ok)"}]
+    : [{l:"Captured",n:total,c:"var(--line-2)"},{l:"Allocated",n:pass2,c:"var(--ok)"}];
+  const pct=n=>total?Math.round(n/total*100):0;
+  el.innerHTML=stages.map((s,i)=>{
+    const prev=i?stages[i-1].n:null;
+    const drop=(prev!=null&&prev-s.n>0)?`<div class="pf-drop">↓ ${prev-s.n} still to come through</div>`:"";
+    return drop+`<div class="pf-stage">
+      <div class="pf-head">${s.l} <b>${s.n}</b><span class="pct">${pct(s.n)}%</span></div>
+      <div class="pf-bar"><span style="width:${pct(s.n)}%;background:${s.c}"></span></div>
+    </div>`;
+  }).join("");
+}
+function renderStatsActivityLoad(){
+  const el=document.getElementById("stats-activity-load"); if(!el) return;
+  const rows=CAST_ACTIVITIES.map(a=>{
+    const reqs=REVIEW_REQS.filter(r=>r.activity===a.id);
+    return {code:a.code,total:reqs.length,done:reqs.filter(r=>r.status==="allocated").length};
+  }).filter(r=>r.total).sort((x,y)=>y.total-x.total||x.code.localeCompare(y.code));
+  const max=Math.max(...rows.map(r=>r.total),1);
+  const none=REVIEW_REQS.filter(r=>!r.activity).length;
+  el.innerHTML=rows.map(r=>`
+    <div class="load-row" data-go="revue-documentaire.html" title="${r.code} — ${r.done} of ${r.total} allocated">
+      <span class="load-code">${r.code}</span>
+      <span class="load-bar" style="width:${Math.round(r.total/max*100)}%">
+        <span class="load-seg done" style="width:${Math.round(r.done/r.total*100)}%"></span>
+        <span class="load-seg wip" style="width:${Math.round((r.total-r.done)/r.total*100)}%"></span>
+      </span>
+      <span class="load-n"><b>${r.done}</b>/${r.total} done</span>
+    </div>`).join("")
+    + (none
+      ? `<div class="noact" data-go="revue-documentaire.html"><b>${none} requirement${none>1?"s":""}</b> with no activity set — pass 2 hasn't named one yet.</div>`
+      : `<div class="noact clear">Every requirement has an activity.</div>`);
+  bindGo(el);
+}
+function ringHTML(pct,color,label){
+  const r=26,c=2*Math.PI*r;
+  return `<svg viewBox="0 0 64 64" width="64" height="64">
+    <circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--panel-3)" stroke-width="7"/>
+    <circle cx="32" cy="32" r="${r}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-pct/100)).toFixed(1)}" transform="rotate(-90 32 32)"/>
+    <text x="32" y="37" text-anchor="middle" font-size="15" font-weight="700" fill="var(--text)">${label}</text>
+  </svg>`;
+}
+/* Two honest "how much of this is still a guess" figures. Neither is a failure
+   state — an unconfirmed AI activity is normal early on; the point is that it
+   stops being normal as the deadline approaches. */
+function renderStatsAIQuality(){
+  const el=document.getElementById("stats-ai-quality"); if(!el) return;
+  const total=REVIEW_REQS.length;
+  const proposed=REVIEW_REQS.filter(r=>r.aiActivity);
+  const unconfirmed=proposed.filter(r=>r.status!=="allocated").length;
+  const aiPct=proposed.length?Math.round(unconfirmed/proposed.length*100):0;
+  const weak=REVIEW_REQS.filter(r=>r.obsWeak).length;
+  const weakPct=total?Math.round(weak/total*100):0;
+  el.innerHTML=`<div class="gq-wrap">
+    <div class="gq">${ringHTML(aiPct,"var(--ia)",aiPct+"%")}
+      <div class="gq-lbl">${unconfirmed} of ${proposed.length} AI-proposed<br>activities unconfirmed</div></div>
+    <div class="gq">${ringHTML(weakPct,"var(--warn)",weakPct+"%")}
+      <div class="gq-lbl">${weak} of ${total} OBS derived<br>below the confidence threshold</div></div>
+  </div>`;
+}
+
+/* =====================================================
+   Statistics — Compliance tab
+===================================================== */
+/* DEC-028 — the external declaration is what actually reaches the client, and
+   until now nothing measured the distance between it and the internal verdict.
+   That distance IS the bid risk, so it gets its own figure rather than being
+   inferable only by opening requirements one at a time. */
+function renderStatsExternalGap(){
+  const el=document.getElementById("stats-external-gap"); if(!el) return;
+  const {total,compliant,non,pending}=complianceCounts();
+  const declared=FOLLOWUP_REQS.filter(r=>r.external);
+  const internal=[
+    {label:"Compliant",cls:"s-ok",n:compliant},
+    {label:"Not compliant",cls:"s-warn",n:non},
+    {label:"Pending",cls:"s-neutral",n:pending},
+  ];
+  const external=[
+    {label:"Compliant",cls:"s-ok",n:declared.filter(r=>r.external==="compliant").length},
+    {label:"Not compliant",cls:"s-warn",n:declared.filter(r=>r.external==="not_compliant").length},
+    {label:"Not declared yet",cls:"s-neutral",n:total-declared.length},
+  ];
+  const barOnly=segs=>`<div class="sbar">${segs.filter(s=>s.n).map(s=>{
+    const p=total?Math.round(s.n/total*1000)/10:0;
+    return `<div class="sbar-seg ${s.cls}" style="width:${p}%" title="${s.label} · ${s.n}">${p>=9?s.n:""}</div>`;
+  }).join("")}</div>`;
+  const gap=declared.filter(r=>r.external==="compliant"&&r.compliance!=="compliant");
+  const risks=gap.filter(r=>r.risk).length;
+  const note=gap.length
+    ? `<div class="gap-note" data-go="compliance.html"><b>${gap.length} requirement${gap.length>1?"s":""}</b> declared Compliant to the client while the internal verdict is not — ${risks} of them carr${risks===1?"ies":"y"} an accepted risk.</div>`
+    : `<div class="gap-note clear"><b>✓ No gap</b> — nothing is declared Compliant against an internal verdict that says otherwise.</div>`;
+  el.innerHTML=`
+    <div class="gap-side"><div class="gap-side-h">Internal verdict</div>${barOnly(internal)}</div>
+    <div class="gap-side"><div class="gap-side-h">Declared to the client</div>${barOnly(external)}</div>
+    <div class="sbar-legend">
+      <span class="sbar-key"><span class="dot s-ok"></span>Compliant</span>
+      <span class="sbar-key"><span class="dot s-warn"></span>Not compliant</span>
+      <span class="sbar-key"><span class="dot s-neutral"></span>Pending / not declared</span>
+    </div>${note}`;
+  bindGo(el);
+}
+/* A requirement consolidates only once EVERY assignment has answered, so the
+   useful number is not "how many answers came back" but "what is each of the
+   remaining ones actually waiting on" — three very different queues. */
+function renderStatsConsolidation(){
+  const el=document.getElementById("stats-consolidation"); if(!el) return;
+  const total=FOLLOWUP_REQS.length;
+  const isDone=r=>branchesOf(r).length>0 && branchesOf(r).every(s=>s==="answered");
+  const done=FOLLOWUP_REQS.filter(isDone).length;
+  const open=FOLLOWUP_REQS.filter(r=>!isDone(r));
+  // priority order — a requirement bounced back to the PM is a different
+  // problem from one waiting on the client, even if it is also waiting on both.
+  const rea=open.filter(r=>branchesOf(r).includes("reassignment_needed"));
+  const qa=open.filter(r=>!rea.includes(r)&&branchesOf(r).includes("awaiting_qa"));
+  const wait=open.filter(r=>!rea.includes(r)&&!qa.includes(r));
+  const pct=total?Math.round(done/total*100):0;
+  el.innerHTML=`
+    <div class="cons-top"><span class="big">${done}/${total}</span><span>requirements fully consolidated · ${pct}%</span></div>
+    <div class="cons-bar"><span style="width:${pct}%"></span></div>
+    <div class="cons-split">
+      <div class="cons-item wait" data-go="compliance.html"><div class="n">${wait.length}</div><div class="k">waiting on a contributor</div></div>
+      <div class="cons-item qa" data-go="qa.html"><div class="n">${qa.length}</div><div class="k">waiting on the client (Q&amp;A)</div></div>
+      <div class="cons-item rea" data-go="revue-documentaire.html"><div class="n">${rea.length}</div><div class="k">bounced back — needs reallocation</div></div>
+    </div>`;
+  bindGo(el);
+}
+const BST_STAGES=[
+  {k:"proposed",           label:"Proposed",            cls:"s-neutral"},
+  {k:"assigned",           label:"Assigned",            cls:"s-human"},
+  {k:"awaiting_answer",    label:"Awaiting answer",     cls:"s-ia"},
+  {k:"awaiting_qa",        label:"Awaiting Q&A",        cls:"s-accent"},
+  {k:"reassignment_needed",label:"Reassignment needed", cls:"s-warn"},
+  {k:"answered",           label:"Answered",            cls:"s-ok"},
+];
+function renderStatsAssignFunnel(){
+  const el=document.getElementById("stats-assign-funnel"); if(!el) return;
+  const all=FOLLOWUP_REQS.flatMap(branchesOf);
+  const segs=BST_STAGES.map(s=>Object.assign({},s,{n:all.filter(x=>x===s.k).length}));
+  el.innerHTML=stackedBarHTML(all.length,segs,"compliance.html");
+  bindGo(el);
+}
+const LATE_WARN_DAYS=7;
+function renderStatsLate(){
+  const el=document.getElementById("stats-late"); if(!el) return;
+  if(!OVERDUE_BRANCHES.length){ el.innerHTML=`<div class="late-empty">✓ Nobody is late right now.</div>`; return; }
+  const by=new Map();
+  OVERDUE_BRANCHES.forEach(o=>{ by.set(o.expert,(by.get(o.expert)||[]).concat(o)); });
+  const rows=[...by.entries()].map(([name,items])=>({name,n:items.length,days:Math.max(...items.map(i=>i.days))}))
+    .sort((a,b)=>b.days-a.days);
+  const max=Math.max(...rows.map(r=>r.days),1);
+  el.innerHTML=rows.map(r=>`
+    <div class="late-row" title="${r.name} — ${r.n} assignment${r.n>1?"s":""} overdue, oldest ${r.days} days">
+      <span class="late-name">${r.name}${r.n>1?` <small>· ${r.n} assignments</small>`:""}</span>
+      <span class="late-bar"><span class="${r.days>=LATE_WARN_DAYS?"over":""}" style="width:${Math.round(r.days/max*100)}%"></span></span>
+      <span class="late-days">${r.days}d</span>
+    </div>`).join("");
+}
+
 function renderStatsPanel(){
-  renderStatsBottlenecks();
-  renderStatsComplianceBar("stats-comp-bar","stats-comp-legend");
-  renderStatsComplianceBar("stats-comp-bar2","stats-comp-legend2");
-  renderStatsQABlocked();
+  // Allocation tab
+  renderStatsAllocFunnel();
+  renderStatsPassFunnel();
+  renderStatsActivityLoad();
+  renderStatsAIQuality();
   renderStatsCasting();
   renderStatsInvalidated();
+  renderStatsAIReliability();
   renderStatsTrajectory();
   renderStatsProgressDeadline();
-  renderStatsAIReliability();
+  // Compliance tab
+  renderStatsComplianceBar("stats-comp-bar","stats-comp-legend");
+  renderStatsExternalGap();
+  renderStatsConsolidation();
+  renderStatsAssignFunnel();
+  renderStatsLate();
+  renderStatsQABlocked();
+  renderStatsBottlenecks();
 }
 renderStatsPanel();
 
