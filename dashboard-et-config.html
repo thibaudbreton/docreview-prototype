@@ -166,17 +166,22 @@ html[data-theme="light"] .logo-mark-light{display:block}
    and the progress bar goes — the figure beside the name already carries it. */
 .support-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3);margin-bottom:26px}
 @media(max-width:1000px){.support-rail{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:620px){.support-rail{grid-template-columns:1fr}}
+@media(max-width:620px){.support-rail{grid-template-columns:minmax(0,1fr)}}
 .phase.is-support{min-height:0;align-items:center;padding:var(--space-2) var(--space-3);background:var(--panel-2)}
 .phase.is-support:hover{transform:none;background:var(--panel-3)}
 .phase.is-support .ph-num{width:24px;height:24px;font-size:var(--text-sm)}
 .phase.is-support .ph-num.transversal{font-size:var(--text-base)}
+/* Everything on the line must be able to shrink, or it pushes the card past
+   its grid track and the whole rail overflows sideways. The figure gives way
+   first (shrink 3), the name only if that wasn't enough (shrink 1) — and both
+   ellipsis rather than overflow. Badge and arrow never shrink: they are the
+   two things worth keeping whole. */
 .phase.is-support .ph-info{display:flex;align-items:baseline;gap:var(--space-2);min-width:0}
-.phase.is-support .ph-name{font-size:var(--text-base);white-space:nowrap}
+.phase.is-support .ph-name{font-size:var(--text-base);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:4ch}
 .phase.is-support .ph-desc,.phase.is-support .ph-bar{display:none}
-.phase.is-support .ph-stat{margin-top:0;font-size:var(--text-xs);gap:4px;min-width:0}
+.phase.is-support .ph-stat{margin-top:0;font-size:var(--text-xs);gap:4px;min-width:0;flex:1 3 auto}
 .phase.is-support .ph-stat span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.phase.is-support .ph-stat .big{font-size:var(--text-sm)}
+.phase.is-support .ph-stat .big{font-size:var(--text-sm);flex-shrink:0}
 .phase.is-support .ph-badge{position:static;align-self:center;flex-shrink:0}
 .phase.is-support .ph-open-btn{position:static;align-self:center;flex-shrink:0;border:none;background:none;padding:0;color:var(--text-3)}
 .phase.is-support:hover .ph-open-btn{border:none;background:none;color:var(--accent)}
