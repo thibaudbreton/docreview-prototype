@@ -120,11 +120,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rail-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
 .rail-label span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3);opacity:.8}
 /* §2.2 — KPI row above navigation */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
-.kpi-row.kpi-3{grid-template-columns:repeat(3,1fr)}
-.kpi-tile{border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);padding:var(--space-3) var(--space-4)}
-.kpi-tile .kpi-num{font-size:var(--text-xl);font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
-.kpi-tile .kpi-lbl{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
 /* Dashboard redesign — the process is TWO steps, and the dashboard's job on
    arrival is to make it obvious which one to click. So the rail carries only
    Allocation and Compliance, full size; Versions & Q&A joined Team casting in
@@ -164,15 +159,29 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .phase:hover .ph-open-btn{border-color:var(--accent);background:var(--accent-soft)}
 /* support rail — same molecule, deliberately quieter: no big CTA competing with
    the two steps, badge and arrow inline instead of pinned to the corners. */
-.support-rail{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3);margin-bottom:26px}
-@media(max-width:1000px){.support-rail{grid-template-columns:repeat(2,1fr)}}
-.phase.is-support{min-height:0;align-items:center;padding:var(--space-3) var(--space-4);background:var(--panel-2)}
+/* One line per card, not four. These three are entry points, not progress
+   reports: at 115px tall the rail could only sit above the fold by pushing the
+   action list off it, and below the fold it stopped being reachable at all.
+   Name and figure share one baseline; the description moves to the row's title
+   and the progress bar goes — the figure beside the name already carries it. */
+.support-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3);margin-bottom:26px}
+@media(max-width:1000px){.support-rail{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.support-rail{grid-template-columns:minmax(0,1fr)}}
+.phase.is-support{min-height:0;align-items:center;padding:var(--space-2) var(--space-3);background:var(--panel-2)}
+.phase.is-support:hover{transform:none;background:var(--panel-3)}
 .phase.is-support .ph-num{width:24px;height:24px;font-size:var(--text-sm)}
 .phase.is-support .ph-num.transversal{font-size:var(--text-base)}
-.phase.is-support .ph-name{font-size:var(--text-base)}
-.phase.is-support .ph-stat{margin-top:3px;font-size:var(--text-xs)}
-.phase.is-support .ph-stat .big{font-size:var(--text-base)}
-.phase.is-support .ph-bar{margin-top:6px;height:4px}
+/* Everything on the line must be able to shrink, or it pushes the card past
+   its grid track and the whole rail overflows sideways. The figure gives way
+   first (shrink 3), the name only if that wasn't enough (shrink 1) — and both
+   ellipsis rather than overflow. Badge and arrow never shrink: they are the
+   two things worth keeping whole. */
+.phase.is-support .ph-info{display:flex;align-items:baseline;gap:var(--space-2);min-width:0}
+.phase.is-support .ph-name{font-size:var(--text-base);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:4ch}
+.phase.is-support .ph-desc,.phase.is-support .ph-bar{display:none}
+.phase.is-support .ph-stat{margin-top:0;font-size:var(--text-xs);gap:4px;min-width:0;flex:1 3 auto}
+.phase.is-support .ph-stat span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.phase.is-support .ph-stat .big{font-size:var(--text-sm);flex-shrink:0}
 .phase.is-support .ph-badge{position:static;align-self:center;flex-shrink:0}
 .phase.is-support .ph-open-btn{position:static;align-self:center;flex-shrink:0;border:none;background:none;padding:0;color:var(--text-3)}
 .phase.is-support:hover .ph-open-btn{border:none;background:none;color:var(--accent)}
@@ -189,9 +198,13 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .stats-tab.on{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .stats-sec{display:none}
 .stats-sec.on{display:block}
-.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4)}
+/* align-items:start — a short card (Casting gaps, Compliance profile) must size
+   to its content instead of being stretched to its row-mate's height, which
+   left 100-140px of empty box under it. */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4);align-items:start}
+@media (max-width:700px){.stats-grid{grid-template-columns:1fr}}
 .stat-block{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4)}
-.stat-block.stat-trajectory,.stat-block.stat-bottlenecks{grid-column:1/-1}
+.stat-block.stat-wide,.stat-block.stat-bottlenecks{grid-column:1/-1}
 .stat-h{font-size:var(--text-sm);font-weight:600;margin-bottom:4px}
 .stat-sub{font-size:var(--text-xs);color:var(--text-3);margin-bottom:12px}
 
@@ -227,6 +240,92 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .ai-rel-bar{height:8px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
 .ai-rel-bar span{display:block;height:100%;background:var(--accent);border-radius:var(--radius-xs)}
 .ai-rel-pct{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
+
+/* --- shared stacked bar (allocation funnel, assignment funnel) --- */
+.sbar{display:flex;height:26px;border-radius:var(--radius-md);overflow:hidden;background:var(--panel);margin-bottom:12px;cursor:pointer}
+.sbar-seg{display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:700;color:#fff;transition:width .5s,filter .12s}
+.sbar:hover .sbar-seg{filter:brightness(1.12)}
+.sbar-seg.s-neutral{background:var(--line-2);color:var(--text-2)}
+.sbar-seg.s-ia{background:var(--ia)}
+.sbar-seg.s-accent{background:var(--accent)}
+.sbar-seg.s-ok{background:var(--ok)}
+.sbar-seg.s-warn{background:var(--warn)}
+.sbar-seg.s-human{background:var(--human)}
+/* Each key is a 4-column grid, not a flex row: the count used to be pushed to
+   the far right with margin-left:auto, which detached it from its own label and
+   sat it against the NEXT key's dot — six keys read as one run-on sentence. */
+.sbar-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(186px,1fr));gap:var(--space-2) var(--space-4)}
+.sbar-key{display:flex;align-items:center;gap:7px;min-width:0;font-size:var(--text-sm);color:var(--text-2)}
+.sbar-key .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sbar-key .dot{width:9px;height:9px;border-radius:var(--radius-xs);flex-shrink:0}
+.dot.s-neutral{background:var(--line-2)}.dot.s-ia{background:var(--ia)}
+.dot.s-accent{background:var(--accent)}.dot.s-ok{background:var(--ok)}.dot.s-warn{background:var(--warn)}
+.dot.s-human{background:var(--human)}
+.sbar-key b{font-variant-numeric:tabular-nums;color:var(--text)}
+.sbar-key .pct{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* --- pass 1 -> pass 2 funnel --- */
+.pf-stage{margin-bottom:var(--space-2)}
+.pf-head{display:flex;align-items:baseline;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2);margin-bottom:3px}
+.pf-head b{font-size:var(--text-base);color:var(--text);font-variant-numeric:tabular-nums}
+.pf-head .pct{margin-left:auto;font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums}
+.pf-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden}
+.pf-bar span{display:block;height:100%;border-radius:var(--radius-xs);transition:width .5s}
+.pf-drop{font-size:var(--text-xs);color:var(--warn);margin:0 0 var(--space-2) 2px}
+
+/* --- load by activity --- */
+.load-row{display:grid;grid-template-columns:52px 1fr 66px;align-items:center;gap:var(--space-3);padding:3px 0;cursor:pointer}
+.load-row:hover .load-code{color:var(--text)}
+.load-code{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-3);transition:color .12s}
+.load-code.none{font-family:var(--font-ui);font-style:italic;font-weight:500}
+.load-bar{display:flex;height:14px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden}
+.load-seg{transition:width .5s}
+.load-seg.done{background:var(--ok)}
+.load-seg.wip{background:var(--line-2)}
+.load-n{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
+.load-n b{color:var(--text)}
+.noact{margin-top:10px;padding:var(--space-2) var(--space-3);border:1px dashed var(--line-2);border-radius:var(--radius-md);font-size:var(--text-sm);color:var(--text-2);cursor:pointer}
+.noact b{color:var(--ia)}
+.noact.clear{color:var(--text-3);border-style:solid;cursor:default}
+
+/* --- derivation-quality ring gauges --- */
+.gq-wrap{display:flex;gap:var(--space-4);justify-content:space-around}
+.gq{text-align:center;flex:1}
+.gq svg{display:block;margin:0 auto}
+.gq-lbl{font-size:var(--text-xs);color:var(--text-3);line-height:1.35;margin-top:var(--space-2)}
+
+/* --- internal vs declared --- */
+.gap-side{margin-bottom:10px}
+.gap-side-h{font-size:var(--text-xs);color:var(--text-3);margin-bottom:4px}
+.gap-note{margin-top:10px;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);line-height:1.45;background:var(--warn-soft);color:var(--text-2);cursor:pointer}
+.gap-note b{color:var(--warn)}
+.gap-note.clear{background:var(--ok-soft);cursor:default}
+.gap-note.clear b{color:var(--ok)}
+
+/* --- consolidation --- */
+.cons-top{display:flex;align-items:baseline;gap:var(--space-2);margin-bottom:var(--space-2)}
+.cons-top .big{font-size:var(--text-xl);font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.cons-top span{font-size:var(--text-sm);color:var(--text-2)}
+.cons-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden;margin-bottom:12px}
+.cons-bar span{display:block;height:100%;background:var(--ok);border-radius:var(--radius-xs);transition:width .5s}
+.cons-split{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--space-2)}
+.cons-item{padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--panel-3);cursor:pointer;transition:filter .12s}
+.cons-item:hover{filter:brightness(1.1)}
+.cons-item .n{font-size:var(--text-lg);font-weight:700;font-variant-numeric:tabular-nums}
+.cons-item .k{font-size:var(--text-xs);color:var(--text-3);line-height:1.35}
+.cons-item.wait .n{color:var(--ia)}
+.cons-item.qa .n{color:var(--accent)}
+.cons-item.rea .n{color:var(--warn)}
+
+/* --- late by contributor --- */
+.late-row{display:grid;grid-template-columns:1fr 84px 52px;align-items:center;gap:var(--space-3);padding:4px 0}
+.late-name{font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.late-name small{color:var(--text-3)}
+.late-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden}
+.late-bar span{display:block;height:100%;border-radius:var(--radius-xs);background:var(--ia);transition:width .5s}
+.late-bar span.over{background:var(--warn)}
+.late-days{font-size:var(--text-xs);font-weight:600;color:var(--text-2);text-align:right;font-variant-numeric:tabular-nums}
+.late-empty{font-size:var(--text-sm);color:var(--ok)}
 
 /* main columns */
 .dash-main{display:grid;grid-template-columns:1.55fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);align-items:start}
@@ -555,7 +654,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         <div>
           <div class="hero-kicker">Tender project</div>
           <h1 id="dash-title">Energy Monitoring System</h1>
-          <div class="meta"><span>BO-ID <b id="dash-ref">STB-2026</b></span><span id="dash-line-sub">Multi-site EMS</span><span><b id="dash-line">SIG</b></span><span>Bid Director: <b>Thibaud Breton</b></span></div>
+          <div class="meta"><span>BO-ID <b id="dash-ref">STB-2026</b></span><span id="dash-line-sub">Multi-site EMS</span><span><b id="dash-line">SIG</b></span><span><b id="dash-total-reqs">14</b> requirements</span><span>Bid Director: <b>Thibaud Breton</b></span></div>
         </div>
         <div class="deadline warn"><div class="d-num">23</div><div class="d-lbl">days to submission</div></div>
       </div>
@@ -569,12 +668,14 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         phase, rather than data of its own. Team casting above <i>is</i> this project's own, from the creation wizard.
       </div>
 
-      <!-- §2.2 — KPI block above navigation. Four counts on a Turnkey tender
-           (pass-1/pass-2 per TICKET-two-pass-allocation.md are genuinely
-           different questions — Turnkey's activity-level distribution vs. the
-           system-specific model each activity routes into); three, no
-           placeholder, on a non-Turnkey one, which skips pass 1 entirely. -->
-      <div class="kpi-row" id="tender-kpi-row"></div>
+      <!-- §2.2's KPI row is gone. Its four tiles (total / confirmed by Turnkey /
+           confirmed by the systems / compliance filled in) restated numbers the
+           two phase cards below already carry as their own progress stat, 80px
+           further down — the same figure twice within one glance. The pass-1 vs
+           pass-2 split the row existed to expose now has a place that actually
+           explains it: the Pass 1 → pass 2 funnel in Statistics › Allocation.
+           The one figure with no other home, the tender's total volume, moved
+           into the hero line above. -->
 
       <!-- phase rail — the two steps, and only the two steps -->
       <div class="rail-label">Process <span>· two steps · click one to open it</span></div>
@@ -604,6 +705,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         </div>
       </div>
 
+
       <!-- Support rail. Neither of these is a step: both are open from day one,
            run alongside the two steps and have no position in the sequence.
            Versions & Q&A used to sit in the phase rail as a third card, which
@@ -612,7 +714,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
            Same .phase molecule, .is-support strips it back visually. -->
       <div class="rail-label">Always open <span>· runs alongside, in no particular order</span></div>
       <div class="support-rail">
-        <div class="phase is-support" id="ph-team" style="cursor:pointer">
+        <div class="phase is-support" id="ph-team" style="cursor:pointer" title="Team casting — assign a manager and staff to each activity.">
           <div class="ph-num transversal">◉</div>
           <div class="ph-info">
             <div class="ph-name">Team casting</div>
@@ -623,24 +725,22 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <span class="ph-badge wait" id="ph-team-badge">1 pending</span>
           <span class="ph-open-btn">→</span>
         </div>
-        <a class="phase is-support" id="ph-documents" href="javascript:parent.route('documents')">
+        <a class="phase is-support" id="ph-documents" href="javascript:parent.route('documents')" title="Documents &amp; versions — upload tender documents and track what changed between versions.">
           <div class="ph-num transversal">▤</div>
           <div class="ph-info">
             <div class="ph-name">Documents &amp; versions</div>
             <div class="ph-desc">Upload tender documents and track what changed between versions.</div>
-            <div class="ph-stat"><span class="big">3</span><span>documents · 1 processing</span></div>
+            <div class="ph-stat"><span class="big">3</span><span>docs · 1 processing</span></div>
           </div>
-          <span class="ph-badge wait">Open</span>
           <span class="ph-open-btn">→</span>
         </a>
-        <a class="phase is-support" id="ph-qa" href="javascript:parent.route('qa')">
+        <a class="phase is-support" id="ph-qa" href="javascript:parent.route('qa')" title="Q&amp;A — ask the issuer questions and track their answers.">
           <div class="ph-num transversal">↻</div>
           <div class="ph-info">
             <div class="ph-name">Q&amp;A</div>
             <div class="ph-desc">Ask the issuer questions and track their answers.</div>
             <div class="ph-stat"><span class="big">5</span><span>questions · 1 answered</span></div>
           </div>
-          <span class="ph-badge wait">Open</span>
           <span class="ph-open-btn">→</span>
         </a>
       </div>
@@ -709,19 +809,12 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             <div class="feed" id="comments-feed"></div>
           </div>
 
-          <div class="card">
-            <h3>Compliance</h3>
-            <div class="comp-bar">
-              <div class="comp-seg compliant" id="compseg-compliant" style="width:25%">3</div>
-              <div class="comp-seg non" id="compseg-non" style="width:8.3%">1</div>
-              <div class="comp-seg pending" id="compseg-pending" style="width:66.7%">8</div>
-            </div>
-            <div class="comp-legend">
-              <span><span class="dot compliant"></span>Compliant · <span id="compleg-compliant">3</span></span>
-              <span><span class="dot non"></span>Non-compliant · <span id="compleg-non">1</span></span>
-              <span><span class="dot pending"></span>Awaiting · <span id="compleg-pending">8</span></span>
-            </div>
-          </div>
+          <!-- The sidebar's own Compliance bar lived here and drew exactly the
+               same segments and legend as Statistics › Compliance › Compliance
+               profile, ~400px below it — the identical chart twice on one page.
+               Statistics keeps it, where it sits next to internal-vs-declared
+               and gains the context that makes it worth reading; at-a-glance
+               compliance progress is already on the Compliance phase card. -->
 
           <div class="card">
             <h3>Contributors</h3>
@@ -734,38 +827,47 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
         </aside>
       </div>
 
-      <!-- SPEC-dashboard-statistics.md — statistics panel. Two tabs for the two audiences
-           the spec splits on: the PM's operational "what's blocking me" and the
-           stakeholder's comparative "is this healthy". Always visible regardless of
-           allocation state, per the spec's "always show the unknown" principle — pending
-           is the honest majority early in a tender, not a state to hide. -->
+      <!-- SPEC-dashboard-statistics.md — statistics panel. Split by STEP, not by
+           audience: one tab per canonical step (DEC-029), matching the PROCESS cards
+           above and the two screens a reader would open next. The spec's original
+           PM/stakeholder split collapsed both steps into each tab, which meant the
+           same compliance bar was drawn twice and no tab ever answered "where is
+           allocation stuck". Always visible regardless of allocation state, per the
+           spec's "always show the unknown" principle — pending is the honest majority
+           early in a tender, not a state to hide. -->
       <div class="card stats-panel">
         <div class="stats-head">
           <h3>Statistics</h3>
           <div class="stats-tabs">
-            <button class="stats-tab on" data-stab="pm">For you</button>
-            <button class="stats-tab" data-stab="stake">For stakeholders</button>
+            <button class="stats-tab on" data-stab="alloc">Allocation</button>
+            <button class="stats-tab" data-stab="compl">Compliance</button>
           </div>
         </div>
 
-        <div class="stats-sec on" data-stab="pm">
+        <div class="stats-sec on" data-stab="alloc">
           <div class="stats-grid">
-            <div class="stat-block stat-bottlenecks">
-              <div class="stat-h">Bottlenecks by perimeter</div>
-              <div class="stat-sub">Awaiting a contributor answer — ranked by age of the oldest, not by count</div>
-              <div id="stats-bottlenecks" class="bn-list"></div>
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Allocation funnel</div>
+              <div class="stat-sub">Where the requirements are sitting — not just how many are done</div>
+              <div id="stats-alloc-funnel"></div>
             </div>
 
             <div class="stat-block">
-              <div class="stat-h">Compliance profile</div>
-              <div class="comp-bar" id="stats-comp-bar"></div>
-              <div class="comp-legend" id="stats-comp-legend"></div>
+              <div class="stat-h">Pass 1 → pass 2</div>
+              <div class="stat-sub">Where the drop-off happens between the two confirmations</div>
+              <div id="stats-pass-funnel"></div>
             </div>
 
             <div class="stat-block">
-              <div class="stat-h">Blocked on the client</div>
-              <div class="stat-sub">Awaiting Q&amp;A — not people to chase, a client to wait for</div>
-              <div id="stats-qa-blocked" class="qa-blocked-list"></div>
+              <div class="stat-h">Derivation quality</div>
+              <div class="stat-sub">What the AI proposed and nobody has confirmed yet</div>
+              <div id="stats-ai-quality"></div>
+            </div>
+
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Load by activity</div>
+              <div class="stat-sub">How the requirements spread across activities, and how much of each is allocated</div>
+              <div id="stats-activity-load"></div>
             </div>
 
             <div class="stat-block">
@@ -778,30 +880,62 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
               <div id="stats-invalidated"></div>
             </div>
 
-            <div class="stat-block stat-trajectory">
-              <div class="stat-h">Trajectory to deadline</div>
-              <div id="stats-trajectory"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="stats-sec" data-stab="stake">
-          <div class="stats-grid">
-            <div class="stat-block">
-              <div class="stat-h">Compliance profile</div>
-              <div class="comp-bar" id="stats-comp-bar2"></div>
-              <div class="comp-legend" id="stats-comp-legend2"></div>
-            </div>
-
-            <div class="stat-block">
-              <div class="stat-h">Progress against deadline</div>
-              <div id="stats-progress-deadline"></div>
-            </div>
-
             <div class="stat-block stat-ai-reliability">
               <div class="stat-h">AI reliability — correction rate by field</div>
               <div class="stat-sub">Share of AI-proposed values a human subsequently changed</div>
               <div id="stats-ai-reliability"></div>
+            </div>
+
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Trajectory to deadline</div>
+              <div id="stats-trajectory"></div>
+              <div id="stats-progress-deadline"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-sec" data-stab="compl">
+          <div class="stats-grid">
+            <div class="stat-block">
+              <div class="stat-h">Compliance profile</div>
+              <div class="comp-bar" id="stats-comp-bar"></div>
+              <div class="comp-legend" id="stats-comp-legend"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Internal vs declared to the client</div>
+              <div class="stat-sub">What we found, against what the client is told — the gap is the risk</div>
+              <div id="stats-external-gap"></div>
+            </div>
+
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Consolidation</div>
+              <div class="stat-sub">A requirement consolidates only once every one of its assignments has answered</div>
+              <div id="stats-consolidation"></div>
+            </div>
+
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Assignment funnel</div>
+              <div class="stat-sub">Every assignment across the tender, by where it stands</div>
+              <div id="stats-assign-funnel"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Late by contributor</div>
+              <div class="stat-sub">Who to chase, and how long they have been sitting on it</div>
+              <div id="stats-late"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Blocked on the client</div>
+              <div class="stat-sub">Awaiting Q&amp;A — not people to chase, a client to wait for</div>
+              <div id="stats-qa-blocked" class="qa-blocked-list"></div>
+            </div>
+
+            <div class="stat-block stat-bottlenecks">
+              <div class="stat-h">Bottlenecks by activity</div>
+              <div class="stat-sub">Awaiting a contributor answer — ranked by age of the oldest, not by count</div>
+              <div id="stats-bottlenecks" class="bn-list"></div>
             </div>
           </div>
         </div>
@@ -1718,14 +1852,19 @@ document.getElementById("cast-simulate-scale").addEventListener("click",function
 
 /* B2 — casting progress indicator (dashboard phase card). Reflects the same
    ROSTER/coverage model as the Team screen above, not the separate Config
-   EXPERTS list, so the two surfaces never tell a different story. */
+   EXPERTS list, so the two surfaces never tell a different story.
+   The measure is "has anyone at all been staffed on this activity", NOT the
+   Team screen's own "every perimeter covered": since DEC-036 made the
+   perimeter list one shared set of six teams, full coverage means staffing
+   all six on every activity, which no real tender does — the card sat at 0/7
+   permanently and read as broken. Full coverage still drives the Team
+   screen's own per-activity badges, where the detail belongs. */
 function renderCastingProgress(){
-  const castable=CAST_ACTIVITIES.filter(a=>a.managerId);
-  const done=castable.filter(a=>activityCoverage(a).kind==="staffed").length;
   const total=CAST_ACTIVITIES.length;
+  const done=CAST_ACTIVITIES.filter(a=>a.managerId&&rosterOfActivity(a.id).length>0).length;
   const pct=total?Math.round(done/total*100):100;
   document.getElementById("ph-team-n").textContent=done;
-  document.getElementById("ph-team-txt").textContent=`/ ${total} activities fully staffed`;
+  document.getElementById("ph-team-txt").textContent=`/ ${total} staffed`;
   document.getElementById("ph-team-bar").style.width=pct+"%";
   const badge=document.getElementById("ph-team-badge");
   const pending=total-done;
@@ -1783,50 +1922,63 @@ document.querySelectorAll('[data-redact]').forEach(b=>b.addEventListener("click"
    Allocation phase card, the "Requirements validated" health stat, the Compliance
    breakdown and the Response rate instead of typing the resulting numbers into the
    markup, so they can't silently drift from the screens that own that data. */
+/* `activity` mirrors the primary activity each requirement is routed to (the
+   16-code list shared with revue-documentaire.html's TYPO since DEC-032) —
+   null means pass 2 hasn't named one yet, which the Allocation tab shows as
+   its own figure rather than hiding. `aiActivity` marks an activity the AI
+   proposed, `obsWeak` an OBS derived below the confidence threshold: both
+   feed the derivation-quality gauges, and both are properties the Allocation
+   screen really carries (perimAI / OBS_THRESHOLD). */
 const REVIEW_REQS=[
-  {id:"SRM-00001",status:"toreview"},{id:"SRM-00002",status:"toreview"},
-  {id:"SRM-00003",status:"allocated"},{id:"SRM-00004",status:"allocated"},
-  {id:"SRM-00005",status:"toreview"},{id:"SRM-00006",status:"suggested"},
-  {id:"SRM-00007",status:"suggested"},{id:"SRM-00008",status:"suggested"},
-  {id:"SRM-00009",status:"allocated"},{id:"SRM-00010",status:"edited"},
-  {id:"SRM-00011",status:"suggested"},{id:"SRM-00012",status:"allocated"},
-  {id:"SRM-00013",status:"toreview"},{id:"SRM-00014",status:"allocated"},
+  {id:"SRM-00001",status:"toreview", activity:"sig"},
+  {id:"SRM-00002",status:"toreview", activity:"sig"},
+  {id:"SRM-00003",status:"allocated",activity:"sig"},
+  {id:"SRM-00004",status:"allocated",activity:"ocs", aiActivity:true},
+  {id:"SRM-00005",status:"toreview", activity:"sig", obsWeak:true},
+  {id:"SRM-00006",status:"suggested",activity:"trk", aiActivity:true},
+  {id:"SRM-00007",status:"suggested",activity:"sig", aiActivity:true},
+  {id:"SRM-00008",status:"suggested",activity:"com", aiActivity:true},
+  {id:"SRM-00009",status:"allocated",activity:"trk", aiActivity:true,obsWeak:true},
+  {id:"SRM-00010",status:"edited",   activity:"trk", aiActivity:true},
+  {id:"SRM-00011",status:"suggested",activity:null,  aiActivity:true,obsWeak:true},
+  {id:"SRM-00012",status:"allocated",activity:"sig"},
+  {id:"SRM-00013",status:"toreview", activity:"rams",aiActivity:true,obsWeak:true},
+  {id:"SRM-00014",status:"allocated",activity:"pos"},
 ];
+/* `branchStatuses` replaces the old branchesAnswered/branchesTotal pair: same
+   information, but per assignment, so the assignment funnel and the "what is
+   consolidation actually waiting on" split can be derived rather than typed.
+   Values are compliance.html's own BST keys. `external`/`risk` mirror the
+   external declaration and its accepted-risk note (DEC-028) — the only place
+   the gap between what we found and what the client is told gets measured. */
 const FOLLOWUP_REQS=[
   // TD3 — SRM-00001/SRM-00002 now exist in compliance.html's REQS; kept in sync here.
-  {id:"SRM-00001",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00002",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00003",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"SRM-00004",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"SRM-00005",compliance:null,branchesAnswered:1,branchesTotal:3},
-  {id:"SRM-00006",compliance:null,branchesAnswered:0,branchesTotal:1,overdueBranches:1},
-  {id:"SRM-00007",compliance:"not_compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"SRM-00008",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00009",compliance:"compliant",branchesAnswered:1,branchesTotal:1},
-  {id:"SRM-00010",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00011",compliance:null,branchesAnswered:1,branchesTotal:2},
-  {id:"SRM-00012",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00013",compliance:null,branchesAnswered:0,branchesTotal:1},
-  {id:"SRM-00014",compliance:null,branchesAnswered:0,branchesTotal:1},
+  {id:"SRM-00001",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
+  {id:"SRM-00002",compliance:null,            branchStatuses:["proposed"]},
+  {id:"SRM-00003",compliance:"compliant",     branchStatuses:["answered"],external:"compliant"},
+  {id:"SRM-00004",compliance:"compliant",     branchStatuses:["answered"]},
+  {id:"SRM-00005",compliance:null,            branchStatuses:["answered","awaiting_answer","reassignment_needed"],external:"compliant",risk:true},
+  {id:"SRM-00006",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
+  {id:"SRM-00007",compliance:"not_compliant", branchStatuses:["answered"],external:"compliant",risk:true},
+  {id:"SRM-00008",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
+  {id:"SRM-00009",compliance:"compliant",     branchStatuses:["answered"]},
+  {id:"SRM-00010",compliance:null,            branchStatuses:["awaiting_qa"]},
+  {id:"SRM-00011",compliance:null,            branchStatuses:["answered","awaiting_answer"],overdueBranches:1},
+  {id:"SRM-00012",compliance:null,            branchStatuses:["awaiting_qa"]},
+  {id:"SRM-00013",compliance:null,            branchStatuses:["awaiting_qa"]},
+  {id:"SRM-00014",compliance:null,            branchStatuses:["awaiting_qa"]},
 ];
-/* §2.2 — Turnkey-ness read from the same project object accueil.html seeds
+const branchesOf=r=>r.branchStatuses||[];
+const answeredOf=r=>branchesOf(r).filter(s=>s==="answered").length;
+/* Turnkey-ness read from the same project object accueil.html seeds
    (CURRENT_PROJECT.line) rather than a second, disconnected flag — a real
-   project field, not invented for this KPI row alone. No project (this
-   screen opened standalone) defaults to Turnkey, matching STB-2026's own
-   demo. */
+   project field. No project (this screen opened standalone) defaults to
+   Turnkey, matching STB-2026's own demo. Now consumed by the Pass 1 → pass 2
+   funnel in Statistics, which is where that distinction is actually explained. */
 const IS_TURNKEY_TENDER = !CURRENT_PROJECT || CURRENT_PROJECT.line==="Turnkey";
-function renderTenderKPIs(){
-  const el=document.getElementById("tender-kpi-row"); if(!el) return;
-  const total=REVIEW_REQS.length;
-  const pass1=REVIEW_REQS.filter(r=>r.status!=="suggested").length;
-  const pass2=REVIEW_REQS.filter(r=>r.status==="allocated").length;
-  const complianceFilled=FOLLOWUP_REQS.filter(r=>r.compliance!=null).length;
-  const tiles=[{n:total,l:"Total requirements"}];
-  if(IS_TURNKEY_TENDER) tiles.push({n:pass1,l:"Confirmed by Turnkey"});
-  tiles.push({n:pass2,l:"Confirmed by the systems"});
-  tiles.push({n:complianceFilled,l:"Compliance filled in (internal)"});
-  el.className="kpi-row"+(IS_TURNKEY_TENDER?"":" kpi-3");
-  el.innerHTML=tiles.map(t=>`<div class="kpi-tile"><div class="kpi-num">${t.n}</div><div class="kpi-lbl">${t.l}</div></div>`).join("");
+function renderHeroVolume(){
+  const el=document.getElementById("dash-total-reqs"); if(!el) return;
+  el.textContent=REVIEW_REQS.length;
 }
 function renderReviewKPIs(){
   const total=REVIEW_REQS.length;
@@ -1837,22 +1989,18 @@ function renderReviewKPIs(){
   document.getElementById("ph-review-bar").style.width=pct+"%";
   document.getElementById("att-review-sub").textContent=`${total-validated} requirements still to validate`;
 }
-function renderComplianceKPIs(){
-  const {total,compliant,non,pending}=complianceCounts();
-  const pct=n=>total?Math.round(n/total*1000)/10+"%":"0%";
-  [["compliant",compliant],["non",non],["pending",pending]].forEach(([k,n])=>{
-    document.getElementById(`compseg-${k}`).style.width=pct(n);
-    document.getElementById(`compseg-${k}`).textContent=n||"";
-    document.getElementById(`compleg-${k}`).textContent=n;
-  });
-}
 /* TB2 — mirrors the activity-level detail behind compliance.html's
    isOverB() (awaiting_answer && age >= OVERDUE_DAYS): only a branch actually waiting
    on its contributor can be overdue, not one blocked on the issuer or bounced back
    for reassignment. Drives the "contributor response overdue" attention card instead
    of a hand-typed name/id/day-count that can silently point at the wrong person. */
 const OVERDUE_BRANCHES=[
+  // oldest first — renderOverdueCard leads with [0], and the Compliance tab's
+  // "late by contributor" chart groups these by person.
+  {reqId:"SRM-00001",expert:"Karim Benali",days:9},
+  {reqId:"SRM-00008",expert:"Karim Benali",days:7},
   {reqId:"SRM-00006",expert:"Sophie Lang",days:6},
+  {reqId:"SRM-00011",expert:"Marc Dubois",days:5},
 ];
 function renderOverdueCard(){
   const card=document.getElementById("att-overdue");
@@ -1912,8 +2060,7 @@ function renderReassignRollup(){
   card.querySelectorAll("[data-go]").forEach(el=>el.addEventListener("click",()=>goRoute(el.dataset.go)));
 }
 renderReviewKPIs();
-renderComplianceKPIs();
-renderTenderKPIs();
+renderHeroVolume();
 renderOverdueCard();
 renderCommentsFeed();
 renderReassignRollup();
@@ -1949,7 +2096,7 @@ function renderStatsBottlenecks(){
   el.innerHTML = rows.map(r=>`
     <div class="bn-row" data-go="revue-documentaire.html">
       <span class="bn-code">${r.code}</span>
-      <span class="bn-label">${r.label}</span>
+      <span class="bn-label">${r.label===r.code?"":r.label}</span>
       <span class="bn-count">${r.count} awaiting</span>
       <span class="bn-age ${r.oldestDays>=10?"warn":""}">${r.oldestDays}d oldest</span>
     </div>`).join("");
@@ -1989,7 +2136,7 @@ function renderStatsQABlocked(){
   const el=document.getElementById("stats-qa-blocked"); if(!el) return;
   if(!STATS_QA_BLOCKED.length){ el.innerHTML=`<div class="qa-blocked-empty">Nothing blocked on the client right now.</div>`; return; }
   el.innerHTML=`<div class="qa-blocked-count">${STATS_QA_BLOCKED.length} question${STATS_QA_BLOCKED.length>1?"s":""} raised, oldest ${Math.max(...STATS_QA_BLOCKED.map(q=>q.days))} days ago</div>`
-    + STATS_QA_BLOCKED.map(q=>`<div class="qa-blocked-row" data-go="compliance.html"><b>${q.reqId}</b><span>${q.note}</span><span class="qa-blocked-days">${q.days}d</span></div>`).join("");
+    + STATS_QA_BLOCKED.map(q=>`<div class="qa-blocked-row" data-go="compliance.html" title="${q.reqId} — ${q.note.replace(/"/g,"&quot;")} · raised ${q.days} days ago"><b>${q.reqId}</b><span>${q.note}</span><span class="qa-blocked-days">${q.days}d</span></div>`).join("");
   el.querySelectorAll("[data-go]").forEach(row=>row.addEventListener("click",()=>goRoute(row.dataset.go)));
 }
 
@@ -1998,8 +2145,8 @@ function renderStatsQABlocked(){
 function renderStatsCasting(){
   const el=document.getElementById("stats-casting"); if(!el) return;
   const gaps=CAST_ACTIVITIES.filter(a=>!a.managerId);
-  if(!gaps.length){ el.innerHTML=`<div class="casting-ok">✓ Every perimeter has a manager cast</div>`; return; }
-  el.innerHTML=`<div class="casting-warn" id="stats-casting-link">⚠ ${gaps.length} perimeter${gaps.length>1?"s":""} unstaffed — ${gaps.map(g=>g.label).join(", ")}</div>`;
+  if(!gaps.length){ el.innerHTML=`<div class="casting-ok">✓ Every activity has a manager cast</div>`; return; }
+  el.innerHTML=`<div class="casting-warn" id="stats-casting-link">⚠ ${gaps.length} activit${gaps.length>1?"ies":"y"} with no manager cast — ${gaps.map(g=>g.label).join(", ")}</div>`;
   document.getElementById("stats-casting-link")?.addEventListener("click",()=>showScreen("team"));
 }
 
@@ -2072,16 +2219,226 @@ function renderStatsAIReliability(){
     </div>`).join("");
 }
 
+/* =====================================================
+   Statistics — Allocation tab
+   The panel is split by STEP (Allocation / Compliance), matching the two
+   canonical steps DEC-029 named and the PROCESS cards above, rather than by
+   audience: the same person reads both, but never at the same moment.
+===================================================== */
+/* The Allocation screen's own statuses (STATUS_LABEL there) in pipeline order.
+   REVIEW_REQS mirrors them under its own keys, so the mapping lives here once
+   instead of being re-guessed by each stat that needs it. */
+const ALLOC_STAGES=[
+  {k:"suggested",label:"Incomplete",  cls:"s-neutral"},
+  {k:"toreview", label:"To review",   cls:"s-ia"},
+  {k:"edited",   label:"To validate", cls:"s-accent"},
+  {k:"allocated",label:"Allocated",   cls:"s-ok"},
+];
+/* One stacked bar + legend, shared by the allocation and assignment funnels —
+   they answer the same shape of question at two different steps. */
+function stackedBarHTML(total,segs,route){
+  const pct=n=>total?Math.round(n/total*1000)/10:0;
+  const bar=segs.filter(s=>s.n).map(s=>
+    `<div class="sbar-seg ${s.cls}" style="width:${pct(s.n)}%" title="${s.label} · ${s.n} (${pct(s.n)}%)">${pct(s.n)>=7?s.n:""}</div>`).join("");
+  const legend=segs.map(s=>
+    `<span class="sbar-key" title="${s.label} · ${s.n}"><span class="dot ${s.cls}"></span><span class="lbl">${s.label}</span><b>${s.n}</b><span class="pct">${pct(s.n)}%</span></span>`).join("");
+  return `<div class="sbar"${route?` data-go="${route}"`:""}>${bar}</div><div class="sbar-legend">${legend}</div>`;
+}
+function bindGo(el){ el.querySelectorAll("[data-go]").forEach(n=>n.addEventListener("click",()=>goRoute(n.dataset.go))); }
+
+function renderStatsAllocFunnel(){
+  const el=document.getElementById("stats-alloc-funnel"); if(!el) return;
+  const segs=ALLOC_STAGES.map(s=>Object.assign({},s,{n:REVIEW_REQS.filter(r=>r.status===s.k).length}));
+  el.innerHTML=stackedBarHTML(REVIEW_REQS.length,segs,"revue-documentaire.html");
+  bindGo(el);
+}
+/* Pass 1 -> pass 2 as a descending funnel: the two KPI tiles at the top of the
+   page already carry these numbers, but side by side they never showed the
+   drop-off, which is the only part that tells you where to push. */
+function renderStatsPassFunnel(){
+  const el=document.getElementById("stats-pass-funnel"); if(!el) return;
+  const total=REVIEW_REQS.length;
+  const pass1=REVIEW_REQS.filter(r=>r.status!=="suggested").length;
+  const pass2=REVIEW_REQS.filter(r=>r.status==="allocated").length;
+  const stages=IS_TURNKEY_TENDER
+    ? [{l:"Captured",n:total,c:"var(--line-2)"},{l:"Confirmed by Turnkey",n:pass1,c:"var(--ia)"},{l:"Confirmed by the systems",n:pass2,c:"var(--ok)"}]
+    : [{l:"Captured",n:total,c:"var(--line-2)"},{l:"Allocated",n:pass2,c:"var(--ok)"}];
+  const pct=n=>total?Math.round(n/total*100):0;
+  el.innerHTML=stages.map((s,i)=>{
+    const prev=i?stages[i-1].n:null;
+    const drop=(prev!=null&&prev-s.n>0)?`<div class="pf-drop">↓ ${prev-s.n} still to come through</div>`:"";
+    return drop+`<div class="pf-stage">
+      <div class="pf-head">${s.l} <b>${s.n}</b><span class="pct">${pct(s.n)}%</span></div>
+      <div class="pf-bar"><span style="width:${pct(s.n)}%;background:${s.c}"></span></div>
+    </div>`;
+  }).join("");
+}
+function renderStatsActivityLoad(){
+  const el=document.getElementById("stats-activity-load"); if(!el) return;
+  const rows=CAST_ACTIVITIES.map(a=>{
+    const reqs=REVIEW_REQS.filter(r=>r.activity===a.id);
+    return {code:a.code,total:reqs.length,done:reqs.filter(r=>r.status==="allocated").length};
+  }).filter(r=>r.total).sort((x,y)=>y.total-x.total||x.code.localeCompare(y.code));
+  const max=Math.max(...rows.map(r=>r.total),1);
+  const none=REVIEW_REQS.filter(r=>!r.activity).length;
+  el.innerHTML=rows.map(r=>`
+    <div class="load-row" data-go="revue-documentaire.html" title="${r.code} — ${r.done} of ${r.total} allocated">
+      <span class="load-code">${r.code}</span>
+      <span class="load-bar" style="width:${Math.round(r.total/max*100)}%">
+        <span class="load-seg done" style="width:${Math.round(r.done/r.total*100)}%"></span>
+        <span class="load-seg wip" style="width:${Math.round((r.total-r.done)/r.total*100)}%"></span>
+      </span>
+      <span class="load-n"><b>${r.done}</b>/${r.total} done</span>
+    </div>`).join("")
+    + (none
+      ? `<div class="noact" data-go="revue-documentaire.html"><b>${none} requirement${none>1?"s":""}</b> with no activity set — pass 2 hasn't named one yet.</div>`
+      : `<div class="noact clear">Every requirement has an activity.</div>`);
+  bindGo(el);
+}
+function ringHTML(pct,color,label){
+  const r=26,c=2*Math.PI*r;
+  return `<svg viewBox="0 0 64 64" width="64" height="64">
+    <circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--panel-3)" stroke-width="7"/>
+    <circle cx="32" cy="32" r="${r}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-pct/100)).toFixed(1)}" transform="rotate(-90 32 32)"/>
+    <text x="32" y="37" text-anchor="middle" font-size="15" font-weight="700" fill="var(--text)">${label}</text>
+  </svg>`;
+}
+/* Two honest "how much of this is still a guess" figures. Neither is a failure
+   state — an unconfirmed AI activity is normal early on; the point is that it
+   stops being normal as the deadline approaches. */
+function renderStatsAIQuality(){
+  const el=document.getElementById("stats-ai-quality"); if(!el) return;
+  const total=REVIEW_REQS.length;
+  const proposed=REVIEW_REQS.filter(r=>r.aiActivity);
+  const unconfirmed=proposed.filter(r=>r.status!=="allocated").length;
+  const aiPct=proposed.length?Math.round(unconfirmed/proposed.length*100):0;
+  const weak=REVIEW_REQS.filter(r=>r.obsWeak).length;
+  const weakPct=total?Math.round(weak/total*100):0;
+  el.innerHTML=`<div class="gq-wrap">
+    <div class="gq">${ringHTML(aiPct,"var(--ia)",aiPct+"%")}
+      <div class="gq-lbl">${unconfirmed} of ${proposed.length} AI-proposed<br>activities unconfirmed</div></div>
+    <div class="gq">${ringHTML(weakPct,"var(--warn)",weakPct+"%")}
+      <div class="gq-lbl">${weak} of ${total} OBS derived<br>below the confidence threshold</div></div>
+  </div>`;
+}
+
+/* =====================================================
+   Statistics — Compliance tab
+===================================================== */
+/* DEC-028 — the external declaration is what actually reaches the client, and
+   until now nothing measured the distance between it and the internal verdict.
+   That distance IS the bid risk, so it gets its own figure rather than being
+   inferable only by opening requirements one at a time. */
+function renderStatsExternalGap(){
+  const el=document.getElementById("stats-external-gap"); if(!el) return;
+  const {total,compliant,non,pending}=complianceCounts();
+  const declared=FOLLOWUP_REQS.filter(r=>r.external);
+  const internal=[
+    {label:"Compliant",cls:"s-ok",n:compliant},
+    {label:"Not compliant",cls:"s-warn",n:non},
+    {label:"Pending",cls:"s-neutral",n:pending},
+  ];
+  const external=[
+    {label:"Compliant",cls:"s-ok",n:declared.filter(r=>r.external==="compliant").length},
+    {label:"Not compliant",cls:"s-warn",n:declared.filter(r=>r.external==="not_compliant").length},
+    {label:"Not declared yet",cls:"s-neutral",n:total-declared.length},
+  ];
+  const barOnly=segs=>`<div class="sbar">${segs.filter(s=>s.n).map(s=>{
+    const p=total?Math.round(s.n/total*1000)/10:0;
+    return `<div class="sbar-seg ${s.cls}" style="width:${p}%" title="${s.label} · ${s.n}">${p>=9?s.n:""}</div>`;
+  }).join("")}</div>`;
+  const gap=declared.filter(r=>r.external==="compliant"&&r.compliance!=="compliant");
+  const risks=gap.filter(r=>r.risk).length;
+  const note=gap.length
+    ? `<div class="gap-note" data-go="compliance.html"><b>${gap.length} requirement${gap.length>1?"s":""}</b> declared Compliant to the client while the internal verdict is not — ${risks} of them carr${risks===1?"ies":"y"} an accepted risk.</div>`
+    : `<div class="gap-note clear"><b>✓ No gap</b> — nothing is declared Compliant against an internal verdict that says otherwise.</div>`;
+  el.innerHTML=`
+    <div class="gap-side"><div class="gap-side-h">Internal verdict</div>${barOnly(internal)}</div>
+    <div class="gap-side"><div class="gap-side-h">Declared to the client</div>${barOnly(external)}</div>
+    <div class="sbar-legend">
+      <span class="sbar-key"><span class="dot s-ok"></span><span class="lbl">Compliant</span></span>
+      <span class="sbar-key"><span class="dot s-warn"></span><span class="lbl">Not compliant</span></span>
+      <span class="sbar-key"><span class="dot s-neutral"></span><span class="lbl">Pending / not declared</span></span>
+    </div>${note}`;
+  bindGo(el);
+}
+/* A requirement consolidates only once EVERY assignment has answered, so the
+   useful number is not "how many answers came back" but "what is each of the
+   remaining ones actually waiting on" — three very different queues. */
+function renderStatsConsolidation(){
+  const el=document.getElementById("stats-consolidation"); if(!el) return;
+  const total=FOLLOWUP_REQS.length;
+  const isDone=r=>branchesOf(r).length>0 && branchesOf(r).every(s=>s==="answered");
+  const done=FOLLOWUP_REQS.filter(isDone).length;
+  const open=FOLLOWUP_REQS.filter(r=>!isDone(r));
+  // priority order — a requirement bounced back to the PM is a different
+  // problem from one waiting on the client, even if it is also waiting on both.
+  const rea=open.filter(r=>branchesOf(r).includes("reassignment_needed"));
+  const qa=open.filter(r=>!rea.includes(r)&&branchesOf(r).includes("awaiting_qa"));
+  const wait=open.filter(r=>!rea.includes(r)&&!qa.includes(r));
+  const pct=total?Math.round(done/total*100):0;
+  el.innerHTML=`
+    <div class="cons-top"><span class="big">${done}/${total}</span><span>requirements fully consolidated · ${pct}%</span></div>
+    <div class="cons-bar"><span style="width:${pct}%"></span></div>
+    <div class="cons-split">
+      <div class="cons-item wait" data-go="compliance.html"><div class="n">${wait.length}</div><div class="k">waiting on a contributor</div></div>
+      <div class="cons-item qa" data-go="qa.html"><div class="n">${qa.length}</div><div class="k">waiting on the client (Q&amp;A)</div></div>
+      <div class="cons-item rea" data-go="revue-documentaire.html"><div class="n">${rea.length}</div><div class="k">bounced back — needs reallocation</div></div>
+    </div>`;
+  bindGo(el);
+}
+const BST_STAGES=[
+  {k:"proposed",           label:"Proposed",            cls:"s-neutral"},
+  {k:"assigned",           label:"Assigned",            cls:"s-human"},
+  {k:"awaiting_answer",    label:"Awaiting answer",     cls:"s-ia"},
+  {k:"awaiting_qa",        label:"Awaiting Q&A",        cls:"s-accent"},
+  {k:"reassignment_needed",label:"Reassignment needed", cls:"s-warn"},
+  {k:"answered",           label:"Answered",            cls:"s-ok"},
+];
+function renderStatsAssignFunnel(){
+  const el=document.getElementById("stats-assign-funnel"); if(!el) return;
+  const all=FOLLOWUP_REQS.flatMap(branchesOf);
+  const segs=BST_STAGES.map(s=>Object.assign({},s,{n:all.filter(x=>x===s.k).length}));
+  el.innerHTML=stackedBarHTML(all.length,segs,"compliance.html");
+  bindGo(el);
+}
+const LATE_WARN_DAYS=7;
+function renderStatsLate(){
+  const el=document.getElementById("stats-late"); if(!el) return;
+  if(!OVERDUE_BRANCHES.length){ el.innerHTML=`<div class="late-empty">✓ Nobody is late right now.</div>`; return; }
+  const by=new Map();
+  OVERDUE_BRANCHES.forEach(o=>{ by.set(o.expert,(by.get(o.expert)||[]).concat(o)); });
+  const rows=[...by.entries()].map(([name,items])=>({name,n:items.length,days:Math.max(...items.map(i=>i.days))}))
+    .sort((a,b)=>b.days-a.days);
+  const max=Math.max(...rows.map(r=>r.days),1);
+  el.innerHTML=rows.map(r=>`
+    <div class="late-row" title="${r.name} — ${r.n} assignment${r.n>1?"s":""} overdue, oldest ${r.days} days">
+      <span class="late-name">${r.name}${r.n>1?` <small>· ${r.n}</small>`:""}</span>
+      <span class="late-bar"><span class="${r.days>=LATE_WARN_DAYS?"over":""}" style="width:${Math.round(r.days/max*100)}%"></span></span>
+      <span class="late-days">${r.days}d</span>
+    </div>`).join("");
+}
+
 function renderStatsPanel(){
-  renderStatsBottlenecks();
-  renderStatsComplianceBar("stats-comp-bar","stats-comp-legend");
-  renderStatsComplianceBar("stats-comp-bar2","stats-comp-legend2");
-  renderStatsQABlocked();
+  // Allocation tab
+  renderStatsAllocFunnel();
+  renderStatsPassFunnel();
+  renderStatsActivityLoad();
+  renderStatsAIQuality();
   renderStatsCasting();
   renderStatsInvalidated();
+  renderStatsAIReliability();
   renderStatsTrajectory();
   renderStatsProgressDeadline();
-  renderStatsAIReliability();
+  // Compliance tab
+  renderStatsComplianceBar("stats-comp-bar","stats-comp-legend");
+  renderStatsExternalGap();
+  renderStatsConsolidation();
+  renderStatsAssignFunnel();
+  renderStatsLate();
+  renderStatsQABlocked();
+  renderStatsBottlenecks();
 }
 renderStatsPanel();
 
