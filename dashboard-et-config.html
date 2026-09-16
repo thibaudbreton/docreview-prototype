@@ -189,7 +189,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .stats-tab.on{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .stats-sec{display:none}
 .stats-sec.on{display:block}
-.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4)}
+/* align-items:start — a short card (Casting gaps, Compliance profile) must size
+   to its content instead of being stretched to its row-mate's height, which
+   left 100-140px of empty box under it. */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4);align-items:start}
+@media (max-width:700px){.stats-grid{grid-template-columns:1fr}}
 .stat-block{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4)}
 .stat-block.stat-wide,.stat-block.stat-bottlenecks{grid-column:1/-1}
 .stat-h{font-size:var(--text-sm);font-weight:600;margin-bottom:4px}
@@ -229,7 +233,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .ai-rel-pct{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
 
 /* --- shared stacked bar (allocation funnel, assignment funnel) --- */
-.sbar{display:flex;height:26px;border-radius:var(--radius-md);overflow:hidden;background:var(--panel-3);margin-bottom:12px;cursor:pointer}
+.sbar{display:flex;height:26px;border-radius:var(--radius-md);overflow:hidden;background:var(--panel);margin-bottom:12px;cursor:pointer}
 .sbar-seg{display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:700;color:#fff;transition:width .5s,filter .12s}
 .sbar:hover .sbar-seg{filter:brightness(1.12)}
 .sbar-seg.s-neutral{background:var(--line-2);color:var(--text-2)}
@@ -238,21 +242,25 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .sbar-seg.s-ok{background:var(--ok)}
 .sbar-seg.s-warn{background:var(--warn)}
 .sbar-seg.s-human{background:var(--human)}
-.sbar-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(172px,1fr));gap:var(--space-2) var(--space-4)}
-.sbar-key{display:flex;align-items:center;gap:7px;font-size:var(--text-sm);color:var(--text-2);white-space:nowrap}
+/* Each key is a 4-column grid, not a flex row: the count used to be pushed to
+   the far right with margin-left:auto, which detached it from its own label and
+   sat it against the NEXT key's dot — six keys read as one run-on sentence. */
+.sbar-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(186px,1fr));gap:var(--space-2) var(--space-4)}
+.sbar-key{display:flex;align-items:center;gap:7px;min-width:0;font-size:var(--text-sm);color:var(--text-2)}
+.sbar-key .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sbar-key .dot{width:9px;height:9px;border-radius:var(--radius-xs);flex-shrink:0}
 .dot.s-neutral{background:var(--line-2)}.dot.s-ia{background:var(--ia)}
 .dot.s-accent{background:var(--accent)}.dot.s-ok{background:var(--ok)}.dot.s-warn{background:var(--warn)}
 .dot.s-human{background:var(--human)}
-.sbar-key b{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--text)}
-.sbar-key .pct{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums;width:34px;text-align:right}
+.sbar-key b{font-variant-numeric:tabular-nums;color:var(--text)}
+.sbar-key .pct{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums;white-space:nowrap}
 
 /* --- pass 1 -> pass 2 funnel --- */
 .pf-stage{margin-bottom:var(--space-2)}
 .pf-head{display:flex;align-items:baseline;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2);margin-bottom:3px}
 .pf-head b{font-size:var(--text-base);color:var(--text);font-variant-numeric:tabular-nums}
 .pf-head .pct{margin-left:auto;font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums}
-.pf-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
+.pf-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden}
 .pf-bar span{display:block;height:100%;border-radius:var(--radius-xs);transition:width .5s}
 .pf-drop{font-size:var(--text-xs);color:var(--warn);margin:0 0 var(--space-2) 2px}
 
@@ -261,7 +269,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .load-row:hover .load-code{color:var(--text)}
 .load-code{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-3);transition:color .12s}
 .load-code.none{font-family:var(--font-ui);font-style:italic;font-weight:500}
-.load-bar{display:flex;height:14px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
+.load-bar{display:flex;height:14px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden}
 .load-seg{transition:width .5s}
 .load-seg.done{background:var(--ok)}
 .load-seg.wip{background:var(--line-2)}
@@ -289,7 +297,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .cons-top{display:flex;align-items:baseline;gap:var(--space-2);margin-bottom:var(--space-2)}
 .cons-top .big{font-size:var(--text-xl);font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
 .cons-top span{font-size:var(--text-sm);color:var(--text-2)}
-.cons-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden;margin-bottom:12px}
+.cons-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden;margin-bottom:12px}
 .cons-bar span{display:block;height:100%;background:var(--ok);border-radius:var(--radius-xs);transition:width .5s}
 .cons-split{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--space-2)}
 .cons-item{padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--panel-3);cursor:pointer;transition:filter .12s}
@@ -304,7 +312,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .late-row{display:grid;grid-template-columns:1fr 84px 52px;align-items:center;gap:var(--space-3);padding:4px 0}
 .late-name{font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .late-name small{color:var(--text-3)}
-.late-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
+.late-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden}
 .late-bar span{display:block;height:100%;border-radius:var(--radius-xs);background:var(--ia);transition:width .5s}
 .late-bar span.over{background:var(--warn)}
 .late-days{font-size:var(--text-xs);font-weight:600;color:var(--text-2);text-align:right;font-variant-numeric:tabular-nums}
@@ -2139,7 +2147,7 @@ function renderStatsQABlocked(){
   const el=document.getElementById("stats-qa-blocked"); if(!el) return;
   if(!STATS_QA_BLOCKED.length){ el.innerHTML=`<div class="qa-blocked-empty">Nothing blocked on the client right now.</div>`; return; }
   el.innerHTML=`<div class="qa-blocked-count">${STATS_QA_BLOCKED.length} question${STATS_QA_BLOCKED.length>1?"s":""} raised, oldest ${Math.max(...STATS_QA_BLOCKED.map(q=>q.days))} days ago</div>`
-    + STATS_QA_BLOCKED.map(q=>`<div class="qa-blocked-row" data-go="compliance.html"><b>${q.reqId}</b><span>${q.note}</span><span class="qa-blocked-days">${q.days}d</span></div>`).join("");
+    + STATS_QA_BLOCKED.map(q=>`<div class="qa-blocked-row" data-go="compliance.html" title="${q.reqId} — ${q.note.replace(/"/g,"&quot;")} · raised ${q.days} days ago"><b>${q.reqId}</b><span>${q.note}</span><span class="qa-blocked-days">${q.days}d</span></div>`).join("");
   el.querySelectorAll("[data-go]").forEach(row=>row.addEventListener("click",()=>goRoute(row.dataset.go)));
 }
 
@@ -2244,7 +2252,7 @@ function stackedBarHTML(total,segs,route){
   const bar=segs.filter(s=>s.n).map(s=>
     `<div class="sbar-seg ${s.cls}" style="width:${pct(s.n)}%" title="${s.label} · ${s.n} (${pct(s.n)}%)">${pct(s.n)>=7?s.n:""}</div>`).join("");
   const legend=segs.map(s=>
-    `<span class="sbar-key"><span class="dot ${s.cls}"></span>${s.label}<b>${s.n}</b><span class="pct">${pct(s.n)}%</span></span>`).join("");
+    `<span class="sbar-key" title="${s.label} · ${s.n}"><span class="dot ${s.cls}"></span><span class="lbl">${s.label}</span><b>${s.n}</b><span class="pct">${pct(s.n)}%</span></span>`).join("");
   return `<div class="sbar"${route?` data-go="${route}"`:""}>${bar}</div><div class="sbar-legend">${legend}</div>`;
 }
 function bindGo(el){ el.querySelectorAll("[data-go]").forEach(n=>n.addEventListener("click",()=>goRoute(n.dataset.go))); }
@@ -2360,9 +2368,9 @@ function renderStatsExternalGap(){
     <div class="gap-side"><div class="gap-side-h">Internal verdict</div>${barOnly(internal)}</div>
     <div class="gap-side"><div class="gap-side-h">Declared to the client</div>${barOnly(external)}</div>
     <div class="sbar-legend">
-      <span class="sbar-key"><span class="dot s-ok"></span>Compliant</span>
-      <span class="sbar-key"><span class="dot s-warn"></span>Not compliant</span>
-      <span class="sbar-key"><span class="dot s-neutral"></span>Pending / not declared</span>
+      <span class="sbar-key"><span class="dot s-ok"></span><span class="lbl">Compliant</span></span>
+      <span class="sbar-key"><span class="dot s-warn"></span><span class="lbl">Not compliant</span></span>
+      <span class="sbar-key"><span class="dot s-neutral"></span><span class="lbl">Pending / not declared</span></span>
     </div>${note}`;
   bindGo(el);
 }
@@ -2417,7 +2425,7 @@ function renderStatsLate(){
   const max=Math.max(...rows.map(r=>r.days),1);
   el.innerHTML=rows.map(r=>`
     <div class="late-row" title="${r.name} — ${r.n} assignment${r.n>1?"s":""} overdue, oldest ${r.days} days">
-      <span class="late-name">${r.name}${r.n>1?` <small>· ${r.n} assignments</small>`:""}</span>
+      <span class="late-name">${r.name}${r.n>1?` <small>· ${r.n}</small>`:""}</span>
       <span class="late-bar"><span class="${r.days>=LATE_WARN_DAYS?"over":""}" style="width:${Math.round(r.days/max*100)}%"></span></span>
       <span class="late-days">${r.days}d</span>
     </div>`).join("");
