@@ -9,53 +9,61 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-08T00:00Z (covered commits from `31eb00a` through
-  `6221a15`, i.e. one substantive commit: `7f50eda`). This entry was
-  drafted the same day in PR #16, which sat unmerged for six days; landed
-  directly on 2026-09-14 after re-confirming nothing below had moved in
-  the meantime (see the 2026-09-14 note at the end of this entry).
+- Last run: 2026-09-16T09:15Z (covered commits from `6221a15` through
+  `dc3577e`: the "fix-multi-activity-manager" merge, 29 substantive
+  prototype commits across two sessions — 24 on 2026-09-10/15 citing
+  DEC-028 through DEC-039, plus 5 more on 2026-09-16 reworking the
+  dashboard Statistics panel). This entry lands directly, superseding
+  PR #21, which drafted the 2026-09-15T08:02Z half of this update and
+  sat unmerged for a day; nothing it found had moved in the meantime, so
+  its findings are folded in below rather than re-derived.
 - Findings this run:
-  - `7f50eda` ("docs: consolidate specs into docs/current, archive
-    originals") is a manual documentation review, not a ticket/issue/PR
-    describing a product decision, and not this routine's own commit —
-    its message says so directly, and its own two-paragraph preamble at
-    the top of this file states the edition is "not fully approved for
-    implementation." Treated it as in scope anyway because it rewrote the
-    entire spec corpus this routine checks against, and it bears directly
-    on two open issues from the previous run.
-  - **Closed #10 and #11.** Both were about live specs describing things
-    that no longer match the shipped app (stale Expert Space references;
-    no spec for `documents.html`). `docs/specs/*.md` is now pointer stubs
-    into `docs/current/`, so the specific stale text both issues quoted
-    no longer exists as current truth — `docs/current/README.md` states
-    directly that Expert Space isn't in the active-screens list, and
-    `docs/current/LIFECYCLE.md` (LIFE-004, LIFE-006/007) covers
-    `documents.html`'s functional rules, just in a rule-based shape
-    rather than the old screen-walkthrough format. Commented on each with
-    the specific citations before closing — this was a factual check
-    (does the coverage gap still exist), not a judgment call.
-  - **Did not close #15.** `docs/current/AI.md` (AI-003) and
-    `docs/current/LIFECYCLE.md` (LANG-001/002) now give one consistent
-    answer to the pipeline-timing question — matching what the lot-1/3/4
-    commits actually shipped, and the three-way contradiction in the old
-    `SPEC-translation.md` is gone along with the file itself. But the
-    consolidation's own "not fully approved for implementation" line
-    means the human sign-off the batch-6 ticket required still isn't on
-    record anywhere (no `docs/decisions/` entry). Commented on #15 with
-    both facts and left it open for a human to confirm the sign-off
-    before closing. Also flagged PR #14 in the same comment: it edits the
-    now-archived `SPEC-translation.md` directly and has real merge
-    conflicts against `main` as of this run — superseded either way.
-  - **#12 still open, unaddressed** (`docs/Faire`,
-    `docs/SPEC-qa-screen.md`, `docs/TICKET-casting-screen-redesign.md`,
-    `docs/USER-TEST-session-3_2.md` all still present, untouched by
-    `7f50eda`). Re-checked, not re-flagged.
-- 2026-09-14 note: no commits landed on `main` after `6221a15` in the
-  interim (`git log 6221a15..HEAD` is empty), and #12, #15, and PR #14
-  are all still open/unresolved exactly as described above — re-checked
-  rather than re-flagged. PR #16 (which had carried this update since
-  2026-09-08) is superseded by this direct commit and should be closed.
-- Baseline for the next run: commits after `6221a15` (2026-09-08T14:54Z),
-  and #12 (still open, 2026-08-30) plus #15 (still open, 2026-09-07) and
-  PR #14 (still open, conflicting) — check whether any have moved before
-  re-flagging.
+  - **Opened #20** (2026-09-15, still open). Commit `22d651b`
+    ("compliance model — two verdicts, no Allocation lock, read-only
+    column") collapses the compliance scale from three internal values
+    to two and removes the requirement-level lock entirely, citing
+    DEC-028/031/039 — IDs that don't exist in `docs/current/OPEN-QUESTIONS.md`
+    or `docs/decisions/DECISIONS.md` (both stop at DEC-026), while the
+    change reverses decisions that *are* on record with real citations:
+    DEC-001/024 (three internal values — `COMPLIANCE.md:14`,
+    `DOMAIN.md:23`, `PLATFORM.md:36`) and DEC-013/014/016 (the lock —
+    `ACCESS.md` ACC-011, `LIFECYCLE.md` LIFE-007, `DOMAIN.md` DOM-009),
+    plus `DECISIONS.md` D6/D8's explicit, reasoned rejection of exactly
+    this collapse. Reverses a previously-deliberated decision rather than
+    renaming something, so this went to an issue, not a direct edit —
+    `docs/current/COMPLIANCE.md` and friends are unchanged.
+  - The rest of the 2026-09-10/15 batch (DEC-029/030/032-036:
+    Allocation/Compliance/Contributor vocabulary, the manager+expert
+    merge into "contributor," the shared 16-code activity list across
+    Compliance/Q&A/Casting, "typology"→"activity" copy) matches what
+    `docs/current/*.md` already described as the target state
+    (`ACCESS.md:33`, `ALLOCATION.md:36`, `DOMAIN.md:29`, `README.md:21`
+    already treat manager/expert as superseded code-level residue; no
+    remaining "typolog*" hits in `docs/current`) — no drift, no edit.
+  - **Commented on #20, not a new issue**, for the 2026-09-16 dashboard
+    batch (`d2793d2`, `633685b`): `d2793d2` cites **DEC-029** again to
+    justify restructuring Statistics into one tab per canonical step, and
+    `633685b`'s commit message cites **DEC-036**'s perimeter merge as the
+    reason a Team-casting badge regressed — both are the same undefined
+    DEC-IDs #20 already flags, now driving a second area of the product.
+    Folded into #20 as more evidence rather than opened separately, since
+    the root cause (phantom DEC citations) is identical.
+  - **No spec written for dashboard/Statistics itself** — `docs/current`
+    has no reading-map row for it (`README.md:27-41`) and `AUDIT.md:20`
+    already recorded on 2026-09-08 that the old dashboard/KPI specs were
+    deliberately left archived rather than consolidated. `d2793d2`/`6953e2b`/
+    `633685b`/`9fad58e`/`a568853` are further work inside that
+    already-acknowledged gap, not new drift against a current claim — so
+    nothing to fix or flag beyond the DEC-029/036 citations above.
+  - **#12 still open, unaddressed**, unchanged since 2026-08-30.
+    Re-checked, not re-flagged.
+  - **#15 and PR #14 unchanged** since the previous run's comments (both
+    still show 2026-09-08T22:06 as last activity). Re-checked, not
+    re-flagged.
+  - PR #21 (carried the 2026-09-15 half of this update since then) is
+    superseded by this direct update and should be closed.
+- Baseline for the next run: commits after `dc3577e` (2026-09-16T09:04Z),
+  and #12 (still open, 2026-08-30), #15 (still open, 2026-09-07), PR #14
+  (still open, conflicting), and #20 (open, now covering both the
+  compliance-model reversal and the dashboard's DEC-029/036 citations) —
+  check whether any have moved before re-flagging.
