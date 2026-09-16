@@ -1,5 +1,9 @@
 # Tickets — Continuity & consistency fixes
 
+## Run log
+
+- **2026-09-16 (nightly routine):** Completed: TH1 (drop unjustified 80px bottom padding on Home/Dashboard `.wrap`). Blocked: none. Remaining untouched: TH2, TH3, TH4, TH5, TH6.
+
 > **Groups A–G: COMPLETED, done as of 2026-08-13.** Kept for historical reference; decisions that changed a spec are indexed in `docs/decisions/DECISIONS.md`. Do not treat anything in Groups A–G as open work.
 >
 > **Group H (added 2026-08-20) is a separate, currently OPEN batch** — a vertical-space/UX-density audit, unrelated to the continuity/consistency fixes above. It reuses this file only because its ticket-queue heading is what the unattended nightly routine (`docs/prompts/PROMPT-nightly-ticket-routine.md`) matches on. Treat Group H's unchecked boxes as live work the routine may pick up.
@@ -172,7 +176,10 @@ Original ticket text, for reference:
 
 Test participants run the prototype on laptops with limited vertical screen real estate (Windows taskbar + Chrome tab/URL/bookmarks bars eating ~150-180px before the page even starts). Audited every screen and several reusable sub-components in a Chrome viewport of 1366×650 — a realistic worst case for this environment — measuring actual DOM heights rather than eyeballing. Two full audit passes: one across the six main screens, one across shared components (nav columns, detail panels, dropdowns, bulk-action bar, form fields). Findings below are ordered by how much visible content they cost on a constrained screen; Follow-up (TH3) is by far the worst offender. Not itself a continuity/consistency issue like Groups A–G — a straight information-density problem.
 
-- [ ] **TH1 — Drop the unjustified 80px bottom padding on Home and Dashboard**
+- [x] **TH1 — DONE.** Replaced the hardcoded `80px` bottom value in both files' `.wrap` with `var(--space-8)` (32px) — neither screen has a floating bottom element to clear, so the large fixed padding was pure dead space copied from the document-review screens where it's load-bearing. `accueil.html`: `padding:var(--space-8) var(--space-6) 80px` → `padding:var(--space-8) var(--space-6) var(--space-8)`. `dashboard-et-config.html`: `padding:var(--space-6) var(--space-6) 80px` → `padding:var(--space-6) var(--space-6) var(--space-8)`. Verified: `build_merge.py` rebuild clean, both screens' script blocks pass `node --check`, all 7 source blobs decode as UTF-8, 0 dead `href="*.html"` links in the merged output.
+
+  Original ticket text, for reference:
+  **Drop the unjustified 80px bottom padding on Home and Dashboard**
   Files: `accueil.html` (`.wrap`, line 58), `dashboard-et-config.html` (`.wrap`, line 100).
   `.wrap{padding:...80px}` on both files reserves 80px of trailing whitespace at the end of every scroll. That padding value is copied from `revue-documentaire.html`/`suivi-experts-et-versions.html`'s `.doc-scroll`, where it's load-bearing — it stops the last table row from being hidden behind the floating `.sel-bar` bulk-action bar. Neither Home nor Dashboard has any floating element covering their bottom edge, so on these two screens it's just 80px of dead space. Measured on Dashboard: total content is 949px against 598px of usable height (header deducted) on a 650px-tall viewport — this padding alone is ~9% of that overflow.
   Fix: reduce to `var(--space-6)` (24px) or `var(--space-8)` (32px) on both files' `.wrap`.
