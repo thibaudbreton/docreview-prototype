@@ -9,53 +9,63 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-08T00:00Z (covered commits from `31eb00a` through
-  `6221a15`, i.e. one substantive commit: `7f50eda`). This entry was
-  drafted the same day in PR #16, which sat unmerged for six days; landed
-  directly on 2026-09-14 after re-confirming nothing below had moved in
-  the meantime (see the 2026-09-14 note at the end of this entry).
+- Last run: 2026-09-17T10:05Z (covered commits from `6221a15` through
+  `d21eb23`, 50 commits total). Two earlier runs on this same window sat
+  unmerged as PR #21 (2026-09-15, covered `6221a15..31a4b58`) and PR #23
+  (2026-09-16, covered `6221a15..dc3577e`); #21 was already superseded by
+  #23 and closed. This run's findings fold both in and cover the
+  remaining `dc3577e..d21eb23` (14 commits, all 2026-09-17), so PR #23 is
+  now superseded in turn and should be closed.
 - Findings this run:
-  - `7f50eda` ("docs: consolidate specs into docs/current, archive
-    originals") is a manual documentation review, not a ticket/issue/PR
-    describing a product decision, and not this routine's own commit —
-    its message says so directly, and its own two-paragraph preamble at
-    the top of this file states the edition is "not fully approved for
-    implementation." Treated it as in scope anyway because it rewrote the
-    entire spec corpus this routine checks against, and it bears directly
-    on two open issues from the previous run.
-  - **Closed #10 and #11.** Both were about live specs describing things
-    that no longer match the shipped app (stale Expert Space references;
-    no spec for `documents.html`). `docs/specs/*.md` is now pointer stubs
-    into `docs/current/`, so the specific stale text both issues quoted
-    no longer exists as current truth — `docs/current/README.md` states
-    directly that Expert Space isn't in the active-screens list, and
-    `docs/current/LIFECYCLE.md` (LIFE-004, LIFE-006/007) covers
-    `documents.html`'s functional rules, just in a rule-based shape
-    rather than the old screen-walkthrough format. Commented on each with
-    the specific citations before closing — this was a factual check
-    (does the coverage gap still exist), not a judgment call.
-  - **Did not close #15.** `docs/current/AI.md` (AI-003) and
-    `docs/current/LIFECYCLE.md` (LANG-001/002) now give one consistent
-    answer to the pipeline-timing question — matching what the lot-1/3/4
-    commits actually shipped, and the three-way contradiction in the old
-    `SPEC-translation.md` is gone along with the file itself. But the
-    consolidation's own "not fully approved for implementation" line
-    means the human sign-off the batch-6 ticket required still isn't on
-    record anywhere (no `docs/decisions/` entry). Commented on #15 with
-    both facts and left it open for a human to confirm the sign-off
-    before closing. Also flagged PR #14 in the same comment: it edits the
-    now-archived `SPEC-translation.md` directly and has real merge
-    conflicts against `main` as of this run — superseded either way.
+  - The `fix-multi-activity-manager` batch (DEC-028–DEC-039 vocabulary,
+    the dashboard Statistics rework, DEC-040–DEC-057 allocation re-run and
+    OBS/ABS/PBS work, the DEC-044 standalone SIG tender, the DEC-045
+    "activity"→"system" rename) is, with one exception below, **doc-synced
+    in the same commits that shipped it** — `docs/current/ALLOCATION.md`,
+    `DOMAIN.md`, `OPEN-QUESTIONS.md` and `TENDER-PROFILES.md` all gained
+    their DEC-040–057 entries alongside the code (`a6aeb84`, `7e9b462`,
+    `b851a7a`), and `d72a2a9` swept the DEC-045 rename through every
+    `docs/current` file the same day it applied it to the prototype.
+    Spot-checked `DOMAIN.md`, `ALLOCATION.md` and `OPEN-QUESTIONS.md`
+    against the shipped behavior (multi-OBS consolidation, requirement-
+    level re-run granularity, OBS-is-an-organisation) — consistent, no
+    action needed.
+  - **#20 (compliance model reversal) — updated, not closed.** `a6aeb84`
+    (2026-09-17, 10:19) landed DEC-027–050 into
+    `docs/current/OPEN-QUESTIONS.md` with real, sourced citations,
+    including DEC-028/031/039 — the exact IDs #20 flagged as not existing
+    anywhere. DEC-031 states directly "Remplace DEC-001" and "DEC-024 sans
+    objet", and DEC-028 states the Allocation lock disappears, so the
+    citation problem that was #20's original objection is resolved. But
+    the five spec files #20 cited as still asserting the old model —
+    `docs/current/COMPLIANCE.md` (§ intro, CONF-001/003/004/005/006/014,
+    the state table, CONF-T03/T08/T09/T11/T13/T15), `DOMAIN.md` (DOM-009),
+    `ACCESS.md` (ACC-011 and the permissions table), `LIFECYCLE.md`
+    (LIFE-007, LIFE-T05), and `PLATFORM.md` (the compliance-profile row)
+    — are **unchanged**, still describing three internal verdicts and a
+    requirement-level lock, still citing DEC-001/013/014/016/024 as if
+    current. `docs/decisions/DECISIONS.md` D6/D8 (the original reasoned
+    write-ups for the lock exclusion and the three-verdict scale) are also
+    not annotated as superseded. This is exactly the core-domain-behavior
+    case the routine's own rule routes to a GitHub issue rather than a
+    direct edit — five interlinked spec files plus the decision log, not
+    a renamed field — so left it to a human rather than rewriting it
+    myself, especially with the same human mid-session on these very
+    files today. Commented on #20 with the specific line references
+    rather than opening a duplicate issue, since #20 already covers this
+    discrepancy.
   - **#12 still open, unaddressed** (`docs/Faire`,
     `docs/SPEC-qa-screen.md`, `docs/TICKET-casting-screen-redesign.md`,
-    `docs/USER-TEST-session-3_2.md` all still present, untouched by
-    `7f50eda`). Re-checked, not re-flagged.
-- 2026-09-14 note: no commits landed on `main` after `6221a15` in the
-  interim (`git log 6221a15..HEAD` is empty), and #12, #15, and PR #14
-  are all still open/unresolved exactly as described above — re-checked
-  rather than re-flagged. PR #16 (which had carried this update since
-  2026-09-08) is superseded by this direct commit and should be closed.
-- Baseline for the next run: commits after `6221a15` (2026-09-08T14:54Z),
-  and #12 (still open, 2026-08-30) plus #15 (still open, 2026-09-07) and
-  PR #14 (still open, conflicting) — check whether any have moved before
-  re-flagging.
+    `docs/USER-TEST-session-3_2.md` all still present). Re-checked, not
+    re-flagged.
+  - **#15 still open, PR #14 still open.** No commits in this window touch
+    `docs/specs/SPEC-translation.md`, `TICKETS-prototype-batch6.md`, or
+    add a `docs/decisions/` entry for the pipeline-timing sign-off.
+    Re-checked, not re-flagged.
+- Baseline for the next run: commits after `d21eb23`
+  (2026-09-17T10:05Z), and #12 (still open, 2026-08-30), #15 (still open,
+  2026-09-07) plus PR #14 (still open), and #20 (still open,
+  2026-09-15, updated 2026-09-17) — check whether `COMPLIANCE.md`,
+  `DOMAIN.md`, `ACCESS.md`, `LIFECYCLE.md`, `PLATFORM.md` or
+  `DECISIONS.md` D6/D8 have been brought in line with DEC-028/031/039
+  before re-flagging, and close #20 once they have.
