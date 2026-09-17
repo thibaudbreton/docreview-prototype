@@ -336,6 +336,10 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .att-card h3{font-size:var(--text-base)}
 .health{display:flex;flex-direction:column;gap:16px}
 .locked-hint{font-size:var(--text-sm);color:var(--text-3);line-height:1.55;background:var(--panel);border:1px dashed var(--line-2)}
+.dangerbox{border:1px solid var(--warn);background:var(--warn-soft);border-radius:var(--radius-md);padding:var(--space-3);font-size:var(--text-sm);color:var(--text-2);line-height:1.5;margin-bottom:10px}
+.dangerbox b{color:var(--warn)}
+.btn-danger{font-size:var(--text-sm);font-weight:600;padding:7px var(--space-4);border-radius:var(--radius-md);border:1px solid var(--warn);color:var(--warn);background:transparent}
+.btn-danger[disabled]{opacity:.5;cursor:not-allowed}
 .warnbox{border:1px dashed rgba(224,164,60,.5);background:var(--ia-soft);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-sm);color:var(--text-2);line-height:1.55}
 .warnbox b{color:var(--ia)}
 
@@ -961,6 +965,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
       <div class="cfg-nav-item on" data-sec="general"><span class="ci">◈</span> General</div>
       <div class="cfg-nav-item" data-sec="team"><span class="ci">◉</span> Team &amp; contributors</div>
       <div class="cfg-nav-item" data-sec="workflow"><span class="ci">⇄</span> Workflow &amp; milestones</div>
+      <div class="cfg-nav-item" data-sec="model"><span class="ci">↻</span> Allocation model</div>
       <div class="cfg-nav-item" data-sec="appearance"><span class="ci">◐</span> Appearance</div>
       <div class="cfg-nav-item" data-sec="ai"><span class="ci">✦</span> AI &amp; segmentation</div>
       <div class="cfg-nav-item" data-sec="feedback"><span class="ci">↺</span> AI feedback</div>
@@ -1004,6 +1009,28 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="frow"><div class="fl"><div class="flt">Overdue threshold</div><div class="fld">Days without a contributor response before a request is flagged overdue.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="1" max="14" value="5" id="over-range"><span class="range-val" id="over-val">5 days</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Maximum reminder cadence</div><div class="fld">Prevents reminder spam to contributors.</div></div><div class="fc"><select class="sel"><option>Once every 2 days</option><option>Daily</option><option>Once every 3 days</option><option>Manual only</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Outdated-response re-flag</div><div class="fld">When a new version changes a requirement that already had a response.</div></div><div class="fc"><div class="segc" data-seg="reflag"><button class="on">Substantive changes only</button><button>Any change</button></div><div class="opt-desc"><b>Substantive changes only:</b> typo-level edits don't invalidate an existing contributor response — a human arbitrates borderline cases.</div></div></div>
+        </section>
+
+        <!-- Allocation model — ALLOC-015 / DEC-049, DEC-050 -->
+        <section class="cfg-sec" data-sec="model">
+          <div class="cfg-h">Allocation model</div>
+          <div class="cfg-sub">Which model derives ABS, PBS and OBS on this tender — and what changing it costs.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ Demo only: this screen shows the setting and what changing it would destroy. Nothing here is wired — selecting another model changes no derivation, and no re-run is performed in this build.</div>
+
+          <div class="frow"><div class="fl"><div class="flt">System</div><div class="fld">What the tender is issued on. One per tender.</div></div><div class="fc"><div class="fval" id="cfg-model-system">—</div></div></div>
+
+          <div class="frow"><div class="fl"><div class="flt">Product</div><div class="fld">Chosen at creation and fixed afterwards — it describes what the tender <i>is</i> (DEC-049). Correcting it means recreating the tender.</div></div><div class="fc"><div class="fval" id="cfg-model-product">—</div><div class="opt-desc">Not editable, by decision — not a missing control.</div></div></div>
+
+          <div class="frow"><div class="fl"><div class="flt">Model applied</div><div class="fld">Follows the product by default. This is the part that can be changed.</div></div><div class="fc"><select class="sel" id="cfg-model-select"></select></div></div>
+
+          <div class="frow" style="border-bottom:none">
+            <div class="fl"><div class="flt">Re-run on all requirements</div><div class="fld">Changing the model makes every derivation produced by the previous one wrong, so this re-derives the whole tender.</div></div>
+            <div class="fc">
+              <div class="dangerbox" id="cfg-model-danger">—</div>
+              <button class="btn-danger" id="cfg-model-rerun" disabled title="Not wired in this build">↻ Change model and re-run everything</button>
+              <div class="opt-desc">Unlike the per-requirement re-run, this one does <b>not</b> spare answered requirements (DEC-050): the model that produced them has changed, so what was built on it no longer holds. The two are deliberately not the same action, and one is never offered as a fallback for the other.</div>
+            </div>
+          </div>
         </section>
 
         <!-- AI -->
@@ -2534,6 +2561,34 @@ function renderNarrativeCards(){
     if(answered&&w) w.innerHTML=`<b>${answered.id}</b> answered — internal verdict ${answered.compliance==="compliant"?"Compliant":"Not compliant"}`;
   }
 }
+/* ALLOC-015 — display only, per the build's scope. The figures are read from
+   this screen's own mirror rather than typed, so the warning cannot drift from
+   the tender it describes: a destructive action that misstates what it destroys
+   is worse than no warning at all. */
+function renderAllocationModelSection(){
+  const sysEl=document.getElementById("cfg-model-system");
+  const prodEl=document.getElementById("cfg-model-product");
+  const sel=document.getElementById("cfg-model-select");
+  const danger=document.getElementById("cfg-model-danger");
+  if(!sysEl||!prodEl||!sel||!danger) return;
+  const line=(CURRENT_PROJECT&&CURRENT_PROJECT.line)||"Turnkey";
+  const product=(CURRENT_PROJECT&&CURRENT_PROJECT.product)||null;
+  sysEl.textContent=line;
+  prodEl.textContent=product?`${line} ${product.charAt(0).toUpperCase()+product.slice(1)}`
+    : "Not set — a Turnkey tender carries a combination of several systems' products, whose matrix is still owed (DEC-048).";
+  const models=IS_SIG_TENDER
+    ? [{v:"sig-urban",l:"SIG Urban"},{v:"sig-mainline",l:"SIG Mainline"}]
+    : [{v:"__combination",l:"Per-system models — set by the tender's combination"}];
+  sel.innerHTML=models.map(m=>`<option value="${m.v}">${m.l}</option>`).join("");
+  sel.disabled=!IS_SIG_TENDER;
+  const reqs=REVIEW_REQS.length;
+  const answers=FOLLOWUP_REQS.reduce((n,r)=>n+branchesOf(r).filter(st=>st==="answered").length,0);
+  const verdicts=FOLLOWUP_REQS.filter(r=>r.compliance).length;
+  danger.innerHTML=`Changing the model would re-derive <b>${reqs} requirement${reqs>1?"s":""}</b> and destroy `
+    + `<b>${answers} recorded answer${answers!==1?"s":""}</b>`
+    + (verdicts?` and <b>${verdicts} internal verdict${verdicts>1?"s":""}</b>`:"")
+    + `, including those already declared to the client.`;
+}
 function renderStatsPanel(){
   // Allocation tab
   renderStatsAllocFunnel();
@@ -2556,6 +2611,7 @@ function renderStatsPanel(){
 }
 renderStatsPanel();
 renderNarrativeCards();
+renderAllocationModelSection();
 
 /* apply phase gating on load */
 applyGating();
