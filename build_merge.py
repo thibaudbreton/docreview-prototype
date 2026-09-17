@@ -121,8 +121,15 @@ function seedProjects(){
     {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Turnkey", days:23, deadline:1,
      status:"requirement_review", done:10, total:12, allocated:10, complianceFilled:0, updated:"today", primary:true, role:"Project manager", builtOut:true,
      language:"fr"},
+    // DEC-044 — the standalone SIG tender, built out so TENDER-PROFILES' "Tender
+    // SIG autonome" column is verifiable on a real project. English source
+    // (language:"en") exercises the no-translation path, the other half of
+    // SPEC-translation.md §2 that STB-2026's French source cannot show.
+    // Counts match revue-documentaire.html's seedSigSections(): 12 requirements,
+    // 5 of them allocated.
     {id:"rfp114", ref:"RFP-2026-114", name:"Urban Line 4 Signalling Upgrade", line:"SIG", days:9, deadline:1,
-     status:"expert_review", done:34, total:41, allocated:41, complianceFilled:34, updated:"2h ago", role:"Signalling manager", builtOut:false},
+     status:"requirement_review", done:4, total:12, allocated:4, complianceFilled:0, updated:"2h ago", role:"Signalling manager", builtOut:true,
+     language:"en", system:"Urban / Metro", product:"Urban"},
     {id:"ao088", ref:"AO-2026-088", name:"Depot Maintenance Systems", line:"Services", days:41, deadline:1,
      status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now", role:"Project manager", builtOut:false},
     {id:"stb133", ref:"STB-2026-133", name:"Regional Fleet Telemetry", line:"Rolling Stock", days:5, deadline:1,

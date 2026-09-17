@@ -2,7 +2,11 @@
 
 ## Autorité
 
-Les réponses utilisateur de cette session priment sur le code et les anciennes specs. Une précision ultérieure remplace la réponse antérieure sur le même sujet : DEC-026 remplace notamment la limite aux « changements majeurs » de DEC-015. Le prototype n'est pas modifié dans cette tâche.
+Les réponses utilisateur de cette session priment sur le code et les anciennes specs. Une précision ultérieure remplace la réponse antérieure sur le même sujet : DEC-026 remplace notamment la limite aux « changements majeurs » de DEC-015, et DEC-031 remplace l'échelle à trois verdicts de DEC-001 (ce qui prive DEC-024 d'objet). Le prototype n'est pas modifié dans cette tâche.
+
+DEC-045 remplace le vocabulaire de DEC-033 : ce que DEC-029 à DEC-039 appelaient « activity » s'appelle **système**. Le renommage n'est pas un revirement — il rend le mot « activité » à l'ABS, avec lequel il faisait doublon. Les décisions de fond de DEC-033 (le rôle du périmètre, les droits qu'il ne limite pas) restent valides, seul le premier terme de la hiérarchie change.
+
+DEC-028 à DEC-039 viennent d'une relecture indépendante du prototype (14 septembre 2026) : les incohérences relevées entre écrans ont été soumises à l'utilisateur en quatre salves de questions. Le détail de ce qui a été observé écran par écran est dans [le backlog extrait](../stories/STORIES-extracted-from-prototype.md).
 
 ## Décisions consolidées
 
@@ -34,15 +38,42 @@ Les réponses utilisateur de cette session priment sur le code et les anciennes 
 | DEC-024 | **R&D Needed → Compliant** automatiquement à l'export client ; warning interne uniquement | Précision complémentaire |
 | DEC-025 | **Validation d'allocation autorisée sans responsable** ; ne pas bloquer le travail | Précision complémentaire |
 | DEC-026 | **Toute modification du texte ou de la traduction repasse en review**, sans seuil de gravité | Précision complémentaire, remplace DEC-015 |
+| DEC-027 | Nouvelle version : relancer automatiquement les modèles nécessaires sur les exigences modifiées ; préserver les exigences inchangées | Précision utilisateur sur les versions |
+| DEC-028 | **Le verdict qui part au client est la déclaration externe** de Compliance, avec risque obligatoire quand l'interne est Not Compliant ; le lock du verdict final d'Allocation disparaît | Relecture prototype, salve 1 |
+| DEC-029 | Noms canoniques des deux étapes : **Allocation** et **Compliance** ; « Requirements review », « Expert Review », « Follow-up » et « qualification » s'y alignent | Relecture prototype, salve 1 |
+| DEC-030 | **Contributor** partout pour qui répond à une exigence ; « activity manager » réservé à qui gère le casting d'une activité | Relecture prototype, salve 1 |
+| DEC-031 | **Deux verdicts internes** : Compliant / Not Compliant. « R&D needed » est une mention portée par un **Compliant**, pas un verdict ; les catégories ne qualifient que Not Compliant. **Remplace DEC-001** ; DEC-024 sans objet, il n'y a plus rien à convertir à l'export | Relecture prototype, salves 1 et 4 |
+| DEC-032 | Liste d'activités de référence : **celle de la capture** (les codes réellement présents dans le document) ; Compliance, Q&A et Casting s'y alignent. Légende des codes à fournir — aujourd'hui le libellé est égal au code | Relecture prototype, salve 2 |
+| DEC-033 | Hiérarchie **Activity → Perimeter → Person** ; « typology » disparaît au profit d'« activity ». Le périmètre sert à **affecter automatiquement** à partir de l'OBS et **ne limite pas les droits** : un contributeur agit sur toute son activité (confirme DEC-002 et DEC-012) | Relecture prototype, salve 2 |
+| DEC-034 | **TK OBS** (une activité, passe 1) et **OBS · team** (un périmètre, passe 2) sont conservés tels quels, explicitement préfixés pour ne jamais être confondus | Relecture prototype, salve 2 |
+| DEC-035 | **« Finalize allocation » ne verrouille rien** : les deux étapes tournent en parallèle. Le réglage « Enforce full validation before export » est retiré, il prétend l'inverse (confirme D15 du journal des décisions) | Relecture prototype, salve 2 |
+| DEC-036 | **OBS · team et perimeter sont la même liste** : ce que la passe 2 dérive EST un périmètre, l'affectation est une correspondance directe. Conséquence : Casting ne peut plus laisser créer un périmètre libre au clavier | Relecture prototype, salve 3 |
+| DEC-037 | Périmètre staffé par plusieurs personnes : **toutes sont responsables**, en multi-allocation intra-activité, verdicts consolidés (le plus restrictif gagne). À concilier avec DEC-010 — voir les points ouverts ci-dessous | Relecture prototype, salve 3 |
+| DEC-038 | Catégories de non-conformité : **le placeholder reste explicite** à l'écran jusqu'à ce que le métier fournisse les valeurs (confirme OPEN-04) | Relecture prototype, salve 3 |
+| DEC-039 | Colonne Compliance de la table Allocation : **lecture seule**, à la nouvelle échelle ; un verdict ne se saisit que depuis Compliance | Relecture prototype, salve 3 |
+| DEC-040 | **Relance d'une passe d'allocation** sur une exigence déjà traitée, en choisissant le modèle. Granularité : l'**équipe** (la feuille), niveau où le verdict se saisit ; les feuilles voisines ne bougent pas | Demande utilisateur, 17 septembre 2026 |
+| DEC-041 | Relance **interdite dès qu'une réponse est enregistrée** sur la feuille. Contrôle visible mais inactif, motif affiché. C'est ce qui rend l'application directe sans risque | Demande utilisateur, 17 septembre 2026 |
+| DEC-042 | La relance **applique directement**, sans aperçu ni validation intermédiaire, et écrase **ABS/PBS/OBS seulement** : l'équipe et la personne affectées ne sont pas touchées. Re-dériver n'est pas réaffecter | Demande utilisateur, 17 septembre 2026 |
+| DEC-043 | Activité sans modèle : relance possible en **empruntant** le modèle d'une autre activité, explicitement désigné. Emprunt **ponctuel et silencieux** — aucun marqueur persistant sur l'exigence ni à l'export, seule l'historique de branche le conserve. N'annule pas ALLOC-005 : le manuel reste le défaut | Demande utilisateur, 17 septembre 2026 |
+| DEC-044 | Le prototype porte un **tender SIG autonome réellement construit**, `RFP-2026-114`, **avec son propre contenu** de signalisation. Passe d'IA unique, ABS → PBS → OBS direct, **dimension système supprimée** (une exigence = une dérivation = une équipe), conformité équipes → exigence | Demande utilisateur, 17 septembre 2026 |
+| DEC-045 | **« Activity » devient « système »** dans tout ce qu'un utilisateur lit. Motif : « activity » faisait doublon avec l'**ABS — Activity Breakdown Structure**, qui est le vrai porteur de la notion d'activité, au sein des systèmes et sous-systèmes. **Remplace le vocabulaire de DEC-033** ; la hiérarchie devient Système → Périmètre → Personne | Demande utilisateur, 17 septembre 2026 |
+| DEC-046 | La liste de référence (ex-liste d'activités, DEC-032) contient **systèmes et sous-systèmes dans le même champ**. Un tender n'est émis que sur **un seul système** ; c'est l'allocation d'un Turnkey qui répartit vers les **sous-systèmes** de ce système | Demande utilisateur, 17 septembre 2026 |
+| DEC-047 | **Chaque système a ses produits**, et le produit **sélectionne le modèle d'allocation**. SIG : Urban, Mainline. RSC (matériel roulant) : les types de train — TGV, métro… Le type de tender « Mainline » de DEC-004 **est** un tender SIG de produit Mainline : la collision de noms disparaît au lieu d'être contournée | Demande utilisateur, 17 septembre 2026 |
+| DEC-048 | **Turnkey n'a pas de produit propre** : il porte une **combinaison** de produits de plusieurs systèmes, désignée d'un nom (TGV, Métro…). Les produits sont corrélés — un produit Urban ne se combine pas avec des trains à grande vitesse. **Matrice des combinaisons à fournir** ; placeholder explicite d'ici là, même traitement que DEC-038 | Demande utilisateur, 17 septembre 2026 |
+| DEC-049 | Le **produit est figé à la création** et n'est pas modifiable — il décrit ce que le tender *est*. Le **modèle** qui en découle est en revanche **réglable dans les paramètres**. Le champ « System » du wizard est renommé et devient ce niveau : combinaison pour un Turnkey, produit pour un tender spécialisé | Demande utilisateur, 17 septembre 2026 |
+| DEC-051 | Relance bloquée par une réponse enregistrée **et par `awaiting_qa`** : une question en vol porte sur la dérivation actuelle, la changer dessous rendrait la réponse du client inexploitable | Demande utilisateur, 17 septembre 2026 |
+| DEC-052 | **Relance en masse** depuis la barre d'actions groupées, sur une sélection ; même règle de blocage feuille par feuille, les bloquées sont sautées et comptées | Demande utilisateur, 17 septembre 2026 |
+| DEC-053 | Relance sans effet : **aucun traitement particulier**, la trace dans l'historique suffit | Demande utilisateur, 17 septembre 2026 |
+| DEC-050 | **Relance globale** depuis les paramètres, au changement de modèle : **écrase tout, réponses comprises**, comme une nouvelle version de document (DEC-027) — le modèle ayant changé, les dérivations précédentes et tout ce qui en découle sont caduques. Distincte de la relance unitaire de DEC-041, qui reste interdite dès qu'une réponse existe | Demande utilisateur, 17 septembre 2026 |
 
 ## Suivi des anciens arbitrages
 
 | ID | État actuel |
 |---|---|
-| OPEN-01 | Résolu : DEC-001/024, échelle et conversion client |
+| OPEN-01 | Résolu puis révisé : l'échelle passe à deux verdicts internes (DEC-031, remplace DEC-001). Plus de conversion à l'export — DEC-024 sans objet ; tout écart avec ce que reçoit le client passe par la déclaration externe (DEC-028) |
 | OPEN-02 | Résolu pour droits métier : DEC-003/012/013. Admin/VIP hors détail du pilote ; à préciser si ajoutés |
 | OPEN-03 | Résolu : responsable unique par exigence, absence autorisée ; ne bloque pas validation (DEC-010/025) |
-| OPEN-04 | Champs et validations de maquette retenus. Liste Category encore explicitement placeholder dans le code ; vocabulaire réel à fournir avant production Compliance |
+| OPEN-04 | Champs et validations de maquette retenus. Liste Category confirmée placeholder explicite (DEC-038) ; elle devient porteuse puisqu'elle qualifie chaque Not Compliant (DEC-031) — vocabulaire réel à fournir avant production Compliance |
 | OPEN-05 | Choix automatique par type résolu. Modification ultérieure du type/mode non répondue explicitement ; ne pas déduire une autorisation du « oui » à la sélection automatique |
 | OPEN-06 | Lecture projet et exclusion sans action résolues. Cycles multiples/plusieurs questions bloquantes non précisés ; conserver le périmètre maquette décrit, à compléter pour la phase Q&A |
 | OPEN-07 | Texte/traduction : review pour tout changement ; nouvelle version affectée : unlock + pending ; fusion/scission : zéro décision. Suppression manuelle/restauration reste un détail distinct non confirmé |
@@ -55,6 +86,20 @@ Les réponses utilisateur de cette session priment sur le code et les anciennes 
 | OPEN-14 | PM peut saisir/modifier même après complétude. Les interfaces de réédition doivent refléter cette décision |
 | OPEN-15 | Mainline/RSC : inclus au pilote, pas de passe Turnkey selon le modèle non-Turnkey ; particularités de configuration/UI non fournies, ne pas les inventer depuis SIG |
 
+## Points ouverts par la relecture du prototype (14 septembre 2026)
+
+**Responsable de suivi contre répondants (DEC-010 / DEC-037).** DEC-010 fixe un responsable de suivi par exigence, pas par branche. Le prototype porte pourtant un `manager` par branche *et* par team, et DEC-037 rend désormais plusieurs personnes responsables dans un même périmètre. Les deux ne se contredisent que parce qu'un seul champ mélange « qui répond » et « qui suit » : à séparer avant construction.
+
+**RSC / RCS / RST.** DEC-004 liste « RSC » parmi les quatre types ; l'assistant de création propose « RCS » ; le vocabulaire de la capture ne contient ni l'un ni l'autre, seulement « RST ». Orthographe à confirmer avant d'aligner quoi que ce soit.
+
+**Légende des codes d'activité (DEC-032).** La liste de référence devient celle de la capture, où le libellé est aujourd'hui égal au code parce que la source ne les développe jamais. Il faut la légende métier (que valent CJV, DEQ, POS, SEN, SPM…) pour que les écrans restent lisibles.
+
+**Ordre de dérivation non conforme (ALLOC-003).** DEC-008 et ALLOC-003 fixent **ABS → PBS → OBS**, et ALLOC-T02 interdit explicitement l'ancien ordre pour SIG. Le prototype dérive pourtant encore **PBS → ABS → OBS** dans `derivationChainHTML`. Confirmé le 17 septembre 2026 : la décision prime, le code est à corriger — ce n'est pas un arbitrage à reprendre.
+
+**Points laissés ouverts par DEC-040 à DEC-043**, à trancher avant construction de la relance : quels états bloquent exactement la relance au-delà d'une réponse enregistrée (`awaiting_qa` bloque-t-il ? proposition : non) ; relance en masse sur une sélection (proposition : hors périmètre, une feuille à la fois) ; quoi afficher quand la relance produit un résultat identique au précédent (proposition : le dire).
+
+**À corriger sans arbitrage** — relevés par la relecture, ce sont des défauts, pas des décisions : le drapeau de la version v2.2 que plus aucun écran ne déclenche (la narration correspondante du dashboard ne peut jamais s'afficher) ; le dashboard qui affiche la ligne produit SIG sur un tender traité partout ailleurs comme Turnkey ; les cloches de notification inertes sur quatre écrans sur cinq ; le registre Q&A resté dans Compliance alors que `qa.html` en est le seul propriétaire.
+
 ## Ne pas redemander
 
-Ne pas rouvrir l'échelle des verdicts, le droit de lecture des autres activités, la permission de casting, le responsable unique ou la validation sans responsable. La réallocation et les champs existants sont à documenter depuis la maquette. Les questions purement internes aux modèles sont à traiter dans le chantier IA.
+L'échelle des verdicts a été rouverte une fois et refermée par DEC-031 : ne pas la rouvrir à nouveau. Ne pas rouvrir non plus le droit de lecture des autres activités, la permission de casting, le responsable unique, la validation sans responsable, ni — depuis la relecture du 14 septembre — le nom des deux étapes (DEC-029), le vocabulaire des rôles (DEC-030), le rôle du périmètre (DEC-033/036) ou ce que verrouille la finalisation (DEC-035). La réallocation et les champs existants sont à documenter depuis la maquette. Les questions purement internes aux modèles sont à traiter dans le chantier IA.

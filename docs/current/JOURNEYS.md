@@ -30,7 +30,7 @@ PM → équipe projet et activités ; tout contributeur → rattachements de sa 
 
 ## JRN-005 — Ajouter/remplacer un document
 
-Documents → ajouter, réordonner ou nouvelle version → traitement → consulter modifications → ouvrir les réponses à revoir. Références LIFE-004 à LIFE-007. La suppression manuelle affiche l’impact avant confirmation ; conservation/récupération reste distincte des suppressions lors de comparaison (LIFE-006).
+Documents → ajouter, réordonner ou nouvelle version → comparaison → relance automatique des modèles nécessaires sur les exigences modifiées → consulter les nouvelles propositions → revoir/valider le travail affecté. Références LIFE-004 à LIFE-011. La suppression manuelle affiche l’impact avant confirmation ; conservation/récupération reste distincte des suppressions lors de comparaison (LIFE-006).
 
 ## JRN-006 — Traiter les questions client
 

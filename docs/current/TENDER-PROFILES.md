@@ -22,6 +22,42 @@ DEC-007 : le type sélectionne automatiquement la configuration/référentiels e
 
 Les variantes Mainline/RSC font partie du périmètre, mais leurs particularités non fournies restent OPEN-15. L'absence de description ne signifie ni exclusion du pilote ni équivalence automatique avec SIG. Les alias historiques RCS/RST/Rolling Stock ne sont pas validés comme synonymes de RSC ; les nouvelles specs utilisent les quatre noms fournis.
 
+## Systèmes, produits et modèles
+
+DEC-045 à DEC-049. Ce que les décisions antérieures appelaient « activité » s'appelle **système**. Le mot « activité » revient à l'**ABS — Activity Breakdown Structure**, qui désigne les activités *au sein* des systèmes ; c'est le doublon entre les deux qui a motivé le renommage, pas un changement de modèle.
+
+**Les quatre niveaux.**
+
+| Niveau | Ce que c'est | Exemples | Qui le fixe |
+|---|---|---|---|
+| Système | Ce sur quoi le tender est émis. **Un seul par tender** | Turnkey, SIG, RSC | La création du tender |
+| Sous-système | Ce vers quoi l'allocation d'un Turnkey répartit, à l'intérieur de son système | SIG, RST, OCS, TRK… | L'allocation |
+| Produit | La déclinaison d'un système, qui **sélectionne le modèle** | SIG : Urban, Mainline · RSC : TGV, métro… | La création, **non modifiable ensuite** |
+| Modèle | Ce que le produit applique pour dériver ABS → PBS → OBS | — | Le produit par défaut, **réglable dans les paramètres** |
+
+Systèmes et sous-systèmes **cohabitent aujourd'hui dans le même champ** — la liste de référence issue de la capture (DEC-032) mélange les deux niveaux. Le partage entre ce qui est système et ce qui est sous-système reste à établir à partir de la liste réelle ; ne pas le deviner code par code.
+
+**Turnkey est le cas particulier.** Il n'a pas de produit propre : il porte une **combinaison** de produits de plusieurs systèmes, désignée d'un nom d'usage — TGV, Métro… Les produits y sont corrélés : un produit Urban (métro, tramway) ne se combine pas avec des trains à grande vitesse. **La matrice qui dit ce que contient chaque combinaison est à fournir.** D'ici là, la traiter en placeholder explicite à l'écran, comme la liste de catégories de non-conformité (DEC-038) — pas en la remplissant de valeurs plausibles.
+
+**Le renommage n'est pas fait.** Cette section et celle du tender SIG ci-dessous emploient le nouveau vocabulaire ; le reste du corpus — matrice d'applicabilité ci-dessus comprise — et la totalité du prototype disent encore « activité ». La passe de renommage est un chantier à part entière : le mot est dans les colonnes de table, les filtres, le Casting, les statistiques, Compliance et Q&A. Tant qu'elle n'est pas faite, lire « activité » comme « système » **sauf** quand le texte parle de l'ABS, où le mot garde son sens propre.
+
+**Produit figé, modèle réglable.** Le produit décrit ce que le tender *est* : il se choisit à la création et ne se corrige pas ensuite (une erreur se règle en recréant le tender, cohérent avec OPEN-05). Le modèle qu'il applique, lui, se change dans les paramètres du projet — et ce changement déclenche la relance globale décrite en ALLOC-015. Le champ « System » du wizard de création est renommé et devient ce niveau : une combinaison pour un Turnkey, un produit pour un tender spécialisé.
+
+## Tender SIG de démonstration — RFP-2026-114
+
+DEC-044 : le prototype doit porter un tender **SIG autonome réellement construit**, à côté du Turnkey STB-2026. Jusqu'ici la colonne « Tender SIG autonome » de la matrice ci-dessus n'était vérifiable sur aucun projet : `RFP-2026-114 · Urban Line 4 Signalling Upgrade` existe dans la liste des tenders avec `line:"SIG"`, mais sans contenu propre — l'ouvrir affichait le chrome mono-passe par-dessus les exigences et les données en forme Turnkey de STB-2026.
+
+Le projet est construit **avec son propre contenu** de signalisation. Réutiliser le texte d'Energy Monitoring System a été écarté : un tender de signalisation qui parle de consommation énergétique invalide la démonstration qu'il est censé porter.
+
+**Ce que le profil implique, au-delà de la matrice.**
+
+- **Une seule passe d'IA.** Pas de distribution entre sous-systèmes : le tender est déjà SIG. La dérivation est directe, **ABS → PBS → OBS → personne** (ALLOC-003, DEC-008).
+- **La dimension système disparaît de l'allocation.** Pas de colonne Système, pas de branches multiples : une exigence donne une dérivation et une équipe. Ce n'est pas un affichage allégé d'un modèle Turnkey, c'est un modèle plus court — conformément à « Absents, pas simplement vides » de la matrice.
+- **Conformité équipes → exigence.** Compliance perd son niveau intermédiaire « assignation par système » : la consolidation se fait des équipes vers l'exigence directement. La règle du plus restrictif (DEC-037) s'applique inchangée, sur un niveau de moins.
+- **Casting.** PM et contributeurs SIG, sans hiérarchie interne. Les périmètres restent la liste partagée de DEC-036.
+
+**État du code à la date de cette spec.** La plomberie mono-passe existe déjà : `runsPassOne()` vaut faux dès que la ligne du tender n'est pas Turnkey, et l'interface de passe 1 disparaît alors. Ce qui manque est le contenu du projet, son marquage comme projet construit, et la suppression effective du niveau système côté Compliance. Deux défauts connus se referment avec ce travail : le dashboard qui affichait « SIG » sur un tender traité partout ailleurs comme Turnkey, et l'ordre de dérivation du code, resté `PBS → ABS → OBS` contre ALLOC-003 et ALLOC-T02.
+
 ## Critères d'acceptation
 
 - TYPE-T01 : créer SIG conserve les écrans du produit et n'affiche aucun champ, filtre, étape ou action réservés à la distribution Turnkey.
@@ -30,6 +66,10 @@ Les variantes Mainline/RSC font partie du périmètre, mais leurs particularité
 - TYPE-T04 : créer Turnkey conserve les deux passes et la consolidation multi-activité.
 - TYPE-T05 : Mainline et RSC chargent leur configuration ; aucune substitution silencieuse par SIG ou Turnkey si elle manque.
 - TYPE-T06 : tous les parcours et tests annoncent leur type de tender ; un test Turnkey ne vaut pas recette SIG/Mainline/RSC.
+- TYPE-T07 : ouvrir RFP-2026-114 affiche ses propres exigences de signalisation, jamais celles d'Energy Monitoring System, et aucun bandeau de contenu réutilisé.
+- TYPE-T08 : sur ce tender, aucune exigence ne porte plus d'une activité, et l'axe activité est absent de la table, du panneau de détail, des filtres et de Compliance.
+- TYPE-T09 : la chaîne de dérivation y est lue ABS puis PBS puis OBS, dans cet ordre, sur tous les écrans qui l'affichent.
+- TYPE-T10 : la ligne produit annoncée par le dashboard est celle du projet ouvert ; basculer de STB-2026 à RFP-2026-114 change l'affichage et le comportement ensemble, jamais l'un sans l'autre.
 
 ## Périmètre de livraison
 

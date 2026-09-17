@@ -38,3 +38,7 @@ Les liens historiques internes aux copies d'archive sont conservés tels quels ;
 Les 30 réponses et les trois précisions suivantes sont intégrées dans DEC-004 à DEC-026. Ajout de TENDER-PROFILES, correction explicite de la chaîne SIG en ABS → PBS → OBS, responsable unique facultatif, droits de lecture globaux dans le projet, retour en revue pour tout changement de texte/traduction, conversion R&D → Compliant côté client, pilote allocation et charge 100k/10 simultanés.
 
 Les anciens constats de code restent étiquetés OBS et les nouvelles décisions DEC priment. Vérifications ciblées supplémentaires : maquette de réallocation (`renderReassignForm`, `approveReassign`, `rejectReassign`) et validation de Topic dans Compliance (`v-submit-notcompliant`). Aucun test navigateur ni modification du prototype. Les anciens documents de référence sont conservés dans leur archive initiale, sans leur appliquer les nouvelles décisions.
+
+## Précision DEC-027 — retraitement après nouvelle version
+
+Ajout du retraitement automatique ciblé sur les exigences modifiées par une version. LIFE-011, AI-006/011 et JRN-005 explicitent la règle ; LIFE-T09/10 vérifient le ciblage et le respect du type de tender. Aucun appel modèle réel ni changement du prototype.

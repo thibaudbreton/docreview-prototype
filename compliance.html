@@ -693,7 +693,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
       <linearGradient id="srmLc" x1="35.01" y1="44.22" x2="84.75" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset=".168" stop-color="#1E3246"/></linearGradient>
       </defs>
       </svg>SRM</a></div>
-    <div class="crumb"><span class="sep">/</span><a class="project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a></div>
+    <div class="crumb"><span class="sep">/</span><a class="project" id="crumb-project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a></div>
     <!-- TH6 — Versions & Q&A used to sit here as a co-equal tab; it's reached
          from .hdr-actions below now. That left this nav holding a single
          "Compliance" button that only ever navigated to the screen you were
@@ -818,7 +818,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" id="f-sel-all" title="Select all in view"></label></div>
               <div class="rcell c-id"><span class="cl">ID</span></div>
               <div class="rcell c-req"><span class="cl">Requirement / assignment</span></div>
-              <div class="rcell c-typo" data-col="typo"><span class="cl">Activity</span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
+              <div class="rcell c-typo" data-col="typo"><span class="cl">System</span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
               <div class="rcell c-expert" data-col="expert"><span class="cl">Assigned to</span><button class="colf-btn" data-colf="expert" title="Filter this column">⏷</button></div>
               <div class="rcell c-status" data-col="status"><span class="cl">Status</span></div>
               <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
@@ -950,7 +950,7 @@ const CATEGORY_LIST=["Placeholder category A","Placeholder category B","Placehol
 /* The three real reassignment cases (SPEC-expert-space.md, still valid after the
    merge — they were about the task, not the role). Carried over from
    expert-space.html when its verdict form moved here. */
-const REASON_LABEL={wrong_person:"Right activity, wrong person", wrong_typology:"Wrong activity", not_applicable:"This activity doesn't apply here"};
+const REASON_LABEL={wrong_person:"Right system, wrong person", wrong_typology:"Wrong system", not_applicable:"This system doesn't apply here"};
 /* REX tab — migrated from expert-space.html, remapped to this screen's own SRM- ids. */
 const REX_BASE={
   "SRM-00005":[
@@ -1137,11 +1137,95 @@ function genFollowupReqs(n){
   }
   return out;
 }
-const REQS=REQS_HAND.concat(genFollowupReqs(90));
+/* =====================================================
+   SIG TENDER — Compliance side of RFP-2026-114 (DEC-044)
+   Mirrors revue-documentaire.html's seedSigSections() ids and text, the same
+   independently-hand-authored-per-screen convention every other screen follows.
+
+   TENDER-PROFILES: on a standalone SIG tender consolidation runs "équipes →
+   exigence" — the per-system assignment level is gone, because the tender is
+   already scoped to one system. Each requirement therefore carries exactly one
+   branch, which is all buildFVRows() needs to keep it on a single line: its own
+   rule already says a requirement with fewer than two branches gets no sub-row.
+   The tree stays two-deep underneath so consolidate(), the verdict form and
+   casting keep working untouched; what disappears is the level on screen.
+===================================================== */
+const SIG_REQS=[
+  {id:"L4-0004",sec:"2. Train control",type:"Functional",external:"compliant",
+   text:"The system SHALL enforce a continuous safe braking envelope for every train under CBTC control, based on its position, speed and the movement authority granted by the wayside.",
+   branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:8,
+     resp:{note:"Standard CBTC protection profile, validated on two previous urban deployments. No deviation.",att:1,date:"Jul 14"}}]},
+  {id:"L4-0005",sec:"2. Train control",type:"Performance",
+   text:"Train position SHALL be reported to the wayside at least twice per second, with a confidence interval not exceeding 2 metres at any speed up to 80 km/h.",
+   branches:[{typology:"sig",manager:"sup",status:"answered",internal:"compliant",age:7,
+     resp:{note:"10 Hz reporting with a 1.4 m interval measured at 80 km/h on the reference line.",att:2,date:"Jul 15"}}]},
+  {id:"L4-0006",sec:"2. Train control",type:"Interface",
+   text:"The onboard equipment SHALL remain capable of degraded manual operation under line-side signals when CBTC coverage is unavailable, without requiring a train reset.",
+   branches:[{typology:"sig",manager:null,status:"proposed",internal:null,age:3}]},
+  {id:"L4-0008",sec:"2. Train control",type:"Functional",
+   text:"The system SHALL support a minimum headway of 90 seconds in normal service on the central section between Gare du Nord and Palais des Congrès.",
+   branches:[{typology:"sig",manager:"m_sig",status:"awaiting_answer",internal:null,age:4,lastFollowup:"Jul 16"}]},
+  {id:"L4-0009",sec:"2. Train control",type:"Regulatory",
+   text:"Migration to CBTC SHALL be carried out without interrupting commercial service, with mixed-fleet operation supported throughout the transition period.",
+   branches:[{typology:"sig",manager:"sup",status:"awaiting_answer",internal:null,age:9,lastFollowup:"Jul 11"}]},
+  {id:"L4-0010",sec:"3. Wayside and interlocking",type:"Functional",external:"compliant",
+   externalRisk:"Route release timing is met on the nominal configuration only; the degraded-mode case is priced as a contract option and the client is told the guarantee does not cover it.",
+   text:"Each interlocking SHALL guarantee that no conflicting route can be set simultaneously, and SHALL release a route only once the train has been confirmed clear of the last track section.",
+   branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"not_compliant",age:6,
+     resp:{note:"Conflicting-route exclusion is met. Release on loss of the last section detection needs a change to the standard product — not feasible within the proposed envelope.",att:1,date:"Jul 16"}}]},
+  {id:"L4-0011",sec:"3. Wayside and interlocking",type:"Performance",
+   text:"Route setting SHALL complete within 3 seconds of the request, measured from the supervision workstation to the confirmation of point position.",
+   branches:[{typology:"sig",manager:"m_sig",status:"awaiting_qa",internal:null,age:5,qaRef:"QA-L1",
+     qaNote:"The 3 s budget depends on whether point machine confirmation is included — the specification does not say."}]},
+  {id:"L4-0012",sec:"3. Wayside and interlocking",type:"Interface",
+   text:"Radio coverage SHALL be continuous across the whole line including the depot approach tracks, with no single point of failure between two consecutive access points.",
+   branches:[{typology:"sig",manager:"sup",status:"awaiting_qa",internal:null,age:4,qaRef:"QA-L2",
+     qaNote:"Depot approach tracks are not on the coverage drawings supplied; the extent cannot be priced as it stands."}]},
+  {id:"L4-0014",sec:"4. Station interfaces and safety",type:"Interface",
+   text:"Platform screen doors SHALL open only when the train is berthed within the permitted stopping tolerance and the train doors on the corresponding side are enabled.",
+   branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:6,
+     resp:{note:"Berthing tolerance and door enabling are part of the standard PSD interface. Compliant as specified.",att:1,date:"Jul 15"}}]},
+  {id:"L4-0015",sec:"4. Station interfaces and safety",type:"Security",
+   text:"Loss of the interface between the train and the platform screen doors SHALL result in the doors remaining closed, and SHALL be reported to the control centre within 2 seconds.",
+   branches:[{typology:"sig",manager:null,status:"reassignment_needed",internal:null,age:3,
+     reassignComment:"Fail-safe behaviour of the PSD interface is a safety case matter, not a signalling design one. Please reallocate."}]},
+  {id:"L4-0017",sec:"4. Station interfaces and safety",type:"Regulatory",external:"compliant",
+   text:"The supplier SHALL deliver a safety case demonstrating SIL 4 for all train protection functions, in accordance with EN 50126, EN 50128 and EN 50129.",
+   branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:9,
+     resp:{note:"SIL 4 safety case delivered on the two most recent urban CBTC projects; the same assessment body is proposed here.",att:3,date:"Jul 12"}}]},
+  {id:"L4-0018",sec:"4. Station interfaces and safety",type:"Regulatory",
+   text:"The supplier SHALL provide evidence of independent safety assessment by a recognised body before the start of passenger service on any migrated section.",
+   branches:[{typology:"sig",manager:"sup",status:"awaiting_answer",internal:null,age:2}]},
+];
+const SIG_QA=[
+  {id:"QA-L1",st:"sent",q:"Does the 3-second route setting budget include point machine confirmation, or does it stop at the command being issued?",
+   reqs:["L4-0011"],branch:{req:"L4-0011",typology:"sig"},expert:"m_sig",from:"Louis Renaud",date:"Jul 15"},
+  {id:"QA-L2",st:"draft",q:"Do the depot approach tracks fall within the radio coverage obligation? They are absent from the drawings supplied.",
+   reqs:["L4-0012"],branch:{req:"L4-0012",typology:"sig"},expert:"sup",from:"Sophie Lang",date:"Jul 16"},
+];
+(function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return;
+    const p=window.parent.getCurrentProject(); if(!p) return;
+    const el=document.getElementById("crumb-project");
+    if(el) el.textContent=p.ref+" · "+p.name;
+  }catch(e){}
+})();
+/* DEC-044 — a standalone SIG tender serves its own content; the 90 generated
+   filler requirements exist to give the reference project volume and would
+   drown a 12-requirement tender in another tender's rows. */
+const IS_SIG_TENDER = (function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return false;
+    const p=window.parent.getCurrentProject();
+    return !!p && p.line==="SIG";
+  }catch(e){ return false; }
+})();
+const REQS = IS_SIG_TENDER ? SIG_REQS : REQS_HAND.concat(genFollowupReqs(90));
 const OVERDUE_DAYS=5;
 /* T7 — a question is a first-class object: raised by one expert, bound to exactly one
    branch (reqId + typology), and that branch sits in `awaiting_qa` until an answer lands. */
-let QA=[
+let QA = IS_SIG_TENDER ? SIG_QA : [
   {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",
    reqs:["SRM-00010"],branch:{req:"SRM-00010",typology:"trk"},expert:"infra",from:"Karim Benali",date:"Jul 14"},
   {id:"QA-02",st:"internal",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
@@ -1349,7 +1433,7 @@ function canAnswer(b){ return state.role==="contributor"&&b.typology===state.con
    from a popover opened on the column's own header rather than a toolbar
    select disconnected from the column it narrows. */
 const COL_FILTER_DEFS={
-  typo:{label:"Activity",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:b=>[b.typology]},
+  typo:{label:"System",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:b=>[b.typology]},
   expert:{label:"Assigned to",options:[...MANAGERS.map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
 };
 function passesColFilters(b){
@@ -1401,7 +1485,7 @@ function passes(r){
 const ADV_FILTER_FIELDS={
   id:{label:"ID",type:"text",get:r=>[r.id||""]},
   text:{label:"Text",type:"text",get:r=>[r.text||""]},
-  typo:{label:"Activity",type:"enum",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:r=>(r.branches||[]).map(b=>b.typology)},
+  typo:{label:"System",type:"enum",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:r=>(r.branches||[]).map(b=>b.typology)},
   internal:{label:"Internal compliance",type:"enum",options:[{v:"compliant",l:"Compliant"},{v:"not_compliant",l:"Not Compliant"},{v:"",l:"Pending"}],get:r=>(r.branches||[]).map(b=>b.internal||"")},
   // the EFFECTIVE value, inherited one included — filtering on "what the client
   // gets" is the question people actually ask, not "what was typed in"
@@ -1414,6 +1498,11 @@ const ADV_FILTER_FIELDS={
   doc:{label:"Document",type:"enum",options:DOCS.map(d=>({v:d.id,l:d.name})),get:r=>[SEC_DOC[r.sec]||""]},
   section:{label:"Section",type:"text",get:r=>[r.sec||""]},
 };
+/* TYPE-T08 — with one system on the whole tender, filtering by it offers a
+   choice where every row answers the same thing. Removed from both filter
+   surfaces rather than left as a control that can only ever be a no-op. */
+if(IS_SIG_TENDER){ delete COL_FILTER_DEFS.typo; delete ADV_FILTER_FIELDS.typo; }
+
 const ADV_FIELD_GROUPS=[
   {g:"Progress",       fields:["status","internal","external","risk"]},
   {g:"Assignment",     fields:["typo","contributor","age"]},
@@ -1773,7 +1862,7 @@ function verdictCommentHTML(note){
 }
 function consolidatedProgressHTML(c){
   if(!c.pending) return `<span class="spill answered">${BST.answered}</span>`;
-  return `<span class="spill ${c.blocking.status}">${BST[c.blocking.status]}${c.remaining>1?` · ${c.remaining} allocated activities`:""}</span>`;
+  return `<span class="spill ${c.blocking.status}">${BST[c.blocking.status]}${c.remaining>1?` · ${c.remaining} allocated systems`:""}</span>`;
 }
 function consolidatedComplianceHTML(c){
   return c.pending ? `<span class="vpill none">—</span>` : cmpPillHTML(c.internal);
@@ -1836,11 +1925,14 @@ const F_RCOLS=[
   {k:"status",w:"150px"},{k:"compliance",w:"150px"},{k:"comment",w:"minmax(200px,1fr)"},
   {k:"external",w:"150px"},{k:"risk",w:"minmax(180px,1fr)"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
 ];
+/* TYPE-T08 — on a SIG tender the system axis is absent, not merely collapsed:
+   it must not be re-addable from the column menu, and it must not appear as
+   something to filter on, since every row would answer the same value. */
 const F_COLUMN_TOGGLE_DEFS=[
-  {k:"typo",label:"Activity"},{k:"expert",label:"Assigned to"},
+  {k:"typo",label:"System"},{k:"expert",label:"Assigned to"},
   {k:"status",label:"Status"},{k:"compliance",label:"Compliance"},{k:"comment",label:"Compliance comment"},
   {k:"external",label:"External compliance"},{k:"risk",label:"Risk accepted"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
-];
+].filter(c=>!IS_SIG_TENDER || c.k!=="typo");
 const F_RCOLS_BY_KEY=Object.fromEntries(F_RCOLS.map(c=>[c.k,c]));
 const F_NAV_COLS=["sel","id","req","typo","expert","status","compliance","comment","external","risk","lastfu","age"];
 function fNavCols(){ return F_NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
@@ -1897,7 +1989,7 @@ function buildFVRows(){
   fVROWS=[];
   rows.forEach(r=>{
     fVROWS.push({type:"row",r});
-    if(r.branches.length<2) return; // one activity concerned — stays on a single line, no sub-row
+    if(r.branches.length<2) return; // one system concerned — stays on a single line, no sub-row
     if(!state.expandedBranches.has(r.id)) return; // collapsed — caret not opened yet
     const branchFilterActive=(state.filter&&state.filter!=="out")||colFilterActiveCount()||state.needsMe||state.ownTeamOnly;
     r.branches.forEach((b,i)=>{
@@ -1918,14 +2010,14 @@ function fRowInnerHTML(r){
   const multi=r.branches.length>1;
   const expanded=multi&&state.expandedBranches.has(r.id);
   const caretHTML=multi
-    ? `<button class="branch-caret${expanded?" open":""}" data-branchtoggle="${r.id}" title="${expanded?"Collapse activities":`Expand ${r.branches.length} activities`}">▸</button>`
+    ? `<button class="branch-caret${expanded?" open":""}" data-branchtoggle="${r.id}" title="${expanded?"Collapse systems":`Expand ${r.branches.length} systems`}">▸</button>`
     : "";
   const lastFollowup=r.branches.reduce((latest,b)=>b.lastFollowup?b.lastFollowup:latest,null);
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${r.id}" ${state.selection.has(r.id)?"checked":""}></label></div>
     <div class="rcell c-id">${r.id}</div>
     <div class="rcell c-req">${caretHTML}<div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div>${r.outdated?'<span class="flag-out">Δ outdated</span>':""}</div>
-    <div class="rcell c-typo">${single?`<span class="ptag">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} activities</span>`}</div>
+    <div class="rcell c-typo">${single?`<span class="ptag">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} systems</span>`}</div>
     <div class="rcell c-expert">${single?branchWhoHTML(single):`<span class="multi-ph">Multiple (${r.branches.length})</span>`}</div>
     <div class="rcell c-status">${consolidatedProgressHTML(c)}</div>
     <div class="rcell c-compliance">${consolidatedComplianceHTML(c)}</div>
@@ -1940,7 +2032,7 @@ function fBranchRowHTML(parent,b,idx){
   return `<div class="rrow branch-row" data-branchof="${parent.id}" data-branchidx="${idx}">
     <div class="rcell c-sel"></div>
     <div class="rcell c-id"></div>
-    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${TY(b.typology).label}</span>${multiTeam?`<span class="nav-brn" title="${teams.length} teams within this activity — most restrictive wins">${teams.length} teams</span>`:""}</div>
+    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${TY(b.typology).label}</span>${multiTeam?`<span class="nav-brn" title="${teams.length} teams within this system — most restrictive wins">${teams.length} teams</span>`:""}</div>
     <div class="rcell c-typo"><span class="ptag">${TY(b.typology).code}</span></div>
     <div class="rcell c-expert">${multiTeam?`<span class="multi-ph">Multiple (${teams.length})</span>`:branchWhoHTML(b)}</div>
     <div class="rcell c-status">${branchProgressHTML(b)}</div>
@@ -2132,7 +2224,7 @@ function renderPanel2(){
     </div>
     <div class="set-tabs">
       <button data-t="response" class="${state.tab==="response"?"active":""}">Assignment</button>
-      <button data-t="activity" class="${state.tab==="activity"?"active":""}">Activity</button>
+      ${IS_SIG_TENDER?"":`<button data-t="activity" class="${state.tab==="activity"?"active":""}">System</button>`}
       <button data-t="req" class="${state.tab==="req"?"active":""}">Requirement</button>
       <button data-t="doc" class="${state.tab==="doc"?"active":""}">Document</button>
       <button data-t="rex" class="${state.tab==="rex"?"active":""}">REX</button>
@@ -2165,7 +2257,7 @@ function renderPanel2(){
   const b=p.querySelector("#set2-body");
 
   const whoBlock=`
-    <div class="field"><label>Assignment · ${TY(br.typology).label}</label>
+    <div class="field"><label>Assignment${IS_SIG_TENDER?"":` · ${TY(br.typology).label}`}</label>
       <div class="fval">${e?`<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.role}</span>`:`<span class="exp-mini none">Nobody assigned yet</span>`}</div></div>
     <div class="field"><label>Status</label><div class="fval"><span class="spill ${br.status}">${BST[br.status]}</span></div></div>`;
 
@@ -2247,7 +2339,7 @@ function renderPanel2(){
           </div>
           <div class="field" id="reassign-expert-field"><label>Reassign to</label>
             <select id="reassign-expert">${otherExperts.length?otherExperts.map(x=>`<option value="${x.id}">${x.name} — ${x.role}</option>`).join(""):'<option value="">Nobody else available</option>'}</select></div>
-          <div class="field" id="reassign-typo-field" style="display:none"><label>Correct activity</label>
+          <div class="field" id="reassign-typo-field" style="display:none"><label>Correct system</label>
             <select id="reassign-typo">${otherTypos.map(t=>`<option value="${t}">${TY(t).label}</option>`).join("")}</select></div>
           <div class="field"><label>Why</label><textarea id="reassign-text" rows="3" placeholder="Required — why should this be reassigned?"></textarea></div>
           <div class="form-actions"><button class="btn-cancel" id="reassign-cancel">Cancel</button><button class="btn-submit warn" id="reassign-submit">Send request</button></div>
