@@ -4734,11 +4734,28 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
     ${derivStepHTML("PBS",
       `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
       derivSrc.pbs)}
-    ${!rmView?`<div class="deriv-arrow small">↓</div>
-    ${derivStepHTML(`OBS · team${myBranch?` <span class="deriv-scope">· your allocated system</span>`:""}`,
-      `<div class="fval">${escHtml(personLabel(myBranch?myBranch.manager:b.manager)||"— Unassigned —")}</div>`,
-      derivSrc.obs,
-      "The team or service within the system — assigned below, not picked here.")}`:""}
+    ${(function(){
+      /* OBS shows whenever one leaf resolves — the contributor's own system, or
+         the single system a requirement carries. It used to be gated on !rmView,
+         which meant "not an admin looking at a requirement that has branches";
+         since ensureBranches() materialises a branch for every requirement, that
+         hid the last step of the chain on every single-system tender, SIG
+         included. With several systems it stays hidden here and belongs to each
+         system's own detail below, where it is unambiguous. */
+      const brs=b.branches||[];
+      const idx = myBranch ? brs.indexOf(myBranch) : (brs.length===1 ? 0 : -1);
+      if(brs.length && idx<0) return "";
+      /* The label promises a team, so show the team. The assigned person has its
+         own field; putting a name under "OBS · team" was the older conflation. */
+      const val = (derivSrc.obs && derivSrc.obs.v)
+        || personLabel(myBranch?myBranch.manager:b.manager)
+        || "— Not derived yet —";
+      return `<div class="deriv-arrow small">↓</div>`
+        + derivStepHTML(`OBS · team${myBranch?` <span class="deriv-scope">· your allocated system</span>`:""}`,
+            `<div class="fval">${escHtml(val)}</div>`,
+            derivSrc.obs,
+            "The team or service within the system — assigned below, not picked here.");
+    })()}
   </div>`;
   return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that system's own model">routes into</div>`:"") + modelHTML;
 }
