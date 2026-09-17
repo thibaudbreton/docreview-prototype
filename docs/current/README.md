@@ -54,6 +54,6 @@ Sept sources actives sont assemblées dans `index.html` et `docreview-app.html` 
 
 Conformité, versions et Q&A restent décrits dans le corpus ; leur présence ne les impose pas tous comme livrables du premier parcours. REX/Chat hors V1. La conception des modèles IA n’est pas couverte ici.
 
-Dimensionnement confirmé : jusqu’à 100 000 lignes et 10 utilisateurs simultanés. Les décisions utilisateur DEC-001 à DEC-026 figurent dans le registre ; la règle la plus récente prime.
+Dimensionnement confirmé : jusqu’à 100 000 lignes et 10 utilisateurs simultanés. Les décisions utilisateur DEC-001 à DEC-027 figurent dans le registre ; la règle la plus récente prime.
 
 Les anciennes specs sont conservées intégralement dans [l'archive](../archive/specs-2026-09-08/README.md), utile pour les détails historiques. Leurs contradictions ne doivent pas être importées dans les nouvelles tâches.
