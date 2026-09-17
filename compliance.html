@@ -693,7 +693,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
       <linearGradient id="srmLc" x1="35.01" y1="44.22" x2="84.75" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset=".168" stop-color="#1E3246"/></linearGradient>
       </defs>
       </svg>SRM</a></div>
-    <div class="crumb"><span class="sep">/</span><a class="project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a></div>
+    <div class="crumb"><span class="sep">/</span><a class="project" id="crumb-project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a></div>
     <!-- TH6 — Versions & Q&A used to sit here as a co-equal tab; it's reached
          from .hdr-actions below now. That left this nav holding a single
          "Compliance" button that only ever navigated to the screen you were
@@ -1137,11 +1137,95 @@ function genFollowupReqs(n){
   }
   return out;
 }
-const REQS=REQS_HAND.concat(genFollowupReqs(90));
+/* =====================================================
+   SIG TENDER — Compliance side of RFP-2026-114 (DEC-044)
+   Mirrors revue-documentaire.html's seedSigSections() ids and text, the same
+   independently-hand-authored-per-screen convention every other screen follows.
+
+   TENDER-PROFILES: on a standalone SIG tender consolidation runs "équipes →
+   exigence" — the per-system assignment level is gone, because the tender is
+   already scoped to one system. Each requirement therefore carries exactly one
+   branch, which is all buildFVRows() needs to keep it on a single line: its own
+   rule already says a requirement with fewer than two branches gets no sub-row.
+   The tree stays two-deep underneath so consolidate(), the verdict form and
+   casting keep working untouched; what disappears is the level on screen.
+===================================================== */
+const SIG_REQS=[
+  {id:"L4-0004",sec:"2. Train control",type:"Functional",external:"compliant",
+   text:"The system SHALL enforce a continuous safe braking envelope for every train under CBTC control, based on its position, speed and the movement authority granted by the wayside.",
+   branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:8,
+     resp:{note:"Standard CBTC protection profile, validated on two previous urban deployments. No deviation.",att:1,date:"Jul 14"}}]},
+  {id:"L4-0005",sec:"2. Train control",type:"Performance",
+   text:"Train position SHALL be reported to the wayside at least twice per second, with a confidence interval not exceeding 2 metres at any speed up to 80 km/h.",
+   branches:[{typology:"sig",manager:"sup",status:"answered",internal:"compliant",age:7,
+     resp:{note:"10 Hz reporting with a 1.4 m interval measured at 80 km/h on the reference line.",att:2,date:"Jul 15"}}]},
+  {id:"L4-0006",sec:"2. Train control",type:"Interface",
+   text:"The onboard equipment SHALL remain capable of degraded manual operation under line-side signals when CBTC coverage is unavailable, without requiring a train reset.",
+   branches:[{typology:"sig",manager:null,status:"proposed",internal:null,age:3}]},
+  {id:"L4-0008",sec:"2. Train control",type:"Functional",
+   text:"The system SHALL support a minimum headway of 90 seconds in normal service on the central section between Gare du Nord and Palais des Congrès.",
+   branches:[{typology:"sig",manager:"m_sig",status:"awaiting_answer",internal:null,age:4,lastFollowup:"Jul 16"}]},
+  {id:"L4-0009",sec:"2. Train control",type:"Regulatory",
+   text:"Migration to CBTC SHALL be carried out without interrupting commercial service, with mixed-fleet operation supported throughout the transition period.",
+   branches:[{typology:"sig",manager:"sup",status:"awaiting_answer",internal:null,age:9,lastFollowup:"Jul 11"}]},
+  {id:"L4-0010",sec:"3. Wayside and interlocking",type:"Functional",external:"compliant",
+   externalRisk:"Route release timing is met on the nominal configuration only; the degraded-mode case is priced as a contract option and the client is told the guarantee does not cover it.",
+   text:"Each interlocking SHALL guarantee that no conflicting route can be set simultaneously, and SHALL release a route only once the train has been confirmed clear of the last track section.",
+   branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"not_compliant",age:6,
+     resp:{note:"Conflicting-route exclusion is met. Release on loss of the last section detection needs a change to the standard product — not feasible within the proposed envelope.",att:1,date:"Jul 16"}}]},
+  {id:"L4-0011",sec:"3. Wayside and interlocking",type:"Performance",
+   text:"Route setting SHALL complete within 3 seconds of the request, measured from the supervision workstation to the confirmation of point position.",
+   branches:[{typology:"sig",manager:"m_sig",status:"awaiting_qa",internal:null,age:5,qaRef:"QA-L1",
+     qaNote:"The 3 s budget depends on whether point machine confirmation is included — the specification does not say."}]},
+  {id:"L4-0012",sec:"3. Wayside and interlocking",type:"Interface",
+   text:"Radio coverage SHALL be continuous across the whole line including the depot approach tracks, with no single point of failure between two consecutive access points.",
+   branches:[{typology:"sig",manager:"sup",status:"awaiting_qa",internal:null,age:4,qaRef:"QA-L2",
+     qaNote:"Depot approach tracks are not on the coverage drawings supplied; the extent cannot be priced as it stands."}]},
+  {id:"L4-0014",sec:"4. Station interfaces and safety",type:"Interface",
+   text:"Platform screen doors SHALL open only when the train is berthed within the permitted stopping tolerance and the train doors on the corresponding side are enabled.",
+   branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:6,
+     resp:{note:"Berthing tolerance and door enabling are part of the standard PSD interface. Compliant as specified.",att:1,date:"Jul 15"}}]},
+  {id:"L4-0015",sec:"4. Station interfaces and safety",type:"Security",
+   text:"Loss of the interface between the train and the platform screen doors SHALL result in the doors remaining closed, and SHALL be reported to the control centre within 2 seconds.",
+   branches:[{typology:"sig",manager:null,status:"reassignment_needed",internal:null,age:3,
+     reassignComment:"Fail-safe behaviour of the PSD interface is a safety case matter, not a signalling design one. Please reallocate."}]},
+  {id:"L4-0017",sec:"4. Station interfaces and safety",type:"Regulatory",external:"compliant",
+   text:"The supplier SHALL deliver a safety case demonstrating SIL 4 for all train protection functions, in accordance with EN 50126, EN 50128 and EN 50129.",
+   branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:9,
+     resp:{note:"SIL 4 safety case delivered on the two most recent urban CBTC projects; the same assessment body is proposed here.",att:3,date:"Jul 12"}}]},
+  {id:"L4-0018",sec:"4. Station interfaces and safety",type:"Regulatory",
+   text:"The supplier SHALL provide evidence of independent safety assessment by a recognised body before the start of passenger service on any migrated section.",
+   branches:[{typology:"sig",manager:"sup",status:"awaiting_answer",internal:null,age:2}]},
+];
+const SIG_QA=[
+  {id:"QA-L1",st:"sent",q:"Does the 3-second route setting budget include point machine confirmation, or does it stop at the command being issued?",
+   reqs:["L4-0011"],branch:{req:"L4-0011",typology:"sig"},expert:"m_sig",from:"Louis Renaud",date:"Jul 15"},
+  {id:"QA-L2",st:"draft",q:"Do the depot approach tracks fall within the radio coverage obligation? They are absent from the drawings supplied.",
+   reqs:["L4-0012"],branch:{req:"L4-0012",typology:"sig"},expert:"sup",from:"Sophie Lang",date:"Jul 16"},
+];
+(function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return;
+    const p=window.parent.getCurrentProject(); if(!p) return;
+    const el=document.getElementById("crumb-project");
+    if(el) el.textContent=p.ref+" · "+p.name;
+  }catch(e){}
+})();
+/* DEC-044 — a standalone SIG tender serves its own content; the 90 generated
+   filler requirements exist to give the reference project volume and would
+   drown a 12-requirement tender in another tender's rows. */
+const IS_SIG_TENDER = (function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return false;
+    const p=window.parent.getCurrentProject();
+    return !!p && p.line==="SIG";
+  }catch(e){ return false; }
+})();
+const REQS = IS_SIG_TENDER ? SIG_REQS : REQS_HAND.concat(genFollowupReqs(90));
 const OVERDUE_DAYS=5;
 /* T7 — a question is a first-class object: raised by one expert, bound to exactly one
    branch (reqId + typology), and that branch sits in `awaiting_qa` until an answer lands. */
-let QA=[
+let QA = IS_SIG_TENDER ? SIG_QA : [
   {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",
    reqs:["SRM-00010"],branch:{req:"SRM-00010",typology:"trk"},expert:"infra",from:"Karim Benali",date:"Jul 14"},
   {id:"QA-02",st:"internal",q:"Please confirm the required retention period for audit logs — the STB states 3 years while the applicable group policy states 5 years.",
@@ -1414,6 +1498,11 @@ const ADV_FILTER_FIELDS={
   doc:{label:"Document",type:"enum",options:DOCS.map(d=>({v:d.id,l:d.name})),get:r=>[SEC_DOC[r.sec]||""]},
   section:{label:"Section",type:"text",get:r=>[r.sec||""]},
 };
+/* TYPE-T08 — with one system on the whole tender, filtering by it offers a
+   choice where every row answers the same thing. Removed from both filter
+   surfaces rather than left as a control that can only ever be a no-op. */
+if(IS_SIG_TENDER){ delete COL_FILTER_DEFS.typo; delete ADV_FILTER_FIELDS.typo; }
+
 const ADV_FIELD_GROUPS=[
   {g:"Progress",       fields:["status","internal","external","risk"]},
   {g:"Assignment",     fields:["typo","contributor","age"]},
@@ -1836,11 +1925,14 @@ const F_RCOLS=[
   {k:"status",w:"150px"},{k:"compliance",w:"150px"},{k:"comment",w:"minmax(200px,1fr)"},
   {k:"external",w:"150px"},{k:"risk",w:"minmax(180px,1fr)"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
 ];
+/* TYPE-T08 — on a SIG tender the system axis is absent, not merely collapsed:
+   it must not be re-addable from the column menu, and it must not appear as
+   something to filter on, since every row would answer the same value. */
 const F_COLUMN_TOGGLE_DEFS=[
   {k:"typo",label:"System"},{k:"expert",label:"Assigned to"},
   {k:"status",label:"Status"},{k:"compliance",label:"Compliance"},{k:"comment",label:"Compliance comment"},
   {k:"external",label:"External compliance"},{k:"risk",label:"Risk accepted"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
-];
+].filter(c=>!IS_SIG_TENDER || c.k!=="typo");
 const F_RCOLS_BY_KEY=Object.fromEntries(F_RCOLS.map(c=>[c.k,c]));
 const F_NAV_COLS=["sel","id","req","typo","expert","status","compliance","comment","external","risk","lastfu","age"];
 function fNavCols(){ return F_NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
@@ -2132,7 +2224,7 @@ function renderPanel2(){
     </div>
     <div class="set-tabs">
       <button data-t="response" class="${state.tab==="response"?"active":""}">Assignment</button>
-      <button data-t="activity" class="${state.tab==="activity"?"active":""}">System</button>
+      ${IS_SIG_TENDER?"":`<button data-t="activity" class="${state.tab==="activity"?"active":""}">System</button>`}
       <button data-t="req" class="${state.tab==="req"?"active":""}">Requirement</button>
       <button data-t="doc" class="${state.tab==="doc"?"active":""}">Document</button>
       <button data-t="rex" class="${state.tab==="rex"?"active":""}">REX</button>
@@ -2165,7 +2257,7 @@ function renderPanel2(){
   const b=p.querySelector("#set2-body");
 
   const whoBlock=`
-    <div class="field"><label>Assignment · ${TY(br.typology).label}</label>
+    <div class="field"><label>Assignment${IS_SIG_TENDER?"":` · ${TY(br.typology).label}`}</label>
       <div class="fval">${e?`<span class="exp-mini"><span class="exp-avatar" style="background:${e.color}">${e.init}</span>${e.name} — ${e.role}</span>`:`<span class="exp-mini none">Nobody assigned yet</span>`}</div></div>
     <div class="field"><label>Status</label><div class="fval"><span class="spill ${br.status}">${BST[br.status]}</span></div></div>`;
 
