@@ -3,7 +3,7 @@
 ## Décisions de référence
 
 DEC-004 : les types à couvrir sont **Turnkey, SIG, Mainline, RSC** (réponse utilisateur 1).
-DEC-005 : le modèle et les actions de SIG sont les mêmes en tender SIG autonome et dans l'activité SIG d'un Turnkey. Dans le second cas, les contributeurs SIG ne gèrent pas le projet global : documents, équipes au niveau projet et relation client (réponse 2). Cela n'enlève pas leur droit de gérer les rattachements de leur propre activité (DEC-003).
+DEC-005 : le modèle et les actions de SIG sont les mêmes en tender SIG autonome et dans le système SIG d'un Turnkey. Dans le second cas, les contributeurs SIG ne gèrent pas le projet global : documents, équipes au niveau projet et relation client (réponse 2). Cela n'enlève pas leur droit de gérer les rattachements de leur propre système (DEC-003).
 DEC-006 : SIG conserve tous les écrans ; retirer de l'interface tout ce qui concerne la passe 1 Turnkey, dont ses ABS/PBS/OBS spécifiques. Le panneau de détail s'ouvre directement dans la configuration SIG (réponses 3–4).
 DEC-007 : le type sélectionne automatiquement la configuration/référentiels et modèles applicables. La réponse « oui » ne précise pas si le type reste modifiable après traitement : OPEN-05 reste limité à ce changement (réponse 5).
 
@@ -12,15 +12,17 @@ DEC-007 : le type sélectionne automatiquement la configuration/référentiels e
 | Fonction | Tender Turnkey | SIG au sein d'un Turnkey | Tender SIG autonome | Mainline / RSC autonomes |
 |---|---|---|---|---|
 | Passe de distribution Turnkey | Oui, au niveau global | Déjà issue de cette distribution | Non | Non, intention existante pour types non-Turnkey |
-| Allocation d'activité | Modèle propre à l'activité | Modèle SIG | Même modèle SIG | Configuration propre, pas de paramètres SIG copiés implicitement |
+| Allocation de système | Modèle propre au système | Modèle SIG | Même modèle SIG | Configuration propre, pas de paramètres SIG copiés implicitement |
 | Écrans | Référence du prototype | Mêmes actions métier SIG ; gestion globale réservée à l'équipe projet | Tous conservés, adaptés à SIG | Parcours jusqu'à allocation inclus ; détails propres non documentés par le prototype |
 | Champs ABS/PBS/OBS Turnkey | Visibles dans la passe 1 | Ne pas les confondre avec ceux de SIG | Absents, pas simplement vides | Absents dans la variante non-Turnkey ; valider détails particuliers |
-| Détail d'allocation | Distribution puis détail d'activité | Configuration SIG pour le travail SIG | Directement configuration SIG | Configuration du type correspondant |
-| Casting | Équipe projet + rattachements par activité | Gestion de ses rattachements, pas du casting global | PM + contributeurs SIG ; pas de hiérarchie interne | Même principe de droits ; vocabulaire propre à confirmer si différent |
-| Conformité | Équipes → activités → exigence | Réponses SIG alimentent le projet global | Équipes → exigence | Règles communes, pas de distribution Turnkey |
+| Détail d'allocation | Distribution puis détail de système | Configuration SIG pour le travail SIG | Directement configuration SIG | Configuration du type correspondant |
+| Casting | Équipe projet + rattachements par système | Gestion de ses rattachements, pas du casting global | PM + contributeurs SIG ; pas de hiérarchie interne | Même principe de droits ; vocabulaire propre à confirmer si différent |
+| Conformité | Équipes → systèmes → exigence | Réponses SIG alimentent le projet global | Équipes → exigence | Règles communes, pas de distribution Turnkey |
 | Documents / relation client | Équipe de gestion globale | Pas de gestion globale par simple rattachement SIG | Équipe projet SIG | Équipe du projet correspondant |
 
-Les variantes Mainline/RSC font partie du périmètre, mais leurs particularités non fournies restent OPEN-15. L'absence de description ne signifie ni exclusion du pilote ni équivalence automatique avec SIG. Les alias historiques RCS/RST/Rolling Stock ne sont pas validés comme synonymes de RSC ; les nouvelles specs utilisent les quatre noms fournis.
+Les variantes Mainline/RSC font partie du périmètre, mais leurs particularités non fournies restent OPEN-15. L'absence de description ne signifie ni exclusion du pilote ni équivalence automatique avec SIG.
+
+**Orthographe : RSC, et seulement RSC (DEC-059).** Le nom du système est **RSC**, tel que DEC-004 l'écrit — c'est la seule autorité disponible, et « RCS » que proposaient le wizard de création et les paramètres en est une inversion, alignée depuis. **RST reste distinct** : c'est un code de la capture Turnkey, donc un sous-système, et rien de fourni ne dit qu'il est le pendant de RSC. Les deux ne sont pas traités comme synonymes ; le prototype marque RST comme porteur d'un modèle pour rendre le routage démontrable, et ce point-là reste une hypothèse explicite, pas un fait. « Rolling Stock » n'est validé ni comme système ni comme code.
 
 ## Systèmes, produits et modèles
 
@@ -35,11 +37,15 @@ DEC-045 à DEC-049. Ce que les décisions antérieures appelaient « activité �
 | Produit | La déclinaison d'un système, qui **sélectionne le modèle** | SIG : Urban, Mainline · RSC : TGV, métro… | La création, **non modifiable ensuite** |
 | Modèle | Ce que le produit applique pour dériver ABS → PBS → OBS | — | Le produit par défaut, **réglable dans les paramètres** |
 
-Systèmes et sous-systèmes **cohabitent aujourd'hui dans le même champ** — la liste de référence issue de la capture (DEC-032) mélange les deux niveaux. Le partage entre ce qui est système et ce qui est sous-système reste à établir à partir de la liste réelle ; ne pas le deviner code par code.
+**Le partage système / sous-système se lit sur la provenance, pas code par code (DEC-058).** La liste de référence des 16 codes (DEC-032) est la colonne *Responsible Entity* d'une capture **Turnkey** — Riyadh L7. Ce vers quoi une distribution Turnkey répartit est, par la définition du tableau ci-dessus, du **sous-système**. La liste entière est donc au niveau sous-système ; il n'y a rien à trancher entrée par entrée, et c'est la provenance qui le dit, pas une appréciation sur chaque code.
+
+Les **systèmes** sont les types de tender de DEC-004 : Turnkey, SIG, RSC — « Mainline » étant un produit SIG et non un système, par DEC-047. Deux codes existent donc **aux deux niveaux** : SIG est un sous-système d'un Turnkey *et* un système quand il porte son propre tender ; RSC de même, sous réserve de son orthographe et de son rapport à RST (ci-dessous). Ce n'est pas une anomalie de modélisation — ce sont exactement les deux colonnes SIG de la matrice d'applicabilité.
+
+Ce double statut explique aussi pourquoi ces deux codes-là sont les seuls à porter un modèle d'allocation (`ACTIVITY_MODEL`) : un code a un modèle **parce qu'**il tient debout comme tender autonome, et le Turnkey réutilise ce modèle quand il route vers lui. Le champ unique qui les mélange aujourd'hui n'a donc pas à être scindé en deux listes ; ce qui doit être marqué, c'est ce petit ensemble de codes qui vaut aussi comme système.
 
 **Turnkey est le cas particulier.** Il n'a pas de produit propre : il porte une **combinaison** de produits de plusieurs systèmes, désignée d'un nom d'usage — TGV, Métro… Les produits y sont corrélés : un produit Urban (métro, tramway) ne se combine pas avec des trains à grande vitesse. **La matrice qui dit ce que contient chaque combinaison est à fournir.** D'ici là, la traiter en placeholder explicite à l'écran, comme la liste de catégories de non-conformité (DEC-038) — pas en la remplissant de valeurs plausibles.
 
-**Le renommage n'est pas fait.** Cette section et celle du tender SIG ci-dessous emploient le nouveau vocabulaire ; le reste du corpus — matrice d'applicabilité ci-dessus comprise — et la totalité du prototype disent encore « activité ». La passe de renommage est un chantier à part entière : le mot est dans les colonnes de table, les filtres, le Casting, les statistiques, Compliance et Q&A. Tant qu'elle n'est pas faite, lire « activité » comme « système » **sauf** quand le texte parle de l'ABS, où le mot garde son sens propre.
+**Le renommage est fait.** Le vocabulaire « système » est appliqué à l'ensemble des specs vivantes (`docs/current`) et aux commentaires du prototype. Deux réserves : les **identifiants de code** (`CAST_ACTIVITIES`, `activityId`, `deriveActivityCompliance`…) gardent leur nom — un refactor purement cosmétique sur six fichiers, sans bénéfice pour l'utilisateur — et les **documents d'archive, tickets et comptes rendus de test** ne sont pas réécrits : ce sont des traces de ce qui a été dit à une date, pas des specs. Là où le mot « activité » subsiste dans `docs/current`, il désigne l'**ABS** et garde son sens propre.
 
 **Produit figé, modèle réglable.** Le produit décrit ce que le tender *est* : il se choisit à la création et ne se corrige pas ensuite (une erreur se règle en recréant le tender, cohérent avec OPEN-05). Le modèle qu'il applique, lui, se change dans les paramètres du projet — et ce changement déclenche la relance globale décrite en ALLOC-015. Le champ « System » du wizard de création est renommé et devient ce niveau : une combinaison pour un Turnkey, un produit pour un tender spécialisé.
 
@@ -63,11 +69,11 @@ Le projet est construit **avec son propre contenu** de signalisation. Réutilise
 - TYPE-T01 : créer SIG conserve les écrans du produit et n'affiche aucun champ, filtre, étape ou action réservés à la distribution Turnkey.
 - TYPE-T02 : le panneau de détail SIG ouvre directement sa configuration, sans passage par un panneau Turnkey vide.
 - TYPE-T03 : un même cas SIG reçoit les mêmes règles d'allocation dans le projet autonome et dans la branche SIG Turnkey ; les pouvoirs de gestion globale diffèrent selon le rattachement.
-- TYPE-T04 : créer Turnkey conserve les deux passes et la consolidation multi-activité.
+- TYPE-T04 : créer Turnkey conserve les deux passes et la consolidation multi-système.
 - TYPE-T05 : Mainline et RSC chargent leur configuration ; aucune substitution silencieuse par SIG ou Turnkey si elle manque.
 - TYPE-T06 : tous les parcours et tests annoncent leur type de tender ; un test Turnkey ne vaut pas recette SIG/Mainline/RSC.
 - TYPE-T07 : ouvrir RFP-2026-114 affiche ses propres exigences de signalisation, jamais celles d'Energy Monitoring System, et aucun bandeau de contenu réutilisé.
-- TYPE-T08 : sur ce tender, aucune exigence ne porte plus d'une activité, et l'axe activité est absent de la table, du panneau de détail, des filtres et de Compliance.
+- TYPE-T08 : sur ce tender, aucune exigence ne porte plus d'un système, et l'axe système est absent de la table, du panneau de détail, des filtres et de Compliance.
 - TYPE-T09 : la chaîne de dérivation y est lue ABS puis PBS puis OBS, dans cet ordre, sur tous les écrans qui l'affichent.
 - TYPE-T10 : la ligne produit annoncée par le dashboard est celle du projet ouvert ; basculer de STB-2026 à RFP-2026-114 change l'affichage et le comportement ensemble, jamais l'un sans l'autre.
 

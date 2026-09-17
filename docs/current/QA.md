@@ -20,7 +20,7 @@ DEC-021 : même fonctionnement Q&A pour Turnkey et SIG. Fonction décrite pour l
 
 OBS : `qa.html` possède ses données et une génération de réponses fictives (`syntheticAnswer/buildDossier`). La continuité complète avec les branches bloquées de Compliance n'est pas une intégration backend démontrée. « Sent » dans le prototype après export ne prouve pas l'envoi effectif hors outil : OPEN-06.
 
-La fusion doit préserver tous les liens de travail bloqué (DOC). DEC-021 : aucune action supplémentaire lors de l’exclusion (« rien ») : conserver l’exclusion, sans notification ni déblocage ajouté. DEC-012 permet la consultation des autres activités du même projet. Les détails non répondus (plusieurs questions bloquantes, lots successifs) conservent le comportement de maquette sans élargissement implicite ; OPEN-06 résiduel.
+La fusion doit préserver tous les liens de travail bloqué (DOC). DEC-021 : aucune action supplémentaire lors de l’exclusion (« rien ») : conserver l’exclusion, sans notification ni déblocage ajouté. DEC-012 permet la consultation des autres systèmes du même projet. Les détails non répondus (plusieurs questions bloquantes, lots successifs) conservent le comportement de maquette sans élargissement implicite ; OPEN-06 résiduel.
 
 ## Acceptation
 

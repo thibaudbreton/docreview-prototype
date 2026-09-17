@@ -11,7 +11,7 @@ Dossier SRM-PROTO, HEAD `3ef09ba0f491ef9fe6dad248e2febc523cf0dddf`, fichiers de 
 | Sept écrans, anciennes pages retirées | `build_merge.py:SOURCES` |
 | Deux verdicts et R&D en commentaire | `compliance.html:CMP/CMP_ORDER`, formulaire `v-submit-compliant`, ticket fusion |
 | Trois verdicts et arbre à deux niveaux | `revue-documentaire.html:COMPLIANCE_DEFS/CMP_RANK/deriveActivityCompliance/deriveRequirementCompliance` |
-| Réponse par activité | `compliance.html:canAnswer/passesB` |
+| Réponse par système | `compliance.html:canAnswer/passesB` |
 | Casting encore lié à managerId | `dashboard-et-config.html:CAST_ACTIVITIES/castGroupHTML/PM_TEAM` |
 | Création en quatre étapes et limites | `creation-projet.html`, spec création récente |
 | Versions et gap simulés | `documents.html:uploadVersion` |

@@ -8,10 +8,10 @@
 | DOM-002 | Document / version | Un document possède plusieurs versions ; une nouvelle version ne constitue pas un autre projet. OBS/DOC |
 | DOM-003 | Élément capturé | Titre, information ou exigence. L'identifiant doit rester stable lors d'une correction de type. DOC, test utilisateur session 3 |
 | DOM-004 | Exigence | Élément qui peut être caractérisé, alloué et faire l'objet de réponses de conformité ; un responsable de suivi au maximum, absence permise DEC-010/025 |
-| DOM-005 | Branche d'activité | Une activité associée à une exigence ; peut contenir plusieurs équipes. OBS dans Allocation |
+| DOM-005 | Branche de système | Un système associé à une exigence ; peut contenir plusieurs équipes. OBS dans Allocation |
 | DOM-006 | Affectation d'équipe | Feuille de l'arbre d'allocation. Ne pas confondre équipe/service, personne responsable et rôle d'accès. DEC-010 : responsable unique au niveau exigence ; affectations multiples distinctes |
 | DOM-007 | Proposition IA | Valeur proposée pour une étape ou un champ. Sa confiance ne constitue pas une validation humaine. OBS/DOC |
-| DOM-008 | Réponse | Réponse de conformité, commentaire et, selon verdict, catégorie/topic. Consolidation par équipes/activités distincte du responsable unique de suivi ; DEC-014 confirme le calcul |
+| DOM-008 | Réponse | Réponse de conformité, commentaire et, selon verdict, catégorie/topic. Consolidation par équipes/systèmes distincte du responsable unique de suivi ; DEC-014 confirme le calcul |
 | DOM-009 | Verdict dérivé / final | Résultat calculé et résultat retenu au niveau exigence ; un verrou peut les rendre différents. OBS dans Allocation |
 | DOM-010 | Question / réponse client | Objets identifiés avec liens vers questions, exigences et travail bloqué. DOC |
 | DOM-011 | Événement d'audit | Changement avec auteur humain/machine, date, objet et ancienne/nouvelle valeur. DOC, pas de stockage réel dans le prototype |
@@ -42,7 +42,7 @@ DOM-013 : conserver séparément la proposition IA, la valeur retenue et l'évé
 
 [Variantes de tender](TENDER-PROFILES.md) : le type n’est pas un simple libellé, il sélectionne parcours et configuration. Un tender SIG autonome n’est pas un Turnkey filtré.
 
-DEC-010/025 : au plus un responsable de suivi par exigence, même si plusieurs équipes/activités contribuent ; l’absence de responsable ne bloque pas la validation d’allocation. Les réponses et allocations multiples ne créent pas autant de responsables. DEC-012 : tous les contributeurs d’une activité sont au même niveau ; ils consultent les autres activités sans les modifier.
+DEC-010/025 : au plus un responsable de suivi par exigence, même si plusieurs équipes/systèmes contribuent ; l’absence de responsable ne bloque pas la validation d’allocation. Les réponses et allocations multiples ne créent pas autant de responsables. DEC-012 : tous les contributeurs d’un système sont au même niveau ; ils consultent les autres systèmes sans les modifier.
 
 La séquence historique PBS → ABS → OBS est corrigée pour SIG par DEC-008 : **ABS → PBS → OBS → personne**.
 

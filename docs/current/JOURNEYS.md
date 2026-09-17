@@ -16,7 +16,7 @@ Acceptation : identité obligatoire contrôlée, rattachement au projet conserv�
 
 ## JRN-002 — Corriger et valider l'allocation
 
-Acteur : contributeurs dans leur activité ; validation par l’équipe de gestion du projet (DEC-009). Ouvrir Allocation → isoler les éléments à revoir → inspecter source/propositions → corriger → valider l'allocation → retrouver le travail dans Compliance. Références : ALLOC-001 à ALLOC-010.
+Acteur : contributeurs dans leur système ; validation par l’équipe de gestion du projet (DEC-009). Ouvrir Allocation → isoler les éléments à revoir → inspecter source/propositions → corriger → valider l'allocation → retrouver le travail dans Compliance. Références : ALLOC-001 à ALLOC-010.
 
 Acceptation : identité conservée après changement Type, dépendances invalidées après correction amont, progression indépendante des branches. Les champs techniques exacts et droits de validation restent liés aux questions ouvertes.
 
@@ -26,7 +26,7 @@ Acteurs : Contributor / PM. Même écran Compliance, périmètre et actions selo
 
 ## JRN-004 — Maintenir le casting
 
-PM → équipe projet et activités ; tout contributeur → rattachements de sa propre activité (DEC-003). Recherche annuaire → personne → activité/périmètre optionnel → ajout → champ prêt pour l'ajout suivant. Références ACC-001 à ACC-006. Roster 150–200 personnes décrit comme besoin, pas mesure de charge exécutée.
+PM → équipe projet et systèmes ; tout contributeur → rattachements de son propre système (DEC-003). Recherche annuaire → personne → système/périmètre optionnel → ajout → champ prêt pour l'ajout suivant. Références ACC-001 à ACC-006. Roster 150–200 personnes décrit comme besoin, pas mesure de charge exécutée.
 
 ## JRN-005 — Ajouter/remplacer un document
 
@@ -34,7 +34,7 @@ Documents → ajouter, réordonner ou nouvelle version → comparaison → relan
 
 ## JRN-006 — Traiter les questions client
 
-Contributor soulève une question liée ; PM prépare le lot et exporte ; envoi hors outil ; PM importe les réponses et arbitre les associations ; contributeur reprend son travail. Références QA-001 à QA-009. Lecture ouverte aux autres activités du même projet (DEC-012) ; formats et cas résiduels dans OPEN-06/10.
+Contributor soulève une question liée ; PM prépare le lot et exporte ; envoi hors outil ; PM importe les réponses et arbitre les associations ; contributeur reprend son travail. Références QA-001 à QA-009. Lecture ouverte aux autres systèmes du même projet (DEC-012) ; formats et cas résiduels dans OPEN-06/10.
 
 ## JRN-007 — Piloter et configurer
 

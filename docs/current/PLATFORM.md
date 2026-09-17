@@ -5,7 +5,7 @@ La stack communiquée par l'utilisateur est React côté front et Azure côté b
 ## Besoins conservés
 
 - PLAT-001 — DOC : persistance des projets, documents, exigences, affectations, réponses et états ; accès après redémarrage.
-- PLAT-002 — DOC : SSO et droits projet/activité contrôlés côté serveur. La séparation entre projets et les droits de modification doivent couvrir requêtes directes, compteurs, recherche et exports. Dans un projet, lecture de toutes les activités autorisée aux contributeurs par DEC-012.
+- PLAT-002 — DOC : SSO et droits projet/système contrôlés côté serveur. La séparation entre projets et les droits de modification doivent couvrir requêtes directes, compteurs, recherche et exports. Dans un projet, lecture de tous les systèmes autorisée aux contributeurs par DEC-012.
 - PLAT-003 — DOC : audit des changements humains et machines, identité, date, avant/après ; traçabilité des traitements IA et coût. Le suivi de session et sa rétention doivent être précisés (OPEN-11).
 - PLAT-004 — DOC : import/export DOORS 9 et DOORS NG, export Excel. Les menus CSV/ReqIF de démonstration ne prouvent pas une intégration. Formats, mappings et boucle aller-retour à contractualiser (OPEN-10/12).
 - PLAT-005 — DOC : notifications internes et email ; déclencheurs, destinataires, regroupement et relances non finalisés. L'envoi client Q&A reste hors outil (QA-003).
@@ -19,12 +19,12 @@ La stack communiquée par l'utilisateur est React côté front et Azure côté b
 | Profil de conformité | Exigences : verdict final ou en attente ; ne pas omettre les inconnus ; échelle interne DEC-001 et conversion client DEC-024 |
 | Attente interne | Affectations en attente de réponse, âge de la plus ancienne par périmètre ; distinguer Q&A client |
 | Blocage client | Affectations `awaiting_qa`, ancienneté de la question liée |
-| Casting incomplet | Périmètres/activités utiles au dossier sans personne ; responsable facultatif unique DEC-010/025 ; absence non bloquante |
+| Casting incomplet | Périmètres/systèmes utiles au dossier sans personne ; responsable facultatif unique DEC-010/025 ; absence non bloquante |
 | Travail à revoir | Réponses affectées par une nouvelle version, selon OPEN-07 |
 | Trajectoire | Historique du travail restant et échéance ; nécessite snapshots ou historique exploitable |
 | Corrections IA | Propositions modifiées par champ ; définir dénominateur, revue effective et corrections répétées |
 
-Une métrique doit annoncer son unité : exigences, activités, équipes, réponses et personnes ne sont pas interchangeables. Aucun indicateur composite santé ni pourcentage global unique n'est adopté sans définition métier. Les valeurs de démo ne constituent pas une mesure réelle.
+Une métrique doit annoncer son unité : exigences, systèmes, équipes, réponses et personnes ne sont pas interchangeables. Aucun indicateur composite santé ni pourcentage global unique n'est adopté sans définition métier. Les valeurs de démo ne constituent pas une mesure réelle.
 
 ## Correspondance avec les 29 FR historiques
 
@@ -42,7 +42,7 @@ Une métrique doit annoncer son unité : exigences, activités, équipes, répon
 | 19–20 | QA-001 à QA-009 | Deux flux, pas un chat générique |
 | 21 | PLAT-006/007 | DEC-023 : 10 utilisateurs simultanés, 100 000 lignes |
 | 22–23 | PLAT-003 | Périmètre audit et conservation OPEN-11 |
-| 24–26 | ACC-001 à ACC-007, PLAT-002 | DEC-012/013 : lecture projet, édition activité, actions PM |
+| 24–26 | ACC-001 à ACC-007, PLAT-002 | DEC-012/013 : lecture projet, édition système, actions PM |
 | 27 | OPEN-11 | Standards et contraintes à fournir |
 | 28–29 | PLAT-004 | Contrats d'échange et priorité OPEN-10/12 |
 

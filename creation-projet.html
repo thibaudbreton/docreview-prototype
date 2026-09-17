@@ -268,11 +268,11 @@ header .btn-ghost{margin-left:auto}
       <!-- TICKET-tender-creation-rework.md — "creation should produce the
            minimum needed to start working, and nothing more." Casting used to
            be steps 4-5 here; it's gone, because it stopped being a
-           creation-time activity — it's ongoing project user management on
+           creation-time system — it's ongoing project user management on
            its own permanent screen (TICKET-casting-screen-redesign.md). What
            replaces it below is the much smaller thing creation actually
            needs: who's on the project management team, not who's staffed on
-           every activity. -->
+           every system. -->
       <div class="sh">You choose how much the AI does. Every step can be turned off and handled manually.</div>
       <div class="st on" data-step="1"><div class="sn">1</div><div><div class="stt">Project identity</div><div class="std">BO-ID, name, product line</div></div></div>
       <div class="st" data-step="2"><div class="sn">2</div><div><div class="stt">Documents</div><div class="std">The tender document(s)</div></div></div>
@@ -293,7 +293,7 @@ header .btn-ghost{margin-left:auto}
           <!-- TICKET-tender-creation-rework.md — "the system choice is more
                consequential than it looks... worth treating as a deliberate
                choice in the interface rather than one field among five."
-               Turnkey resolves allocation to an activity (further split by
+               Turnkey resolves allocation to a system (further split by
                technical/non-technical); every other product line resolves it
                to a person. That's a setting, not a label, so it gets the same
                card treatment as the processing-mode choice in step 3 instead
@@ -306,7 +306,7 @@ header .btn-ghost{margin-left:auto}
             <div class="fc">
               <div class="line-picker" id="line-picker">
                 <button type="button" class="line-opt on" data-line="Turnkey">Turnkey</button>
-                <button type="button" class="line-opt" data-line="RCS">RCS</button>
+                <button type="button" class="line-opt" data-line="RSC">RSC</button>
                 <button type="button" class="line-opt" data-line="SIG">SIG</button>
                 <button type="button" class="line-opt" data-line="INFRA">INFRA</button>
                 <button type="button" class="line-opt" data-line="Rolling Stock">Rolling Stock</button>
@@ -372,7 +372,7 @@ header .btn-ghost{margin-left:auto}
                pipeline step" (it's built continuously from verdicts as
                contributors answer). Down from 4 toggles to 3: Capture,
                Characterisation, Allocation. "Allocation" here means the
-               activity a requirement needs — casting a person to it is the
+               system a requirement needs — casting a person to it is the
                separate, ongoing screen this whole rework points to; there's
                no roster to propose against at creation time any more.
                Open question in the ticket: whether the mode above should
@@ -391,7 +391,7 @@ header .btn-ghost{margin-left:auto}
           <div class="warnbox" id="manual-note" style="display:none"><b>Manual mode.</b> The review screen opens with the document but no blocks. Use <b>Edit segmentation</b> to draw requirement boundaries, then characterize and assign them from the right panel.</div>
         </section>
 
-        <!-- STEP 4 — replaces the old per-activity casting step. That's ongoing
+        <!-- STEP 4 — replaces the old per-system casting step. That's ongoing
              project user management now (TICKET-casting-screen-redesign.md),
              not something a creation form can settle up front. What's left to
              collect here is much smaller: the creator is already the first
@@ -437,7 +437,7 @@ header .btn-ghost{margin-left:auto}
 
 <script>
 /* TICKET-tender-creation-rework.md §4 — the project management team, not the
-   per-activity casting roster this step used to build. "admin" is the
+   per-system casting roster this step used to build. "admin" is the
    creator, automatically the first member, whole-project scope. Adding
    another here is the same SSO-search pattern dashboard-et-config.html's
    casting screen uses for its own PM_TEAM add flow (own independent copy of

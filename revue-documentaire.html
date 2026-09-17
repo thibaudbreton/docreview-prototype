@@ -453,7 +453,7 @@ body.mode-review .doc-scroll{display:none}
 .rrow .row-natpick{font-size:var(--text-xs);font-weight:600;color:var(--text-3);background:var(--panel-3);border-radius:var(--radius-sm);padding:1px 6px;opacity:0;transition:opacity .12s;flex-shrink:0}
 .rrow:hover .row-natpick,.rrow .row-natpick:focus-visible{opacity:1}
 .rrow .row-natpick:hover{color:var(--text);background:var(--line-2)}
-/* B8 — information rows: no activity/allocation/compliance/status, just id+text+category */
+/* B8 — information rows: no system/allocation/compliance/status, just id+text+category */
 .rrow.info-row{cursor:default}
 .rrow.info-row .c-req{gap:var(--space-2)}
 /* TH4 — was a full uppercase "Information" text pill; an info row already
@@ -746,9 +746,9 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .status-pill.s-tovalidate{background:var(--human-soft);color:var(--human)}
 .status-pill.s-allocated{background:var(--ok-soft);color:var(--ok)}
 .status-pill.s-changed{background:var(--accent-soft);color:var(--accent)}
-/* allocated activity status (sub-row, display-only — not the same states as the parent status pill) */
+/* allocated system status (sub-row, display-only — not the same states as the parent status pill) */
 .status-pill.branch-status-answered{background:var(--ok-soft);color:var(--ok);cursor:default}
-/* TD2 — full six-value allocated-activity-status set (was answered/awaiting/reassignment_needed only,
+/* TD2 — full six-value allocated-system-status set (was answered/awaiting/reassignment_needed only,
    collapsing proposed/assigned/awaiting_answer/awaiting_qa into one bucket). Styling mirrors
    compliance.html's .spill rules: proposed/assigned/awaiting_answer stay neutral,
    awaiting_qa gets the accent highlight since it's blocked on something external. */
@@ -774,12 +774,12 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .branch-caret:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .branch-caret.open{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);transform:rotate(90deg)}
 .multi-ph{color:var(--text-3);font-size:var(--text-xs);font-style:italic}
-/* allocated-activity sub-rows — tinted + indented so they read as children of the parent row */
+/* allocated-system sub-rows — tinted + indented so they read as children of the parent row */
 .rrow.branch-row{background:var(--panel-2);cursor:default}
 .rrow.branch-row:hover{background:var(--panel-2)}
 .rrow.branch-row .c-req{padding-left:var(--space-6);gap:6px}
-/* TICKET-two-pass-allocation.md — level 3: a team inside an activity. Indented
-   past the activity row so the activity grouping stays readable; the tree is
+/* TICKET-two-pass-allocation.md — level 3: a team inside a system. Indented
+   past the system row so the system grouping stays readable; the tree is
    two levels deep, not a flat list of leaves. */
 .rrow.team-row .c-req{padding-left:calc(var(--space-6) + var(--space-5))}
 .rrow.team-row{background:var(--bg)}
@@ -787,13 +787,13 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .team-connector{opacity:.55}
 .team-caret{margin-left:var(--space-4)}
 .team-count{font-size:var(--text-xs);color:var(--text-3);white-space:nowrap}
-/* pass-1 confidence, shown per level — being unsure which ACTIVITY a
+/* pass-1 confidence, shown per level — being unsure which SYSTEM a
    requirement belongs to is its own kind of doubt (§4) */
 .tkobs-val{display:inline-flex;align-items:center;gap:5px;font-size:var(--text-sm);color:var(--text-2);min-width:0}
 .tkobs-val .tkobs-c{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums}
 .tkobs-val.weak{color:var(--ia)}
 .tkobs-val.weak .tkobs-c{color:var(--ia);font-weight:700}
-/* an activity with no allocation model — routine, so neutral, not a warning */
+/* a system with no allocation model — routine, so neutral, not a warning */
 .manual-alloc-tag{font-size:var(--text-xs);font-weight:700;padding:1px 6px;border-radius:var(--radius-pill);background:var(--panel-3);color:var(--text-3);white-space:nowrap}
 .branch-connector{color:var(--text-3);flex-shrink:0}
 .cbadge.container-count-badge{color:var(--human);background:var(--human-soft);font-weight:600;flex-shrink:0}
@@ -1004,7 +1004,7 @@ body.seg-on .tbl-gran{display:inline-flex}
 .tbl-h{background:#efece3;font-family:var(--font-ui);font-size:var(--text-xs);font-weight:700;color:#6b6455}
 .doc-tbl .blk{margin:0;border-radius:0}
 
-/* ---------- Activity / perimeters ---------- */
+/* ---------- System / perimeters ---------- */
 .perim{display:inline-flex;gap:var(--space-1);align-items:center;flex-wrap:wrap}
 .ptag{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;letter-spacing:.6px;padding:1px var(--space-1);border:1px solid var(--line-2);border-radius:var(--radius-xs);color:var(--text-3);line-height:1.6;white-space:nowrap}
 .ptag.ai{border-style:dashed;border-color:rgba(224,164,60,.55);color:var(--ia)}
@@ -1094,8 +1094,8 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .deriv-pass-h{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-3)}
 .deriv-dim{font-size:var(--text-xs);color:var(--text-3);line-height:1.5;margin-bottom:var(--space-2)}
 /* The compact distribution card a contributor sees under their own
-   activity — visible (they can want to know where this came from) but
-   secondary: a small chip row, not the full per-activity list. */
+   system — visible (they can want to know where this came from) but
+   secondary: a small chip row, not the full per-system list. */
 .distrib-compact{padding:var(--space-2) var(--space-3)}
 .distrib-compact .deriv-pass-h{margin-bottom:6px}
 .distrib-chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -1132,10 +1132,10 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
    tooltip: consistent with confBadgeHTML's own convention just above it. */
 .deriv-info{width:14px;height:14px;border-radius:50%;border:1px solid var(--line-2);color:var(--text-3);font-size:9px;font-weight:700;font-style:italic;display:inline-grid;place-items:center;cursor:help;flex-shrink:0}
 .deriv-info:hover{border-color:var(--accent);color:var(--accent)}
-/* activity list — one aligned row per activity: code, name, confidence, whether
+/* system list — one aligned row per system: code, name, confidence, whether
    it has a model. The confidence badge drops the auto-margin it uses in a step
    header, otherwise it and the model tag fight over the free space. */
-/* per-activity blocks in the project manager's view */
+/* per-system blocks in the project manager's view */
 .act-block-name{font-size:var(--text-sm);font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .act-alloc-pill{font-size:var(--text-xs);font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);white-space:nowrap}
 .act-alloc-pill.s-notstarted{background:var(--panel-3);color:var(--text-3)}
@@ -1148,7 +1148,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .act-open-row{margin-top:var(--space-3);text-align:right}
 .act-detail-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
 .review-why{font-size:var(--text-xs);color:var(--ia);line-height:1.45;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--ia-soft);border-radius:var(--radius-sm)}
-/* RM view: "N assignments" indicator + retractable per-allocated-activity sections (collapsed by default) */
+/* RM view: "N assignments" indicator + retractable per-allocated-system sections (collapsed by default) */
 .branch-sections-lbl{display:block;margin-bottom:var(--space-3);font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3)}
 .branch-sections-lbl span{text-transform:none;font-weight:500;letter-spacing:0;color:var(--text-3)}
 .branch-sec{border:1px solid var(--line-2);border-radius:var(--radius-md);margin-bottom:var(--space-2);overflow:hidden}
@@ -1184,7 +1184,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .branch-proposal-actions .approve:hover{background:var(--ok);color:#fff}
 .branch-proposal-actions .reject{color:var(--warn);border:1px solid rgba(242,96,79,.5)}
 .branch-proposal-actions .reject:hover{background:var(--warn);color:#fff}
-/* TH-followup2 — was a single line cramming activity tag + manager select +
+/* TH-followup2 — was a single line cramming system tag + manager select +
    status pill together, with the select truncated to whatever room was
    left. One field per row, full width, matches how ABS/PBS/OBS already
    read in this same panel. */
@@ -1231,7 +1231,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .psearch-opt.active,.psearch-opt:hover{background:var(--panel-3)}
 .psearch-opt .exp-avatar{width:22px;height:22px;font-size:10px}
 .psearch-empty{padding:var(--space-3);font-size:var(--text-sm);color:var(--text-3);font-style:italic}
-/* role recap (Activity) */
+/* role recap (System) */
 .role-recap{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);margin-bottom:18px}
 .role-row{display:flex;align-items:center;gap:10px}
 .role-tag{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);width:62px;flex-shrink:0}
@@ -1505,7 +1505,7 @@ body.restricted .restrict-banner{display:flex}
       <!-- Support-screen access as plain icon buttons, same treatment as the
            notification bell right after them — a labelled nav-btn read as
            heavier than the other header controls sitting next to it. Casting
-           joins here too: this is where you notice an activity has nobody to
+           joins here too: this is where you notice a system has nobody to
            staff it, same as Documents is where you notice one is missing. The
            people-icon is the same glyph dashboard-et-config.html's own
            team-btn uses, so "this icon means casting" stays consistent
@@ -1572,7 +1572,7 @@ body.restricted .restrict-banner{display:flex}
       <button class="tpill p-reassign" data-filter="reassign" id="pill-reassign" style="display:none"><span class="n" id="n-reassign">0</span> pending reassignment</button>
       <!-- TICKET-two-pass-allocation.md §3/lot 4 — "must be visible and filterable —
            it's a real queue of work, not a failure." Only ever shown on a Turnkey
-           tender: everywhere else the tender's own activity always has a model by
+           tender: everywhere else the tender's own system always has a model by
            definition, so the count would be permanently zero. -->
       <button class="tpill p-manual" data-filter="manual" id="pill-manual" style="display:none"><span class="n" id="n-manual">0</span> awaiting manual allocation</button>
     </div>
@@ -1809,7 +1809,7 @@ const FLAGS = { captureCorrection:false };
 /* =====================================================
    DATA — single model feeding all three views
 ===================================================== */
-/* There is no manager/expert split: one requirement, one activity, one
+/* There is no manager/expert split: one requirement, one system, one
    assigned person — never two roles standing in for each other. MANAGERS is
    the single roster; the three former ALLOCS entries (sup/infra/cyber) live
    here now as ordinary people, same shape as everyone else, so every id that
@@ -2080,7 +2080,7 @@ function splitSectionNumTitle(section){
    computeCharStatus()/computeAllocStatus() below (unmodified) read it as
    Incomplete, same as any other block missing that data.
    `perim` is one exception: the DOORS capture's "Responsible Entity" column
-   already carries real activity codes (see import_capture_doors.py), so a
+   already carries real system codes (see import_capture_doors.py), so a
    requirement arrives pre-allocated rather than blank — that's captured
    data, not an invented characterisation. Older .xlsx-schema captures
    (import_capture.py) don't have row.perim; it's just absent there, same
@@ -2162,7 +2162,7 @@ function seedDemoSections(){
        textOriginal:"Le système DOIT fournir une visualisation consolidée des données multi-sites sur un tableau de bord unique, avec agrégation par site, région et type d'installation.",
        text:"The system SHALL provide consolidated multi-site data visualization on a single dashboard, with aggregation by site, region and installation type."},
       {id:"SRM-00009", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln","sys"], perimAI:true, pbs:{v:"Supervision / Alerting",c:89}, abs:{v:"Design & Engineering",c:74}, obs:{v:"Monitoring & Supervision — FR",c:61}, manager:"m_sig", type:"Functional", domain:"Alerting", status:"toreview", alloc:"sup", comments:0,
-       // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the allocated activities.
+       // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the allocated systems.
        branches:[
          {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:"sup", branchStatus:"answered", allocStatus:"allocated", compliance:"not_compliant",
           pbs:{v:"Supervision / Alerting",c:91}, abs:{v:"Design & Engineering",c:88}, obs:{v:"Monitoring & Supervision — FR",c:90}},
@@ -2170,8 +2170,8 @@ function seedDemoSections(){
           pbs:{v:"Platform / Wayside alerting",c:80}, abs:{v:"Performance & Validation",c:76}, obs:{v:"Infrastructure & Platform — FR",c:74}},
          {typology:"sys", label:"Safety", manager:null, expert:null, branchStatus:"reassignment_needed", allocStatus:"allocated", compliance:"pending",
           pbs:{v:"Safety / Alerting escalation",c:70}, abs:{v:"Systems Integration",c:58}, obs:{v:"Cybersecurity — Group",c:42},
-          // TICKET-two-pass-allocation.md §6 — the one seeded activity that
-          // branches again at pass 2: two teams under one activity, so the
+          // TICKET-two-pass-allocation.md §6 — the one seeded system that
+          // branches again at pass 2: two teams under one system, so the
           // tree is genuinely two levels deep somewhere in the demo and the
           // "pending propagates upward" rule has something to bite on (Risk
           // hasn't answered, so Safety stays pending however DBM answers).
@@ -2217,7 +2217,7 @@ function seedDemoSections(){
        text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile."},
       {id:"SRM-00018", kind:"heading", level:2, textOriginal:"3.2 Disponibilité", text:"3.2 Availability"},
       {id:"SRM-00019", kind:"requirement", tech:"tech", techAI:true, perim:["tky","sig","mln"], perimAI:true, pbs:{v:"Platform / Availability",c:88}, abs:{v:"Operations",c:71}, obs:{v:"Infrastructure & Platform — FR",c:63}, manager:"m_mln", type:"Performance", domain:"Availability", status:"suggested", alloc:null, comments:0,
-       // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the allocated activities.
+       // Multi-allocation demo (UI-only): every value below is hand-written, not derived from the allocated systems.
        branches:[
          {typology:"sig", label:"SIG & Urban", manager:"m_sig", expert:null, branchStatus:"proposed", allocStatus:"allocated", compliance:"pending",
           pbs:{v:"Platform / Availability",c:84}, abs:{v:"Operations",c:70}, obs:{v:"Monitoring & Supervision — FR",c:66}},
@@ -2262,11 +2262,11 @@ const SECTIONS = IS_SIG_TENDER ? seedSigSections() : (buildDataFromCapture() || 
    alone; reaching it also sends the item on to Contributor Review. */
 const STATUS_LABEL = {incomplete:"Incomplete", doubt:"To review", tovalidate:"To validate", allocated:"Allocated"};
 /* which field(s) carry the doubt, when status is "doubt" — same five fields
-   across both axes (Class/Activity on the requirement, ABS/PBS/OBS per
+   across both axes (Class/System on the requirement, ABS/PBS/OBS per
    branch), all treated identically, per the earlier OBS-like-ABS/PBS
    confirmation. */
 const DOUBT_FIELD_LABEL = {type:"Type", class:"Class", typo:"System", abs:"ABS", pbs:"PBS", obs:"OBS"};
-/* Multi-allocation (allocated activities): UI-only, hand-authored demo data — see SECTIONS entries with a `branches` array.
+/* Multi-allocation (allocated systems): UI-only, hand-authored demo data — see SECTIONS entries with a `branches` array.
    Nothing here is derived: rollupStatus / rollupCompliance / blockingBranch are written by hand per requirement. */
 const COMPLIANCE_DEFS=[
   {k:"compliant",label:"Compliant"},
@@ -2278,14 +2278,14 @@ const complianceLabel = k => (COMPLIANCE_DEFS.find(c=>c.k===k)||{}).label || k |
    BST (reference implementation). Was {answered, awaiting, reassignment_needed} — a real
    collapse of proposed/assigned/awaiting_answer/awaiting_qa into "awaiting", not a shorthand. */
 const BRANCH_STATUS_LABEL = {proposed:"Proposed", assigned:"Assigned", awaiting_answer:"Awaiting answer", awaiting_qa:"Awaiting Q&A", reassignment_needed:"Reassignment needed", answered:"Answered"};
-/* B10 — three reassignment reasons, raised by Expert or Activity Manager, always
+/* B10 — three reassignment reasons, raised by Expert or System Manager, always
    resolved by the project manager. Reallocation is always a replacement (a
-   requirement can never end up with zero activities) — reason 3 still names a
+   requirement can never end up with zero systems) — reason 3 still names a
    replacement typology, it doesn't just remove the branch. */
 const REASON_LABEL = {wrong_person:"Right system, wrong person", wrong_typology:"Wrong system", not_applicable:"This system doesn't apply here"};
 /* B1/B10 — which of this requirement's branches, if any, is stuck waiting on
    the project manager. Reads branchStatus itself, not "does a .reassignRequest
-   object exist" — a missing-activity proposal (submitPropose) also lands a
+   object exist" — a missing-system proposal (submitPropose) also lands a
    branch on "reassignment_needed" but carries a .proposal, not a
    .reassignRequest, so checking for the request object alone silently missed
    half of what actually needs PM attention. */
@@ -2330,7 +2330,17 @@ function isFreshProject(){
 /* =====================================================
    TYPOLOGY — the real "Responsible Entity" codes found in the Riyadh L7
    capture (Vol.2.2 Project Overview + Vol.2.3 WPS 1.06/4.01), replacing the
-   earlier invented mockup list. label intentionally equals code: the source
+   earlier invented mockup list.
+
+   DEC-058 — these are all SUB-SYSTEMS, and that follows from where the list
+   comes from rather than from judging each code. Riyadh L7 is a Turnkey
+   capture, "Responsible Entity" is what its distribution routed to, and what
+   a Turnkey distribution routes to is a sub-system by definition. So there is
+   no system/sub-system split to make inside this list. Systems are the tender
+   types: Turnkey, SIG, RSC. Two codes sit at both levels — SIG and RSC are
+   sub-systems of a Turnkey AND systems when they carry their own tender —
+   which is exactly why those two are the ones with an allocation model
+   (see ACTIVITY_MODEL below). label intentionally equals code: the source
    capture never spells these acronyms out, and guessing full names for
    unfamiliar domain codes (what is "CJV" versus "DEQ"?) would be inventing
    data, not importing it. If a real legend for these codes turns up, swap
@@ -2488,10 +2498,10 @@ function applyRerunTo(b, branchIdx, productId){
 
    Pass 1 (Turnkey only): characterisation feeds ONE dimension, chosen by
    technical/non-technical — non-technical reads the ABS, technical reads the
-   PBS. That dimension produces the TK OBS, which is an ACTIVITY, and the TK
-   OBS routes the requirement into that activity's own allocation model.
+   PBS. That dimension produces the TK OBS, which is an SYSTEM, and the TK
+   OBS routes the requirement into that system's own allocation model.
 
-   Pass 2 (every tender): the activity's own model, PBS -> ABS -> OBS in
+   Pass 2 (every tender): the system's own model, PBS -> ABS -> OBS in
    sequence, resolving to a team. Pass 2's OBS is a team/service, which is
    what casting staffs — not the same kind of thing as pass 1's OBS, which is
    why the two are never both labelled "OBS".
@@ -2589,18 +2599,22 @@ function ensureTranslationFields(b){
   if(!b.translationLog) b.translationLog=[];
 }
 
-/* Which activities have an allocation model of their own. SIG and RST are
+/* Which systems have an allocation model of their own. SIG and RST are
    large enough to be tender types in their own right, so their models were
    built for those standalone tenders; Turnkey reuses them when it routes
    there. Everything else has none — and that is the ordinary case, not an
    error state (ticket §3).
 
-   OPEN, and deliberately not guessed at: the ticket names SIG and "RSC" as
-   the two modelled activities, but the prototype's activity vocabulary (the
-   real Riyadh L7 capture codes above) has no RSC and no RCS — the closest
-   is RST. RST is marked modelled here so the routing is demonstrable with
-   more than one destination; confirm the real list before treating this as
-   fact. Everything not listed resolves to "no model" via the fallback. */
+   A code has a model BECAUSE it stands up as a tender of its own — that is
+   the same fact DEC-058 reads off the list, seen from the other side.
+
+   STILL OPEN, and deliberately not guessed at: the ticket names SIG and
+   "RSC" as the two modelled ones, and DEC-059 settles that spelling — RSC,
+   per DEC-004, the only authority there is. But the capture's vocabulary
+   above has no RSC; the closest is RST, and nothing supplied says RST is
+   RSC's sub-system counterpart. RST is marked modelled here so the routing
+   is demonstrable with more than one destination — an explicit assumption,
+   not a fact. Everything not listed resolves to "no model" via the fallback. */
 const ACTIVITY_MODEL={sig:true, rst:true};
 const activityHasModel=id=>!!ACTIVITY_MODEL[id];
 
@@ -2614,10 +2628,10 @@ function passOneDimension(b){
   const src = useAbs ? b.abs : b.pbs;
   return {dim: useAbs?"ABS":"PBS", value: src?src.v:null, conf: src?src.c:null};
 }
-/* a requirement can already arrive with 2+ activities — real capture data,
+/* a requirement can already arrive with 2+ systems — real capture data,
    not just something a user grows one click at a time via the perimeter
    pickers further down. Run the same sync once up front so those rows get
-   real branches (and therefore an editable manager per activity) too,
+   real branches (and therefore an editable manager per system) too,
    instead of only ever syncing on the next manual perim toggle. */
 SECTIONS.forEach(s=>s.blocks.forEach(b=>{
   const arr=(b.kind==="table")?b.rows:[b];
@@ -2661,7 +2675,7 @@ const OBS_THRESHOLD=75;
 function derivWeak(b){ return !!(b.obs && b.obs.c < OBS_THRESHOLD); }
 /* B7 — characterisation/allocation progression: Incomplete → To review → To
    validate → Allocated. Derived once at init from the AI's own confidence/
-   unconfirmed signals — techAI/perimAI for Class/Activity (characterisation,
+   unconfirmed signals — techAI/perimAI for Class/System (characterisation,
    on the requirement), weakestLink() for ABS/PBS/OBS (allocation, per branch
    — same "any of the five fields, treated identically" rule on both axes).
    STICKY once "allocated": never recomputed after a human explicitly
@@ -2670,7 +2684,7 @@ function derivWeak(b){ return !!(b.obs && b.obs.c < OBS_THRESHOLD); }
    Internal field/status names keep the shorter "doubt" spelling (doubtField,
    allocDoubtField, status:"doubt") — only the label shown to users changed.
    TICKET-ai-uncertainty-display.md — typeAI (is this block really a heading/
-   information/requirement?) is checked first, ahead of Class/Activity: those
+   information/requirement?) is checked first, ahead of Class/System: those
    checks only mean anything once the block's nature itself is trusted. It's
    also the ONLY axis information/heading blocks ever carry — see the
    kind!=="requirement" branch below, which is why this runs for every kind
@@ -2765,9 +2779,9 @@ function applyCaptureDemoStatuses(){
     // regardless of how confident the AI actually was. Confidence itself is
     // per ROW, not per branch (data.js has one confidence object per
     // requirement) — every branch shares it; the assigned person varies per
-    // branch, so a 3-activity row doesn't route all three to the same one.
+    // branch, so a 3-system row doesn't route all three to the same one.
     // branch.manager specifically was ALSO stuck permanently null/undefined
-    // for single-activity rows: ensureBranches() mirrors b.manager onto the
+    // for single-system rows: ensureBranches() mirrors b.manager onto the
     // branch once, at branch-CREATION time — which is the earlier
     // syncBranchesFromPerim sweep, running before this function has set
     // x.manager at all. myBranchOf(b) reads branch.manager, not b.manager,
@@ -2780,7 +2794,7 @@ function applyCaptureDemoStatuses(){
         if(bucket<2){ br.manager=null; br.pbs=null; br.abs=null; br.obs=null; br.tkObs=null; }
         else {
           const bh = hashId(x.id+":"+br.typology);
-          // One activity, one assigned person — mirrors x.manager rather
+          // One system, one assigned person — mirrors x.manager rather
           // than hashing independently: visibleTo(b) (the restricted-view
           // filter) reads b.manager, and myBranchOf(b) reads branch.manager;
           // picking those two apart would show a manager a requirement
@@ -2790,16 +2804,16 @@ function applyCaptureDemoStatuses(){
           br.abs = {v:"", c: x.abs.c};
           br.obs = {v:"", c: x.obs.c};
           /* TICKET-two-pass-allocation.md §4 — pass 1's TK OBS carries its OWN
-             confidence: being unsure which ACTIVITY a requirement belongs to is
+             confidence: being unsure which SYSTEM a requirement belongs to is
              a distinct and consequential kind of doubt, independent of how
-             confident pass 2 then is inside that activity. Derived from its own
+             confident pass 2 then is inside that system. Derived from its own
              hash so it genuinely varies against the pass-2 values rather than
              mirroring them. */
           br.tkObs = {v: TY(br.typology).label, c: 55 + (bh % 45)};
         }
       });
     }
-    // single-activity rows have no branches, but pass 1 still ran on them —
+    // single-system rows have no branches, but pass 1 still ran on them —
     // keep the requirement-level TK OBS so the column isn't empty for them
     if(runsPassOne() && bucket>=2 && !(x.branches&&x.branches.length) && (x.perim||[]).length){
       x.tkObs = {v: TY(x.perim[0]).label, c: 55 + (h % 45)};
@@ -2821,8 +2835,8 @@ if(window.SRM_DATA && !IS_SIG_TENDER) applyCaptureDemoStatuses();
       computeCharStatus(x);
       if(x.kind!=="requirement") return;
       // Used to read length>1 — correct back when branches[] only existed for
-      // genuinely multi-activity rows. Since syncBranchesFromPerim now
-      // materializes one branch for every allocated single-activity
+      // genuinely multi-system rows. Since syncBranchesFromPerim now
+      // materializes one branch for every allocated single-system
       // requirement too, that guard silently computed the SINGLE branch's
       // own allocStatus onto the top-level block instead — branch.allocStatus
       // (what a contributor's own status pill reads) stayed permanently
@@ -2894,7 +2908,7 @@ const STATUS_RANK = {incomplete:0, doubt:1, tovalidate:2, allocated:3};
    consolidation, §4): whichever axis is LESS far along is what's displayed,
    never the more advanced one. An unassigned OBS makes allocStatus
    "incomplete" (see computeAllocStatus) regardless of how confident the AI
-   was on Class/Activity — so a row can never read "To validate"/"To review"
+   was on Class/System — so a row can never read "To validate"/"To review"
    while its actual OBS is still empty. Multi-branch parents are
    the one exception: once characterisation is allocated, each branch tracks
    its own allocation individually (B6), so the parent row just hands off to
@@ -2924,7 +2938,7 @@ function isFullyAllocated(b){
   if((b.branches||[]).length>1) return b.branches.every(br=>br.allocStatus==="allocated");
   return b.allocStatus==="allocated";
 }
-/* B6/B7 — the detail panel's own validate CTA. A multi-activity parent only
+/* B6/B7 — the detail panel's own validate CTA. A multi-system parent only
    ever validates its own characterisation here; once that's allocated, each
    branch validates its own allocation individually from its table row (B6),
    so there is nothing left for this panel-level button to do. */
@@ -3010,9 +3024,9 @@ const state = {
   expandedBranches:new Set(),
   expandedTeams:new Set(),   // "blockId::branchIdx" — pass-2 nesting, independent of the system level
   /* Detail panel has two views, not two screens: the project manager's
-     overview of the whole distribution, and one activity's own detail — the
+     overview of the whole distribution, and one system's own detail — the
      view a specialised contributor works in. panelActivity is the branch index
-     the activity view is showing. */
+     the system view is showing. */
   panelView:"pm",
   panelActivity:null,
   redactMode:(function(){try{return (window.parent!==window&&window.parent.getRedactMode)?window.parent.getRedactMode():"redact";}catch(e){return "redact";}})(),
@@ -3102,7 +3116,7 @@ function visibleTo(b){
   if(b.manager===VIEWER) return true;
   return (b.branches||[]).some(br=>br.manager===VIEWER);
 }
-/* the allocated activity a given (non-admin) manager owns on a multi-allocation requirement, if any */
+/* the allocated system a given (non-admin) manager owns on a multi-allocation requirement, if any */
 function myBranchOf(b){ return (b.branches||[]).find(br=>br.manager===VIEWER)||null; }
 
 /* =====================================================
@@ -3118,13 +3132,13 @@ function escHtml(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&am
 function ensureBranches(b){
   if(!(b.branches&&b.branches.length)){
     const t=(b.perim&&b.perim[0])||"sig";
-    // Mirrors every field a single-activity requirement already carries at
+    // Mirrors every field a single-system requirement already carries at
     // top level — not just manager. Without pbs/abs/obs the derivation
     // chain's own confidence badges went blank on a freshly-materialized
     // branch even though the real values were sitting right there on b;
     // without allocStatus/allocDoubtField/allocReviewReason a contributor's
     // own status pill (myBranch.allocStatus) read "Incomplete" for
-    // activities that were actually long since Allocated.
+    // systems that were actually long since Allocated.
     // The manager-implies-answered rule is only a default now: a seed stating
     // its own branchStatus wins. It had to — the SIG tender called every
     // requirement with an owner "answered" on this screen while Compliance
@@ -3139,19 +3153,19 @@ function ensureBranches(b){
   }
   return b.branches;
 }
-/* keeps b.branches in step with b.perim whenever a manager toggles activities
+/* keeps b.branches in step with b.perim whenever a manager toggles systems
    directly (the propose/reassign review flow manages branches itself and
-   doesn't need this). Without it, adding a 2nd+ activity grew b.perim but
-   left b.branches untouched, so the new activity had no branch — and
+   doesn't need this). Without it, adding a 2nd+ system grew b.perim but
+   left b.branches untouched, so the new system had no branch — and
    therefore nowhere to assign a manager. ensureBranches() seeds branch[0]
    from the existing single allocation exactly as it always did; this only
    adds what's missing beyond that, one fresh (unassigned) branch per newly
-   added activity. */
+   added system. */
 function syncBranchesFromPerim(b){
-  // Used to require 2+ activities — a single-activity requirement never got a
+  // Used to require 2+ systems — a single-system requirement never got a
   // branches[] entry at all, so the panel's "Allocations" block (which reads
   // b.branches, not b.perim) had nothing to show and stayed hidden for the
-  // overwhelming majority of requirements. One activity is one allocation,
+  // overwhelming majority of requirements. One system is one allocation,
   // same as several — it should render the same way, just with one row.
   if(!b.perim || !b.perim.length) return;
   ensureBranches(b);
@@ -3164,18 +3178,18 @@ function syncBranchesFromPerim(b){
 /* =====================================================
    PASS 2 — TEAM LEVEL (TICKET-two-pass-allocation.md §6)
 
-   Allocation is a two-level tree, not a chain: one requirement -> N activities
-   -> each with M teams. `b.branches[]` was already the activity level, so it
+   Allocation is a two-level tree, not a chain: one requirement -> N systems
+   -> each with M teams. `b.branches[]` was already the system level, so it
    keeps that role; what's new is `branch.teams[]` beneath it.
 
    The per-branch allocation fields (manager, branchStatus, allocStatus,
-   pbs/abs/obs) belong to a TEAM, not to the activity — an activity with two
+   pbs/abs/obs) belong to a TEAM, not to the system — a system with two
    teams has two of each. They stay mirrored onto the branch for the single-team
    case, which is the overwhelming majority and what every existing consumer
    still reads; ensureTeams() is what keeps the two views in step.
 
    `branch.compliance` becomes DERIVED and is never entered by anyone: an
-   activity's verdict is the most restrictive of its teams', pending until all
+   system's verdict is the most restrictive of its teams', pending until all
    of them have answered (§6). Same rule, applied again one level up, gives the
    requirement's verdict.
 ===================================================== */
@@ -3216,7 +3230,7 @@ function consolidateCompliance(values){
   if(values.some(v=>!v||v==="pending")) return "pending"; // one silent leaf blocks its parent
   return values.reduce((worst,v)=>(CMP_RANK[v]||0)>(CMP_RANK[worst]||0)?v:worst, values[0]);
 }
-/* An activity's verdict is derived from its teams and mirrored back onto the
+/* A system's verdict is derived from its teams and mirrored back onto the
    branch, so every existing consumer of branch.compliance keeps reading a
    correct value without knowing the tree got deeper. */
 function deriveActivityCompliance(branch){
@@ -3240,7 +3254,7 @@ function deriveRequirementCompliance(b){
    with several teams, which this file already knows how to consolidate
    (most restrictive wins, pending until all answer, per deriveActivityCompliance
    above). Editable in the contributor's own view only, same +Add/✕ pattern
-   as the Activity list (.ui-list/.ui-list-add, components.css). */
+   as the System list (.ui-list/.ui-list-add, components.css). */
 /* `ctx` ({reqId, branchIdx, systemId}) turns each row into its own re-run
    target. Only when there are several: with one organisation the control stays
    on the model heading, where the chain it re-derives is named. */
@@ -3301,7 +3315,7 @@ function bindObsList(body,myBranch,b){
 /* TICKET-two-pass-allocation.md §6 — derive every requirement's verdict from
    its tree once at init, so the hand-authored rollupCompliance values stop
    being the source of truth and start being checked against the teams
-   underneath them. Runs after syncBranchesFromPerim so every activity has a
+   underneath them. Runs after syncBranchesFromPerim so every system has a
    branch to derive from.
    This has to sit AFTER deriveRequirementCompliance/consolidateCompliance/
    CMP_RANK are declared, not just after they're USED elsewhere — CMP_RANK is
@@ -3309,14 +3323,14 @@ function bindObsList(body,myBranch,b){
    Declared earlier in the file, it tripped a temporal-dead-zone
    ReferenceError on every load; it only went unnoticed because it requires
    (r.branches||[]).length>0 at sweep time, which used to be rare (2+
-   activities only) until syncBranchesFromPerim started running from one
-   activity up. */
+   systems only) until syncBranchesFromPerim started running from one
+   system up. */
 SECTIONS.forEach(s=>s.blocks.forEach(b=>{
   const arr=(b.kind==="table")?b.rows:[b];
   arr.forEach(r=>{ if(r.kind==="requirement" && (r.branches||[]).length) deriveRequirementCompliance(r); });
 }));
 
-/* The pass-2 allocation status, at ACTIVITY level — "has this activity done its
+/* The pass-2 allocation status, at SYSTEM level — "has this system done its
    allocation yet?". Derived from its teams the same way its verdict is, so
    nobody enters it and it can't drift: no team resolved -> Not started, some ->
    In progress, all -> Allocated. Deliberately three states, not the four-state
@@ -3329,7 +3343,7 @@ function activityAllocStatus(branch){
   if(!resolved) return "notstarted";
   return resolved===teams.length ? "allocated" : "inprogress";
 }
-/* §3 — routed to an activity that has no allocation model: activity known,
+/* §3 — routed to a system that has no allocation model: system known,
    fine allocation still to be done by hand. A routine mode of working, not a
    failure, and a real queue of work that has to be filterable. */
 function needsManualAllocation(branch){
@@ -3343,7 +3357,7 @@ function reqNeedsManualAllocation(b){
 
 /* §6 — the tree branches at two independent levels; a requirement's SHAPE is
    one of three states, the deepest branching present. A requirement can be
-   multi-activity AND have one of those activities branch into multiple teams —
+   multi-system AND have one of those systems branch into multiple teams —
    reported as "team" in that case, since that's the level someone filtering by
    shape actually wants to find. */
 function reqAllocLevel(b){
@@ -3353,8 +3367,8 @@ function reqAllocLevel(b){
   return "single";
 }
 /* §4/§2 — which pass a requirement's doubt belongs to, if any. Pass 1 doubt
-   (unsure which ACTIVITY this belongs to) is checked first and wins: it is
-   the more consequential kind — a weak pass-2 chain inside the wrong activity
+   (unsure which SYSTEM this belongs to) is checked first and wins: it is
+   the more consequential kind — a weak pass-2 chain inside the wrong system
    is moot. Only ever "pass1" on a Turnkey tender, since nothing else runs pass 1. */
 function reqPassDoubt(b){
   const brs=b.branches||[];
@@ -3387,7 +3401,7 @@ function matchesFilter(b){
   if(!passesAdvFilter(b)) return false;
   const isInfo = blockNature(b)==="info";
   // B8 / TICKET-ai-uncertainty-display.md — an information row carries none of
-  // the fields most quick/column filters describe (no activity, no allocation…),
+  // the fields most quick/column filters describe (no system, no allocation…),
   // but it CAN now carry a Type-review state, so the status quick-filters (and
   // the doubtfield=type column filter, already handled by passesColFilters
   // above) are let through instead of blanket-hiding every info row under any
@@ -3827,10 +3841,10 @@ function rowInnerHTML(b){
   const branchBadge = hasBranches?`<span class="cbadge branch-count-badge" title="${b.branches.length} parallel allocations">⑂ ${b.branches.length}</span>`:"";
   // B1/B10 — computed live from branchStatus (blockedBranchOf), not just the
   // hand-typed demo field: any row with a branch stuck on "reassignment
-  // needed" shows this on the COLLAPSED row, single-activity or not — that's
+  // needed" shows this on the COLLAPSED row, single-system or not — that's
   // the overwhelming majority of requirements, and before this it was
-  // invisible there entirely (only visible by expanding a multi-activity
-  // row, which single-activity rows don't even have).
+  // invisible there entirely (only visible by expanding a multi-system
+  // row, which single-system rows don't even have).
   const blockedBranch = blockedBranchOf(b);
   const blockingLabel = b.blockingBranch || (blockedBranch?`${blockedBranch.label||TY(blockedBranch.typology).label} — reassignment needed`:null);
   const blockingBadge = blockingLabel?`<span class="cbadge blocking-badge" title="${escHtml(blockingLabel)}">⚠ Blocked</span>`:"";
@@ -3850,7 +3864,7 @@ function rowInnerHTML(b){
   const mgrCellHTML = hasBranches
     ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see managers per branch">Multiple (${b.branches.length})</span>`
     : `<select class="cell-select${b.manager?"":" empty"}" data-mgr="${b.id}">${mgrOptions}</select>`;
-  /* TICKET-two-pass-allocation.md — pass 1's output: the ACTIVITY the
+  /* TICKET-two-pass-allocation.md — pass 1's output: the SYSTEM the
      requirement was distributed to, with its own confidence. Empty on every
      non-Turnkey tender, which runs no pass 1 at all. Never labelled "OBS" on
      its own — the header says TK OBS, the pass-2 column says OBS · team. */
@@ -3864,7 +3878,7 @@ function rowInnerHTML(b){
   const obsCellHTML = hasBranches
     ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see the team per branch">Multiple (${b.branches.length})</span>`
     : `<span class="fval">${escHtml((b.obs&&b.obs.v)||"—")}</span>`;
-  /* B7 — status pill: characterisation (Class/Activity, on b) and allocation
+  /* B7 — status pill: characterisation (Class/System, on b) and allocation
      (ABS/PBS/OBS) combine "most restrictive wins" via effectiveStatus() — per
      branch for multi-branch rows (shown on the branch sub-row instead, see
      branchRowHTML), or on b itself for the common single-branch case — then
@@ -3909,7 +3923,7 @@ function rowInnerHTML(b){
     <div class="rcell c-status"><button class="status-pill ${statusCls}" data-cycle="${b.id}" title="${statusTitle.replace(/"/g,'&quot;')}">${statusLbl}</button></div>
     <div class="rcell c-compliance">${complianceHTML}</div>`;
 }
-/* B8 — an information row: no activity, no allocation, no compliance — the
+/* B8 — an information row: no system, no allocation, no compliance — the
    category is its only attribute. Same 11-column grid as a requirement row
    so the header stays aligned, everything past the text cell is just a
    placeholder. TICKET-ai-uncertainty-display.md is the one exception: the
@@ -3937,11 +3951,11 @@ function infoRowHTML(b){
     <div class="rcell c-status">${statusHTML}</div>
     <div class="rcell c-compliance"><span class="ph">—</span></div>`;
 }
-/* one editable sub-row per allocated activity — UI-only, no recomputation of the parent on edit */
+/* one editable sub-row per allocated system — UI-only, no recomputation of the parent on edit */
 function branchRowHTML(parent, branch, idx){
   const mgrOptions = ['<option value="">— Unassigned —</option>']
     .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${branch.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
-  /* B7 — per-allocated-activity allocation status (B6: each allocated activity progresses on its own,
+  /* B7 — per-allocated-system allocation status (B6: each allocated system progresses on its own,
      independent of its siblings) — once allocated, falls through to whatever
      the existing branch-tracking status already shows (Contributor Review). */
   const branchStatusHTML = (branch.allocStatus && branch.allocStatus!=="allocated")
@@ -3951,13 +3965,13 @@ function branchRowHTML(parent, branch, idx){
         return `<button class="status-pill s-${branch.allocStatus}" data-branchcycle="${parent.id}::${idx}" title="${title.replace(/"/g,'&quot;')}">${STATUS_LABEL[branch.allocStatus]}</button>`;
       })()
     : `<span class="status-pill branch-status-${branch.branchStatus}" title="In Contributor Review">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>`;
-  /* TICKET-two-pass-allocation.md §6 — an activity that branches again at pass 2
+  /* TICKET-two-pass-allocation.md §6 — a system that branches again at pass 2
      stops being editable in place: its manager/team/verdict belong to the teams
      underneath it, and its own verdict is DERIVED, never entered. A single-team
-     activity (the common case) still edits inline and writes through to teams[0],
+     system (the common case) still edits inline and writes through to teams[0],
      so nothing changes for it.
      The branch-level lock that used to render here is gone: the lock applies only
-     at the requirement's final verdict, never a leaf and never an activity. */
+     at the requirement's final verdict, never a leaf and never a system. */
   const teams=ensureTeams(branch);
   const multiTeam=teams.length>1;
   const teamKey=`${parent.id}::${idx}`;
@@ -3991,9 +4005,9 @@ function branchRowHTML(parent, branch, idx){
   </div>`;
 }
 
-/* Level 3 — one team within an activity. Where the actual allocation lives once
-   pass 2 branches: manager, team, verdict. Indented past the activity row so the
-   activity grouping stays legible rather than flattening into a list of leaves. */
+/* Level 3 — one team within a system. Where the actual allocation lives once
+   pass 2 branches: manager, team, verdict. Indented past the system row so the
+   system grouping stays legible rather than flattening into a list of leaves. */
 function teamRowHTML(parent, branch, bidx, team, tidx){
   const mgrOptions = ['<option value="">— Unassigned —</option>']
     .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${team.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
@@ -4060,7 +4074,7 @@ function passesColFilters(b){
      field, which the corpus calls Type in one place). Also added a 4th real
      value, Image, that the spec's table didn't list.
    - "Perimeter" isn't a field of its own — it's the same underlying data as
-     Activity (b.perim). Offering both would be two fields answering the same
+     System (b.perim). Offering both would be two fields answering the same
      question; merged into one.
    - Status options are the live STATUS_LABEL values (…/Allocated), not the
      spec's literal "Valid" — matching real data, not spec prose, per §2's own
@@ -4114,7 +4128,7 @@ function pushRow(b){
   if((b.branches||[]).length>1 && state.expandedBranches.has(b.id)){
     b.branches.forEach((branch,idx)=>{
       VROWS.push({type:"branch",parent:b,branch,idx});
-      // second level: teams within this activity, only when it actually branches
+      // second level: teams within this system, only when it actually branches
       const teams=ensureTeams(branch);
       if(teams.length>1 && state.expandedTeams.has(`${b.id}::${idx}`)){
         teams.forEach((team,tidx)=>VROWS.push({type:"team",parent:b,branch,bidx:idx,team,tidx}));
@@ -4186,7 +4200,7 @@ function renderReview(){
     const def=COL_FILTER_DEFS[c], excl=state.colFilters[c];
     const kept=def.options.filter(o=>!excl.has(o.v)), gone=def.options.filter(o=>excl.has(o.v));
     if(!kept.length) return `${def.label} — nothing shown`;
-    // "Activity is not TRK" beats listing the sixteen values that stayed.
+    // "System is not TRK" beats listing the sixteen values that stayed.
     return gone.length<kept.length
       ? `${def.label} is not ${gone.map(o=>o.l).join(", ")}`
       : `${def.label} is any of ${kept.map(o=>o.l).join(", ")}`;
@@ -4254,7 +4268,7 @@ function renderReview(){
 ===================================================== */
 const NAV_COLS=["sel","id","req","class","typo","abs","type","tkobs","obs","mgr","status","compliance"];
 function navCols(){ return NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
-/* flat, on-screen order of data rows (parents + visible allocated-activity sub-rows) — respects
+/* flat, on-screen order of data rows (parents + visible allocated-system sub-rows) — respects
    current sort/filter/branch-expansion, exactly what Up/Down should step through.
    This stays host-specific (VROWS is revue's own row model) — everything below it
    is generic and shared with the follow-up screen via table-engine.js (TE). */
@@ -4308,9 +4322,9 @@ function bindVRows(win){
     state.expandedBranches.has(id) ? state.expandedBranches.delete(id) : state.expandedBranches.add(id);
     renderReview();
   }));
-  /* second level — teams within one activity. Independent of the activity
+  /* second level — teams within one system. Independent of the system
      caret: collapsing the requirement hides everything under it, but an
-     activity's teams keep their own open/closed state. */
+     system's teams keep their own open/closed state. */
   win.querySelectorAll("[data-teamtoggle]").forEach(btn=>btn.addEventListener("click",e=>{
     e.stopPropagation();
     const k=btn.dataset.teamtoggle;
@@ -4318,7 +4332,7 @@ function bindVRows(win){
     renderReview();
   }));
   /* team-level edits — this is where allocation actually lives once pass 2
-     branches. Every verdict change re-derives the activity and the requirement
+     branches. Every verdict change re-derives the system and the requirement
      above it; nothing writes a derived value directly. */
   const teamAt=(key)=>{
     const [id,bidx,tidx]=key.split("::"); const f=findBlock(id); if(!f) return null;
@@ -4402,7 +4416,7 @@ function bindVRows(win){
     renderReview();
   }));
 }
-/* inline activity popover (multi-select) */
+/* inline system popover (multi-select) */
 function openTypoPopover(anchor, id){
   document.querySelectorAll(".typo-pop").forEach(p=>p.remove());
   const f=findBlock(id); if(!f) return; const b=f.b; b.perim=b.perim||[];
@@ -4448,7 +4462,7 @@ function togglePeek(id, tr){
 /* =====================================================
    RENDER — RIGHT PANEL
 ===================================================== */
-/* B1/B10 — activity manager's "propose a change" trigger: a reassignment request
+/* B1/B10 — system manager's "propose a change" trigger: a reassignment request
    (one of three reasons, B10) or a missing typology, both route to the existing
    reassignment_needed state for the project manager to review */
 function proposeBlockHTML(b, hasBranches, myBranch){
@@ -4566,9 +4580,9 @@ function rejectProposal(b,idx){
 }
 /* B10 — reassignment request approve/reject. Approve always replaces, never
    just removes: "wrong person" keeps the same typology and swaps the expert;
-   "wrong typology" / "activity doesn't apply" swap the branch's typology itself
+   "wrong typology" / "system doesn't apply" swap the branch's typology itself
    for the one the requester named — the branch never disappears outright, so a
-   requirement can never end up with zero activities. */
+   requirement can never end up with zero systems. */
 function approveReassign(b,idx){
   const branch=b.branches[idx]; const req=branch.reassignRequest; if(!req) return;
   const actor = MGR(VIEWER).name;
@@ -4630,7 +4644,7 @@ function syncReassignRequestsFromShell(){
     pushBranchLog(b, req.byName, `Requested reassignment for ${TY(req.typology).label} — ${REASON_LABEL[req.reason]}: "${req.note}"`);
   });
 }
-/* roles recap for the Activity tab: Admin, Assigned to — one person, one row */
+/* roles recap for the System tab: Admin, Assigned to — one person, one row */
 function roleRecapHTML(b){
   const admin = MANAGERS.find(m=>m.admin);
   const mgr = b.manager?MGR(b.manager):null;
@@ -4659,7 +4673,7 @@ function roleRecapHTML(b){
    never collapsed into one row-level signal.
 
    On a Turnkey tender, pass 1 is shown above pass 2: the single dimension it
-   read, the activity it produced, and whether that activity has a model to
+   read, the system it produced, and whether that system has a model to
    route into or needs allocating by hand.
 ===================================================== */
 function confBadgeHTML(f){
@@ -4675,9 +4689,9 @@ function derivStepHTML(label,control,conf,hint,info){
   </div>`;
 }
 /* The full "who else is on this requirement, and where" card — every
-   activity this requirement touches, not just one. Used for the PM/no-
-   activity-yet path here, and reused as the contributor's own (lower,
-   de-emphasized but real) "Distribution across activities" block. */
+   system this requirement touches, not just one. Used for the PM/no-
+   system-yet path here, and reused as the contributor's own (lower,
+   de-emphasized but real) "Distribution across systems" block. */
 function distributionBlockHTML(b, compact){
   if(!runsPassOne()) return "";
   const dim=passOneDimension(b);
@@ -4685,7 +4699,7 @@ function distributionBlockHTML(b, compact){
     ? b.branches
     : ((b.perim||[]).length ? [{typology:b.perim[0], label:TY(b.perim[0]).label, tkObs:b.tkObs}] : []);
   // §3.7 — unwrapped: no surrounding .deriv-pass card here (border/background/
-  // padding), just the heading and its content directly. The sibling "activity's
+  // padding), just the heading and its content directly. The sibling "system's
   // own model" block in derivationChainHTML below keeps its own .deriv-pass —
   // this only strips the wrapper distributionBlockHTML used to draw around
   // itself.
@@ -4797,7 +4811,7 @@ function bindAssignments(root, b){
 }
 function derivationChainHTML(b,myBranch,derivSrc,rmView){
   const distribHTML = distributionBlockHTML(b);
-  /* ---- the activity's own model, PBS -> ABS -> OBS ---- */
+  /* ---- the system's own model, PBS -> ABS -> OBS ---- */
   const scope = myBranch ? `${TY(myBranch.typology).label}` : (runsPassOne()?"The system's own model":`${escHtml(TENDER_LINE)}'s model`);
   const modelHTML = `<div class="deriv-pass">
     <div class="deriv-pass-h">${escHtml(scope)}${(function(){
@@ -4849,13 +4863,13 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
   </div>`;
   return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that system's own model">routes into</div>`:"") + modelHTML;
 }
-/* A contributor's own view of one activity — fixed order, explicitly
+/* A contributor's own view of one system — fixed order, explicitly
    specified: ABS, PBS, OBS (the organisation, not a person), who's assigned
    (manager and expert together), a separator, the verdict, a separator, the
    distribution block (visible, just not first, and compact here), any
    pending reassignment request, propose-a-change, and finally source
    section. Everything else that used to show here is gone — this replaces
-   the scattered Classification/Activity-field/derivationChainHTML/mgr-block
+   the scattered Classification/System-field/derivationChainHTML/mgr-block
    sequence entirely for the myBranch case, rather than threading one more
    condition through each of those. */
 function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx){
@@ -4893,14 +4907,14 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
    DETAIL PANEL — two views, one panel
 
    VIEW 1, the project manager's on a Turnkey tender: what the distribution
-   decided, and where each activity has got to. Classification reads as one
+   decided, and where each system has got to. Classification reads as one
    sequence — nature, type, the single dimension that type selects, then the
-   activities it produced — followed by one block per activity carrying only
+   systems it produced — followed by one block per system carrying only
    what a PM needs to see about it: its OBS, whether it has allocated yet, its
    verdict, and who holds it.
 
-   VIEW 2, one activity's own detail: the view a specialised contributor works
-   in. Full pass-2 chain for that activity, the person on it, and the two
+   VIEW 2, one system's own detail: the view a specialised contributor works
+   in. Full pass-2 chain for that system, the person on it, and the two
    escalations they can raise.
 
    Deliberately not two screens: it's the same requirement either way, so
@@ -4950,10 +4964,10 @@ function pmClassificationHTML(b){
       </div>
     </div>`;
 }
-/* Per-activity OBS breakdown — one row per organisation on that activity,
+/* Per-system OBS breakdown — one row per organisation on that system,
    used inside activityBlocksHTML's own card rather than as a separate
-   cross-activity recap. Falls back to the plain single-line form when the
-   activity only has one team, since there's nothing to break down. */
+   cross-system recap. Falls back to the plain single-line form when the
+   system only has one team, since there's nothing to break down. */
 function obsBreakdownHTML(teams){
   if(teams.length<=1){
     const t=teams[0];
@@ -5007,9 +5021,9 @@ function activityDetailHTML(b,bidx){
   const teams=ensureTeams(branch);
   const t=teams[0];
   const mgr=t.manager?(MGR(t.manager)||{}).name:null;
-  /* Specialty = the sub-activity inside the activity (Urban, Mainline…), the
-     level the casting model already has between activity and perimeter. Read
-     from the activity's own label where the source data carries it — not
+  /* Specialty = the sub-system inside the system (Urban, Mainline…), the
+     level the casting model already has between system and perimeter. Read
+     from the system's own label where the source data carries it — not
      invented as a new field. */
   const specialty=(branch.label&&branch.label!==TY(branch.typology).label)
     ? branch.label.replace(TY(branch.typology).code,"").replace(/^[\s&·—-]+/,"").trim()
@@ -5061,28 +5075,28 @@ function renderSettings(){
   const hasBranches = isReq && (b.branches||[]).length>=1;
   const rmView = hasBranches && isAdmin();
   const myBranch = hasBranches && !isAdmin() ? myBranchOf(b) : null;
-  // B10 — a reassignment request (or a B1 add-activity proposal) needs the project
+  // B10 — a reassignment request (or a B1 add-system proposal) needs the project
   // manager's approve/reject card even when the requirement still has only one
-  // allocated activity; hasBranches/rmView alone would hide it until a second allocated activity exists.
+  // allocated system; hasBranches/rmView alone would hide it until a second allocated system exists.
   const showBranchPanel = isReq && isAdmin() && ((b.branches||[]).length>=1 || (b.branches||[]).some(br=>br.proposal||br.reassignRequest));
   /* The project manager's two-pass view of a Turnkey tender. Everything else —
      a contributor, or any non-Turnkey tender — keeps the single-pass panel it
      already had, since there is no distribution to explain there. */
   const pmTurnkey = isReq && runsPassOne() && isAdmin();
   const actView = pmTurnkey && state.panelView==="activity" && state.panelActivity!=null;
-  // TC1 — a request raised by the EXPERT belongs to that allocated activity's own manager to
+  // TC1 — a request raised by the EXPERT belongs to that allocated system's own manager to
   // resolve, not the admin (a byRole:"manager" request is a B1 escalation and stays
   // admin-only, handled above by showBranchPanel). Looked up independently of
-  // myBranch/hasBranches so it still surfaces on a requirement with only one allocated activity.
+  // myBranch/hasBranches so it still surfaces on a requirement with only one allocated system.
   const myReassignBranch = isReq && !isAdmin()
     ? (b.branches||[]).find(br=>br.manager===VIEWER && br.reassignRequest && br.reassignRequest.byRole==="expert")
     : null;
   const myReassignIdx = myReassignBranch ? b.branches.indexOf(myReassignBranch) : -1;
   const es = effectiveStatus(b);
   // A contributor's status pill has to be THEIRS, not the requirement's own
-  // rollup — on a multi-activity requirement, effectiveStatus(b) tracks
+  // rollup — on a multi-system requirement, effectiveStatus(b) tracks
   // characterisation, never any one branch's own progress, so a manager
-  // whose own activity was long since answered still saw whatever the
+  // whose own system was long since answered still saw whatever the
   // requirement's top-level state happened to be. myBranch.allocStatus (same
   // computeAllocStatus() output, same STATUS_LABEL vocabulary, already what
   // the table's own per-branch cycle button reads) is the real answer to
@@ -5268,8 +5282,8 @@ function renderSettings(){
       state.panelView="pm"; state.panelActivity=null;
       applyViewColumns(); renderSettings();
     });
-    // the activity view's escalations reuse the existing forms — same two
-    // reasons the propose block already offers, raised from inside one activity
+    // the system view's escalations reuse the existing forms — same two
+    // reasons the propose block already offers, raised from inside one system
     body.querySelector("#act-reassign")?.addEventListener("click",()=>renderReassignForm(b,body));
     body.querySelector("#act-missing")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
@@ -5296,20 +5310,20 @@ function renderSettings(){
       const p=btn.dataset.perim;
       b.perim = b.perim || [];
       const removing = b.perim.includes(p);
-      // §3.4 — removing the LAST activity can't just empty b.perim: per B10, a
-      // requirement can never end up with zero activities.
+      // §3.4 — removing the LAST system can't just empty b.perim: per B10, a
+      // requirement can never end up with zero systems.
       if(removing && b.perim.length===1){
         state.typoOpen=false;
         if(isAdmin()){
           // Admin has no request-to-approve here — they decide directly — but
-          // "decide directly" still can't mean "leave zero activities" (there's
+          // "decide directly" still can't mean "leave zero systems" (there's
           // no #propose-form for them to route into either, that's a
           // non-admin-only trigger). Add-then-remove keeps the same invariant
           // without inventing a second UI just for this edge case.
           toast("Add a replacement system first, then remove this one — a requirement can't have zero systems","warn");
         } else {
           // A manager already has the request/approval flow (B10) for exactly
-          // this: swap a wrong activity for the right one via PM review,
+          // this: swap a wrong system for the right one via PM review,
           // rather than a second, parallel way of doing the same thing.
           toast("This is the last system — request a replacement instead of removing it outright","warn");
           renderReassignForm(b, body);
@@ -5318,7 +5332,7 @@ function renderSettings(){
       }
       const wasAI=b.perimAI, prevPerim=(b.perim||[]).slice();
       if(removing){
-        // Not the last activity — remove it, and the branch it created with
+        // Not the last system — remove it, and the branch it created with
         // it (syncBranchesFromPerim only ever ADDS a missing branch; nothing
         // previously removed the orphaned one when a typology was unchecked).
         const branch=(b.branches||[]).find(br=>br.typology===p);
@@ -5607,7 +5621,7 @@ function setManagerAssignment(id,mid){
     toast(`${id} assigned to ${MGR(mid).name}`,"ok",()=>{f.b.manager=before;refresh()});
   }
 }
-/* B7 — Class/Activity (characterisation) and ABS/PBS/OBS (allocation) are two
+/* B7 — Class/System (characterisation) and ABS/PBS/OBS (allocation) are two
    separate axes now; a manual correction on one never touches the other, and
    neither ever downgrades an item that already reached Allocated. */
 function markCharEdited(b){ if(b.status!=="allocated") b.status="tovalidate"; }
@@ -5621,7 +5635,7 @@ function markAllocEdited(target){
   target.allocStatus = target.manager ? "tovalidate" : "incomplete";
   target.allocDoubtField=null; target.allocReviewReason=null;
 }
-/* B6/B7 — the one validate action: the row's status-pill click, each allocated activity's
+/* B6/B7 — the one validate action: the row's status-pill click, each allocated system's
    own status-pill click, and the Bulk Action Bar all route through this.
    Advances characterisation first (requirement-level), then — once that's
    already Allocated — this row's/branch's own allocation, individually (B6:
@@ -5882,7 +5896,7 @@ document.addEventListener("click",e=>{ if(!e.target.closest("#viewas")) document
 document.getElementById("restrict-exit").addEventListener("click",()=>setViewer("admin"));
 renderViewAs();
 
-/* Activity toolbar */
+/* System toolbar */
 /* ---------- per-column sort ---------- */
 function setSortCol(col){
   if(col==null){ state.sortCol=null; }
@@ -5921,8 +5935,8 @@ const RCOLS=[
 const RCOLS_BY_KEY=Object.fromEntries(RCOLS.map(c=>[c.k,c]));
 /* The panel's two views ask different questions of the table, so each brings its
    own default column set: the project-manager overview is about pass 1 (which
-   activity, is it distributed), the activity view is about pass 2 inside one
-   activity (the ABS/PBS/OBS chain and who holds it). Only ever applied on a
+   system, is it distributed), the system view is about pass 2 inside one
+   system (the ABS/PBS/OBS chain and who holds it). Only ever applied on a
    view switch — after that the View menu wins, so a deliberate choice is never
    overwritten on the next click. */
 const VIEW_COLUMNS={
@@ -6029,7 +6043,7 @@ function renderColFilterIndicators(){
 
 /* ---------- Advanced filter builder (SPEC-advanced-filters.md) ---------- */
 /* §11 — "ordering by what's already known about how they sweep — status,
-   per-field doubt, activity — is a reasonable placeholder." A flat list of 15
+   per-field doubt, system — is a reasonable placeholder." A flat list of 15
    fields wasn't that ordering, it was the data model's declaration order, and
    it opened every new condition on ID (the one field nobody sweeps on).
    Grouped, sweep-first, and the group a field lives in is itself the answer to
@@ -6504,7 +6518,7 @@ function renderExportPanel(){
 document.getElementById("export-btn")?.addEventListener("click",e=>{ e.stopPropagation(); exportState.docId=state.docFilter; exportState.open=!exportState.open; renderExportPanel(); });
 document.addEventListener("click",e=>{ if(exportState.open && !e.target.closest("#export-panel") && !e.target.closest("#export-btn")){ exportState.open=false; renderExportPanel(); } });
 
-/* close activity dropdown on outside click */
+/* close system dropdown on outside click */
 document.addEventListener("click",e=>{
   if(state.typoOpen && !e.target.closest("#typo-msel")){ state.typoOpen=false; renderSettings(); }
 });
