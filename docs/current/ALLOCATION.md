@@ -43,7 +43,7 @@ Sources : `revue-documentaire.html:renderReassignForm/submitReassignRequest/appr
 
 ALLOC-014 — DEC-040 à DEC-043 : rejouer un modèle d'allocation sur une exigence déjà traitée, en choisissant lequel. Mécanisme distinct de la réallocation (ALLOC-013) : la réallocation change **qui** répond, la relance recalcule **ce que le modèle dérive**. Les deux ne se remplacent pas.
 
-**Granularité.** La relance porte sur une **équipe** — la feuille de l'arbre exigence → activité → équipe, c'est-à-dire le niveau exact où le verdict se saisit et où vivent les ABS/PBS/OBS. Pas de relance au niveau d'une exigence entière ni d'une activité : chaque feuille se relance pour elle-même, et les feuilles voisines ne bougent pas.
+**Granularité (DEC-056, remplace DEC-040 sur ce point).** La relance porte sur l'**exigence** au sein de son système : elle re-dérive **ABS, PBS et l'ensemble des organisations**. La granularité « équipe » de DEC-040 reposait sur l'idée que les ABS/PBS/OBS vivaient à la feuille ; DEC-055 établit que seuls les OBS s'y trouvent — ABS et PBS sont uniques pour l'exigence. Relancer une organisation isolément n'a donc pas de sens : elle partage son ABS et son PBS avec ses sœurs. Elle est bloquée dès qu'**une seule** de ses organisations l'est, puisqu'elle les réécrit toutes.
 
 **Deux cas d'entrée.**
 

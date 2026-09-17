@@ -1075,6 +1075,11 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
    arrows between steps carry the "derived from" relationship that presenting
    these as three sibling fields used to hide. */
 .deriv-pass{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);background:var(--panel-2)}
+.assign-pass{margin-top:var(--space-3)}
+.assign-hint{font-size:var(--text-xs);color:var(--text-3);line-height:1.45;margin-bottom:var(--space-3)}
+.assign-row{display:grid;grid-template-columns:1fr 168px;align-items:center;gap:var(--space-3);padding:3px 0}
+.assign-org{font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.assign-sel{width:100%}
 .rerun-wrap{position:relative;margin-left:auto}
 .ui-list-row .rerun-wrap{margin-left:auto}
 .ui-list-row .rerun-btn{padding:1px 7px;font-size:var(--text-xs)}
@@ -1995,11 +2000,14 @@ function seedSigSections(){
        manager:"m_sig", type:"Functional", domain:"Design & Engineering", status:"toreview", alloc:"sup", comments:0,
        branches:[{typology:"sig", label:"SIG", manager:"m_sig", branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
          abs:{v:"Design & Engineering",c:88}, pbs:{v:"ATS / Supervision",c:90}, obs:{v:"Signalling Design — FR",c:86},
+         /* DEC-055 — an organisation carries its OBS, its person and its verdict.
+            Never an ABS or a PBS: those are the requirement's, shared by both.
+            Two organisations with different ABS would be two requirements. */
          teams:[
            {team:"design", manager:"m_sig", branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
-            abs:{v:"Design & Engineering",c:88}, pbs:{v:"ATS / Supervision",c:90}, obs:{v:"Signalling Design — FR",c:86}},
-           {team:"vv", manager:null, branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
-            abs:{v:"Verification & Validation",c:74}, pbs:{v:"ATS / Supervision",c:81}, obs:{v:"V&V — FR",c:69}},
+            obs:{v:"Signalling Design — FR",c:86}},
+           {team:"vv", manager:"sup", branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
+            obs:{v:"V&V — FR",c:69}},
          ]}],
        text:"The system SHALL support a minimum headway of 90 seconds in normal service on the central section between Gare du Nord and Palais des Congrès."},
       {id:"L4-0009", kind:"requirement", branchStatus:"awaiting_answer", tech:"nontech", techAI:true, perim:["sig"], perimAI:false,
@@ -2426,6 +2434,13 @@ function rerunBlockedReason(leaf){
   if(verdict&&verdict!=="pending") return "a verdict has been recorded";
   return null;
 }
+/* DEC-056 — the re-run rewrites every organisation under the requirement, so a
+   single blocked one blocks the whole act. Reports the first reason found, which
+   is the one a reader needs to act on. */
+function branchRerunBlockedReason(branch){
+  for(const t of ensureTeams(branch)){ const r=rerunBlockedReason(t); if(r) return r; }
+  return null;
+}
 /* Ordered for the picker: the current system's own products first — choosing
    between SIG Urban and SIG Mainline is not borrowing, both are legitimate
    models of the same system — then, separately, another system's (case B). */
@@ -2437,22 +2452,34 @@ function rerunModelChoices(systemId){
 }
 /* Writes onto the leaf. ABS/PBS/OBS and nothing else: re-deriving is not
    re-assigning (DEC-042), so manager, team and status are never touched. */
-/* A branch can hold several organisations (§3.6 — OBS is a list, not a value),
-   and each is its own leaf with its own verdict. So the team index is part of
-   the address: re-running "the branch" would silently mean its first team. */
-function applyRerunTo(b, branchIdx, teamIdx, productId){
+/* DEC-055/056 — ABS and PBS are unique for a requirement; only the OBS
+   multiplies. So a re-run is a requirement-level act: it re-derives the
+   characterisation once and then every organisation under it. Re-running one
+   organisation on its own would mean giving it an ABS its siblings do not
+   share, which would describe a different requirement. */
+function applyRerunTo(b, branchIdx, productId){
   const branch=(b.branches||[])[branchIdx]; if(!branch) return null;
   const teams=ensureTeams(branch);
-  const leaf=teams[teamIdx]; if(!leaf) return null;
-  const r=runAllocationModel(productId, b.id+"#"+branchIdx+"#"+teamIdx); if(!r) return null;
-  leaf.abs=r.abs; leaf.pbs=r.pbs; leaf.obs=r.obs;
-  /* The branch mirrors its leaf only when it has exactly one: with several, the
-     branch's values are consolidated from them, and overwriting from one leaf
-     would misreport the others. */
-  if(teams.length===1){ branch.abs=r.abs; branch.pbs=r.pbs; branch.obs=r.obs; }
-  if((b.branches||[]).length===1 && teams.length===1){
-    b.domain=r.abs.v; b.type=r.nature; b.obs=r.obs; b.abs=r.abs; b.pbs=r.pbs;
-  }
+  const r=runAllocationModel(productId, b.id+"#"+branchIdx); if(!r) return null;
+  // one characterisation, shared by every organisation below it
+  branch.abs=r.abs; branch.pbs=r.pbs;
+  if((b.branches||[]).length===1){ b.domain=r.abs.v; b.type=r.nature; b.abs=r.abs; b.pbs=r.pbs; }
+  /* The organisations are a SET, so they are derived as one: N distinct values
+     walked from a single starting point, never N independent draws — those can
+     land on the same organisation twice, and a requirement handled by "V&V and
+     V&V" is a requirement handled by V&V. Teams are deliberately left without an
+     abs/pbs of their own (DEC-055): everything reads them from the branch.
+     Whether a model may add or drop an organisation is a separate question
+     nobody has answered; the set keeps its size here rather than guessing. */
+  const vocab=(MODEL_VOCAB[productId]||{}).obs||[];
+  const start=hashId(b.id+"#"+branchIdx)%Math.max(vocab.length,1);
+  teams.forEach((t,i)=>{
+    const v=vocab.length?vocab[(start+i)%vocab.length]:(t.obs&&t.obs.v);
+    const c=58+(hashId(b.id+"#"+branchIdx+"#"+i)%40);
+    t.obs={v,c};
+  });
+  branch.obs=teams[0].obs;
+  if((b.branches||[]).length===1 && teams.length===1) b.obs=teams[0].obs;
   return r;
 }
 
@@ -3222,13 +3249,9 @@ function obsListHTML(myBranch, ctx){
   const rows=teams.map((t,i)=>{
     const val=(t.obs&&t.obs.v)||TEAM(t.team).label||"—";
     const c=t.obs&&t.obs.c;
-    const rerun=(ctx&&teams.length>1)
-      ? rerunControlHTML(`leaf:${ctx.reqId}::${ctx.branchIdx}::${i}`, ctx.systemId, rerunBlockedReason(t))
-      : "";
     return `<div class="ui-list-row">
       <span class="ui-list-main">${escHtml(val)}</span>
       ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence">${c}%</span>`:""}
-      ${rerun}
       ${teams.length>1?`<button class="ui-list-rm" data-obsrm="${i}" title="Remove this organisation">✕</button>`:""}
     </div>`;
   }).join("");
@@ -4728,14 +4751,12 @@ function bindRerunControls(root, b){
     e.stopPropagation();
     const key=opt.dataset.rerunApply, productId=opt.dataset.rerunProduct;
     const product=PRODUCT(productId); if(!product) return;
-    const parts=key.split("::");
-    const idx=+parts[1], tIdx=+(parts[2]||0);
+    const idx=+key.split("::")[1];
     const branch=(b.branches||[])[idx]; if(!branch) return;
-    const leaf=ensureTeams(branch)[tIdx]; if(!leaf) return;
-    const blocked=rerunBlockedReason(leaf);
+    const blocked=branchRerunBlockedReason(branch);
     if(blocked){ toast(`Cannot re-run — ${blocked}.`,"warn"); return; }
     const borrowed = productSystem(productId)!==branch.typology;
-    applyRerunTo(b, idx, tIdx, productId);
+    applyRerunTo(b, idx, productId);
     // DEC-043 — the borrow leaves no persistent marker anywhere a reader looks;
     // the branch history is the one place it survives, and that is deliberate.
     pushBranchLog(b, MGR(VIEWER).name,
@@ -4744,6 +4765,35 @@ function bindRerunControls(root, b){
     refresh();
   }));
   document.addEventListener("click",()=>root.querySelectorAll(".rerun-menu.on").forEach(m=>m.classList.remove("on")),{once:true});
+}
+/* DEC-057 — who verifies for each organisation, in its own block. The OBS list
+   above stays the reading of the derivation; this is the assignment, which is a
+   separate step (DEC-054: the person comes after the organisation). Only drawn
+   when there are several — with one, the panel's own "Assigned to" says it. */
+function assignmentsBlockHTML(b, branchIdx){
+  const branch=(b.branches||[])[branchIdx]; if(!branch) return "";
+  const teams=ensureTeams(branch);
+  if(teams.length<2) return "";
+  const opts=m=>['<option value="">— Not designated —</option>']
+    .concat(MANAGERS.filter(x=>!x.admin).map(x=>`<option value="${x.id}" ${m===x.id?"selected":""}>${escHtml(x.name)}</option>`)).join("");
+  return `<div class="deriv-pass assign-pass">
+    <div class="deriv-pass-h">Who verifies</div>
+    <div class="assign-hint">Each organisation answers for itself, and the verdicts consolidate — most restrictive wins, pending until all have answered.</div>
+    ${teams.map((t,i)=>`<div class="assign-row">
+      <span class="assign-org">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label||"—")}</span>
+      <select class="ui-select assign-sel" data-assignteam="${branchIdx}::${i}">${opts(t.manager)}</select>
+    </div>`).join("")}
+  </div>`;
+}
+function bindAssignments(root, b){
+  root.querySelectorAll("[data-assignteam]").forEach(sel=>sel.addEventListener("change",()=>{
+    const [bi,ti]=sel.dataset.assignteam.split("::").map(Number);
+    const branch=(b.branches||[])[bi]; if(!branch) return;
+    const t=ensureTeams(branch)[ti]; if(!t) return;
+    t.manager=sel.value||null;
+    toast(`${(t.obs&&t.obs.v)||TEAM(t.team).label} — ${t.manager?MGR(t.manager).name+" will verify":"nobody designated"}`,"ok");
+    refresh();
+  }));
 }
 function derivationChainHTML(b,myBranch,derivSrc,rmView){
   const distribHTML = distributionBlockHTML(b);
@@ -4757,12 +4807,7 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
       const idx = myBranch ? (b.branches||[]).indexOf(myBranch) : ((b.branches||[]).length===1 ? 0 : -1);
       if(idx<0) return "";
       const br=(b.branches||[])[idx];
-      const teams=ensureTeams(br);
-      /* Several organisations under this system means several leaves, each with
-         its own verdict: re-running "the chain" would not say which. The control
-         moves onto each OBS row instead. */
-      if(teams.length>1) return "";
-      return rerunControlHTML("leaf:"+b.id+"::"+idx+"::0", br.typology, rerunBlockedReason(teams[0]));
+      return rerunControlHTML("leaf:"+b.id+"::"+idx, br.typology, branchRerunBlockedReason(br));
     })()}</div>
     ${derivStepHTML("ABS",
       `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
@@ -4789,7 +4834,8 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
       if(brs.length){
         const br=brs[idx];
         return `<div class="deriv-arrow small">↓</div>`
-          + obsListHTML(br, {reqId:b.id, branchIdx:idx, systemId:br.typology});
+          + obsListHTML(br, {reqId:b.id, branchIdx:idx, systemId:br.typology})
+          + assignmentsBlockHTML(b, idx);
       }
       /* DEC-054 — an OBS is an organisation, never a person. This used to fall
          back to the assignee's name, the conflation inherited from the first
@@ -4974,7 +5020,7 @@ function activityDetailHTML(b,bidx){
       <span class="act-block-name">${escHtml(branch.label||TY(branch.typology).label)}</span>
     </div>
     <div class="deriv-pass">
-      <div class="deriv-pass-h">${escHtml(TY(branch.typology).label)}'s own model${rerunControlHTML("leaf:"+b.id+"::"+bidx+"::0",branch.typology,rerunBlockedReason(t))}</div>
+      <div class="deriv-pass-h">${escHtml(TY(branch.typology).label)}'s own model${rerunControlHTML("leaf:"+b.id+"::"+bidx,branch.typology,branchRerunBlockedReason(branch))}</div>
       ${derivStepHTML("Type", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
       ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-system within this system."):""}
         ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
@@ -5229,6 +5275,7 @@ function renderSettings(){
     body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });
     bindRerunControls(body, b);
+    bindAssignments(body, b);
     body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
     body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
@@ -5777,16 +5824,14 @@ function bulkRerun(productId){
     const b=f.b; ensureBranches(b);
     const branches=b.branches||[];
     if(branches.length!==1){ noLeaf++; return; }   // several systems: ambiguous, leave it to the panel
-    const teams=ensureTeams(branches[0]);
-    if(teams.length!==1){ noLeaf++; return; }     // several organisations: same reason, one level down
-    if(rerunBlockedReason(teams[0])){ skipped++; return; }
-    applyRerunTo(b, 0, 0, productId);
+    if(branchRerunBlockedReason(branches[0])){ skipped++; return; }
+    applyRerunTo(b, 0, productId);
     pushBranchLog(b, MGR(VIEWER).name, `Re-ran allocation with ${product.label} (bulk)`, "ok");
     done++;
   });
   const parts=[`${done} re-derived with ${product.label}`];
   if(skipped) parts.push(`${skipped} left alone — answered or waiting on the client`);
-  if(noLeaf) parts.push(`${noLeaf} carry several systems or organisations — re-run those from the panel`);
+  if(noLeaf) parts.push(`${noLeaf} span several systems — re-run those from the panel`);
   toast(parts.join(" · "), done?"ok":"warn");
   refresh();
 }

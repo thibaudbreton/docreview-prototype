@@ -59,9 +59,12 @@ DEC-054. **OBS = Organisation Breakdown Structure.** C'est une **organisation**,
 
 **La personne vient après, et séparément.** On assigne ensuite, le plus souvent, au responsable de cette équipe **dans la région où se joue le tender**. Au moment de la dérivation, l'organisation n'est pas encore rattachée à une région : la chaîne s'arrête sur une équipe, l'affectation d'une personne est une étape distincte.
 
+**Cardinalité (DEC-055).** ABS et PBS sont **uniques** pour une exigence ; l'**OBS peut être multiple**. Une exigence concerne parfois plusieurs équipes, et chacune doit vérifier si elle est conforme : chaque organisation porte donc **sa** personne qui vérifie et **son** verdict, consolidés ensuite au niveau exigence (DEC-037, le plus restrictif gagne). Ne jamais dupliquer un ABS ou un PBS par équipe — deux équipes qui ne partageraient pas le même ABS décriraient deux exigences, pas une.
+
 **Conséquences à tenir partout.**
 
 - Une chaîne de dérivation se termine sur une **organisation**. Afficher un nom de personne sous un libellé OBS est l'amalgame hérité de la première version de l'application ; il est à supprimer partout où il subsiste.
 - « OBS » et « affectation » ne sont pas synonymes dans les libellés, infobulles et motifs de revue. Un OBS faible veut dire que **l'organisation proposée** est peut-être la mauvaise, pas que la personne l'est.
 - DEC-036 tient : ce que la passe 2 dérive est un périmètre, et un périmètre est une organisation.
+- La relance porte sur l'**exigence entière** (DEC-056) : elle re-dérive ABS, PBS et l'ensemble des organisations. Relancer une organisation seule n'a pas de sens puisqu'elle partage ABS et PBS avec ses sœurs.
 - **Précision de DEC-042** : la relance re-dérive bien l'OBS — c'est ce qu'un modèle d'allocation produit. Ce qu'elle ne touche pas, c'est la **personne** affectée en aval. La protection portait sur l'affectation nominative, pas sur l'organisation.
