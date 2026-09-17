@@ -1177,11 +1177,16 @@ const CURRENT_PROJECT = (function(){ try{ return (window.parent!==window && wind
   if(!CURRENT_PROJECT) return;
   const p=CURRENT_PROJECT;
   const crumb=document.getElementById("crumb-project"); if(crumb) crumb.textContent=p.ref+" · "+p.name;
-  if(p.builtOut===true) return; // stb2026 — hardcoded hero markup already matches it, nothing to override
+  // TYPE-T10 — the hero follows the project that is actually open, always. It
+  // used to return early for a built-out project and leave STB-2026's hardcoded
+  // markup in place, which is how the dashboard came to announce "SIG" on a
+  // tender treated as Turnkey everywhere else. Only the reused-content banner
+  // is still conditional, since only a project without content needs it.
   const title=document.getElementById("dash-title"); if(title) title.textContent=p.name;
   const ref=document.getElementById("dash-ref"); if(ref) ref.textContent=p.ref;
   const line=document.getElementById("dash-line"); if(line) line.textContent=p.line||"—";
   const lineSub=document.getElementById("dash-line-sub"); if(lineSub) lineSub.textContent=p.system||p.line||"—";
+  if(p.builtOut===true) return;
   const banner=document.getElementById("dash-scope-banner"); if(banner) banner.style.display="block";
 })();
 

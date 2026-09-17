@@ -1474,7 +1474,7 @@ body.restricted .restrict-banner{display:flex}
       </svg>SRM</a></div>
       <div class="crumb">
         <span class="sep">/</span>
-        <a class="project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a>
+        <a class="project" id="crumb-project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a>
         <button class="version-pill" title="Switch version"><span class="dot"></span><b>v2.1</b> active</button>
       </div>
     </div>
@@ -1900,7 +1900,131 @@ function seedDemoDocs(){
     {id:"d2", name:"Technical annex A — performance & security", file:"EMS_annex_A.pdf"},
   ];
 }
-const DOCS = (window.SRM_DATA && Array.isArray(window.SRM_DATA.documents) && window.SRM_DATA.documents.length)
+/* Read before DOCS/SECTIONS below, which depend on it — TENDER_LINE itself is
+   declared further down, with the two-pass model it belongs to. Same source,
+   read twice rather than moving that block away from its explanation. */
+/* The header named STB-2026 in its own markup, so every project looked like the
+   reference one. Same source as everything else: the open project. */
+(function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return;
+    const p=window.parent.getCurrentProject(); if(!p) return;
+    const el=document.getElementById("crumb-project");
+    if(el) el.textContent=p.ref+" · "+p.name;
+  }catch(e){}
+})();
+const IS_SIG_TENDER = (function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return false;
+    const p=window.parent.getCurrentProject();
+    return !!p && p.line==="SIG";
+  }catch(e){ return false; }
+})();
+/* =====================================================
+   SIG TENDER CONTENT — RFP-2026-114 "Urban Line 4 Signalling Upgrade"
+   DEC-044 / TYPE-T07. A standalone SIG tender, so the "Tender SIG autonome"
+   column of TENDER-PROFILES' applicability matrix is verifiable on a real
+   project instead of being theory. Its own signalling content on purpose:
+   reusing the EMS text would have produced a signalling tender talking about
+   energy consumption, which invalidates the very thing it demonstrates.
+
+   Single pass (runsPassOne() is false off Turnkey), so no distribution step
+   and no sub-systems: each requirement carries its own ABS/PBS/OBS directly
+   and resolves to one team. Source language is English here (the project
+   carries language:"en"), which also exercises the no-translation path —
+   ensureTranslationFields falls back to `text` when textOriginal is absent.
+===================================================== */
+function seedSigDocs(){
+  return [
+    {id:"d1", name:"Tender specification — signalling and train control", file:"L4_signalling_main.pdf"},
+    {id:"d2", name:"Technical annex B — interfaces and safety case", file:"L4_annex_B.pdf"},
+  ];
+}
+function seedSigSections(){
+  return [
+  {
+    id:"s1", docId:"d1", num:"1", title:"Scope and purpose",
+    blocks:[
+      {id:"L4-0001", kind:"text", status:"allocated",
+       text:"This specification defines the requirements applicable to the resignalling of Urban Line 4 with a CBTC train control system, covering onboard equipment, wayside equipment and the line supervision system."},
+      {id:"L4-0002", kind:"text", status:"allocated",
+       text:"It applies to the twenty-two stations of the line and to the Bellevue depot. Rolling stock procurement is covered by a separate tender and is out of scope, except for the onboard CBTC interfaces defined in section 4."},
+    ]
+  },
+  {
+    id:"s2", docId:"d1", num:"2", title:"Train control",
+    blocks:[
+      {id:"L4-0003", kind:"heading", level:2, text:"2.1 Automatic train protection"},
+      {id:"L4-0004", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+       abs:{v:"Design & Engineering",c:93}, pbs:{v:"CBTC / Wayside",c:95}, obs:{v:"Signalling Design — FR",c:91},
+       manager:"m_sig", type:"Functional", domain:"Design & Engineering", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
+       text:"The system SHALL enforce a continuous safe braking envelope for every train under CBTC control, based on its position, speed and the movement authority granted by the wayside."},
+      {id:"L4-0005", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+       abs:{v:"Design & Engineering",c:90}, pbs:{v:"CBTC / Onboard",c:92}, obs:{v:"Signalling Design — FR",c:88},
+       manager:"m_sig", type:"Performance", domain:"Design & Engineering", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:2,
+       text:"Train position SHALL be reported to the wayside at least twice per second, with a confidence interval not exceeding 2 metres at any speed up to 80 km/h."},
+      {id:"L4-0006", kind:"requirement", tech:"tech", techAI:true, perim:["sig"], perimAI:true,
+       abs:{v:"Systems Integration",c:71}, pbs:{v:"CBTC / Onboard",c:84}, obs:{v:"Integration — FR",c:58},
+       manager:null, type:"Interface", domain:"Systems Integration", status:"suggested", alloc:null, comments:0, uncertain:true,
+       text:"The onboard equipment SHALL remain capable of degraded manual operation under line-side signals when CBTC coverage is unavailable, without requiring a train reset."},
+      {id:"L4-0007", kind:"heading", level:2, text:"2.2 Automatic train operation"},
+      {id:"L4-0008", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+       abs:{v:"Design & Engineering",c:88}, pbs:{v:"ATS / Supervision",c:90}, obs:{v:"Signalling Design — FR",c:86},
+       manager:"m_sig", type:"Functional", domain:"Design & Engineering", status:"toreview", alloc:"sup", comments:0,
+       text:"The system SHALL support a minimum headway of 90 seconds in normal service on the central section between Gare du Nord and Palais des Congrès."},
+      {id:"L4-0009", kind:"requirement", tech:"nontech", techAI:true, perim:["sig"], perimAI:false,
+       abs:{v:"Installation & Commissioning",c:66}, pbs:{v:"ATS / Supervision",c:77}, obs:{v:"Integration — FR",c:54},
+       manager:null, type:"Regulatory", domain:"Installation & Commissioning", status:"suggested", alloc:null, comments:0, uncertain:true,
+       text:"Migration to CBTC SHALL be carried out without interrupting commercial service, with mixed-fleet operation supported throughout the transition period."},
+    ]
+  },
+  {
+    id:"s3", docId:"d1", num:"3", title:"Wayside and interlocking",
+    blocks:[
+      {id:"L4-0010", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+       abs:{v:"Design & Engineering",c:94}, pbs:{v:"Interlocking",c:96}, obs:{v:"Wayside Engineering — FR",c:92},
+       manager:"m_sig", type:"Functional", domain:"Design & Engineering", status:"allocated", allocStatus:"allocated", alloc:"infra", comments:0,
+       text:"Each interlocking SHALL guarantee that no conflicting route can be set simultaneously, and SHALL release a route only once the train has been confirmed clear of the last track section."},
+      {id:"L4-0011", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+       abs:{v:"Verification & Validation",c:82}, pbs:{v:"Interlocking",c:89}, obs:{v:"V&V — FR",c:79},
+       manager:"m_sig", type:"Performance", domain:"Verification & Validation", status:"edited", alloc:"infra", comments:1,
+       text:"Route setting SHALL complete within 3 seconds of the request, measured from the supervision workstation to the confirmation of point position."},
+      {id:"L4-0012", kind:"requirement", tech:"tech", techAI:true, perim:["sig"], perimAI:true,
+       abs:{v:"Installation & Commissioning",c:63}, pbs:{v:"Telecom / Radio",c:81}, obs:{v:"Wayside Engineering — FR",c:49},
+       manager:null, type:"Interface", domain:"Installation & Commissioning", status:"suggested", alloc:null, comments:0, uncertain:true,
+       text:"Radio coverage SHALL be continuous across the whole line including the depot approach tracks, with no single point of failure between two consecutive access points."},
+    ]
+  },
+  {
+    id:"s4", docId:"d2", num:"4", title:"Station interfaces and safety",
+    blocks:[
+      {id:"L4-0013", kind:"heading", level:2, text:"4.1 Platform screen doors"},
+      {id:"L4-0014", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+       abs:{v:"Systems Integration",c:87}, pbs:{v:"Platform Screen Doors",c:93}, obs:{v:"Integration — FR",c:85},
+       manager:"m_sig", type:"Interface", domain:"Systems Integration", status:"toreview", alloc:"sup", comments:0,
+       text:"Platform screen doors SHALL open only when the train is berthed within the permitted stopping tolerance and the train doors on the corresponding side are enabled."},
+      {id:"L4-0015", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+       abs:{v:"Safety Assurance",c:91}, pbs:{v:"Platform Screen Doors",c:88}, obs:{v:"Safety & RAMS — Group",c:83},
+       manager:"m_sig", type:"Security", domain:"Safety Assurance", status:"toreview", alloc:"cyber", comments:0,
+       text:"Loss of the interface between the train and the platform screen doors SHALL result in the doors remaining closed, and SHALL be reported to the control centre within 2 seconds."},
+      {id:"L4-0016", kind:"heading", level:2, text:"4.2 Safety case"},
+      {id:"L4-0017", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+       abs:{v:"Safety Assurance",c:95}, pbs:{v:"CBTC / Wayside",c:86}, obs:{v:"Safety & RAMS — Group",c:90},
+       manager:"m_sig", type:"Regulatory", domain:"Safety Assurance", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
+       text:"The supplier SHALL deliver a safety case demonstrating SIL 4 for all train protection functions, in accordance with EN 50126, EN 50128 and EN 50129."},
+      {id:"L4-0018", kind:"requirement", tech:"nontech", techAI:false, perim:["sig"], perimAI:false,
+       abs:{v:"Verification & Validation",c:78}, pbs:{v:"ATS / Supervision",c:72}, obs:{v:"V&V — FR",c:74},
+       manager:null, type:"Regulatory", domain:"Verification & Validation", status:"toreview", alloc:null, comments:0,
+       text:"The supplier SHALL provide evidence of independent safety assessment by a recognised body before the start of passenger service on any migrated section."},
+    ]
+  },
+  ];
+}
+/* TYPE-T07 — the capture (window.SRM_DATA) is STB-2026's own document set, so a
+   SIG tender never reads it: it would show Energy Monitoring System's content on
+   a signalling tender, which is exactly what DEC-044 rules out. */
+const DOCS = IS_SIG_TENDER ? seedSigDocs()
+  : (window.SRM_DATA && Array.isArray(window.SRM_DATA.documents) && window.SRM_DATA.documents.length)
   ? window.SRM_DATA.documents.map(d=>({id:d.id, name:d.name, file:""}))
   : seedDemoDocs();
 const DOC = id => DOCS.find(d=>d.id===id);
@@ -2090,7 +2214,7 @@ function seedDemoSections(){
   },
   ];
 }
-const SECTIONS = buildDataFromCapture() || seedDemoSections();
+const SECTIONS = IS_SIG_TENDER ? seedSigSections() : (buildDataFromCapture() || seedDemoSections());
 
 /* B7 — the characterisation/allocation progression. Replaces the old
    suggested/edited/toreview/validated vocabulary: those conflated "AI is
@@ -2517,7 +2641,10 @@ function applyCaptureDemoStatuses(){
     }
   });
 }
-if(window.SRM_DATA) applyCaptureDemoStatuses();
+/* Only ever decorates capture rows. A SIG tender serves its own hand-authored
+   content (TYPE-T07), whose ABS/PBS/assignee are written deliberately — this
+   would overwrite all three with values spread from a hash. */
+if(window.SRM_DATA && !IS_SIG_TENDER) applyCaptureDemoStatuses();
 (function initProgressionStatus(){
   SECTIONS.forEach(s=>s.blocks.forEach(b=>{
     const arr = (b.kind==="table") ? b.rows : [b];
@@ -2696,7 +2823,10 @@ const state = {
   navCollapsed:new Set(),
   docNavCollapsed:new Set(),
   docFilter:"all",
-  colCollapsed:new Set(),
+  // TYPE-T08 — collapsing is what actually hides a column (applyCols writes
+  // data-cc, the CSS above keys off it); dropping a key from colOrder alone only
+  // removes it from the ordering, leaving the markup on screen.
+  colCollapsed:new Set(IS_SIG_TENDER?["typo","tkobs"]:[]),
   colOrder:["class","typo","abs","type","tkobs","obs","mgr","status","compliance"],
   navPanelCollapsed:false,
   detailPanelCollapsed:false,
@@ -4419,12 +4549,12 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
   const scope = myBranch ? `${TY(myBranch.typology).label}` : (runsPassOne()?"The system's own model":`${escHtml(TENDER_LINE)}'s model`);
   const modelHTML = `<div class="deriv-pass">
     <div class="deriv-pass-h">${escHtml(scope)}</div>
-    ${derivStepHTML("PBS",
-      `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
-      derivSrc.pbs)}
     ${derivStepHTML("ABS",
       `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
       derivSrc.abs)}
+    ${derivStepHTML("PBS",
+      `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
+      derivSrc.pbs)}
     ${!rmView?`<div class="deriv-arrow small">↓</div>
     ${derivStepHTML(`OBS · team${myBranch?` <span class="deriv-scope">· your allocated system</span>`:""}`,
       `<div class="fval">${escHtml(personLabel(myBranch?myBranch.manager:b.manager)||"— Unassigned —")}</div>`,
@@ -4607,8 +4737,8 @@ function activityDetailHTML(b,bidx){
       <div class="deriv-pass-h">${escHtml(TY(branch.typology).label)}'s own model</div>
       ${derivStepHTML("Type", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
       ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-system within this system."):""}
-        ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||b.type||"—")}</div>`, t.pbs)}
         ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
+        ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||b.type||"—")}</div>`, t.pbs)}
         ${derivStepHTML("OBS · team", `<div class="fval">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label)}</div>`, t.obs,
         "The team or service within this system — this is what casting staffs.")}
     </div>
@@ -4742,7 +4872,7 @@ function renderSettings(){
       ${!isReq?`<div class="field"><label>Type</label>
         <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
       </div>`:""}
-      ${isReq&&!myBranch?`<div class="field"><label>System ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
+      ${isReq&&!myBranch&&!IS_SIG_TENDER?`<div class="field"><label>System ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <div class="msel ${state.typoOpen?"open":""}" id="typo-msel">
           <button class="msel-btn" id="typo-btn">
             <span class="mval">${(b.perim||[]).length?(b.perim||[]).map(p=>`<span class="ptag${p==="tky"?" tky":""}">${TY(p).code}</span>`).join(""):'<span class="placeholder">Select systems…</span>'}</span>
@@ -5919,10 +6049,14 @@ document.getElementById("filter-btn")?.addEventListener("click",e=>{
 
 /* ---------- View panel: column visibility + expert derivation chain ---------- */
 const colsPanelState={open:false};
+/* TYPE-T08 — on a standalone SIG tender the system axis is absent, not empty:
+   the tender is already scoped to one system, so a column, a field and a
+   grouping that can only ever hold one value would be noise. TK OBS goes with
+   it — it belongs to the distribution pass that does not run here. */
 const COLUMN_TOGGLE_DEFS=[
   {k:"class",label:"Class"},{k:"typo",label:"System"},{k:"abs",label:"ABS"},{k:"type",label:"PBS"},
   {k:"tkobs",label:"TK OBS (system)"},{k:"obs",label:"OBS (team)"},{k:"mgr",label:"Assigned to"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
-];
+].filter(c=>!IS_SIG_TENDER || (c.k!=="typo" && c.k!=="tkobs"));
 function renderColumnsPanel(){
   const p=document.getElementById("cols-panel"); if(!p) return;
   p.classList.toggle("on", colsPanelState.open);
@@ -5938,7 +6072,7 @@ function renderColumnsPanel(){
     <div class="field" style="margin-bottom:2px"><label>Group by</label>
       <div class="gseg" id="pf-gseg">
         <button data-g="none" class="${state.groupBy==="none"?"on":""}">None</button>
-        <button data-g="typology" class="${state.groupBy==="typology"?"on":""}">System</button>
+        ${IS_SIG_TENDER?"":`<button data-g="typology" class="${state.groupBy==="typology"?"on":""}">System</button>`}
       </div>
     </div>
     <div class="view-sep"></div>
