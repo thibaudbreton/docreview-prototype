@@ -2628,7 +2628,7 @@ function weakestLink(b){
   const w=arr.reduce((a,x)=>x[1].c<a[1].c?x:a,arr[0]);
   return w[1].c<75?{k:w[0],c:w[1].c}:null;
 }
-/* OBS is the decision-bearing link: below the threshold the proposed assignment
+/* OBS is the decision-bearing link: below the threshold the proposed organisation
    cannot be trusted. Threshold mirrors the project configuration setting. */
 const OBS_THRESHOLD=75;
 function derivWeak(b){ return !!(b.obs && b.obs.c < OBS_THRESHOLD); }
@@ -2720,7 +2720,7 @@ function applyCaptureDemoStatuses(){
     x.type = PBS_TYPES[h % PBS_TYPES.length];
     x.manager = mgrList[h % mgrList.length].id;
     if(bucket < 2){
-      // Incomplete — 2%: characterised, but never got an OBS assignment.
+      // Incomplete — 2%: characterised, but no organisation derived for it yet.
       // Independent of the confidence model — an absolute floor, same rule
       // as everywhere else in this app — not something the AI was ever
       // "confident" or "unsure" about, it just never ran.
@@ -2811,7 +2811,7 @@ if(window.SRM_DATA && !IS_SIG_TENDER) applyCaptureDemoStatuses();
    the STB-2026 demo's own AI-confidence-derived distribution (built for a
    "several days into review" story) with a plausible fixed one instead of
    hand-tuning confidence numbers meant for a different story: no item
-   already allocated, 2 with no OBS assignment at all ("Incomplete"), a
+   already allocated, 2 with no organisation derived at all ("Incomplete"), a
    couple more in "To review" for two different underlying reasons, and the
    rest — the bulk of a confident first AI pass — sitting in "To validate". */
 function applyFreshProjectStatuses(){
@@ -2834,7 +2834,7 @@ function applyFreshProjectStatuses(){
   const unassignedIds = singleBranch.filter((x,i)=>i===2||i===7).map(x=>x.id);
   const reviewFields = [
     ["class","Class is AI-detected, unconfirmed"],
-    ["obs","Weak OBS derivation (61%) — the proposed assignment may be wrong"],
+    ["obs","Weak OBS derivation (61%) — the proposed organisation may be wrong"],
   ];
   const reviewCandidates = singleBranch.filter(x=>!unassignedIds.includes(x.id));
   const reviewPicks = [reviewCandidates[0], reviewCandidates[Math.floor(reviewCandidates.length/2)]].filter(Boolean);
@@ -2868,7 +2868,7 @@ const STATUS_RANK = {incomplete:0, doubt:1, tovalidate:2, allocated:3};
    never the more advanced one. An unassigned OBS makes allocStatus
    "incomplete" (see computeAllocStatus) regardless of how confident the AI
    was on Class/Activity — so a row can never read "To validate"/"To review"
-   while its actual OBS assignment is still empty. Multi-branch parents are
+   while its actual OBS is still empty. Multi-branch parents are
    the one exception: once characterisation is allocated, each branch tracks
    its own allocation individually (B6), so the parent row just hands off to
    the per-branch rollup instead of combining with a single branch's numbers.
@@ -4791,10 +4791,14 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
         return `<div class="deriv-arrow small">↓</div>`
           + obsListHTML(br, {reqId:b.id, branchIdx:idx, systemId:br.typology});
       }
-      const val = personLabel(b.manager) || "— Not derived yet —";
+      /* DEC-054 — an OBS is an organisation, never a person. This used to fall
+         back to the assignee's name, the conflation inherited from the first
+         version of the app: it made the chain look like it derived who answers,
+         when it derives which team handles it. */
+      const val = (derivSrc.obs && derivSrc.obs.v) || "— No organisation derived yet —";
       return `<div class="deriv-arrow small">↓</div>`
         + derivStepHTML("OBS · team", `<div class="fval">${escHtml(val)}</div>`, derivSrc.obs,
-            "The team or service within the system — assigned below, not picked here.");
+            "The team or service within the system. Assigning a person comes after — usually that team's manager in the tender's region.");
     })()}
   </div>`;
   return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that system's own model">routes into</div>`:"") + modelHTML;

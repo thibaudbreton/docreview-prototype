@@ -45,3 +45,23 @@ DOM-013 : conserver séparément la proposition IA, la valeur retenue et l'évé
 DEC-010/025 : au plus un responsable de suivi par exigence, même si plusieurs équipes/activités contribuent ; l’absence de responsable ne bloque pas la validation d’allocation. Les réponses et allocations multiples ne créent pas autant de responsables. DEC-012 : tous les contributeurs d’une activité sont au même niveau ; ils consultent les autres activités sans les modifier.
 
 La séquence historique PBS → ABS → OBS est corrigée pour SIG par DEC-008 : **ABS → PBS → OBS → personne**.
+
+## OBS — ce que c'est, et ce que ce n'est pas
+
+DEC-054. **OBS = Organisation Breakdown Structure.** C'est une **organisation**, jamais une personne. Dériver un OBS, c'est dire « c'est cette équipe-là qui s'en occupe » — pas « c'est cette personne qui répond ».
+
+**Deux granularités, une même structure.** Ce ne sont pas deux notions différentes, c'est le même axe lu à deux niveaux de l'entreprise (ce qui fonde DEC-034, qui interdit de les confondre) :
+
+| | Ce que l'OBS désigne | Où |
+|---|---|---|
+| **TK OBS** | Un **système ou sous-système** — une très grande équipe | Passe 1, distribution Turnkey |
+| **OBS · team** | Une **équipe** au sein d'un système ou sous-système | Passe 2, modèle du système |
+
+**La personne vient après, et séparément.** On assigne ensuite, le plus souvent, au responsable de cette équipe **dans la région où se joue le tender**. Au moment de la dérivation, l'organisation n'est pas encore rattachée à une région : la chaîne s'arrête sur une équipe, l'affectation d'une personne est une étape distincte.
+
+**Conséquences à tenir partout.**
+
+- Une chaîne de dérivation se termine sur une **organisation**. Afficher un nom de personne sous un libellé OBS est l'amalgame hérité de la première version de l'application ; il est à supprimer partout où il subsiste.
+- « OBS » et « affectation » ne sont pas synonymes dans les libellés, infobulles et motifs de revue. Un OBS faible veut dire que **l'organisation proposée** est peut-être la mauvaise, pas que la personne l'est.
+- DEC-036 tient : ce que la passe 2 dérive est un périmètre, et un périmètre est une organisation.
+- **Précision de DEC-042** : la relance re-dérive bien l'OBS — c'est ce qu'un modèle d'allocation produit. Ce qu'elle ne touche pas, c'est la **personne** affectée en aval. La protection portait sur l'affectation nominative, pas sur l'organisation.
