@@ -110,7 +110,7 @@ function seedProjects(){
     // TICKET-two-pass-allocation.md — line was "SIG", which contradicted this
     // project's own seed data: its requirements are already distributed across
     // SIG, Mainline and Safety, and only a Turnkey tender distributes across
-    // activities like that (a SIG tender is already scoped to SIG). Turnkey
+    // systems like that (a SIG tender is already scoped to SIG). Turnkey
     // also makes pass 1 demonstrable on the one fully-built demo project.
     // SPEC-translation.md §2 — one source language per tender, captured at
     // creation. French here so the demo has a real, reviewable non-English
@@ -201,7 +201,7 @@ window.addProject = function(meta){
     role:"Project manager",
     // TICKET-tender-creation-rework.md — casting left the creation wizard
     // entirely (it's ongoing project user management on its own screen now,
-    // TICKET-casting-screen-redesign.md), so there's no per-activity roster
+    // TICKET-casting-screen-redesign.md), so there's no per-system roster
     // to carry through any more. What creation still collects is the much
     // smaller `pmTeam` — the wizard's own step 4, creator seeded in first.
     // Not consumed by dashboard-et-config.html's redesigned casting screen

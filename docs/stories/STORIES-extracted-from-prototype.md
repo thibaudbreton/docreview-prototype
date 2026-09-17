@@ -2,6 +2,8 @@
 
 > An independent reading of the SRM prototype as it stands today (7 source screens plus the shell in `build_merge.py`). Every story below describes an intent the prototype visibly embodies — what the feature should do when built, as evidenced by the screen — not whether the prototype performs it. Vocabulary is the prototype's own, uncorrected; where the same thing is named differently in different places, that is listed at the end rather than smoothed over.
 >
+>**Note, 17 September 2026 — vocabulary has moved since this extraction.** What these stories call an *activity* is now a **system** (DEC-045); *activity* went back to naming the ABS — Activity Breakdown Structure — which is the level inside a system. The list of 7 casting activities in §3 and the product-line spellings in §1 have both been replaced since. This document is left as written, as a record of the reading that produced it; the live vocabulary is in [docs/current/TENDER-PROFILES.md](../current/TENDER-PROFILES.md).
+>
 > Areas follow the order a user meets them: the tender list and creation, then the tender dashboard and its support screens, then the two process steps (Allocation, Compliance), then Q&A, then the flows that span several screens.
 
 ---

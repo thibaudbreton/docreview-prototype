@@ -6,36 +6,36 @@ Applicabilité : [variantes de tender](TENDER-PROFILES.md). Le prototype est la 
 
 | ID | Règle | Statut et portée |
 |---|---|---|
-| ALLOC-001 | Turnkey distribue entre activités, puis applique leur modèle. Un tender SIG commence directement dans SIG. | DEC-005/006, DOC autres non-Turnkey |
-| ALLOC-002 | Passe 1 Turnkey : classe technique vers PBS, non technique vers ABS, puis activité TK OBS. Cette distinction ne s'applique pas à l'allocation SIG. | DOC passe 1, DEC-008 exclusion SIG |
+| ALLOC-001 | Turnkey distribue entre systèmes, puis applique leur modèle. Un tender SIG commence directement dans SIG. | DEC-005/006, DOC autres non-Turnkey |
+| ALLOC-002 | Passe 1 Turnkey : classe technique vers PBS, non technique vers ABS, puis système TK OBS. Cette distinction ne s'applique pas à l'allocation SIG. | DOC passe 1, DEC-008 exclusion SIG |
 | ALLOC-003 | Allocation SIG : **ABS → PBS → OBS → personne**. Aucune différence de chaîne technique/non technique. Corriger un champ invalide les propositions qui en dépendent ; les corrections de décisions déjà validées suivent LIFE-008. | DEC-008 prime sur l'ancien PBS → ABS → OBS |
-| ALLOC-004 | Distribution multiple entre activités en Turnkey, puis affectations d'équipes ; ne pas dupliquer l'exigence pour représenter les branches. | DOC, consolidation confirmée DEC-014 |
-| ALLOC-005 | Activité sans modèle : allocation manuelle, identifiée et filtrable, sans bloquer les autres activités. | DOC ; contenu/gestion des modèles hors spec fonctionnelle |
+| ALLOC-004 | Distribution multiple entre systèmes en Turnkey, puis affectations d'équipes ; ne pas dupliquer l'exigence pour représenter les branches. | DOC, consolidation confirmée DEC-014 |
+| ALLOC-005 | Système sans modèle : allocation manuelle, identifiée et filtrable, sans bloquer les autres systèmes. | DOC ; contenu/gestion des modèles hors spec fonctionnelle |
 | ALLOC-006 | Incertitude affichée par champ/étape applicable ; aucun indicateur de passe 1 en SIG. | DOC/DEC-006 |
 | ALLOC-007 | La confiance IA ne remplace pas la validation humaine de l'allocation. | DOC, borne du pilote DEC-022 |
 | ALLOC-008 | La validation d'allocation rend le travail disponible pour la suite de conformité ; pas de construction de Compliance exigée dans le premier pilote. | DOC + DEC-022 |
 | ALLOC-009 | Les exigences progressent indépendamment. Un cas incomplet n'arrête pas les autres. | DOC |
 | ALLOC-010 | L’allocation peut être validée sans responsable. L’absence reste visible, sans bloquer cette exigence ni les autres. | DEC-025 |
-| ALLOC-011 | **Au plus une personne responsable du suivi par exigence**, pas une par activité ou équipe. Tous les contributeurs de l'activité peuvent répondre. | DEC-010 + DEC-002 |
+| ALLOC-011 | **Au plus une personne responsable du suivi par exigence**, pas une par système ou équipe. Tous les contributeurs du système peuvent répondre. | DEC-010 + DEC-002 |
 | ALLOC-012 | La validation relève de l'équipe de gestion du projet, composée de bid managers et requirement managers de SIG selon la réponse utilisateur. Ces fonctions ne créent pas une hiérarchie des contributeurs. | DEC-009 ; portée générale aux autres types OPEN-15 |
 
 ## Absence de responsable — décision
 
-DEC-025 : absence autorisée, y compris après validation d’allocation. Afficher « Non désigné » et permettre d’isoler ces exigences avec le filtre de champ vide existant ; ne pas ajouter de validation bloquante. Les contributeurs gardent leurs droits dans leur activité. Un responsable peut être désigné ensuite ; il devient l’unique responsable du suivi. La proposition de blocage formulée précédemment a été refusée.
+DEC-025 : absence autorisée, y compris après validation d’allocation. Afficher « Non désigné » et permettre d’isoler ces exigences avec le filtre de champ vide existant ; ne pas ajouter de validation bloquante. Les contributeurs gardent leurs droits dans leur système. Un responsable peut être désigné ensuite ; il devient l’unique responsable du suivi. La proposition de blocage formulée précédemment a été refusée.
 
 ## Réallocation — référence vérifiée dans la maquette
 
 ALLOC-013 — DEC-011 : conserver le mécanisme de demande de réallocation de la maquette, pas inventer une nouvelle interaction.
 
-- Motifs : bonne activité/mauvaise personne ; mauvaise activité ; activité non applicable.
-- Justification requise ; proposer une personne de remplacement pour le premier, une activité de remplacement pour les deux autres dans le parcours Turnkey.
+- Motifs : bon système/mauvaise personne ; mauvais système ; système non applicable.
+- Justification requise ; proposer une personne de remplacement pour le premier, un système de remplacement pour les deux autres dans le parcours Turnkey.
 - La demande passe à `reassignment_needed`. La maquette offre approbation/refus.
 - Approbation personne : remplacement du responsable, travail remis à disposition. Le code historique utilise des identifiants équipe/personne incohérents par écran ; ne pas reproduire cette duplication avec DEC-010.
-- Approbation activité : remplacement de la branche, état proposé/en attente et nouvelle allocation. La maquette remplace au lieu de laisser zéro activité.
+- Approbation système : remplacement de la branche, état proposé/en attente et nouvelle allocation. La maquette remplace au lieu de laisser zéro système.
 - Refus : retour à l'état antérieur.
 - La gestion projet reçoit les demandes au niveau global ; les anciens rôles manager/expert du code ne recréent pas une hiérarchie métier après DEC-003/012.
 
-Dans un tender SIG, les actions de distribution Turnkey sont absentes (DEC-006). Ne pas laisser un menu de changement d'activité qui lancerait la passe 1. Les cas hors activité en standalone devront être explicités si nécessaires (OPEN-15), sans inventer leur équivalent.
+Dans un tender SIG, les actions de distribution Turnkey sont absentes (DEC-006). Ne pas laisser un menu de changement de système qui lancerait la passe 1. Les cas hors système en standalone devront être explicités si nécessaires (OPEN-15), sans inventer leur équivalent.
 
 Sources : `revue-documentaire.html:renderReassignForm/submitReassignRequest/approveReassign/rejectReassign`, `compliance.html:reassign-submit`. Inspection du code ; pas de recette navigateur.
 
@@ -43,7 +43,7 @@ Sources : `revue-documentaire.html:renderReassignForm/submitReassignRequest/appr
 
 ALLOC-014 — DEC-040 à DEC-043 : rejouer un modèle d'allocation sur une exigence déjà traitée, en choisissant lequel. Mécanisme distinct de la réallocation (ALLOC-013) : la réallocation change **qui** répond, la relance recalcule **ce que le modèle dérive**. Les deux ne se remplacent pas.
 
-**Granularité.** La relance porte sur une **équipe** — la feuille de l'arbre exigence → activité → équipe, c'est-à-dire le niveau exact où le verdict se saisit et où vivent les ABS/PBS/OBS. Pas de relance au niveau d'une exigence entière ni d'une activité : chaque feuille se relance pour elle-même, et les feuilles voisines ne bougent pas.
+**Granularité (DEC-056, remplace DEC-040 sur ce point).** La relance porte sur l'**exigence** au sein de son système : elle re-dérive **ABS, PBS et l'ensemble des organisations**. La granularité « équipe » de DEC-040 reposait sur l'idée que les ABS/PBS/OBS vivaient à la feuille ; DEC-055 établit que seuls les OBS s'y trouvent — ABS et PBS sont uniques pour l'exigence. Relancer une organisation isolément n'a donc pas de sens : elle partage son ABS et son PBS avec ses sœurs. Elle est bloquée dès qu'**une seule** de ses organisations l'est, puisqu'elle les réécrit toutes.
 
 **Deux cas d'entrée.**
 
@@ -61,11 +61,11 @@ Choisir l'autre produit à la relance **ne change pas le produit du tender**, qu
 
 **Condition.** La relance est **interdite dès qu'une réponse est enregistrée** sur cette feuille. Le contrôle est alors visible mais inactif, avec le motif affiché — pas masqué, sinon l'absence s'interprète comme un défaut. Cette règle est ce qui rend l'application directe sans risque : rien en aval ne peut être détruit, puisque rien en aval n'existe encore.
 
-**Emprunt ponctuel.** Le modèle emprunté au cas B ne laisse **aucun marqueur persistant** : ni sur l'exigence, ni dans les filtres, ni à l'export. L'emprunt vaut pour cette relance seulement et ne devient pas la configuration de l'activité.
+**Emprunt ponctuel.** Le modèle emprunté au cas B ne laisse **aucun marqueur persistant** : ni sur l'exigence, ni dans les filtres, ni à l'export. L'emprunt vaut pour cette relance seulement et ne devient pas la configuration du système.
 
 **Trace.** La relance écrit dans l'historique de branche comme toute autre action — qui, quand, quel modèle, cas A ou B. C'est le seul endroit où la provenance subsiste, et c'est voulu : l'emprunt est silencieux dans l'interface courante, pas effacé de l'historique.
 
-**Droits.** L'équipe de gestion du projet et les contributeurs de l'activité concernée (DEC-003, DEC-012). La relance n'ouvre aucun droit nouveau et n'en retire aucun.
+**Droits.** L'équipe de gestion du projet et les contributeurs du système concerné (DEC-003, DEC-012). La relance n'ouvre aucun droit nouveau et n'en retire aucun.
 
 **Confiance.** Les scores issus d'une relance suivent ALLOC-006 et ALLOC-007 : affichés par champ, et sans jamais dispenser de la validation humaine. Une relance ne vaut pas validation.
 
@@ -89,18 +89,18 @@ ALLOC-015 — DEC-050 : les paramètres du projet permettent de **changer le mod
 
 Conserver la distinction Incomplete / To review / To validate / Allocated ; ne pas assimiler validation de l'allocation et conformité finale.
 
-- ALLOC-T01 : Turnkey multi-activité garde une exigence et plusieurs branches.
+- ALLOC-T01 : Turnkey multi-système garde une exigence et plusieurs branches.
 - ALLOC-T02 : en SIG, corriger ABS invalide ses propositions PBS/OBS dépendantes ; corriger PBS invalide OBS. Ancien ordre interdit pour SIG.
-- ALLOC-T03 : activité sans modèle : travail manuel possible, autres exigences indépendantes.
+- ALLOC-T03 : système sans modèle : travail manuel possible, autres exigences indépendantes.
 - ALLOC-T04 : résultat IA complet reste à valider explicitement.
-- ALLOC-T05 : personne responsable unique malgré plusieurs activités/équipes.
+- ALLOC-T05 : personne responsable unique malgré plusieurs systèmes/équipes.
 - ALLOC-T06 : validation sans responsable autorisée, absence affichée ; aucun blocage de validation lié au seul responsable manquant.
 - ALLOC-T07 : demande sans motif explicatif refusée ; refus d'une demande restaure l'état précédent.
 - ALLOC-T08 : aucune colonne/section de passe 1 dans le parcours SIG ; détail SIG direct.
 - ALLOC-T09 : relancer une feuille recalcule ses seuls ABS/PBS/OBS ; l'équipe et la personne affectées sont inchangées après la relance.
 - ALLOC-T10 : une feuille dont la réponse est enregistrée n'est pas relançable ; le contrôle reste visible et inactif, avec son motif.
 - ALLOC-T11 : relancer une feuille ne modifie aucune feuille voisine de la même exigence.
-- ALLOC-T12 : une activité sans modèle peut être relancée avec le modèle d'une autre, choisi explicitement ; l'activité reste sans modèle après coup et les exigences suivantes restent en allocation manuelle.
+- ALLOC-T12 : un système sans modèle peut être relancé avec le modèle d'un autre, choisi explicitement ; le système reste sans modèle après coup et les exigences suivantes restent en allocation manuelle.
 - ALLOC-T13 : après un emprunt, aucune trace du modèle emprunté n'apparaît sur l'exigence ni à l'export ; l'historique de branche, lui, la porte.
 - ALLOC-T14 : le sélecteur de relance distingue les produits du système concerné de l'emprunt à un autre système ; le produit du tender y est présélectionné.
 - ALLOC-T15 : relancer avec l'autre produit laisse le produit du tender inchangé ; rien dans le projet n'indique ensuite qu'il aurait changé.
