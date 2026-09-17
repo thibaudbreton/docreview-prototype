@@ -1075,6 +1075,15 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
    arrows between steps carry the "derived from" relationship that presenting
    these as three sibling fields used to hide. */
 .deriv-pass{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);background:var(--panel-2)}
+.rerun-wrap{position:relative;margin-left:auto}
+.rerun-btn{text-transform:none;letter-spacing:0;font-weight:600}
+.rerun-btn.is-blocked{opacity:.45;cursor:not-allowed}
+.rerun-menu{display:none;position:absolute;right:0;top:calc(100% + 4px);z-index:40;min-width:210px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-md);box-shadow:0 8px 24px rgba(0,0,0,.28);padding:var(--space-1) 0}
+.rerun-menu.on{display:block}
+.rerun-head{font-size:var(--text-xs);letter-spacing:.3px;text-transform:uppercase;color:var(--text-3);padding:var(--space-2) var(--space-3) 4px}
+.rerun-head.borrowed{border-top:1px solid var(--line);margin-top:var(--space-1);color:var(--ia)}
+.rerun-opt{padding:6px var(--space-3);font-size:var(--text-sm);color:var(--text-2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400}
+.rerun-opt:hover{background:var(--panel-3);color:var(--text)}
 .deriv-pass-h{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-3)}
 .deriv-dim{font-size:var(--text-xs);color:var(--text-3);line-height:1.5;margin-bottom:var(--space-2)}
 /* The compact distribution card a contributor sees under their own
@@ -1730,6 +1739,11 @@ body.restricted .restrict-banner{display:flex}
   </div>
 
   <div class="sel-drop">
+    <button class="sel-btn" id="sel-rerun-btn" title="Replay an allocation model on the selection. Derivation only — who answers is not touched.">Re-run<span class="caret">▾</span></button>
+    <div class="sel-menu" id="sel-rerun-menu"></div>
+  </div>
+
+  <div class="sel-drop">
     <button class="sel-btn" id="sel-class-btn">Classify<span class="caret">▾</span></button>
     <div class="sel-menu" id="sel-class-menu">
       <div class="sel-mopt" data-selcls="tech">Technical</div>
@@ -1955,24 +1969,24 @@ function seedSigSections(){
     id:"s2", docId:"d1", num:"2", title:"Train control",
     blocks:[
       {id:"L4-0003", kind:"heading", level:2, text:"2.1 Automatic train protection"},
-      {id:"L4-0004", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+      {id:"L4-0004", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
        abs:{v:"Design & Engineering",c:93}, pbs:{v:"CBTC / Wayside",c:95}, obs:{v:"Signalling Design — FR",c:91},
        manager:"m_sig", type:"Functional", domain:"Design & Engineering", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
        text:"The system SHALL enforce a continuous safe braking envelope for every train under CBTC control, based on its position, speed and the movement authority granted by the wayside."},
-      {id:"L4-0005", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+      {id:"L4-0005", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
        abs:{v:"Design & Engineering",c:90}, pbs:{v:"CBTC / Onboard",c:92}, obs:{v:"Signalling Design — FR",c:88},
        manager:"m_sig", type:"Performance", domain:"Design & Engineering", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:2,
        text:"Train position SHALL be reported to the wayside at least twice per second, with a confidence interval not exceeding 2 metres at any speed up to 80 km/h."},
-      {id:"L4-0006", kind:"requirement", tech:"tech", techAI:true, perim:["sig"], perimAI:true,
+      {id:"L4-0006", kind:"requirement", branchStatus:"proposed", tech:"tech", techAI:true, perim:["sig"], perimAI:true,
        abs:{v:"Systems Integration",c:71}, pbs:{v:"CBTC / Onboard",c:84}, obs:{v:"Integration — FR",c:58},
        manager:null, type:"Interface", domain:"Systems Integration", status:"suggested", alloc:null, comments:0, uncertain:true,
        text:"The onboard equipment SHALL remain capable of degraded manual operation under line-side signals when CBTC coverage is unavailable, without requiring a train reset."},
       {id:"L4-0007", kind:"heading", level:2, text:"2.2 Automatic train operation"},
-      {id:"L4-0008", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+      {id:"L4-0008", kind:"requirement", branchStatus:"awaiting_answer", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
        abs:{v:"Design & Engineering",c:88}, pbs:{v:"ATS / Supervision",c:90}, obs:{v:"Signalling Design — FR",c:86},
        manager:"m_sig", type:"Functional", domain:"Design & Engineering", status:"toreview", alloc:"sup", comments:0,
        text:"The system SHALL support a minimum headway of 90 seconds in normal service on the central section between Gare du Nord and Palais des Congrès."},
-      {id:"L4-0009", kind:"requirement", tech:"nontech", techAI:true, perim:["sig"], perimAI:false,
+      {id:"L4-0009", kind:"requirement", branchStatus:"awaiting_answer", tech:"nontech", techAI:true, perim:["sig"], perimAI:false,
        abs:{v:"Installation & Commissioning",c:66}, pbs:{v:"ATS / Supervision",c:77}, obs:{v:"Integration — FR",c:54},
        manager:null, type:"Regulatory", domain:"Installation & Commissioning", status:"suggested", alloc:null, comments:0, uncertain:true,
        text:"Migration to CBTC SHALL be carried out without interrupting commercial service, with mixed-fleet operation supported throughout the transition period."},
@@ -1981,15 +1995,15 @@ function seedSigSections(){
   {
     id:"s3", docId:"d1", num:"3", title:"Wayside and interlocking",
     blocks:[
-      {id:"L4-0010", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+      {id:"L4-0010", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
        abs:{v:"Design & Engineering",c:94}, pbs:{v:"Interlocking",c:96}, obs:{v:"Wayside Engineering — FR",c:92},
        manager:"m_sig", type:"Functional", domain:"Design & Engineering", status:"allocated", allocStatus:"allocated", alloc:"infra", comments:0,
        text:"Each interlocking SHALL guarantee that no conflicting route can be set simultaneously, and SHALL release a route only once the train has been confirmed clear of the last track section."},
-      {id:"L4-0011", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+      {id:"L4-0011", kind:"requirement", branchStatus:"awaiting_qa", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
        abs:{v:"Verification & Validation",c:82}, pbs:{v:"Interlocking",c:89}, obs:{v:"V&V — FR",c:79},
        manager:"m_sig", type:"Performance", domain:"Verification & Validation", status:"edited", alloc:"infra", comments:1,
        text:"Route setting SHALL complete within 3 seconds of the request, measured from the supervision workstation to the confirmation of point position."},
-      {id:"L4-0012", kind:"requirement", tech:"tech", techAI:true, perim:["sig"], perimAI:true,
+      {id:"L4-0012", kind:"requirement", branchStatus:"awaiting_qa", tech:"tech", techAI:true, perim:["sig"], perimAI:true,
        abs:{v:"Installation & Commissioning",c:63}, pbs:{v:"Telecom / Radio",c:81}, obs:{v:"Wayside Engineering — FR",c:49},
        manager:null, type:"Interface", domain:"Installation & Commissioning", status:"suggested", alloc:null, comments:0, uncertain:true,
        text:"Radio coverage SHALL be continuous across the whole line including the depot approach tracks, with no single point of failure between two consecutive access points."},
@@ -1999,20 +2013,20 @@ function seedSigSections(){
     id:"s4", docId:"d2", num:"4", title:"Station interfaces and safety",
     blocks:[
       {id:"L4-0013", kind:"heading", level:2, text:"4.1 Platform screen doors"},
-      {id:"L4-0014", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+      {id:"L4-0014", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
        abs:{v:"Systems Integration",c:87}, pbs:{v:"Platform Screen Doors",c:93}, obs:{v:"Integration — FR",c:85},
        manager:"m_sig", type:"Interface", domain:"Systems Integration", status:"toreview", alloc:"sup", comments:0,
        text:"Platform screen doors SHALL open only when the train is berthed within the permitted stopping tolerance and the train doors on the corresponding side are enabled."},
-      {id:"L4-0015", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+      {id:"L4-0015", kind:"requirement", branchStatus:"reassignment_needed", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
        abs:{v:"Safety Assurance",c:91}, pbs:{v:"Platform Screen Doors",c:88}, obs:{v:"Safety & RAMS — Group",c:83},
        manager:"m_sig", type:"Security", domain:"Safety Assurance", status:"toreview", alloc:"cyber", comments:0,
        text:"Loss of the interface between the train and the platform screen doors SHALL result in the doors remaining closed, and SHALL be reported to the control centre within 2 seconds."},
       {id:"L4-0016", kind:"heading", level:2, text:"4.2 Safety case"},
-      {id:"L4-0017", kind:"requirement", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
+      {id:"L4-0017", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
        abs:{v:"Safety Assurance",c:95}, pbs:{v:"CBTC / Wayside",c:86}, obs:{v:"Safety & RAMS — Group",c:90},
        manager:"m_sig", type:"Regulatory", domain:"Safety Assurance", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
        text:"The supplier SHALL deliver a safety case demonstrating SIL 4 for all train protection functions, in accordance with EN 50126, EN 50128 and EN 50129."},
-      {id:"L4-0018", kind:"requirement", tech:"nontech", techAI:false, perim:["sig"], perimAI:false,
+      {id:"L4-0018", kind:"requirement", branchStatus:"awaiting_answer", tech:"nontech", techAI:false, perim:["sig"], perimAI:false,
        abs:{v:"Verification & Validation",c:78}, pbs:{v:"ATS / Supervision",c:72}, obs:{v:"V&V — FR",c:74},
        manager:null, type:"Regulatory", domain:"Verification & Validation", status:"toreview", alloc:null, comments:0,
        text:"The supplier SHALL provide evidence of independent safety assessment by a recognised body before the start of passenger service on any migrated section."},
@@ -2317,6 +2331,108 @@ const TYPO=[
  {id:"trk",code:"TRK",label:"TRK"},
 ];
 const TY=id=>TYPO.find(t=>t.id===id)||{code:id.toUpperCase(),label:id};
+
+/* =====================================================
+   ALLOCATION RE-RUN — ALLOC-014, DEC-040 to DEC-043 and DEC-051 to DEC-053
+   Replaying an allocation model on one leaf, choosing which model. Distinct
+   from reallocation (ALLOC-013): that one changes WHO answers, this one
+   recomputes WHAT the model derives. Neither replaces the other.
+===================================================== */
+/* DEC-047 — each system has its own products, and the product selects the
+   model. Only a system that carries a model has products; everything else
+   allocates by hand (ALLOC-005) and can only ever borrow one (case B). The
+   real product lists beyond these are owed with the combination matrix
+   (DEC-048) — nothing is invented here for systems nobody has described. */
+const SYSTEM_PRODUCTS={
+  sig:[{id:"sig-urban",label:"SIG Urban"},{id:"sig-mainline",label:"SIG Mainline"}],
+  rst:[{id:"rst-metro",label:"RST Metro"},{id:"rst-tgv",label:"RST High speed"}],
+};
+const PRODUCT=id=>Object.values(SYSTEM_PRODUCTS).flat().find(p=>p.id===id)||null;
+const productSystem=id=>Object.keys(SYSTEM_PRODUCTS).find(k=>SYSTEM_PRODUCTS[k].some(p=>p.id===id))||null;
+
+/* A model is simulated, not implemented — same convention as every other AI
+   step in this prototype ("represented, not implemented"). What matters for the
+   demonstration is that two products genuinely derive differently and that the
+   same product is stable on the same requirement, so a re-run is reproducible.
+   PBS is stored at two different levels in this data: a requirement carries one
+   of the five natures in `type`, a team leaf carries a free product-area string.
+   The vocabularies below follow that split rather than papering over it. */
+const MODEL_VOCAB={
+  "sig-urban":{
+    abs:["Design & Engineering","Systems Integration","Verification & Validation","Safety Assurance"],
+    pbsLeaf:["CBTC / Onboard","CBTC / Wayside","ATS / Supervision","Platform Screen Doors"],
+    nature:["Functional","Performance","Interface","Regulatory"],
+    obs:["Signalling Design — FR","Integration — FR","V&V — FR","Safety & RAMS — Group"],
+  },
+  "sig-mainline":{
+    abs:["Design & Engineering","Installation & Commissioning","Verification & Validation","Safety Assurance"],
+    pbsLeaf:["Interlocking","Trackside equipment","Telecom / Radio","Level crossings"],
+    nature:["Functional","Performance","Regulatory","Security"],
+    obs:["Wayside Engineering — FR","Signalling Design — FR","V&V — FR","Safety & RAMS — Group"],
+  },
+  "rst-metro":{
+    abs:["Design & Engineering","Systems Integration","Verification & Validation"],
+    pbsLeaf:["Traction","Doors","Bogies","Onboard networks"],
+    nature:["Functional","Performance","Interface"],
+    obs:["Rolling Stock Design — FR","Integration — FR","V&V — FR"],
+  },
+  "rst-tgv":{
+    abs:["Design & Engineering","Safety Assurance","Verification & Validation"],
+    pbsLeaf:["Traction","Pantograph","Bogies","Onboard networks"],
+    nature:["Functional","Performance","Regulatory"],
+    obs:["Rolling Stock Design — FR","Safety & RAMS — Group","V&V — FR"],
+  },
+};
+/* Deterministic on (leaf id, product): re-running the same model twice gives the
+   same answer, which is what makes DEC-053 ("no special handling when nothing
+   changed") a real outcome rather than random noise. */
+function runAllocationModel(productId, seedId){
+  const v=MODEL_VOCAB[productId]; if(!v) return null;
+  const h=hashId(seedId+"::"+productId);
+  const pick=(arr,shift)=>arr[(h>>shift)%arr.length];
+  const conf=shift=>58+((h>>shift)%40);
+  return {
+    abs:{v:pick(v.abs,2), c:conf(3)},
+    pbs:{v:pick(v.pbsLeaf,5), c:conf(7)},
+    obs:{v:pick(v.obs,9), c:conf(11)},
+    nature:pick(v.nature,5),          // PBS as the requirement stores it (one of five)
+  };
+}
+/* DEC-041 + DEC-051 — what makes applying directly safe is that nothing
+   downstream can exist yet. An answer blocks; so does a question in flight,
+   because the client was asked about the derivation as it stands and changing it
+   underneath would make their answer unusable. */
+function rerunBlockedReason(leaf){
+  const st=leaf&&leaf.branchStatus;
+  if(st==="answered") return "an answer has been recorded";
+  if(st==="awaiting_qa") return "a question is with the client";
+  const verdict=leaf&&(leaf.compliance||leaf.rollupCompliance);
+  if(verdict&&verdict!=="pending") return "a verdict has been recorded";
+  return null;
+}
+/* Ordered for the picker: the current system's own products first — choosing
+   between SIG Urban and SIG Mainline is not borrowing, both are legitimate
+   models of the same system — then, separately, another system's (case B). */
+function rerunModelChoices(systemId){
+  const own=(SYSTEM_PRODUCTS[systemId]||[]).map(p=>({...p,borrowed:false}));
+  const other=Object.keys(SYSTEM_PRODUCTS).filter(k=>k!==systemId)
+    .flatMap(k=>SYSTEM_PRODUCTS[k].map(p=>({...p,borrowed:true})));
+  return {own,other};
+}
+/* Writes onto the leaf. ABS/PBS/OBS and nothing else: re-deriving is not
+   re-assigning (DEC-042), so manager, team and status are never touched. */
+function applyRerunTo(b, branchIdx, productId){
+  const branch=(b.branches||[])[branchIdx]; if(!branch) return null;
+  const leaf=ensureTeams(branch)[0]; if(!leaf) return null;
+  const r=runAllocationModel(productId, b.id+"#"+branchIdx); if(!r) return null;
+  leaf.abs=r.abs; leaf.pbs=r.pbs; leaf.obs=r.obs;
+  branch.abs=r.abs; branch.pbs=r.pbs; branch.obs=r.obs;
+  /* A requirement with a single system shows the chain at its own level, reading
+     b.domain and b.type rather than the leaf — so the derivation has to land on
+     both or the panel would show the old values under a new confidence. */
+  if((b.branches||[]).length===1){ b.domain=r.abs.v; b.type=r.nature; b.obs=r.obs; b.abs=r.abs; b.pbs=r.pbs; }
+  return r;
+}
 
 /* =====================================================
    TWO-PASS ALLOCATION — TICKET-two-pass-allocation.md
@@ -2960,7 +3076,12 @@ function ensureBranches(b){
     // without allocStatus/allocDoubtField/allocReviewReason a contributor's
     // own status pill (myBranch.allocStatus) read "Incomplete" for
     // activities that were actually long since Allocated.
-    b.branches=[{typology:t,label:TY(t).label,manager:b.manager||null,branchStatus:b.manager?"answered":"proposed",compliance:"pending",
+    // The manager-implies-answered rule is only a default now: a seed stating
+    // its own branchStatus wins. It had to — the SIG tender called every
+    // requirement with an owner "answered" on this screen while Compliance
+    // called the same ones awaiting, and the re-run blocking rule (DEC-041/051)
+    // reads exactly this field.
+    b.branches=[{typology:t,label:TY(t).label,manager:b.manager||null,branchStatus:b.branchStatus||(b.manager?"answered":"proposed"),compliance:"pending",
       pbs:b.pbs||null,abs:b.abs||null,obs:b.obs||null,tkObs:b.tkObs||null,
       allocStatus:b.allocStatus||null,allocDoubtField:b.allocDoubtField||null,allocReviewReason:b.allocReviewReason||null}]; // TD2 — no one assigned yet when b.manager is null
     if(!b.rollupStatus) b.rollupStatus=STATUS_LABEL[b.status];
@@ -4543,12 +4664,70 @@ function distributionBlockHTML(b, compact){
       </div>`;
     }).join(""):`<div class="deriv-hint">No system yet — nothing to route into.</div>`}`;
 }
+/* The control sits on the model's own heading — you re-run the thing named right
+   there, not a generic action floating elsewhere. Blocked leaves keep the button
+   visible and inert with the reason on it (DEC-041): hiding it would read as a
+   missing feature rather than a deliberate refusal. */
+function rerunControlHTML(scopeKey, systemId, blockedReason){
+  if(blockedReason){
+    return `<button class="mini-btn rerun-btn is-blocked" disabled title="Cannot re-run — ${escHtml(blockedReason)}.">↻ Re-run</button>`;
+  }
+  const {own,other}=rerunModelChoices(systemId);
+  if(!own.length && !other.length) return "";
+  const opt=p=>`<div class="rerun-opt" data-rerun-apply="${scopeKey}" data-rerun-product="${p.id}">${escHtml(p.label)}</div>`;
+  return `<div class="rerun-wrap">
+    <button class="mini-btn rerun-btn" data-rerun-open="${scopeKey}" title="Replay an allocation model on this leaf. Derivation only — who answers is not touched.">↻ Re-run ▾</button>
+    <div class="rerun-menu" data-rerun-menu="${scopeKey}">
+      ${own.length?`<div class="rerun-head">This system's models</div>${own.map(opt).join("")}`:""}
+      ${other.length?`<div class="rerun-head borrowed">Borrow another system's model</div>${other.map(opt).join("")}`:""}
+    </div>
+  </div>`;
+}
+/* One binder for every re-run control on the panel, whatever level it sits at.
+   `scopeKey` says which leaf: "req:<id>" for a requirement that carries its own
+   derivation, "leaf:<id>::<branchIdx>" for a team under a system. */
+function bindRerunControls(root, b){
+  root.querySelectorAll("[data-rerun-open]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation();
+    const k=btn.dataset.rerunOpen;
+    const menu=root.querySelector(`[data-rerun-menu="${k}"]`);
+    const open=menu.classList.contains("on");
+    root.querySelectorAll(".rerun-menu.on").forEach(m=>m.classList.remove("on"));
+    menu.classList.toggle("on",!open);
+  }));
+  root.querySelectorAll("[data-rerun-apply]").forEach(opt=>opt.addEventListener("click",e=>{
+    e.stopPropagation();
+    const key=opt.dataset.rerunApply, productId=opt.dataset.rerunProduct;
+    const product=PRODUCT(productId); if(!product) return;
+    const idx=+key.split("::")[1];
+    const branch=(b.branches||[])[idx]; if(!branch) return;
+    const blocked=rerunBlockedReason(ensureTeams(branch)[0]);
+    if(blocked){ toast(`Cannot re-run — ${blocked}.`,"warn"); return; }
+    const borrowed = productSystem(productId)!==branch.typology;
+    applyRerunTo(b, idx, productId);
+    // DEC-043 — the borrow leaves no persistent marker anywhere a reader looks;
+    // the branch history is the one place it survives, and that is deliberate.
+    pushBranchLog(b, MGR(VIEWER).name,
+      `Re-ran allocation with ${product.label}${borrowed?" (borrowed — this system has no model of its own)":""}`, "ok");
+    toast(`${b.id} — re-derived with ${product.label}`,"ok");
+    refresh();
+  }));
+  document.addEventListener("click",()=>root.querySelectorAll(".rerun-menu.on").forEach(m=>m.classList.remove("on")),{once:true});
+}
 function derivationChainHTML(b,myBranch,derivSrc,rmView){
   const distribHTML = distributionBlockHTML(b);
   /* ---- the activity's own model, PBS -> ABS -> OBS ---- */
   const scope = myBranch ? `${TY(myBranch.typology).label}` : (runsPassOne()?"The system's own model":`${escHtml(TENDER_LINE)}'s model`);
   const modelHTML = `<div class="deriv-pass">
-    <div class="deriv-pass-h">${escHtml(scope)}</div>
+    <div class="deriv-pass-h">${escHtml(scope)}${(function(){
+      /* One leaf to act on: the contributor's own system, or the single system a
+         requirement carries. With several, the control belongs on each system's
+         own detail below — re-running "the chain" would be ambiguous. */
+      const idx = myBranch ? (b.branches||[]).indexOf(myBranch) : ((b.branches||[]).length===1 ? 0 : -1);
+      if(idx<0) return "";
+      const br=(b.branches||[])[idx];
+      return rerunControlHTML("leaf:"+b.id+"::"+idx, br.typology, rerunBlockedReason(ensureTeams(br)[0]));
+    })()}</div>
     ${derivStepHTML("ABS",
       `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
       derivSrc.abs)}
@@ -4734,7 +4913,7 @@ function activityDetailHTML(b,bidx){
       <span class="act-block-name">${escHtml(branch.label||TY(branch.typology).label)}</span>
     </div>
     <div class="deriv-pass">
-      <div class="deriv-pass-h">${escHtml(TY(branch.typology).label)}'s own model</div>
+      <div class="deriv-pass-h">${escHtml(TY(branch.typology).label)}'s own model${rerunControlHTML("leaf:"+b.id+"::"+bidx,branch.typology,rerunBlockedReason(t))}</div>
       ${derivStepHTML("Type", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
       ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-system within this system."):""}
         ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
@@ -4987,6 +5166,7 @@ function renderSettings(){
     body.querySelector("#act-missing")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });
+    bindRerunControls(body, b);
     body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
     body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
@@ -5521,6 +5701,38 @@ document.getElementById("sel-validate").addEventListener("click",bulkValidate);
 document.getElementById("sel-toreview").addEventListener("click",bulkMarkToReview);
 document.getElementById("sel-reclass-info").addEventListener("click",bulkReclassifyInfo);
 document.querySelectorAll("[data-selcls]").forEach(b=>b.addEventListener("click",()=>bulkSetClass(b.dataset.selcls)));
+/* DEC-052 — the same re-run, on a selection. Blocked leaves are skipped and
+   counted, never forced: the rule that protects an answered leaf cannot become
+   negotiable just because ten rows were selected at once. Deliberately NOT the
+   global re-run (ALLOC-015), which is a different act — that one changes the
+   project's model and destroys answers on purpose. */
+function bulkRerun(productId){
+  const product=PRODUCT(productId); if(!product) return;
+  const ids=[...state.selection];
+  let done=0, skipped=0, noLeaf=0;
+  ids.forEach(id=>{
+    const f=findBlock(id); if(!f) return;
+    const b=f.b; ensureBranches(b);
+    const branches=b.branches||[];
+    if(branches.length!==1){ noLeaf++; return; }   // several systems: ambiguous, leave it to the panel
+    const leaf=ensureTeams(branches[0])[0];
+    if(rerunBlockedReason(leaf)){ skipped++; return; }
+    applyRerunTo(b, 0, productId);
+    pushBranchLog(b, MGR(VIEWER).name, `Re-ran allocation with ${product.label} (bulk)`, "ok");
+    done++;
+  });
+  const parts=[`${done} re-derived with ${product.label}`];
+  if(skipped) parts.push(`${skipped} left alone — answered or waiting on the client`);
+  if(noLeaf) parts.push(`${noLeaf} span several systems — re-run those from the panel`);
+  toast(parts.join(" · "), done?"ok":"warn");
+  refresh();
+}
+(function(){
+  const menu=document.getElementById("sel-rerun-menu"); if(!menu) return;
+  const all=Object.keys(SYSTEM_PRODUCTS).flatMap(k=>SYSTEM_PRODUCTS[k].map(p=>({...p,sys:k})));
+  menu.innerHTML=all.map(p=>`<div class="sel-mopt" data-bulkrerun="${p.id}">${p.label}</div>`).join("");
+  menu.querySelectorAll("[data-bulkrerun]").forEach(o=>o.addEventListener("click",()=>bulkRerun(o.dataset.bulkrerun)));
+})();
 /* Assign popover — four fields, each applying to the whole selection on change.
    "Keep current" is the resting value so opening the popover changes nothing,
    and every field snaps back to it after applying. */
@@ -5547,7 +5759,7 @@ function bindDrop(btnId,dropSel){
     d.classList.toggle("open");
   });
 }
-bindDrop("sel-assign-btn"); bindDrop("sel-class-btn");
+bindDrop("sel-assign-btn"); bindDrop("sel-class-btn"); bindDrop("sel-rerun-btn");
 document.addEventListener("click",e=>{ if(!e.target.closest(".sel-drop")) document.querySelectorAll(".sel-drop").forEach(x=>x.classList.remove("open")); });
 
 /* View as */

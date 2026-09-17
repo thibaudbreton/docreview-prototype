@@ -79,11 +79,11 @@ ALLOC-015 — DEC-050 : les paramètres du projet permettent de **changer le mod
 
 **Les deux relances ne se remplacent pas.** L'unitaire est chirurgicale, donc protégée (ALLOC-014, interdite si réponse). La globale est un changement de prémisse du projet, donc totale. Ne pas offrir l'une comme repli de l'autre, et ne pas fusionner leurs contrôles.
 
-À préciser avant construction, non tranché à ce stade :
+**Ce qui bloque, précisément** (DEC-051). Une réponse enregistrée, et **aussi l'attente d'une réponse du client** (`awaiting_qa`). Une question en vol suppose que le client a été interrogé sur la dérivation actuelle ; la changer sous la question rendrait sa réponse inexploitable. Les états qui ne bloquent pas : proposé, assigné, en attente de réponse du contributeur, réallocation demandée.
 
-- Quels états bloquent exactement. La règle dit « réponse enregistrée » ; reste à confirmer si `awaiting_qa` (question partie chez le client, aucune réponse encore) bloque ou non. Proposition : ne bloque pas.
-- Relance en masse sur une sélection. Hors périmètre proposé : une feuille à la fois, conformément à la demande d'origine.
-- Comportement quand le résultat est identique au précédent. Proposition : le dire explicitement plutôt que de ne rien afficher.
+**Relance en masse** (DEC-052). Disponible depuis la barre d'actions groupées de la table, sur une sélection. Même règle de blocage feuille par feuille : les feuilles bloquées sont sautées et comptées, jamais relancées de force. Couvre le cas « dix exigences mal dérivées » sans passer par un changement de modèle global, qui lui est destructeur.
+
+**Résultat identique** (DEC-053). Aucun traitement particulier : même retour que toute relance. La trace dans l'historique suffit à établir qu'elle a eu lieu.
 
 ## États et acceptation
 
