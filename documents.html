@@ -315,7 +315,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
     <div class="field"><label>Document</label><select id="export-doc"></select></div>
     <div class="field"><label>Include</label>
       <label class="exp-row"><input type="checkbox" data-estep="capture" checked> Capture — structure, segments and tables</label>
-      <label class="exp-row"><input type="checkbox" data-estep="charac" checked> Characterisation — class, activity, type and status</label>
+      <label class="exp-row"><input type="checkbox" data-estep="charac" checked> Characterisation — class, system, type and status</label>
       <label class="exp-row"><input type="checkbox" data-estep="alloc" checked> Allocation — assignments</label>
     </div>
     <div class="field"><label>Format</label>
@@ -442,7 +442,7 @@ Object.assign(DOC("d1"),{added:"Mar 3, 2026", versions:[
 Object.assign(DOC("d30"),{added:"Jul 18, 2026", versions:[
   {num:"v1.0", date:"Jul 18, 2026", note:"Added mid-project — waiting for capture", gap:null, stale:0},
 ]});
-Object.assign(DOC("d29"),{prog:70, progLabel:"Characterisation — class, activity and type…"});
+Object.assign(DOC("d29"),{prog:70, progLabel:"Characterisation — class, system and type…"});
 const PSTATE={ready:"Ready", running:"Processing", queued:"Not processed"};
 const PSTATE_FULL={ready:"Captured & characterised", running:"AI processing running", queued:"Not yet processed"};
 const state={expanded:new Set(), removeId:null, addSeq:0, search:"", filter:"all"};
@@ -629,12 +629,12 @@ function addDocument(){
   // translate from.
   const steps = TENDER_LANGUAGE==="en" ? [
     {p:35, l:"Capture — splitting the document into blocks…"},
-    {p:70, l:"Characterisation — class, activity and type…"},
+    {p:70, l:"Characterisation — class, system and type…"},
     {p:100, l:"Done"},
   ] : [
     {p:25, l:"Capture — splitting the document into blocks…"},
     {p:55, l:`Translation — from ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} to the tool's working English…`},
-    {p:80, l:"Characterisation — class, activity and type…"},
+    {p:80, l:"Characterisation — class, system and type…"},
     {p:100, l:"Done"},
   ];
   let k=0;

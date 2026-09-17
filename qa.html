@@ -416,7 +416,7 @@ function renderQuestions(){
     <span class="count">${QA.length} on record</span></div>`;
   html+=`<div class="qa-filters">
     <input id="q-search" placeholder="Search question text or requirement ref…" autocomplete="off">
-    <select id="q-activity"><option value="">All activities</option>${Object.keys(TYPOS).map(k=>`<option value="${k}">${TY(k).label}</option>`).join("")}</select>
+    <select id="q-activity"><option value="">All systems</option>${Object.keys(TYPOS).map(k=>`<option value="${k}">${TY(k).label}</option>`).join("")}</select>
   </div>`;
   let anyGroup=false;
   groups.forEach(([st,label])=>{

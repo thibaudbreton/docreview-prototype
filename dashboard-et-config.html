@@ -685,7 +685,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="ph-info">
             <div class="ph-name">Allocation</div>
             <!-- §2.1 — placeholder copy, flagged per the ticket's own instruction -->
-            <div class="ph-desc">Route each requirement to the activity and team responsible for answering it.</div>
+            <div class="ph-desc">Route each requirement to the system and team responsible for answering it.</div>
             <div class="ph-stat" id="ph-review-stat"><span class="big" id="ph-review-n">5</span><span id="ph-review-txt">/ 14 requirements validated</span></div>
             <div class="ph-bar"><div id="ph-review-bar" style="width:36%;background:var(--ia)"></div></div>
           </div>
@@ -714,11 +714,11 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
            Same .phase molecule, .is-support strips it back visually. -->
       <div class="rail-label">Always open <span>· runs alongside, in no particular order</span></div>
       <div class="support-rail">
-        <div class="phase is-support" id="ph-team" style="cursor:pointer" title="Team casting — assign a manager and staff to each activity.">
+        <div class="phase is-support" id="ph-team" style="cursor:pointer" title="Team casting — assign a manager and staff to each system.">
           <div class="ph-num transversal">◉</div>
           <div class="ph-info">
             <div class="ph-name">Team casting</div>
-            <div class="ph-desc">Assign a manager and staff to each activity.</div>
+            <div class="ph-desc">Assign a manager and staff to each system.</div>
             <div class="ph-stat"><span class="big" id="ph-team-n">2</span><span id="ph-team-txt">/ 3 managers have completed their team</span></div>
             <div class="ph-bar"><div id="ph-team-bar" style="width:67%;background:var(--ok)"></div></div>
           </div>
@@ -865,8 +865,8 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             </div>
 
             <div class="stat-block stat-wide">
-              <div class="stat-h">Load by activity</div>
-              <div class="stat-sub">How the requirements spread across activities, and how much of each is allocated</div>
+              <div class="stat-h">Load by system</div>
+              <div class="stat-sub">How the requirements spread across systems, and how much of each is allocated</div>
               <div id="stats-activity-load"></div>
             </div>
 
@@ -933,7 +933,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
             </div>
 
             <div class="stat-block stat-bottlenecks">
-              <div class="stat-h">Bottlenecks by activity</div>
+              <div class="stat-h">Bottlenecks by system</div>
               <div class="stat-sub">Awaiting a contributor answer — ranked by age of the oldest, not by count</div>
               <div id="stats-bottlenecks" class="bn-list"></div>
             </div>
@@ -991,7 +991,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
           <div class="cfg-sub">Contributors available for requirement assignment during allocation. Each can be assigned requirements and receives a qualification link.</div>
           <div id="exp-editor"></div>
           <div class="add-exp"><input class="inp" id="new-exp-name" placeholder="Full name"><input class="inp" id="new-exp-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="add-exp-btn">Add contributor</button></div>
-          <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria <span style="font-weight:400;color:var(--text-3);font-size:var(--text-xs)">(TE2 — demo only, doesn't change what the review table actually offers)</span></div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (activity)</span><span class="chip-tog on">OBS (organization)</span><span class="chip-tog">Discipline</span></div></div></div>
+          <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria <span style="font-weight:400;color:var(--text-3);font-size:var(--text-xs)">(TE2 — demo only, doesn't change what the review table actually offers)</span></div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (system)</span><span class="chip-tog on">OBS (organization)</span><span class="chip-tog">Discipline</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Restricted view</div><div class="fld">What a manager sees for requirements outside their assignments (the admin/project lead always sees everything).</div></div><div class="fc"><div class="segc" data-seg="redact"><button class="on" data-redact="redact">Redacted</button><button data-redact="hide">Hidden</button></div><div class="opt-desc"><b>Redacted:</b> the manager sees blacked-out passages — they perceive the volume and context but not the content. <b>Hidden:</b> out-of-scope passages disappear entirely.</div></div></div>
         </section>
 
@@ -1096,7 +1096,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
       <div class="view-head" style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:6px">
         <h1 style="font-size:var(--text-xl);font-weight:600;letter-spacing:-.2px" id="team-h1">Team casting</h1>
       </div>
-      <div class="cfg-sub" id="team-sub" style="margin-bottom:16px">Every contributor is staffed against an activity and, where the activity uses one, a perimeter within it — the perimeter is optional, not a required step.</div>
+      <div class="cfg-sub" id="team-sub" style="margin-bottom:16px">Every contributor is staffed against a system and, where the system uses one, a perimeter within it — the perimeter is optional, not a required step.</div>
       <div class="team-scope">
         <span style="font-size:var(--text-sm);color:var(--text-3)">Viewing as</span>
         <select id="team-viewer"></select>
@@ -1108,7 +1108,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
              strip, since adding an activity is a project-wide structural
              change, not something scoped to one manager's own activity. -->
         <div class="cast-add-act-wrap" id="cast-add-act-wrap" style="display:none">
-          <button class="cast-add-act-btn" id="cast-add-act-btn">+ Add activity</button>
+          <button class="cast-add-act-btn" id="cast-add-act-btn">+ Add system</button>
           <div class="cast-add-act-pop" id="cast-add-act-pop"></div>
         </div>
         <!-- TICKET-casting-screen-redesign.md DoD #5: "stays usable and responsive
@@ -1117,7 +1117,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
              narrative on this screen — coverage counts, the "just added" chip —
              is tuned around), a repeatable control generates the scale on demand
              so the claim stays demonstrable, not just asserted in a commit message. -->
-        <button class="demo-link" id="cast-simulate-scale" title="Generates ~185 additional staffed rows across every activity/perimeter, to demonstrate the screen at the ticket's real scale">🎭 <b>DEMO</b> Simulate 200 roster</button>
+        <button class="demo-link" id="cast-simulate-scale" title="Generates ~185 additional staffed rows across every system/perimeter, to demonstrate the screen at the ticket's real scale">🎭 <b>DEMO</b> Simulate 200 roster</button>
       </div>
       <div id="cast-coverage"></div>
       <div id="team-body"></div>
@@ -1473,7 +1473,7 @@ let TEAM_VIEWER="admin";
 let CAST_UNSTAFFED_ONLY=false;
 let CAST_ROSTER_SEARCH="";
 let CAST_LAST_ADDED=null; // {personId, label} — powers "add to another perimeter"
-const castExpanded=new Set(); // activity ids expanded in the current view
+const castExpanded=new Set(); // system ids expanded in the current view
 
 function initTeamViewer(){
   const sel=document.getElementById("team-viewer");
@@ -1481,7 +1481,7 @@ function initTeamViewer(){
   // land on genuinely different views below, so the picker should say which
   // kind of person is being simulated, not just list names.
   sel.innerHTML=`<optgroup label="Project management team">${PM_TEAM.map(p=>`<option value="${p.id}">${p.name} — ${p.title}</option>`).join("")}</optgroup>
-    <optgroup label="Activity managers">${MANAGERS.map(m=>`<option value="${m.id}">${m.name} — ${m.role}</option>`).join("")}</optgroup>`;
+    <optgroup label="System managers">${MANAGERS.map(m=>`<option value="${m.id}">${m.name} — ${m.role}</option>`).join("")}</optgroup>`;
   sel.value=TEAM_VIEWER;
   sel.addEventListener("change",e=>{
     TEAM_VIEWER=e.target.value;
@@ -1648,9 +1648,9 @@ function castGroupHTML(a,viewerIsAdmin){
   if(!perims.length || directRows.length) groups.push(castPerimeterHTML(a,null,"Staffed directly (no perimeter)"));
   let bodyInner;
   if(!a.managerId){
-    bodyInner=`<div class="cast-noperm">This activity hasn't been cast to a manager yet — nobody can staff it until it is.<br><b>Assign an activity manager in the project wizard or from here once that flow is wired.</b></div>`;
+    bodyInner=`<div class="cast-noperm">This system hasn't been cast to a manager yet — nobody can staff it until it is.<br><b>Assign a system manager in the project wizard or from here once that flow is wired.</b></div>`;
   } else if(!editable && !viewerIsAdmin){
-    bodyInner=`<div class="cast-readonly-note">🔒 Read-only — ${mgr.name} manages this activity, not you.</div>` + groups.join("");
+    bodyInner=`<div class="cast-readonly-note">🔒 Read-only — ${mgr.name} manages this system, not you.</div>` + groups.join("");
   } else {
     bodyInner=(editable?castAddFlowHTML(a.id):"") + groups.join("");
   }
@@ -1658,7 +1658,7 @@ function castGroupHTML(a,viewerIsAdmin){
     <div class="cast-group-head" data-toggle-act="${a.id}">
       <span class="cast-caret">▾</span>
       <span class="cast-ptag">${a.code}</span>
-      <div><div class="cast-group-title">${a.label}${a.hasModel?`<span class="model-tag" title="Has its own allocation model — a Turnkey tender can route requirements into it automatically">model</span>`:`<span class="model-tag none" title="No allocation model — requirements routed here are allocated manually by this activity's contributors">manual</span>`}</div><div class="cast-group-mgr">${mgr?mgr.name:"Unassigned"}</div></div>
+      <div><div class="cast-group-title">${a.label}${a.hasModel?`<span class="model-tag" title="Has its own allocation model — a Turnkey tender can route requirements into it automatically">model</span>`:`<span class="model-tag none" title="No allocation model — requirements routed here are allocated manually by this system's contributors">manual</span>`}</div><div class="cast-group-mgr">${mgr?mgr.name:"Unassigned"}</div></div>
       <span class="cast-group-badge ${badgeCls}">${badgeTxt}</span>
     </div>
     <div class="cast-body">${bodyInner}</div>
@@ -1682,7 +1682,7 @@ function castPMTeamHTML(){
   return `<div class="cast-group is-pm-team" data-act="__pmteam">
     <div class="cast-group-head" style="cursor:default">
       <span class="cast-ptag">PM</span>
-      <div><div class="cast-group-title">Project management team</div><div class="cast-group-mgr">Whole-project scope — no activity restriction</div></div>
+      <div><div class="cast-group-title">Project management team</div><div class="cast-group-mgr">Whole-project scope — no system restriction</div></div>
       <span class="cast-group-badge staffed">${PM_TEAM.length} member${PM_TEAM.length>1?"s":""}</span>
     </div>
     <div class="cast-body">
@@ -1733,8 +1733,8 @@ function renderTeamScreen(){
   const viewer=viewerInfo(TEAM_VIEWER);
   h1.textContent=viewer.isPM?"Team casting — overview":"Team casting — your scope";
   sub.textContent=viewer.isPM
-    ? "Which activities and perimeters still need someone, at a glance — click a card above to jump to it."
-    : "Your own activity, expanded and ready to staff. Everything else stays visible for context, read-only.";
+    ? "Which systems and perimeters still need someone, at a glance — click a card above to jump to it."
+    : "Your own system, expanded and ready to staff. Everything else stays visible for context, read-only.";
   const lastAddedChip=CAST_LAST_ADDED?`<div class="cast-readonly-note" style="margin-bottom:12px">↻ Just added <b>${CAST_LAST_ADDED.label}</b> — staffing them on another perimeter too? Search their name again in the right spot below. <button class="btn-ghost" style="font-size:var(--text-xs);padding:2px 8px;margin-left:8px" id="cast-clear-last">Dismiss</button></div>`:"";
   body.innerHTML=(viewer.isPM?castPMTeamHTML():"") + lastAddedChip + CAST_ACTIVITIES.map(a=>castGroupHTML(a,viewer.isPM)).join("");
   document.getElementById("cast-add-act-wrap").style.display=viewer.isPM?"block":"none";
@@ -1784,11 +1784,11 @@ function renderAddActivityPop(){
   const pop=document.getElementById("cast-add-act-pop");
   const available=REFERENCE_ACTIVITIES.filter(r=>!CAST_ACT(r.id));
   if(!available.length){
-    pop.innerHTML=`<div class="cast-add-act-pop-title">Add activity</div>
-      <div class="cast-add-act-pop-empty">Every activity in the reference list is already on this project.</div>`;
+    pop.innerHTML=`<div class="cast-add-act-pop-title">Add system</div>
+      <div class="cast-add-act-pop-empty">Every system in the reference list is already on this project.</div>`;
     return;
   }
-  pop.innerHTML=`<div class="cast-add-act-pop-title">Add activity</div>
+  pop.innerHTML=`<div class="cast-add-act-pop-title">Add system</div>
     <select id="cast-add-act-select">${available.map(r=>`<option value="${r.id}">${r.code} — ${r.label}</option>`).join("")}</select>
     <button class="cast-add-act-confirm" id="cast-add-act-confirm">+ Add</button>`;
   pop.querySelector("#cast-add-act-confirm").addEventListener("click",()=>{
@@ -1823,11 +1823,11 @@ document.addEventListener("click",e=>{
 const SIM_FIRST=["Elise","Karim","Nadia","Bruno","Sana","Victor","Layla","Hugo","Priya","Malik","Chiara","Tarek","Ines","Yann","Farah","Cedric","Amel","Louis","Nour","Damien","Salma","Theo","Widad","Romain"];
 const SIM_LAST=["Girard","Ndiaye","Costa","Benyahia","Moreno","Lambert","Achouri","Petit","Sow","Berger","Haidari","Roussel","Kessler","Fabre","Belhadj","Duval","Traore","Mercier","Aziz","Colin"];
 function generateScaleRoster(targetTotal){
-  const activities=CAST_ACTIVITIES.filter(a=>a.managerId);
+  const systems=CAST_ACTIVITIES.filter(a=>a.managerId);
   let added=0,guard=0;
   while(ROSTER.length<targetTotal && guard<4000){
     guard++;
-    const a=activities[Math.floor(Math.random()*activities.length)];
+    const a=systems[Math.floor(Math.random()*systems.length)];
     const perims=perimetersOf(a.id);
     const perimeterId=perims.length && Math.random()<0.85 ? perims[Math.floor(Math.random()*perims.length)].id : null;
     const first=SIM_FIRST[Math.floor(Math.random()*SIM_FIRST.length)], last=SIM_LAST[Math.floor(Math.random()*SIM_LAST.length)];
@@ -1847,7 +1847,7 @@ document.getElementById("cast-simulate-scale").addEventListener("click",function
   const added=generateScaleRoster(200);
   if(!added){ toast(`Roster is already at the 200-row demo target (${ROSTER.length})`,"warn"); return; }
   renderTeamScreen(); renderCastingProgress();
-  toast(`Simulated ${added} additional staffed rows — ${ROSTER.length} total, spread across every activity`,"ok");
+  toast(`Simulated ${added} additional staffed rows — ${ROSTER.length} total, spread across every system`,"ok");
 });
 
 /* B2 — casting progress indicator (dashboard phase card). Reflects the same
@@ -2145,7 +2145,7 @@ function renderStatsQABlocked(){
 function renderStatsCasting(){
   const el=document.getElementById("stats-casting"); if(!el) return;
   const gaps=CAST_ACTIVITIES.filter(a=>!a.managerId);
-  if(!gaps.length){ el.innerHTML=`<div class="casting-ok">✓ Every activity has a manager cast</div>`; return; }
+  if(!gaps.length){ el.innerHTML=`<div class="casting-ok">✓ Every system has a manager cast</div>`; return; }
   el.innerHTML=`<div class="casting-warn" id="stats-casting-link">⚠ ${gaps.length} activit${gaps.length>1?"ies":"y"} with no manager cast — ${gaps.map(g=>g.label).join(", ")}</div>`;
   document.getElementById("stats-casting-link")?.addEventListener("click",()=>showScreen("team"));
 }
@@ -2206,7 +2206,7 @@ function renderStatsProgressDeadline(){
 const STATS_AI_RELIABILITY=[
   {field:"Type",rate:8},
   {field:"Class",rate:5},
-  {field:"Activity",rate:14},
+  {field:"System",rate:14},
   {field:"Allocation",rate:22},
 ];
 function renderStatsAIReliability(){
@@ -2291,8 +2291,8 @@ function renderStatsActivityLoad(){
       <span class="load-n"><b>${r.done}</b>/${r.total} done</span>
     </div>`).join("")
     + (none
-      ? `<div class="noact" data-go="revue-documentaire.html"><b>${none} requirement${none>1?"s":""}</b> with no activity set — pass 2 hasn't named one yet.</div>`
-      : `<div class="noact clear">Every requirement has an activity.</div>`);
+      ? `<div class="noact" data-go="revue-documentaire.html"><b>${none} requirement${none>1?"s":""}</b> with no system set — pass 2 hasn't named one yet.</div>`
+      : `<div class="noact clear">Every requirement has a system.</div>`);
   bindGo(el);
 }
 function ringHTML(pct,color,label){
@@ -2317,7 +2317,7 @@ function renderStatsAIQuality(){
   const weakPct=total?Math.round(weak/total*100):0;
   el.innerHTML=`<div class="gq-wrap">
     <div class="gq">${ringHTML(aiPct,"var(--ia)",aiPct+"%")}
-      <div class="gq-lbl">${unconfirmed} of ${proposed.length} AI-proposed<br>activities unconfirmed</div></div>
+      <div class="gq-lbl">${unconfirmed} of ${proposed.length} AI-proposed<br>systems unconfirmed</div></div>
     <div class="gq">${ringHTML(weakPct,"var(--warn)",weakPct+"%")}
       <div class="gq-lbl">${weak} of ${total} OBS derived<br>below the confidence threshold</div></div>
   </div>`;
@@ -2448,7 +2448,7 @@ applyGating();
 /* ---------- AI feedback panel ---------- */
 const FB_RATES=[
   {k:"Segmentation",v:94,c:"var(--ok)"},
-  {k:"Activity",v:82,c:"var(--ia)"},
+  {k:"System",v:82,c:"var(--ia)"},
   {k:"Characterization",v:88,c:"var(--ok)"},
   {k:"Assignment (OBS)",v:71,c:"var(--warn)"},
 ];
@@ -2468,7 +2468,7 @@ function renderFeedback(){
   let items=[]; try{ if(window.parent!==window&&window.parent.getAIFeedback) items=window.parent.getAIFeedback(); }catch(e){}
   if(live){
     if(!items.length){
-      live.innerHTML=`<div class="fb-empty">No correction captured yet in this session. Reassign a requirement or change an activity in the review screen — it will appear here instantly, silently logged.</div>`;
+      live.innerHTML=`<div class="fb-empty">No correction captured yet in this session. Reassign a requirement or change a system in the review screen — it will appear here instantly, silently logged.</div>`;
     }else{
       live.innerHTML=items.slice(-8).reverse().map(f=>`<div class="fb-live-row">
         <span class="fs">${SURF_LABEL[f.surface]||f.surface}</span>

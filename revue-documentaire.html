@@ -1651,11 +1651,11 @@ body.restricted .restrict-banner{display:flex}
             <div class="rcell c-id" data-sortcol="id"><span class="cl">ID<span class="sort-arrow"></span></span></div>
             <div class="rcell c-req"><span class="cl">Requirement</span></div>
             <div class="rcell c-class" data-col="class" data-sortcol="class"><span class="cl">Class<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="class" title="Filter this column">⏷</button></div>
-            <div class="rcell c-typo" data-col="typo" data-sortcol="typo"><span class="cl">Activity<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
+            <div class="rcell c-typo" data-col="typo" data-sortcol="typo"><span class="cl">System<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
             <div class="rcell c-abs" data-col="abs" data-sortcol="abs"><span class="cl">ABS<span class="sort-arrow"></span></span></div>
             <div class="rcell c-type" data-col="type" data-sortcol="type"><span class="cl">PBS<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="type" title="Filter this column">⏷</button></div>
-            <div class="rcell c-tkobs" data-col="tkobs" data-sortcol="tkobs" title="The activity this requirement is routed to — Turnkey tenders only."><span class="cl">TK OBS<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="The team or service within the activity — informational, not a separate person to assign."><span class="cl">OBS · team<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-tkobs" data-col="tkobs" data-sortcol="tkobs" title="The system this requirement is routed to — Turnkey tenders only."><span class="cl">TK OBS<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="The team or service within the system — informational, not a separate person to assign."><span class="cl">OBS · team<span class="sort-arrow"></span></span></div>
             <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Assigned to<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="mgr" title="Filter this column">⏷</button></div>
             <div class="rcell c-status" data-col="status" data-sortcol="status"><span class="cl">Status<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="status" title="Filter this column">⏷</button></div>
             <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
@@ -1724,7 +1724,7 @@ body.restricted .restrict-banner{display:flex}
     <button class="sel-btn" id="sel-assign-btn">Assign<span class="caret">▾</span></button>
     <div class="sel-menu sel-menu-form" id="sel-assign-menu">
       <div class="sel-f"><label for="sel-mgr-sel">Assigned to</label><select id="sel-mgr-sel"></select></div>
-      <div class="sel-f"><label for="sel-typo-sel">Activity</label><select id="sel-typo-sel"></select></div>
+      <div class="sel-f"><label for="sel-typo-sel">System</label><select id="sel-typo-sel"></select></div>
       <div class="sel-f"><label for="sel-type-sel">PBS</label><select id="sel-type-sel"></select></div>
     </div>
   </div>
@@ -2103,7 +2103,7 @@ const STATUS_LABEL = {incomplete:"Incomplete", doubt:"To review", tovalidate:"To
    across both axes (Class/Activity on the requirement, ABS/PBS/OBS per
    branch), all treated identically, per the earlier OBS-like-ABS/PBS
    confirmation. */
-const DOUBT_FIELD_LABEL = {type:"Type", class:"Class", typo:"Activity", abs:"ABS", pbs:"PBS", obs:"OBS"};
+const DOUBT_FIELD_LABEL = {type:"Type", class:"Class", typo:"System", abs:"ABS", pbs:"PBS", obs:"OBS"};
 /* Multi-allocation (allocated activities): UI-only, hand-authored demo data — see SECTIONS entries with a `branches` array.
    Nothing here is derived: rollupStatus / rollupCompliance / blockingBranch are written by hand per requirement. */
 const COMPLIANCE_DEFS=[
@@ -2120,7 +2120,7 @@ const BRANCH_STATUS_LABEL = {proposed:"Proposed", assigned:"Assigned", awaiting_
    resolved by the project manager. Reallocation is always a replacement (a
    requirement can never end up with zero activities) — reason 3 still names a
    replacement typology, it doesn't just remove the branch. */
-const REASON_LABEL = {wrong_person:"Right activity, wrong person", wrong_typology:"Wrong activity", not_applicable:"This activity doesn't apply here"};
+const REASON_LABEL = {wrong_person:"Right system, wrong person", wrong_typology:"Wrong system", not_applicable:"This system doesn't apply here"};
 /* B1/B10 — which of this requirement's branches, if any, is stuck waiting on
    the project manager. Reads branchStatus itself, not "does a .reassignRequest
    object exist" — a missing-activity proposal (submitPropose) also lands a
@@ -2358,7 +2358,7 @@ function perimHTML(b){
 }
 function groupKey(b){ return (b.perim&&b.perim[0])||"none"; }
 function groupTitle(g){ return g==="tky"?"TURNKEY":(g==="none"?"NO ACTIVITY":TY(g).label.toUpperCase()); }
-function groupDesc(g){ return g==="tky"?"Supervises the whole scope — needs a coordinating owner":(g==="none"?"Activity not set":TY(g).label+" perimeter"); }
+function groupDesc(g){ return g==="tky"?"Supervises the whole scope — needs a coordinating owner":(g==="none"?"System not set":TY(g).label+" perimeter"); }
 function groupColor(g){ return GROUP_COLOR[g]||"#5f6675"; }
 function weakestLink(b){
   if(!b.obs) return null;
@@ -2398,7 +2398,7 @@ function computeCharStatus(x){
   }
   if(x.tech==null || !(x.perim&&x.perim.length)){ x.status="incomplete"; x.doubtField=null; x.reviewReason=null; return; }
   if(x.techAI){ x.status="doubt"; x.doubtField="class"; x.reviewReason="Class is AI-detected, unconfirmed"; return; }
-  if(x.perimAI){ x.status="doubt"; x.doubtField="typo"; x.reviewReason="Activity is AI-detected, unconfirmed"; return; }
+  if(x.perimAI){ x.status="doubt"; x.doubtField="typo"; x.reviewReason="System is AI-detected, unconfirmed"; return; }
   x.status="tovalidate"; x.doubtField=null; x.reviewReason=null;
 }
 function computeAllocStatus(target){
@@ -2588,7 +2588,7 @@ function applyFreshProjectStatuses(){
     if(pickIdx>=0){
       const [field,reason]=reviewFields[pickIdx];
       x.status="doubt"; x.doubtField=field; x.reviewReason=reason;
-      x.techAI = field==="class"; x.perimAI = field==="typo"; // keep the Class/Activity cell's own "AI-detected" cue in sync
+      x.techAI = field==="class"; x.perimAI = field==="typo"; // keep the Class/System cell's own "AI-detected" cue in sync
       x.allocStatus="tovalidate"; x.allocDoubtField=null; x.allocReviewReason=null;
       return;
     }
@@ -2639,7 +2639,7 @@ function isFullyAllocated(b){
 function validateCtaHTML(b,hasBranches,es){
   if(hasBranches){
     if(b.status!=="allocated") return `<button class="validate-cta" id="validate-btn">✓ Validate characterisation</button>`;
-    return `<div class="set-hint" style="opacity:.7;font-size:var(--text-xs);padding:8px 0">Characterisation allocated — each allocated activity below validates its own allocation individually.</div>`;
+    return `<div class="set-hint" style="opacity:.7;font-size:var(--text-xs);padding:8px 0">Characterisation allocated — each allocated system below validates its own allocation individually.</div>`;
   }
   if(es.val==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Contributor Review</button>`;
   if(b.status!=="allocated") return `<button class="validate-cta" id="validate-btn">✓ Validate characterisation</button>`;
@@ -2713,7 +2713,7 @@ const state = {
   activeCell:{id:null,bidx:null,col:null},
   wrapText:false,
   expandedBranches:new Set(),
-  expandedTeams:new Set(),   // "blockId::branchIdx" — pass-2 nesting, independent of the activity level
+  expandedTeams:new Set(),   // "blockId::branchIdx" — pass-2 nesting, independent of the system level
   /* Detail panel has two views, not two screens: the project manager's
      overview of the whole distribution, and one activity's own detail — the
      view a specialised contributor works in. panelActivity is the branch index
@@ -2958,7 +2958,7 @@ function obsListHTML(myBranch){
       ${rows}
       <div id="obs-add-row"><button class="ui-list-add" id="obs-add-btn">+ Add organisation</button></div>
     </div>
-    <div class="deriv-hint">The organisation(s) — the team or service within the activity. This is what casting staffs, not a person to pick here.${teams.length>1?" Several organisations means several verdicts to consolidate — most restrictive wins, pending until all answer.":""}</div>
+    <div class="deriv-hint">The organisation(s) — the team or service within the system. This is what casting staffs, not a person to pick here.${teams.length>1?" Several organisations means several verdicts to consolidate — most restrictive wins, pending until all answer.":""}</div>
   </div>`;
 }
 function bindObsList(body,myBranch,b){
@@ -3552,11 +3552,11 @@ function rowInnerHTML(b){
      non-Turnkey tender, which runs no pass 1 at all. Never labelled "OBS" on
      its own — the header says TK OBS, the pass-2 column says OBS · team. */
   const tkObsCellHTML = !runsPassOne()
-    ? `<span class="ph" title="Routing only runs on Turnkey tenders — this tender is already scoped to one activity">—</span>`
+    ? `<span class="ph" title="Routing only runs on Turnkey tenders — this tender is already scoped to one system">—</span>`
     : hasBranches
-      ? `<span class="multi-ph" title="Distributed to ${b.branches.length} activities — expand to see each one's confidence">Multiple (${b.branches.length})</span>`
+      ? `<span class="multi-ph" title="Distributed to ${b.branches.length} systems — expand to see each one's confidence">Multiple (${b.branches.length})</span>`
       : (b.tkObs
-        ? `<span class="tkobs-val${b.tkObs.c<OBS_THRESHOLD?" weak":""}" title="Routed to ${escHtml(b.tkObs.v)} · ${b.tkObs.c}% confidence${b.tkObs.c<OBS_THRESHOLD?" (below threshold — which activity this belongs to is uncertain)":""}">${escHtml(b.tkObs.v)}<span class="tkobs-c">${b.tkObs.c}%</span></span>`
+        ? `<span class="tkobs-val${b.tkObs.c<OBS_THRESHOLD?" weak":""}" title="Routed to ${escHtml(b.tkObs.v)} · ${b.tkObs.c}% confidence${b.tkObs.c<OBS_THRESHOLD?" (below threshold — which system this belongs to is uncertain)":""}">${escHtml(b.tkObs.v)}<span class="tkobs-c">${b.tkObs.c}%</span></span>`
         : `<span class="ph">—</span>`);
   const obsCellHTML = hasBranches
     ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see the team per branch">Multiple (${b.branches.length})</span>`
@@ -3662,23 +3662,23 @@ function branchRowHTML(parent, branch, idx){
     ? `<button class="branch-caret team-caret${state.expandedTeams.has(teamKey)?" open":""}" data-teamtoggle="${teamKey}" title="${state.expandedTeams.has(teamKey)?"Collapse teams":`Expand ${teams.length} teams`}">▸</button>`
     : "";
   const manualFlag = needsManualAllocation(branch)
-    ? `<span class="manual-alloc-tag" title="This activity has no allocation model — its contributors allocate within it by hand. A normal way of working, not a failure.">manual</span>`
+    ? `<span class="manual-alloc-tag" title="This system has no allocation model — its contributors allocate within it by hand. A normal way of working, not a failure.">manual</span>`
     : "";
   const tkObsCell = !runsPassOne() ? `<span class="ph">—</span>`
     : (branch.tkObs
-      ? `<span class="tkobs-val${branch.tkObs.c<OBS_THRESHOLD?" weak":""}" title="Routed to ${escHtml(branch.tkObs.v)} · ${branch.tkObs.c}% confidence${branch.tkObs.c<OBS_THRESHOLD?" (below threshold — this activity may be the wrong destination)":""}">${branch.tkObs.c}%</span>`
+      ? `<span class="tkobs-val${branch.tkObs.c<OBS_THRESHOLD?" weak":""}" title="Routed to ${escHtml(branch.tkObs.v)} · ${branch.tkObs.c}% confidence${branch.tkObs.c<OBS_THRESHOLD?" (below threshold — this system may be the wrong destination)":""}">${branch.tkObs.c}%</span>`
       : `<span class="ph">—</span>`);
   return `<div class="rrow branch-row" data-branchof="${parent.id}" data-branchidx="${idx}">
     <div class="rcell c-sel"></div>
     <div class="rcell c-id">${teamCaret}</div>
-    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${branch.label}</span>${manualFlag}${multiTeam?`<span class="team-count" title="${teams.length} teams allocated within this activity">${teams.length} teams</span>`:""}</div>
+    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${branch.label}</span>${manualFlag}${multiTeam?`<span class="team-count" title="${teams.length} teams allocated within this system">${teams.length} teams</span>`:""}</div>
     <div class="rcell c-class"></div>
     <div class="rcell c-typo"><span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending project-manager review":""}">${TY(branch.typology).code}</span></div>
     <div class="rcell c-abs"></div>
     <div class="rcell c-type"></div>
     <div class="rcell c-tkobs">${tkObsCell}</div>
     <div class="rcell c-obs">${multiTeam
-      ? `<span class="multi-ph" title="${teams.length} teams within this activity — expand to see each">Multiple (${teams.length})</span>`
+      ? `<span class="multi-ph" title="${teams.length} teams within this system — expand to see each">Multiple (${teams.length})</span>`
       : `<span class="fval">${escHtml((branch.obs&&branch.obs.v)||TEAM(teams[0]&&teams[0].team).label||"—")}</span>`}</div>
     <div class="rcell c-mgr">${multiTeam
       ? `<span class="multi-ph">Multiple (${teams.length})</span>`
@@ -3735,7 +3735,7 @@ function sortRows(rows){
 /* per-column Excel-style filters — state.colFilters[col] holds EXCLUDED values (empty = show all, unchecked in the popover = excluded) */
 const COL_FILTER_DEFS={
   class:{label:"Class",options:[{v:"tech",l:"Technical"},{v:"nontech",l:"Non-technical"}],get:b=>[b.tech||""]},
-  typo:{label:"Activity",options:[...TYPO.map(t=>({v:t.id,l:t.label})),{v:"",l:"— none set —"}],get:b=>(b.perim&&b.perim.length)?b.perim:[""]},
+  typo:{label:"System",options:[...TYPO.map(t=>({v:t.id,l:t.label})),{v:"",l:"— none set —"}],get:b=>(b.perim&&b.perim.length)?b.perim:[""]},
   type:{label:"PBS",options:["Functional","Performance","Security","Interface","Regulatory"].map(t=>({v:t,l:t})),get:b=>[b.type||""]},
   mgr:{label:"Assigned to",options:[...MANAGERS.filter(m=>!m.admin).map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
   status:{label:"Status",options:Object.keys(STATUS_LABEL).map(k=>({v:k,l:STATUS_LABEL[k]})),get:b=>[effectiveStatus(b).val]},
@@ -3793,8 +3793,8 @@ const ADV_FILTER_FIELDS={
   // by awaiting manual allocation." The quick pill above covers the third one
   // as a one-click view; these three fields cover all of them at filter
   // precision, combinable with everything else in the advanced filter.
-  alloclevel:{label:"Allocation level",type:"enum",options:[{v:"single",l:"Single (no branching)"},{v:"activity",l:"Branches — multiple activities"},{v:"team",l:"Branches — multiple teams"}],get:b=>[reqAllocLevel(b)]},
-  passdoubt:{label:"Doubt — where",type:"enum",options:[{v:"pass1",l:"Which activity"},{v:"pass2",l:"Within the activity"},{v:"none",l:"No doubt"}],get:b=>[reqPassDoubt(b)]},
+  alloclevel:{label:"Allocation level",type:"enum",options:[{v:"single",l:"Single (no branching)"},{v:"activity",l:"Branches — multiple systems"},{v:"team",l:"Branches — multiple teams"}],get:b=>[reqAllocLevel(b)]},
+  passdoubt:{label:"Doubt — where",type:"enum",options:[{v:"pass1",l:"Which system"},{v:"pass2",l:"Within the system"},{v:"none",l:"No doubt"}],get:b=>[reqPassDoubt(b)]},
   manualalloc:{label:"Awaiting manual allocation",type:"enum",options:[{v:"yes",l:"Yes"},{v:"no",l:"No"}],get:b=>[reqNeedsManualAllocation(b)?"yes":"no"]},
 };
 function passesAdvFilter(b){ return TE.matchesFilter(ADV_FILTER_FIELDS, state.advFilter, b); }
@@ -3898,7 +3898,7 @@ function renderReview(){
     t.textContent=sentence; t.title=sentence;   // truncated inline, full on hover
   }
   document.getElementById("review-sub").innerHTML =
-    `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, activity, assignments and statuses`;
+    `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, system, assignments and statuses`;
   renderSortIndicators();
   renderColFilterIndicators();
 
@@ -4158,12 +4158,12 @@ function proposeBlockHTML(b, hasBranches, myBranch){
     <div class="propose-block">
       <label class="propose-lbl">Propose a change</label>
       ${addPending.length||reassignPending.length?`<div class="propose-pending">
-        ${addPending.map(p=>`<div class="propose-pending-t">✦ New activity requested — <b>${TY(p.typology).label}</b>: "${escHtml(p.proposal.note)}" <span style="color:var(--text-3)">· awaiting project-manager review</span></div>`).join("")}
+        ${addPending.map(p=>`<div class="propose-pending-t">✦ New system requested — <b>${TY(p.typology).label}</b>: "${escHtml(p.proposal.note)}" <span style="color:var(--text-3)">· awaiting project-manager review</span></div>`).join("")}
         ${reassignPending.map(p=>`<div class="propose-pending-t">↩ Reassignment requested — <b>${TY(p.typology).label}</b> · ${REASON_LABEL[p.reassignRequest.reason]}: "${escHtml(p.reassignRequest.note)}" <span style="color:var(--text-3)">· awaiting project-manager review</span></div>`).join("")}
       </div>`:""}
       <div class="propose-actions">
         <button class="propose-btn" id="propose-reassign-btn" ${reassignBlocked?"disabled":""} title="${reassignBlocked?"Already flagged for reassignment":"Ask the project manager to reassign this allocation"}">↩ Request reassignment</button>
-        <button class="propose-btn" id="propose-add-btn" title="Ask the project manager to add an activity you think was missed">+ Missing activity</button>
+        <button class="propose-btn" id="propose-add-btn" title="Ask the project manager to add a system you think was missed">+ Missing system</button>
       </div>
       <div class="propose-form" id="propose-form" style="display:none"></div>
     </div>`;
@@ -4172,8 +4172,8 @@ function renderProposeForm(kind,b,body){
   const form = body.querySelector("#propose-form");
   const used = new Set([...(b.perim||[]), ...(b.branches||[]).map(br=>br.typology)]);
   const options = TYPO.filter(t=>t.id!=="tky" && !used.has(t.id));
-  form.innerHTML = `<select id="propose-typo">${options.length?options.map(t=>`<option value="${t.id}">${t.code} — ${t.label}</option>`).join(""):'<option value="">No activity left to propose</option>'}</select>
-       <textarea id="propose-note" placeholder="Why do you think this activity is missing?"></textarea>`
+  form.innerHTML = `<select id="propose-typo">${options.length?options.map(t=>`<option value="${t.id}">${t.code} — ${t.label}</option>`).join(""):'<option value="">No system left to propose</option>'}</select>
+       <textarea id="propose-note" placeholder="Why do you think this system is missing?"></textarea>`
     + `<div class="propose-form-actions"><button class="mini-btn" id="propose-cancel">Cancel</button><button class="mgr-done" id="propose-submit"${!options.length?" disabled":""}>Submit proposal</button></div>`;
   form.style.display = "flex";
   form.querySelector("#propose-cancel").addEventListener("click",()=>{ form.style.display="none"; form.innerHTML=""; });
@@ -4184,12 +4184,12 @@ function submitPropose(kind,b,form){
   if(!note){ toast("Add a short reason before submitting","warn"); return; }
   const mgrName = MGR(VIEWER).name;
   const typo = form.querySelector("#propose-typo").value;
-  if(!typo){ toast("Pick an activity first","warn"); return; }
+  if(!typo){ toast("Pick a system first","warn"); return; }
   ensureBranches(b);
   b.branches.push({typology:typo, label:TY(typo).label, manager:null, expert:null, branchStatus:"reassignment_needed", compliance:"pending", proposal:{kind:"add", note, by:VIEWER, at:"Today"}});
   if(!(b.perim||[]).includes(typo)) b.perim=[...(b.perim||[]), typo];
-  pushBranchLog(b, mgrName, `Proposed adding ${TY(typo).label} as a missing activity — "${note}"`);
-  toast("New activity proposed — sent to the project manager","ok");
+  pushBranchLog(b, mgrName, `Proposed adding ${TY(typo).label} as a missing system — "${note}"`);
+  toast("New system proposed — sent to the project manager","ok");
   refresh();
 }
 /* B10 — reassignment request form: pick one of the three reasons, name the
@@ -4249,7 +4249,7 @@ function approveProposal(b,idx){
   const branch=b.branches[idx]; const prop=branch.proposal; if(!prop) return;
   branch.branchStatus = "proposed"; // TD2 — nobody assigned yet at approval time
   branch.proposal=null;
-  pushBranchLog(b, MGR("admin").name, `Approved — ${TY(branch.typology).label} added as a new activity.`, "ok");
+  pushBranchLog(b, MGR("admin").name, `Approved — ${TY(branch.typology).label} added as a new system.`, "ok");
   toast("Proposal approved","ok");
   refresh();
 }
@@ -4257,7 +4257,7 @@ function rejectProposal(b,idx){
   const branch=b.branches[idx]; const prop=branch.proposal; if(!prop) return;
   b.branches.splice(idx,1);
   if(!b.branches.some(x=>x.typology===branch.typology)) b.perim=(b.perim||[]).filter(p=>p!==branch.typology);
-  pushBranchLog(b, MGR("admin").name, `Rejected — proposed ${TY(branch.typology).label} activity removed, reverted to its prior state.`, "warn");
+  pushBranchLog(b, MGR("admin").name, `Rejected — proposed ${TY(branch.typology).label} system removed, reverted to its prior state.`, "warn");
   toast("Proposal rejected — reverted to the prior state","warn");
   refresh();
 }
@@ -4287,7 +4287,7 @@ function approveReassign(b,idx){
     b.branches.splice(idx,1,newBranch);
     if(!b.branches.some(x=>x.typology===branch.typology)) b.perim=(b.perim||[]).filter(p=>p!==branch.typology);
     if(!(b.perim||[]).includes(newTypo)) b.perim=[...(b.perim||[]), newTypo];
-    pushBranchLog(b, actor, `Approved — ${oldLabel} replaced with ${newLabel} (${req.reason==="not_applicable"?"activity didn't apply":"wrong activity"}).`, "ok");
+    pushBranchLog(b, actor, `Approved — ${oldLabel} replaced with ${newLabel} (${req.reason==="not_applicable"?"system didn't apply":"wrong system"}).`, "ok");
   }
   try{ if(window.parent!==window && window.parent.updateReassignRequest && req.requestId) window.parent.updateReassignRequest(req.requestId, {requestStatus:"approved"}); }catch(e){}
   toast("Reassignment approved","ok");
@@ -4388,7 +4388,7 @@ function distributionBlockHTML(b, compact){
   // itself.
   if(compact){
     return `<div class="distrib-compact">
-      <div class="deriv-pass-h">Distribution across activities</div>
+      <div class="deriv-pass-h">Distribution across systems</div>
       <div class="distrib-chips">
         ${acts.length?acts.map(a=>{
           const hasModel=activityHasModel(a.typology);
@@ -4396,11 +4396,11 @@ function distributionBlockHTML(b, compact){
           return `<span class="distrib-chip${hasModel?"":" manual"}" title="${label}${hasModel?" — has a model":" — allocated manually"}">
             <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>${confBadgeHTML(a.tkObs)}
           </span>`;
-        }).join(""):`<span class="deriv-hint">No activity yet.</span>`}
+        }).join(""):`<span class="deriv-hint">No system yet.</span>`}
       </div>
     </div>`;
   }
-  return `<div class="deriv-pass-h">Distribution across activities</div>
+  return `<div class="deriv-pass-h">Distribution across systems</div>
     ${dim?`<div class="deriv-dim">${b.tech==="nontech"?"Non-technical":"Technical"} — a single dimension is read, the <b>${dim.dim}</b>. The other one takes no part in this step.</div>`
           :`<div class="deriv-dim">Not classified yet — routing needs the technical / non-technical call before it can read a dimension.</div>`}
     ${acts.length?acts.map(a=>{
@@ -4409,14 +4409,14 @@ function distributionBlockHTML(b, compact){
         <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>
         <span class="deriv-act-label">${escHtml(a.label||TY(a.typology).label)}</span>
         ${confBadgeHTML(a.tkObs)}
-        <span class="deriv-act-model${hasModel?"":" none"}" title="${hasModel?"Routed into this activity's own model automatically.":"No allocation model for this activity. Its contributors allocate within it by hand — a routine way of working, not a failure."}">${hasModel?"→ has a model":"→ allocate manually"}</span>
+        <span class="deriv-act-model${hasModel?"":" none"}" title="${hasModel?"Routed into this system's own model automatically.":"No allocation model for this system. Its contributors allocate within it by hand — a routine way of working, not a failure."}">${hasModel?"→ has a model":"→ allocate manually"}</span>
       </div>`;
-    }).join(""):`<div class="deriv-hint">No activity yet — nothing to route into.</div>`}`;
+    }).join(""):`<div class="deriv-hint">No system yet — nothing to route into.</div>`}`;
 }
 function derivationChainHTML(b,myBranch,derivSrc,rmView){
   const distribHTML = distributionBlockHTML(b);
   /* ---- the activity's own model, PBS -> ABS -> OBS ---- */
-  const scope = myBranch ? `${TY(myBranch.typology).label}` : (runsPassOne()?"The activity's own model":`${escHtml(TENDER_LINE)}'s model`);
+  const scope = myBranch ? `${TY(myBranch.typology).label}` : (runsPassOne()?"The system's own model":`${escHtml(TENDER_LINE)}'s model`);
   const modelHTML = `<div class="deriv-pass">
     <div class="deriv-pass-h">${escHtml(scope)}</div>
     ${derivStepHTML("PBS",
@@ -4426,12 +4426,12 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
       `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
       derivSrc.abs)}
     ${!rmView?`<div class="deriv-arrow small">↓</div>
-    ${derivStepHTML(`OBS · team${myBranch?` <span class="deriv-scope">· your allocated activity</span>`:""}`,
+    ${derivStepHTML(`OBS · team${myBranch?` <span class="deriv-scope">· your allocated system</span>`:""}`,
       `<div class="fval">${escHtml(personLabel(myBranch?myBranch.manager:b.manager)||"— Unassigned —")}</div>`,
       derivSrc.obs,
-      "The team or service within the activity — assigned below, not picked here.")}`:""}
+      "The team or service within the system — assigned below, not picked here.")}`:""}
   </div>`;
-  return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that activity's own model">routes into</div>`:"") + modelHTML;
+  return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that system's own model">routes into</div>`:"") + modelHTML;
 }
 /* A contributor's own view of one activity — fixed order, explicitly
    specified: ABS, PBS, OBS (the organisation, not a person), who's assigned
@@ -4515,7 +4515,7 @@ function pmClassificationHTML(b){
           `Technical — pass 1 reads the PBS and nothing else.`)}
 
     <div class="deriv-step">
-      <div class="deriv-head"><span class="deriv-label">Activity</span></div>
+      <div class="deriv-head"><span class="deriv-label">System</span></div>
       <div class="ui-list is-compact">
         ${acts.length?acts.map(a=>{
           const hasModel=activityHasModel(a.typology);
@@ -4526,11 +4526,11 @@ function pmClassificationHTML(b){
           return `<div class="ui-list-row">
             <span class="ui-list-tag">${TY(a.typology).code}</span>
             <span class="ui-list-main">${showName?escHtml(name):""}</span>
-            ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence that this is the right activity${c<OBS_THRESHOLD?` — below the ${OBS_THRESHOLD}% threshold`:""}">${c}%</span>`:""}
-            <span class="ui-list-note${hasModel?" is-accent":""}" title="${hasModel?"Routed into this activity's own allocation model.":"No model — allocated by hand inside the activity."}">${hasModel?"has a model":"manual"}</span>
+            ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence that this is the right system${c<OBS_THRESHOLD?` — below the ${OBS_THRESHOLD}% threshold`:""}">${c}%</span>`:""}
+            <span class="ui-list-note${hasModel?" is-accent":""}" title="${hasModel?"Routed into this system's own allocation model.":"No model — allocated by hand inside the system."}">${hasModel?"has a model":"manual"}</span>
           </div>`;
-        }).join(""):`<div class="ui-list-empty">No activity yet</div>`}
-        <button class="ui-list-add" id="pm-add-activity">+ Add activity</button>
+        }).join(""):`<div class="ui-list-empty">No system yet</div>`}
+        <button class="ui-list-add" id="pm-add-activity">+ Add system</button>
       </div>
     </div>`;
 }
@@ -4564,7 +4564,7 @@ function activityBlocksHTML(b){
   if(!acts.length) return "";
   return `<div class="set-sep"></div>
   <div class="branch-sections">
-    <label class="branch-sections-lbl">Activities (${acts.length})</label>
+    <label class="branch-sections-lbl">Systems (${acts.length})</label>
     ${acts.map((branch,bidx)=>{
       const st=activityAllocStatus(branch);
       const teams=ensureTeams(branch);
@@ -4573,13 +4573,13 @@ function activityBlocksHTML(b){
         <div class="branch-sec-head">
           <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}">${TY(branch.typology).code}</span>
           <span class="act-block-name">${escHtml(branch.label||TY(branch.typology).label)}</span>
-          <span class="act-alloc-pill s-${st}" title="Derived from this activity's ${teams.length} team${teams.length>1?"s":""} — nobody enters it">${ACT_ALLOC_LABEL[st]}</span>
+          <span class="act-alloc-pill s-${st}" title="Derived from this system's ${teams.length} team${teams.length>1?"s":""} — nobody enters it">${ACT_ALLOC_LABEL[st]}</span>
         </div>
         <div class="branch-sec-body">
           ${obsBreakdownHTML(teams)}
           <div class="act-line"><span class="act-k">Assigned to</span><span class="act-v">${escHtml(who)}</span></div>
-          <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this activity's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
-          <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open activity detail →</button></div>
+          <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this system's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
+          <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open system detail →</button></div>
         </div>
       </div>`;
     }).join("")}
@@ -4587,7 +4587,7 @@ function activityBlocksHTML(b){
 }
 function activityDetailHTML(b,bidx){
   const branch=(b.branches||[])[bidx];
-  if(!branch) return `<div class="deriv-hint">That activity is gone.</div>`;
+  if(!branch) return `<div class="deriv-hint">That system is gone.</div>`;
   const teams=ensureTeams(branch);
   const t=teams[0];
   const mgr=t.manager?(MGR(t.manager)||{}).name:null;
@@ -4599,18 +4599,18 @@ function activityDetailHTML(b,bidx){
     ? branch.label.replace(TY(branch.typology).code,"").replace(/^[\s&·—-]+/,"").trim()
     : null;
   return `<div class="act-detail-head">
-      <button class="mini-btn" id="act-back">← All activities</button>
+      <button class="mini-btn" id="act-back">← All systems</button>
       <span class="ptag${branch.typology==="tky"?" tky":""}">${TY(branch.typology).code}</span>
       <span class="act-block-name">${escHtml(branch.label||TY(branch.typology).label)}</span>
     </div>
     <div class="deriv-pass">
       <div class="deriv-pass-h">${escHtml(TY(branch.typology).label)}'s own model</div>
       ${derivStepHTML("Type", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
-      ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-activity within this activity."):""}
+      ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-system within this system."):""}
         ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||b.type||"—")}</div>`, t.pbs)}
         ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
         ${derivStepHTML("OBS · team", `<div class="fval">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label)}</div>`, t.obs,
-        "The team or service within this activity — this is what casting staffs.")}
+        "The team or service within this system — this is what casting staffs.")}
     </div>
     <div class="set-sep"></div>
     <div class="field"><label>Assigned to</label>
@@ -4619,8 +4619,8 @@ function activityDetailHTML(b,bidx){
     <div class="propose-block">
       <label class="propose-lbl">Raise a problem</label>
       <div class="propose-actions">
-        <button class="mini-btn" id="act-reassign" ${branch.reassignRequest?"disabled":""} title="${branch.reassignRequest?"Already flagged for reassignment":"Right activity, wrong person — or the wrong activity entirely"}">↩ Request reassignment</button>
-        <button class="mini-btn" id="act-missing">+ Missing activity</button>
+        <button class="mini-btn" id="act-reassign" ${branch.reassignRequest?"disabled":""} title="${branch.reassignRequest?"Already flagged for reassignment":"Right system, wrong person — or the wrong system entirely"}">↩ Request reassignment</button>
+        <button class="mini-btn" id="act-missing">+ Missing system</button>
       </div>
       <div class="propose-form" id="propose-form" style="display:none"></div>
     </div>`;
@@ -4676,7 +4676,7 @@ function renderSettings(){
     <div class="set-head">
       <div class="set-id-row">
         <span class="set-id">${b.id}</span>
-        ${myEs.val?`<span class="status-pill s-${myEs.val}" style="cursor:default" title="${myBranch?"Your status on this activity":""}">${STATUS_LABEL[myEs.val]}</span>`:""}
+        ${myEs.val?`<span class="status-pill s-${myEs.val}" style="cursor:default" title="${myBranch?"Your status on this system":""}">${STATUS_LABEL[myEs.val]}</span>`:""}
         ${b.sourceImage?`<button class="mini-btn" id="back-to-container" style="margin-left:auto" title="Back to ${b.sourceImage}">← Image</button>`:""}
       </div>
       ${b.sourceImage?`<div class="prov-hint" style="color:var(--human);margin-bottom:4px;display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap">
@@ -4689,7 +4689,7 @@ function renderSettings(){
     </div>
     <div class="set-tabs">
       <button data-tab="details" class="${state.tab==="details"?"active":""}">Details</button>
-      <button data-tab="activity" class="${state.tab==="activity"?"active":""}">Activity ${b.comments?`<span class="tab-count">${b.comments}</span>`:""}</button>
+      <button data-tab="activity" class="${state.tab==="activity"?"active":""}">System ${b.comments?`<span class="tab-count">${b.comments}</span>`:""}</button>
       ${isReq&&rexFor(b).length?`<button data-tab="rex" class="${state.tab==="rex"?"active":""}">REX <span class="tab-count rex-count">${rexFor(b).length}</span></button>`:""}
       ${b.textOriginal!==undefined?`<button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translation${b.translationCorrected?` <span class="tab-count corr-count" title="Translation corrected">✓</span>`:""}</button>`:""}
     </div>
@@ -4742,10 +4742,10 @@ function renderSettings(){
       ${!isReq?`<div class="field"><label>Type</label>
         <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
       </div>`:""}
-      ${isReq&&!myBranch?`<div class="field"><label>Activity ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
+      ${isReq&&!myBranch?`<div class="field"><label>System ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <div class="msel ${state.typoOpen?"open":""}" id="typo-msel">
           <button class="msel-btn" id="typo-btn">
-            <span class="mval">${(b.perim||[]).length?(b.perim||[]).map(p=>`<span class="ptag${p==="tky"?" tky":""}">${TY(p).code}</span>`).join(""):'<span class="placeholder">Select activities…</span>'}</span>
+            <span class="mval">${(b.perim||[]).length?(b.perim||[]).map(p=>`<span class="ptag${p==="tky"?" tky":""}">${TY(p).code}</span>`).join(""):'<span class="placeholder">Select systems…</span>'}</span>
             <span class="caret">▼</span>
           </button>
           <div class="msel-menu">
@@ -4753,7 +4753,7 @@ function renderSettings(){
               <span class="box">✓</span><span class="code">${t.code}</span>${t.label}</div>`).join("")}
           </div>
         </div>
-        ${b.perimAI?`<button class="mini-btn" id="perim-confirm" style="margin-top:var(--space-2);border-color:var(--ok);color:var(--ok)">✓ Confirm AI activity</button>`:""}
+        ${b.perimAI?`<button class="mini-btn" id="perim-confirm" style="margin-top:var(--space-2);border-color:var(--ok);color:var(--ok)">✓ Confirm AI system</button>`:""}
         ${isTurnkey(b)?`<div class="tky-note"><b>Turnkey.</b> Supervises the whole scope — needs a coordinating owner plus one specialist per perimeter.</div>`:""}
       </div>`:""}
 
@@ -4768,7 +4768,7 @@ function renderSettings(){
               <span class="status-pill branch-status-${branch.branchStatus}">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>
             </div>
             ${branch.proposal?`<div class="branch-proposal">
-              <div class="branch-proposal-h">✦ Proposed — new activity by <b>${MGR(branch.proposal.by).name}</b></div>
+              <div class="branch-proposal-h">✦ Proposed — new system by <b>${MGR(branch.proposal.by).name}</b></div>
               <div class="branch-proposal-note">"${escHtml(branch.proposal.note)}"</div>
               <div class="branch-proposal-actions">
                 <button class="approve" data-approve-proposal="${bidx}">✓ Approve</button>
@@ -4887,12 +4887,12 @@ function renderSettings(){
           // no #propose-form for them to route into either, that's a
           // non-admin-only trigger). Add-then-remove keeps the same invariant
           // without inventing a second UI just for this edge case.
-          toast("Add a replacement activity first, then remove this one — a requirement can't have zero activities","warn");
+          toast("Add a replacement system first, then remove this one — a requirement can't have zero systems","warn");
         } else {
           // A manager already has the request/approval flow (B10) for exactly
           // this: swap a wrong activity for the right one via PM review,
           // rather than a second, parallel way of doing the same thing.
-          toast("This is the last activity — request a replacement instead of removing it outright","warn");
+          toast("This is the last system — request a replacement instead of removing it outright","warn");
           renderReassignForm(b, body);
         }
         return;
@@ -4919,7 +4919,7 @@ function renderSettings(){
       e.stopPropagation(); state.typoOpen=!state.typoOpen; renderSettings();
     });
     body.querySelector("#perim-confirm")?.addEventListener("click",()=>{
-      b.perimAI=false; markCharEdited(b); refresh(); toast(`Activity confirmed for ${b.id}`,"ok");
+      b.perimAI=false; markCharEdited(b); refresh(); toast(`System confirmed for ${b.id}`,"ok");
     });
   } else if(state.tab==="rex"){
     const rex = rexFor(b);
@@ -5225,7 +5225,7 @@ function validateProgress(id, branchIdx){
       b.status="allocated"; b.doubtField=null; delete b.reviewReason;
       return "char";
     }
-    if((b.branches||[]).length>1) return null; // each allocated activity validates its own allocation individually
+    if((b.branches||[]).length>1) return null; // each allocated system validates its own allocation individually
     return validateAllocTarget(b,false) ? "alloc" : null;
   }
   return validateAllocTarget((b.branches||[])[branchIdx],true) ? "alloc" : null;
@@ -5920,8 +5920,8 @@ document.getElementById("filter-btn")?.addEventListener("click",e=>{
 /* ---------- View panel: column visibility + expert derivation chain ---------- */
 const colsPanelState={open:false};
 const COLUMN_TOGGLE_DEFS=[
-  {k:"class",label:"Class"},{k:"typo",label:"Activity"},{k:"abs",label:"ABS"},{k:"type",label:"PBS"},
-  {k:"tkobs",label:"TK OBS (activity)"},{k:"obs",label:"OBS (team)"},{k:"mgr",label:"Assigned to"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
+  {k:"class",label:"Class"},{k:"typo",label:"System"},{k:"abs",label:"ABS"},{k:"type",label:"PBS"},
+  {k:"tkobs",label:"TK OBS (system)"},{k:"obs",label:"OBS (team)"},{k:"mgr",label:"Assigned to"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
 ];
 function renderColumnsPanel(){
   const p=document.getElementById("cols-panel"); if(!p) return;
@@ -5938,7 +5938,7 @@ function renderColumnsPanel(){
     <div class="field" style="margin-bottom:2px"><label>Group by</label>
       <div class="gseg" id="pf-gseg">
         <button data-g="none" class="${state.groupBy==="none"?"on":""}">None</button>
-        <button data-g="typology" class="${state.groupBy==="typology"?"on":""}">Activity</button>
+        <button data-g="typology" class="${state.groupBy==="typology"?"on":""}">System</button>
       </div>
     </div>
     <div class="view-sep"></div>
@@ -5982,7 +5982,7 @@ function matchesDoc(b){ return state.docFilter==="all" || (b.section && b.sectio
 /* ---------- modular export ---------- */
 const EXPORT_STEPS=[
   {k:"capture",label:"Capture",desc:"Document structure, segments and tables"},
-  {k:"charac",label:"Characterization",desc:"Class, activity, type and status"},
+  {k:"charac",label:"Characterization",desc:"Class, system, type and status"},
   {k:"alloc",label:"Allocation",desc:"Managers and contributor assignments"},
 ];
 const EXPORT_FORMATS=[

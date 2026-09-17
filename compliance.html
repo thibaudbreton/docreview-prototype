@@ -818,7 +818,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
               <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" id="f-sel-all" title="Select all in view"></label></div>
               <div class="rcell c-id"><span class="cl">ID</span></div>
               <div class="rcell c-req"><span class="cl">Requirement / assignment</span></div>
-              <div class="rcell c-typo" data-col="typo"><span class="cl">Activity</span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
+              <div class="rcell c-typo" data-col="typo"><span class="cl">System</span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
               <div class="rcell c-expert" data-col="expert"><span class="cl">Assigned to</span><button class="colf-btn" data-colf="expert" title="Filter this column">⏷</button></div>
               <div class="rcell c-status" data-col="status"><span class="cl">Status</span></div>
               <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
@@ -950,7 +950,7 @@ const CATEGORY_LIST=["Placeholder category A","Placeholder category B","Placehol
 /* The three real reassignment cases (SPEC-expert-space.md, still valid after the
    merge — they were about the task, not the role). Carried over from
    expert-space.html when its verdict form moved here. */
-const REASON_LABEL={wrong_person:"Right activity, wrong person", wrong_typology:"Wrong activity", not_applicable:"This activity doesn't apply here"};
+const REASON_LABEL={wrong_person:"Right system, wrong person", wrong_typology:"Wrong system", not_applicable:"This system doesn't apply here"};
 /* REX tab — migrated from expert-space.html, remapped to this screen's own SRM- ids. */
 const REX_BASE={
   "SRM-00005":[
@@ -1349,7 +1349,7 @@ function canAnswer(b){ return state.role==="contributor"&&b.typology===state.con
    from a popover opened on the column's own header rather than a toolbar
    select disconnected from the column it narrows. */
 const COL_FILTER_DEFS={
-  typo:{label:"Activity",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:b=>[b.typology]},
+  typo:{label:"System",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:b=>[b.typology]},
   expert:{label:"Assigned to",options:[...MANAGERS.map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
 };
 function passesColFilters(b){
@@ -1401,7 +1401,7 @@ function passes(r){
 const ADV_FILTER_FIELDS={
   id:{label:"ID",type:"text",get:r=>[r.id||""]},
   text:{label:"Text",type:"text",get:r=>[r.text||""]},
-  typo:{label:"Activity",type:"enum",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:r=>(r.branches||[]).map(b=>b.typology)},
+  typo:{label:"System",type:"enum",options:Object.keys(TYPOS).map(t=>({v:t,l:TY(t).label})),get:r=>(r.branches||[]).map(b=>b.typology)},
   internal:{label:"Internal compliance",type:"enum",options:[{v:"compliant",l:"Compliant"},{v:"not_compliant",l:"Not Compliant"},{v:"",l:"Pending"}],get:r=>(r.branches||[]).map(b=>b.internal||"")},
   // the EFFECTIVE value, inherited one included — filtering on "what the client
   // gets" is the question people actually ask, not "what was typed in"
@@ -1773,7 +1773,7 @@ function verdictCommentHTML(note){
 }
 function consolidatedProgressHTML(c){
   if(!c.pending) return `<span class="spill answered">${BST.answered}</span>`;
-  return `<span class="spill ${c.blocking.status}">${BST[c.blocking.status]}${c.remaining>1?` · ${c.remaining} allocated activities`:""}</span>`;
+  return `<span class="spill ${c.blocking.status}">${BST[c.blocking.status]}${c.remaining>1?` · ${c.remaining} allocated systems`:""}</span>`;
 }
 function consolidatedComplianceHTML(c){
   return c.pending ? `<span class="vpill none">—</span>` : cmpPillHTML(c.internal);
@@ -1837,7 +1837,7 @@ const F_RCOLS=[
   {k:"external",w:"150px"},{k:"risk",w:"minmax(180px,1fr)"},{k:"lastfu",w:"110px"},{k:"age",w:"70px"},
 ];
 const F_COLUMN_TOGGLE_DEFS=[
-  {k:"typo",label:"Activity"},{k:"expert",label:"Assigned to"},
+  {k:"typo",label:"System"},{k:"expert",label:"Assigned to"},
   {k:"status",label:"Status"},{k:"compliance",label:"Compliance"},{k:"comment",label:"Compliance comment"},
   {k:"external",label:"External compliance"},{k:"risk",label:"Risk accepted"},{k:"lastfu",label:"Last follow-up"},{k:"age",label:"Age"},
 ];
@@ -1897,7 +1897,7 @@ function buildFVRows(){
   fVROWS=[];
   rows.forEach(r=>{
     fVROWS.push({type:"row",r});
-    if(r.branches.length<2) return; // one activity concerned — stays on a single line, no sub-row
+    if(r.branches.length<2) return; // one system concerned — stays on a single line, no sub-row
     if(!state.expandedBranches.has(r.id)) return; // collapsed — caret not opened yet
     const branchFilterActive=(state.filter&&state.filter!=="out")||colFilterActiveCount()||state.needsMe||state.ownTeamOnly;
     r.branches.forEach((b,i)=>{
@@ -1918,14 +1918,14 @@ function fRowInnerHTML(r){
   const multi=r.branches.length>1;
   const expanded=multi&&state.expandedBranches.has(r.id);
   const caretHTML=multi
-    ? `<button class="branch-caret${expanded?" open":""}" data-branchtoggle="${r.id}" title="${expanded?"Collapse activities":`Expand ${r.branches.length} activities`}">▸</button>`
+    ? `<button class="branch-caret${expanded?" open":""}" data-branchtoggle="${r.id}" title="${expanded?"Collapse systems":`Expand ${r.branches.length} systems`}">▸</button>`
     : "";
   const lastFollowup=r.branches.reduce((latest,b)=>b.lastFollowup?b.lastFollowup:latest,null);
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${r.id}" ${state.selection.has(r.id)?"checked":""}></label></div>
     <div class="rcell c-id">${r.id}</div>
     <div class="rcell c-req">${caretHTML}<div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div>${r.outdated?'<span class="flag-out">Δ outdated</span>':""}</div>
-    <div class="rcell c-typo">${single?`<span class="ptag">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} activities</span>`}</div>
+    <div class="rcell c-typo">${single?`<span class="ptag">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} systems</span>`}</div>
     <div class="rcell c-expert">${single?branchWhoHTML(single):`<span class="multi-ph">Multiple (${r.branches.length})</span>`}</div>
     <div class="rcell c-status">${consolidatedProgressHTML(c)}</div>
     <div class="rcell c-compliance">${consolidatedComplianceHTML(c)}</div>
@@ -1940,7 +1940,7 @@ function fBranchRowHTML(parent,b,idx){
   return `<div class="rrow branch-row" data-branchof="${parent.id}" data-branchidx="${idx}">
     <div class="rcell c-sel"></div>
     <div class="rcell c-id"></div>
-    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${TY(b.typology).label}</span>${multiTeam?`<span class="nav-brn" title="${teams.length} teams within this activity — most restrictive wins">${teams.length} teams</span>`:""}</div>
+    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${TY(b.typology).label}</span>${multiTeam?`<span class="nav-brn" title="${teams.length} teams within this system — most restrictive wins">${teams.length} teams</span>`:""}</div>
     <div class="rcell c-typo"><span class="ptag">${TY(b.typology).code}</span></div>
     <div class="rcell c-expert">${multiTeam?`<span class="multi-ph">Multiple (${teams.length})</span>`:branchWhoHTML(b)}</div>
     <div class="rcell c-status">${branchProgressHTML(b)}</div>
@@ -2132,7 +2132,7 @@ function renderPanel2(){
     </div>
     <div class="set-tabs">
       <button data-t="response" class="${state.tab==="response"?"active":""}">Assignment</button>
-      <button data-t="activity" class="${state.tab==="activity"?"active":""}">Activity</button>
+      <button data-t="activity" class="${state.tab==="activity"?"active":""}">System</button>
       <button data-t="req" class="${state.tab==="req"?"active":""}">Requirement</button>
       <button data-t="doc" class="${state.tab==="doc"?"active":""}">Document</button>
       <button data-t="rex" class="${state.tab==="rex"?"active":""}">REX</button>
@@ -2247,7 +2247,7 @@ function renderPanel2(){
           </div>
           <div class="field" id="reassign-expert-field"><label>Reassign to</label>
             <select id="reassign-expert">${otherExperts.length?otherExperts.map(x=>`<option value="${x.id}">${x.name} — ${x.role}</option>`).join(""):'<option value="">Nobody else available</option>'}</select></div>
-          <div class="field" id="reassign-typo-field" style="display:none"><label>Correct activity</label>
+          <div class="field" id="reassign-typo-field" style="display:none"><label>Correct system</label>
             <select id="reassign-typo">${otherTypos.map(t=>`<option value="${t}">${TY(t).label}</option>`).join("")}</select></div>
           <div class="field"><label>Why</label><textarea id="reassign-text" rows="3" placeholder="Required — why should this be reassigned?"></textarea></div>
           <div class="form-actions"><button class="btn-cancel" id="reassign-cancel">Cancel</button><button class="btn-submit warn" id="reassign-submit">Send request</button></div>

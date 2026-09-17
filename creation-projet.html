@@ -384,7 +384,7 @@ header .btn-ghost{margin-left:auto}
             <div class="ash">Individual steps <span class="custom">Custom</span></div>
             <div class="astep"><div><div class="at">Capture</div><div class="ad" data-on="Splits the document into text blocks, detects tables and flags uncertain boundaries." data-off="<span class='off'>Off — you create requirements by selecting passages in the document.</span>">Splits the document into text blocks, detects tables and flags uncertain boundaries.</div></div><span class="tog on" data-ai="seg"></span></div>
             <div class="astep"><div><div class="at">Characterisation</div><div class="ad" data-on="Proposes a type and domain for each block, and whether it is a requirement." data-off="<span class='off'>Off — every requirement starts unclassified.</span>">Proposes a type and domain for each block, and whether it is a requirement.</div></div><span class="tog on" data-ai="char"></span></div>
-            <div class="astep"><div><div class="at">Allocation</div><div class="ad" data-on="Proposes which activity each requirement needs, based on its characterization." data-off="<span class='off'>Off — you assign the activity yourself, for every requirement.</span>">Proposes which activity each requirement needs, based on its characterization.</div></div><span class="tog on" data-ai="alloc"></span></div>
+            <div class="astep"><div><div class="at">Allocation</div><div class="ad" data-on="Proposes which system each requirement needs, based on its characterization." data-off="<span class='off'>Off — you assign the system yourself, for every requirement.</span>">Proposes which system each requirement needs, based on its characterization.</div></div><span class="tog on" data-ai="alloc"></span></div>
           </div>
 
           <div class="estimate" id="estimate"><span class="eic">◷</span><span id="est-txt"></span></div>
@@ -399,7 +399,7 @@ header .btn-ghost{margin-left:auto}
              never blocks submitting. -->
         <section class="step-pane" data-pane="4">
           <div class="h1">Project management team</div>
-          <div class="sub">You're the first member automatically — whole-project scope, no activity restriction. Add others now if you already know who they are, or leave it and do it later from the Casting screen.</div>
+          <div class="sub">You're the first member automatically — whole-project scope, no system restriction. Add others now if you already know who they are, or leave it and do it later from the Casting screen.</div>
           <div id="pm-team"></div>
           <div class="pm-add-wrap">
             <input type="text" class="inp" id="pm-search" placeholder="Search a person via SSO to add another project manager…" autocomplete="off">
@@ -506,7 +506,7 @@ document.getElementById("next").addEventListener("click",()=>{
 
 /* ---------- product line — the allocation-relevant choice (§1) ---------- */
 const LINE_NOTE={
-  "Turnkey":"Allocation resolves to an <b>activity</b>, split further by technical/non-technical classification.",
+  "Turnkey":"Allocation resolves to an <b>system</b>, split further by technical/non-technical classification.",
 };
 const LINE_NOTE_DEFAULT="Allocation resolves to a <b>person</b>.";
 function renderLineNote(){
