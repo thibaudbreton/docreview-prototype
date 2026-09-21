@@ -34,7 +34,7 @@ DEC-045 à DEC-049. Ce que les décisions antérieures appelaient « activité �
 |---|---|---|---|
 | Système | Ce sur quoi le tender est émis. **Un seul par tender** | Turnkey, SIG, RSC | La création du tender |
 | Sous-système | Ce vers quoi l'allocation d'un Turnkey répartit, à l'intérieur de son système | SIG, RST, OCS, TRK… | L'allocation |
-| Produit | La déclinaison d'un système, qui **sélectionne le modèle** | SIG : Urban, Mainline · RSC : TGV, métro… | La création, **non modifiable ensuite** |
+| Produit | La déclinaison d'un système, qui **sélectionne le modèle** | SIG : Urban, **Mainline Wayside**, **Mainline Onboard** (DEC-061) · RSC : TGV, métro… | La création, **non modifiable ensuite** |
 | Modèle | Ce que le produit applique pour dériver ABS → PBS → OBS | — | Le produit par défaut, **réglable dans les paramètres** |
 
 **Le partage système / sous-système se lit sur la provenance, pas code par code (DEC-058).** La liste de référence des 16 codes (DEC-032) est la colonne *Responsible Entity* d'une capture **Turnkey** — Riyadh L7. Ce vers quoi une distribution Turnkey répartit est, par la définition du tableau ci-dessus, du **sous-système**. La liste entière est donc au niveau sous-système ; il n'y a rien à trancher entrée par entrée, et c'est la provenance qui le dit, pas une appréciation sur chaque code.
@@ -47,9 +47,15 @@ Ce double statut explique aussi pourquoi ces deux codes-là sont les seuls à po
 
 **Le renommage est fait.** Le vocabulaire « système » est appliqué à l'ensemble des specs vivantes (`docs/current`) et aux commentaires du prototype. Deux réserves : les **identifiants de code** (`CAST_ACTIVITIES`, `activityId`, `deriveActivityCompliance`…) gardent leur nom — un refactor purement cosmétique sur six fichiers, sans bénéfice pour l'utilisateur — et les **documents d'archive, tickets et comptes rendus de test** ne sont pas réécrits : ce sont des traces de ce qui a été dit à une date, pas des specs. Là où le mot « activité » subsiste dans `docs/current`, il désigne l'**ABS** et garde son sens propre.
 
-**Produit figé, modèle réglable.** Le produit décrit ce que le tender *est* : il se choisit à la création et ne se corrige pas ensuite (une erreur se règle en recréant le tender, cohérent avec OPEN-05). Le modèle qu'il applique, lui, se change dans les paramètres du projet — et ce changement déclenche la relance globale décrite en ALLOC-015. Le champ « System » du wizard de création est renommé et devient ce niveau : une combinaison pour un Turnkey, un produit pour un tender spécialisé.
+**Un modèle, concrètement, c'est un sous-ensemble de clés.** Pour SIG, le classeur PBS / OBS / ABS ([KEYS](KEYS.md)) porte les trois axes avec une croix par produit ; le modèle Mainline Wayside est ce qui est coché Mainline Wayside. Le prototype le charge tel quel pour les deux produits Mainline.
+
+**Produit figé, modèle réglable.** Le produit décrit ce que le tender *est* : il se choisit à la création et ne se corrige pas ensuite (une erreur se règle en recréant le tender, cohérent avec OPEN-05). Le modèle qu'il applique, lui, se change dans les paramètres du projet — et ce changement déclenche la relance globale décrite en ALLOC-015.
+
+**Fait au 21 septembre 2026.** Le champ « System » du wizard de création portait une seconde liste de systèmes (Mainline, Urban / Metro, Tramway…) sous la ligne produit — le même niveau dit deux fois. Il est devenu ce niveau-ci : **Produit** pour un tender spécialisé, **Combinaison** pour un Turnkey. Seuls les produits de SIG sont connus (Urban, Mainline Wayside, Mainline Onboard, depuis les clés) ; pour tout le reste le champ affiche un placeholder explicite au lieu d'une liste plausible — combinaison Turnkey comprise, dont la matrice reste due (DEC-048). Le produit choisi est désormais **transporté jusqu'au projet créé**, ce qui n'était pas le cas : le wizard le collectait et `addProject` le jetait, si bien qu'un tender créé dans l'application ne pouvait jamais avoir de produit ni, donc, de clés.
 
 ## Tender SIG de démonstration — RFP-2026-114
+
+Depuis le 21 septembre 2026 : **« Line 4 Resignalling — ETCS L2 », produit Mainline Wayside**, pour porter les clés réelles (DEC-061). Le contenu urbain / CBTC décrit ci-dessous a été réécrit en conséquence — interlockings, RBC, passages à niveau — sur les trois écrans qui le portent. Le nom « Urban Line 4 » dans ce qui suit est historique.
 
 DEC-044 : le prototype doit porter un tender **SIG autonome réellement construit**, à côté du Turnkey STB-2026. Jusqu'ici la colonne « Tender SIG autonome » de la matrice ci-dessus n'était vérifiable sur aucun projet : `RFP-2026-114 · Urban Line 4 Signalling Upgrade` existe dans la liste des tenders avec `line:"SIG"`, mais sans contenu propre — l'ouvrir affichait le chrome mono-passe par-dessus les exigences et les données en forme Turnkey de STB-2026.
 
@@ -75,6 +81,7 @@ Le projet est construit **avec son propre contenu** de signalisation. Réutilise
 - TYPE-T07 : ouvrir RFP-2026-114 affiche ses propres exigences de signalisation, jamais celles d'Energy Monitoring System, et aucun bandeau de contenu réutilisé.
 - TYPE-T08 : sur ce tender, aucune exigence ne porte plus d'un système, et l'axe système est absent de la table, du panneau de détail, des filtres et de Compliance.
 - TYPE-T09 : la chaîne de dérivation y est lue ABS puis PBS puis OBS, dans cet ordre, sur tous les écrans qui l'affichent.
+- TYPE-T11 : sur RFP-2026-114, ABS, PBS et OBS proviennent des clés cochées Mainline Wayside ; aucune valeur inventée ne subsiste dans ses dérivations.
 - TYPE-T10 : la ligne produit annoncée par le dashboard est celle du projet ouvert ; basculer de STB-2026 à RFP-2026-114 change l'affichage et le comportement ensemble, jamais l'un sans l'autre.
 
 ## Périmètre de livraison
