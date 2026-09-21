@@ -69,6 +69,10 @@ Choisir l'autre produit à la relance **ne change pas le produit du tender**, qu
 
 **Confiance.** Les scores issus d'une relance suivent ALLOC-006 et ALLOC-007 : affichés par champ, et sans jamais dispenser de la validation humaine. Une relance ne vaut pas validation.
 
+## Dérivation sur les clés
+
+ALLOC-017 — DEC-061/062 : sur un tender dont le produit a des clés ([KEYS](KEYS.md)), la chaîne ABS → PBS → OBS se choisit dans les listes cochées pour ce produit, jamais en texte libre. L'OBS proposé en premier est celui rangé sous l'ABS de l'exigence, comme dans le classeur ; les autres restent accessibles. La relance dérive de même l'OBS sous l'ABS qu'elle vient de dériver. La **nature** de l'exigence (Functional, Performance, Security, Interface, Regulatory) n'est pas un PBS et n'est pas dans la chaîne : la changer n'invalide rien.
+
 ## Une allocation par organisation
 
 ALLOC-016 — DEC-060 : **une allocation est une organisation et la personne qui y répond.** Une exigence qui atteint trois organisations est **trois allocations à faire**, et le compte affiché est celui des organisations, pas celui des systèmes.

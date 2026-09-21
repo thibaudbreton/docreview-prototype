@@ -615,14 +615,15 @@ body.mode-review .doc-scroll{display:none}
    .rcell, current rows and future ones alike — the row-render code never needs to
    know the current order. */
 .rgrid-head .rcell{position:relative}
-.rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="type"] .c-type,.rgrid[data-cc~="tkobs"] .c-tkobs,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{display:none}
+.rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="pbs"] .c-pbs,.rgrid[data-cc~="type"] .c-type,.rgrid[data-cc~="tkobs"] .c-tkobs,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{display:none}
 .rcell.c-sel{order:var(--ord-sel,0)}
 .rcell.c-id{order:var(--ord-id,1)}
 .rcell.c-req{order:var(--ord-req,2)}
 .rcell.c-class{order:var(--ord-class,3)}
 .rcell.c-typo{order:var(--ord-typo,4)}
 .rcell.c-abs{order:var(--ord-abs,5)}
-.rcell.c-type{order:var(--ord-type,6)}
+.rcell.c-pbs{order:var(--ord-pbs,6)}
+.rcell.c-type{order:var(--ord-type,7)}
 .rcell.c-tkobs{order:var(--ord-tkobs,7)}
 .rcell.c-obs{order:var(--ord-obs,8)}
 .rcell.c-mgr{order:var(--ord-mgr,9)}
@@ -1670,7 +1671,8 @@ body.restricted .restrict-banner{display:flex}
             <div class="rcell c-class" data-col="class" data-sortcol="class"><span class="cl">Class<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="class" title="Filter this column">⏷</button></div>
             <div class="rcell c-typo" data-col="typo" data-sortcol="typo"><span class="cl">System<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
             <div class="rcell c-abs" data-col="abs" data-sortcol="abs"><span class="cl">ABS<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-type" data-col="type" data-sortcol="type"><span class="cl">PBS<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="type" title="Filter this column">⏷</button></div>
+            <div class="rcell c-pbs" data-col="pbs" data-sortcol="pbs" title="Product Breakdown Structure — the product element the requirement bears on"><span class="cl">PBS<span class="sort-arrow"></span></span></div>
+            <div class="rcell c-type" data-col="type" data-sortcol="type"><span class="cl">Nature<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="type" title="Filter this column">⏷</button></div>
             <div class="rcell c-tkobs" data-col="tkobs" data-sortcol="tkobs" title="The system this requirement is routed to — Turnkey tenders only."><span class="cl">TK OBS<span class="sort-arrow"></span></span></div>
             <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="The team or service within the system — informational, not a separate person to assign."><span class="cl">OBS · team<span class="sort-arrow"></span></span></div>
             <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Assigned to<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="mgr" title="Filter this column">⏷</button></div>
@@ -1798,6 +1800,7 @@ body.restricted .restrict-banner{display:flex}
   }catch(e){}
 })();
 /* @include data.js */
+/* @include keys.js */
 /* @include table-engine.js */
 /* =====================================================
    FEATURE FLAGS
@@ -1943,7 +1946,7 @@ const IS_SIG_TENDER = (function(){
   }catch(e){ return false; }
 })();
 /* =====================================================
-   SIG TENDER CONTENT — RFP-2026-114 "Urban Line 4 Signalling Upgrade"
+   SIG TENDER CONTENT — RFP-2026-114 "Line 4 Resignalling — ETCS Level 2" (product: Mainline Wayside)
    DEC-044 / TYPE-T07. A standalone SIG tender, so the "Tender SIG autonome"
    column of TENDER-PROFILES' applicability matrix is verifiable on a real
    project instead of being theory. Its own signalling content on purpose:
@@ -1968,9 +1971,9 @@ function seedSigSections(){
     id:"s1", docId:"d1", num:"1", title:"Scope and purpose",
     blocks:[
       {id:"L4-0001", kind:"text", status:"allocated",
-       text:"This specification defines the requirements applicable to the resignalling of Urban Line 4 with a CBTC train control system, covering onboard equipment, wayside equipment and the line supervision system."},
+       text:"This specification defines the requirements applicable to the resignalling of Line 4 with ETCS Level 2, covering the interlockings, the radio block centre, the trackside equipment and the traffic management system."},
       {id:"L4-0002", kind:"text", status:"allocated",
-       text:"It applies to the twenty-two stations of the line and to the Bellevue depot. Rolling stock procurement is covered by a separate tender and is out of scope, except for the onboard CBTC interfaces defined in section 4."},
+       text:"It applies to the twenty-two stations of the line and to the Bellevue depot. Onboard equipment is covered by a separate tender and is out of scope, except for the track-to-train interfaces defined in section 4."},
     ]
   },
   {
@@ -1978,17 +1981,17 @@ function seedSigSections(){
     blocks:[
       {id:"L4-0003", kind:"heading", level:2, text:"2.1 Automatic train protection"},
       {id:"L4-0004", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
-       abs:{v:"Design & Engineering",c:93}, pbs:{v:"CBTC / Wayside",c:95}, obs:{v:"Signalling Design — FR",c:91},
-       manager:"m_sig", type:"Functional", domain:"Design & Engineering", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
-       text:"The system SHALL enforce a continuous safe braking envelope for every train under CBTC control, based on its position, speed and the movement authority granted by the wayside."},
+       abs:{v:"Design",id:"design",c:93}, pbs:{v:"2.2.1 · ATC Wayside (HW+SW)",id:"2.2.1",c:95}, obs:{v:"Train Control Subsystem Manager",id:"obs15",c:91},
+       manager:"m_sig", type:"Functional", domain:"Design", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:0,
+       text:"The system SHALL enforce a continuous safe braking envelope for every train under ETCS Level 2 supervision, based on its position, speed and the movement authority granted by the radio block centre."},
       {id:"L4-0005", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
-       abs:{v:"Design & Engineering",c:90}, pbs:{v:"CBTC / Onboard",c:92}, obs:{v:"Signalling Design — FR",c:88},
-       manager:"m_sig", type:"Performance", domain:"Design & Engineering", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:2,
+       abs:{v:"Design",id:"design",c:90}, pbs:{v:"2.2.2 · ATC TrackSide (HW) Balises / Beacons",id:"x1",c:92}, obs:{v:"Train Control Subsystem Manager",id:"obs15",c:88},
+       manager:"m_sig", type:"Performance", domain:"Design", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:2,
        text:"Train position SHALL be reported to the wayside at least twice per second, with a confidence interval not exceeding 2 metres at any speed up to 80 km/h."},
       {id:"L4-0006", kind:"requirement", branchStatus:"proposed", tech:"tech", techAI:true, perim:["sig"], perimAI:true,
-       abs:{v:"Systems Integration",c:71}, pbs:{v:"CBTC / Onboard",c:84}, obs:{v:"Integration — FR",c:58},
-       manager:null, type:"Interface", domain:"Systems Integration", status:"suggested", alloc:null, comments:0, uncertain:true,
-       text:"The onboard equipment SHALL remain capable of degraded manual operation under line-side signals when CBTC coverage is unavailable, without requiring a train reset."},
+       abs:{v:"Design",id:"design",c:71}, pbs:{v:"2.1.4 · IXL Trackside Sub System / Outdoor Signals",id:"2.1.4",c:84}, obs:{v:"IXL System Engineering",id:"obs25",c:58},
+       manager:null, type:"Interface", domain:"Design", status:"suggested", alloc:null, comments:0, uncertain:true,
+       text:"Trains SHALL remain capable of degraded operation under line-side signals when radio coverage is unavailable, without requiring a train reset."},
       {id:"L4-0007", kind:"heading", level:2, text:"2.2 Automatic train operation"},
       /* The one requirement here that resolves to TWO organisations. §3.6 — OBS is
          a list, not a value — and TENDER-PROFILES' matrix says a standalone SIG
@@ -1997,63 +2000,65 @@ function seedSigSections(){
          itself. Everything else on this tender resolves to one, which is the
          ordinary case. */
       {id:"L4-0008", kind:"requirement", branchStatus:"awaiting_answer", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
-       abs:{v:"Design & Engineering",c:88}, pbs:{v:"ATS / Supervision",c:90}, obs:{v:"Signalling Design — FR",c:86},
-       manager:"m_sig", type:"Functional", domain:"Design & Engineering", status:"toreview", alloc:"sup", comments:0,
+       abs:{v:"Design",id:"design",c:88}, pbs:{v:"2.2.1 · ATC Wayside (HW+SW)",id:"2.2.1",c:90}, obs:{v:"Train Control Subsystem Manager",id:"obs15",c:86},
+       manager:"m_sig", type:"Functional", domain:"Design", status:"toreview", alloc:"sup", comments:0,
        branches:[{typology:"sig", label:"SIG", manager:"m_sig", branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
-         abs:{v:"Design & Engineering",c:88}, pbs:{v:"ATS / Supervision",c:90}, obs:{v:"Signalling Design — FR",c:86},
+         abs:{v:"Design",id:"design",c:88}, pbs:{v:"2.2.1 · ATC Wayside (HW+SW)",id:"2.2.1",c:90}, obs:{v:"Train Control Subsystem Manager",id:"obs15",c:86},
          /* DEC-055 — an organisation carries its OBS, its person and its verdict.
             Never an ABS or a PBS: those are the requirement's, shared by both.
-            Two organisations with different ABS would be two requirements. */
+            The keys nest the OBS under the ABS, so both roles here sit under
+            Design — the headway is designed by the train-control sub-system
+            and the architecture that carries it. */
          teams:[
            {team:"design", manager:"m_sig", branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
-            obs:{v:"Signalling Design — FR",c:86}},
+            obs:{v:"Train Control Subsystem Manager",id:"obs15",c:86}},
            {team:"vv", manager:"sup", branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
-            obs:{v:"V&V — FR",c:69}},
+            obs:{v:"Project Architect",id:"obs30",c:69}},
          ]}],
        text:"The system SHALL support a minimum headway of 90 seconds in normal service on the central section between Gare du Nord and Palais des Congrès."},
       {id:"L4-0009", kind:"requirement", branchStatus:"awaiting_answer", tech:"nontech", techAI:true, perim:["sig"], perimAI:false,
-       abs:{v:"Installation & Commissioning",c:66}, pbs:{v:"ATS / Supervision",c:77}, obs:{v:"Integration — FR",c:54},
-       manager:null, type:"Regulatory", domain:"Installation & Commissioning", status:"suggested", alloc:null, comments:0, uncertain:true,
-       text:"Migration to CBTC SHALL be carried out without interrupting commercial service, with mixed-fleet operation supported throughout the transition period."},
+       abs:{v:"Installation",id:"installation",c:66}, pbs:{v:"2.2 · ATC Mainline - Wayside",id:"2.2",c:77}, obs:{v:"Sig Project Field Operations Manager (Site Installation Manager)",id:"obs46",c:54},
+       manager:null, type:"Regulatory", domain:"Installation", status:"suggested", alloc:null, comments:0, uncertain:true,
+       text:"Migration to ETCS Level 2 SHALL be carried out without interrupting commercial service, with mixed-fleet operation supported throughout the transition period."},
     ]
   },
   {
     id:"s3", docId:"d1", num:"3", title:"Wayside and interlocking",
     blocks:[
       {id:"L4-0010", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
-       abs:{v:"Design & Engineering",c:94}, pbs:{v:"Interlocking",c:96}, obs:{v:"Wayside Engineering — FR",c:92},
-       manager:"m_sig", type:"Functional", domain:"Design & Engineering", status:"allocated", allocStatus:"allocated", alloc:"infra", comments:0,
+       abs:{v:"Design",id:"design",c:94}, pbs:{v:"2.1.1 · Interlocking Sub System",id:"2.1.1",c:96}, obs:{v:"IXL Application Design Eng.",id:"obs22",c:92},
+       manager:"m_sig", type:"Functional", domain:"Design", status:"allocated", allocStatus:"allocated", alloc:"infra", comments:0,
        text:"Each interlocking SHALL guarantee that no conflicting route can be set simultaneously, and SHALL release a route only once the train has been confirmed clear of the last track section."},
       {id:"L4-0011", kind:"requirement", branchStatus:"awaiting_qa", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
-       abs:{v:"Verification & Validation",c:82}, pbs:{v:"Interlocking",c:89}, obs:{v:"V&V — FR",c:79},
-       manager:"m_sig", type:"Performance", domain:"Verification & Validation", status:"edited", alloc:"infra", comments:1,
+       abs:{v:"Verification and Validation",id:"verification-and-validation",c:82}, pbs:{v:"2.1.1 · Interlocking Sub System",id:"2.1.1",c:89}, obs:{v:"Project V&V Manager",id:"obs37",c:79},
+       manager:"m_sig", type:"Performance", domain:"Verification and Validation", status:"edited", alloc:"infra", comments:1,
        text:"Route setting SHALL complete within 3 seconds of the request, measured from the supervision workstation to the confirmation of point position."},
       {id:"L4-0012", kind:"requirement", branchStatus:"awaiting_qa", tech:"tech", techAI:true, perim:["sig"], perimAI:true,
-       abs:{v:"Installation & Commissioning",c:63}, pbs:{v:"Telecom / Radio",c:81}, obs:{v:"Wayside Engineering — FR",c:49},
-       manager:null, type:"Interface", domain:"Installation & Commissioning", status:"suggested", alloc:null, comments:0, uncertain:true,
+       abs:{v:"Design",id:"design",c:63}, pbs:{v:"4.2.2 · Radio Com SIG",id:"4.2.2",c:81}, obs:{v:"Security and Telecom Subsystem Manager",id:"obs19",c:49},
+       manager:null, type:"Interface", domain:"Design", status:"suggested", alloc:null, comments:0, uncertain:true,
        text:"Radio coverage SHALL be continuous across the whole line including the depot approach tracks, with no single point of failure between two consecutive access points."},
     ]
   },
   {
-    id:"s4", docId:"d2", num:"4", title:"Station interfaces and safety",
+    id:"s4", docId:"d2", num:"4", title:"Level crossings and safety",
     blocks:[
-      {id:"L4-0013", kind:"heading", level:2, text:"4.1 Platform screen doors"},
+      {id:"L4-0013", kind:"heading", level:2, text:"4.1 Level crossings"},
       {id:"L4-0014", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
-       abs:{v:"Systems Integration",c:87}, pbs:{v:"Platform Screen Doors",c:93}, obs:{v:"Integration — FR",c:85},
-       manager:"m_sig", type:"Interface", domain:"Systems Integration", status:"toreview", alloc:"sup", comments:0,
-       text:"Platform screen doors SHALL open only when the train is berthed within the permitted stopping tolerance and the train doors on the corresponding side are enabled."},
+       abs:{v:"Design",id:"design",c:87}, pbs:{v:"2.1.3 · Level - Pedestrian Crossing",id:"2.1.3",c:93}, obs:{v:"IXL Application Design Eng.",id:"obs22",c:85},
+       manager:"m_sig", type:"Interface", domain:"Design", status:"toreview", alloc:"sup", comments:0,
+       text:"A level crossing SHALL close only on an approaching train and SHALL reopen once the train has been confirmed clear of the crossing section, with the closing time computed from the line speed."},
       {id:"L4-0015", kind:"requirement", branchStatus:"reassignment_needed", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
-       abs:{v:"Safety Assurance",c:91}, pbs:{v:"Platform Screen Doors",c:88}, obs:{v:"Safety & RAMS — Group",c:83},
-       manager:"m_sig", type:"Security", domain:"Safety Assurance", status:"toreview", alloc:"cyber", comments:0,
-       text:"Loss of the interface between the train and the platform screen doors SHALL result in the doors remaining closed, and SHALL be reported to the control centre within 2 seconds."},
+       abs:{v:"Safety",id:"safety",c:91}, pbs:{v:"2.1.3 · Level - Pedestrian Crossing",id:"2.1.3",c:88}, obs:{v:"Project Safety Engineer",id:"obs42",c:83},
+       manager:"m_sig", type:"Security", domain:"Safety", status:"toreview", alloc:"cyber", comments:0,
+       text:"Loss of the interface between the interlocking and a level crossing SHALL result in the crossing remaining closed to road traffic, and SHALL be reported to the control centre within 2 seconds."},
       {id:"L4-0016", kind:"heading", level:2, text:"4.2 Safety case"},
       {id:"L4-0017", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
-       abs:{v:"Safety Assurance",c:95}, pbs:{v:"CBTC / Wayside",c:86}, obs:{v:"Safety & RAMS — Group",c:90},
-       manager:"m_sig", type:"Regulatory", domain:"Safety Assurance", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
+       abs:{v:"Safety",id:"safety",c:95}, pbs:{v:"2 · Signalling",id:"2",c:86}, obs:{v:"Project Safety Assurance Manager",id:"obs44",c:90},
+       manager:"m_sig", type:"Regulatory", domain:"Safety", status:"allocated", allocStatus:"allocated", alloc:"cyber", comments:0,
        text:"The supplier SHALL deliver a safety case demonstrating SIL 4 for all train protection functions, in accordance with EN 50126, EN 50128 and EN 50129."},
       {id:"L4-0018", kind:"requirement", branchStatus:"awaiting_answer", tech:"nontech", techAI:false, perim:["sig"], perimAI:false,
-       abs:{v:"Verification & Validation",c:78}, pbs:{v:"ATS / Supervision",c:72}, obs:{v:"V&V — FR",c:74},
-       manager:null, type:"Regulatory", domain:"Verification & Validation", status:"toreview", alloc:null, comments:0,
+       abs:{v:"Safety",id:"safety",c:78}, pbs:{v:"2 · Signalling",id:"2",c:72}, obs:{v:"Safety Assessor",id:"obs43",c:74},
+       manager:null, type:"Regulatory", domain:"Safety", status:"toreview", alloc:null, comments:0,
        text:"The supplier SHALL provide evidence of independent safety assessment by a recognised body before the start of passenger service on any migrated section."},
     ]
   },
@@ -2379,7 +2384,7 @@ const TY=id=>TYPO.find(t=>t.id===id)||{code:id.toUpperCase(),label:id};
    real product lists beyond these are owed with the combination matrix
    (DEC-048) — nothing is invented here for systems nobody has described. */
 const SYSTEM_PRODUCTS={
-  sig:[{id:"sig-urban",label:"SIG Urban"},{id:"sig-mainline",label:"SIG Mainline"}],
+  sig:[{id:"sig-urban",label:"SIG Urban"},{id:"sig-mainline-wayside",label:"SIG Mainline Wayside"},{id:"sig-mainline-onboard",label:"SIG Mainline Onboard"}],
   rst:[{id:"rst-metro",label:"RST Metro"},{id:"rst-tgv",label:"RST High speed"}],
 };
 const PRODUCT=id=>Object.values(SYSTEM_PRODUCTS).flat().find(p=>p.id===id)||null;
@@ -2392,18 +2397,55 @@ const productSystem=id=>Object.keys(SYSTEM_PRODUCTS).find(k=>SYSTEM_PRODUCTS[k].
    PBS is stored at two different levels in this data: a requirement carries one
    of the five natures in `type`, a team leaf carries a free product-area string.
    The vocabularies below follow that split rather than papering over it. */
+/* ---- The real keys (DEC-061). keys.js is generated by build_keys.py from the
+   "PBS OBS ABS Keys" workbook: three reference lists, one per axis, each
+   flagged per product. What a product's model IS, concretely, is the subset
+   flagged for it — and the OBS entries are nested under ABS categories in the
+   workbook, so choosing an ABS narrows the roles. That nesting is the one
+   structural fact the chain relies on.
+   Only the two Mainline products are wired to the keys: DEC-062 settled that
+   the OBS is a job position for the Mainline model, and said nothing about
+   Urban, which therefore keeps its earlier, invented vocabulary. Loaded as-is:
+   duplicates and id-less rows are the workbook's, not ours. */
+const KEYS = window.SRM_KEYS || {pbs:[],abs:[],obs:[],products:[]};
+const KEY_PRODUCT = {"sig-mainline-wayside":"mainline-wayside","sig-mainline-onboard":"mainline-onboard"};
+const PBS_LABEL = e => `${e.id.startsWith("x")?"":e.id+" · "}${e.name}`;
+function keyedVocab(productId){
+  const kp=KEY_PRODUCT[productId]; if(!kp) return null;
+  const flagged=list=>list.filter(e=>(e.products||[]).includes(kp));
+  return {
+    keyed:true, product:kp,
+    absList: flagged(KEYS.abs),
+    pbsList: flagged(KEYS.pbs),
+    obsList: flagged(KEYS.obs),
+    nature:["Functional","Performance","Security","Interface","Regulatory"],
+  };
+}
+const isKeyedModel = productId => !!KEY_PRODUCT[productId];
+/* Which product this tender is on, as a model id — read once from the shell. */
+const TENDER_PRODUCT_ID = (function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return null;
+    const p=window.parent.getCurrentProject(); if(!p||p.line!=="SIG") return null;
+    return {"Urban":"sig-urban","Mainline Wayside":"sig-mainline-wayside","Mainline Onboard":"sig-mainline-onboard"}[p.product]||null;
+  }catch(e){ return null; }
+})();
+/* The tender's own keyed vocabulary, or null when its model is not keyed
+   (Turnkey, Urban, RST) — every control below falls back to free text then. */
+const TENDER_KEYS = TENDER_PRODUCT_ID ? keyedVocab(TENDER_PRODUCT_ID) : null;
+/* The table header is static markup, so the one label that changes meaning
+   on a keyed tender is patched here rather than templated. */
+if(TENDER_KEYS){ document.querySelectorAll(".rgrid-head .c-obs .cl").forEach(el=>{ el.childNodes[0].textContent="OBS · role"; }); }
+const KEY_ABS = id => KEYS.abs.find(a=>a.id===id)||null;
+const KEY_PBS = id => KEYS.pbs.find(e=>e.id===id)||null;
+const KEY_OBS = id => KEYS.obs.find(o=>o.id===id)||null;
+
 const MODEL_VOCAB={
   "sig-urban":{
     abs:["Design & Engineering","Systems Integration","Verification & Validation","Safety Assurance"],
     pbsLeaf:["CBTC / Onboard","CBTC / Wayside","ATS / Supervision","Platform Screen Doors"],
     nature:["Functional","Performance","Interface","Regulatory"],
     obs:["Signalling Design — FR","Integration — FR","V&V — FR","Safety & RAMS — Group"],
-  },
-  "sig-mainline":{
-    abs:["Design & Engineering","Installation & Commissioning","Verification & Validation","Safety Assurance"],
-    pbsLeaf:["Interlocking","Trackside equipment","Telecom / Radio","Level crossings"],
-    nature:["Functional","Performance","Regulatory","Security"],
-    obs:["Wayside Engineering — FR","Signalling Design — FR","V&V — FR","Safety & RAMS — Group"],
   },
   "rst-metro":{
     abs:["Design & Engineering","Systems Integration","Verification & Validation"],
@@ -2422,15 +2464,31 @@ const MODEL_VOCAB={
    same answer, which is what makes DEC-053 ("no special handling when nothing
    changed") a real outcome rather than random noise. */
 function runAllocationModel(productId, seedId){
-  const v=MODEL_VOCAB[productId]; if(!v) return null;
   const h=hashId(seedId+"::"+productId);
   const pick=(arr,shift)=>arr[(h>>shift)%arr.length];
   const conf=shift=>58+((h>>shift)%40);
+  const kv=keyedVocab(productId);
+  if(kv){
+    /* On the keys: ABS first, then a PBS element, then a role — and the roles
+       offered are those the workbook lists under that ABS, which is the whole
+       point of the nesting. A category with no role flagged for the product
+       (EHS on Mainline Wayside, say) falls back to any flagged role rather
+       than to nothing. */
+    const abs=pick(kv.absList,2);
+    const pbs=pick(kv.pbsList,5);
+    const under=kv.obsList.filter(o=>o.abs===abs.id);
+    const obs=pick(under.length?under:kv.obsList,9);
+    return {
+      abs:{v:abs.label, id:abs.id, c:conf(3)},
+      pbs:{v:PBS_LABEL(pbs), id:pbs.id, c:conf(7)},
+      obs:{v:obs.title, id:obs.id, c:conf(11)},
+    };
+  }
+  const v=MODEL_VOCAB[productId]; if(!v) return null;
   return {
     abs:{v:pick(v.abs,2), c:conf(3)},
     pbs:{v:pick(v.pbsLeaf,5), c:conf(7)},
     obs:{v:pick(v.obs,9), c:conf(11)},
-    nature:pick(v.nature,5),          // PBS as the requirement stores it (one of five)
   };
 }
 /* DEC-041 + DEC-051 — what makes applying directly safe is that nothing
@@ -2474,7 +2532,7 @@ function applyRerunTo(b, branchIdx, productId){
   const r=runAllocationModel(productId, b.id+"#"+branchIdx); if(!r) return null;
   // one characterisation, shared by every organisation below it
   branch.abs=r.abs; branch.pbs=r.pbs;
-  if((b.branches||[]).length===1){ b.domain=r.abs.v; b.type=r.nature; b.abs=r.abs; b.pbs=r.pbs; }
+  if((b.branches||[]).length===1){ b.domain=r.abs.v; b.abs=r.abs; b.pbs=r.pbs; }
   /* The organisations are a SET, so they are derived as one: N distinct values
      walked from a single starting point, never N independent draws — those can
      land on the same organisation twice, and a requirement handled by "V&V and
@@ -2482,12 +2540,15 @@ function applyRerunTo(b, branchIdx, productId){
      abs/pbs of their own (DEC-055): everything reads them from the branch.
      Whether a model may add or drop an organisation is a separate question
      nobody has answered; the set keeps its size here rather than guessing. */
-  const vocab=(MODEL_VOCAB[productId]||{}).obs||[];
+  const kv=keyedVocab(productId);
+  const vocab = kv
+    ? (function(){ const under=kv.obsList.filter(o=>o.abs===r.abs.id); return (under.length?under:kv.obsList).map(o=>({v:o.title,id:o.id})); })()
+    : ((MODEL_VOCAB[productId]||{}).obs||[]).map(v=>({v}));
   const start=hashId(b.id+"#"+branchIdx)%Math.max(vocab.length,1);
   teams.forEach((t,i)=>{
-    const v=vocab.length?vocab[(start+i)%vocab.length]:(t.obs&&t.obs.v);
+    const pickd=vocab.length?vocab[(start+i)%vocab.length]:{v:(t.obs&&t.obs.v)};
     const c=58+(hashId(b.id+"#"+branchIdx+"#"+i)%40);
-    t.obs={v,c};
+    t.obs=Object.assign({},pickd,{c});
   });
   branch.obs=teams[0].obs;
   if((b.branches||[]).length===1 && teams.length===1) b.obs=teams[0].obs;
@@ -3007,7 +3068,7 @@ const state = {
   // data-cc, the CSS above keys off it); dropping a key from colOrder alone only
   // removes it from the ordering, leaving the markup on screen.
   colCollapsed:new Set(IS_SIG_TENDER?["typo","tkobs"]:[]),
-  colOrder:["class","typo","abs","type","tkobs","obs","mgr","status","compliance"],
+  colOrder:["class","typo","abs","pbs","type","tkobs","obs","mgr","status","compliance"],
   navPanelCollapsed:false,
   detailPanelCollapsed:false,
   sortCol:null,
@@ -3284,7 +3345,7 @@ function deriveRequirementCompliance(b){
 function obsListHTML(myBranch, ctx){
   const teams=ensureTeams(myBranch);
   const rows=teams.map((t,i)=>{
-    const val=(t.obs&&t.obs.v)||TEAM(t.team).label||"—";
+    const val=(t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:(TENDER_KEYS?"— No role derived yet —":"— No organisation derived yet —"));
     const c=t.obs&&t.obs.c;
     return `<div class="ui-list-row">
       <span class="ui-list-main">${escHtml(val)}</span>
@@ -3293,17 +3354,45 @@ function obsListHTML(myBranch, ctx){
     </div>`;
   }).join("");
   return `<div class="deriv-step">
-    <div class="deriv-head"><span class="deriv-label">OBS</span></div>
+    <div class="deriv-head"><span class="deriv-label">OBS${TENDER_KEYS?" · role":""}</span></div>
     <div class="ui-list is-compact">
       ${rows}
-      <div id="obs-add-row"><button class="ui-list-add" id="obs-add-btn">+ Add organisation</button></div>
+      <div id="obs-add-row"><button class="ui-list-add" id="obs-add-btn">+ Add ${TENDER_KEYS?"role":"organisation"}</button></div>
     </div>
-    <div class="deriv-hint">The organisation(s) — the team or service within the system. This is what casting staffs, not a person to pick here.${teams.length>1?" Several organisations means several verdicts to consolidate — most restrictive wins, pending until all answer.":""}</div>
+    <div class="deriv-hint">${TENDER_KEYS
+      ? `The role(s) — job positions from the OBS key, listed under the ABS chosen above. A position, not a person: who fills it is assigned below.`
+      : `The organisation(s) — the team or service within the system. This is what casting staffs, not a person to pick here.`}${teams.length>1?" Several means several verdicts to consolidate — most restrictive wins, pending until all answer.":""}</div>
   </div>`;
 }
 function bindObsList(body,myBranch,b){
   body.querySelector("#obs-add-btn")?.addEventListener("click",()=>{
     const row=body.querySelector("#obs-add-row");
+    if(TENDER_KEYS){
+      /* Roles under the requirement's ABS first, every other flagged role after
+         — the workbook's nesting is the default, not a wall. */
+      const absId=(myBranch.abs&&myBranch.abs.id)||(b.abs&&b.abs.id)||null;
+      const taken=new Set(ensureTeams(myBranch).map(t=>t.obs&&t.obs.id).filter(Boolean));
+      const under=TENDER_KEYS.obsList.filter(o=>o.abs===absId && !taken.has(o.id));
+      const rest=TENDER_KEYS.obsList.filter(o=>o.abs!==absId && !taken.has(o.id));
+      const opt=o=>`<option value="${o.id}">${escHtml(o.title)}</option>`;
+      row.innerHTML=`<div class="obs-add-form">
+        <select class="ui-select" id="obs-add-input"><option value="">— Pick a role —</option>
+          ${under.length?`<optgroup label="Under ${escHtml((KEY_ABS(absId)||{}).label||"this ABS")}">${under.map(opt).join("")}</optgroup>`:""}
+          <optgroup label="Other roles on this product">${rest.map(opt).join("")}</optgroup></select>
+        <button class="mini-btn" id="obs-add-cancel">Cancel</button>
+        <button class="mgr-done" id="obs-add-confirm">Add</button>
+      </div>`;
+      row.querySelector("#obs-add-cancel").addEventListener("click",()=>refresh());
+      row.querySelector("#obs-add-confirm").addEventListener("click",()=>{
+        const o=KEY_OBS(row.querySelector("#obs-add-input").value);
+        if(!o){ toast("Pick a role","warn"); return; }
+        ensureTeams(myBranch).push({team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",obs:{v:o.title,id:o.id,c:null}});
+        deriveRequirementCompliance(b);
+        toast(`${o.title} added`,"ok");
+        refresh();
+      });
+      return;
+    }
     row.innerHTML=`<div class="obs-add-form">
       <input class="ui-input" type="text" id="obs-add-input" placeholder="Organisation name…" autocomplete="off">
       <button class="mini-btn" id="obs-add-cancel">Cancel</button>
@@ -3405,12 +3494,22 @@ function reqPassDoubt(b){
 /* §2 — the chain is sequential, PBS -> ABS -> OBS. Correcting a step
    invalidates what follows it, rather than leaving stale downstream values
    sitting there still looking valid. */
-const DERIV_CHAIN=["pbs","abs","obs"];
+const DERIV_CHAIN=["abs","pbs","obs"];
 function invalidateDownstream(target,changed){
   const i=DERIV_CHAIN.indexOf(changed);
   if(i<0||!target) return [];
   const cleared=DERIV_CHAIN.slice(i+1).filter(k=>target[k]);
-  cleared.forEach(k=>{ target[k]=null; });
+  /* Clear on every holder of the value, not just the one handed in: the
+     requirement, its single system when it has one, and — for the OBS — the
+     organisations under it, since obsListHTML reads teams[i].obs and used to
+     keep showing a role the toast had just announced as cleared. */
+  const holders=[target];
+  if(target.branches && target.branches.length===1) holders.push(target.branches[0]);
+  else if(!target.branches && target.teams) { /* a branch: nothing above it to mirror here */ }
+  cleared.forEach(k=>{
+    holders.forEach(h=>{ h[k]=null; });
+    if(k==="obs"){ holders.forEach(h=>(h.teams||[]).forEach(t=>{ t.obs=null; })); }
+  });
   return cleared;
 }
 function pushBranchLog(b,who,what,k){
@@ -3938,7 +4037,12 @@ function rowInnerHTML(b){
     <div class="rcell c-req">${b.sourceImage?imgSrcBtn:`<div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div>`}<div class="req-badges">${imgRowActions}${badges}</div><button class="nat-pick row-natpick" data-natpick="${b.id}" title="Reclassify this block">▾</button></div>
     <div class="rcell c-class"><button class="cls-flip ${b.techAI?"ia":""}" data-clsflip="${b.id}" title="${b.techAI?"AI-detected, unconfirmed — ":""}Click to switch classification">${b.tech==="tech"?"Tech":"Non-tech"}</button></div>
     <div class="rcell c-typo"><button class="typo-cell" data-typocell="${b.id}">${typoTags}</button></div>
-    <div class="rcell c-abs"><input type="text" class="cell-text" data-abs="${b.id}" value="${(b.domain||"").replace(/"/g,'&quot;')}" placeholder="—"></div>
+    <div class="rcell c-abs">${TENDER_KEYS
+      ? `<select class="cell-select" data-abs="${b.id}"><option value="">—</option>${TENDER_KEYS.absList.map(a=>`<option value="${a.id}" ${a.label===b.domain?"selected":""}>${escHtml(a.label)}</option>`).join("")}</select>`
+      : `<input type="text" class="cell-text" data-abs="${b.id}" value="${(b.domain||"").replace(/"/g,'&quot;')}" placeholder="—">`}</div>
+    <div class="rcell c-pbs">${TENDER_KEYS
+      ? `<select class="cell-select" data-pbs="${b.id}" title="${escHtml((b.pbs&&b.pbs.v)||"")}"><option value="">—</option>${pbsOptionsHTML(b.pbs&&b.pbs.id)}</select>`
+      : `<span class="fval">${escHtml((b.pbs&&b.pbs.v)||"—")}</span>`}</div>
     <div class="rcell c-type"><select class="cell-select" data-type="${b.id}">${typeOptions}</select></div>
     <div class="rcell c-tkobs">${tkObsCellHTML}</div>
     <div class="rcell c-obs">${obsCellHTML}</div>
@@ -3967,6 +4071,7 @@ function infoRowHTML(b){
     <div class="rcell c-class"><span class="ph">—</span></div>
     <div class="rcell c-typo"><span class="ph">—</span></div>
     <div class="rcell c-abs"><span class="ph">—</span></div>
+    <div class="rcell c-pbs"><span class="ph">—</span></div>
     <div class="rcell c-type"><span class="ph">—</span></div>
     <div class="rcell c-tkobs"><span class="ph">—</span></div>
     <div class="rcell c-obs"><span class="ph">—</span></div>
@@ -4015,6 +4120,7 @@ function branchRowHTML(parent, branch, idx){
     <div class="rcell c-class"></div>
     <div class="rcell c-typo"><span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending project-manager review":""}">${TY(branch.typology).code}</span></div>
     <div class="rcell c-abs"></div>
+    <div class="rcell c-pbs"></div>
     <div class="rcell c-type"></div>
     <div class="rcell c-tkobs">${tkObsCell}</div>
     <div class="rcell c-obs">${multiTeam
@@ -4042,6 +4148,7 @@ function teamRowHTML(parent, branch, bidx, team, tidx){
     <div class="rcell c-class"></div>
     <div class="rcell c-typo"></div>
     <div class="rcell c-abs"></div>
+    <div class="rcell c-pbs"></div>
     <div class="rcell c-type"></div>
     <div class="rcell c-tkobs"></div>
     <div class="rcell c-obs"><span class="fval">${escHtml((team.obs&&team.obs.v)||TEAM(team.team).label||"—")}</span></div>
@@ -4059,6 +4166,7 @@ const SORT_KEYS={
   class:b=>({tech:0,nontech:1}[b.tech]??2),
   typo:b=>{ const p=(b.perim||[])[0]; return p==null?9999:(p==="tky"?-1:TYPO.findIndex(t=>t.id===p)); },
   abs:b=>b.domain||"",
+  pbs:b=>(b.pbs&&b.pbs.id)||(b.pbs&&b.pbs.v)||"",
   type:b=>b.type||"",
   mgr:b=>b.manager?(MGR(b.manager)?.name||""):"",
   obs:b=>(b.obs&&b.obs.v)||"",
@@ -4076,7 +4184,7 @@ function sortRows(rows){
 const COL_FILTER_DEFS={
   class:{label:"Class",options:[{v:"tech",l:"Technical"},{v:"nontech",l:"Non-technical"}],get:b=>[b.tech||""]},
   typo:{label:"System",options:[...TYPO.map(t=>({v:t.id,l:t.label})),{v:"",l:"— none set —"}],get:b=>(b.perim&&b.perim.length)?b.perim:[""]},
-  type:{label:"PBS",options:["Functional","Performance","Security","Interface","Regulatory"].map(t=>({v:t,l:t})),get:b=>[b.type||""]},
+  type:{label:"Nature",options:["Functional","Performance","Security","Interface","Regulatory"].map(t=>({v:t,l:t})),get:b=>[b.type||""]},
   mgr:{label:"Assigned to",options:[...MANAGERS.filter(m=>!m.admin).map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
   status:{label:"Status",options:Object.keys(STATUS_LABEL).map(k=>({v:k,l:STATUS_LABEL[k]})),get:b=>[effectiveStatus(b).val]},
   doubtfield:{label:"Review field",options:[...Object.keys(DOUBT_FIELD_LABEL).map(k=>({v:k,l:DOUBT_FIELD_LABEL[k]})),{v:"",l:"— nothing to review —"}],get:b=>{const es=effectiveStatus(b); return [es.val==="doubt"?(es.doubtField||""):""];}},
@@ -4114,7 +4222,7 @@ function passesColFilters(b){
 const ADV_FILTER_FIELDS={
   id:{label:"ID",type:"text",get:b=>[b.id||""]},
   text:{label:"Text",type:"text",get:b=>[b.text||""]},
-  nature:{label:"Nature",type:"enum",options:[{v:"heading",l:"Heading"},{v:"info",l:"Information"},{v:"requirement",l:"Requirement"},{v:"image",l:"Image"}],get:b=>[blockNature(b)]},
+  nature:{label:"Block type",type:"enum",options:[{v:"heading",l:"Heading"},{v:"info",l:"Information"},{v:"requirement",l:"Requirement"},{v:"image",l:"Image"}],get:b=>[blockNature(b)]},
   class:{type:"enum",label:COL_FILTER_DEFS.class.label,options:COL_FILTER_DEFS.class.options,get:COL_FILTER_DEFS.class.get},
   status:{type:"enum",label:COL_FILTER_DEFS.status.label,options:COL_FILTER_DEFS.status.options,get:COL_FILTER_DEFS.status.get},
   compliance:{label:"Compliance",type:"enum",options:[...COMPLIANCE_DEFS.map(c=>({v:c.k,l:c.label}))],get:b=>{
@@ -4122,6 +4230,7 @@ const ADV_FILTER_FIELDS={
   }},
   typo:{type:"enum",label:COL_FILTER_DEFS.typo.label,options:COL_FILTER_DEFS.typo.options,get:COL_FILTER_DEFS.typo.get},
   abs:{label:"ABS",type:"text",get:b=>[b.domain||""]},
+  pbs:{label:"PBS",type:"text",get:b=>[(b.pbs&&b.pbs.v)||""]},
   type:{type:"enum",label:COL_FILTER_DEFS.type.label,options:COL_FILTER_DEFS.type.options,get:COL_FILTER_DEFS.type.get},
   obs:{label:"OBS",type:"text",get:b=>[(b.obs&&b.obs.v)||""]},
   mgr:{label:"Assigned to",type:"enum",options:COL_FILTER_DEFS.mgr.options,get:COL_FILTER_DEFS.mgr.get},
@@ -4289,7 +4398,7 @@ function renderReview(){
    (which row's detail panel is open) — this is purely a keyboard
    focus position, painted as an accent ring on one .rcell.
 ===================================================== */
-const NAV_COLS=["sel","id","req","class","typo","abs","type","tkobs","obs","mgr","status","compliance"];
+const NAV_COLS=["sel","id","req","class","typo","abs","pbs","type","tkobs","obs","mgr","status","compliance"];
 function navCols(){ return NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
 /* flat, on-screen order of data rows (parents + visible allocated-system sub-rows) — respects
    current sort/filter/branch-expansion, exactly what Up/Down should step through.
@@ -4382,7 +4491,17 @@ function bindVRows(win){
   win.querySelectorAll("[data-type]").forEach(sel=>sel.addEventListener("change",e=>{ e.stopPropagation(); const f=findBlock(sel.dataset.type); if(f){ f.b.type=sel.value; markAllocEdited(f.b); refresh(); } }));
   win.querySelectorAll("[data-abs]").forEach(inp=>{
     inp.addEventListener("click",e=>e.stopPropagation());
-    inp.addEventListener("change",e=>{ const f=findBlock(inp.dataset.abs); if(f){ f.b.domain=inp.value.trim(); markAllocEdited(f.b); refresh(); } });
+    inp.addEventListener("change",e=>{ const f=findBlock(inp.dataset.abs); if(!f) return;
+      if(TENDER_KEYS){ const a=KEY_ABS(inp.value); f.b.domain=a?a.label:""; f.b.abs=a?{v:a.label,id:a.id,c:null}:null; if((f.b.branches||[]).length===1) f.b.branches[0].abs=f.b.abs; }
+      else f.b.domain=inp.value.trim();
+      markAllocEdited(f.b); refresh(); });
+  });
+  win.querySelectorAll("[data-pbs]").forEach(sel=>{
+    sel.addEventListener("click",e=>e.stopPropagation());
+    sel.addEventListener("change",e=>{ const f=findBlock(sel.dataset.pbs); if(!f) return;
+      const el=KEY_PBS(sel.value); f.b.pbs=el?{v:PBS_LABEL(el),id:el.id,c:null}:null;
+      if((f.b.branches||[]).length===1) f.b.branches[0].pbs=f.b.pbs;
+      markAllocEdited(f.b); refresh(); });
   });
   win.querySelectorAll("[data-mgr]").forEach(sel=>sel.addEventListener("change",e=>{
     e.stopPropagation(); const f=findBlock(sel.dataset.mgr); if(!f) return;
@@ -4706,6 +4825,40 @@ function confBadgeHTML(f){
   const weak=f.c<OBS_THRESHOLD;
   return `<span class="deriv-conf${weak?" weak":""}" title="${f.c}% confidence${weak?` — below the ${OBS_THRESHOLD}% threshold, this step needs checking`:""}">${f.c}%</span>`;
 }
+/* The three chain controls. On a keyed tender (DEC-061/062) they are selects
+   over the workbook's lists — nobody types "Design & Engineering" into a field
+   whose legal values are sixteen categories — and free text everywhere else.
+   PBS is the product element, grouped by family; the requirement's NATURE
+   (Functional, Performance…) is not a PBS and gets its own field below the
+   chain, which is the correction DEC-062 asked for. */
+function absControlHTML(b, derivSrc){
+  if(!TENDER_KEYS) return `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`;
+  const cur=(derivSrc.abs&&derivSrc.abs.id)||(KEYS.abs.find(a=>a.label===b.domain)||{}).id||"";
+  return `<select class="ui-select" id="f-domain"><option value="">— Not derived yet —</option>${TENDER_KEYS.absList.map(a=>`<option value="${a.id}" ${a.id===cur?"selected":""}>${escHtml(a.label)}</option>`).join("")}</select>`;
+}
+function pbsOptionsHTML(selectedId){
+  const list=TENDER_KEYS.pbsList.slice();
+  const cur=selectedId?KEY_PBS(selectedId):null;
+  let extra="";
+  if(cur && !list.some(e=>e.id===cur.id)){
+    extra=`<optgroup label="From another product's model"><option value="${cur.id}" selected>${escHtml(PBS_LABEL(cur))}</option></optgroup>`;
+  }
+  const fams=list.filter(e=>e.level===2);
+  const under=f=>list.filter(e=>e.level!==2 && (e.parent===f.id || (KEY_PBS(e.parent)||{}).parent===f.id));
+  const opt=e=>`<option value="${e.id}" ${e.id===selectedId?"selected":""}>${e.level===4?"\u00a0\u00a0":""}${escHtml(PBS_LABEL(e))}</option>`;
+  const grouped=fams.map(f=>`<optgroup label="${escHtml(PBS_LABEL(f))}">${opt(f)}${under(f).map(opt).join("")}</optgroup>`).join("");
+  const orphans=list.filter(e=>e.level!==2 && !fams.some(f=>under(f).includes(e)));
+  return extra+grouped+(orphans.length?`<optgroup label="Other">${orphans.map(opt).join("")}</optgroup>`:"");
+}
+function pbsControlHTML(b, derivSrc){
+  const cur=derivSrc.pbs||b.pbs||null;
+  if(!TENDER_KEYS) return `<input class="ui-input" type="text" id="f-pbs" value="${escHtml((cur&&cur.v)||"")}" placeholder="Product element">`;
+  return `<select class="ui-select" id="f-pbs"><option value="">— Not derived yet —</option>${pbsOptionsHTML(cur&&cur.id)}</select>`;
+}
+function natureFieldHTML(b){
+  return `<div class="field"><label>Nature <span>· what kind of requirement this is — not part of the derivation</span></label>
+    <select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select></div>`;
+}
 function derivStepHTML(label,control,conf,hint,info){
   return `<div class="deriv-step">
     <div class="deriv-head"><span class="deriv-label">${label}</span>${info?`<span class="deriv-info" title="${escHtml(info)}">i</span>`:""}${confBadgeHTML(conf)}</div>
@@ -4819,12 +4972,8 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
       const br=(b.branches||[])[idx];
       return rerunControlHTML("leaf:"+b.id+"::"+idx, br.typology, branchRerunBlockedReason(br));
     })()}</div>
-    ${derivStepHTML("ABS",
-      `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
-      derivSrc.abs)}
-    ${derivStepHTML("PBS",
-      `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
-      derivSrc.pbs)}
+    ${derivStepHTML("ABS", absControlHTML(b,derivSrc), derivSrc.abs)}
+    ${derivStepHTML("PBS", pbsControlHTML(b,derivSrc), derivSrc.pbs, null, TENDER_KEYS?"The product element the requirement bears on — from the PBS key, grouped by family.":null)}
     ${(function(){
       /* OBS shows whenever one leaf resolves — the contributor's own system, or
          the single system a requirement carries. It used to be gated on !rmView,
@@ -4856,7 +5005,7 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
             "The team or service within the system. Assigning a person comes after — usually that team's manager in the tender's region.");
     })()}
   </div>`;
-  return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that system's own model">routes into</div>`:"") + modelHTML;
+  return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that system's own model">routes into</div>`:"") + modelHTML + natureFieldHTML(b);
 }
 /* A contributor's own view of one system — fixed order, explicitly
    specified: ABS, PBS, OBS (the organisation, not a person), who's assigned
@@ -4869,13 +5018,10 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
    condition through each of those. */
 function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx){
   return `
-    ${derivStepHTML("ABS",
-      `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`,
-      derivSrc.abs)}
-    ${derivStepHTML("PBS",
-      `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`,
-      derivSrc.pbs)}
+    ${derivStepHTML("ABS", absControlHTML(b,derivSrc), derivSrc.abs)}
+    ${derivStepHTML("PBS", pbsControlHTML(b,derivSrc), derivSrc.pbs, null, TENDER_KEYS?"The product element the requirement bears on — from the PBS key, grouped by family.":null)}
     ${obsListHTML(myBranch, {reqId:b.id, branchIdx:(b.branches||[]).indexOf(myBranch), systemId:myBranch.typology})}
+    ${natureFieldHTML(b)}
     <div class="field"><label>Assigned to</label>
       ${personSearchHTML("req-manager",myBranch.manager)}
     </div>
@@ -5276,18 +5422,41 @@ function renderSettings(){
       if(!cleared.length) return;
       toast(`${changed.toUpperCase()} changed — ${cleared.map(c=>c.toUpperCase()).join(" and ")} cleared, they were derived from it`,"warn");
     };
+    /* The nature is off the chain (DEC-062): changing it invalidates nothing. */
     body.querySelector("#f-type")?.addEventListener("change",e=>{
       const before=b.type; b.type=e.target.value;
       logFeedback("char",b.id,before,e.target.value,null);
-      const cleared=invalidateDownstream(derivTarget(),"pbs");
-      markAllocEdited(b); refresh();
-      cleared.length ? announceCleared(cleared,"PBS") : toast("PBS updated","ok");
+      markAllocEdited(b); refresh(); toast("Nature updated","ok");
     });
+    /* A human pick carries no confidence: the badge goes, the value stays. On a
+       single-system requirement the branch mirrors the requirement, as
+       everywhere else in this file. */
+    const writeDeriv=(key,val)=>{
+      const t=derivTarget(); t[key]=val;
+      if(t!==b && (b.branches||[]).length===1) b[key]=val;
+      if(t===b && (b.branches||[]).length===1) b.branches[0][key]=val;
+    };
     body.querySelector("#f-domain")?.addEventListener("change",e=>{
-      b.domain=e.target.value.trim();
+      if(TENDER_KEYS){
+        const a=KEY_ABS(e.target.value);
+        b.domain=a?a.label:""; writeDeriv("abs", a?{v:a.label,id:a.id,c:null}:null);
+      }else{
+        b.domain=e.target.value.trim();
+      }
       const cleared=invalidateDownstream(derivTarget(),"abs");
       markAllocEdited(b); refresh();
       announceCleared(cleared,"ABS");
+    });
+    body.querySelector("#f-pbs")?.addEventListener("change",e=>{
+      if(TENDER_KEYS){
+        const el=KEY_PBS(e.target.value);
+        writeDeriv("pbs", el?{v:PBS_LABEL(el),id:el.id,c:null}:null);
+      }else{
+        const v=e.target.value.trim(); writeDeriv("pbs", v?{v,c:null}:null);
+      }
+      const cleared=invalidateDownstream(derivTarget(),"pbs");
+      markAllocEdited(b); refresh();
+      cleared.length ? announceCleared(cleared,"PBS") : toast("PBS updated","ok");
     });
     body.querySelector("#propose-reassign-btn")?.addEventListener("click",()=>renderReassignForm(b,body));
     /* ---- two-view navigation + the PM view's own controls ---- */
@@ -5947,7 +6116,7 @@ function renderSortIndicators(){
    right visual position without the row-render code needing to know about ordering. */
 const RCOLS=[
   {k:"sel",w:"32px"},{k:"id",w:"98px"},{k:"req",w:"minmax(325px,1.82fr)"},
-  {k:"class",w:"78px"},{k:"typo",w:"112px"},{k:"abs",w:"120px"},{k:"type",w:"100px"},
+  {k:"class",w:"78px"},{k:"typo",w:"112px"},{k:"abs",w:"120px"},{k:"pbs",w:"150px"},{k:"type",w:"100px"},
   {k:"tkobs",w:"124px"},{k:"obs",w:"140px"},{k:"mgr",w:"118px"},{k:"status",w:"92px"},{k:"compliance",w:"108px"},
 ];
 const RCOLS_BY_KEY=Object.fromEntries(RCOLS.map(c=>[c.k,c]));
@@ -5958,8 +6127,8 @@ const RCOLS_BY_KEY=Object.fromEntries(RCOLS.map(c=>[c.k,c]));
    view switch — after that the View menu wins, so a deliberate choice is never
    overwritten on the next click. */
 const VIEW_COLUMNS={
-  pm:       {hide:["abs","type","obs","mgr"], show:["typo","tkobs","status","compliance"]},
-  activity: {hide:["tkobs"],                  show:["abs","type","obs","mgr","status","compliance"]},
+  pm:       {hide:["abs","pbs","type","obs","mgr"], show:["typo","tkobs","status","compliance"]},
+  activity: {hide:["tkobs"],                        show:["abs","pbs","type","obs","mgr","status","compliance"]},
 };
 function applyViewColumns(){
   if(!runsPassOne()) return;              // no pass 1, no two views to switch between
@@ -6070,8 +6239,8 @@ function renderColFilterIndicators(){
    three fields the spec promises were unreachable in the UI — fixed. */
 const ADV_FIELD_GROUPS=[
   {g:"Progress",         fields:["status","compliance","doubtfield","passdoubt","changed"]},
-  {g:"Characterisation", fields:["nature","class","typo"]},
-  {g:"Allocation",       fields:["type","abs","obs","mgr","alloclevel","manualalloc"]},
+  {g:"Characterisation", fields:["nature","class","type","typo"]},
+  {g:"Allocation",       fields:["abs","pbs","obs","mgr","alloclevel","manualalloc"]},
   {g:"Content & source", fields:["id","text","section","doc"]},
 ];
 const ADV_FIELD_ORDER=ADV_FIELD_GROUPS.reduce((a,g)=>a.concat(g.fields),[]);
@@ -6406,8 +6575,8 @@ const colsPanelState={open:false};
    grouping that can only ever hold one value would be noise. TK OBS goes with
    it — it belongs to the distribution pass that does not run here. */
 const COLUMN_TOGGLE_DEFS=[
-  {k:"class",label:"Class"},{k:"typo",label:"System"},{k:"abs",label:"ABS"},{k:"type",label:"PBS"},
-  {k:"tkobs",label:"TK OBS (system)"},{k:"obs",label:"OBS (team)"},{k:"mgr",label:"Assigned to"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
+  {k:"class",label:"Class"},{k:"typo",label:"System"},{k:"abs",label:"ABS"},{k:"pbs",label:"PBS"},{k:"type",label:"Nature"},
+  {k:"tkobs",label:"TK OBS (system)"},{k:"obs",label:TENDER_KEYS?"OBS (role)":"OBS (team)"},{k:"mgr",label:"Assigned to"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
 ].filter(c=>!IS_SIG_TENDER || (c.k!=="typo" && c.k!=="tkobs"));
 function renderColumnsPanel(){
   const p=document.getElementById("cols-panel"); if(!p) return;

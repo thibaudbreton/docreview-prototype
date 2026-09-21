@@ -56,6 +56,9 @@ DEC-054. **OBS = Organisation Breakdown Structure.** C'est une **organisation**,
 |---|---|---|
 | **TK OBS** | Un **système ou sous-système** — une très grande équipe | Passe 1, distribution Turnkey |
 | **OBS · team** | Une **équipe** au sein d'un système ou sous-système | Passe 2, modèle du système |
+| **OBS · role** | Un **poste** — intitulé avec ses codes Skills / SoA / Job (DEC-062) | Passe 2, modèle **Mainline** sur les clés PBS/OBS/ABS |
+
+**La maille dépend du modèle.** Le classeur de référence de SIG ([KEYS](KEYS.md)) range les OBS par poste, sous les catégories ABS : pour le modèle Mainline, dériver un OBS, c'est dire « c'est ce poste-là qui s'en occupe ». Un poste n'est pas une personne — DEC-054 tient — mais ce n'est pas non plus « Signalling Design — FR ». Urban n'a pas été tranché et garde la maille équipe.
 
 **La personne vient après, et séparément.** On assigne ensuite, le plus souvent, au responsable de cette équipe **dans la région où se joue le tender**. Au moment de la dérivation, l'organisation n'est pas encore rattachée à une région : la chaîne s'arrête sur une équipe, l'affectation d'une personne est une étape distincte.
 

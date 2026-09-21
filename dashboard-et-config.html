@@ -2574,12 +2574,15 @@ function renderAllocationModelSection(){
   const line=(CURRENT_PROJECT&&CURRENT_PROJECT.line)||"Turnkey";
   const product=(CURRENT_PROJECT&&CURRENT_PROJECT.product)||null;
   sysEl.textContent=line;
-  prodEl.textContent=product?`${line} ${product.charAt(0).toUpperCase()+product.slice(1)}`
+  prodEl.textContent=product?`${line} ${product}`
     : "Not set — a Turnkey tender carries a combination of several systems' products, whose matrix is still owed (DEC-048).";
   const models=IS_SIG_TENDER
-    ? [{v:"sig-urban",l:"SIG Urban"},{v:"sig-mainline",l:"SIG Mainline"}]
+    ? [{v:"sig-urban",l:"SIG Urban"},{v:"sig-mainline-wayside",l:"SIG Mainline Wayside — on the PBS/OBS/ABS keys"},{v:"sig-mainline-onboard",l:"SIG Mainline Onboard — on the PBS/OBS/ABS keys"}]
     : [{v:"__combination",l:"Per-system models — set by the tender's combination"}];
   sel.innerHTML=models.map(m=>`<option value="${m.v}">${m.l}</option>`).join("");
+  // the tender's own product is the model in force — that is what the select shows first
+  const inForce={"Urban":"sig-urban","Mainline Wayside":"sig-mainline-wayside","Mainline Onboard":"sig-mainline-onboard"}[product];
+  if(inForce && models.some(m=>m.v===inForce)) sel.value=inForce;
   sel.disabled=!IS_SIG_TENDER;
   const reqs=REVIEW_REQS.length;
   const answers=FOLLOWUP_REQS.reduce((n,r)=>n+branchesOf(r).filter(st=>st==="answered").length,0);
