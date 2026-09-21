@@ -1075,11 +1075,6 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
    arrows between steps carry the "derived from" relationship that presenting
    these as three sibling fields used to hide. */
 .deriv-pass{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3);background:var(--panel-2)}
-.assign-pass{margin-top:var(--space-3)}
-.assign-hint{font-size:var(--text-xs);color:var(--text-3);line-height:1.45;margin-bottom:var(--space-3)}
-.assign-row{display:grid;grid-template-columns:1fr 168px;align-items:center;gap:var(--space-3);padding:3px 0}
-.assign-org{font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.assign-sel{width:100%}
 .rerun-wrap{position:relative;margin-left:auto}
 .ui-list-row .rerun-wrap{margin-left:auto}
 .ui-list-row .rerun-btn{padding:1px 7px;font-size:var(--text-xs)}
@@ -1145,6 +1140,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .act-line+.act-line{border-top:1px solid var(--line)}
 .act-k{width:110px;flex-shrink:0;font-size:var(--text-xs);color:var(--text-3)}
 .act-v{flex:1;min-width:0;color:var(--text-2)}
+.act-who{color:var(--text-3)}
 .act-open-row{margin-top:var(--space-3);text-align:right}
 .act-detail-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
 .review-why{font-size:var(--text-xs);color:var(--ia);line-height:1.45;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--ia-soft);border-radius:var(--radius-sm)}
@@ -1153,6 +1149,11 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .branch-sections-lbl span{text-transform:none;font-weight:500;letter-spacing:0;color:var(--text-3)}
 .branch-sec{border:1px solid var(--line-2);border-radius:var(--radius-md);margin-bottom:var(--space-2);overflow:hidden}
 .branch-sec-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-2) var(--space-3);background:var(--panel-2)}
+/* The organisation is what an allocation IS now, so it is the head's own text
+   and gets the room; the system code sits beside it as a tag, and only on a
+   tender where the system axis means anything. */
+.branch-sec-org{flex:1;min-width:0;font-size:var(--text-sm);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.branch-sec-head .ptag{flex:none}
 .set-sep{height:1px;background:var(--line);margin:6px 0 18px}
 /* B1 — allocation-change proposal: manager trigger + project-manager review */
 .propose-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:9px}
@@ -3222,6 +3223,28 @@ function ensureTeams(branch){
   }
   return branch.teams;
 }
+/* The one place that writes who is assigned on a leaf. A single-organisation
+   system keeps branch.manager and teams[0].manager in step: plenty of code
+   still reads the branch field, and branchRowHTML's own comment already
+   claimed this write-through happened when in fact nothing did it — the
+   branch select wrote branch.manager and left teams[0] stale. */
+function setAllocManager(b, branch, tidx, id){
+  const teams=ensureTeams(branch);
+  const t=teams[tidx]; if(!t) return null;
+  if(id) registerPerson(id);
+  t.manager=id||null;
+  if(teams.length===1){
+    branch.manager=t.manager;
+    /* And when that system is the requirement's only one, the requirement
+       carries the same person — which is what ensureBranches() already asserts
+       in the other direction ("one system, one assigned person"), and what
+       visibleTo() reading b.manager against myBranchOf() reading
+       branch.manager depends on. Only the degenerate case: with two systems or
+       two organisations there is no single answer to mirror. */
+    if((b.branches||[]).length===1) b.manager=t.manager;
+  }
+  return t;
+}
 /* most restrictive wins, pending until everyone has answered — the ticket's
    one rule, used at both levels (§6). Order is COMPLIANCE_DEFS' own. */
 const CMP_RANK={not_compliant:2, compliant:1};
@@ -4340,8 +4363,8 @@ function bindVRows(win){
     return {b:f.b, branch, team:ensureTeams(branch)[+tidx]};
   };
   win.querySelectorAll("[data-teammgr]").forEach(sel=>sel.addEventListener("change",e=>{
-    e.stopPropagation(); const t=teamAt(sel.dataset.teammgr); if(!t)return;
-    t.team.manager=sel.value||null; refresh();
+    e.stopPropagation(); const key=sel.dataset.teammgr, t=teamAt(key); if(!t)return;
+    setAllocManager(t.b, t.branch, +key.split("::")[2], sel.value); refresh();
   }));
   win.querySelectorAll("[data-gotoimg]").forEach(btn=>btn.addEventListener("click",e=>{
     e.stopPropagation();
@@ -4350,7 +4373,9 @@ function bindVRows(win){
   win.querySelectorAll("[data-branchmgr]").forEach(sel=>sel.addEventListener("change",e=>{
     e.stopPropagation();
     const [id,idx]=sel.dataset.branchmgr.split("::"); const f=findBlock(id); if(!f)return;
-    const branch=f.b.branches[+idx]; branch.manager=sel.value||null;
+    const branch=f.b.branches[+idx];
+    /* Only rendered on a single-organisation system, so leaf 0 is the one. */
+    setAllocManager(f.b, branch, 0, sel.value);
     toast(`${branch.label}: manager ${branch.manager?"— "+MGR(branch.manager).name:"unassigned"}`,"ok");
     refresh();
   }));
@@ -4780,35 +4805,6 @@ function bindRerunControls(root, b){
   }));
   document.addEventListener("click",()=>root.querySelectorAll(".rerun-menu.on").forEach(m=>m.classList.remove("on")),{once:true});
 }
-/* DEC-057 — who verifies for each organisation, in its own block. The OBS list
-   above stays the reading of the derivation; this is the assignment, which is a
-   separate step (DEC-054: the person comes after the organisation). Only drawn
-   when there are several — with one, the panel's own "Assigned to" says it. */
-function assignmentsBlockHTML(b, branchIdx){
-  const branch=(b.branches||[])[branchIdx]; if(!branch) return "";
-  const teams=ensureTeams(branch);
-  if(teams.length<2) return "";
-  const opts=m=>['<option value="">— Not designated —</option>']
-    .concat(MANAGERS.filter(x=>!x.admin).map(x=>`<option value="${x.id}" ${m===x.id?"selected":""}>${escHtml(x.name)}</option>`)).join("");
-  return `<div class="deriv-pass assign-pass">
-    <div class="deriv-pass-h">Who verifies</div>
-    <div class="assign-hint">Each organisation answers for itself, and the verdicts consolidate — most restrictive wins, pending until all have answered.</div>
-    ${teams.map((t,i)=>`<div class="assign-row">
-      <span class="assign-org">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label||"—")}</span>
-      <select class="ui-select assign-sel" data-assignteam="${branchIdx}::${i}">${opts(t.manager)}</select>
-    </div>`).join("")}
-  </div>`;
-}
-function bindAssignments(root, b){
-  root.querySelectorAll("[data-assignteam]").forEach(sel=>sel.addEventListener("change",()=>{
-    const [bi,ti]=sel.dataset.assignteam.split("::").map(Number);
-    const branch=(b.branches||[])[bi]; if(!branch) return;
-    const t=ensureTeams(branch)[ti]; if(!t) return;
-    t.manager=sel.value||null;
-    toast(`${(t.obs&&t.obs.v)||TEAM(t.team).label} — ${t.manager?MGR(t.manager).name+" will verify":"nobody designated"}`,"ok");
-    refresh();
-  }));
-}
 function derivationChainHTML(b,myBranch,derivSrc,rmView){
   const distribHTML = distributionBlockHTML(b);
   /* ---- the system's own model, PBS -> ABS -> OBS ---- */
@@ -4848,8 +4844,7 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
       if(brs.length){
         const br=brs[idx];
         return `<div class="deriv-arrow small">↓</div>`
-          + obsListHTML(br, {reqId:b.id, branchIdx:idx, systemId:br.typology})
-          + assignmentsBlockHTML(b, idx);
+          + obsListHTML(br, {reqId:b.id, branchIdx:idx, systemId:br.typology});
       }
       /* DEC-054 — an OBS is an organisation, never a person. This used to fall
          back to the assignee's name, the conflation inherited from the first
@@ -4964,25 +4959,27 @@ function pmClassificationHTML(b){
       </div>
     </div>`;
 }
-/* Per-system OBS breakdown — one row per organisation on that system,
-   used inside activityBlocksHTML's own card rather than as a separate
-   cross-system recap. Falls back to the plain single-line form when the
-   system only has one team, since there's nothing to break down. */
+/* Per-system OBS breakdown — one row per organisation on that system, and
+   each row carries its own person. It used to list the organisations here and
+   the people on a separate "Assigned to" line joined by " · ", which left the
+   reader to pair two lists by position: the same split the panel had between
+   its OBS list and a "Who verifies" block, and the same fix. */
 function obsBreakdownHTML(teams){
+  const who=t=>t.manager?((MGR(t.manager)||{}).name||"—"):"Unassigned";
   if(teams.length<=1){
     const t=teams[0];
     const val=(t&&t.obs&&t.obs.v)||(t&&TEAM(t.team).label)||"—";
-    return `<div class="act-line"><span class="act-k">OBS · team</span><span class="act-v">${escHtml(val)}</span></div>`;
+    return `<div class="act-line"><span class="act-k">Allocation</span><span class="act-v">${escHtml(val)} <span class="act-who">· ${escHtml(t?who(t):"Unassigned")}</span></span></div>`;
   }
   return `<div class="act-line act-line-obs">
-    <span class="act-k">OBS · team</span>
+    <span class="act-k">Allocations (${teams.length})</span>
     <div class="ui-list is-compact is-flush act-v">
       ${teams.map(t=>{
         const val=(t.obs&&t.obs.v)||TEAM(t.team).label||"—";
         const c=t.obs&&t.obs.c;
         const status=BRANCH_STATUS_LABEL[t.branchStatus]||t.branchStatus;
         return `<div class="ui-list-row" title="${escHtml(status)}">
-          <span class="ui-list-main">${escHtml(val)}</span>
+          <span class="ui-list-main">${escHtml(val)} <span class="act-who">· ${escHtml(who(t))}</span></span>
           ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence">${c}%</span>`:""}
         </div>`;
       }).join("")}
@@ -4998,16 +4995,19 @@ function activityBlocksHTML(b){
     ${acts.map((branch,bidx)=>{
       const st=activityAllocStatus(branch);
       const teams=ensureTeams(branch);
-      const who=teams.map(t=>t.manager?(MGR(t.manager)||{}).name:"Unassigned").join(" · ");
       return `<div class="branch-sec">
         <div class="branch-sec-head">
           <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}">${TY(branch.typology).code}</span>
-          <span class="act-block-name">${escHtml(branch.label||TY(branch.typology).label)}</span>
+          ${(function(){
+            /* Capture rows carry the code itself as the label, which printed
+               "SEN SEN" — the tag beside it already says it. */
+            const lbl=branch.label||TY(branch.typology).label;
+            return lbl===TY(branch.typology).code ? "" : `<span class="act-block-name">${escHtml(lbl)}</span>`;
+          })()}
           <span class="act-alloc-pill s-${st}" title="Derived from this system's ${teams.length} team${teams.length>1?"s":""} — nobody enters it">${ACT_ALLOC_LABEL[st]}</span>
         </div>
         <div class="branch-sec-body">
           ${obsBreakdownHTML(teams)}
-          <div class="act-line"><span class="act-k">Assigned to</span><span class="act-v">${escHtml(who)}</span></div>
           <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this system's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
           <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open system detail →</button></div>
         </div>
@@ -5189,15 +5189,31 @@ function renderSettings(){
 
       ${isReq?`<div class="set-sep"></div>${derivationChainHTML(b,myBranch,derivSrc,rmView)}`:""}
 
-      ${showBranchPanel&&!pmTurnkey?`<div class="set-sep"></div>
+      ${showBranchPanel&&!pmTurnkey?(function(){
+        /* One allocation per ORGANISATION, not per system. "Who verifies" used
+           to be a second block saying the same thing in other words — an
+           organisation, a person — while this one listed systems. They were one
+           list drawn twice, so they are one list now. A system that resolves to
+           three organisations is three allocations to make, which is what the
+           count says and what the table has shown all along ("Multiple (3)" on
+           the system row, one row per organisation underneath).
+           The system tag stays only where the system axis carries meaning: a
+           Turnkey, or a requirement that reaches more than one. On a SIG tender
+           it was the same code on every card. */
+        const units=[]; b.branches.forEach((branch,bidx)=>ensureTeams(branch).forEach((t,tidx)=>units.push({branch,bidx,t,tidx})));
+        const showSystem = runsPassOne() || b.branches.length>1;
+        const mgrOpts=m=>['<option value="">— Unassigned —</option>']
+          .concat(MANAGERS.filter(x=>!x.admin).map(x=>`<option value="${x.id}" ${m===x.id?"selected":""}>${escHtml(x.name)} — ${escHtml(x.role)}</option>`)).join("");
+        return `<div class="set-sep"></div>
       <div class="branch-sections">
-        <label class="branch-sections-lbl">Allocations (${b.branches.length})</label>
-        ${b.branches.map((branch,bidx)=>`<div class="branch-sec">
+        <label class="branch-sections-lbl">Allocations (${units.length})${units.length>1?` <span>· each organisation answers for itself, and the verdicts consolidate — most restrictive wins, pending until all have answered</span>`:""}</label>
+        ${units.map(({branch,bidx,t,tidx})=>`<div class="branch-sec">
             <div class="branch-sec-head">
-              <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}" title="${branch.proposal||branch.reassignRequest?"Proposed change — pending your review":""}">${TY(branch.typology).code}</span>
-              <span class="status-pill branch-status-${branch.branchStatus}">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>
+              ${showSystem?`<span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}" title="${branch.proposal||branch.reassignRequest?"Proposed change — pending your review":""}">${TY(branch.typology).code}</span>`:""}
+              <span class="branch-sec-org">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label||"— No organisation derived yet —")}</span>
+              <span class="status-pill branch-status-${t.branchStatus||branch.branchStatus}">${BRANCH_STATUS_LABEL[t.branchStatus||branch.branchStatus]||t.branchStatus||branch.branchStatus}</span>
             </div>
-            ${branch.proposal?`<div class="branch-proposal">
+            ${tidx===0&&branch.proposal?`<div class="branch-proposal">
               <div class="branch-proposal-h">✦ Proposed — new system by <b>${MGR(branch.proposal.by).name}</b></div>
               <div class="branch-proposal-note">"${escHtml(branch.proposal.note)}"</div>
               <div class="branch-proposal-actions">
@@ -5205,7 +5221,7 @@ function renderSettings(){
                 <button class="reject" data-reject-proposal="${bidx}">✕ Reject</button>
               </div>
             </div>`:""}
-            ${branch.reassignRequest?`<div class="branch-proposal">
+            ${tidx===0&&branch.reassignRequest?`<div class="branch-proposal">
               <div class="branch-proposal-h">↩ Reassignment requested by <b>${branch.reassignRequest.byName}</b>${branch.reassignRequest.byRole==="expert"?' <span style="font-weight:400;color:var(--text-3)">(contributor)</span>':""}</div>
               <div class="branch-proposal-note">${REASON_LABEL[branch.reassignRequest.reason]} — "${escHtml(branch.reassignRequest.note)}"</div>
               <div class="branch-proposal-note" style="font-style:normal">${branch.reassignRequest.reason==="wrong_person"
@@ -5219,11 +5235,12 @@ function renderSettings(){
             <div class="branch-sec-body">
               <div class="branch-sec-field">
                 <label>Assigned to</label>
-                <select class="branch-sec-select${branch.manager?"":" empty"}" data-panelbranchmgr="${bidx}">${['<option value="">— Unassigned —</option>'].concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${branch.manager===m.id?"selected":""}>${m.name} — ${m.role}</option>`)).join("")}</select>
+                <select class="branch-sec-select${t.manager?"":" empty"}" data-panelallocmgr="${bidx}::${tidx}">${mgrOpts(t.manager)}</select>
               </div>
             </div>
           </div>`).join("")}
-      </div>`:""}
+      </div>`;
+      })():""}
 
       <div class="set-sep"></div>
 
@@ -5289,16 +5306,17 @@ function renderSettings(){
     body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });
     bindRerunControls(body, b);
-    bindAssignments(body, b);
     body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
     body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
     body.querySelectorAll("[data-approve-reassign]").forEach(btn=>btn.addEventListener("click",()=>approveReassign(b,+btn.dataset.approveReassign)));
     body.querySelectorAll("[data-reject-reassign]").forEach(btn=>btn.addEventListener("click",()=>rejectReassign(b,+btn.dataset.rejectReassign)));
-    body.querySelectorAll("[data-panelbranchmgr]").forEach(sel=>sel.addEventListener("change",e=>{
-      const branch=b.branches[+sel.dataset.panelbranchmgr];
-      branch.manager=e.target.value||null;
-      toast(branch.manager?`${branch.label}: assigned to ${MGR(branch.manager).name}`:`${branch.label}: unassigned`,"ok");
+    body.querySelectorAll("[data-panelallocmgr]").forEach(sel=>sel.addEventListener("change",e=>{
+      const [bi,ti]=sel.dataset.panelallocmgr.split("::").map(Number);
+      const branch=(b.branches||[])[bi]; if(!branch) return;
+      const t=setAllocManager(b, branch, ti, e.target.value); if(!t) return;
+      const who=(t.obs&&t.obs.v)||TEAM(t.team).label||branch.label;
+      toast(t.manager?`${who}: assigned to ${MGR(t.manager).name}`:`${who}: unassigned`,"ok");
       refresh();
     }));
     body.querySelector("#validate-btn")?.addEventListener("click",()=>validateBlock(b.id));

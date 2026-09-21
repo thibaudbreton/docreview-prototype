@@ -57,9 +57,9 @@ ALLOC-014 — DEC-040 à DEC-043 : rejouer un modèle d'allocation sur une exige
 
 Choisir l'autre produit à la relance **ne change pas le produit du tender**, qui est figé à la création (DEC-049). La relance reste ponctuelle.
 
-**Effet.** La relance **applique directement** son résultat : ni aperçu, ni validation intermédiaire, ni proposition soumise. Elle écrase **ABS, PBS et OBS de cette feuille, et rien d'autre**. L'équipe et la personne affectées ne sont pas touchées : re-dériver n'est pas réaffecter — pour cela il y a la réallocation. L'ordre produit est celui d'ALLOC-003, ABS → PBS → OBS.
+**Effet.** La relance **applique directement** son résultat : ni aperçu, ni validation intermédiaire, ni proposition soumise. Elle écrase **l'ABS, le PBS et l'ensemble des OBS de l'exigence, et rien d'autre**. L'équipe et la personne affectées ne sont pas touchées : re-dériver n'est pas réaffecter — pour cela il y a la réallocation. L'ordre produit est celui d'ALLOC-003, ABS → PBS → OBS.
 
-**Condition.** La relance est **interdite dès qu'une réponse est enregistrée** sur cette feuille. Le contrôle est alors visible mais inactif, avec le motif affiché — pas masqué, sinon l'absence s'interprète comme un défaut. Cette règle est ce qui rend l'application directe sans risque : rien en aval ne peut être détruit, puisque rien en aval n'existe encore.
+**Condition.** La relance est **interdite dès qu'une réponse est enregistrée** sur l'une quelconque de ses organisations. Le contrôle est alors visible mais inactif, avec le motif affiché — pas masqué, sinon l'absence s'interprète comme un défaut. Cette règle est ce qui rend l'application directe sans risque : rien en aval ne peut être détruit, puisque rien en aval n'existe encore.
 
 **Emprunt ponctuel.** Le modèle emprunté au cas B ne laisse **aucun marqueur persistant** : ni sur l'exigence, ni dans les filtres, ni à l'export. L'emprunt vaut pour cette relance seulement et ne devient pas la configuration du système.
 
@@ -68,6 +68,19 @@ Choisir l'autre produit à la relance **ne change pas le produit du tender**, qu
 **Droits.** L'équipe de gestion du projet et les contributeurs du système concerné (DEC-003, DEC-012). La relance n'ouvre aucun droit nouveau et n'en retire aucun.
 
 **Confiance.** Les scores issus d'une relance suivent ALLOC-006 et ALLOC-007 : affichés par champ, et sans jamais dispenser de la validation humaine. Une relance ne vaut pas validation.
+
+## Une allocation par organisation
+
+ALLOC-016 — DEC-060 : **une allocation est une organisation et la personne qui y répond.** Une exigence qui atteint trois organisations est **trois allocations à faire**, et le compte affiché est celui des organisations, pas celui des systèmes.
+
+Il y avait auparavant deux blocs disant la même chose : la liste des organisations d'un côté, un bloc « qui vérifie » de l'autre, qui reprenait la même liste pour y accrocher une personne. **DEC-060 remplace DEC-057** : il n'y a pas de bloc d'affectations séparé, c'est l'allocation elle-même qui porte sa personne.
+
+Ce que cela implique :
+
+- Le libellé de chaque allocation est **l'organisation**, pas le système. Le système reste affiché en étiquette là où il distingue quelque chose — un Turnkey, ou une exigence qui atteint plusieurs systèmes — et disparaît là où il serait le même code sur toutes les cartes.
+- Le statut et le verdict se lisent **par organisation**, puisque chacune répond pour elle-même et que les verdicts se consolident ensuite (DEC-055, DEC-037).
+- L'étape OBS de la chaîne de dérivation **reste** : elle est la lecture de ce que le modèle a dérivé, avec ses scores de confiance et ses ajouts/retraits. L'allocation, elle, est le travail qui en découle. Les deux se ressemblent parce que l'une décrit ce que l'autre traite ; elles ne se dupliquent pas.
+- Sur une exigence à **une seule** organisation dans **un seul** système, la personne affectée à l'allocation est aussi la personne de l'exigence : les deux champs ne peuvent pas diverger sans que l'un des deux mente.
 
 ## Relance globale au changement de modèle
 
@@ -97,14 +110,17 @@ Conserver la distinction Incomplete / To review / To validate / Allocated ; ne p
 - ALLOC-T06 : validation sans responsable autorisée, absence affichée ; aucun blocage de validation lié au seul responsable manquant.
 - ALLOC-T07 : demande sans motif explicatif refusée ; refus d'une demande restaure l'état précédent.
 - ALLOC-T08 : aucune colonne/section de passe 1 dans le parcours SIG ; détail SIG direct.
-- ALLOC-T09 : relancer une feuille recalcule ses seuls ABS/PBS/OBS ; l'équipe et la personne affectées sont inchangées après la relance.
-- ALLOC-T10 : une feuille dont la réponse est enregistrée n'est pas relançable ; le contrôle reste visible et inactif, avec son motif.
-- ALLOC-T11 : relancer une feuille ne modifie aucune feuille voisine de la même exigence.
+- ALLOC-T09 : relancer une exigence recalcule ses seuls ABS/PBS/OBS ; les personnes affectées à chacune de ses organisations sont inchangées après la relance.
+- ALLOC-T10 : une exigence dont une organisation a enregistré sa réponse n'est pas relançable ; le contrôle reste visible et inactif, avec son motif.
+- ALLOC-T11 : relancer une exigence ne modifie aucune autre exigence ; à l'intérieur, elle re-dérive bien toutes ses organisations, jamais une seule.
 - ALLOC-T12 : un système sans modèle peut être relancé avec le modèle d'un autre, choisi explicitement ; le système reste sans modèle après coup et les exigences suivantes restent en allocation manuelle.
 - ALLOC-T13 : après un emprunt, aucune trace du modèle emprunté n'apparaît sur l'exigence ni à l'export ; l'historique de branche, lui, la porte.
 - ALLOC-T14 : le sélecteur de relance distingue les produits du système concerné de l'emprunt à un autre système ; le produit du tender y est présélectionné.
 - ALLOC-T15 : relancer avec l'autre produit laisse le produit du tender inchangé ; rien dans le projet n'indique ensuite qu'il aurait changé.
 - ALLOC-T16 : changer le modèle dans les paramètres annonce, avant confirmation, le nombre d'exigences touchées et le nombre de réponses détruites.
 - ALLOC-T17 : après une relance globale, aucune exigence ne conserve de dérivation issue du modèle précédent.
+- ALLOC-T18 : le nombre d'allocations affiché égale le nombre d'organisations de l'exigence, et non celui de ses systèmes.
+- ALLOC-T19 : aucun écran ne propose deux endroits pour désigner la personne d'une même organisation.
+- ALLOC-T20 : affecter une personne sur une exigence à organisation unique donne la même personne partout où l'exigence l'affiche — table comprise.
 
 Une correction des métadonnées n’est pas assimilée par défaut à une modification du texte source/de travail. Toute modification du texte/traduction entraîne une revue selon LIFE-008 ; les modifications structurelles d'allocation suivent la réallocation.
