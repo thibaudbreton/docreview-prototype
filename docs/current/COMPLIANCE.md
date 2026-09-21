@@ -43,6 +43,21 @@ Le ticket de fusion demande explicitement deux verdicts ; le ticket d'allocation
 
 OBS : REX est alimenté par exemples, Chat est un stub, les rappels et exports ne prouvent pas une intégration réelle. Le formulaire actuel est conditionné par les branches de rendu ; cela ne limite pas le droit de modification PM confirmé par DEC-013.
 
+## Lisibilité du panneau de détail
+
+Revue UX du 21 septembre 2026, sur le cas le plus chargé : une exigence dont le verdict externe dévie de l'interne avec un risque accepté. Le panneau ouvrait sur **trois pastilles de verdict** — l'interne consolidée à côté de l'identifiant, l'externe, puis celle de l'affectation plus bas — sans qu'aucune ne dise laquelle fait foi. Sur une exigence à une seule affectation, la première et la troisième portaient **la même valeur**, à trois cents pixels d'écart et sous deux libellés différents. S'y ajoutaient une étiquette rouge « ≠ internal », un encadré ambre à triangle d'alerte autour d'une décision délibérée, et un gros bouton bleu « Escalate to client Q&A » — l'action la plus visible de l'écran, au moment précis où c'est la mauvaise.
+
+Les règles qui en sortent :
+
+| ID | Règle |
+|---|---|
+| CONF-016 | **Une seule pastille en tête : celle que le client reçoit.** C'est la question à laquelle le panneau existe pour répondre. Le verdict interne est énoncé **en toutes lettres** dessous, comme contexte, pas comme titre concurrent. |
+| CONF-017 | **La déviation est une décision, pas une alerte.** Un liseré ambre et une phrase qui la nomme ; ni triangle d'avertissement, ni fond d'alerte. Le risque accepté se lit comme la justification enregistrée qu'il est. |
+| CONF-018 | **Un verdict n'est affiché qu'une fois par portée.** Le verdict propre à une affectation n'apparaît que lorsqu'il y en a **plusieurs** — avec une seule, il répète celui de l'exigence. |
+| CONF-019 | **Le panneau dit en une phrase ce qui est attendu**, dans tous ses états, y compris « rien ». Sans quoi l'absence d'action se déduit de l'absence de bouton, ce qui ne se distingue pas d'un écran incomplet. |
+| CONF-020 | **La hiérarchie des actions suit cette phrase.** L'action nommée est primaire, les autres restent disponibles en secondaire. Une position déjà arbitrée avec son risque n'a **pas** d'action primaire : escalader n'y est plus la suite logique. |
+| CONF-021 | Aucun écran ne propose à quelqu'un une action **adressée à lui-même** — pas de bouton de relance chez la personne dont on attend précisément la réponse. |
+
 ## Transitions
 
 | État avant | Action | État/effet attendu | Base |
@@ -83,6 +98,8 @@ Distinguer le verrou métier d'une protection contre deux éditions simultanées
 `compliance.html:CMP/CMP_ORDER/consolidate/canAnswer/renderPanel2`, `revue-documentaire.html:consolidateCompliance/deriveRequirementCompliance`, tickets fusion Compliance et allocation à deux passes.
 
 ## Cas complémentaires approuvés
+
+CONF-T15 : le panneau n'affiche jamais deux pastilles de verdict portant la même valeur pour la même portée. CONF-T16 : dans chacun de ses états — en attente, sans réponse, bloqué sur le client, retourné, répondu, arbitré — le panneau porte exactement une phrase disant ce qui est attendu. CONF-T17 : sur une exigence dont la déclaration externe est arbitrée et justifiée, aucun bouton primaire n'est proposé. CONF-T18 : la vue du contributeur qui doit répondre ne lui propose pas de se relancer lui-même.
 
 CONF-T11 : nouvelle version modifiant une exigence verrouillée → déverrouillage automatique et verdict pending. CONF-T12 : toutes réponses présentes → dossier complet, modification PM encore possible. CONF-T13 : export d’un R&D → conversion automatique en Compliant, warning interne absent du fichier client. CONF-T14 : contributeur d’un autre système consulte mais ne modifie pas ; le PM peut modifier.
 
