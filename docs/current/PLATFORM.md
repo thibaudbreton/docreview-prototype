@@ -24,6 +24,8 @@ La stack communiquée par l'utilisateur est React côté front et Azure côté b
 | Trajectoire | Historique du travail restant et échéance ; nécessite snapshots ou historique exploitable |
 | Corrections IA | Propositions modifiées par champ ; définir dénominateur, revue effective et corrections répétées |
 
+**Une cloche de notification qui ne fait rien est un mensonge d'interface.** Un contrôle inerte sur quatre écrans sur cinq apprend au lecteur qu'il est inerte partout. Ce qu'une notification affiche se calcule depuis l'état réel de l'écran, résume **par nature avec son compte** plutôt que d'énumérer (une ligne par affectation donne cinquante lignes sur un vrai jeu de données — un tableau, pas une notification), et dit explicitement quand rien n'attend le lecteur. Un élément unique nomme son exigence : un compte de un qui cache laquelle ne sert à rien.
+
 Une métrique doit annoncer son unité : exigences, systèmes, équipes, réponses et personnes ne sont pas interchangeables. Aucun indicateur composite santé ni pourcentage global unique n'est adopté sans définition métier. Les valeurs de démo ne constituent pas une mesure réelle.
 
 ## Correspondance avec les 29 FR historiques

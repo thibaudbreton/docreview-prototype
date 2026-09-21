@@ -217,6 +217,11 @@ window.addProject = function(meta){
     // exempt from TA1's demo-only block.
     experts: [],
     language: meta.language||"en",  // SPEC-translation.md §2 — captured at creation, one per tender
+    // DEC-049 — the product is fixed at creation and is what selects the
+    // allocation model downstream (revue-documentaire.html reads it to decide
+    // whether the PBS/OBS/ABS keys apply). It was collected by the wizard and
+    // then dropped here, so a tender created in the app could never have one.
+    product: meta.product||null,
     pmTeam: Array.isArray(meta.pmTeam) ? meta.pmTeam : [] };  // whoever creates the tender owns it
   if(manual){ p.status="requirement_review"; p.done=0; p.total=0; p.allocated=0; p.complianceFilled=0; }
   else { p.status="processing"; p.progress=3; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); p.allocated=0; p.complianceFilled=0; }

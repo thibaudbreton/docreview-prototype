@@ -107,7 +107,14 @@ DEC-028 à DEC-039 viennent d'une relecture indépendante du prototype (14 septe
 
 **Points laissés ouverts par DEC-040 à DEC-043**, à trancher avant construction de la relance : quels états bloquent exactement la relance au-delà d'une réponse enregistrée (`awaiting_qa` bloque-t-il ? proposition : non) ; relance en masse sur une sélection (proposition : hors périmètre, une feuille à la fois) ; quoi afficher quand la relance produit un résultat identique au précédent (proposition : le dire).
 
-**À corriger sans arbitrage** — relevés par la relecture, ce sont des défauts, pas des décisions : le drapeau de la version v2.2 que plus aucun écran ne déclenche (la narration correspondante du dashboard ne peut jamais s'afficher) ; le dashboard qui affiche la ligne produit SIG sur un tender traité partout ailleurs comme Turnkey ; les cloches de notification inertes sur quatre écrans sur cinq ; le registre Q&A resté dans Compliance alors que `qa.html` en est le seul propriétaire.
+**À corriger sans arbitrage** — relevés par la relecture, ce sont des défauts, pas des décisions. **Les quatre sont corrigés au 21 septembre 2026 :**
+
+- *Le drapeau v2.2 sans déclencheur.* `window.setV22Uploaded()` existait dans la coquille mais plus rien ne l'appelait depuis la disparition du bouton « Simulate upload — v2.2 » de Compliance, donc la narration correspondante du dashboard ne pouvait jamais s'afficher. C'est l'écran Documents & versions qui possède les versions : téléverser une nouvelle version du document principal y lève désormais le drapeau.
+- *La ligne produit SIG sur un tender Turnkey.* Refermé avec DEC-044 et l'affichage du produit réel dans les paramètres.
+- *Les cloches inertes sur quatre écrans sur cinq.* Chacune ouvre maintenant une liste **calculée depuis l'état propre de son écran** — jamais un fil figé — et dit « rien ne vous attend ici » quand c'est le cas plutôt que d'inventer une ligne. Une notification **résume par nature avec son compte** ; la première version listait une ligne par affectation, ce qui donnait cinquante-et-une lignes sur le jeu de capture : un tableau, pas une notification.
+- *Le registre Q&A résiduel dans Compliance.* Le regroupement, les deux compteurs et la bannière de section qui en restaient sont supprimés. Ce qui demeure est le journal dont l'écran a réellement besoin : de quoi attribuer un identifiant lors d'une escalade, et les questions que ses propres branches citent par `qaRef`.
+
+**Nouveau, non corrigé — l'escalade de Compliance n'atteint pas le registre.** Escalader depuis Compliance attribue un identifiant `QA-0N` et bloque la branche, mais la question ne parvient jamais à `qa.html` : il n'existe pas de canal partagé pour les questions, là où `pushReassignRequest()` en est un pour les réaffectations. C'est une fonctionnalité à spécifier (qui possède la question créée ? arrive-t-elle en brouillon ?), pas une correction à faire au passage.
 
 ## Ne pas redemander
 

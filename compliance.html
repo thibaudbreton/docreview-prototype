@@ -84,6 +84,23 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .icon-btn:hover{background:var(--panel-3);color:var(--text)}
 /* Casting/Q&A glued to the bell — zero gap between them, a hairline divider
    so hovering one doesn't visually fuse it into its neighbour. */
+
+/* Notification bell. It was inert here — a control that does nothing on four
+   screens out of five teaches the reader that it does nothing anywhere. The
+   list below is computed from THIS screen's own state, never a fixed script:
+   if nothing is waiting, it says so rather than inventing an item. */
+.notif-wrap{position:relative;display:inline-flex}
+.notif-drop{position:absolute;top:calc(100% + 8px);right:0;width:330px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 48px rgba(0,0,0,.28);z-index:60;display:none;overflow:hidden;text-align:left}
+.notif-drop.open{display:block}
+.notif-drop .nd-head{padding:var(--space-3) var(--space-4);font-size:var(--text-base);font-weight:600;border-bottom:1px solid var(--line)}
+.nd-item{display:flex;gap:var(--space-3);width:100%;padding:var(--space-3) var(--space-4);cursor:pointer;transition:background .12s;border-bottom:1px solid var(--line);text-align:left}
+.nd-item:last-child{border-bottom:none}
+.nd-item:hover{background:var(--panel-3)}
+.nd-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.nd-text{font-size:var(--text-sm);color:var(--text-2);line-height:1.45}
+.nd-text b{color:var(--text)}
+.nd-time{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
+.nd-empty{padding:var(--space-4);font-size:var(--text-sm);color:var(--text-3);line-height:1.5}
 .icon-cluster{display:flex;align-items:center}
 .icon-cluster .icon-btn+.icon-btn{position:relative}
 .icon-cluster .icon-btn+.icon-btn::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:1px;background:var(--line)}
@@ -751,7 +768,7 @@ textarea.resp-in:focus{border-color:var(--accent)}
       <div class="icon-cluster">
         <a class="icon-btn" href="javascript:parent.route('team')" title="Team casting"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></a>
         <a class="icon-btn" href="javascript:parent.route('qa')" title="Q&amp;A — questions to the client"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
-        <button class="icon-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span></button>
+        <span class="notif-wrap"><button class="icon-btn" id="notif-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span><span class="badge-dot"></span></button><div class="notif-drop" id="notif-drop"></div></span>
       </div>
       <button class="btn-primary" id="export2-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Export</button>
       <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
@@ -1238,6 +1255,14 @@ const REQS = IS_SIG_TENDER ? SIG_REQS : REQS_HAND.concat(genFollowupReqs(90));
 const OVERDUE_DAYS=5;
 /* T7 — a question is a first-class object: raised by one expert, bound to exactly one
    branch (reqId + typology), and that branch sits in `awaiting_qa` until an answer lands. */
+/* Not a register — qa.html is the only owner of that (TH6), and the grouping,
+   the two count helpers and the section banner that used to render one here are
+   gone with this. What stays is the question ledger this screen genuinely needs:
+   somewhere to mint the next id when a manager escalates, and the seeded
+   questions its own branches point at through br.qaRef.
+   Known gap, not fixed here: an escalation raised on this screen mints an id and
+   blocks the branch, but never reaches qa.html — there is no shared Q&A channel
+   the way pushReassignRequest() is one for reassignments. See OPEN-QUESTIONS. */
 let QA = IS_SIG_TENDER ? SIG_QA : [
   {id:"QA-01",st:"sent",q:"For history queries, is the one-year depth measured over a rolling year or a calendar year (P95 commitment)?",
    reqs:["SRM-00010"],branch:{req:"SRM-00010",typology:"trk"},expert:"infra",from:"Karim Benali",date:"Jul 14"},
@@ -1261,8 +1286,6 @@ function branchesOfQ(q){
   }).filter(Boolean);
 }
 function branchOfQ(q){ return branchesOfQ(q)[0]||null; } // single-activity convenience (display only)
-const questionsToSend=()=>QA.filter(q=>q.st==="draft"||q.st==="internal");
-const questionsSent=()=>QA.filter(q=>q.st==="sent");
 const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:null,tab:"response",selQ:null,uploaded:false,
   /* TICKET-merge-expert-space-into-compliance.md — role default scope: the project
      manager lands on everything, a contributor lands on their own system only.
@@ -1464,6 +1487,69 @@ function nextStepFor(r, br){
 /* =====================================================
    TOASTS
 ===================================================== */
+/* What Compliance knows is waiting: returned assignments to reallocate, answers
+   the client is blocking, and assignments past the overdue threshold. */
+function notifItems(){
+  /* One line per kind, with its count — not one per assignment. On the capture
+     dataset the per-assignment version produced fifty-one rows, which is a
+     table, not a notification: nothing in it reads at a glance, and this screen
+     already has a table that does it better. Clicking filters to that kind; a
+     lone item still names its requirement, since a count of one that hides
+     which one is worse than no notification at all. */
+  const brs=allBranches();
+  const mk=(list,c,one,many,time,filter)=>{
+    if(!list.length) return null;
+    return {c, time, t:list.length===1?one(list[0]):many(list.length),
+      go:()=>{ if(list.length===1){ state.sel=list[0].req.id; renderPanel2(); }
+               else { state.filter=filter; state.sel=null; refreshAll(); } }};
+  };
+  return [
+    mk(brs.filter(needsReassign), "var(--ia)",
+       b=>`<b>${b.req.id}</b> returned by the contributor — reallocate it`,
+       n=>`<b>${n} assignments</b> returned by contributors — reallocate them`,
+       "waiting on you", "reassign"),
+    mk(brs.filter(isOverB), "var(--warn)",
+       b=>`<b>${b.req.id}</b> has had no answer for ${b.age} days`,
+       n=>`<b>${n} assignments</b> past the ${OVERDUE_DAYS}-day threshold with no answer`,
+       "chase the contributors", "over"),
+    mk(brs.filter(isAwaitingQA), "var(--accent)",
+       b=>`<b>${b.req.id}</b> blocked on the client${b.qaRef?` — question ${b.qaRef}`:""}`,
+       n=>`<b>${n} assignments</b> blocked on the client`,
+       "nothing due from you", "qa"),
+  ].filter(Boolean);
+}
+
+/* ---- notification bell ------------------------------------------------------
+   Shared shape across screens, screen-specific content: notifItems() returns
+   what THIS screen knows is waiting, read off its own data. */
+function renderNotifDrop(){
+  const drop=document.getElementById("notif-drop"); if(!drop) return;
+  /* notifItems() reads this screen's live state, so a bad read must not take
+     the screen down with it — the bell is the least important thing here. */
+  let items=[]; try{ items=notifItems()||[]; }catch(e){ items=[]; }
+  const btn=document.getElementById("notif-btn");
+  const dot=btn&&btn.querySelector(".badge-dot");
+  if(dot) dot.style.display=items.length?"":"none";
+  drop.innerHTML=`<div class="nd-head">Notifications${items.length?` · ${items.length}`:""}</div>`
+    + (items.length
+      ? items.map((it,i)=>`<button class="nd-item" data-nd="${i}"><span class="nd-dot" style="background:${it.c||"var(--accent)"}"></span><span><span class="nd-text">${it.t}</span><div class="nd-time">${it.time||""}</div></span></button>`).join("")
+      : `<div class="nd-empty">Nothing waiting on you here.</div>`);
+  drop.querySelectorAll("[data-nd]").forEach(el=>el.addEventListener("click",()=>{
+    drop.classList.remove("open");
+    const it=items[+el.dataset.nd]; if(it&&it.go) it.go();
+  }));
+}
+(function wireBell(){
+  const btn=document.getElementById("notif-btn"), drop=document.getElementById("notif-drop");
+  if(!btn||!drop) return;
+  /* Rendered on open, never at wire time: this block runs wherever it sits in
+     the file, and the state notifItems() reads is declared with const further
+     down — calling it here threw on the temporal dead zone and took the rest
+     of the script with it. Lazy also means the list is never stale. */
+  btn.addEventListener("click",e=>{ e.stopPropagation(); renderNotifDrop(); drop.classList.toggle("open"); });
+  document.addEventListener("click",e=>{ if(!drop.contains(e.target)&&!btn.contains(e.target)) drop.classList.remove("open"); });
+})();
+
 function toast(msg,kind="ok"){
   const z=document.getElementById("toast-zone"),t=document.createElement("div");
   t.className="toast";
@@ -2240,11 +2326,6 @@ function renderDoc2(){
   v.innerHTML=legend+paper;
   v.querySelectorAll(".dblk").forEach(b=>b.addEventListener("click",()=>select(b.dataset.id)));
 }
-
-/* =====================================================
-   Q&A REGISTER (screen 2)
-===================================================== */
-function qaGroups(){ return [["draft","Draft"],["internal","Internal review"],["sent","Exported for issuer"],["answered","Answered by issuer"]]; }
 
 /* =====================================================
    RIGHT PANEL (screen 2)

@@ -49,7 +49,9 @@ Ce double statut explique aussi pourquoi ces deux codes-là sont les seuls à po
 
 **Un modèle, concrètement, c'est un sous-ensemble de clés.** Pour SIG, le classeur PBS / OBS / ABS ([KEYS](KEYS.md)) porte les trois axes avec une croix par produit ; le modèle Mainline Wayside est ce qui est coché Mainline Wayside. Le prototype le charge tel quel pour les deux produits Mainline.
 
-**Produit figé, modèle réglable.** Le produit décrit ce que le tender *est* : il se choisit à la création et ne se corrige pas ensuite (une erreur se règle en recréant le tender, cohérent avec OPEN-05). Le modèle qu'il applique, lui, se change dans les paramètres du projet — et ce changement déclenche la relance globale décrite en ALLOC-015. Le champ « System » du wizard de création est renommé et devient ce niveau : une combinaison pour un Turnkey, un produit pour un tender spécialisé.
+**Produit figé, modèle réglable.** Le produit décrit ce que le tender *est* : il se choisit à la création et ne se corrige pas ensuite (une erreur se règle en recréant le tender, cohérent avec OPEN-05). Le modèle qu'il applique, lui, se change dans les paramètres du projet — et ce changement déclenche la relance globale décrite en ALLOC-015.
+
+**Fait au 21 septembre 2026.** Le champ « System » du wizard de création portait une seconde liste de systèmes (Mainline, Urban / Metro, Tramway…) sous la ligne produit — le même niveau dit deux fois. Il est devenu ce niveau-ci : **Produit** pour un tender spécialisé, **Combinaison** pour un Turnkey. Seuls les produits de SIG sont connus (Urban, Mainline Wayside, Mainline Onboard, depuis les clés) ; pour tout le reste le champ affiche un placeholder explicite au lieu d'une liste plausible — combinaison Turnkey comprise, dont la matrice reste due (DEC-048). Le produit choisi est désormais **transporté jusqu'au projet créé**, ce qui n'était pas le cas : le wizard le collectait et `addProject` le jetait, si bien qu'un tender créé dans l'application ne pouvait jamais avoir de produit ni, donc, de clés.
 
 ## Tender SIG de démonstration — RFP-2026-114
 
