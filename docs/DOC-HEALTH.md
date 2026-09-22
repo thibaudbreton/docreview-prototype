@@ -9,53 +9,76 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-08T00:00Z (covered commits from `31eb00a` through
-  `6221a15`, i.e. one substantive commit: `7f50eda`). This entry was
-  drafted the same day in PR #16, which sat unmerged for six days; landed
-  directly on 2026-09-14 after re-confirming nothing below had moved in
-  the meantime (see the 2026-09-14 note at the end of this entry).
+- Last run: 2026-09-21T07:41Z (covered commits from `6221a15` through
+  `314d2a5`, 55 commits total — the full `fix-multi-activity-manager` and
+  `obs-allocations-merge` window). Two prior runs over parts of this same
+  window had already landed as unmerged PRs and were closed as superseded
+  — #21 (2026-09-15, `6221a15..31a4b58`) and #23 (2026-09-16,
+  `6221a15..dc3577e`) — and a third, PR #24 (2026-09-17,
+  `6221a15..d21eb23`), sat open and unmerged for four days. PR #24's
+  findings were re-checked against the current tree, nothing in them had
+  moved, so they're folded in below rather than re-derived, and PR #24 is
+  closed by this entry rather than landed separately — the same call the
+  2026-09-08 run made after PR #16 sat six days, now sharper: the nightly
+  ticket routine (`docs/archive/TICKETS-continuity-fixes.md`, run
+  independently of this one) hit the identical problem from its own side
+  this week and named the root cause directly — nothing merges either
+  routine's branches into `main`, so one more PR here just repeats PR
+  #16/#21/#23/#24's fate. Landing this run's update directly, as the last
+  three landed updates have.
 - Findings this run:
-  - `7f50eda` ("docs: consolidate specs into docs/current, archive
-    originals") is a manual documentation review, not a ticket/issue/PR
-    describing a product decision, and not this routine's own commit —
-    its message says so directly, and its own two-paragraph preamble at
-    the top of this file states the edition is "not fully approved for
-    implementation." Treated it as in scope anyway because it rewrote the
-    entire spec corpus this routine checks against, and it bears directly
-    on two open issues from the previous run.
-  - **Closed #10 and #11.** Both were about live specs describing things
-    that no longer match the shipped app (stale Expert Space references;
-    no spec for `documents.html`). `docs/specs/*.md` is now pointer stubs
-    into `docs/current/`, so the specific stale text both issues quoted
-    no longer exists as current truth — `docs/current/README.md` states
-    directly that Expert Space isn't in the active-screens list, and
-    `docs/current/LIFECYCLE.md` (LIFE-004, LIFE-006/007) covers
-    `documents.html`'s functional rules, just in a rule-based shape
-    rather than the old screen-walkthrough format. Commented on each with
-    the specific citations before closing — this was a factual check
-    (does the coverage gap still exist), not a judgment call.
-  - **Did not close #15.** `docs/current/AI.md` (AI-003) and
-    `docs/current/LIFECYCLE.md` (LANG-001/002) now give one consistent
-    answer to the pipeline-timing question — matching what the lot-1/3/4
-    commits actually shipped, and the three-way contradiction in the old
-    `SPEC-translation.md` is gone along with the file itself. But the
-    consolidation's own "not fully approved for implementation" line
-    means the human sign-off the batch-6 ticket required still isn't on
-    record anywhere (no `docs/decisions/` entry). Commented on #15 with
-    both facts and left it open for a human to confirm the sign-off
-    before closing. Also flagged PR #14 in the same comment: it edits the
-    now-archived `SPEC-translation.md` directly and has real merge
-    conflicts against `main` as of this run — superseded either way.
+  - `6221a15..d21eb23` (50 commits, carried over from PR #24): the
+    `fix-multi-activity-manager` batch — DEC-028–039 vocabulary, the
+    dashboard Statistics rework, DEC-040–057 allocation re-run and
+    OBS/ABS/PBS work, the DEC-044 standalone SIG tender, the DEC-045
+    "activity"→"system" rename — is doc-synced in the same commits that
+    shipped it (`a6aeb84`, `7e9b462`, `b851a7a`, `d72a2a9` all touch
+    `docs/current/` alongside the code they document). Spot-checked
+    `DOMAIN.md`, `ALLOCATION.md`, `OPEN-QUESTIONS.md` against shipped
+    behavior — consistent, no action needed.
+  - `d21eb23..314d2a5` (5 commits, 2026-09-21, this run's own window):
+    same pattern holds — `1982965` (DEC-060, the allocation panel) and
+    `132eef3` (DEC-061/062, the real PBS/OBS/ABS keys) each update
+    `docs/current/ALLOCATION.md`/`DOMAIN.md`/`OPEN-QUESTIONS.md`/`KEYS.md`
+    in the same commit as the code; `b3a195d` (DEC-049, the four standing
+    defects) updates `OPEN-QUESTIONS.md`/`PLATFORM.md`/`TENDER-PROFILES.md`
+    likewise. Spot-checked all three against the code — consistent, no
+    action needed.
+  - **#20 (compliance model reversal) — still open, still not ours to
+    close.** Unchanged since PR #24's 2026-09-17 check: DEC-028/031/039
+    still carry real citations in `OPEN-QUESTIONS.md` (resolving the
+    issue's original "these IDs don't exist" objection), but
+    `COMPLIANCE.md`, `DOMAIN.md`, `ACCESS.md`, `LIFECYCLE.md`, and
+    `PLATFORM.md` still assert three internal verdicts and a
+    requirement-level lock, and `DECISIONS.md` D6/D8 are still
+    unannotated. New this run: `7978837` ("Compliance panel: one verdict
+    at the top...") added `COMPLIANCE.md` CONF-016–021, a new section on
+    panel layout that states the two-verdict/no-lock reality in passing
+    ("le verdict interne est énoncé en toutes lettres dessous, comme
+    contexte, pas comme titre concurrent" — one verdict shown, not a
+    locked final one) — consistent with the reversal, but appended
+    alongside the still-unreconciled CONF-005/006/007/013/014 lock
+    language rather than replacing it, so the contradiction #20 describes
+    now sits inside one file's own sections, not just across files. Still
+    five interlinked spec files plus the decision log describing core
+    domain behavior — routed to a human per the routine's own rule, same
+    as the last two runs. Commented on #20 with the new citation.
   - **#12 still open, unaddressed** (`docs/Faire`,
     `docs/SPEC-qa-screen.md`, `docs/TICKET-casting-screen-redesign.md`,
-    `docs/USER-TEST-session-3_2.md` all still present, untouched by
-    `7f50eda`). Re-checked, not re-flagged.
-- 2026-09-14 note: no commits landed on `main` after `6221a15` in the
-  interim (`git log 6221a15..HEAD` is empty), and #12, #15, and PR #14
-  are all still open/unresolved exactly as described above — re-checked
-  rather than re-flagged. PR #16 (which had carried this update since
-  2026-09-08) is superseded by this direct commit and should be closed.
-- Baseline for the next run: commits after `6221a15` (2026-09-08T14:54Z),
-  and #12 (still open, 2026-08-30) plus #15 (still open, 2026-09-07) and
-  PR #14 (still open, conflicting) — check whether any have moved before
-  re-flagging.
+    `docs/USER-TEST-session-3_2.md` all still present). Re-checked, not
+    re-flagged.
+  - **#15 still open, PR #14 still open.** No commit in `6221a15..314d2a5`
+    touches `docs/specs/SPEC-translation.md`,
+    `TICKETS-prototype-batch6.md`, or adds a `docs/decisions/` entry for
+    the pipeline-timing sign-off. Re-checked, not re-flagged.
+  - Noted, not acted on: `docs/archive/TICKETS-continuity-fixes.md` picked
+    up a `2026-09-21 (nightly routine)` entry from a separate scheduled
+    routine (ticket-queue work, not specs/decisions) — a different file
+    and a different remit from this one, left untouched.
+- Baseline for the next run: commits after `314d2a5` (2026-09-21T07:41Z),
+  and #12 (still open, 2026-08-30), #15 (still open, 2026-09-07) plus
+  PR #14 (still open, conflicting), and #20 (still open, 2026-09-15,
+  updated 2026-09-21) — check whether `COMPLIANCE.md`, `DOMAIN.md`,
+  `ACCESS.md`, `LIFECYCLE.md`, `PLATFORM.md`, or `DECISIONS.md` D6/D8 have
+  been brought in line with DEC-028/031/039 before re-flagging, and close
+  #20 once they have.
