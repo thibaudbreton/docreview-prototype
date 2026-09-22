@@ -4,7 +4,7 @@ _Maintained alongside the code. Updated in the same commit as any component chan
 
 This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CSS/JS in full (`accueil.html`, `creation-projet.html`, `documents.html`, `qa.html`, `compliance.html`, `dashboard-et-config.html`, `revue-documentaire.html`) — the merged files (`index.html`, `docreview-app.html`) were not read; per `README.md`, sources are always edited, never the merged output. See `CLAUDE.md` for the rules that keep this file current from here on.
 
-**Design tokens actually defined** (both theme blocks, same names, different values): `--bg`, `--panel`, `--line`, `--text`, `--text-2`, `--text-3`, `--accent`, `--accent-soft`, `--ia`, `--ok`, `--human`, `--warn`, `--paper`, `--paper-ink`, `--text-xs/sm/base/lg/xl`, `--space-1` through `--space-8` (4/8/12/16/20/24/32px), `--radius-xs/sm/md/lg/pill`, `--font-ui/doc/mono`.
+**Design tokens actually defined** (both theme blocks, same names, different values): `--bg`, `--panel`, `--line`, `--text`, `--text-2`, `--text-3`, `--accent`, `--accent-soft`, `--ia`, `--ok`, `--human`, `--warn`, `--paper`, `--paper-ink`, `--text-xs/sm/base/lg/xl`, `--space-1` through `--space-8` (4/8/12/16/20/24/32px), `--radius-xs/sm/md/lg/pill`, `--font-ui/doc/mono`, and since 2026-09-22 `--font-heading` (Antarctica → Noto Sans fallback) and `--brand-red` (decorative only, exact value to confirm).
 
 **Untracked custom properties in near-constant use** — not part of the token scale above, so not swappable by theme the way real tokens are, and a likely first fix before any Figma pass: `--panel-2`, `--panel-3`, `--line-2`, `--accent-hover`, `--ok-soft`, `--warn-soft`, `--ia-soft`, `--human-soft`. They're flagged per-entry below wherever a component depends on one.
 
@@ -381,6 +381,26 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.rex-ring`, a `conic-gradient` donut for REX match-percentage, driven by an inline `--p` variable. Entirely hardcoded geometry (22–26px, mask radius, gradient stops) — no tokens beyond the fill color.
+
+### Logo Mark
+- **level**: atom
+- **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html
+- **variants**: dark, light (two inline SVGs toggled by `html[data-theme]`)
+- **tokens**: --brand-red (the dot)
+- **built-from**: none
+- **added**: 2026-09-22
+- **changed**: 2026-09-22
+- **notes**: The three lobes are hardcoded `#fff` / `#1E3246` gradients inside the SVG, not tokens. Height hardcoded 22px. The dot is the one brand-red touch in the header; the shell's favicon is a base64 copy of the same SVG and does NOT follow (still white dot).
+
+### Page Title
+- **level**: atom
+- **file**: every screen (`h1`, `h2`), plus `.cfg-h`, `.set-title`, `.view-panel-head`, `.fb-bh` as section titles
+- **variants**: page (h1/h2, carries the red mark), section (h3 and the class-based titles, no mark)
+- **tokens**: --font-heading, --brand-red (h1/h2 mark only), --text-lg / --text-xl where sized
+- **built-from**: none
+- **added**: 2026-09-22
+- **changed**: 2026-09-22
+- **notes**: The red mark is a `::before` inline-block so it survives flex and block title containers alike; its height is `.85em`, deliberately relative rather than on the space scale. Red is never applied to interactive or stateful elements — see `--warn`.
 
 ## Molecules
 
@@ -1223,8 +1243,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-4, --space-5, --panel, --line
 - **built-from**: Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
+- **changed**: 2026-09-22
+- **notes**: Logo Mark's dot now takes `--brand-red` (2026-09-22). Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
 - **level**: organism

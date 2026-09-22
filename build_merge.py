@@ -355,6 +355,15 @@ def main():
     with open(KEYS_FILE, encoding="utf-8") as f:
         keys_js = f.read()
 
+    # Antarctica (the brand title face) is licensed and not versioned. The
+    # screens declare it with a url() fallback so dropping the files under
+    # fonts/ needs no code change — but while they are missing that url() is
+    # a 404 on every screen load, which reads as "broken" in any devtools.
+    # Same treatment as data.js: keep the reference only when the files exist.
+    antarctica_present = all(Path(f"fonts/Antarctica-{w}.woff2").is_file() for w in ("Regular", "Bold"))
+    if not antarctica_present:
+        print("Note: fonts/Antarctica-*.woff2 not found — titles fall back to Noto Sans (see fonts/README.md).")
+
     blob_lines = []
     for key, filename in SOURCES:
         with open(filename, encoding="utf-8") as f:
@@ -364,6 +373,9 @@ def main():
         if DATA_INCLUDE_MARKER in html:
             html = html.replace(DATA_INCLUDE_MARKER, capture_js)
             html = html.replace(KEYS_INCLUDE_MARKER, keys_js)
+        if not antarctica_present:  # every screen declares the face, not just the one with data.js
+            html = html.replace(',url("fonts/Antarctica-Regular.woff2") format("woff2")', "")
+            html = html.replace(',url("fonts/Antarctica-Bold.woff2") format("woff2")', "")
         if CSS_INCLUDE_MARKER in html:
             html = html.replace(CSS_INCLUDE_MARKER, shared_css)
         b64 = base64.b64encode(html.encode("utf-8")).decode("ascii")

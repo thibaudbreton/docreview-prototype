@@ -1,24 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Brand type (22 Sept 2026): Noto Sans for everything, Antarctica for titles.
+     Noto Sans comes from Google Fonts; Antarctica is a licensed brand face with
+     no public CDN — see fonts/README.md for where its files go. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smart Requirement Manager — STB-2026 · Energy Monitoring System</title>
 <link rel="icon" type="image/svg+xml" media="(prefers-color-scheme: light)" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIyIDIwIDg0IDQ4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMy4wNzAzMSA0NC4yMTczQzMuMDcwMzEgMzEuMzI4NiAxMy41MTg2IDIwLjg4MDMgMjYuNDA3MyAyMC44ODAzSDYxLjE5MDVDNjEuMzEzMiAyMC44ODAzIDYxLjQxMjcgMjAuOTc5OCA2MS40MTI3IDIxLjEwMjVWNjcuMzMyMUM2MS40MTI3IDY3LjQ1NDggNjEuMzEzMiA2Ny41NTQyIDYxLjE5MDUgNjcuNTU0MkgyNi40MDczQzEzLjUxODYgNjcuNTU0MiAzLjA3MDMxIDU3LjEwNTkgMy4wNzAzMSA0NC4yMTczVjQ0LjIxNzNaIiBmaWxsPSJ1cmwoI2ZsYSkiIGZpbGwtb3BhY2l0eT0iLjU0Ii8+CjxwYXRoIGQ9Ik0xOC40MjM4IDQ0LjIxNzNDMTguNDIzOCAzMS4zMjg2IDI4Ljg3MjEgMjAuODgwMyA0MS43NjA4IDIwLjg4MDNINjMuMDg0NkM2My4xNzg5IDIwLjg4MDMgNjMuMjU1MyAyMC45NTY4IDYzLjI1NTMgMjEuMDUxVjY3LjM4MzVDNjMuMjU1MyA2Ny40Nzc4IDYzLjE3ODkgNjcuNTU0MiA2My4wODQ2IDY3LjU1NDJINDEuNzYwOEMyOC44NzIxIDY3LjU1NDIgMTguNDIzOCA1Ny4xMDU5IDE4LjQyMzggNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmbGIpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8cGF0aCBkPSJNMzUuMDA1NCA0NC4yMTczQzM1LjAwNTQgMzEuMzI4NiA0NS40NTM3IDIwLjg4MDMgNTguMzQyMyAyMC44ODAzSDYxLjQxM0M3NC4zMDE2IDIwLjg4MDMgODQuNzQ5OSAzMS4zMjg2IDg0Ljc0OTkgNDQuMjE3M1Y0NC4yMTczQzg0Ljc0OTkgNTcuMTA1OSA3NC4zMDE2IDY3LjU1NDIgNjEuNDEzIDY3LjU1NDJINTguMzQyM0M0NS40NTM3IDY3LjU1NDIgMzUuMDA1NCA1Ny4xMDU5IDM1LjAwNTQgNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmbGMpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8Y2lyY2xlIGN4PSI2MC4zMTA1IiBjeT0iNDQuMzQzMSIgcj0iMTguNTQ5NyIgZmlsbD0iI2ZmZiIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJmbGEiIHgxPSIzLjA3IiB5MT0iNDQuMjIiIHgyPSI2MS40MSIgeTI9IjQ0LjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iIzFFMzI0NiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzFFMzI0NiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJmbGIiIHgxPSIxOC40MiIgeTE9IjQ0LjIyIiB4Mj0iNjMuMjYiIHkyPSI0NC4yMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiMxRTMyNDYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxRTMyNDYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZmxjIiB4MT0iMzUuMDEiIHkxPSI0NC4yMiIgeDI9Ijg0Ljc1IiB5Mj0iNDQuMjIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjMUUzMjQ2Ii8+PHN0b3Agb2Zmc2V0PSIuMTY4IiBzdG9wLWNvbG9yPSIjMUUzMjQ2Ii8+PC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=">
 <link rel="icon" type="image/svg+xml" media="(prefers-color-scheme: dark)" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIyIDIwIDg0IDQ4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMy4wNzAzMSA0NC4yMTczQzMuMDcwMzEgMzEuMzI4NiAxMy41MTg2IDIwLjg4MDMgMjYuNDA3MyAyMC44ODAzSDYxLjE5MDVDNjEuMzEzMiAyMC44ODAzIDYxLjQxMjcgMjAuOTc5OCA2MS40MTI3IDIxLjEwMjVWNjcuMzMyMUM2MS40MTI3IDY3LjQ1NDggNjEuMzEzMiA2Ny41NTQyIDYxLjE5MDUgNjcuNTU0MkgyNi40MDczQzEzLjUxODYgNjcuNTU0MiAzLjA3MDMxIDU3LjEwNTkgMy4wNzAzMSA0NC4yMTczVjQ0LjIxNzNaIiBmaWxsPSJ1cmwoI2ZkYSkiIGZpbGwtb3BhY2l0eT0iLjU0Ii8+CjxwYXRoIGQ9Ik0xOC40MjM4IDQ0LjIxNzNDMTguNDIzOCAzMS4zMjg2IDI4Ljg3MjEgMjAuODgwMyA0MS43NjA4IDIwLjg4MDNINjMuMDg0NkM2My4xNzg5IDIwLjg4MDMgNjMuMjU1MyAyMC45NTY4IDYzLjI1NTMgMjEuMDUxVjY3LjM4MzVDNjMuMjU1MyA2Ny40Nzc4IDYzLjE3ODkgNjcuNTU0MiA2My4wODQ2IDY3LjU1NDJINDEuNzYwOEMyOC44NzIxIDY3LjU1NDIgMTguNDIzOCA1Ny4xMDU5IDE4LjQyMzggNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmZGIpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8cGF0aCBkPSJNMzUuMDA1NCA0NC4yMTczQzM1LjAwNTQgMzEuMzI4NiA0NS40NTM3IDIwLjg4MDMgNTguMzQyMyAyMC44ODAzSDYxLjQxM0M3NC4zMDE2IDIwLjg4MDMgODQuNzQ5OSAzMS4zMjg2IDg0Ljc0OTkgNDQuMjE3M1Y0NC4yMTczQzg0Ljc0OTkgNTcuMTA1OSA3NC4zMDE2IDY3LjU1NDIgNjEuNDEzIDY3LjU1NDJINTguMzQyM0M0NS40NTM3IDY3LjU1NDIgMzUuMDA1NCA1Ny4xMDU5IDM1LjAwNTQgNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmZGMpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8Y2lyY2xlIGN4PSI2MC4zMTA1IiBjeT0iNDQuMzQzMSIgcj0iMTguNTQ5NyIgZmlsbD0iI2ZmZiIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJmZGEiIHgxPSIzLjA3IiB5MT0iNDQuMjIiIHgyPSI2MS40MSIgeTI9IjQ0LjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJmZGIiIHgxPSIxOC40MiIgeTE9IjQ0LjIyIiB4Mj0iNjMuMjYiIHkyPSI0NC4yMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZmRjIiB4MT0iMzUuMDEiIHkxPSI0NC4yMiIgeDI9Ijg0Ljc1IiB5Mj0iNDQuMjIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjZmZmIi8+PHN0b3Agb2Zmc2V0PSIuMTY4IiBzdG9wLWNvbG9yPSIjZmZmIi8+PC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=">
 <style>
+/* Antarctica — the brand title face. Not on any public CDN and not installed
+   here, so it resolves in this order: an installed copy, then the files under
+   fonts/ (drop Antarctica-Regular.woff2 and Antarctica-Bold.woff2 there — the
+   srcdoc screens resolve relative URLs against index.html), then Noto Sans.
+   Nothing breaks while the files are missing; titles simply stay in Noto. */
+@font-face{font-family:"Antarctica";font-weight:400;font-display:swap;src:local("Antarctica"),local("Antarctica-Regular"),url("fonts/Antarctica-Regular.woff2") format("woff2")}
+@font-face{font-family:"Antarctica";font-weight:700;font-display:swap;src:local("Antarctica Bold"),local("Antarctica-Bold"),url("fonts/Antarctica-Bold.woff2") format("woff2")}
+
 :root{
-  --bg:#141F2B;
-  --panel:#1E3246;
-  --panel-2:#26374C;
-  --panel-3:#2F4257;
-  --line:#2C3E52;
-  --line-2:#3A4E66;
+  --bg:#071A30;
+  --panel:#0B294A;
+  --panel-2:#143556;
+  --panel-3:#1D4062;
+  --line:#1F3E5F;
+  --line-2:#2E4E70;
   --text:#EEF1F8;
   --text-2:#AAB6C6;
   --text-3:#8B9AAD;
   --accent:#4C82FF;
-  --accent-soft:#1E3A63;
+  --accent-soft:#1B3F6B;
   --accent-hover:color-mix(in srgb, var(--accent) 75%, white);
   --ia:#E3A64B;
   --ia-soft:rgba(227,166,75,.12);
@@ -34,7 +48,9 @@
   --text-xs:11px; --text-sm:12px; --text-base:13px; --text-lg:16px; --text-xl:21px;
   --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
   --radius-xs:4px; --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-pill:999px;
-  --font-ui:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-ui:"Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-heading:"Antarctica","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --brand-red:#E4002B; /* placeholder — exact brand red to confirm */
   --font-doc:Georgia,"Times New Roman",serif;
   --font-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
 }
@@ -49,8 +65,8 @@ html[data-theme="light"]{
   --text:#1E3246;
   --text-2:#4A5A6E;
   --text-3:#637187;
-  --accent:#0050E3;
-  --accent-soft:#E9EFFD;
+  --accent:#0B294A;
+  --accent-soft:#E6EBF2;
   --ia:#C67A16;
   --ia-soft:rgba(198,122,22,.12);
   --ok:#1E8E5A;
@@ -1459,6 +1475,14 @@ body.restricted .restrict-banner{display:flex}
 
 @media(max-width:1100px){.settings{width:290px}.nav{width:230px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ---- brand touches (22 Sept 2026) ---------------------------------------
+   Titles take the heading face. The red is DECORATIVE ONLY: the logo dot and
+   a small mark ahead of page titles — never on anything clickable or stateful,
+   because red already means "not compliant" / "warn" in this UI and a red
+   control would read as an error. Exact brand red still to be confirmed. */
+h1,h2,h3,.cfg-h,.set-title,.view-panel-head,.fb-bh{font-family:var(--font-heading)}
+h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;border-radius:2px;background:var(--brand-red);margin-right:.45em;vertical-align:-.08em}
+.logo-mark circle{fill:var(--brand-red)}
 </style>
 <script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 </head>

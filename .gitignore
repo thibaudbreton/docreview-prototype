@@ -10,3 +10,7 @@
 data.js
 Turnkey RFP Example/
 
+fonts/*.woff2
+fonts/*.woff
+fonts/*.otf
+fonts/*.ttf
