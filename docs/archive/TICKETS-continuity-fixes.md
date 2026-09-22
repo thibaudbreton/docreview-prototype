@@ -1,5 +1,12 @@
 # Tickets — Continuity & consistency fixes
 
+## Run log
+
+**2026-09-21 (nightly routine)**
+- Completed: none.
+- Blocked: TH1 — five duplicate unmerged fix branches already exist from prior runs (2026-09-09, -10, -15, -16) plus one prior blocker-note attempt (2026-09-18) that also never merged. See the note under TH1 for branch names and what's needed. Declined to open a sixth duplicate.
+- Remaining untouched: TH2, TH3, TH4, TH5, TH6.
+
 > **Groups A–G: COMPLETED, done as of 2026-08-13.** Kept for historical reference; decisions that changed a spec are indexed in `docs/decisions/DECISIONS.md`. Do not treat anything in Groups A–G as open work.
 >
 > **Group H (added 2026-08-20) is a separate, currently OPEN batch** — a vertical-space/UX-density audit, unrelated to the continuity/consistency fixes above. It reuses this file only because its ticket-queue heading is what the unattended nightly routine (`docs/prompts/PROMPT-nightly-ticket-routine.md`) matches on. Treat Group H's unchecked boxes as live work the routine may pick up.
@@ -176,6 +183,7 @@ Test participants run the prototype on laptops with limited vertical screen real
   Files: `accueil.html` (`.wrap`, line 58), `dashboard-et-config.html` (`.wrap`, line 100).
   `.wrap{padding:...80px}` on both files reserves 80px of trailing whitespace at the end of every scroll. That padding value is copied from `revue-documentaire.html`/`suivi-experts-et-versions.html`'s `.doc-scroll`, where it's load-bearing — it stops the last table row from being hidden behind the floating `.sel-bar` bulk-action bar. Neither Home nor Dashboard has any floating element covering their bottom edge, so on these two screens it's just 80px of dead space. Measured on Dashboard: total content is 949px against 598px of usable height (header deducted) on a 650px-tall viewport — this padding alone is ~9% of that overflow.
   Fix: reduce to `var(--space-6)` (24px) or `var(--space-8)` (32px) on both files' `.wrap`.
+  > blocked (2026-09-21 nightly run): this exact fix is already sitting in **five** open, unmerged, unreviewed branches from earlier nightly runs — `claude/th1-wrap-bottom-padding` (2026-09-09), `claude/th1-drop-bottom-padding` (2026-09-10), `claude/th1-vertical-space-padding` (2026-09-15), `claude/th1-drop-wrap-bottom-padding` (2026-09-16), plus a prior blocker-note-only attempt at `claude/th1-duplicate-pr-blocker` (2026-09-18) that itself never got merged either — which is why this note didn't already exist on `main` and this run initially redid the fix a sixth time before catching the duplication and discarding that branch instead of pushing it. **Root cause, not just a duplicate ticket:** nothing merges this routine's branches into `main`, so the checkbox here can never flip and every run re-reads the same stale unchecked state. A human needs to (a) pick one of the five fix branches, review and merge it (they're functionally identical — the trivial padding change described above), close the other four, and (b) put a review/merge cadence in place for this routine's future PRs, or TH1 (and eventually every ticket) will keep looping. Not implementing this run; queue left otherwise untouched below TH1.
 
 - [ ] **TH2 — Remove the redundant "Requirements review" title block**
   File: `revue-documentaire.html` (`.review-head`, ~line 1334).
