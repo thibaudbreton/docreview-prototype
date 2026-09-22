@@ -28,6 +28,7 @@ Sept sources actives sont assemblées dans `index.html` et `docreview-app.html` 
 |---|---|
 | Variantes Turnkey / SIG / Mainline / RSC | [Profils de tender](TENDER-PROFILES.md) |
 | Clés PBS / OBS / ABS de SIG — le fichier et sa lecture | [Clés](KEYS.md) |
+| Conversion du document source — réglages de capture | [Capture](CAPTURE.md) |
 | Définitions, objets, vocabulaire | [Modèle métier](DOMAIN.md) |
 | Création, documents, versions, traduction | [Cycle documentaire](LIFECYCLE.md) |
 | Allocation, dépendances, validation | [Allocation](ALLOCATION.md) |

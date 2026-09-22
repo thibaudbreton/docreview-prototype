@@ -986,7 +986,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
       <div class="cfg-nav-item" data-sec="workflow"><span class="ci">⇄</span> Workflow &amp; milestones</div>
       <div class="cfg-nav-item" data-sec="model"><span class="ci">↻</span> Allocation model</div>
       <div class="cfg-nav-item" data-sec="appearance"><span class="ci">◐</span> Appearance</div>
-      <div class="cfg-nav-item" data-sec="ai"><span class="ci">✦</span> AI &amp; segmentation</div>
+      <div class="cfg-nav-item" data-sec="ai"><span class="ci">✦</span> Capture &amp; segmentation</div>
       <div class="cfg-nav-item" data-sec="feedback"><span class="ci">↺</span> AI feedback</div>
       <div class="cfg-nav-item" data-sec="qa"><span class="ci">⇗</span> Q&amp;A &amp; submission</div>
       <div class="cfg-nav-item" data-sec="versions"><span class="ci">◷</span> Versions</div>
@@ -1054,12 +1054,21 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 
         <!-- AI -->
         <section class="cfg-sec" data-sec="ai">
-          <div class="cfg-h">AI &amp; segmentation</div>
-          <div class="cfg-sub">How the document is processed into blocks, and how the AI surfaces its uncertainty.</div>
+          <div class="cfg-h">Capture &amp; segmentation</div>
+          <div class="cfg-sub">How the source document is converted, how it is cut into blocks, and how the AI surfaces its uncertainty.</div>
           <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how the document is actually segmented or characterised in this build — the review screen's blocks are hand-authored seed data.</div>
+          <!-- The advanced capture settings of the real product, supplied 22 September
+               2026. They govern CONVERSION — what comes out of the source file — which
+               happens before segmentation, hence their place at the top of this section.
+               Four are known; the reference screenshot is cut off below them, so the
+               list may not be complete (see docs/current/CAPTURE.md). -->
+          <div class="frow"><div class="fl"><div class="flt">Conversion range</div><div class="fld">Which pages of the source document are captured at all.</div></div><div class="fc"><div class="segc" data-seg="convrange"><button class="on" data-range="all">All pages</button><button data-range="some">Specific pages</button></div><div id="convrange-pages" hidden style="margin-top:10px"><input type="text" class="inp" id="convrange-input" placeholder="e.g. 1-12, 40, 55-58" style="max-width:260px"><div class="opt-desc">Anything outside these pages is not captured, so it produces no requirements at all — this is not a filter on the review table.</div></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Default table conversion format</div><div class="fld">Whether a table is captured as a picture of itself or as structured data.</div></div><div class="fc"><div class="segc" data-seg="tableformat"><button class="on">Image</button><button>Dataframe</button></div><div class="opt-desc"><b>Image:</b> faithful to the layout, nothing inside is searchable or extractable. <b>Dataframe:</b> rows and columns become data — which is what lets a table row become a requirement, below.</div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Default table granularity</div><div class="fld">How table rows map to requirements on first pass. Only reachable once a table is converted as a dataframe — an image has no rows to map.</div></div><div class="fc"><div class="segc" data-seg="gran"><button class="on">One requirement per row</button><button>Whole table</button></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Sentences in paragraphs</div><div class="fld">Whether a paragraph stays one block or is cut into one block per sentence.</div></div><div class="fc"><div class="segc" data-seg="sentences"><button class="on">As source file</button><button>Split</button></div><div class="opt-desc">Splitting raises the requirement count and can separate a sentence from the one that qualifies it. Kept as the source file has it by default.</div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Format of equations</div><div class="fld">Whether an equation is captured as a picture or as a formula.</div></div><div class="fc"><div class="segc" data-seg="equations"><button class="on">As images</button><button>As formulas</button></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Document rendering</div><div class="fld">The core technical trade-off — affects fidelity, overlays and performance on large documents.</div></div><div class="fc"><div class="segc" data-seg="render"><button class="on">Faithful PDF</button><button>Reconstructed HTML</button></div><div class="opt-desc"><b>Faithful PDF:</b> pixel-perfect to the source, block overlays sit on top. <b>Reconstructed HTML:</b> easier overlays and reflow, approximate fidelity. Decision pending — test on a real tender.</div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Uncertainty threshold</div><div class="fld">Below this confidence, a block is flagged "uncertain segmentation" for manual review. Tables are almost always flagged.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="50" max="95" value="80" id="conf-range"><span class="range-val" id="conf-val">80%</span></div><div class="hintbox">⚠ Confidence is used internally to prioritize, never shown to users as a score.</div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Default table granularity</div><div class="fld">How table rows map to requirements on first pass.</div></div><div class="fc"><div class="segc" data-seg="gran"><button class="on">One requirement per row</button><button>Whole table</button></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Re-segmentation on new version</div><div class="fld">Full re-processing is cleaner; incremental diff is faster on large documents.</div></div><div class="fc"><div class="segc" data-seg="reseg"><button>Full re-segmentation</button><button class="on">Incremental diff</button></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Never overwrite manual edits</div><div class="fld">AI re-processing preserves human segmentation corrections.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="preserve"></span><span class="tl">Protect manual corrections on re-run</span></div></div></div>
         </section>
@@ -1372,6 +1381,12 @@ document.querySelectorAll(".tog").forEach(t=>t.addEventListener("click",()=>t.cl
 /* Segmented controls */
 document.querySelectorAll(".segc").forEach(seg=>seg.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
   seg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  /* "Specific pages" without somewhere to say WHICH pages is a decorative
+     option. The field appears with the choice and goes away with it. */
+  if(b.dataset.range){
+    const f=document.getElementById("convrange-pages");
+    if(f){ f.hidden = b.dataset.range!=="some"; if(!f.hidden) document.getElementById("convrange-input").focus(); }
+  }
 })));
 /* Chips */
 document.querySelectorAll(".chip-tog").forEach(c=>c.addEventListener("click",()=>c.classList.toggle("on")));

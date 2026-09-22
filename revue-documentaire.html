@@ -4856,8 +4856,14 @@ function pbsControlHTML(b, derivSrc){
   return `<select class="ui-select" id="f-pbs"><option value="">— Not derived yet —</option>${pbsOptionsHTML(cur&&cur.id)}</select>`;
 }
 function natureFieldHTML(b){
-  return `<div class="field"><label>Nature <span>· what kind of requirement this is — not part of the derivation</span></label>
-    <select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select></div>`;
+  /* The label is a label. A sentence inside it renders in the panel's uppercase,
+     letter-spaced label style and wraps into two shouting lines; the explanation
+     belongs under the control, in the same quiet hint every derivation step uses.
+     The field sits ABOVE the chain: what kind of requirement this is comes before
+     where it gets allocated, and it is not a step of that derivation. */
+  return `<div class="field"><label>Nature</label>
+    <select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>
+    <div class="deriv-hint">What kind of requirement this is. Not a step of the derivation — changing it clears nothing.</div></div>`;
 }
 function derivStepHTML(label,control,conf,hint,info){
   return `<div class="deriv-step">
@@ -5005,7 +5011,7 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
             "The team or service within the system. Assigning a person comes after — usually that team's manager in the tender's region.");
     })()}
   </div>`;
-  return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that system's own model">routes into</div>`:"") + modelHTML + natureFieldHTML(b);
+  return distribHTML + (distribHTML?`<div class="deriv-arrow" title="Routes the requirement into that system's own model">routes into</div>`:"") + modelHTML;
 }
 /* A contributor's own view of one system — fixed order, explicitly
    specified: ABS, PBS, OBS (the organisation, not a person), who's assigned
@@ -5018,10 +5024,10 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
    condition through each of those. */
 function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx){
   return `
+    ${natureFieldHTML(b)}
     ${derivStepHTML("ABS", absControlHTML(b,derivSrc), derivSrc.abs)}
     ${derivStepHTML("PBS", pbsControlHTML(b,derivSrc), derivSrc.pbs, null, TENDER_KEYS?"The product element the requirement bears on — from the PBS key, grouped by family.":null)}
     ${obsListHTML(myBranch, {reqId:b.id, branchIdx:(b.branches||[]).indexOf(myBranch), systemId:myBranch.typology})}
-    ${natureFieldHTML(b)}
     <div class="field"><label>Assigned to</label>
       ${personSearchHTML("req-manager",myBranch.manager)}
     </div>
@@ -5333,6 +5339,7 @@ function renderSettings(){
         ${isTurnkey(b)?`<div class="tky-note"><b>Turnkey.</b> Supervises the whole scope — needs a coordinating owner plus one specialist per perimeter.</div>`:""}
       </div>`:""}
 
+      ${isReq?natureFieldHTML(b):""}
       ${isReq?`<div class="set-sep"></div>${derivationChainHTML(b,myBranch,derivSrc,rmView)}`:""}
 
       ${showBranchPanel&&!pmTurnkey?(function(){
