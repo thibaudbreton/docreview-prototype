@@ -71,6 +71,10 @@ Choisir l'autre produit à la relance **ne change pas le produit du tender**, qu
 
 **Confiance.** Les scores issus d'une relance suivent ALLOC-006 et ALLOC-007 : affichés par champ, et sans jamais dispenser de la validation humaine. Une relance ne vaut pas validation.
 
+## Titres et blocs d'information
+
+ALLOC-018 — DEC-073 : **un titre ou un bloc d'information n'a pas de statut.** Seules les exigences portent Incomplete / To review / To validate / Allocated. Si l'IA n'est pas sûre qu'un bloc soit un titre, une information ou une exigence, c'est la puce de type qui le dit (bordure en pointillés) ; choisir le type en place le confirme, en choisir un autre le reclasse. Critère : ALLOC-T24 — aucun titre ni bloc d'information n'affiche de pastille de statut, dans aucune vue.
+
 ## Dérivation sur les clés
 
 ALLOC-017 — DEC-061/062 : sur un tender dont le produit a des clés ([KEYS](KEYS.md)), la chaîne ABS → PBS → OBS se choisit dans les listes cochées pour ce produit, jamais en texte libre. L'OBS proposé en premier est celui rangé sous l'ABS de l'exigence, comme dans le classeur ; les autres restent accessibles. La relance dérive de même l'OBS sous l'ABS qu'elle vient de dériver. La **nature** de l'exigence (Functional, Performance, Security, Interface, Regulatory) n'est pas un PBS et n'est pas dans la chaîne : la changer n'invalide rien.

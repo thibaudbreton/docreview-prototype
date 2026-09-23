@@ -84,6 +84,7 @@ DEC-028 à DEC-039 viennent d'une relecture indépendante du prototype (14 septe
 | DEC-070 | **Compare : un document à la fois.** On choisit le document, puis une version antérieure de ce document, comparée à celle en vigueur ; le résumé et la navigation portent sur ce document. Un document à une seule version le dit | Demande utilisateur, 23 septembre 2026 |
 | DEC-071 | Un onglet **Versions** dans le détail d'une exigence, **masqué** quand elle n'a pas changé dans la version en vigueur de son document | Demande utilisateur, 23 septembre 2026 |
 | DEC-072 | **Pas d'état de traitement propre à un changement** (Nouveau / Revu sans impact / Action requise supprimés) : une exigence ajoutée ou modifiée repasse **To review**, et la valider est le traitement. Le statut le plus restrictif continue de primer | Demande utilisateur, 23 septembre 2026 |
+| DEC-073 | **Les titres et les blocs d'information n'ont pas de statut** : ni Incomplete, ni To review, ni To validate, ni Allocated — nulle part (table, panneau, document, navigation). Ils n'entrent ni en caractérisation ni en allocation. Un type proposé par l'IA sur ces blocs se signale sur la puce de type elle-même (pointillés), et choisir le type déjà en place le confirme. **Remplace, pour ces blocs, le « To review » de TICKET-ai-uncertainty-display** | Demande utilisateur, 23 septembre 2026 |
 
 ## Suivi des anciens arbitrages
 

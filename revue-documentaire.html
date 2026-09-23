@@ -1010,6 +1010,7 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 }
 .comment-input input:focus{border-color:var(--accent)}
 /* .change-card and .review-state went with the Change Card (DEC-072) */
+.nat-pick.is-ai{border:1px dashed var(--ia);color:var(--ia)}
 
 /* ---------- Segmentation mode & tables ---------- */
 .seg-bar{display:none;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-5);background:var(--human-soft);border-bottom:1px solid var(--human);flex-shrink:0;font-size:var(--text-sm)}
@@ -2831,15 +2832,15 @@ function derivWeak(b){ return !!(b.obs && b.obs.c < OBS_THRESHOLD); }
    kind!=="requirement" branch below, which is why this runs for every kind
    now (initProgressionStatus), not just requirement rows as before. */
 function computeCharStatus(x){
+  /* DEC-073 — a heading or an information block has no status at all: it
+     never enters characterisation or allocation, so none of Incomplete / To
+     review / To validate / Allocated describes it. That includes an AI-typed
+     one — its Type uncertainty is carried by the type chip itself (dashed,
+     "confirm or change"), not by a workflow status. Checked first, so a seed
+     that set status:"allocated" on a text block does not survive either. */
+  if(x.kind!=="requirement"){ x.status=null; x.doubtField=null; x.reviewReason=null; return; }
   if(x.status==="allocated") return;
   if(x.typeAI){ x.status="doubt"; x.doubtField="type"; x.reviewReason="Type is AI-detected, unconfirmed"; return; }
-  if(x.kind!=="requirement"){
-    // Information/heading: Type is their only field with a review state at
-    // all — there's no "To validate"/"Incomplete" workflow for a block that
-    // never enters characterisation or allocation, so a confident one shows
-    // nothing (null), same as it always has ("as today" per the ticket).
-    x.status=null; x.doubtField=null; x.reviewReason=null; return;
-  }
   if(x.tech==null || !(x.perim&&x.perim.length)){ x.status="incomplete"; x.doubtField=null; x.reviewReason=null; return; }
   if(x.techAI){ x.status="doubt"; x.doubtField="class"; x.reviewReason="Class is AI-detected, unconfirmed"; return; }
   if(x.perimAI){ x.status="doubt"; x.doubtField="typo"; x.reviewReason="System is AI-detected, unconfirmed"; return; }
@@ -3063,7 +3064,7 @@ function effectiveStatus(b){
   // with allocVal below would misread a confident one as "Incomplete"
   // instead of "nothing to show". Type is their only axis — read b.status
   // directly, exactly as computeCharStatus() left it.
-  if(blockNature(b)!=="requirement") return {val:b.status||null, doubtField:b.status==="doubt"?"type":null, reviewReason:b.reviewReason||null};
+  if(blockNature(b)!=="requirement") return {val:null, doubtField:null, reviewReason:null};   // DEC-073
   if((b.branches||[]).length>1){
     if(b.status!=="allocated") return {val:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason};
     return {val:"allocated", doubtField:null, reviewReason:null};
@@ -3359,7 +3360,8 @@ function deleteAllocationData(b){
 function reclassify(id, nature){
   const f=findBlock(id); if(!f) return;
   const b=f.b, before=blockNature(b);
-  if(before===nature){ return; }
+  // picking the type it already has is how an AI-detected type gets confirmed
+  if(before===nature){ if(b.typeAI){ b.typeAI=false; computeCharStatus(b); refresh(); toast(`${b.id} — type confirmed: ${NATURE_LABEL[nature]}`,"ok"); } return; }
   // TICKET-ai-uncertainty-display.md — an explicit reclassification IS the
   // human resolving whatever Type uncertainty existed, whichever direction
   // it goes. Cleared unconditionally; computeCharStatus() below derives the
@@ -3885,7 +3887,8 @@ function renderNav(){
 function natureLabelChip(b){ const n=blockNature(b); return n==="requirement"?(b.type+" · "+STATUS_LABEL[b.status||"incomplete"]):NATURE_LABEL[n]; }
 function natureTag(b){
   const n=blockNature(b);
-  return `<button class="nat-pick" data-natpick="${b.id}" title="Reclassify this block">${NATURE_LABEL[n]} ▾</button>`;
+  const ai = b.typeAI && b.kind!=="image";
+  return `<button class="nat-pick${ai?" is-ai":""}" data-natpick="${b.id}" title="${ai?"Type detected by the AI, not confirmed yet — pick it to confirm, or change it":"Reclassify this block"}">${NATURE_LABEL[n]} ▾</button>`;
 }
 function natureOptions(b){
   // B9 — an image can only be demoted to Information (mis-detected figure);
@@ -4299,9 +4302,7 @@ function rowInnerHTML(b){
 function infoRowHTML(b){
   const plain = (b.text||"").replace(/<[^>]+>/g,"");
   const es = effectiveStatus(b);
-  const statusHTML = es.val==="doubt"
-    ? `<span class="status-pill s-doubt" style="cursor:default" title="${(es.reviewReason||"").replace(/"/g,'&quot;')}">${STATUS_LABEL.doubt}</span>`
-    : `<span class="ph">—</span>`;
+  const statusHTML = `<span class="ph">—</span>`;   // DEC-073: no status on an information row
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
     <div class="rcell c-id">${b.id}</div>
@@ -4606,9 +4607,7 @@ function renderReview(){
       // carry a Type-review pill, and clicking it opens the detail panel so
       // that pill is followed through the same way a table row's would be.
       const es = effectiveStatus(it.b);
-      const pill = es.val==="doubt"
-        ? `<span class="status-pill s-doubt" style="cursor:default;margin-left:auto" title="${(es.reviewReason||"").replace(/"/g,'&quot;')}">${STATUS_LABEL.doubt}</span>`
-        : "";
+      const pill = "";   // DEC-073: a heading carries no status
       return `<div class="rgrid-sub lvl-${it.b.level||2}${state.selected===it.b.id?" active":""}" data-id="${it.b.id}"><span class="rh-t">${it.b.text}</span>${pill}</div>`;
     }
     /* Custom columns are requirement-level: a system or team sub-row and an

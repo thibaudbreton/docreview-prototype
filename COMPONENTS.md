@@ -249,8 +249,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --radius-xs, --radius-pill, --text-xs, --warn, --ia, --human, --ok, --accent
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Backgrounds use the untracked `--warn-soft`/`--ia-soft`/`--human-soft`/`--ok-soft`/`--accent-soft` family (only `--accent-soft` is an actual tracked token). Sibling of Status Badge / Chip (above) and Verdict/Progress Status Chip (below) — three independent codings of "small colored status label" across the app, none sharing a base class.
+- **changed**: 2026-09-23
+- **notes**: Backgrounds use the untracked `--warn-soft`/`--ia-soft`/`--human-soft`/`--ok-soft`/`--accent-soft` family (only `--accent-soft` is an actual tracked token). Sibling of Status Badge / Chip (above) and Verdict/Progress Status Chip (below) — three independent codings of "small colored status label" across the app, none sharing a base class. Requirements only since 2026-09-23 (DEC-073): a heading or an information block never shows one — not in its table row, its panel header, the document view or the navigation dot.
 
 ### Verdict Pill
 - **level**: atom
@@ -441,6 +441,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-23
 - **changed**: 2026-09-23
 - **notes**: `wordDiffHTML(prev, cur)`, a word-level LCS diff computed at render time — the current text no longer carries diff markup inside it. Used in Compare (document blocks) and in the Versions tab. Colours hardcoded (`#f6d5d2`/`#8c2f28`, `#cfe9db`/`#155c3c`), not tokens — same values as the older Compare-mode rules.
+
+### Nature Picker
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: default, AI-typed (`.is-ai`, dashed `--ia` border — type detected by the AI, not confirmed)
+- **tokens**: --text-xs, --radius-sm, --ia, --paper-ink-2
+- **built-from**: none
+- **added**: 2026-09-01
+- **changed**: 2026-09-23
+- **notes**: `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
 
 ## Molecules
 
