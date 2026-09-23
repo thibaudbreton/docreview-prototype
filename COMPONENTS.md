@@ -225,12 +225,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Activity / Requirement Tag
 - **level**: atom
 - **file**: qa.html, compliance.html, revue-documentaire.html
-- **variants**: default, `.ai` (dashed, AI-unconfirmed), `.tky` (turnkey, filled), `.proposed` (pending PM review)
-- **tokens**: --font-mono, --text-xs, --ia, --human, --radius-xs, --space-1
+- **variants**: default, `.ai` (dashed, AI-unconfirmed), `.tky` (turnkey, filled), `.proposed` (pending PM review), `.ptag-more` ("+N" overflow count, dashed — takes `.proposed` when a hidden system is a pending change)
+- **tokens**: --font-mono, --text-xs, --ia, --human, --radius-xs, --space-1, --text-2
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.ptag` / `.qa-req` / `.c-id`. Turnkey variant uses a fully hardcoded gray (`#7b8794`), not a token. Letter-spacing (0.6px) hardcoded. Border relies on untracked `--line-2`.
+- **changed**: 2026-09-23
+- **notes**: `.ptag` / `.qa-req` / `.c-id`. Turnkey variant uses a fully hardcoded gray (`#7b8794`), not a token. Letter-spacing (0.6px) hardcoded. Border relies on untracked `--line-2`. In Allocation's System cell (2026-09-23, `typoTagsHTML()`): one line only — as many tags as fit, then "+N" naming the rest on hover; every tag shows in "Wrap text" mode. The fit is estimated from code length (10 + 7.2px per letter, measured on the monospace tags) against a hardcoded 102px budget tied to the 136px column — widen the column and the budget has to move with it.
 
 ### Status Badge / Chip
 - **level**: atom
