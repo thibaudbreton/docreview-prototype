@@ -62,7 +62,8 @@ Construit **dans Allocation uniquement** (DEC-064) ; Compliance viendra ensuite 
 - Groupe **Custom columns** dans le constructeur de filtres ; entonnoir d'en-tête pour les listes ; tri par l'en-tête.
 - L'export interne annonce les colonnes incluses et rappelle qu'elles ne partent jamais dans la matrice client.
 - Définitions et valeurs sont conservées dans la coquille, par tender : elles survivent à la navigation entre écrans et sont effacées par « Reset demo ».
-- Non fait : navigation au clavier dans ces colonnes (la table la limite aux colonnes natives) ; renommer une option existante (on peut en ajouter et en retirer).
+- **Clavier** : les flèches atteignent ces colonnes comme les autres ; **Entrée ou F2** ouvre l'édition de la cellule active ; Entrée valide et descend d'une ligne, Échap rétablit la valeur. Le sélecteur à choix multiple suit le même contrat (↑/↓ entre les options, Espace coche). Au passage, ←/→ suivent désormais l'ordre **affiché** des colonnes, y compris après un réordonnancement dans *View* — elles suivaient jusque-là une liste figée.
+- Non fait : renommer une option existante (on peut en ajouter et en retirer).
 
 ## Critères d'acceptation
 
@@ -75,3 +76,4 @@ Construit **dans Allocation uniquement** (DEC-064) ; Compliance viendra ensuite 
 - CUST-T07 : une colonne se filtre avec les opérateurs de son type, dans le constructeur comme depuis l'en-tête (listes).
 - CUST-T08 : aucune colonne personnalisée ne figure dans la matrice de conformité client.
 - CUST-T09 : une valeur survit à la navigation entre écrans et à la remise à zéro d'une exigence par une nouvelle version.
+- CUST-T10 : une colonne personnalisée se remplit entièrement au clavier : l'atteindre aux flèches, l'éditer avec Entrée, valider en descendant, annuler avec Échap — y compris une liste à choix multiple.

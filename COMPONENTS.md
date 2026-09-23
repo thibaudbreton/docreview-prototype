@@ -1271,8 +1271,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text, --text-3, --line-2, --radius-sm, --text-sm; popover --panel, --line-2, --radius-md
 - **built-from**: Text Input (`.cell-text`), Select Dropdown (`.cell-select`), Checkbox
 - **added**: 2026-09-23
-- **changed**: 2026-09-23
-- **notes**: `cfCellsHTML()`, appended to every grid row centrally in `rowHTML()` rather than inside each row renderer, so a new row type cannot forget it. Column width hardcoded 150px. Popover min-width 190px / max-height 280px hardcoded. Depends on untracked `--line-2`, `--panel-2`.
+- **changed**: 2026-09-23 (keyboard)
+- **notes**: `cfCellsHTML()`, appended to every grid row centrally in `rowHTML()` rather than inside each row renderer, so a new row type cannot forget it. Keyboard: reachable with the arrows like any column; Enter/F2 edits; text and single-list cells get the engine's Enter (confirm + move down) / Escape (restore) through `.cell-text`/`.cell-select`; the multi-value picker takes the same contract (↑/↓ between options, Space ticks, Enter confirms and moves down, Escape restores the previous values). Column width hardcoded 150px. Popover min-width 190px / max-height 280px hardcoded. Depends on untracked `--line-2`, `--panel-2`.
 
 ### Custom Column Header Cell
 - **level**: molecule
@@ -1331,10 +1331,10 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **file**: compliance.html, revue-documentaire.html
 - **variants**: document-order, sorted, grouped-by-activity, filtered-to-selection, wrap-text, scale-test (revue-documentaire.html — 12,000-row virtualized mode)
 - **tokens**: --space-3, --space-5, --radius-lg, --line, --panel, --accent-soft
-- **built-from**: Requirement Row, Branch / Allocated-Activity Sub-row, Grid Section / Group Header, Filter Toolbar, Bulk Selection Action Bar, Checkbox
+- **built-from**: Requirement Row, Branch / Allocated-Activity Sub-row, Grid Section / Group Header, Filter Toolbar, Bulk Selection Action Bar, Checkbox, Custom Column Cell, Custom Column Header Cell
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.rgrid`. Explicitly documented in both screens as the same interaction engine (`table-engine.js`) — per-column sort/filter, drag-select across the selection gutter, keyboard active-cell navigation — with only column config differing per screen. `--rgrid-cols`/`--frgrid-cols` widths are hardcoded px/fr values.
+- **changed**: 2026-09-23
+- **notes**: `.rgrid`. Explicitly documented in both screens as the same interaction engine (`table-engine.js`) — per-column sort/filter, drag-select across the selection gutter, keyboard active-cell navigation — with only column config differing per screen. Keyboard (revue-documentaire.html, 2026-09-23): ←/→ follow the DRAWN column order (pinned three + `state.colOrder`, so View-menu reordering and custom columns are honoured — it used to be a fixed list); Enter or F2 on the active cell starts editing it; focusing a control inside a cell makes that cell the active one. `--rgrid-cols`/`--frgrid-cols` widths are hardcoded px/fr values.
 
 ### Document Reading View
 - **level**: organism

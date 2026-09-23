@@ -128,7 +128,11 @@ scrollActiveCellIntoView(state, adapter){
 focusActiveCellControl(state, adapter){
   const row = adapter.activeCellRowEl(state.activeCell); if(!row) return;
   const cell = row.querySelector(`.rcell.c-${state.activeCell.col}`); if(!cell) return;
-  const ctrl = cell.querySelector("input,select"); if(ctrl) ctrl.focus();
+  const ctrl = cell.querySelector("input,select");
+  // Remember what Escape restores now, not only on the focus event: that
+  // event does not fire when the window lacks system focus, and Escape then
+  // had nothing to put back.
+  if(ctrl){ if(ctrl.tagName==="INPUT") ctrl.dataset.orig = ctrl.value; ctrl.focus(); }
 },
 /* wires Enter (confirm + move down, "type down a column") / Escape (cancel + blur)
    on one editable control; call once per .cell-text/.cell-select after each render */

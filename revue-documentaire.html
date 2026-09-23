@@ -4470,8 +4470,12 @@ function renderReview(){
    (which row's detail panel is open) — this is purely a keyboard
    focus position, painted as an accent ring on one .rcell.
 ===================================================== */
-const NAV_COLS=["sel","id","req","class","typo","abs","pbs","type","tkobs","obs","mgr","status","compliance"];
-function navCols(){ return NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
+/* Left/Right walk the columns in the order they are DRAWN: the pinned three,
+   then state.colOrder — which is what the View menu reorders and where custom
+   columns are appended. This used to be a fixed list, so a reordered table
+   sent the arrows across it in the old order, and a custom column could never
+   be reached from the keyboard at all. */
+function navCols(){ return ["sel","id","req",...state.colOrder].filter(c=>!state.colCollapsed.has(c)); }
 /* flat, on-screen order of data rows (parents + visible allocated-system sub-rows) — respects
    current sort/filter/branch-expansion, exactly what Up/Down should step through.
    This stays host-specific (VROWS is revue's own row model) — everything below it
@@ -4498,6 +4502,18 @@ function paintActiveCell(){ TE.paintActiveCell(state,navAdapter); }
 function scrollActiveCellIntoView(){ TE.scrollActiveCellIntoView(state,navAdapter); }
 function moveActiveCellDelta(dRow,dCol){ TE.moveActiveCellDelta(state,dRow,dCol,navAdapter); }
 function focusActiveCellControl(){ TE.focusActiveCellControl(state,navAdapter); }
+/* Enter / F2 on the active cell starts editing it: focus its field or select,
+   or open a multi-value picker. Returns false when the cell has nothing to
+   edit, so the key is left alone. */
+function editActiveCell(){
+  const row=activeCellRowEl(); if(!row||!state.activeCell.col) return false;
+  const cell=row.querySelector(`.rcell.c-${state.activeCell.col}`); if(!cell) return false;
+  const multi=cell.querySelector(".cf-multi");
+  if(multi){ cfOpenMulti(multi,{keyboard:true}); return true; }
+  const ctrl=cell.querySelector("input:not([type=checkbox]),select");
+  if(ctrl){ if(ctrl.tagName==="INPUT"){ ctrl.dataset.orig=ctrl.value; } ctrl.focus(); if(ctrl.select && ctrl.tagName==="INPUT") ctrl.select(); return true; }
+  return false;
+}
 function bindCellEditKeys(el){ TE.bindCellEditKeys(el,state,navAdapter); }
 function bindVRows(win){
   win.querySelectorAll(".rrow:not(.branch-row)").forEach(tr=>{
@@ -4519,6 +4535,17 @@ function bindVRows(win){
       paintActiveCell();
     });
   });
+  /* Focusing a control inside a cell (by click or Tab) makes that cell the
+     active one. Controls stop click propagation, so the row's click handler
+     above never saw them — and Enter, which confirms and moves DOWN from the
+     active cell, then moved from wherever the cursor had last been. */
+  win.querySelectorAll(".rrow").forEach(tr=>tr.addEventListener("focusin",e=>{
+    const cell=e.target.closest(".rcell"); if(!cell) return;
+    const colClass=[...cell.classList].find(c=>c.startsWith("c-")); if(!colClass) return;
+    const isBranch=tr.classList.contains("branch-row");
+    state.activeCell={id:isBranch?tr.dataset.branchof:tr.dataset.id, bidx:isBranch?+tr.dataset.branchidx:null, col:colClass.slice(2)};
+    paintActiveCell();
+  }));
   win.querySelectorAll(".cell-select, .cell-text").forEach(bindCellEditKeys);
   win.querySelectorAll("[data-branchtoggle]").forEach(btn=>btn.addEventListener("click",e=>{
     e.stopPropagation();
@@ -6820,17 +6847,19 @@ function cfCommit(reqId, fid, v){
 function cfBindCells(root){
   root.querySelectorAll("[data-cfcell]").forEach(el=>{
     el.addEventListener("click",e=>e.stopPropagation());
-    el.addEventListener("keydown",e=>{ e.stopPropagation(); if(e.key==="Enter"&&el.tagName==="INPUT") el.blur(); });
+    // Enter (confirm + move down) and Escape (cancel) come from bindCellEditKeys,
+    // like every other .cell-text/.cell-select — no second handler here.
     el.addEventListener("change",()=>{ const [r,f]=el.dataset.cfcell.split("::"); cfCommit(r,f,el.value.trim()); });
   });
   root.querySelectorAll("[data-cfmulti]").forEach(el=>el.addEventListener("click",e=>{ e.stopPropagation(); cfOpenMulti(el); }));
 }
 /* multi-value picker — checkboxes, applied as you tick, committed on close so
    the table re-renders once rather than under the pointer */
-function cfOpenMulti(anchor){
+function cfOpenMulti(anchor, opts){
   const [reqId,fid]=anchor.dataset.cfmulti.split("::"); const d=cfDef(fid); if(!d) return;
   const pop=document.getElementById("cf-pop");
   const cur=new Set(cfGet(reqId,fid)||[]);
+  pop._orig={reqId,fid,val:cfGet(reqId,fid)};
   pop.innerHTML=d.options.map(o=>`<label><input type="checkbox" value="${escHtml(o)}" ${cur.has(o)?"checked":""}> ${escHtml(o)}</label>`).join("")
     + [...cur].filter(o=>!d.options.includes(o)).map(o=>`<label><input type="checkbox" value="${escHtml(o)}" checked> ${escHtml(o)}</label>`).join("");
   pop.dataset.ref=anchor.dataset.cfmulti;
@@ -6842,10 +6871,26 @@ function cfOpenMulti(anchor){
     cfSet(reqId,fid,vals);
     anchor.textContent=vals.length?vals.join(", "):"—"; anchor.classList.toggle("empty",!vals.length);
   }));
+  /* Keyboard, same contract as a text or select cell: ↑/↓ between options,
+     Space ticks (native), Enter confirms and moves down the column, Escape
+     puts back what was there and stays. Opened from the keyboard, focus lands
+     on the first option. */
+  pop.onkeydown=e=>{
+    const boxes=[...pop.querySelectorAll("input")], i=boxes.indexOf(document.activeElement);
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){ e.preventDefault(); e.stopPropagation(); const n=boxes[(i+(e.key==="ArrowDown"?1:-1)+boxes.length)%boxes.length]; n&&n.focus(); }
+    else if(e.key==="Enter"){ e.preventDefault(); e.stopPropagation(); cfCloseMulti(); moveActiveCellDelta(1,0); }
+    else if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); const o=pop._orig; if(o) cfSet(o.reqId,o.fid,o.val); cfCloseMulti(); }
+  };
+  if(opts&&opts.keyboard){ const first=pop.querySelector("input"); first&&first.focus(); }
+}
+function cfCloseMulti(){
+  const pop=document.getElementById("cf-pop"); if(!pop||!pop.classList.contains("on")) return;
+  pop.classList.remove("on"); pop._orig=null;
+  refresh();   // re-renders the row; the active cell survives it (renderReview repaints it)
 }
 document.addEventListener("click",e=>{
   const pop=document.getElementById("cf-pop");
-  if(pop && pop.classList.contains("on") && !e.target.closest("#cf-pop")){ pop.classList.remove("on"); refresh(); }
+  if(pop && pop.classList.contains("on") && !e.target.closest("#cf-pop")) cfCloseMulti();
 });
 
 /* ---- detail panel ---- */
@@ -7185,10 +7230,14 @@ document.getElementById("opt-send").addEventListener("click",()=>{
    Arrows/space are ignored while any input/select has focus — that's "editing state",
    where arrows move the text cursor instead (see bindCellEditKeys for Enter/Escape there). */
 document.addEventListener("keydown",e=>{
+  // a multi-value picker opened with the mouse: the table must not move under it
+  const cfPop=document.getElementById("cf-pop");
+  if(cfPop && cfPop.classList.contains("on") && !cfPop.contains(e.target)){ if(e.key==="Escape"){ e.preventDefault(); cfCloseMulti(); } return; }
   if(e.target.matches("input,select,textarea")) return;
   if(state.mode!=="review") return;
   const navKey=(e.key==="j"||e.key==="J")?"ArrowDown":(e.key==="k"||e.key==="K")?"ArrowUp":e.key;
   if(TE.handleNavKeydown({key:navKey},state,navAdapter)){ e.preventDefault(); return; }
+  if((e.key==="Enter"||e.key==="F2") && !e.target.closest("button,a,.overlay.open,#cf-pop") && editActiveCell()){ e.preventDefault(); return; }
   if((e.key==="v"||e.key==="V") && state.selected){ validateBlock(state.selected); }
   else if((e.key==="a"||e.key==="A") && state.selected){
     const sel = document.querySelector(`.rrow[data-id="${state.selected}"] select`);
