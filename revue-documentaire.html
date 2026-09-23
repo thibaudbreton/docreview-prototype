@@ -1189,7 +1189,6 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .act-open-row{margin-top:var(--space-3);display:flex;align-items:center;justify-content:flex-end;gap:var(--space-2)}
 /* on a system card the re-run sits beside "Open system detail", not pushed away
    by .rerun-wrap's own margin-left:auto (meant for a title row) */
-.act-open-row .rerun-wrap{margin-left:0}
 .act-detail-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
 .review-why{font-size:var(--text-xs);color:var(--ia);line-height:1.45;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--ia-soft);border-radius:var(--radius-sm)}
 /* RM view: "N assignments" indicator + retractable per-allocated-system sections (collapsed by default) */
@@ -5022,7 +5021,7 @@ function proposeBlockHTML(b, hasBranches, myBranch){
   const mine = hasBranches ? myBranch : (branches[0]||null);
   const addPending = branches.filter(br=>br.proposal && br.proposal.by===VIEWER);
   const reassignPending = branches.filter(br=>br.reassignRequest && br.reassignRequest.by===VIEWER);
-  const reassignBlocked = mine && mine.branchStatus==="reassignment_needed";
+  const reassignBlocked = mine && (mine.branchStatus==="reassignment_needed" || !!mine.reassignRequest);
   return `<div class="set-sep"></div>
     <div class="propose-block">
       <label class="propose-lbl">Propose a change</label>
@@ -5065,10 +5064,11 @@ function submitPropose(kind,b,form){
    replacement (expert for "wrong person", typology for the other two — reallocation
    is always a replacement, so both of those cases require a destination typology
    right away rather than just flagging the branch), then a short note. */
-function renderReassignForm(b,body){
+function renderReassignForm(b,body,branch){
   const form = body.querySelector("#propose-form");
   ensureBranches(b);
-  const target = myBranchOf(b) || b.branches[0];
+  // inside one system's detail, that system — not the viewer's or the first one
+  const target = branch || myBranchOf(b) || b.branches[0];
   if(!target){ toast("No allocation to request a reassignment on","warn"); return; }
   const expertOptions = MANAGERS.filter(m=>!m.admin && m.id!==target.manager);
   const typoOptions = TYPO.filter(t=>t.id!=="tky" && t.id!==target.typology);
@@ -5606,7 +5606,7 @@ function activityBlocksHTML(b){
         <div class="branch-sec-body">
           ${obsBreakdownHTML(teams)}
           <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this system's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
-          <div class="act-open-row">${rerunControlHTML("leaf:"+b.id+"::"+bidx, branch.typology, branchRerunBlockedReason(branch))}<button class="mini-btn act-open-btn" data-openact="${bidx}">Open system detail →</button></div>
+          <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open system detail →</button></div>
         </div>
       </div>`;
     }).join("")}
@@ -5642,15 +5642,7 @@ function activityDetailHTML(b,bidx){
     <div class="set-sep"></div>
     <div class="field"><label>Assigned to</label>
       <div class="fval">${escHtml(mgr||"— nobody yet —")}</div></div>
-    <div class="set-sep"></div>
-    <div class="propose-block">
-      <label class="propose-lbl">Raise a problem</label>
-      <div class="propose-actions">
-        <button class="mini-btn" id="act-reassign" ${branch.reassignRequest?"disabled":""} title="${branch.reassignRequest?"Already flagged for reassignment":"Right system, wrong person — or the wrong system entirely"}">↩ Request reassignment</button>
-        <button class="mini-btn" id="act-missing">+ Missing system</button>
-      </div>
-      <div class="propose-form" id="propose-form" style="display:none"></div>
-    </div>`;
+    ${proposeBlockHTML(b, true, branch)}`;
 }
 function renderSettings(){
   const panel = document.getElementById("settings-body");
@@ -5910,7 +5902,10 @@ function renderSettings(){
       markAllocEdited(b); refresh();
       cleared.length ? announceCleared(cleared,"PBS") : toast("PBS updated","ok");
     });
-    body.querySelector("#propose-reassign-btn")?.addEventListener("click",()=>renderReassignForm(b,body));
+    /* One propose block everywhere (the contributor's, "bolder propose buttons"
+       2026-09-10) — the system detail used to carry an older "Raise a problem"
+       copy with its own ids. There it acts on the system opened. */
+    body.querySelector("#propose-reassign-btn")?.addEventListener("click",()=>renderReassignForm(b,body, state.panelView==="activity"&&state.panelActivity!=null ? (b.branches||[])[state.panelActivity] : null));
     /* ---- two-view navigation + the PM view's own controls ---- */
     body.querySelectorAll("[data-openact]").forEach(btn=>btn.addEventListener("click",()=>{
       state.panelView="activity"; state.panelActivity=+btn.dataset.openact;
@@ -5920,10 +5915,6 @@ function renderSettings(){
       state.panelView="pm"; state.panelActivity=null;
       applyViewColumns(); renderSettings();
     });
-    // the system view's escalations reuse the existing forms — same two
-    // reasons the propose block already offers, raised from inside one system
-    body.querySelector("#act-reassign")?.addEventListener("click",()=>renderReassignForm(b,body));
-    body.querySelector("#act-missing")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#pm-add-activity")?.addEventListener("click",()=>openAddSystem(b,body));
     body.querySelectorAll("[data-sysrm]").forEach(btn=>btn.addEventListener("click",()=>removeSystem(b, btn.dataset.sysrm)));
     body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });

@@ -601,6 +601,12 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .cta.ok{background:var(--ok);color:#fff}
 .cta.blue{background:var(--accent);color:#fff}
 .cta.line{border:1px solid var(--line-2);color:var(--text-2)}
+/* Same propose button as Allocation's (revue-documentaire.html, 2026-09-10) —
+   "Request reassignment" reads the same on both screens. */
+.propose-btn{padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--accent);color:var(--accent);background:var(--accent-soft);
+  font-size:var(--text-sm);font-weight:600;transition:all .15s;display:inline-flex;gap:var(--space-1);align-items:center;justify-content:center}
+.propose-btn:hover{background:var(--accent);color:#fff}
+.propose-btn:disabled{opacity:.4;cursor:default;background:var(--panel-2);border-color:var(--line-2);color:var(--text-3)}
 .cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
 .timeline{position:relative;padding-left:20px}
 .timeline::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:1.5px;background:var(--line-2)}
@@ -2512,7 +2518,7 @@ function renderPanel2(){
       // the merge — a contributor could only ever say yes, never "not mine".
       const otherExperts=MANAGERS.filter(x=>x.id!==br.manager);
       const otherTypos=Object.keys(TYPOS).filter(t=>t!==br.typology);
-      const reassignHTML=state.openForm!=="reassign"?`<button class="cta line" id="a-reassign" style="margin-top:8px">↩ Request reassignment</button>`:`
+      const reassignHTML=state.openForm!=="reassign"?`<button class="propose-btn" id="a-reassign" style="margin-top:8px;width:100%">↩ Request reassignment</button>`:`
         <div class="inline-form" id="reassign-form">
           <div class="if-label">Request reassignment</div>
           <div class="reassign-reasons">

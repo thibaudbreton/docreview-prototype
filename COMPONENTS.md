@@ -808,11 +808,11 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **level**: molecule
 - **file**: revue-documentaire.html
 - **variants**: add-activity proposal, reassignment request (3 radio reasons)
-- **tokens**: --space-2, --space-3, --radius-md
-- **built-from**: Select Dropdown, Text Input
+- **tokens**: --accent, --accent-soft, --space-1, --space-2, --space-3, --radius-md, --text-sm
+- **built-from**: Propose Button (`.propose-btn`), Select Dropdown, Text Input
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.propose-form`/`.reassign-reasons`, Detail Panel for non-admin managers. Sibling of Inline Form Shell (below), which serves the same purpose in compliance.html — two independently-built form containers for the same "propose a change" idea.
+- **changed**: 2026-09-23
+- **notes**: 2026-09-23 — one propose block everywhere: `proposeBlockHTML()` ("Propose a change", pending requests, "↩ Request reassignment" + "+ Missing system" as filled `.propose-btn`, the 2026-09-10 version) now also renders in a Turnkey system's detail, replacing an older "Raise a problem" copy with `.mini-btn` buttons and its own ids (`#act-reassign`/`#act-missing`, gone). There the reassignment targets the system opened (`renderReassignForm(b,body,branch)`), not the viewer's or the first. Request reassignment is disabled once a request is pending on that system. compliance.html's contributor "↩ Request reassignment" uses the same `.propose-btn` (CSS duplicated there — no shared stylesheet for it); its PM-side "↪ Reassign and send back out" is a different action and keeps `.cta ok`. `.propose-btn:hover` text `#fff` hardcoded; disabled state depends on untracked `--panel-2`/`--line-2`. `.propose-form`/`.reassign-reasons`, Detail Panel for non-admin managers. Sibling of Inline Form Shell (below), which serves the same purpose in compliance.html — two independently-built form containers for the same "propose a change" idea.
 
 ### Inline Form Shell
 - **level**: molecule
@@ -1272,7 +1272,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Ghost Button (`.mini-btn`), menu options
 - **added**: 2026-09-17
 - **changed**: 2026-09-23
-- **notes**: `rerunControlHTML()`. Menu groups the system's own products first, then borrowable models under a distinct header. Placed in three spots: the model header of the qualification block (manager, single system), each system card in the Turnkey PM view (added 2026-09-23 — it used to sit only behind "Open system detail"), and the head of the contributor view (added 2026-09-23 — ALLOC-014 gives contributors the right). `.rerun-wrap` has `margin-left:auto` for title rows; the system card overrides it to 0. Menu `min-width:210px` hardcoded. Depends on untracked `--line-2`.
+- **notes**: `rerunControlHTML()`. Menu groups the system's own products first, then borrowable models under a distinct header. Placed in: the model header of the qualification block (manager, single system), the header of a Turnkey system's detail ("Open system detail"), and the head of the contributor view (added 2026-09-23 — ALLOC-014 gives contributors the right). It sat on each system card of the Turnkey PM view from 2026-09-23 until removed the same day at the user's request; the system's detail keeps it. `.rerun-wrap` has `margin-left:auto` for title rows. Menu `min-width:210px` hardcoded. Depends on untracked `--line-2`.
 
 ### OBS List
 - **level**: molecule
