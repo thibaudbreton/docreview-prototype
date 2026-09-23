@@ -386,11 +386,11 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **level**: atom
 - **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html
 - **variants**: dark, light (two inline SVGs toggled by `html[data-theme]`)
-- **tokens**: --brand-red (the dot)
+- **tokens**: none
 - **built-from**: none
 - **added**: 2026-09-22
-- **changed**: 2026-09-22
-- **notes**: The three lobes are hardcoded `#fff` / `#1E3246` gradients inside the SVG, not tokens. Height hardcoded 22px. The dot is the one brand-red touch in the header; the shell's favicon is a base64 copy of the same SVG and does NOT follow (still white dot).
+- **changed**: 2026-09-23
+- **notes**: The three lobes and the dot are hardcoded `#fff` / `#1E3246` inside the SVG, not tokens. Height hardcoded 22px. The dot took `--brand-red` on 2026-09-22 and went back to white on 2026-09-23 at the user's request — brand red stays off the logo. The shell's favicon is a base64 copy of the same SVG.
 
 ### Page Title
 - **level**: atom
@@ -1244,7 +1244,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
 - **changed**: 2026-09-22
-- **notes**: Logo Mark's dot now takes `--brand-red` (2026-09-22). Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
+- **notes**: Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
 - **level**: organism

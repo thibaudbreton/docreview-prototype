@@ -130,13 +130,12 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .t-ok{color:var(--ok)}.t-warn{color:var(--ia)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* ---- brand touches (22 Sept 2026) ---------------------------------------
-   Titles take the heading face. The red is DECORATIVE ONLY: the logo dot and
-   a small mark ahead of page titles — never on anything clickable or stateful,
+   Titles take the heading face. The red is DECORATIVE ONLY: a small mark
+   ahead of page titles — never on anything clickable or stateful,
    because red already means "not compliant" / "warn" in this UI and a red
    control would read as an error. Exact brand red still to be confirmed. */
 h1,h2,h3,.cfg-h,.set-title,.view-panel-head,.fb-bh{font-family:var(--font-heading)}
 h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;border-radius:2px;background:var(--brand-red);margin-right:.45em;vertical-align:-.08em}
-.logo-mark circle{fill:var(--brand-red)}
 </style>
 </head>
 <body>
