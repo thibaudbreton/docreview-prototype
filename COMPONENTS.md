@@ -349,8 +349,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --radius-sm, --text-3, --text-xs, --text
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.panel-toggle`. A code comment in compliance.html states this is deliberately "the same pattern as revue-documentaire.html." Hardcoded 20px size.
+- **changed**: 2026-09-23
+- **notes**: `.panel-toggle`. A code comment in compliance.html states this is deliberately "the same pattern as revue-documentaire.html." Hardcoded 20px size. The detail-panel variant is absolutely positioned at left:6px and sat on top of the requirement id; since 2026-09-23 `.set-id-row` carries `padding-left:18px` on both screens to clear it — a hardcoded offset tied to this button's size, not a space token.
 
 ### Kbd Key
 - **level**: atom
@@ -411,6 +411,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-23
 - **changed**: 2026-09-23
 - **notes**: `.cf-tag`, the small "custom" pill beside a custom column's name in the View menu's column list. Font size hardcoded 10px, off the type scale. Depends on untracked `--line-2`.
+
+### Paragraph Reference
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: section only (no sub-heading above the requirement), sub-heading (deepest heading wins, full path in the tooltip)
+- **tokens**: --text-xs, --text-3, --text-2, --font-mono, --accent
+- **built-from**: none
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `.set-para`, "§ 2.2.1 Brief Description" under the id in the detail panel header; resolved by `paragraphOf()`. Clicking opens the Document view on the block, same as "View in document". Allocation only: Compliance's requirements carry their top-level section and nothing deeper, so there is no paragraph to show there yet.
 
 ## Molecules
 

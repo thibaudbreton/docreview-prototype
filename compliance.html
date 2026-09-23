@@ -532,7 +532,8 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .settings.collapsed>*:not(.panel-toggle){display:none}
 .settings-body2{flex:1;min-height:0;display:flex;flex-direction:column}
 .set-head{padding:var(--space-4) var(--space-4) 0}
-.set-id-row{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-1);flex-wrap:wrap}
+/* padding-left clears the panel's collapse button (absolute at left:6px, 20px wide) */
+.set-id-row{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-1);flex-wrap:wrap;padding-left:18px}
 .set-id{font-family:var(--font-mono);font-size:var(--text-sm);color:var(--accent);font-weight:600}
 .set-title{font-size:var(--text-base);font-weight:600;line-height:1.4;margin-bottom:var(--space-3);color:var(--text)}
 .set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px}

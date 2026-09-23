@@ -837,7 +837,14 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .settings.collapsed>*:not(.panel-toggle){display:none}
 .settings-body{flex:1;min-height:0;display:flex;flex-direction:column}
 .set-head{padding:var(--space-4) var(--space-4) 0}
-.set-id-row{display:flex;align-items:center;gap:var(--space-2);margin-bottom:4px}
+/* padding-left clears the panel's collapse button (.settings-toggle, absolute
+   at left:6px, 20px wide), which used to sit on top of the requirement id */
+.set-id-row{display:flex;align-items:center;gap:var(--space-2);margin-bottom:4px;padding-left:18px}
+/* the paragraph the requirement sits in — deepest heading above it */
+.set-para{display:inline-flex;align-items:baseline;gap:6px;max-width:100%;margin:0 0 6px;padding:0;font-size:var(--text-xs);color:var(--text-3);text-align:left;cursor:pointer}
+.set-para b{font-family:var(--font-mono);font-weight:600;color:var(--text-2)}
+.set-para span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.set-para:hover span{color:var(--accent);text-decoration:underline}
 .set-id{font-family:var(--font-mono);font-size:var(--text-sm);color:var(--accent);font-weight:600}
 .set-actions-inline{margin-left:auto;display:flex;gap:4px}
 .mini-btn{
@@ -3165,6 +3172,26 @@ const reqs = () => allBlocks().filter(b=>b.kind==="requirement");
 const findBlock = id => {
   for(const s of SECTIONS){ for(const b of s.blocks){ if(b.id===id) return {b,s}; if(b.kind==="table"){ const r=b.rows.find(x=>x.id===id); if(r) return {b:r,s}; } } } return null;
 };
+/* The paragraph a block sits in: the deepest heading above it inside its
+   section, else the section itself. On the capture the section IS the nearest
+   heading ("2.1 - INTRODUCTION"); on the hand-authored tenders a section is the
+   top level and its sub-headings are blocks ("2.1 Automatic train protection"),
+   so both shapes resolve to the most specific number available. */
+function paragraphOf(id){
+  const f=findBlock(id); if(!f) return null;
+  const s=f.s; let head=null;
+  for(const blk of s.blocks){
+    if(blk.id===id || (blk.kind==="table" && (blk.rows||[]).some(r=>r.id===id))) break;
+    if(blk.kind==="heading") head=blk;
+  }
+  const clean=t=>String(t||"").replace(/<[^>]+>/g,"").replace(/^\s*[-–—:]\s*/,"").trim();
+  const secTitle=clean(s.title), secNum=String(s.num||"").replace(/\.$/,"");
+  if(head){
+    const m=/^\s*([\d.]+)\s*[-–—:]?\s*(.*)$/.exec(clean(head.text));
+    return {num:m?m[1].replace(/\.$/,""):"", title:m?clean(m[2]):clean(head.text), path:`${secNum} ${secTitle} › ${clean(head.text)}`};
+  }
+  return {num:secNum, title:secTitle, path:`${secNum} ${secTitle}`};
+}
 /* --- block nature: heading / info / requirement / image --- */
 function blockNature(b){
   if(b.kind==="heading") return "heading";
@@ -5370,6 +5397,8 @@ function renderSettings(){
         <button class="mini-btn" id="panel-dup" title="Duplicate — attach another requirement to ${b.sourceImage}">⎘ Duplicate</button>
         ${b.duplicatedFrom?`<button class="mini-btn" id="panel-deldup" title="Delete this duplicate">🗑 Delete</button>`:""}
       </div>`:""}
+      ${(function(){ const p=paragraphOf(b.id); if(!p||(!p.num&&!p.title)) return "";
+        return `<button class="set-para" id="set-para" title="${escHtml(p.path)} — view in document">${p.num?`<b>§ ${escHtml(p.num)}</b>`:"§"}<span>${escHtml(p.title)}</span></button>`; })()}
       ${myEs.reviewReason&&myEs.val==="doubt"?`<div class="review-why">⚠ ${myEs.reviewReason}${myEs.doubtField==="type"?` — reclassify to resolve: ${natureTag(b)}`:""}</div>`:""}
       <div class="set-title" id="set-title-text" title="${b.text.replace(/<[^>]+>/g,"").replace(/"/g,'&quot;')}">${b.text.replace(/<[^>]+>/g,"")}</div>
     </div>
@@ -5605,6 +5634,7 @@ function renderSettings(){
     body.querySelector("#ia-accept")?.addEventListener("click",()=>{setManagerAssignment(b.id,suggestion.alloc);toast("AI assignment accepted","ok")});
     body.querySelector("#ia-reject")?.addEventListener("click",()=>{logFeedback("alloc",b.id,"AI suggestion","rejected",null);delete TYPE_SUGGEST[b.id];refresh();toast("Suggestion rejected — manual assignment required","ok")});
     body.querySelector("#goto-doc")?.addEventListener("click",()=>{setMode("document");selectBlock(b.id,{scroll:true})});
+    panel.querySelector("#set-para")?.addEventListener("click",()=>{setMode("document");selectBlock(b.id,{scroll:true})});
     body.querySelectorAll("[data-perim]").forEach(btn=>btn.addEventListener("click",e=>{
       e.stopPropagation();
       const p=btn.dataset.perim;
