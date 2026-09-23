@@ -1388,6 +1388,30 @@ body.restricted .restrict-banner{display:flex}
 .tky-note{margin-top:var(--space-3);border-radius:var(--radius-md);padding:var(--space-3) var(--space-3);background:rgba(123,135,148,.14);border:1px solid rgba(123,135,148,.4);font-size:var(--text-sm);color:var(--text-2);line-height:1.55}
 .tky-note b{color:#a8b3c0}
 
+/* ---------- Custom columns (SPEC-custom-columns.md) ---------- */
+.cf-edit{margin-left:2px;padding:0 4px;border-radius:var(--radius-sm);color:var(--text-3);font-size:var(--text-xs);line-height:1.6}
+.cf-edit:hover{color:var(--accent);background:var(--accent-soft)}
+body.restricted .cf-edit, body.restricted #cf-add-btn{display:none}
+.cf-tag{margin-left:6px;font-size:10px;font-weight:600;color:var(--text-3);border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:0 6px}
+.cf-multi{width:100%;text-align:left;padding:3px 6px;border-radius:var(--radius-sm);border:1px solid transparent;color:var(--text);font-size:var(--text-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cf-multi:hover{border-color:var(--line-2)}
+.cf-multi.empty{color:var(--text-3)}
+.cf-pop{position:fixed;z-index:90;min-width:190px;max-height:280px;overflow:auto;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-md);box-shadow:0 12px 36px rgba(0,0,0,.25);padding:6px 0;display:none}
+.cf-pop.on{display:block}
+.cf-pop label{display:flex;align-items:center;gap:var(--space-2);padding:5px 12px;font-size:var(--text-sm);cursor:pointer}
+.cf-pop label:hover{background:var(--panel-2)}
+.cf-chips{display:flex;flex-wrap:wrap;gap:6px}
+/* editor */
+.cf-ed .field{margin-bottom:var(--space-4)}
+.cf-opt-row{display:flex;align-items:center;gap:var(--space-2);padding:5px 0;border-bottom:1px solid var(--line)}
+.cf-opt-row .t{flex:1;font-size:var(--text-sm)}
+.cf-opt-row .u{font-size:var(--text-xs);color:var(--text-3)}
+.cf-opt-add{display:flex;gap:var(--space-2);margin-top:var(--space-2)}
+.cf-scope{font-size:var(--text-sm);color:var(--text-2);line-height:1.5;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3)}
+.cf-danger{margin:0 20px 4px;padding:var(--space-3);border-radius:var(--radius-md);background:var(--warn-soft);color:var(--text);font-size:var(--text-sm);line-height:1.5}
+.cf-danger b{color:var(--warn)}
+.modal-foot .cf-del{margin-right:auto;color:var(--warn)}
+
 /* ---------- Modal / toast ---------- */
 .overlay{
   position:fixed;inset:0;background:rgba(6,8,12,.7);backdrop-filter:blur(3px);
@@ -1683,6 +1707,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
               <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once">⏷ Filter <span class="view-badge" id="view-badge" style="display:none"></span> ▾</button>
               <div class="adv-panel" id="adv-filter-panel"></div>
             </div>
+            <button class="btn-ghost" id="cf-add-btn" style="font-size:var(--text-sm)" title="Add a column of your own to this tender's Allocation table">＋ Column</button>
             <div class="view-wrap" style="position:relative">
               <button class="btn-ghost" id="cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
               <div class="view-panel" id="cols-panel"></div>
@@ -1725,6 +1750,10 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
     </aside>
   </main>
 </div>
+
+<!-- ===================== CUSTOM COLUMN EDITOR ===================== -->
+<div class="overlay" id="cf-overlay"><div class="modal cf-ed" id="cf-modal"></div></div>
+<div class="cf-pop" id="cf-pop"></div>
 
 <!-- ===================== EXPORT MODAL ===================== -->
 <div class="overlay" id="export-overlay">
@@ -4413,11 +4442,13 @@ function renderReview(){
         : "";
       return `<div class="rgrid-sub lvl-${it.b.level||2}${state.selected===it.b.id?" active":""}" data-id="${it.b.id}"><span class="rh-t">${it.b.text}</span>${pill}</div>`;
     }
-    if(it.type==="branch") return branchRowHTML(it.parent,it.branch,it.idx);
-    if(it.type==="team") return teamRowHTML(it.parent,it.branch,it.bidx,it.team,it.tidx);
-    if(it.type==="info")  return `<div class="rrow info-row${state.selected===it.b.id?" active":""}" data-id="${it.b.id}">${infoRowHTML(it.b)}</div>`;
+    /* Custom columns are requirement-level: a system or team sub-row and an
+       information row get an empty cell per column so the grid stays aligned. */
+    if(it.type==="branch") return cfAppendCells(branchRowHTML(it.parent,it.branch,it.idx), cfCellsHTML(null));
+    if(it.type==="team") return cfAppendCells(teamRowHTML(it.parent,it.branch,it.bidx,it.team,it.tidx), cfCellsHTML(null));
+    if(it.type==="info")  return `<div class="rrow info-row${state.selected===it.b.id?" active":""}" data-id="${it.b.id}">${infoRowHTML(it.b)}${cfCellsHTML(null,true)}</div>`;
     const b=it.b;
-    return `<div class="rrow${state.selected===b.id?" active":""}${state.selection.has(b.id)?" bulk-sel":""}" data-id="${b.id}">${rowInnerHTML(b)}</div>`;
+    return `<div class="rrow${state.selected===b.id?" active":""}${state.selection.has(b.id)?" bulk-sel":""}" data-id="${b.id}">${rowInnerHTML(b)}${cfCellsHTML(b)}</div>`;
   }
 
   // variable-height, readable, fully editable
@@ -4426,6 +4457,7 @@ function renderReview(){
   spacer.style.height="0px"; win.style.transform="none";
   win.innerHTML=VROWS.map(rowHTML).join("");
   bindVRows(win);
+  cfBindCells(win);
   syncSelAll(rows);
   renderSelBar();
   applyCols();
@@ -5075,6 +5107,7 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     <div class="field"><label>Assigned to</label>
       ${personSearchHTML("req-manager",myBranch.manager)}
     </div>
+    ${cfPanelHTML(b)}
     <div class="set-sep"></div>
     ${distributionBlockHTML(b, true)}
     ${myReassignBranch?`<div class="branch-proposal">
@@ -5439,6 +5472,7 @@ function renderSettings(){
       </div>`;
       })():""}
 
+      ${isReq?cfPanelHTML(b):""}
       <div class="set-sep"></div>
 
       <div class="field"><label>Source section</label>
@@ -5526,6 +5560,7 @@ function renderSettings(){
     body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });
     bindRerunControls(body, b);
+    cfBindPanel(body, b);
     body.querySelector("#propose-add-btn")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelectorAll("[data-approve-proposal]").forEach(btn=>btn.addEventListener("click",()=>approveProposal(b,+btn.dataset.approveProposal)));
     body.querySelectorAll("[data-reject-proposal]").forEach(btn=>btn.addEventListener("click",()=>rejectProposal(b,+btn.dataset.rejectProposal)));
@@ -6670,6 +6705,281 @@ function renderColumnsPanel(){
 document.getElementById("cols-btn")?.addEventListener("click",e=>{ e.stopPropagation(); colsPanelState.open=!colsPanelState.open; renderColumnsPanel(); });
 document.addEventListener("click",e=>{ if(colsPanelState.open && !e.target.closest("#cols-panel") && !e.target.closest("#cols-btn")){ colsPanelState.open=false; renderColumnsPanel(); } });
 
+/* =====================================================
+   CUSTOM COLUMNS — SPEC-custom-columns.md (DEC-064 to DEC-067)
+   A field definition a project manager adds to this tender's Allocation
+   table. Human data only: the AI never fills it, it carries no confidence,
+   and it never puts a requirement into review. Scoped to this tender and to
+   this phase — Compliance has none of these columns, by design (§1).
+   Definitions and values live in the shell (window.getCustomFields), so they
+   survive navigating away and back, and a version reset (§8.6).
+===================================================== */
+/* var, not const: the table can render before this block has run, and these
+   are read from render paths — a const would throw on the temporal dead zone. */
+var CF_SYNCED;   // keys whose grid column, header cell and CSS exist
+var cfEditor;    // editor modal state
+function cfProjectId(){ try{ return window.parent.getCurrentProject().id; }catch(e){ return "_"; } }
+function cfStore(){
+  try{ if(window.parent!==window && window.parent.getCustomFields) return window.parent.getCustomFields(cfProjectId()); }catch(e){}
+  window.__cfLocal = window.__cfLocal || {defs:[],values:{},seq:0};
+  return window.__cfLocal;
+}
+function cfDefs(){ return cfStore().defs.filter(d=>d.phase==="allocation"); }
+function cfDef(id){ return cfDefs().find(d=>d.id===id)||null; }
+const cfKey = id => "cf_"+id;
+function cfHas(v){ return v!=null && v!=="" && !(Array.isArray(v)&&!v.length); }
+function cfGet(reqId, fid){ return (cfStore().values[reqId]||{})[fid]; }
+function cfSet(reqId, fid, v){
+  const st=cfStore();
+  st.values[reqId]=st.values[reqId]||{};
+  if(cfHas(v)) st.values[reqId][fid]=v; else delete st.values[reqId][fid];
+}
+/* how many requirements hold a value — the number every destructive action
+   has to show before it happens (§6) */
+function cfUsage(fid){ return Object.values(cfStore().values).filter(o=>cfHas(o[fid])).length; }
+function cfOptionUsage(fid,opt){
+  return Object.values(cfStore().values).filter(o=>{ const v=o[fid]; return Array.isArray(v)?v.includes(opt):v===opt; }).length;
+}
+function cfMultiHeld(fid){ return Object.values(cfStore().values).filter(o=>Array.isArray(o[fid])&&o[fid].length>1).length; }
+function cfDisplay(v){ return Array.isArray(v)?v.join(", "):(v||""); }
+
+/* ---- registry: make each definition a first-class column everywhere a
+   built-in one is (§3) — grid, header, View menu, sort, both filters ---- */
+function syncCustomColumns(){
+  CF_SYNCED = CF_SYNCED || new Set();
+  const defs=cfDefs(), keys=new Set(defs.map(d=>cfKey(d.id)));
+  // forget columns that were deleted
+  for(let i=RCOLS.length-1;i>=0;i--){ const k=RCOLS[i].k; if(k.startsWith("cf_")&&!keys.has(k)){ delete RCOLS_BY_KEY[k]; RCOLS.splice(i,1); } }
+  for(let i=state.colOrder.length-1;i>=0;i--){ const k=state.colOrder[i]; if(k.startsWith("cf_")&&!keys.has(k)) state.colOrder.splice(i,1); }
+  for(let i=COLUMN_TOGGLE_DEFS.length-1;i>=0;i--){ if(COLUMN_TOGGLE_DEFS[i].k.startsWith("cf_")) COLUMN_TOGGLE_DEFS.splice(i,1); }
+  [ADV_FILTER_FIELDS,SORT_KEYS,COL_FILTER_DEFS,state.colFilters].forEach(o=>Object.keys(o).forEach(k=>{ if(k.startsWith("cf_")&&!keys.has(k)) delete o[k]; }));
+  [...state.colCollapsed].forEach(k=>{ if(k.startsWith("cf_")&&!keys.has(k)) state.colCollapsed.delete(k); });
+  if(state.sortCol && state.sortCol.startsWith("cf_") && !keys.has(state.sortCol)) state.sortCol=null;
+  // a saved advanced condition on a deleted column would otherwise match everything silently
+  const prune=f=>{ if(!f||!f.items) return f; f.items=f.items.filter(it=>it.items?true:!(String(it.field).startsWith("cf_")&&!keys.has(it.field))); f.items.forEach(it=>{ if(it.items) prune(it); }); return f; };
+  prune(state.advFilter);
+  CF_SYNCED.clear();
+  defs.forEach(d=>{
+    const k=cfKey(d.id), list=d.type==="list";
+    if(!RCOLS_BY_KEY[k]){ const c={k,w:"150px"}; RCOLS.push(c); RCOLS_BY_KEY[k]=c; }
+    if(!state.colOrder.includes(k)) state.colOrder.push(k);
+    COLUMN_TOGGLE_DEFS.push({k,label:`${escHtml(d.name)}<span class="cf-tag">custom</span>`});
+    const get=b=>{ const v=cfGet(b.id,d.id); return !cfHas(v)?[""]:(Array.isArray(v)?v:[v]); };
+    ADV_FILTER_FIELDS[k]={label:d.name, type:list?(d.multi?"multi":"enum"):"text", options:list?d.options.map(o=>({v:o,l:o})):undefined, get};
+    SORT_KEYS[k]=b=>cfDisplay(cfGet(b.id,d.id)).toLowerCase();
+    if(list){ COL_FILTER_DEFS[k]={label:d.name, options:[...d.options.map(o=>({v:o,l:o})),{v:"",l:"— empty —"}], get}; if(!state.colFilters[k]) state.colFilters[k]=new Set(); }
+    else { delete COL_FILTER_DEFS[k]; delete state.colFilters[k]; }
+    CF_SYNCED.add(d.id);
+  });
+  const gi=ADV_FIELD_GROUPS.findIndex(g=>g.custom); if(gi>=0) ADV_FIELD_GROUPS.splice(gi,1);
+  if(defs.length) ADV_FIELD_GROUPS.push({g:"Custom columns", custom:true, fields:defs.map(d=>cfKey(d.id))});
+  ADV_FIELD_ORDER.length=0; ADV_FIELD_GROUPS.forEach(g=>ADV_FIELD_ORDER.push(...g.fields));
+  cfRenderHead(); cfRenderStyle();
+}
+function cfRenderStyle(){
+  let el=document.getElementById("cf-style");
+  if(!el){ el=document.createElement("style"); el.id="cf-style"; document.head.appendChild(el); }
+  el.textContent=cfDefs().map(d=>{ const k=cfKey(d.id); return `.rcell.c-${k}{order:var(--ord-${k},90)}\n.rgrid[data-cc~="${k}"] .c-${k}{display:none}`; }).join("\n");
+}
+function cfRenderHead(){
+  const head=document.getElementById("rgrid-head"); if(!head) return;
+  head.querySelectorAll("[data-cfhead]").forEach(el=>el.remove());
+  cfDefs().forEach(d=>{
+    const k=cfKey(d.id), cell=document.createElement("div");
+    cell.className=`rcell c-${k}`; cell.dataset.col=k; cell.dataset.sortcol=k; cell.dataset.cfhead=d.id;
+    cell.title=`${d.name} — a column of this tender's own. Entered by people, never by the AI.`;
+    cell.innerHTML=`<span class="cl">${escHtml(d.name)}<span class="sort-arrow"></span></span>`
+      + (d.type==="list"?`<button class="colf-btn" data-colf="${k}" title="Filter this column">⏷</button>`:"")
+      + `<button class="cf-edit" data-cfedit="${d.id}" title="Edit or delete this column">✎</button>`;
+    head.appendChild(cell);
+    cell.querySelector(".cl").addEventListener("click",e=>{ e.stopPropagation(); setSortCol(k); });
+    cell.querySelector("[data-colf]")?.addEventListener("click",e=>{ e.stopPropagation(); const b=e.currentTarget; colfPop.open===k?closeColFilterPop():openColFilterPop(k,b); });
+    cell.querySelector("[data-cfedit]").addEventListener("click",e=>{ e.stopPropagation(); cfOpenEditor(d.id); });
+  });
+  renderSortIndicators(); renderColFilterIndicators();
+}
+
+/* ---- cells ---- */
+function cfAppendCells(rowHtml, cells){ return cells ? rowHtml.replace(/<\/div>\s*$/, cells+"</div>") : rowHtml; }
+function cfCellsHTML(b, placeholder){
+  if(!CF_SYNCED || !CF_SYNCED.size) return "";
+  return cfDefs().filter(d=>CF_SYNCED.has(d.id)).map(d=>{
+    const k=cfKey(d.id);
+    if(!b) return `<div class="rcell c-${k}">${placeholder?`<span class="ph">—</span>`:""}</div>`;
+    const v=cfGet(b.id,d.id), ref=`${b.id}::${d.id}`;
+    if(d.type==="text") return `<div class="rcell c-${k}"><input type="text" class="cell-text" data-cfcell="${ref}" value="${escHtml(v||"")}" placeholder="—" title="${escHtml(v||"")}"></div>`;
+    if(!d.multi) return `<div class="rcell c-${k}"><select class="cell-select${cfHas(v)?"":" empty"}" data-cfcell="${ref}"><option value="">—</option>${d.options.map(o=>`<option ${o===v?"selected":""}>${escHtml(o)}</option>`).join("")}${cfHas(v)&&!d.options.includes(v)?`<option selected>${escHtml(v)}</option>`:""}</select></div>`;
+    return `<div class="rcell c-${k}"><button class="cf-multi${cfHas(v)?"":" empty"}" data-cfmulti="${ref}" title="${escHtml(cfDisplay(v))}">${cfHas(v)?escHtml(cfDisplay(v)):"—"}</button></div>`;
+  }).join("");
+}
+function cfCommit(reqId, fid, v){
+  const d=cfDef(fid); if(!d) return;
+  cfSet(reqId, fid, v);
+  refresh();
+}
+function cfBindCells(root){
+  root.querySelectorAll("[data-cfcell]").forEach(el=>{
+    el.addEventListener("click",e=>e.stopPropagation());
+    el.addEventListener("keydown",e=>{ e.stopPropagation(); if(e.key==="Enter"&&el.tagName==="INPUT") el.blur(); });
+    el.addEventListener("change",()=>{ const [r,f]=el.dataset.cfcell.split("::"); cfCommit(r,f,el.value.trim()); });
+  });
+  root.querySelectorAll("[data-cfmulti]").forEach(el=>el.addEventListener("click",e=>{ e.stopPropagation(); cfOpenMulti(el); }));
+}
+/* multi-value picker — checkboxes, applied as you tick, committed on close so
+   the table re-renders once rather than under the pointer */
+function cfOpenMulti(anchor){
+  const [reqId,fid]=anchor.dataset.cfmulti.split("::"); const d=cfDef(fid); if(!d) return;
+  const pop=document.getElementById("cf-pop");
+  const cur=new Set(cfGet(reqId,fid)||[]);
+  pop.innerHTML=d.options.map(o=>`<label><input type="checkbox" value="${escHtml(o)}" ${cur.has(o)?"checked":""}> ${escHtml(o)}</label>`).join("")
+    + [...cur].filter(o=>!d.options.includes(o)).map(o=>`<label><input type="checkbox" value="${escHtml(o)}" checked> ${escHtml(o)}</label>`).join("");
+  pop.dataset.ref=anchor.dataset.cfmulti;
+  pop.classList.add("on");
+  const r=anchor.getBoundingClientRect();
+  pop.style.top=(r.bottom+4)+"px"; pop.style.left=Math.max(8,Math.min(r.left, window.innerWidth-pop.offsetWidth-8))+"px";
+  pop.querySelectorAll("input").forEach(cb=>cb.addEventListener("change",()=>{
+    const vals=[...pop.querySelectorAll("input:checked")].map(x=>x.value);
+    cfSet(reqId,fid,vals);
+    anchor.textContent=vals.length?vals.join(", "):"—"; anchor.classList.toggle("empty",!vals.length);
+  }));
+}
+document.addEventListener("click",e=>{
+  const pop=document.getElementById("cf-pop");
+  if(pop && pop.classList.contains("on") && !e.target.closest("#cf-pop")){ pop.classList.remove("on"); refresh(); }
+});
+
+/* ---- detail panel ---- */
+function cfPanelHTML(b){
+  const defs=cfDefs(); if(!defs.length || !b) return "";
+  return `<div class="set-sep"></div>
+    ${defs.map(d=>{
+      const v=cfGet(b.id,d.id), ref=`${b.id}::${d.id}`;
+      let ctl;
+      if(d.type==="text") ctl=`<input type="text" class="ui-input" data-cfpanel="${ref}" value="${escHtml(v||"")}" placeholder="—">`;
+      else if(!d.multi) ctl=`<select class="ui-select" data-cfpanel="${ref}"><option value="">—</option>${d.options.map(o=>`<option ${o===v?"selected":""}>${escHtml(o)}</option>`).join("")}</select>`;
+      else { const cur=new Set(v||[]); ctl=`<div class="cf-chips">${d.options.map(o=>`<button type="button" class="advv-chip${cur.has(o)?" on":""}" data-cfchip="${ref}" data-v="${escHtml(o)}">${escHtml(o)}</button>`).join("")}</div>`; }
+      return `<div class="field"><label>${escHtml(d.name)}</label>${ctl}</div>`;
+    }).join("")}
+    <div class="deriv-hint" style="margin-top:-6px;margin-bottom:12px">Custom columns — entered by people. The AI never fills them, and they never put a requirement into review.</div>`;
+}
+function cfBindPanel(body,b){
+  body.querySelectorAll("[data-cfpanel]").forEach(el=>el.addEventListener("change",()=>{ const [r,f]=el.dataset.cfpanel.split("::"); cfCommit(r,f,el.value.trim()); }));
+  body.querySelectorAll("[data-cfchip]").forEach(el=>el.addEventListener("click",()=>{
+    const [r,f]=el.dataset.cfchip.split("::"); const cur=new Set(cfGet(r,f)||[]);
+    cur.has(el.dataset.v)?cur.delete(el.dataset.v):cur.add(el.dataset.v);
+    const d=cfDef(f); cfCommit(r,f,d?d.options.filter(o=>cur.has(o)).concat([...cur].filter(o=>!d.options.includes(o))):[...cur]);
+  }));
+}
+
+/* ---- editor: create, edit, delete (project managers only, §1) ---- */
+function cfOpenEditor(fid){
+  if(!isAdmin()){ toast("Only project managers create or change columns","warn"); return; }
+  const d=fid?cfDef(fid):null;
+  cfEditor={ id:d?d.id:null, name:d?d.name:"", type:d?d.type:"text", multi:d?!!d.multi:false,
+             options:d?d.options.slice():[], confirmDelete:false };
+  cfRenderEditor();
+  document.getElementById("cf-overlay").classList.add("open");
+  setTimeout(()=>document.getElementById("cf-name")?.focus(),30);
+}
+function cfCloseEditor(){ document.getElementById("cf-overlay").classList.remove("open"); cfEditor=null; }
+function cfRenderEditor(){
+  const m=document.getElementById("cf-modal"), E=cfEditor; if(!m||!E) return;
+  const editing=!!E.id, used=editing?cfUsage(E.id):0;
+  const typeLocked=editing && used>0;   // §8.5 — renaming is safe, changing the type is not
+  const multiLocked=editing && E.multi && cfMultiHeld(E.id)>0;
+  if(E.confirmDelete){
+    m.innerHTML=`<div class="modal-head"><h3>Delete “${escHtml(E.name)}”?</h3>
+        <p>This removes the column from this tender's Allocation table.</p></div>
+      <div class="cf-danger">${used?`<b>${used} requirement${used>1?"s hold":" holds"} a value in this column.</b> Deleting the column deletes ${used>1?"all "+used+" values":"that value"} with it. This cannot be undone.`:`<b>No requirement holds a value yet</b> — only the column itself goes.`}</div>
+      <div class="modal-foot"><button class="btn-ghost" id="cf-keep">Keep it</button>
+        <button class="btn-primary" id="cf-del-go" style="background:var(--warn)">Delete column${used?` and ${used} value${used>1?"s":""}`:""}</button></div>`;
+    m.querySelector("#cf-keep").onclick=()=>{ E.confirmDelete=false; cfRenderEditor(); };
+    m.querySelector("#cf-del-go").onclick=()=>{
+      const st=cfStore(); st.defs=st.defs.filter(x=>x.id!==E.id);
+      Object.values(st.values).forEach(o=>{ delete o[E.id]; });
+      const name=E.name; cfCloseEditor(); syncCustomColumns(); applyCols(); refresh(); renderColumnsPanel();
+      toast(`“${name}” deleted${used?` — ${used} value${used>1?"s":""} removed`:""}`,"warn");
+    };
+    return;
+  }
+  const optRows=E.options.map((o,i)=>{
+    const n=editing?cfOptionUsage(E.id,o):0;
+    return `<div class="cf-opt-row"><span class="t">${escHtml(o)}</span>${n?`<span class="u">used by ${n}</span>`:""}<button class="mini-btn" data-cfoptrm="${i}" title="${n?`In use on ${n} requirement${n>1?"s":""} — clear those values first`:"Remove this option"}">✕</button></div>`;
+  }).join("");
+  m.innerHTML=`<div class="modal-head"><h3>${editing?"Edit column":"New column"}</h3>
+      <p>A column of this tender's own, in Allocation only.</p></div>
+    <div class="modal-body">
+      <div class="field"><label>Name</label><input type="text" class="ui-input" id="cf-name" value="${escHtml(E.name)}" placeholder="e.g. Commercial risk"></div>
+      <div class="field"><label>Type</label>
+        <div class="gseg" id="cf-type">
+          <button data-t="text" class="${E.type==="text"?"on":""}" ${typeLocked&&E.type!=="text"?"disabled":""}>Free text</button>
+          <button data-t="list" class="${E.type==="list"?"on":""}" ${typeLocked&&E.type!=="list"?"disabled":""}>List</button>
+        </div>
+        ${typeLocked?`<div class="deriv-hint">The type can't change — ${used} requirement${used>1?"s hold":" holds"} a value, and converting would lose data. Renaming is fine.</div>`:""}
+      </div>
+      ${E.type==="list"?`<div class="field"><label>Options</label>
+        ${optRows||`<div class="deriv-hint">No option yet.</div>`}
+        <div class="cf-opt-add"><input type="text" class="ui-input" id="cf-opt-new" placeholder="Add an option…"><button class="mini-btn" id="cf-opt-add">Add</button></div>
+        <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:var(--text-sm);text-transform:none;letter-spacing:0;font-weight:500;color:var(--text-2)">
+          <input type="checkbox" id="cf-multi" ${E.multi?"checked":""} ${multiLocked?"disabled":""}> Allow several values per requirement</label>
+        ${multiLocked?`<div class="deriv-hint">Can't go back to a single value — ${cfMultiHeld(E.id)} requirement${cfMultiHeld(E.id)>1?"s hold":" holds"} more than one.</div>`:""}
+      </div>`:""}
+      <div class="cf-scope">This tender only, Allocation only — Compliance won't show it. Internal: included in Allocation exports, <b>never</b> in the client compliance matrix. Always optional; the AI never fills it.</div>
+    </div>
+    <div class="modal-foot">
+      ${editing?`<button class="btn-ghost cf-del" id="cf-del">Delete column…</button>`:""}
+      <button class="btn-ghost" id="cf-cancel">Cancel</button>
+      <button class="btn-primary" id="cf-save">${editing?"Save":"Create column"}</button>
+    </div>`;
+  const nameEl=m.querySelector("#cf-name"); nameEl.addEventListener("input",()=>{ E.name=nameEl.value; });
+  m.querySelectorAll("#cf-type button").forEach(b=>b.addEventListener("click",()=>{ if(b.disabled) return; E.type=b.dataset.t; cfRenderEditor(); }));
+  const addOpt=()=>{ const inp=m.querySelector("#cf-opt-new"); const v=(inp.value||"").trim(); if(!v) return;
+    if(E.options.some(o=>o.toLowerCase()===v.toLowerCase())){ toast(`“${v}” is already an option`,"warn"); return; }
+    E.options.push(v); cfRenderEditor(); m.querySelector("#cf-opt-new")?.focus(); };
+  m.querySelector("#cf-opt-add")?.addEventListener("click",addOpt);
+  m.querySelector("#cf-opt-new")?.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); addOpt(); } });
+  m.querySelectorAll("[data-cfoptrm]").forEach(b=>b.addEventListener("click",()=>{
+    const i=+b.dataset.cfoptrm, o=E.options[i], n=editing?cfOptionUsage(E.id,o):0;
+    // DEC-065 — blocked while in use: no value is ever silently lost or orphaned
+    if(n){ toast(`“${o}” is used by ${n} requirement${n>1?"s":""} — clear those values before removing it`,"warn"); return; }
+    E.options.splice(i,1); cfRenderEditor();
+  }));
+  m.querySelector("#cf-multi")?.addEventListener("change",e=>{ E.multi=e.target.checked; });
+  m.querySelector("#cf-cancel").addEventListener("click",cfCloseEditor);
+  m.querySelector("#cf-del")?.addEventListener("click",()=>{ E.confirmDelete=true; cfRenderEditor(); });
+  m.querySelector("#cf-save").addEventListener("click",cfSaveEditor);
+}
+function cfSaveEditor(){
+  const E=cfEditor; if(!E) return;
+  const name=(E.name||"").trim();
+  if(!name){ toast("Give the column a name","warn"); return; }
+  const builtIn=COLUMN_TOGGLE_DEFS.filter(c=>!c.k.startsWith("cf_")).map(c=>String(c.label).toLowerCase());
+  if(builtIn.includes(name.toLowerCase()) || cfDefs().some(d=>d.id!==E.id && d.name.toLowerCase()===name.toLowerCase())){ toast(`A column called “${name}” already exists`,"warn"); return; }
+  if(E.type==="list" && !E.options.length){ toast("A list needs at least one option","warn"); return; }
+  const st=cfStore();
+  if(E.id){
+    const d=st.defs.find(x=>x.id===E.id);
+    const wasSingle=!d.multi;
+    Object.assign(d,{name, type:E.type, multi:E.type==="list"&&E.multi, options:E.type==="list"?E.options.slice():[]});
+    // single → several: existing values become one-item lists, nothing is lost
+    if(wasSingle && d.multi) Object.values(st.values).forEach(o=>{ if(cfHas(o[d.id])&&!Array.isArray(o[d.id])) o[d.id]=[o[d.id]]; });
+    if(!wasSingle && !d.multi) Object.values(st.values).forEach(o=>{ if(Array.isArray(o[d.id])) o[d.id]=o[d.id][0]; });
+    toast(`“${name}” updated`,"ok");
+  }else{
+    st.seq=(st.seq||0)+1;
+    st.defs.push({id:"f"+st.seq, name, type:E.type, multi:E.type==="list"&&E.multi, options:E.type==="list"?E.options.slice():[], phase:"allocation"});
+    toast(`“${name}” added — at the end of the table`,"ok");
+  }
+  cfCloseEditor(); syncCustomColumns(); applyCols(); refresh(); renderColumnsPanel();
+  // bring the new column into view
+  const body=document.getElementById("rgrid-body"); if(body && !E.id) body.scrollLeft=body.scrollWidth;
+}
+document.getElementById("cf-add-btn")?.addEventListener("click",e=>{ e.stopPropagation(); cfOpenEditor(null); });
+document.getElementById("cf-overlay")?.addEventListener("click",e=>{ if(e.target.id==="cf-overlay") cfCloseEditor(); });
+/* Registry only: the first render is setMode("review") at the end of this file,
+   and rendering from here would reach consts declared below (EXPORT_*). */
+syncCustomColumns();
+
 /* ---------- nav / detail panel collapse ---------- */
 function applyPanels(){
   const navEl=document.querySelector(".nav"), setEl=document.querySelector(".settings");
@@ -6740,6 +7050,7 @@ function renderExportPanel(){
     ${TENDER_LANGUAGE!=="en"?`<div class="exp-lang-note">🌐 Requirement text exports in ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} — the original, never a round trip through English. Comments and non-compliance categories export in English, as written.</div>`:""}
     <div class="exp-sec-lbl">Include steps</div>
     ${EXPORT_STEPS.map(s=>`<label class="exp-row"><input type="checkbox" data-estep="${s.k}" ${exportState.steps.has(s.k)?"checked":""}><span><span class="exp-t">${s.label}</span><span class="exp-d">${s.desc}</span></span></label>`).join("")}
+    ${cfDefs().length?`<div class="exp-note" style="margin:8px 0 4px">${cfDefs().length} custom column${cfDefs().length>1?"s":""} included — internal exports only. Never sent in the client compliance matrix.</div>`:""}
     <div class="exp-sec-lbl">Target format</div>
     <select id="exp-format" class="exp-format">${EXPORT_FORMATS.map(f=>`<option value="${f.k}" ${exportState.format===f.k?"selected":""}>${f.label}</option>`).join("")}</select>
     <button class="exp-go" id="exp-go">Generate export</button>
@@ -6756,7 +7067,7 @@ function renderExportPanel(){
     const scope=exportState.docId==="all"?"all documents":("Doc "+(DOCS.findIndex(d=>d.id===exportState.docId)+1));
     const filtered=colFilterActiveCount()||advFilterActiveCount();
     exportState.open=false; renderExportPanel();
-    toast(`Export generated — ${rows.length.toLocaleString()} requirement${rows.length>1?"s":""} · ${fmt} · ${steps} · ${scope}${filtered?" · filtered":""}`,"ok");
+    toast(`Export generated — ${rows.length.toLocaleString()} requirement${rows.length>1?"s":""} · ${fmt} · ${steps} · ${scope}${filtered?" · filtered":""}${cfDefs().length?` · ${cfDefs().length} custom column${cfDefs().length>1?"s":""}`:""}`,"ok");
   });
 }
 document.getElementById("export-btn")?.addEventListener("click",e=>{ e.stopPropagation(); exportState.docId=state.docFilter; exportState.open=!exportState.open; renderExportPanel(); });

@@ -217,6 +217,9 @@ OPS_BY_TYPE:{
   enum:["is","is_not","is_any_of","is_none_of","is_empty"],
   date:["before","after","between","in_last","is_empty"],
   boolean:["is_true","is_false"],
+  // a list column that holds several values per row (SPEC-custom-columns.md):
+  // "is any of" matches a row holding at least one of the picked values
+  multi:["is_any_of","is_none_of","is_empty","is_not_empty"],
 },
 OP_LABEL:{contains:"contains",not_contains:"does not contain",is:"is",is_not:"is not",starts_with:"starts with",
   is_empty:"is empty",is_not_empty:"is not empty",is_any_of:"is any of",is_none_of:"is none of",

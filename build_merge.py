@@ -239,7 +239,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false;
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={};
   reassignRequests.length=0;
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -254,6 +254,13 @@ window.setReviewValidated = (v)=>{ reviewValidated = !!v; };
 // already-arrived; this flag lets it gate that on the real trigger (Compliance's
 // "Simulate upload — v2.2" button) instead of asserting it as fact on load.
 let v22Uploaded = false;
+// SPEC-custom-columns.md — column definitions and their values, per tender.
+// Held here in the shell, not in the screen: every route reloads the screen's
+// iframe, and a column that vanished on the first navigation would demonstrate
+// nothing. Values are keyed by requirement id, so they also survive a document
+// version resetting a requirement (§8.6) — they are human data, not AI output.
+let customFields = {};
+window.getCustomFields = (projectId)=>{ const k=projectId||"_"; if(!customFields[k]) customFields[k]={defs:[],values:{},seq:0}; return customFields[k]; };
 window.isV22Uploaded = ()=>v22Uploaded;
 window.setV22Uploaded = (v)=>{ v22Uploaded = !!v; };
 let projectMode = 'ai';

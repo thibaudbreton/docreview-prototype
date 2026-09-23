@@ -402,6 +402,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-22
 - **notes**: The red mark is a `::before` inline-block so it survives flex and block title containers alike; its height is `.85em`, deliberately relative rather than on the space scale. Red is never applied to interactive or stateful elements — see `--warn`.
 
+### Custom Column Tag
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: none
+- **tokens**: --text-3, --line-2, --radius-pill
+- **built-from**: none
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `.cf-tag`, the small "custom" pill beside a custom column's name in the View menu's column list. Font size hardcoded 10px, off the type scale. Depends on untracked `--line-2`.
+
 ## Molecules
 
 ### Search Box
@@ -1254,6 +1264,36 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-23
 - **notes**: `obsListHTML()` / `bindObsList()`. The noun comes from `OBS_NOUN` — "role" on a keyed Mainline tender (DEC-062), "organisation" elsewhere — for the remove tooltip, add button, toasts and confirm. Removing down to one entry re-syncs the system's and (single-system) the requirement's person and OBS, so the table's "Assigned to" never shows the removed entry's person.
 
+### Custom Column Cell
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: free text (inline input), single-value list (select), multi-value list (button + checkbox popover `#cf-pop`), empty (system/team sub-rows, information rows)
+- **tokens**: --text, --text-3, --line-2, --radius-sm, --text-sm; popover --panel, --line-2, --radius-md
+- **built-from**: Text Input (`.cell-text`), Select Dropdown (`.cell-select`), Checkbox
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `cfCellsHTML()`, appended to every grid row centrally in `rowHTML()` rather than inside each row renderer, so a new row type cannot forget it. Column width hardcoded 150px. Popover min-width 190px / max-height 280px hardcoded. Depends on untracked `--line-2`, `--panel-2`.
+
+### Custom Column Header Cell
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: text (sort + edit), list (sort + column filter + edit), contributor view (edit hidden)
+- **tokens**: --text-3, --accent, --accent-soft, --radius-sm, --text-xs
+- **built-from**: Column Filter Button (`.colf-btn`), edit button (`.cf-edit`)
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: Injected into `#rgrid-head` by `cfRenderHead()`; its grid order and hidden state come from a generated `<style id="cf-style">`, since the static per-column CSS rules cannot know these keys in advance. The ✎ is hidden by `body.restricted`.
+
+### Custom Fields Panel Section
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: text, single list, multi list (toggle chips `.advv-chip`)
+- **tokens**: --text-xs, --text-3
+- **built-from**: Text Input (`.ui-input`), Select Dropdown (`.ui-select`), Chip Toggle
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `cfPanelHTML()`, in both the manager panel and the contributor view. One quiet hint line under the fields — the label stays a label (see Page Title / Nature field convention). Reuses the advanced filter's chip style for multi values.
+
 ## Organisms
 
 ### App Header
@@ -1705,6 +1745,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `#team-screen`, the full "Team casting" view. Text and available actions change based on simulated viewer identity.
+
+### Custom Column Editor
+- **level**: organism
+- **file**: revue-documentaire.html
+- **variants**: create, edit, delete confirmation (states the number of values lost)
+- **tokens**: --panel, --line, --radius-md, --text-sm, --warn, --warn-soft, --space-2, --space-3
+- **built-from**: Modal (`.overlay` + `.modal`), Text Input, Tab Bar / Segmented Control (`.gseg`), Checkbox, Primary Button, Ghost Button
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `cfOpenEditor()` / `cfRenderEditor()`. Locks are explained in place rather than silently disabled: type change once values exist, going back to single value once a requirement holds several, removing an option in use (refused with a count). The delete button is warn-coloured inline style on `.btn-primary`, not its own class. Depends on untracked `--warn-soft`.
 
 ## Removed
 
