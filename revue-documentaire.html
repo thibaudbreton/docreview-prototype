@@ -5297,16 +5297,15 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
          several verdicts to consolidate" note. */
       if(brs.length){
         const br=brs[idx];
-        return `<div class="deriv-arrow small">↓</div>`
-          + obsListHTML(br, {reqId:b.id, branchIdx:idx, systemId:br.typology});
+        // no "↓" before the OBS step: the steps already read top to bottom, and the arrow only took height
+        return obsListHTML(br, {reqId:b.id, branchIdx:idx, systemId:br.typology});
       }
       /* DEC-054 — an OBS is an organisation, never a person. This used to fall
          back to the assignee's name, the conflation inherited from the first
          version of the app: it made the chain look like it derived who answers,
          when it derives which team handles it. */
       const val = (derivSrc.obs && derivSrc.obs.v) || "— No organisation derived yet —";
-      return `<div class="deriv-arrow small">↓</div>`
-        + derivStepHTML("OBS · team", `<div class="fval">${escHtml(val)}</div>`, derivSrc.obs,
+      return derivStepHTML("OBS · team", `<div class="fval">${escHtml(val)}</div>`, derivSrc.obs,
             "The team or service within the system. Assigning a person comes after — usually that team's manager in the tender's region.");
     })()}
   </div>`;

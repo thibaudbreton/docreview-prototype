@@ -1344,6 +1344,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-23
 - **notes**: `natureFieldHTML()` / `classFieldHTML()`, at the top of every block's details (SIG and other single-pass tenders, the contributor view; the Turnkey PM view has the same two fields in its own layout, now labelled "Class" too, not "Type"). Nature offers only Information / Heading / Requirement (DEC-074) — it briefly held Functional / Performance / Security / Interface / Regulatory, which are gone from Allocation. Confirm buttons exist because re-picking the current value in a select fires no change event.
 
+### Derivation Chain
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: single-system model block ("SIG's model" — ABS, PBS, OBS), Turnkey pass 1 (Nature, Class, PBS/ABS, System), contributor view
+- **tokens**: --panel-2, --line, --radius-md, --space-3, --text-xs, --text-3
+- **built-from**: Derivation Step (`derivStepHTML()` — label, confidence badge, control, hint), OBS List, Re-run Control
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `.deriv-pass` / `.deriv-step`. Not recorded before; entered when the small "↓" between PBS and OBS was removed (2026-09-23) — the steps already read top to bottom and the arrow only took height, so the three steps now sit 16px apart. The only arrow left is Turnkey's "routes into" between the distribution and the system's model, which carries information. Depends on untracked `--panel-2`.
+
 ## Organisms
 
 ### App Header
