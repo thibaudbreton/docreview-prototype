@@ -450,7 +450,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-09-01
 - **changed**: 2026-09-23
-- **notes**: `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
+- **notes**: Document view only since 2026-09-23 — the table row's compact "▾" variant (`.row-natpick`, on requirement and information rows) was removed; in the table, nature is corrected in the detail panel's Nature field. `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
 
 ## Molecules
 
@@ -1849,4 +1849,4 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **notes**: `.change-card`, Detail Panel's Change view (Compare mode).
 
 
-_(none yet — this section starts empty as of the 2026-09-01 seed)_
+### Row Reclassify Button — removed 2026-09-23, replaced by the detail panel's Nature field (Nature and Class Fields)
