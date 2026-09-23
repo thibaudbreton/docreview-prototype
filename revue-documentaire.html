@@ -5540,8 +5540,15 @@ function pmClassificationHTML(b){
           return `<div class="ui-list-row">
             <span class="ui-list-tag">${TY(a.typology).code}</span>
             <span class="ui-list-main">${showName?escHtml(name):""}</span>
-            ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence that this is the right system${c<OBS_THRESHOLD?` — below the ${OBS_THRESHOLD}% threshold`:""}">${c}%</span>`:""}
-            <span class="ui-list-note${hasModel?" is-accent":""}" title="${hasModel?"Routed into this system's own allocation model.":"No model — allocated by hand inside the system."}">${hasModel?"has a model":"manual"}</span>
+            ${hasModel?`<span class="ui-list-note is-accent" title="Routed into this system's own allocation model.">has a model</span>`:""}
+            ${/* Provenance, one or the other (2026-09-23): the AI's confidence when
+                 the Turnkey model proposed the system, "manual" when a person
+                 added it. "manual" used to mean "this system has no allocation
+                 model", and sat next to the AI's percentage — two things that
+                 read as contradicting each other. */
+              c!=null
+              ?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="Proposed by the Turnkey model — ${c}% confidence that this is the right system${c<OBS_THRESHOLD?` — below the ${OBS_THRESHOLD}% threshold`:""}">${c}%</span>`
+              :`<span class="ui-list-note" title="Added by hand — not proposed by the Turnkey model">manual</span>`}
             <button class="ui-list-rm" data-sysrm="${escHtml(a.typology)}" title="Remove this system">✕</button>
           </div>`;
         }).join(""):`<div class="ui-list-empty">No system yet</div>`}
