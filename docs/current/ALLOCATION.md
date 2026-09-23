@@ -81,6 +81,8 @@ ALLOC-017 — DEC-061/062 : sur un tender dont le produit a des clés ([KEYS](KE
 
 **Nature et classe (DEC-074).** La **nature** d'un bloc, c'est ce qu'il est : **Information, Heading ou Requirement** — rien d'autre. Elle se lit et se corrige dans le détail, en tête, et **n'a pas de colonne dans la table**. La **classe** (technique / non technique) s'affiche dans le détail de toute exigence, juste en dessous — elle n'y figurait que dans la vue du chef de projet Turnkey, si bien qu'un tender SIG ne la montrait pas. Une nature ou une classe détectée par l'IA le dit, avec un bouton pour la confirmer. Critères : ALLOC-T25 — le détail d'une exigence montre Nature (trois valeurs) et Class, sur tout tender ; ALLOC-T26 — aucune colonne Nature dans la table, et aucune valeur Functional / Performance / Security / Interface / Regulatory dans Allocation.
 
+ALLOC-019 — DEC-075 : **changer la nature ou la classe propose de relancer le modèle.** Une ligne colorée « ↻ Re-run the model » s'affiche au-dessus d'ABS, PBS et OBS, avec la raison (nature changed / class changed). Rien n'est relancé tout seul. Elle disparaît quand la caractérisation revient à celle de la dérivation, ou après une relance, quelle que soit sa voie. Relance bloquée : la même ligne le dit, sans bouton. Critère : ALLOC-T27 — basculer la classe d'une exigence SIG non répondue affiche le bouton ; le cliquer re-dérive ABS / PBS / OBS et le bouton disparaît ; sur une exigence répondue, la ligne dit « re-run blocked ».
+
 ## Une allocation par organisation
 
 ALLOC-016 — DEC-060 : **une allocation est une organisation et la personne qui y répond.** Une exigence qui atteint trois organisations est **trois allocations à faire**, et le compte affiché est celui des organisations, pas celui des systèmes.

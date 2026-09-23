@@ -1010,6 +1010,15 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .comment-input input:focus{border-color:var(--accent)}
 /* .change-card and .review-state went with the Change Card (DEC-072) */
 .nat-pick.is-ai{border:1px dashed var(--ia);color:var(--ia)}
+/* re-run prompt — one compact row, filled so it cannot be missed */
+.rerun-prompt{display:block;width:100%;margin:0 0 var(--space-3);padding:5px var(--space-3);border-radius:var(--radius-md);
+  background:var(--accent);color:#fff;font-size:var(--text-xs);font-weight:700;line-height:1.4;text-align:left;cursor:pointer;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  box-shadow:0 1px 2px rgba(0,0,0,.12);transition:filter .12s}
+.rerun-prompt:hover{filter:brightness(1.12)}
+button.rerun-prompt{display:flex;align-items:baseline;gap:var(--space-2)}
+.rerun-prompt .rp-why{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-weight:500;opacity:.85;text-align:right}
+.rerun-prompt.is-muted{background:var(--ia-soft);color:var(--ia);box-shadow:none;cursor:default;font-weight:600}
 
 /* ---------- Segmentation mode & tables ---------- */
 .seg-bar{display:none;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-5);background:var(--human-soft);border-bottom:1px solid var(--human);flex-shrink:0;font-size:var(--text-sm)}
@@ -2614,6 +2623,7 @@ function applyRerunTo(b, branchIdx, productId){
   const branch=(b.branches||[])[branchIdx]; if(!branch) return null;
   const teams=ensureTeams(branch);
   const r=runAllocationModel(productId, b.id+"#"+branchIdx); if(!r) return null;
+  b.derivedWith={nature:blockNature(b), tech:b.tech??null};   // the derivation now matches the characterisation
   // one characterisation, shared by every organisation below it
   branch.abs=r.abs; branch.pbs=r.pbs;
   if((b.branches||[]).length===1){ b.domain=r.abs.v; b.abs=r.abs; b.pbs=r.pbs; }
@@ -3269,6 +3279,40 @@ function applyVersionChanges(){
     b.reviewReason=`${lc.type==="added"?"Added":"Modified"} in ${lc.to} of its document — see the Versions tab`;
   });
 }
+/* ---- Re-run prompt after a characterisation change (DEC-075) --------------
+   The model derives ABS → PBS → OBS from a requirement as characterised. If
+   its nature or its class (technical / non-technical) changes afterwards, the
+   derivation on screen was made for something else. Each block remembers what
+   it was when its derivation was made — snapshotted at load, reset by any
+   re-run — and the model block offers a re-run when that no longer holds. */
+function snapshotCharacterisation(){
+  SECTIONS.flatMap(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x])).forEach(b=>{
+    if(!b.derivedWith) b.derivedWith={nature:blockNature(b), tech:b.tech??null};
+  });
+}
+function charChange(b){
+  const d=b.derivedWith; if(!d || blockNature(b)!=="requirement") return null;
+  const nature=d.nature!=="requirement", cls=!nature && (d.tech??null)!==(b.tech??null);
+  return nature||cls ? {nature, cls, wasTech:d.tech} : null;
+}
+function defaultProductFor(systemId){
+  if(TENDER_PRODUCT_ID && productSystem(TENDER_PRODUCT_ID)===systemId) return TENDER_PRODUCT_ID;
+  const p=(SYSTEM_PRODUCTS[systemId]||[])[0]; return p?p.id:null;
+}
+/* One compact line above ABS / PBS / OBS: the reason is in the button's own
+   label, so it costs a single row of height. Blocked (an answer recorded, a
+   question with the client — DEC-041/051) or impossible (no model for the
+   system), it says so in the same slot instead of offering a button that
+   would refuse. */
+function rerunPromptHTML(b, br, idx){
+  const ch=charChange(b); if(!ch || !br) return "";
+  const what = ch.nature ? "Nature changed" : "Class changed";
+  const was  = ch.nature ? "It was not a requirement when the model ran." : ch.wasTech ? `It was ${ch.wasTech==="tech"?"technical":"non-technical"} when the model ran.` : "";
+  const blocked=branchRerunBlockedReason(br), pid=defaultProductFor(br.typology);
+  if(blocked) return `<div class="rerun-prompt is-muted" title="${escHtml(was)} Re-run blocked: ${escHtml(blocked)}.">${what} · re-run blocked</div>`;
+  if(!pid)    return `<div class="rerun-prompt is-muted" title="${escHtml(was)} No allocation model exists for this system.">${what} · check ABS / PBS / OBS by hand</div>`;
+  return `<button class="rerun-prompt" data-rerun-now="${idx}" data-product="${pid}" title="${escHtml(was)} Re-runs ${escHtml(PRODUCT(pid).label)} on this requirement."><span>↻ Re-run the model</span><span class="rp-why">${what.toLowerCase()}</span></button>`;
+}
 /* ---- Compare: one document at a time (DEC-070) ---- */
 function cmpDocs(){ return DOCS.filter(d=>d.versions.length>1); }
 function cmpEnsure(){
@@ -3387,6 +3431,8 @@ function reclassify(id, nature){
       // B8 — information → requirement always lands on Incomplete: nothing is filled in yet.
       b.allocStatus="incomplete"; b.type=b.type||"Functional";
       b.tech=b.tech||"tech"; b.perim=b.perim||[]; b.manager=b.manager||null;
+      // on a SIG tender every requirement is SIG — without it there is no branch, and no model to run
+      if(IS_SIG_TENDER && !b.perim.length){ b.perim=["sig"]; syncBranchesFromPerim(b); }
     }
   }
   computeCharStatus(b);
@@ -5262,6 +5308,15 @@ function bindRerunControls(root, b){
     refresh();
   }));
   document.addEventListener("click",()=>root.querySelectorAll(".rerun-menu.on").forEach(m=>m.classList.remove("on")),{once:true});
+  root.querySelectorAll("[data-rerun-now]").forEach(btn=>btn.addEventListener("click",()=>{
+    const idx=+btn.dataset.rerunNow, product=PRODUCT(btn.dataset.product);
+    const branch=(b.branches||[])[idx]; if(!branch||!product) return;
+    const why=charChange(b);
+    applyRerunTo(b, idx, product.id);
+    pushBranchLog(b, MGR(VIEWER).name, `Re-ran allocation with ${product.label} after its ${why&&why.nature?"nature":"class"} changed`, "ok");
+    toast(`${b.id} — re-derived with ${product.label}`,"ok");
+    refresh();
+  }));
 }
 function derivationChainHTML(b,myBranch,derivSrc,rmView){
   const distribHTML = distributionBlockHTML(b);
@@ -5277,6 +5332,7 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
       const br=(b.branches||[])[idx];
       return rerunControlHTML("leaf:"+b.id+"::"+idx, br.typology, branchRerunBlockedReason(br));
     })()}</div>
+    ${(function(){ const brs=b.branches||[]; const idx=myBranch?brs.indexOf(myBranch):(brs.length===1?0:-1); return idx<0?"":rerunPromptHTML(b,brs[idx],idx); })()}
     ${derivStepHTML("ABS", absControlHTML(b,derivSrc), derivSrc.abs)}
     ${derivStepHTML("PBS", pbsControlHTML(b,derivSrc), derivSrc.pbs, null, TENDER_KEYS?"The product element the requirement bears on — from the PBS key, grouped by family.":null)}
     ${(function(){
@@ -5328,6 +5384,7 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     ${natureFieldHTML(b)}
     ${classFieldHTML(b)}
     <div class="deriv-pass-h">${escHtml(TY(myBranch.typology).label)}'s model${myIdx>=0?rerunControlHTML("leaf:"+b.id+"::"+myIdx, myBranch.typology, branchRerunBlockedReason(myBranch)):""}</div>
+    ${myIdx>=0?rerunPromptHTML(b,myBranch,myIdx):""}
     ${derivStepHTML("ABS", absControlHTML(b,derivSrc), derivSrc.abs)}
     ${derivStepHTML("PBS", pbsControlHTML(b,derivSrc), derivSrc.pbs, null, TENDER_KEYS?"The product element the requirement bears on — from the PBS key, grouped by family.":null)}
     ${obsListHTML(myBranch, {reqId:b.id, branchIdx:(b.branches||[]).indexOf(myBranch), systemId:myBranch.typology})}
@@ -7497,6 +7554,7 @@ if(MODE!=="ai"){
 // demo's own "several days into review" one.
 if(MODE==="ai" && isFreshProject()) applyFreshProjectStatuses();
 applyVersionChanges();
+snapshotCharacterisation();
 // Review is the default working view — setMode also collapses the nav panel and shows the kbd hints
 setMode("review");
 </script>
