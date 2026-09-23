@@ -2111,13 +2111,12 @@ function applyFCols(){
   fullOrder.forEach((k,i)=>grid.style.setProperty(`--ord-${k}`, i));
   grid.setAttribute("data-cc",[...state.colCollapsed].join(" "));
 }
-// clicking a header cell toggles it collapsed/expanded — retractable columns,
-// no need to open the View menu just to hide one
-document.querySelectorAll("#frgrid-head [data-col]").forEach(cell=>cell.addEventListener("click",()=>{
-  const k=cell.dataset.col;
-  state.colCollapsed.has(k) ? state.colCollapsed.delete(k) : state.colCollapsed.add(k);
-  applyFCols();
-}));
+/* A header click used to toggle its column collapsed. That made sense when a
+   collapsed column shrank to a thin, still-clickable sliver; since columns
+   became fully removable (USER-TEST-session-3.md §1.4, display:none), the same
+   click made the column vanish with nothing left to click it back — the only
+   way back was the View menu. Hiding now goes through View only, as it does
+   on Allocation, and a click on a header does nothing on its own. */
 // keep the header's horizontal scroll in sync with the body
 (function(){
   const body=document.getElementById("frgrid-body"), head=document.getElementById("frgrid-head");
@@ -2782,8 +2781,9 @@ function renderColFilterIndicators(){
   });
 }
 document.querySelectorAll("[data-colf]").forEach(btn=>btn.addEventListener("click",e=>{
-  e.stopPropagation(); // the header cell itself collapses the column — the funnel must not
+  e.stopPropagation();
   const col=btn.dataset.colf;
+  if(!COL_FILTER_DEFS[col]) return;   // SIG drops the System filter; its hidden header funnel must not throw
   colfPop.open===col ? closeColFilterPop() : openColFilterPop(col,btn);
 }));
 /* T9/T10 toolbar */
