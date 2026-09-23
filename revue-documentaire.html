@@ -3524,6 +3524,53 @@ function removeSystem(b, typology){
   toast(`${TY(typology).code} removed${brs.length?"":" — no system left"}`,"ok");
   refresh();
 }
+/* The project manager's "+ Add system" adds the system directly. It used to
+   open the contributor's proposal form (renderProposeForm), whose container
+   only exists in the contributor's view — in the PM's view the click threw and
+   nothing happened. A PM does not propose to themselves. Same search picker as
+   the OBS list: type to filter on code and name, click or Enter adds. */
+function openAddSystem(b, body){
+  const row=body.querySelector("#pm-add-row"); if(!row) return;
+  const used=new Set([...(b.perim||[]), ...(b.branches||[]).map(br=>br.typology)]);
+  const cands=TYPO.filter(t=>t.id!=="tky" && !used.has(t.id))
+    .map(t=>({id:t.id, code:t.code, label:t.label, search:(t.code+" "+t.label).toLowerCase()}));
+  row.innerHTML=`<div class="obs-pick">
+    <div class="obs-pick-row">
+      <input class="ui-input" type="text" id="sys-add-input" placeholder="Search a system…" autocomplete="off">
+      <button class="obs-pick-x" id="sys-add-cancel" title="Cancel (Esc)">✕</button>
+    </div>
+    <div class="obs-pick-list" role="listbox"></div>
+  </div>`;
+  const input=row.querySelector("#sys-add-input"), list=row.querySelector(".obs-pick-list");
+  let shown=[], active=0;
+  const add=t=>{
+    b.perim=[...(b.perim||[]), t.id];
+    syncBranchesFromPerim(b);
+    deriveRequirementCompliance(b);
+    pushBranchLog(b, MGR(VIEWER).name, `Added ${t.code} to the systems`, "human");
+    toast(`${t.code} added`,"ok");
+    refresh();
+  };
+  const draw=()=>{
+    const q=input.value.trim().toLowerCase();
+    shown=cands.filter(c=>!q||c.search.includes(q));
+    if(active>=shown.length) active=0;
+    list.innerHTML=shown.length?shown.map((c,i)=>`<div class="obs-pick-opt${i===active?" active":""}" role="option" data-i="${i}"><span class="t">${escHtml(c.code)}</span>${c.label&&c.label!==c.code?`<span class="c">${escHtml(c.label)}</span>`:""}</div>`).join("")
+      :`<div class="obs-pick-empty">${cands.length?"No system matches.":"Every system is already on this requirement."}</div>`;
+    list.querySelectorAll("[data-i]").forEach(el=>el.addEventListener("mousedown",e=>{ e.preventDefault(); add(shown[+el.dataset.i]); }));
+  };
+  input.addEventListener("input",()=>{ active=0; draw(); });
+  input.addEventListener("keydown",e=>{
+    e.stopPropagation();
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){ e.preventDefault(); if(!shown.length) return;
+      active=(active+(e.key==="ArrowDown"?1:-1)+shown.length)%shown.length; draw();
+      list.querySelector(".obs-pick-opt.active")?.scrollIntoView({block:"nearest"}); }
+    else if(e.key==="Enter"){ e.preventDefault(); if(shown[active]) add(shown[active]); }
+    else if(e.key==="Escape"){ e.preventDefault(); refresh(); }
+  });
+  row.querySelector("#sys-add-cancel").addEventListener("click",()=>refresh());
+  draw(); input.focus();
+}
 function syncBranchesFromPerim(b){
   // Used to require 2+ systems — a single-system requirement never got a
   // branches[] entry at all, so the panel's "Allocations" block (which reads
@@ -5519,7 +5566,7 @@ function pmClassificationHTML(b){
             <button class="ui-list-rm" data-sysrm="${escHtml(a.typology)}" title="Remove this system">✕</button>
           </div>`;
         }).join(""):`<div class="ui-list-empty">No system yet</div>`}
-        <button class="ui-list-add" id="pm-add-activity">+ Add system</button>
+        <div id="pm-add-row"><button class="ui-list-add" id="pm-add-activity">+ Add system</button></div>
       </div>
     </div>`;
 }
@@ -5891,7 +5938,7 @@ function renderSettings(){
     // reasons the propose block already offers, raised from inside one system
     body.querySelector("#act-reassign")?.addEventListener("click",()=>renderReassignForm(b,body));
     body.querySelector("#act-missing")?.addEventListener("click",()=>renderProposeForm("add",b,body));
-    body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
+    body.querySelector("#pm-add-activity")?.addEventListener("click",()=>openAddSystem(b,body));
     body.querySelectorAll("[data-sysrm]").forEach(btn=>btn.addEventListener("click",()=>removeSystem(b, btn.dataset.sysrm)));
     body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });
     bindRerunControls(body, b);
