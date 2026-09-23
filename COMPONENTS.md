@@ -1277,12 +1277,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### OBS List
 - **level**: molecule
 - **file**: revue-documentaire.html
-- **variants**: single entry (no remove), several entries (remove per row), keyed ("role", select-based add) vs free ("organisation", text add)
+- **variants**: empty ("No role yet" / "No organisation yet"), one or several entries (remove on every row), keyed ("role", select-based add) vs free ("organisation", text add)
 - **tokens**: --text-sm, --text-xs, --text-3
 - **built-from**: UI List (`.ui-list`), Confidence Badge, Icon Button (remove ✕), Text Input (search field of the add picker)
 - **added**: 2026-09-08
 - **changed**: 2026-09-23
-- **notes**: `obsListHTML()` / `bindObsList()`. The noun comes from `OBS_NOUN` — "role" on a keyed Mainline tender (DEC-062), "organisation" elsewhere — for the remove tooltip, add button, toasts and confirm. Removing down to one entry re-syncs the system's and (single-system) the requirement's person and OBS, so the table's "Assigned to" never shows the removed entry's person. Adding (2026-09-23) is a search, not a dropdown: `+ Add role` opens a full-width field over an inline list (`.obs-pick`), filtered as you type on title and the workbook's skill/SoA/job codes; click or Enter adds, ↑/↓ move, Escape or ✕ cancels. On a keyed tender the roles filed under the requirement's ABS are grouped first (sticky group headers); elsewhere it suggests organisations already used on the tender and offers "Add “…”" for what was typed. It replaced a native select of ~45 titles, truncated in the panel width, plus a separate Add button. List max-height 240px and code line 10px hardcoded.
+- **notes**: DEC-076 (2026-09-23): every row has its ✕, the last one included — removing the last empties the system's single slot (`obsSlotEmpty()`; organisation, team and person go together) and shows the empty state; the next add fills that slot rather than adding a second. `obsListHTML()` / `bindObsList()`. The noun comes from `OBS_NOUN` — "role" on a keyed Mainline tender (DEC-062), "organisation" elsewhere — for the remove tooltip, add button, toasts and confirm. Removing down to one entry re-syncs the system's and (single-system) the requirement's person and OBS, so the table's "Assigned to" never shows the removed entry's person. Adding (2026-09-23) is a search, not a dropdown: `+ Add role` opens a full-width field over an inline list (`.obs-pick`), filtered as you type on title and the workbook's skill/SoA/job codes; click or Enter adds, ↑/↓ move, Escape or ✕ cancels. On a keyed tender the roles filed under the requirement's ABS are grouped first (sticky group headers); elsewhere it suggests organisations already used on the tender and offers "Add “…”" for what was typed. It replaced a native select of ~45 titles, truncated in the panel width, plus a separate Add button. List max-height 240px and code line 10px hardcoded.
 
 ### Custom Column Cell
 - **level**: molecule
@@ -1362,7 +1362,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Derivation Step (`derivStepHTML()` — label, confidence badge, control, hint), OBS List, Re-run Control, Re-run Prompt
 - **added**: 2026-09-23
 - **changed**: 2026-09-23
-- **notes**: Since 2026-09-23 the model block can carry a Re-run Prompt between its header and ABS (DEC-075). `.deriv-pass` / `.deriv-step`. Not recorded before; entered when the small "↓" between PBS and OBS was removed (2026-09-23) — the steps already read top to bottom and the arrow only took height, so the three steps now sit 16px apart. The only arrow left is Turnkey's "routes into" between the distribution and the system's model, which carries information. Depends on untracked `--panel-2`.
+- **notes**: Turnkey pass 1's System list has a ✕ per system since 2026-09-23 (DEC-076, `removeSystem()`), down to none — empty state "No system yet". Since 2026-09-23 the model block can carry a Re-run Prompt between its header and ABS (DEC-075). `.deriv-pass` / `.deriv-step`. Not recorded before; entered when the small "↓" between PBS and OBS was removed (2026-09-23) — the steps already read top to bottom and the arrow only took height, so the three steps now sit 16px apart. The only arrow left is Turnkey's "routes into" between the distribution and the system's model, which carries information. Depends on untracked `--panel-2`.
 
 ## Organisms
 

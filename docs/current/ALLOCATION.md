@@ -83,6 +83,8 @@ ALLOC-017 — DEC-061/062 : sur un tender dont le produit a des clés ([KEYS](KE
 
 ALLOC-019 — DEC-075 : **changer la nature ou la classe propose de relancer le modèle.** Une ligne colorée « ↻ Re-run the model » s'affiche au-dessus d'ABS, PBS et OBS, avec la raison (nature changed / class changed). Rien n'est relancé tout seul. Elle disparaît quand la caractérisation revient à celle de la dérivation, ou après une relance, quelle que soit sa voie. Relance bloquée : la même ligne le dit, sans bouton. Critère : ALLOC-T27 — basculer la classe d'une exigence SIG non répondue affiche le bouton ; le cliquer re-dérive ABS / PBS / OBS et le bouton disparaît ; sur une exigence répondue, la ligne dit « re-run blocked ».
 
+ALLOC-020 — DEC-076 : **tout OBS et tout système se supprime, jusqu'à zéro.** Le ✕ est sur chaque ligne de la liste OBS (SIG comme Turnkey) et de la liste System du Turnkey. Plus rien : la liste le dit (« No role yet », « No system yet ») et l'exigence est Incomplete. Une entrée déjà répondue demande confirmation. Critère : ALLOC-T28 — sur une exigence SIG à un seul OBS, le ✕ est présent et le retire ; sur une exigence Turnkey à deux systèmes, les deux se retirent et l'exigence passe Incomplete.
+
 ## Une allocation par organisation
 
 ALLOC-016 — DEC-060 : **une allocation est une organisation et la personne qui y répond.** Une exigence qui atteint trois organisations est **trois allocations à faire**, et le compte affiché est celui des organisations, pas celui des systèmes.

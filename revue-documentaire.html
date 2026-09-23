@@ -3465,6 +3465,8 @@ function escHtml(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&am
 /* promotes a single-allocation requirement into the branches[] model the first
    time a manager proposes something on it — the existing allocation becomes branch[0] */
 function ensureBranches(b){
+  /* DEC-076: every system removed by hand means none, not "SIG by default". */
+  if(b.systemsCleared && !(b.perim||[]).length){ b.branches=b.branches||[]; return b.branches; }
   if(!(b.branches&&b.branches.length)){
     const t=(b.perim&&b.perim[0])||"sig";
     // Mirrors every field a single-system requirement already carries at
@@ -3496,6 +3498,32 @@ function ensureBranches(b){
    from the existing single allocation exactly as it always did; this only
    adds what's missing beyond that, one fresh (unassigned) branch per newly
    added system. */
+/* DEC-076 — the project manager can remove any system the Turnkey model
+   routed to, down to none. The system's allocation and its organisations go
+   with it; one that already holds an answer asks first. With nothing left the
+   requirement is Incomplete until a system is added again. */
+function removeSystem(b, typology){
+  const brs=b.branches||[];
+  const idx=brs.findIndex(br=>br.typology===typology);
+  const br=brs[idx];
+  const answered=br && ensureTeams(br).some(t=>t.branchStatus==="answered");
+  if(answered && !confirm(`${TY(typology).code} already has a recorded answer. Removing the system permanently deletes that work — this can't be undone. Continue?`)) return;
+  if(idx>=0) brs.splice(idx,1);
+  b.perim=(b.perim||[]).filter(t=>t!==typology);
+  if(!brs.length){
+    b.systemsCleared=true; b.branches=[];
+    Object.assign(b,{manager:null,obs:null,tkObs:null,allocStatus:"incomplete",allocDoubtField:null,allocReviewReason:null});
+  } else if(brs.length===1){
+    // back to one system: the requirement carries that system's allocation again
+    const only=brs[0]; b.manager=only.manager||null; b.obs=only.obs||null;
+    b.allocStatus=only.allocStatus||"incomplete"; b.allocDoubtField=only.allocDoubtField||null; b.allocReviewReason=only.allocReviewReason||null;
+  }
+  if(state.panelActivity!=null) state.panelActivity=null;
+  deriveRequirementCompliance(b);
+  pushBranchLog(b, MGR(VIEWER).name, `Removed ${TY(typology).code} from the systems${brs.length?"":" — no system left"}`, "warn");
+  toast(`${TY(typology).code} removed${brs.length?"":" — no system left"}`,"ok");
+  refresh();
+}
 function syncBranchesFromPerim(b){
   // Used to require 2+ systems — a single-system requirement never got a
   // branches[] entry at all, so the panel's "Allocations" block (which reads
@@ -3503,6 +3531,7 @@ function syncBranchesFromPerim(b){
   // overwhelming majority of requirements. One system is one allocation,
   // same as several — it should render the same way, just with one row.
   if(!b.perim || !b.perim.length) return;
+  delete b.systemsCleared;
   ensureBranches(b);
   const have=new Set(b.branches.map(br=>br.typology));
   b.perim.forEach(t=>{
@@ -3615,15 +3644,21 @@ function deriveRequirementCompliance(b){
 /* `ctx` ({reqId, branchIdx, systemId}) turns each row into its own re-run
    target. Only when there are several: with one organisation the control stays
    on the model heading, where the chain it re-derives is named. */
+/* DEC-076 — every OBS entry can be removed, the last one included. The
+   teams[] model keeps one slot per system, so "none" is that slot emptied
+   (no obs, no team, nobody) rather than an empty array, which ensureTeams()
+   would refill from the branch. */
+const obsSlotEmpty=t=>!t || (!(t.obs&&t.obs.v) && !t.team && !t.manager);
 function obsListHTML(myBranch, ctx){
   const teams=ensureTeams(myBranch);
-  const rows=teams.map((t,i)=>{
+  const none = teams.length===1 && obsSlotEmpty(teams[0]);
+  const rows= none ? `<div class="ui-list-empty">No ${TENDER_KEYS?"role":"organisation"} yet</div>` : teams.map((t,i)=>{
     const val=(t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:(TENDER_KEYS?"— No role derived yet —":"— No organisation derived yet —"));
     const c=t.obs&&t.obs.c;
     return `<div class="ui-list-row">
       <span class="ui-list-main">${escHtml(val)}</span>
       ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence">${c}%</span>`:""}
-      ${teams.length>1?`<button class="ui-list-rm" data-obsrm="${i}" title="Remove this ${OBS_NOUN}">✕</button>`:""}
+      <button class="ui-list-rm" data-obsrm="${i}" title="Remove this ${OBS_NOUN}">✕</button>
     </div>`;
   }).join("");
   return `<div class="deriv-step">
@@ -3651,7 +3686,12 @@ function bindObsList(body,myBranch,b){
     const row=body.querySelector("#obs-add-row");
     const teams=ensureTeams(myBranch);
     const addEntry=(obs)=>{
-      teams.push({team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",obs:Object.assign({c:null},obs)});
+      const entry=Object.assign({c:null},obs);
+      if(teams.length===1 && obsSlotEmpty(teams[0])){      // filling the emptied slot, not adding a second
+        teams[0].obs=entry; myBranch.obs=entry;
+        if((b.branches||[]).length===1) b.obs=entry;
+      } else
+      teams.push({team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",obs:entry});
       deriveRequirementCompliance(b);
       toast(`${obs.v} added`,"ok");
       refresh();
@@ -3719,10 +3759,20 @@ function bindObsList(body,myBranch,b){
   body.querySelectorAll("[data-obsrm]").forEach(btn=>btn.addEventListener("click",()=>{
     const idx=+btn.dataset.obsrm;
     const teams=ensureTeams(myBranch);
-    if(teams.length<=1){ toast(`At least one ${OBS_NOUN} is required`,"warn"); return; }
-    const team=teams[idx];
+    const team=teams[idx]; if(!team) return;
     if(team.branchStatus==="answered" && !confirm(`This ${OBS_NOUN} already has a recorded answer. Removing it permanently deletes that work — this can't be undone. Continue?`)) return;
-    const gone=(team.obs&&team.obs.v)||OBS_NOUN_CAP;
+    const gone=(team.obs&&team.obs.v)||(team.team?TEAM(team.team).label:OBS_NOUN_CAP);
+    if(teams.length===1){
+      /* The last one: the slot stays, emptied — organisation and its person go
+         together — and the allocation is Incomplete again until someone adds one. */
+      Object.assign(team,{obs:null,team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",allocDoubtField:null,allocReviewReason:null});
+      Object.assign(myBranch,{obs:null,team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",allocDoubtField:null,allocReviewReason:null});
+      if((b.branches||[]).length===1) Object.assign(b,{obs:null,manager:null,allocStatus:"incomplete",allocDoubtField:null,allocReviewReason:null});
+      deriveRequirementCompliance(b);
+      pushBranchLog(b, MGR(VIEWER).name, `Removed ${gone} — no ${OBS_NOUN} left`, "warn");
+      toast(`${gone} removed — no ${OBS_NOUN} left`,"ok");
+      refresh(); return;
+    }
     teams.splice(idx,1);
     /* Back to a single entry: the system and — when it is the requirement's only
        one — the requirement itself carry that entry's OBS and person again. The
@@ -4978,7 +5028,7 @@ function submitPropose(kind,b,form){
   const mgrName = MGR(VIEWER).name;
   const typo = form.querySelector("#propose-typo").value;
   if(!typo){ toast("Pick a system first","warn"); return; }
-  ensureBranches(b);
+  ensureBranches(b); delete b.systemsCleared;
   b.branches.push({typology:typo, label:TY(typo).label, manager:null, expert:null, branchStatus:"reassignment_needed", compliance:"pending", proposal:{kind:"add", note, by:VIEWER, at:"Today"}});
   if(!(b.perim||[]).includes(typo)) b.perim=[...(b.perim||[]), typo];
   pushBranchLog(b, mgrName, `Proposed adding ${TY(typo).label} as a missing system — "${note}"`);
@@ -5466,6 +5516,7 @@ function pmClassificationHTML(b){
             <span class="ui-list-main">${showName?escHtml(name):""}</span>
             ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence that this is the right system${c<OBS_THRESHOLD?` — below the ${OBS_THRESHOLD}% threshold`:""}">${c}%</span>`:""}
             <span class="ui-list-note${hasModel?" is-accent":""}" title="${hasModel?"Routed into this system's own allocation model.":"No model — allocated by hand inside the system."}">${hasModel?"has a model":"manual"}</span>
+            <button class="ui-list-rm" data-sysrm="${escHtml(a.typology)}" title="Remove this system">✕</button>
           </div>`;
         }).join(""):`<div class="ui-list-empty">No system yet</div>`}
         <button class="ui-list-add" id="pm-add-activity">+ Add system</button>
@@ -5841,6 +5892,7 @@ function renderSettings(){
     body.querySelector("#act-reassign")?.addEventListener("click",()=>renderReassignForm(b,body));
     body.querySelector("#act-missing")?.addEventListener("click",()=>renderProposeForm("add",b,body));
     body.querySelector("#pm-add-activity")?.addEventListener("click",()=>renderProposeForm("add",b,body));
+    body.querySelectorAll("[data-sysrm]").forEach(btn=>btn.addEventListener("click",()=>removeSystem(b, btn.dataset.sysrm)));
     body.querySelector("#f-nature")?.addEventListener("change",e=>{ reclassify(b.id, e.target.value); });
     bindRerunControls(body, b);
     cfBindPanel(body, b);
