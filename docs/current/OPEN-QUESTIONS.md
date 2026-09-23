@@ -80,6 +80,10 @@ DEC-028 à DEC-039 viennent d'une relecture indépendante du prototype (14 septe
 | DEC-066 | **Les listes peuvent être à choix multiple**, en plus du choix unique. Filtrage par « contient l'un de / aucun de » | Demande utilisateur, 23 septembre 2026 |
 | DEC-067 | **Une colonne personnalisée est toujours facultative** : elle ne bloque jamais la validation d'une exigence | Demande utilisateur, 23 septembre 2026 |
 | DEC-068 | Défauts retenus sur la recommandation de la spec, **à confirmer** : colonnes **hors de l'export client** et incluses dans les exports internes ; **type non modifiable dès qu'une valeur existe** (renommer reste permis) ; valeurs **conservées** quand une nouvelle version remet une exigence à zéro | Recommandation de SPEC-custom-columns, 23 septembre 2026 |
+| DEC-069 | **Les versions appartiennent aux documents, pas au tender.** Le gap se fait document par document ; la pastille de version du projet (« v2.1 active ») disparaît de la barre supérieure | Demande utilisateur, 23 septembre 2026 |
+| DEC-070 | **Compare : un document à la fois.** On choisit le document, puis une version antérieure de ce document, comparée à celle en vigueur ; le résumé et la navigation portent sur ce document. Un document à une seule version le dit | Demande utilisateur, 23 septembre 2026 |
+| DEC-071 | Un onglet **Versions** dans le détail d'une exigence, **masqué** quand elle n'a pas changé dans la version en vigueur de son document | Demande utilisateur, 23 septembre 2026 |
+| DEC-072 | **Pas d'état de traitement propre à un changement** (Nouveau / Revu sans impact / Action requise supprimés) : une exigence ajoutée ou modifiée repasse **To review**, et la valider est le traitement. Le statut le plus restrictif continue de primer | Demande utilisateur, 23 septembre 2026 |
 
 ## Suivi des anciens arbitrages
 

@@ -432,6 +432,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-23
 - **notes**: A 7px zone straddling the right edge of every header cell except the selection gutter. Drag, double-click to reset, or focus and ←/→ in 16px steps (role="separator"). Widths are px overrides per tender and per table, held in the shell (`getTableLayout`), cleared by Reset demo and by "Reset column widths" in View. Minimums: 56px, ID 64px, Requirement 200px (180 on Compliance) — hardcoded. Depends on untracked `--line-2`. Handle geometry (7px, right:-3px, 8px inset) hardcoded.
 
+### Word Diff
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: deleted (`.diff-del`, struck through), inserted (`.diff-ins`)
+- **tokens**: --radius-xs
+- **built-from**: none
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `wordDiffHTML(prev, cur)`, a word-level LCS diff computed at render time — the current text no longer carries diff markup inside it. Used in Compare (document blocks) and in the Versions tab. Colours hardcoded (`#f6d5d2`/`#8c2f28`, `#cfe9db`/`#155c3c`), not tokens — same values as the older Compare-mode rules.
+
 ## Molecules
 
 ### Search Box
@@ -483,16 +493,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.segc` (dashboard-et-config.html, 8 instances), creation-projet.html's Segmented Choice Group, and revue-documentaire.html's `.gseg`/`.tbl-gran`/`.mode-switch`/`.screen-nav .sn` are five separately-named classes implementing the same "pill-track, active segment gets elevated" pattern with independently hardcoded padding/radius/shadow — the single clearest consolidation candidate in the codebase alongside Progress Bar. Relies on untracked `--panel-2`/`--panel-3`/`--line-2`.
-
-### Version Pill
-- **level**: molecule
-- **file**: revue-documentaire.html
-- **variants**: none
-- **tokens**: --space-1, --space-2, --radius-pill, --text-sm, --ok
-- **built-from**: Status Dot
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.version-pill`, header breadcrumb ("v2.1 active"). Border relies on untracked `--line-2`.
 
 ### Multiselect Dropdown
 - **level**: molecule
@@ -674,16 +674,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.peek-paper`. Styled and functional in revue-documentaire.html (legacy hidden markup kept for compare/segmentation reuse); in compliance.html the CSS exists but no render call was found — likely dead/unwired. Hardcoded max-width and box-shadow.
 
-### Change Card
-- **level**: molecule
-- **file**: revue-documentaire.html
-- **variants**: add, mod, rem
-- **tokens**: --space-2, --space-3, --radius-md, --radius-lg, --text-xs, --ok, --ia, --warn
-- **built-from**: none
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.change-card`, Detail Panel's Change view (Compare mode).
-
 ### Export Option Card
 - **level**: molecule
 - **file**: revue-documentaire.html
@@ -791,8 +781,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-3, --radius-pill, --text-sm, --ok, --ia, --warn
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.csum`, Compare Bar ("+1 added / ~2 modified / −1 removed").
+- **changed**: 2026-09-23
+- **notes**: `.csum`, Compare Bar ("+1 added / ~2 modified / −1 removed"). Counts are computed for the compared document and range since 2026-09-23 — they were hardcoded.
 
 ### Advanced Filter Condition Row
 - **level**: molecule
@@ -1314,6 +1304,26 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-23
 - **notes**: `cfPanelHTML()`, in both the manager panel and the contributor view. One quiet hint line under the fields — the label stays a label (see Page Title / Nature field convention). Reuses the advanced filter's chip style for multi values.
 
+### Versions Tab
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: modified (diff + full previous text), added (no earlier text), with earlier versions listed; pending review vs checked since
+- **tokens**: --ia, --ia-soft, --ok, --ok-soft, --paper, --paper-ink, --font-doc, --text-sm, --text-xs, --radius-pill, --radius-sm
+- **built-from**: Word Diff, Next-Step line (`.next-step`), Ghost Button (`.mini-btn`)
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `versionsTabHTML()`. Only shown when the requirement changed in the version of its document in force (DEC-071) — no tab otherwise. No "reviewed / action" state of its own: the change sets the requirement back to To review and validating it is the treatment (DEC-072); the tab says when a more restrictive status (e.g. Incomplete) is what the pill shows. "Open in Compare" jumps to the document and range. Replaces the Change Card. Depends on untracked `--ia-soft`, `--ok-soft`, `--panel-2`.
+
+### Removed Requirement Panel
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: none
+- **tokens**: --paper, --paper-ink, --font-doc, --text-xs, --text-3
+- **built-from**: Status Pill (Requirement Workflow State), detail field
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `renderRemovedPanel()`, what a removed requirement (a ghost block, Compare only — LIFE-006) was and when it went. Read-only. Replaces the Change Card for removals.
+
 ## Organisms
 
 ### App Header
@@ -1473,8 +1483,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3, --space-4
 - **built-from**: Select Dropdown, Compare Summary Chip
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.compare-bar`, Compare mode only. Includes change navigation (Change 1/3, ‹ ›) through `changesOrder`.
+- **changed**: 2026-09-23
+- **notes**: `.compare-bar`, Compare mode only. Rendered by `renderCompareBar()` since 2026-09-23 (it was static markup whose version selects did nothing): document select first, then that document's earlier versions, "→ vX (in force)", counts and change navigation computed for the selected document and range (`cmpChangeIds()`). A document with one version says so instead of showing an empty comparison. Versions are per document (DEC-069).
 
 ### AI Feedback Panel (Why Box)
 - **level**: organism
@@ -1777,5 +1787,26 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **notes**: `cfOpenEditor()` / `cfRenderEditor()`. Locks are explained in place rather than silently disabled: type change once values exist, going back to single value once a requirement holds several, removing an option in use (refused with a count). The delete button is warn-coloured inline style on `.btn-primary`, not its own class. Depends on untracked `--warn-soft`.
 
 ## Removed
+
+### Version Pill — removed 2026-09-23, replaced by per-document versions in the Compare Bar (DEC-069)
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: none
+- **tokens**: --space-1, --space-2, --radius-pill, --text-sm, --ok
+- **built-from**: Status Dot
+- **added**: 2026-09-01
+- **changed**: 2026-09-01
+- **notes**: `.version-pill`, header breadcrumb ("v2.1 active"). Border relies on untracked `--line-2`.
+
+### Change Card — removed 2026-09-23, replaced by the Versions Tab and the Removed Requirement Panel (DEC-071/072)
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: add, mod, rem
+- **tokens**: --space-2, --space-3, --radius-md, --radius-lg, --text-xs, --ok, --ia, --warn
+- **built-from**: none
+- **added**: 2026-09-01
+- **changed**: 2026-09-01
+- **notes**: `.change-card`, Detail Panel's Change view (Compare mode).
+
 
 _(none yet — this section starts empty as of the 2026-09-01 seed)_

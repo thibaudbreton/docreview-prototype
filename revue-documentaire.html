@@ -121,14 +121,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .crumb .sep{color:var(--text-3)}
 .crumb .project{color:var(--text);font-weight:600;white-space:nowrap;text-decoration:none;cursor:pointer;border-radius:var(--radius-xs);transition:color .15s}
 .crumb .project:hover{color:var(--accent)}
-.version-pill{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:var(--space-1) var(--space-2);border:1px solid var(--line-2);border-radius:var(--radius-pill);
-  background:var(--panel-2);font-size:var(--text-sm);color:var(--text-2);
-  cursor:pointer;transition:border-color .15s;
-}
-.version-pill:hover{border-color:var(--accent)}
-.version-pill b{color:var(--text);font-weight:600}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
 .screen-nav{display:flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:3px}
 .screen-nav .sn{padding:5px var(--space-3);border-radius:var(--radius-sm);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;cursor:pointer;white-space:nowrap;text-decoration:none}
@@ -391,13 +383,13 @@ body.mode-compare .sec-gap-chip.has-changes{display:inline-flex}
 .img-lock{position:absolute;top:8px;left:-30px;font-size:var(--text-sm);color:var(--paper-ink-2);opacity:.6}
 body.mode-compare .blk.ch-added{background:rgba(63,178,127,.1);border-color:rgba(48,150,104,.6)}
 body.mode-compare .blk.ch-added::before{
-  content:"Added in v2.1";position:absolute;top:-9px;left:10px;
+  content:attr(data-chlabel);position:absolute;top:-9px;left:10px;
   font-family:var(--font-ui);font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-lg);
   background:#d3ecdf;color:#1d7a4f;
 }
 body.mode-compare .blk.ch-modified{background:rgba(224,164,60,.09);border-color:rgba(200,140,30,.6);border-style:solid}
 body.mode-compare .blk.ch-modified::before{
-  content:"Modified";position:absolute;top:-9px;left:10px;
+  content:attr(data-chlabel);position:absolute;top:-9px;left:10px;
   font-family:var(--font-ui);font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-lg);
   background:#f3e3c3;color:#8a5f10;
 }
@@ -414,6 +406,25 @@ body.mode-compare .blk .diff-del{display:inline}
 }
 body.mode-compare .ghost-block{display:block}
 .ghost-block b{font-family:var(--font-mono);font-size:var(--text-xs)}
+.ghost-block.active{outline:2px solid var(--accent);outline-offset:2px}
+.compare-bar .ver-to{font-weight:600;color:var(--text)}
+.compare-empty{font-size:var(--text-sm);color:var(--text-3)}
+/* Versions tab */
+.ver-head{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;margin-bottom:6px}
+.ver-type{font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-pill)}
+.ver-type.modified{background:var(--ia-soft);color:var(--ia)}
+.ver-type.added{background:var(--ok-soft);color:var(--ok)}
+.ver-meta{font-size:var(--text-xs);color:var(--text-3)}
+.ver-doc{font-size:var(--text-xs);color:var(--text-3);margin-bottom:var(--space-3)}
+.ver-desc{font-size:var(--text-sm);color:var(--text-2);line-height:1.5;margin-bottom:var(--space-3)}
+.ver-text{font-family:var(--font-doc);font-size:var(--text-sm);line-height:1.55;background:var(--paper);color:var(--paper-ink);padding:var(--space-3);border-radius:var(--radius-sm);border:1px solid var(--line)}
+.ver-diff .diff-del{background:#f6d5d2;color:#8c2f28;text-decoration:line-through;border-radius:var(--radius-xs);padding:0 2px}
+.ver-diff .diff-ins{background:#cfe9db;color:#155c3c;border-radius:var(--radius-xs);padding:0 2px}
+.ver-prev{margin:-4px 0 var(--space-4)}
+.ver-prev summary{font-size:var(--text-xs);color:var(--text-3);cursor:pointer;margin-bottom:6px}
+.ver-earlier{font-size:var(--text-sm);color:var(--text-2);padding:3px 0}
+.next-step{margin:var(--space-3) 0 var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--panel-2);border:1px solid var(--line);font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
+.next-step.is-idle{color:var(--text-3)}
 
 /* ---------- Review view ---------- */
 .review-wrap{flex:1;overflow:hidden;display:none;padding:var(--space-5);flex-direction:column;min-height:0}
@@ -998,23 +1009,7 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
   padding:var(--space-2) var(--space-3);outline:none;color:var(--text);font-size:var(--text-sm);
 }
 .comment-input input:focus{border-color:var(--accent)}
-.change-card{
-  border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-3);margin-bottom:var(--space-3);
-}
-.change-card .ch-type{
-  display:inline-flex;padding:2px var(--space-2);border-radius:var(--radius-lg);font-size:var(--text-xs);font-weight:700;margin-bottom:var(--space-2);
-}
-.ch-type.add{background:var(--ok-soft);color:var(--ok)}
-.ch-type.mod{background:var(--ia-soft);color:var(--ia)}
-.ch-type.rem{background:var(--warn-soft);color:var(--warn)}
-.change-card .ch-desc{font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
-.review-state{display:flex;gap:6px;margin-top:10px}
-.review-state button{
-  flex:1;padding:var(--space-1);border-radius:var(--radius-sm);border:1px solid var(--line-2);font-size:var(--text-xs);color:var(--text-2);
-  transition:all .15s;
-}
-.review-state button:hover{border-color:var(--accent);color:var(--text)}
-.review-state button.sel{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}
+/* .change-card and .review-state went with the Change Card (DEC-072) */
 
 /* ---------- Segmentation mode & tables ---------- */
 .seg-bar{display:none;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-5);background:var(--human-soft);border-bottom:1px solid var(--human);flex-shrink:0;font-size:var(--text-sm)}
@@ -1561,7 +1556,6 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
       <div class="crumb">
         <span class="sep">/</span>
         <a class="project" id="crumb-project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a>
-        <button class="version-pill" title="Switch version"><span class="dot"></span><b>v2.1</b> active</button>
       </div>
     </div>
 
@@ -1638,7 +1632,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
       <button class="tpill p-doubt" data-filter="doubt"><span class="n" id="n-doubt">0</span> to review</button>
       <button class="tpill p-tovalidate" data-filter="tovalidate"><span class="n" id="n-tovalidate">0</span> to validate</button>
       <button class="tpill p-allocated" data-filter="allocated"><span class="n" id="n-allocated">0</span> allocated</button>
-      <button class="tpill p-changes" data-filter="changed"><span class="n" id="n-changes">0</span> changes v2.0 → v2.1</button>
+      <button class="tpill p-changes" data-filter="changed"><span class="n" id="n-changes">0</span> changed in latest version</button>
       <button class="tpill p-reassign" data-filter="reassign" id="pill-reassign" style="display:none"><span class="n" id="n-reassign">0</span> pending reassignment</button>
       <!-- TICKET-two-pass-allocation.md §3/lot 4 — "must be visible and filterable —
            it's a real queue of work, not a failure." Only ever shown on a Turnkey
@@ -1668,24 +1662,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
     <!-- ===================== CENTER ZONE ===================== -->
     <section class="center">
       <div class="seg-bar">✂ <b>Segmentation mode</b> — split, merge or change table granularity. Reading clicks are suspended; changes flag affected metadata for review.<button class="btn-ghost" id="seg-exit">Done — save changes</button></div>
-      <div class="compare-bar">
-        <div class="ver-select">
-          Compare
-          <select id="ver-a"><option>v2.0 — May 28, 2026</option><option>v1.0 — Mar 3, 2026</option></select>
-          →
-          <select id="ver-b"><option>v2.1 — Jul 16, 2026 (active)</option></select>
-        </div>
-        <div class="compare-summary">
-          <span class="csum add">+1 added</span>
-          <span class="csum mod">~2 modified</span>
-          <span class="csum rem">−1 removed</span>
-        </div>
-        <div class="compare-nav">
-          <span id="change-pos">Change 1/3</span>
-          <button id="prev-change" title="Previous change">‹</button>
-          <button id="next-change" title="Next change">›</button>
-        </div>
-      </div>
+      <div class="compare-bar" id="compare-bar"></div>
       <div class="doc-scroll" id="doc-scroll"></div>
       <div class="review-wrap">
         <div class="review-head">
@@ -1994,8 +1971,13 @@ function isAdmin(){ return (MGR(VIEWER)||{}).admin; }
    content when nobody has run the import script yet. */
 function seedDemoDocs(){
   return [
-    {id:"d1", name:"Tender specification — main volume", file:"EMS_tender_main.pdf"},
-    {id:"d2", name:"Technical annex A — performance & security", file:"EMS_annex_A.pdf"},
+    {id:"d1", name:"Tender specification — main volume", file:"EMS_tender_main.pdf", versions:[
+      {v:"v1.0", date:"Mar 3, 2026", note:"Invitation to tender"},
+      {v:"v2.0", date:"May 28, 2026", note:"Consolidated issue after the pre-tender meeting"},
+      {v:"v2.1", date:"Jul 16, 2026", note:"Addendum n°2 — alerting threshold revision"}]},
+    {id:"d2", name:"Technical annex A — performance & security", file:"EMS_annex_A.pdf", versions:[
+      {v:"v1.0", date:"Mar 3, 2026", note:"Invitation to tender"},
+      {v:"v1.1", date:"Jul 16, 2026", note:"Addendum n°2 — availability commitment"}]},
   ];
 }
 /* Read before DOCS/SECTIONS below, which depend on it — TENDER_LINE itself is
@@ -2034,8 +2016,12 @@ const IS_SIG_TENDER = (function(){
 ===================================================== */
 function seedSigDocs(){
   return [
-    {id:"d1", name:"Tender specification — signalling and train control", file:"L4_signalling_main.pdf"},
-    {id:"d2", name:"Technical annex B — interfaces and safety case", file:"L4_annex_B.pdf"},
+    {id:"d1", name:"Tender specification — signalling and train control", file:"L4_signalling_main.pdf", versions:[
+      {v:"v1.0", date:"Apr 2, 2026", note:"Invitation to tender"},
+      {v:"v2.0", date:"Jun 10, 2026", note:"Clarifications after the site visit"},
+      {v:"v2.1", date:"Aug 28, 2026", note:"Addendum 1 — headway and migration"}]},
+    {id:"d2", name:"Technical annex B — interfaces and safety case", file:"L4_annex_B.pdf", versions:[
+      {v:"v1.0", date:"Apr 2, 2026", note:"Invitation to tender"}]},
   ];
 }
 function seedSigSections(){
@@ -2060,7 +2046,10 @@ function seedSigSections(){
       {id:"L4-0005", kind:"requirement", branchStatus:"answered", tech:"tech", techAI:false, perim:["sig"], perimAI:false,
        abs:{v:"Design",id:"design",c:90}, pbs:{v:"2.2.2 · ATC TrackSide (HW) Balises / Beacons",id:"x1",c:92}, obs:{v:"Train Control Subsystem Manager",id:"obs15",c:88},
        manager:"m_sig", type:"Performance", domain:"Design", status:"allocated", allocStatus:"allocated", alloc:"sup", comments:2,
-       text:"Train position SHALL be reported to the wayside at least twice per second, with a confidence interval not exceeding 2 metres at any speed up to 80 km/h."},
+       text:"Train position SHALL be reported to the wayside at least twice per second, with a confidence interval not exceeding 2 metres at any speed up to 80 km/h.",
+       history:[{from:"v2.0", to:"v2.1", type:"modified",
+         prevText:"Train position SHALL be reported to the wayside at least once per second, with a confidence interval not exceeding 5 metres at any speed up to 80 km/h.",
+         desc:"Reporting rate doubled (once → twice per second) and the position tolerance tightened from 5 to 2 metres."}]},
       {id:"L4-0006", kind:"requirement", branchStatus:"proposed", tech:"tech", techAI:true, perim:["sig"], perimAI:true,
        abs:{v:"Design",id:"design",c:71}, pbs:{v:"2.1.4 · IXL Trackside Sub System / Outdoor Signals",id:"2.1.4",c:84}, obs:{v:"IXL System Engineering",id:"obs25",c:58},
        manager:null, type:"Interface", domain:"Design", status:"suggested", alloc:null, comments:0, uncertain:true,
@@ -2088,11 +2077,19 @@ function seedSigSections(){
            {team:"vv", manager:"sup", branchStatus:"awaiting_answer", allocStatus:"allocated", compliance:"pending",
             obs:{v:"Project Architect",id:"obs30",c:69}},
          ]}],
-       text:"The system SHALL support a minimum headway of 90 seconds in normal service on the central section between Gare du Nord and Palais des Congrès."},
+       text:"The system SHALL support a minimum headway of 90 seconds in normal service on the central section between Gare du Nord and Palais des Congrès.",
+       history:[{from:"v2.0", to:"v2.1", type:"modified",
+         prevText:"The system SHALL support a minimum headway of 120 seconds in normal service on the central section between Gare du Nord and Palais des Congrès.",
+         desc:"Minimum headway tightened from 120 to 90 seconds on the central section. Likely impact on train control sizing and on the timetable simulation."}]},
       {id:"L4-0009", kind:"requirement", branchStatus:"awaiting_answer", tech:"nontech", techAI:true, perim:["sig"], perimAI:false,
        abs:{v:"Installation",id:"installation",c:66}, pbs:{v:"2.2 · ATC Mainline - Wayside",id:"2.2",c:77}, obs:{v:"Sig Project Field Operations Manager (Site Installation Manager)",id:"obs46",c:54},
        manager:null, type:"Regulatory", domain:"Installation", status:"suggested", alloc:null, comments:0, uncertain:true,
-       text:"Migration to ETCS Level 2 SHALL be carried out without interrupting commercial service, with mixed-fleet operation supported throughout the transition period."},
+       text:"Migration to ETCS Level 2 SHALL be carried out without interrupting commercial service, with mixed-fleet operation supported throughout the transition period.",
+       history:[{from:"v2.0", to:"v2.1", type:"added",
+         desc:"New migration constraint: no interruption of commercial service, mixed-fleet operation throughout. Needs allocation and a check against the staging plan."}]},
+      {id:"L4-GH1", kind:"ghost",
+       history:[{from:"v2.0", to:"v2.1", type:"removed", prevText:"The system SHALL provide a manual block working mode on the depot approach tracks.",
+         desc:"Requirement removed — manual block working is no longer requested. Work recorded against it is archived with v2.0."}]},
     ]
   },
   {
@@ -2142,9 +2139,13 @@ function seedSigSections(){
    a signalling tender, which is exactly what DEC-044 rules out. */
 const DOCS = IS_SIG_TENDER ? seedSigDocs()
   : (window.SRM_DATA && Array.isArray(window.SRM_DATA.documents) && window.SRM_DATA.documents.length)
-  ? window.SRM_DATA.documents.map(d=>({id:d.id, name:d.name, file:""}))
+  ? window.SRM_DATA.documents.map(d=>({id:d.id, name:d.name, file:"", versions:[{v:"v1.0", date:"", note:"As captured"}]}))
   : seedDemoDocs();
 const DOC = id => DOCS.find(d=>d.id===id);
+/* Versions belong to a DOCUMENT, not to the tender (DEC-069): each one moves
+   at its own pace, and a gap is always one document against its own earlier
+   issue. Any document that came without a history has one version. */
+DOCS.forEach(d=>{ if(!d.versions||!d.versions.length) d.versions=[{v:"v1.0", date:"", note:""}]; });
 /* A capture section string usually already carries its own number
    ("3 OVERHAUL WORKSHOP") — split the leading digits/dots off into `num` and
    keep the rest as `title`, matching the demo SECTIONS' own {num,title} shape.
@@ -2264,10 +2265,11 @@ function seedDemoSections(){
        rollupStatus:"Mixed — 1 branch blocked",
        rollupCompliance:"pending",
        blockingBranch:"Safety — reassignment needed",
-       change:"modified",
-       textOriginal:'Le système DOIT générer une alerte lorsque la consommation d\'un site dépasse le seuil configuré pendant plus de <span class="diff-del">15 minutes</span><span class="diff-ins">5 minutes consécutives</span>, et notifier l\'opérateur conformément à la matrice d\'escalade.',
-       text:'The system SHALL generate an alert when a site\'s consumption exceeds the configured threshold for more than <span class="diff-del">15 minutes</span><span class="diff-ins">5 consecutive minutes</span>, and notify the operator according to the escalation matrix.',
-       changeDesc:"Alert trigger delay changed from 15 to 5 consecutive minutes. Probable impact on notification chain sizing."},
+       textOriginal:'Le système DOIT générer une alerte lorsque la consommation d\'un site dépasse le seuil configuré pendant plus de 5 minutes consécutives, et notifier l\'opérateur conformément à la matrice d\'escalade.',
+       text:'The system SHALL generate an alert when a site\'s consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.',
+       history:[{from:"v2.0", to:"v2.1", type:"modified",
+         prevText:'The system SHALL generate an alert when a site\'s consumption exceeds the configured threshold for more than 15 minutes, and notify the operator according to the escalation matrix.',
+         desc:"Alert trigger delay changed from 15 to 5 consecutive minutes. Probable impact on notification chain sizing."}]},
       {id:"SRM-00010", kind:"requirement", tech:"nontech", techAI:true, perim:["mln"], perimAI:false, pbs:{v:"Supervision / Reporting",c:82}, abs:{v:"Design & Engineering",c:69}, obs:{v:"Monitoring & Supervision — FR",c:54}, manager:null, type:"Functional", domain:"Reporting", status:"suggested", alloc:null, comments:0, uncertain:true,
        textOriginal:"Le système DOIT produire un rapport mensuel de performance énergétique par site, exportable aux formats PDF et XLSX, incluant l'écart par rapport aux objectifs contractuels.",
        text:"The system SHALL produce a monthly energy performance report per site, exportable in PDF and XLSX formats, including variance against contractual targets."},
@@ -2306,13 +2308,12 @@ function seedDemoSections(){
        rollupStatus:"Awaiting 1 of 2",
        rollupCompliance:"pending",
        blockingBranch:"SIG & Urban — awaiting contributor answer",
-       change:"added",
        textOriginal:"Le système DOIT garantir une disponibilité de 99,7 % pendant les heures ouvrées, mesurée mensuellement, hors fenêtres de maintenance planifiée.",
        text:"The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.",
-       changeDesc:"New availability requirement introduced in v2.1. No existing assignment — needs allocation."},
+       history:[{from:"v1.0", to:"v1.1", type:"added", desc:"New availability requirement introduced in v1.1. No existing assignment — needs allocation."}]},
       {id:"GHOST-1", kind:"ghost",
-       text:'EXG-00X — "The system SHALL support a read-only degraded mode" was removed in v2.1.',
-       changeDesc:"Requirement removed. Associated assignments and comments are archived in v2.0 history."},
+       history:[{from:"v1.0", to:"v1.1", type:"removed", prevText:"The system SHALL support a read-only degraded mode.",
+         desc:"Requirement removed. Associated assignments and comments are archived with v1.0."}]},
     ]
   },
   {
@@ -3177,7 +3178,7 @@ const state = {
 // sections across a handful of documents — a wide-open tree by default was
 // unusable at that scale.
 SECTIONS.forEach(s=>{ state.navCollapsed.add(s.id); state.docNavCollapsed.add(s.docId); });
-const changesOrder = ["SRM-00009","SRM-00019","GHOST-1"];
+/* change navigation reads cmpChangeIds(): the selected document, the selected range */
 const allBlocks = () => SECTIONS.flatMap(s=>s.blocks.flatMap(b=>b.kind==="table"?b.rows.map(r=>({...r,section:s})):[{...b,section:s}]));
 const reqs = () => allBlocks().filter(b=>b.kind==="requirement");
 const findBlock = id => {
@@ -3213,6 +3214,97 @@ function typoTagsHTML(per, proposed){
     ? `<span class="ptag ptag-more${hidden.some(p=>proposed.has(p))?" proposed":""}" title="Also: ${escHtml(hidden.map(p=>TY(p).label).join(", "))}${hidden.some(p=>proposed.has(p))?" — includes a proposed change":""}">+${hidden.length}</span>`
     : "";
   return per.slice(0,shown).map(tag).join("")+more;
+}
+/* ---- Versions and gap (DEC-069 to DEC-072) ---------------------------------
+   A block's `history` lists what happened to it in each version of ITS
+   document: [{from, to, type: added|modified|removed, prevText, desc}]. The
+   current text is always clean — the diff is computed, never stored inside
+   the text as markup. */
+function docOfBlock(id){ const f=findBlock(id); return f ? DOC(f.s.docId) : null; }
+function activeVersion(doc){ return doc && doc.versions ? doc.versions[doc.versions.length-1] : null; }
+function verIdx(doc, v){ return doc ? doc.versions.findIndex(x=>x.v===v) : -1; }
+/* the change made in the version currently in force, if any — what the
+   Versions tab, the "To review" status and the table badge are about */
+function latestChange(b){
+  const act=activeVersion(docOfBlock(b.id)); const h=b.history||[];
+  const last=h[h.length-1];
+  return last && act && last.to===act.v ? last : null;
+}
+/* everything that happened after `fromV`, folded into one change: what the
+   Compare view shows when a user compares against an older issue */
+function rangeChange(b, fromV){
+  const doc=docOfBlock(b.id); const from=verIdx(doc,fromV);
+  const hs=(b.history||[]).filter(h=>verIdx(doc,h.to)>from);
+  if(!hs.length) return null;
+  const type = hs.some(h=>h.type==="removed") ? "removed" : hs.some(h=>h.type==="added") ? "added" : "modified";
+  return {type, to:hs[hs.length-1].to, prevText:hs[0].prevText, desc:hs.map(h=>h.desc).filter(Boolean).join(" ")};
+}
+/* word-level diff, previous → current, as .diff-del / .diff-ins spans */
+function wordDiffHTML(prev, cur){
+  const A=String(prev||"").replace(/<[^>]+>/g,"").split(/(\s+)/), B=String(cur||"").replace(/<[^>]+>/g,"").split(/(\s+)/);
+  const n=A.length, m=B.length, L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]= A[i]===B[j] ? L[i+1][j+1]+1 : Math.max(L[i+1][j],L[i][j+1]);
+  const out=[]; let i=0,j=0;
+  const push=(t,x)=>{ const last=out[out.length-1]; if(last&&last.t===t) last.x+=x; else out.push({t,x}); };
+  while(i<n&&j<m){ if(A[i]===B[j]){ push("=",A[i]); i++; j++; } else if(L[i+1][j]>=L[i][j+1]) push("-",A[i++]); else push("+",B[j++]); }
+  while(i<n) push("-",A[i++]); while(j<m) push("+",B[j++]);
+  return out.map(o=>o.t==="="?escHtml(o.x):`<span class="${o.t==="-"?"diff-del":"diff-ins"}">${escHtml(o.x)}</span>`).join("");
+}
+/* DEC-072 — no separate "treated" state for a change: a requirement added or
+   modified in the version in force goes back to To review, and validating it
+   is the treatment. Runs once, after every other status has been derived. */
+function applyVersionChanges(){
+  // the real blocks — allBlocks() hands out copies, and writing to those is lost
+  SECTIONS.flatMap(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x])).forEach(b=>{
+    if(blockNature(b)!=="requirement"){ delete b.change; return; }
+    const lc=latestChange(b);
+    if(!lc){ delete b.change; return; }
+    b.change=lc.type;
+    b.status="doubt"; b.doubtField=null;
+    b.reviewReason=`${lc.type==="added"?"Added":"Modified"} in ${lc.to} of its document — see the Versions tab`;
+  });
+}
+/* ---- Compare: one document at a time (DEC-070) ---- */
+function cmpDocs(){ return DOCS.filter(d=>d.versions.length>1); }
+function cmpEnsure(){
+  if(!state.cmpDoc || !DOC(state.cmpDoc)) state.cmpDoc=(cmpDocs()[0]||DOCS[0]||{}).id;
+  const doc=DOC(state.cmpDoc);
+  if(!doc || verIdx(doc,state.cmpFrom)<0 || verIdx(doc,state.cmpFrom)>=doc.versions.length-1)
+    state.cmpFrom = doc && doc.versions.length>1 ? doc.versions[doc.versions.length-2].v : null;
+}
+function cmpBlocksOf(docId){
+  return SECTIONS.filter(sec=>sec.docId===docId).flatMap(sec=>sec.blocks.flatMap(b=>b.kind==="table"?b.rows:[b]));
+}
+function cmpChangeIds(){
+  cmpEnsure(); if(!state.cmpFrom) return [];
+  return cmpBlocksOf(state.cmpDoc).filter(b=>rangeChange(b,state.cmpFrom)).map(b=>b.id);
+}
+function cmpChangeOf(b){ return state.mode==="compare" && state.cmpFrom && docOfBlock(b.id)?.id===state.cmpDoc ? rangeChange(b,state.cmpFrom) : null; }
+function renderCompareBar(){
+  const bar=document.getElementById("compare-bar"); if(!bar) return;
+  cmpEnsure();
+  const doc=DOC(state.cmpDoc); if(!doc){ bar.innerHTML=""; return; }
+  const act=activeVersion(doc);
+  const docOpts=DOCS.map((d,i)=>{ const n=d.versions.length>1?`${d.versions.length} versions`:"one version";
+    return `<option value="${d.id}" ${d.id===doc.id?"selected":""}>Doc ${i+1} — ${escHtml(d.name)} · ${n}</option>`; }).join("");
+  if(doc.versions.length<2){
+    bar.innerHTML=`<div class="ver-select">Compare <select id="cmp-doc">${docOpts}</select></div>
+      <div class="compare-empty">Only one version of this document (${escHtml(act.v)}${act.note?` — ${escHtml(act.note)}`:""}) — nothing to compare yet.</div>`;
+  }else{
+    const ids=cmpChangeIds(), blocks=ids.map(id=>findBlock(id).b), rc=b=>rangeChange(b,state.cmpFrom).type;
+    const a=blocks.filter(b=>rc(b)==="added").length, m=blocks.filter(b=>rc(b)==="modified").length, r=blocks.filter(b=>rc(b)==="removed").length;
+    const fromOpts=doc.versions.slice(0,-1).map(v=>`<option value="${v.v}" ${v.v===state.cmpFrom?"selected":""}>${escHtml(v.v)}${v.date?` — ${escHtml(v.date)}`:""}</option>`).join("");
+    if(state.changeIndex==null || state.changeIndex>=ids.length) state.changeIndex=0;
+    bar.innerHTML=`<div class="ver-select">Compare <select id="cmp-doc">${docOpts}</select>
+        <select id="cmp-from">${fromOpts}</select> → <b class="ver-to" title="${escHtml(act.note||"")}">${escHtml(act.v)} (in force)</b></div>
+      <div class="compare-summary">${a?`<span class="csum add">+${a} added</span>`:""}${m?`<span class="csum mod">~${m} modified</span>`:""}${r?`<span class="csum rem">−${r} removed</span>`:""}${!ids.length?`<span class="csum">No change</span>`:""}</div>
+      ${ids.length?`<div class="compare-nav"><span id="change-pos">Change ${state.changeIndex+1}/${ids.length}</span>
+        <button id="prev-change" title="Previous change">‹</button><button id="next-change" title="Next change">›</button></div>`:""}`;
+  }
+  bar.querySelector("#cmp-doc").addEventListener("change",e=>{ state.cmpDoc=e.target.value; state.cmpFrom=null; state.changeIndex=0; refresh(); });
+  bar.querySelector("#cmp-from")?.addEventListener("change",e=>{ state.cmpFrom=e.target.value; state.changeIndex=0; refresh(); });
+  bar.querySelector("#prev-change")?.addEventListener("click",()=>gotoChange(-1));
+  bar.querySelector("#next-change")?.addEventListener("click",()=>gotoChange(1));
 }
 /* The paragraph a block sits in: the deepest heading above it inside its
    section, else the section itself. On the capture the section IS the nearest
@@ -3722,10 +3814,10 @@ function renderNav(){
     const flat = sec.blocks.flatMap(b=>b.kind==="table"?b.rows:[b]);
     const reqCount = flat.filter(b=>blockNature(b)==="requirement").length;
     total += reqCount;
-    const changes = sec.blocks.filter(b=>b.change||b.kind==="ghost");
-    const add = changes.filter(b=>b.change==="added").length;
-    const mod = changes.filter(b=>b.change==="modified").length;
-    const rem = changes.filter(b=>b.kind==="ghost").length;
+    const cc = sec.blocks.flatMap(b=>b.kind==="table"?b.rows:[b]).map(cmpChangeOf).filter(Boolean);
+    const add = cc.filter(c=>c.type==="added").length;
+    const mod = cc.filter(c=>c.type==="modified").length;
+    const rem = cc.filter(c=>c.type==="removed").length;
 
     // H1 (section) header — collapsible
     const collapsed = !searching && state.navCollapsed.has(sec.id);
@@ -3769,7 +3861,7 @@ function renderNav(){
       if(!b.manager) badges.push('<span class="nbadge b-unalloc" title="Unassigned"></span>');
       if(b.comments) badges.push('<span class="nbadge b-comment" title="Comments"></span>');
       if(b.uncertain) badges.push('<span class="nbadge" style="background:var(--warn)" title="Uncertain segmentation"></span>');
-      if(b.change) badges.push('<span class="nbadge b-change" title="Changed in v2.1"></span>');
+      { const nc=cmpChangeOf(b); if(nc) badges.push(`<span class="nbadge b-change" title="${nc.type==="added"?"Added":"Modified"} in ${nc.to}"></span>`); }
       // status dot fills the gutter that lines items up under the section
       // caret above them — characterisation/allocation progress, same
       // vocabulary as the status pill in the table, not compliance (this
@@ -3819,21 +3911,28 @@ function attachReclassify(el,b){
 function renderDoc(){
   const scroll = document.getElementById("doc-scroll");
   scroll.innerHTML = "";
-  const shownDocs = DOCS.filter(d=>state.docFilter==="all"||d.id===state.docFilter);
+  if(state.mode==="compare") renderCompareBar();
+  // Compare shows ONE document, against its own earlier issue (DEC-070)
+  const shownDocs = state.mode==="compare" ? DOCS.filter(d=>d.id===state.cmpDoc)
+    : DOCS.filter(d=>state.docFilter==="all"||d.id===state.docFilter);
   shownDocs.forEach((doc,di)=>{
     const paper = document.createElement("div");
     paper.className = "paper";
     let head = "";
-    if(di===0 && state.docFilter==="all"){
+    if(state.mode==="compare"){
+      const act=activeVersion(doc);
+      head = `<div class="doc-h1">${escHtml(doc.name)}</div>
+        <div class="doc-sub">${state.cmpFrom?`${escHtml(state.cmpFrom)} → ${escHtml(act.v)}${act.note?` · ${escHtml(act.note)}`:""}`:`${escHtml(act.v)} — only version`}</div>`;
+    }else if(di===0 && state.docFilter==="all"){
       head = `<div class="doc-h1">Technical Requirements Specification</div>
-        <div class="doc-sub">Multi-site Energy Monitoring System — Ref. STB-2026 — Version 2.1</div>`;
+        <div class="doc-sub">Multi-site Energy Monitoring System — Ref. STB-2026</div>`;
     }
     paper.innerHTML = head;
     const docSecs = SECTIONS.filter(s=>s.docId===doc.id);
     docSecs.forEach(sec=>{
-      const changes = sec.blocks.filter(b=>b.change||b.kind==="ghost");
+      const cc=sec.blocks.flatMap(b=>b.kind==="table"?b.rows:[b]).map(cmpChangeOf).filter(Boolean);
       const chipParts = [];
-      const a=changes.filter(b=>b.change==="added").length, m=changes.filter(b=>b.change==="modified").length, r=changes.filter(b=>b.kind==="ghost").length;
+      const a=cc.filter(c=>c.type==="added").length, m=cc.filter(c=>c.type==="modified").length, r=cc.filter(c=>c.type==="removed").length;
       if(a) chipParts.push(`+${a}`); if(m) chipParts.push(`~${m}`); if(r) chipParts.push(`-${r}`);
       const secEl = document.createElement("div");
       secEl.className="doc-sec"; secEl.id="sec-"+sec.id;
@@ -3844,9 +3943,10 @@ function renderDoc(){
       sec.blocks.forEach(b=>{
         if(b.kind==="table"){ paper.appendChild(renderTable(b)); return; }
         if(b.kind==="ghost"){
+          const gc=cmpChangeOf(b); if(!gc) return;   // only inside the compared range
           const g = document.createElement("div");
-          g.className="ghost-block"; g.dataset.id=b.id;
-          g.innerHTML = `<b>Removed in v2.1</b> — ${b.text}`;
+          g.className="ghost-block"+(state.selected===b.id?" active":""); g.dataset.id=b.id;
+          g.innerHTML = `<b>Removed in ${escHtml(gc.to)}</b> — ${escHtml(gc.prevText||"")}`;
           g.addEventListener("click",()=>selectBlock(b.id));
           paper.appendChild(g);
           return;
@@ -3868,8 +3968,10 @@ function renderDoc(){
         const restricted = !visibleTo(b);
         if(restricted && state.redactMode==="hide"){ return; }
         const nat = blockNature(b);
-        el.className = `blk nat-${nat} st-${b.status||""}`+(nat==="requirement"&&!b.manager?" unallocated":"")+(b.uncertain?" uncertain":"")+(b.change?" ch-"+b.change:"")+(state.selected===b.id?" selected":"")+(pass?"":" dimmed")+(restricted?" redacted":"");
+        const cch = cmpChangeOf(b);
+        el.className = `blk nat-${nat} st-${b.status||""}`+(nat==="requirement"&&!b.manager?" unallocated":"")+(b.uncertain?" uncertain":"")+(cch?" ch-"+cch.type:"")+(state.selected===b.id?" selected":"")+(pass?"":" dimmed")+(restricted?" redacted":"");
         el.dataset.id = b.id;
+        if(cch) el.dataset.chlabel = `${cch.type==="added"?"Added":"Modified"} in ${cch.to}`;
         if(restricted){
           el.innerHTML = `<span class="redact-fill">${(b.text||"").replace(/<[^>]+>/g,"")}</span><span class="redact-note">Restricted</span>`;
           paper.appendChild(el);
@@ -3901,7 +4003,7 @@ function renderDoc(){
         let inner = `<span class="type-chip">${b.type+" · "+STATUS_LABEL[b.status]}</span>`;
         inner += `<span class="blk-id">${b.id}</span>`;
         if(b.sourceImage) inner += `<span class="prov-marker" title="Captured from ${b.sourceImage}">📷 From ${b.sourceImage}</span>`;
-        inner += b.text;
+        inner += (cch && cch.type==="modified" && cch.prevText) ? wordDiffHTML(cch.prevText, b.text) : b.text;
         if(b.comments) inner += `<span class="marker" title="${b.comments} comment(s)">${b.comments}</span>`;
         if(state.seg) inner += segTools(b.id);
         el.innerHTML = inner;
@@ -3911,7 +4013,7 @@ function renderDoc(){
       });
     });
     const pn = document.createElement("div");
-    pn.className="page-num"; pn.textContent = `Doc ${DOCS.indexOf(doc)+1} / ${DOCS.length} — STB-2026 v2.1 — Restricted distribution`;
+    pn.className="page-num"; pn.textContent = `Doc ${DOCS.indexOf(doc)+1} / ${DOCS.length} — ${activeVersion(doc).v} — Restricted distribution`;
     paper.appendChild(pn);
     scroll.appendChild(paper);
   });
@@ -4113,7 +4215,7 @@ function rowInnerHTML(b){
   // (see below), plus Duplicate / Delete-duplicate actions instead of an excerpt.
   const imgSrcBtn = b.sourceImage?`<button type="button" class="img-src-btn" data-gotoimg="${b.sourceImage}" title="Captured from ${b.sourceImage} — click to view in the document">📷 ${b.sourceImage}${b.duplicatedFrom?` <span class="img-dup-tag">duplicate</span>`:""}</button>`:"";
   const imgRowActions = b.sourceImage?`<button class="mini-btn row-dup" data-dup="${b.id}" title="Duplicate — attach another requirement to ${b.sourceImage}">⎘ Duplicate</button>${b.duplicatedFrom?`<button class="mini-btn row-deldup" data-deldup="${b.id}" title="Delete this duplicate">🗑 Delete</button>`:""}`:"";
-  const badges = `${branchBadge}${blockingBadge}${b.comments?`<span class="cbadge">💬 ${b.comments}</span>`:""}${b.change?`<span class="cbadge" style="color:var(--ia)">Δ v2.1</span>`:""}`;
+  const badges = `${branchBadge}${blockingBadge}${b.comments?`<span class="cbadge">💬 ${b.comments}</span>`:""}${b.change&&latestChange(b)?`<span class="cbadge" style="color:var(--ia)" title="${b.change==="added"?"Added":"Modified"} in ${latestChange(b).to} of its document">Δ ${latestChange(b).to}</span>`:""}`;
   const proposedTypos = new Set((b.branches||[]).filter(br=>br.proposal).map(br=>br.typology));
   const typoTags = typoTagsHTML(b.perim||[], proposedTypos);
   const caretHTML = hasBranches
@@ -4373,7 +4475,7 @@ const ADV_FILTER_FIELDS={
   doc:{label:"Document",type:"enum",options:DOCS.map(d=>({v:d.id,l:d.name})),get:b=>[b.section&&b.section.docId||""]},
   section:{label:"Section",type:"text",get:b=>[b.section?`${b.section.num||""} ${b.section.title||""}`.trim():""]},
   doubtfield:{type:"enum",label:COL_FILTER_DEFS.doubtfield.label,options:COL_FILTER_DEFS.doubtfield.options,get:COL_FILTER_DEFS.doubtfield.get},
-  changed:{label:"Changed since version",type:"enum",options:[{v:"added",l:"Added"},{v:"modified",l:"Modified"},{v:"unchanged",l:"Unchanged"}],get:b=>[b.change||"unchanged"]},
+  changed:{label:"Changed in latest version",type:"enum",options:[{v:"added",l:"Added"},{v:"modified",l:"Modified"},{v:"unchanged",l:"Unchanged"}],get:b=>[b.change||"unchanged"]},
   // TICKET-two-pass-allocation.md lot 4 — "by allocation level, by pass, and
   // by awaiting manual allocation." The quick pill above covers the third one
   // as a one-click view; these three fields cover all of them at filter
@@ -5390,8 +5492,9 @@ function renderSettings(){
     return;
   }
   const {b,s} = findBlock(state.selected);
-  if(b.kind==="ghost"){ renderChangePanel(b,s,panel); return; }
-  if(state.mode==="compare" && b.change){ renderChangePanel(b,s,panel); return; }
+  if(b.kind==="ghost"){ renderRemovedPanel(b,s,panel); return; }
+  // arriving on a changed requirement from Compare opens its Versions tab, once per selection
+  if(state.mode==="compare" && latestChange(b) && state.cmpAutoTab!==b.id){ state.tab="versions"; state.cmpAutoTab=b.id; }
 
   const suggestion = TYPE_SUGGEST[b.id];
   const isReq = blockNature(b)==="requirement";
@@ -5446,6 +5549,7 @@ function renderSettings(){
       <button data-tab="details" class="${state.tab==="details"?"active":""}">Details</button>
       <button data-tab="activity" class="${state.tab==="activity"?"active":""}">System ${b.comments?`<span class="tab-count">${b.comments}</span>`:""}</button>
       ${isReq&&rexFor(b).length?`<button data-tab="rex" class="${state.tab==="rex"?"active":""}">REX <span class="tab-count rex-count">${rexFor(b).length}</span></button>`:""}
+      ${latestChange(b)?`<button data-tab="versions" class="${state.tab==="versions"?"active":""}">Versions</button>`:""}
       ${b.textOriginal!==undefined?`<button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translation${b.translationCorrected?` <span class="tab-count corr-count" title="Translation corrected">✓</span>`:""}</button>`:""}
     </div>
     <div class="set-body" id="set-body"></div>`;
@@ -5467,6 +5571,7 @@ function renderSettings(){
   const body = panel.querySelector("#set-body");
   if(state.tab==="rex" && !(isReq && rexFor(b).length)) state.tab="details";
   if(state.tab==="translate" && b.textOriginal===undefined) state.tab="details";
+  if(state.tab==="versions" && !latestChange(b)) state.tab="details";   // DEC-071: no tab when nothing changed in the version in force
   if(state.tab==="details"){
     let html = "";
     if(b.uncertain){
@@ -5724,6 +5829,12 @@ function renderSettings(){
     body.querySelector("#perim-confirm")?.addEventListener("click",()=>{
       b.perimAI=false; markCharEdited(b); refresh(); toast(`System confirmed for ${b.id}`,"ok");
     });
+  } else if(state.tab==="versions"){
+    body.innerHTML = versionsTabHTML(b);
+    body.querySelector("#ver-compare")?.addEventListener("click",()=>{
+      const lc=latestChange(b); state.cmpDoc=docOfBlock(b.id).id; state.cmpFrom=lc.from; state.cmpAutoTab=b.id;
+      setMode("compare"); selectBlock(b.id,{scroll:true});
+    });
   } else if(state.tab==="rex"){
     const rex = rexFor(b);
     body.innerHTML = `
@@ -5912,35 +6023,44 @@ function deleteDuplicateRow(id){
   toast(`${id} deleted`,"warn");
   refresh();
 }
-function renderChangePanel(b,s,panel){
-  const type = b.kind==="ghost"?"rem":(b.change==="added"?"add":"mod");
-  const label = {add:"Added",mod:"Modified",rem:"Removed"}[type];
+/* The Versions tab (DEC-071): what changed in the version of the document in
+   force, and what it did to the requirement. No "reviewed / action" state of
+   its own — the requirement is back to To review and validating it is the
+   treatment (DEC-072). */
+function versionsTabHTML(b){
+  const lc=latestChange(b); if(!lc) return "";
+  const doc=docOfBlock(b.id), toV=doc.versions.find(v=>v.v===lc.to)||{}, earlier=(b.history||[]).slice(0,-1);
+  // b.status is the review axis this change resets; the pill can still show a
+  // more restrictive state (e.g. Incomplete allocation), which wins as always
+  const pending = b.status==="doubt", shown = effectiveStatus(b).val;
+  return `<div class="ver-head"><span class="ver-type ${lc.type}">${lc.type==="added"?"Added":"Modified"} in ${escHtml(lc.to)}</span>
+      <span class="ver-meta">${escHtml([toV.date,toV.note].filter(Boolean).join(" · "))}</span></div>
+    <div class="ver-doc">${escHtml(doc.name)} — compared with ${escHtml(lc.from)}</div>
+    ${lc.desc?`<div class="ver-desc">${escHtml(lc.desc)}</div>`:""}
+    ${lc.type==="modified"&&lc.prevText?`<div class="field"><label>What changed</label><div class="ver-text ver-diff">${wordDiffHTML(lc.prevText,b.text)}</div></div>
+      <details class="ver-prev"><summary>Full text in ${escHtml(lc.from)}</summary><div class="ver-text">${escHtml(lc.prevText)}</div></details>`
+      :`<div class="deriv-hint" style="margin-bottom:12px">New in this version — there is no earlier text to compare with.</div>`}
+    ${earlier.length?`<div class="field"><label>Earlier versions</label>${earlier.map(h=>`<div class="ver-earlier"><b>${escHtml(h.to)}</b> ${h.type==="added"?"added":"modified"}${h.desc?` — ${escHtml(h.desc)}`:""}</div>`).join("")}</div>`:""}
+    <div class="next-step${pending?"":" is-idle"}">${pending
+      ? `Set back to <b>To review</b> by this change. Validate the requirement once the change has been checked.${shown!=="doubt"?` Its status shows <b>${STATUS_LABEL[shown]||shown}</b> first — that is more restrictive and wins.`:""}`
+      : `Checked since the change — the requirement has moved on from To review.`}</div>
+    <button class="mini-btn" id="ver-compare">Open in Compare →</button>`;
+}
+/* A removed requirement only exists in the Compare view (LIFE-006): its panel
+   says what it was and when it went, nothing to edit. */
+function renderRemovedPanel(b,s,panel){
+  const h=(b.history||[]).slice(-1)[0]||{}, doc=DOC(s.docId)||{name:""};
   panel.innerHTML = `
     <div class="set-head">
-      <div class="set-id-row"><span class="set-id">${b.id.startsWith("GHOST")?"EXG-00X":b.id}</span>
-        <span class="status-pill s-changed" style="cursor:default">Change v2.0 → v2.1</span></div>
-      <div class="set-title">${s.num}. ${s.title}</div>
+      <div class="set-id-row"><span class="set-id">Removed</span><span class="status-pill s-changed" style="cursor:default">Removed in ${escHtml(h.to||"")}</span></div>
+      <div class="set-title">${escHtml(h.prevText||"")}</div>
     </div>
     <div class="set-body">
-      <div class="change-card">
-        <span class="ch-type ${type}">${label}</span>
-        <div class="ch-desc">${b.changeDesc||""}</div>
-        <div class="review-state" data-id="${b.id}">
-          <button data-st="new" class="sel">New</button>
-          <button data-st="reviewed">Reviewed, no impact</button>
-          <button data-st="action">Action required</button>
-        </div>
-      </div>
-      <div class="field"><label>Affected passage</label>
-        <div class="fval" style="font-family:var(--font-doc);background:var(--paper);color:var(--paper-ink);padding:var(--space-3) var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-base);line-height:1.55">${b.text}</div></div>
-      <button class="validate-cta" id="change-action" style="background:var(--accent)">＋ Create action / reminder</button>
+      <div class="ver-doc">${escHtml(doc.name)} — present in ${escHtml(h.from||"")}, gone from ${escHtml(h.to||"")}</div>
+      ${h.desc?`<div class="ver-desc">${escHtml(h.desc)}</div>`:""}
+      <div class="field"><label>Text in ${escHtml(h.from||"")}</label><div class="ver-text">${escHtml(h.prevText||"")}</div></div>
+      <div class="deriv-hint">No longer part of the tender. It shows in Compare only, never in the table or the document view.</div>
     </div>`;
-  panel.querySelectorAll(".review-state button").forEach(btn=>btn.addEventListener("click",()=>{
-    panel.querySelectorAll(".review-state button").forEach(x=>x.classList.remove("sel"));
-    btn.classList.add("sel");
-    toast(`Change marked: ${btn.textContent}`,"ok");
-  }));
-  panel.querySelector("#change-action").addEventListener("click",()=>toast("Reminder created for Thibaud — due Friday","ok"));
 }
 
 /* =====================================================
@@ -6099,7 +6219,8 @@ function renderTriage(){
   document.getElementById("n-doubt").textContent = r.filter(b=>effectiveStatus(b).val==="doubt").length;
   document.getElementById("n-tovalidate").textContent = r.filter(b=>effectiveStatus(b).val==="tovalidate").length;
   document.getElementById("n-allocated").textContent = r.filter(b=>effectiveStatus(b).val==="allocated").length;
-  document.getElementById("n-changes").textContent = allBlocks().filter(b=>b.change||b.kind==="ghost").length + 1;
+  // requirements added or modified in the version of their document in force — the "+ 1" that padded this count is gone
+  document.getElementById("n-changes").textContent = allBlocks().filter(b=>blockNature(b)==="requirement"&&b.change).length;
   // B10 — the pending-reassignment pill only ever occupies space in the triage
   // bar when at least one request exists; it's not a permanent filter slot.
   const pendingReassign = r.filter(hasPendingReassign).length;
@@ -7235,12 +7356,11 @@ document.getElementById("seg-exit").addEventListener("click",()=>{
 
 /* Compare navigation */
 function gotoChange(delta){
-  state.changeIndex = (state.changeIndex + delta + changesOrder.length) % changesOrder.length;
-  document.getElementById("change-pos").textContent = `Change ${state.changeIndex+1}/${changesOrder.length}`;
-  selectBlock(changesOrder[state.changeIndex],{scroll:true});
+  const ids=cmpChangeIds(); if(!ids.length) return;
+  state.changeIndex = ((state.changeIndex||0) + delta + ids.length) % ids.length;
+  const pos=document.getElementById("change-pos"); if(pos) pos.textContent = `Change ${state.changeIndex+1}/${ids.length}`;
+  selectBlock(ids[state.changeIndex],{scroll:true});
 }
-document.getElementById("next-change").addEventListener("click",()=>gotoChange(1));
-document.getElementById("prev-change").addEventListener("click",()=>gotoChange(-1));
 
 /* Notifications */
 const notifBtn = document.getElementById("notif-btn"), notifDrop = document.getElementById("notif-drop");
@@ -7352,6 +7472,7 @@ if(MODE!=="ai"){
 // the fresh, nothing-validated-yet distribution instead of the STB-2026
 // demo's own "several days into review" one.
 if(MODE==="ai" && isFreshProject()) applyFreshProjectStatuses();
+applyVersionChanges();
 // Review is the default working view — setMode also collapses the nav panel and shows the kbd hints
 setMode("review");
 </script>
