@@ -1334,6 +1334,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-23
 - **notes**: `renderRemovedPanel()`, what a removed requirement (a ghost block, Compare only — LIFE-006) was and when it went. Read-only. Replaces the Change Card for removals.
 
+### Nature and Class Fields
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: nature only (heading, information), nature + class (requirement); AI-detected (hint + Confirm button)
+- **tokens**: --ia, --text-xs
+- **built-from**: Select Dropdown (`.ui-select`), Ghost Button (`.mini-btn`)
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `natureFieldHTML()` / `classFieldHTML()`, at the top of every block's details (SIG and other single-pass tenders, the contributor view; the Turnkey PM view has the same two fields in its own layout, now labelled "Class" too, not "Type"). Nature offers only Information / Heading / Requirement (DEC-074) — it briefly held Functional / Performance / Security / Interface / Regulatory, which are gone from Allocation. Confirm buttons exist because re-picking the current value in a select fires no change event.
+
 ## Organisms
 
 ### App Header
@@ -1374,7 +1384,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Requirement Row, Branch / Allocated-Activity Sub-row, Grid Section / Group Header, Filter Toolbar, Bulk Selection Action Bar, Checkbox, Custom Column Cell, Custom Column Header Cell
 - **added**: 2026-09-01
 - **changed**: 2026-09-23
-- **notes**: `.rgrid`. Explicitly documented in both screens as the same interaction engine (`table-engine.js`) — per-column sort/filter, drag-select across the selection gutter, keyboard active-cell navigation — with only column config differing per screen. Keyboard (revue-documentaire.html, 2026-09-23): ←/→ follow the DRAWN column order (pinned three + `state.colOrder`, so View-menu reordering and custom columns are honoured — it used to be a fixed list); Enter or F2 on the active cell starts editing it; focusing a control inside a cell makes that cell the active one. compliance.html (2026-09-23): a click on a header cell no longer toggles its column hidden — a leftover from when a collapsed column stayed as a clickable sliver; since columns are fully removed (`display:none`), one click made a column vanish with nothing to click it back. Hiding goes through the View menu only, as on Allocation. Both screens (2026-09-23): columns are resizable from a handle on each header's right edge (Column Resize Handle); a dragged width is a fixed px value, so the Requirement column stops being the flexible one until its handle is double-clicked. `--rgrid-cols`/`--frgrid-cols` widths are hardcoded px/fr values.
+- **notes**: `.rgrid`. Explicitly documented in both screens as the same interaction engine (`table-engine.js`) — per-column sort/filter, drag-select across the selection gutter, keyboard active-cell navigation — with only column config differing per screen. Keyboard (revue-documentaire.html, 2026-09-23): ←/→ follow the DRAWN column order (pinned three + `state.colOrder`, so View-menu reordering and custom columns are honoured — it used to be a fixed list); Enter or F2 on the active cell starts editing it; focusing a control inside a cell makes that cell the active one. compliance.html (2026-09-23): a click on a header cell no longer toggles its column hidden — a leftover from when a collapsed column stayed as a clickable sliver; since columns are fully removed (`display:none`), one click made a column vanish with nothing to click it back. Hiding goes through the View menu only, as on Allocation. Both screens (2026-09-23): columns are resizable from a handle on each header's right edge (Column Resize Handle); a dragged width is a fixed px value, so the Requirement column stops being the flexible one until its handle is double-clicked. `--rgrid-cols`/`--frgrid-cols` widths are hardcoded px/fr values. Allocation's table has no Nature column (DEC-074): a block's nature (Information / Heading / Requirement) is read and changed in its details.
 
 ### Document Reading View
 - **level**: organism
@@ -1454,7 +1464,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Select Dropdown, menu options
 - **added**: 2026-09-01
 - **changed**: 2026-09-23
-- **notes**: `.sel-bar`, explicitly documented as shared between these two screens' tables. revue-documentaire.html's bar carries a Re-run menu (`#sel-rerun-menu`); since 2026-09-23 it skips information blocks and headings and counts them apart ("N not requirements") instead of deriving onto them. Fixed to viewport bottom (24px) — a code comment explains centering via `margin-inline:auto` was chosen deliberately over `left:50%;translateX(-50%)` to avoid capping width at half the viewport.
+- **notes**: `.sel-bar`, explicitly documented as shared between these two screens' tables. revue-documentaire.html's bar carries a Re-run menu (`#sel-rerun-menu`); since 2026-09-23 it skips information blocks and headings and counts them apart ("N not requirements") instead of deriving onto them. Fixed to viewport bottom (24px) — a code comment explains centering via `margin-inline:auto` was chosen deliberately over `left:50%;translateX(-50%)` to avoid capping width at half the viewport. Its Assign menu lost the "PBS" field that set Functional / Performance / Security / Interface / Regulatory on the selection (DEC-074) — it now holds Assigned to and System.
 
 ### Finalize / Export Modal
 - **level**: organism

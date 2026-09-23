@@ -17,7 +17,7 @@ Source : classeur **« PBSOBSABS Keys v260720.xlsx »**, fourni le 21 septembre 
 **Ce que le fichier corrige dans le modèle du prototype** (DEC-062) :
 
 - **L'OBS est un poste**, pas une équipe. « IXL Application Design Eng. », pas « Signalling Design — FR ». Un poste n'est pas une personne — l'esprit de DEC-054 tient — mais la maille n'est pas celle qu'on avait supposée. Établi pour le modèle Mainline ; non énoncé pour Urban, qui garde son vocabulaire antérieur.
-- **Le PBS est un élément produit**, pas une nature d'exigence. La colonne que le prototype appelait PBS affichait Functional / Performance / Security / Interface / Regulatory. C'est la **nature**, utile, mais autre chose ; elle a désormais son propre champ et sa propre colonne.
+- **Le PBS est un élément produit**, pas une nature d'exigence. La colonne que le prototype appelait PBS affichait Functional / Performance / Security / Interface / Regulatory. C'est la **nature**, utile, mais autre chose ; elle a désormais son propre champ et sa propre colonne. *Précisé par DEC-074 : ces cinq valeurs ne sont pas non plus la « nature », qui désigne Information / Heading / Requirement ; elles ont quitté Allocation.*
 - **Mainline se divise en Wayside et Onboard**, avec des clés différentes. Ce sont deux produits SIG distincts (DEC-061), non un sous-produit.
 
 ## Ce qui est ignoré, délibérément
@@ -36,5 +36,5 @@ Pour ce prototype (DEC-061) : les deux listes annexes de la feuille ABS (colonne
 - KEY-T01 : `build_keys.py` sur le classeur reproduit `keys.js` à l'identique ; aucune valeur des clés n'est saisie ailleurs que dans le classeur.
 - KEY-T02 : sur un tender Mainline Wayside, ABS, PBS et OBS se choisissent dans des listes ; aucun champ libre n'accepte une valeur hors clé.
 - KEY-T03 : changer l'ABS efface le PBS et l'OBS ; l'ajout d'un rôle propose d'abord ceux rangés sous l'ABS de l'exigence.
-- KEY-T04 : la colonne PBS montre un élément produit, la colonne Nature une des cinq natures ; jamais l'une à la place de l'autre.
+- KEY-T04 : la colonne PBS montre un élément produit, jamais une catégorie d'exigence (Functional, Performance…) — ces catégories ont quitté Allocation (DEC-074).
 - KEY-T05 : un tender Turnkey ou Urban n'expose aucun sélecteur de clé et n'a pas changé de comportement.

@@ -653,7 +653,7 @@ body.mode-review .doc-scroll{display:none}
 .col-resize:hover::after,.col-resize:focus-visible::after,body.col-resizing .col-resize::after{background:var(--accent);width:2px;left:2px}
 .col-resize:focus-visible{outline:none}
 body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:none!important}
-.rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="pbs"] .c-pbs,.rgrid[data-cc~="type"] .c-type,.rgrid[data-cc~="tkobs"] .c-tkobs,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{display:none}
+.rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="pbs"] .c-pbs,.rgrid[data-cc~="tkobs"] .c-tkobs,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{display:none}
 .rcell.c-sel{order:var(--ord-sel,0)}
 .rcell.c-id{order:var(--ord-id,1)}
 .rcell.c-req{order:var(--ord-req,2)}
@@ -661,7 +661,6 @@ body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:no
 .rcell.c-typo{order:var(--ord-typo,4)}
 .rcell.c-abs{order:var(--ord-abs,5)}
 .rcell.c-pbs{order:var(--ord-pbs,6)}
-.rcell.c-type{order:var(--ord-type,7)}
 .rcell.c-tkobs{order:var(--ord-tkobs,7)}
 .rcell.c-obs{order:var(--ord-obs,8)}
 .rcell.c-mgr{order:var(--ord-mgr,9)}
@@ -1730,7 +1729,6 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
             <div class="rcell c-typo" data-col="typo" data-sortcol="typo"><span class="cl">System<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
             <div class="rcell c-abs" data-col="abs" data-sortcol="abs"><span class="cl">ABS<span class="sort-arrow"></span></span></div>
             <div class="rcell c-pbs" data-col="pbs" data-sortcol="pbs" title="Product Breakdown Structure — the product element the requirement bears on"><span class="cl">PBS<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-type" data-col="type" data-sortcol="type"><span class="cl">Nature<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="type" title="Filter this column">⏷</button></div>
             <div class="rcell c-tkobs" data-col="tkobs" data-sortcol="tkobs" title="The system this requirement is routed to — Turnkey tenders only."><span class="cl">TK OBS<span class="sort-arrow"></span></span></div>
             <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="The team or service within the system — informational, not a separate person to assign."><span class="cl">OBS · team<span class="sort-arrow"></span></span></div>
             <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Assigned to<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="mgr" title="Filter this column">⏷</button></div>
@@ -1806,7 +1804,6 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
     <div class="sel-menu sel-menu-form" id="sel-assign-menu">
       <div class="sel-f"><label for="sel-mgr-sel">Assigned to</label><select id="sel-mgr-sel"></select></div>
       <div class="sel-f"><label for="sel-typo-sel">System</label><select id="sel-typo-sel"></select></div>
-      <div class="sel-f"><label for="sel-type-sel">PBS</label><select id="sel-type-sel"></select></div>
     </div>
   </div>
 
@@ -2504,7 +2501,6 @@ function keyedVocab(productId){
     absList: flagged(KEYS.abs),
     pbsList: flagged(KEYS.pbs),
     obsList: flagged(KEYS.obs),
-    nature:["Functional","Performance","Security","Interface","Regulatory"],
   };
 }
 const isKeyedModel = productId => !!KEY_PRODUCT[productId];
@@ -2535,19 +2531,16 @@ const MODEL_VOCAB={
   "sig-urban":{
     abs:["Design & Engineering","Systems Integration","Verification & Validation","Safety Assurance"],
     pbsLeaf:["CBTC / Onboard","CBTC / Wayside","ATS / Supervision","Platform Screen Doors"],
-    nature:["Functional","Performance","Interface","Regulatory"],
     obs:["Signalling Design — FR","Integration — FR","V&V — FR","Safety & RAMS — Group"],
   },
   "rst-metro":{
     abs:["Design & Engineering","Systems Integration","Verification & Validation"],
     pbsLeaf:["Traction","Doors","Bogies","Onboard networks"],
-    nature:["Functional","Performance","Interface"],
     obs:["Rolling Stock Design — FR","Integration — FR","V&V — FR"],
   },
   "rst-tgv":{
     abs:["Design & Engineering","Safety Assurance","Verification & Validation"],
     pbsLeaf:["Traction","Pantograph","Bogies","Onboard networks"],
-    nature:["Functional","Performance","Regulatory"],
     obs:["Rolling Stock Design — FR","Safety & RAMS — Group","V&V — FR"],
   },
 };
@@ -3159,7 +3152,7 @@ const state = {
   // data-cc, the CSS above keys off it); dropping a key from colOrder alone only
   // removes it from the ordering, leaving the markup on screen.
   colCollapsed:new Set(IS_SIG_TENDER?["typo","tkobs"]:[]),
-  colOrder:["class","typo","abs","pbs","type","tkobs","obs","mgr","status","compliance"],
+  colOrder:["class","typo","abs","pbs","tkobs","obs","mgr","status","compliance"],
   navPanelCollapsed:false,
   detailPanelCollapsed:false,
   sortCol:null,
@@ -3926,7 +3919,7 @@ function renderNav(){
 /* =====================================================
    RENDER — DOCUMENT
 ===================================================== */
-function natureLabelChip(b){ const n=blockNature(b); return n==="requirement"?(b.type+" · "+STATUS_LABEL[b.status||"incomplete"]):NATURE_LABEL[n]; }
+function natureLabelChip(b){ const n=blockNature(b); return n==="requirement"?(NATURE_LABEL.requirement+" · "+STATUS_LABEL[b.status||"incomplete"]):NATURE_LABEL[n]; }
 function natureTag(b){
   const n=blockNature(b);
   const ai = b.typeAI && b.kind!=="image";
@@ -4045,7 +4038,7 @@ function renderDoc(){
           return;
         }
         // requirement
-        let inner = `<span class="type-chip">${b.type+" · "+STATUS_LABEL[b.status]}</span>`;
+        let inner = `<span class="type-chip">${NATURE_LABEL.requirement+" · "+STATUS_LABEL[b.status]}</span>`;
         inner += `<span class="blk-id">${b.id}</span>`;
         if(b.sourceImage) inner += `<span class="prov-marker" title="Captured from ${b.sourceImage}">📷 From ${b.sourceImage}</span>`;
         inner += (cch && cch.type==="modified" && cch.prevText) ? wordDiffHTML(cch.prevText, b.text) : b.text;
@@ -4089,7 +4082,7 @@ function renderTable(tb){
     const one=document.createElement("div");
     one.className=`blk st-${b.status}`+(b.manager?"":" unallocated")+(state.selected===b.id?" selected":"");
     one.dataset.id=b.id;
-    one.innerHTML=`<span class="type-chip">${b.type} · ${STATUS_LABEL[b.status]} · Whole table</span>`+
+    one.innerHTML=`<span class="type-chip">${NATURE_LABEL.requirement} · ${STATUS_LABEL[b.status]} · Whole table</span>`+
       tb.rows.map(r=>`<div class="tbl-r"><span>${r.ref}</span><span>${r.text}</span><span>${r.proto}</span></div>`).join("");
     one.addEventListener("click",()=>selectBlock(b.id));
     grid.appendChild(one);
@@ -4171,12 +4164,6 @@ function bulkSetTypology(pid){
   toast(`${TY(pid).label} added to ${c} requirement${c>1?"s":""}`,"ok");
   state.selection.clear(); lastSel=null; refresh();
 }
-function bulkSetType(t){
-  let c=0;
-  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.type=t; markAllocEdited(f.b); c++; } });
-  toast(`Type set to ${t} for ${c} requirement${c>1?"s":""}`,"ok");
-  state.selection.clear(); lastSel=null; refresh();
-}
 function bulkSetClass(cls){
   let c=0;
   state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.tech=cls; f.b.techAI=false; markCharEdited(f.b); c++; } });
@@ -4242,8 +4229,6 @@ function rowInnerHTML(b){
   const plain = (b.text||"").replace(/<[^>]+>/g,"");
   const mgrOptions = ['<option value="">— Unassigned —</option>']
     .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${b.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
-  const typeOptions = ["Functional","Performance","Security","Interface","Regulatory"]
-    .map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("");
   const hasBranches = (b.branches||[]).length>1;
   const branchBadge = hasBranches?`<span class="cbadge branch-count-badge" title="${b.branches.length} parallel allocations">⑂ ${b.branches.length}</span>`:"";
   // B1/B10 — computed live from branchStatus (blockedBranchOf), not just the
@@ -4326,7 +4311,6 @@ function rowInnerHTML(b){
     <div class="rcell c-pbs">${TENDER_KEYS
       ? `<select class="cell-select" data-pbs="${b.id}" title="${escHtml((b.pbs&&b.pbs.v)||"")}"><option value="">—</option>${pbsOptionsHTML(b.pbs&&b.pbs.id)}</select>`
       : `<span class="fval">${escHtml((b.pbs&&b.pbs.v)||"—")}</span>`}</div>
-    <div class="rcell c-type"><select class="cell-select" data-type="${b.id}">${typeOptions}</select></div>
     <div class="rcell c-tkobs">${tkObsCellHTML}</div>
     <div class="rcell c-obs">${obsCellHTML}</div>
     <div class="rcell c-mgr">${mgrCellHTML}</div>
@@ -4353,7 +4337,6 @@ function infoRowHTML(b){
     <div class="rcell c-typo"><span class="ph">—</span></div>
     <div class="rcell c-abs"><span class="ph">—</span></div>
     <div class="rcell c-pbs"><span class="ph">—</span></div>
-    <div class="rcell c-type"><span class="ph">—</span></div>
     <div class="rcell c-tkobs"><span class="ph">—</span></div>
     <div class="rcell c-obs"><span class="ph">—</span></div>
     <div class="rcell c-mgr"><span class="ph">—</span></div>
@@ -4402,7 +4385,6 @@ function branchRowHTML(parent, branch, idx){
     <div class="rcell c-typo"><span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending project-manager review":""}">${TY(branch.typology).code}</span></div>
     <div class="rcell c-abs"></div>
     <div class="rcell c-pbs"></div>
-    <div class="rcell c-type"></div>
     <div class="rcell c-tkobs">${tkObsCell}</div>
     <div class="rcell c-obs">${multiTeam
       ? `<span class="multi-ph" title="${teams.length} teams within this system — expand to see each">Multiple (${teams.length})</span>`
@@ -4430,7 +4412,6 @@ function teamRowHTML(parent, branch, bidx, team, tidx){
     <div class="rcell c-typo"></div>
     <div class="rcell c-abs"></div>
     <div class="rcell c-pbs"></div>
-    <div class="rcell c-type"></div>
     <div class="rcell c-tkobs"></div>
     <div class="rcell c-obs"><span class="fval">${escHtml((team.obs&&team.obs.v)||TEAM(team.team).label||"—")}</span></div>
     <div class="rcell c-mgr"><select class="cell-select branch-edit${team.manager?"":" empty"}" data-teammgr="${key}">${mgrOptions}</select></div>
@@ -4448,7 +4429,6 @@ const SORT_KEYS={
   typo:b=>{ const p=(b.perim||[])[0]; return p==null?9999:(p==="tky"?-1:TYPO.findIndex(t=>t.id===p)); },
   abs:b=>b.domain||"",
   pbs:b=>(b.pbs&&b.pbs.id)||(b.pbs&&b.pbs.v)||"",
-  type:b=>b.type||"",
   mgr:b=>b.manager?(MGR(b.manager)?.name||""):"",
   obs:b=>(b.obs&&b.obs.v)||"",
   status:b=>({incomplete:0,doubt:1,tovalidate:2,allocated:3}[effectiveStatus(b).val]??9),
@@ -4465,7 +4445,6 @@ function sortRows(rows){
 const COL_FILTER_DEFS={
   class:{label:"Class",options:[{v:"tech",l:"Technical"},{v:"nontech",l:"Non-technical"}],get:b=>[b.tech||""]},
   typo:{label:"System",options:[...TYPO.map(t=>({v:t.id,l:t.label})),{v:"",l:"— none set —"}],get:b=>(b.perim&&b.perim.length)?b.perim:[""]},
-  type:{label:"Nature",options:["Functional","Performance","Security","Interface","Regulatory"].map(t=>({v:t,l:t})),get:b=>[b.type||""]},
   mgr:{label:"Assigned to",options:[...MANAGERS.filter(m=>!m.admin).map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
   status:{label:"Status",options:Object.keys(STATUS_LABEL).map(k=>({v:k,l:STATUS_LABEL[k]})),get:b=>[effectiveStatus(b).val]},
   doubtfield:{label:"Review field",options:[...Object.keys(DOUBT_FIELD_LABEL).map(k=>({v:k,l:DOUBT_FIELD_LABEL[k]})),{v:"",l:"— nothing to review —"}],get:b=>{const es=effectiveStatus(b); return [es.val==="doubt"?(es.doubtField||""):""];}},
@@ -4503,7 +4482,7 @@ function passesColFilters(b){
 const ADV_FILTER_FIELDS={
   id:{label:"ID",type:"text",get:b=>[b.id||""]},
   text:{label:"Text",type:"text",get:b=>[b.text||""]},
-  nature:{label:"Block type",type:"enum",options:[{v:"heading",l:"Heading"},{v:"info",l:"Information"},{v:"requirement",l:"Requirement"},{v:"image",l:"Image"}],get:b=>[blockNature(b)]},
+  nature:{label:"Nature",type:"enum",options:[{v:"heading",l:"Heading"},{v:"info",l:"Information"},{v:"requirement",l:"Requirement"},{v:"image",l:"Image"}],get:b=>[blockNature(b)]},
   class:{type:"enum",label:COL_FILTER_DEFS.class.label,options:COL_FILTER_DEFS.class.options,get:COL_FILTER_DEFS.class.get},
   status:{type:"enum",label:COL_FILTER_DEFS.status.label,options:COL_FILTER_DEFS.status.options,get:COL_FILTER_DEFS.status.get},
   compliance:{label:"Compliance",type:"enum",options:[...COMPLIANCE_DEFS.map(c=>({v:c.k,l:c.label}))],get:b=>{
@@ -4512,7 +4491,6 @@ const ADV_FILTER_FIELDS={
   typo:{type:"enum",label:COL_FILTER_DEFS.typo.label,options:COL_FILTER_DEFS.typo.options,get:COL_FILTER_DEFS.typo.get},
   abs:{label:"ABS",type:"text",get:b=>[b.domain||""]},
   pbs:{label:"PBS",type:"text",get:b=>[(b.pbs&&b.pbs.v)||""]},
-  type:{type:"enum",label:COL_FILTER_DEFS.type.label,options:COL_FILTER_DEFS.type.options,get:COL_FILTER_DEFS.type.get},
   obs:{label:"OBS",type:"text",get:b=>[(b.obs&&b.obs.v)||""]},
   mgr:{label:"Assigned to",type:"enum",options:COL_FILTER_DEFS.mgr.options,get:COL_FILTER_DEFS.mgr.get},
   doc:{label:"Document",type:"enum",options:DOCS.map(d=>({v:d.id,l:d.name})),get:b=>[b.section&&b.section.docId||""]},
@@ -4797,7 +4775,6 @@ function bindVRows(win){
     toast(`${branch.label}: manager ${branch.manager?"— "+MGR(branch.manager).name:"unassigned"}`,"ok");
     refresh();
   }));
-  win.querySelectorAll("[data-type]").forEach(sel=>sel.addEventListener("change",e=>{ e.stopPropagation(); const f=findBlock(sel.dataset.type); if(f){ f.b.type=sel.value; markAllocEdited(f.b); refresh(); } }));
   win.querySelectorAll("[data-abs]").forEach(inp=>{
     inp.addEventListener("click",e=>e.stopPropagation());
     inp.addEventListener("change",e=>{ const f=findBlock(inp.dataset.abs); if(!f) return;
@@ -5164,15 +5141,28 @@ function pbsControlHTML(b, derivSrc){
   if(!TENDER_KEYS) return `<input class="ui-input" type="text" id="f-pbs" value="${escHtml((cur&&cur.v)||"")}" placeholder="Product element">`;
   return `<select class="ui-select" id="f-pbs"><option value="">— Not derived yet —</option>${pbsOptionsHTML(cur&&cur.id)}</select>`;
 }
+/* DEC-074 — Nature is what a block IS: Information, Heading or Requirement,
+   the same three the reclassify menu offers. It was briefly a five-value
+   "Functional / Performance / Security / Interface / Regulatory" field, which
+   is not what the word means here and has been taken out of Allocation.
+   An AI-detected nature says so and can be confirmed in place. */
 function natureFieldHTML(b){
-  /* The label is a label. A sentence inside it renders in the panel's uppercase,
-     letter-spaced label style and wraps into two shouting lines; the explanation
-     belongs under the control, in the same quiet hint every derivation step uses.
-     The field sits ABOVE the chain: what kind of requirement this is comes before
-     where it gets allocated, and it is not a step of that derivation. */
+  const ai=b.typeAI && b.kind!=="image";
   return `<div class="field"><label>Nature</label>
-    <select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>
-    <div class="deriv-hint">What kind of requirement this is. Not a step of the derivation — changing it clears nothing.</div></div>`;
+    <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
+    ${ai?`<div class="deriv-hint" style="display:flex;align-items:center;gap:8px;color:var(--ia)">Detected by the AI, not confirmed yet <button class="mini-btn" id="f-nature-confirm">Confirm</button></div>`:""}</div>`;
+}
+/* Technical / non-technical — the Class column of the table, now in every
+   requirement's details (it was only in the Turnkey project-manager view,
+   so a SIG tender never showed it). */
+function classFieldHTML(b){
+  return `<div class="field"><label>Class</label>
+    <select class="ui-select" id="f-tech">
+      <option value="" ${b.tech==null?"selected":""} disabled>— Not set —</option>
+      <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
+      <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
+    </select>
+    ${b.techAI?`<div class="deriv-hint" style="display:flex;align-items:center;gap:8px;color:var(--ia)">Detected by the AI, not confirmed yet <button class="mini-btn" id="f-tech-confirm">Confirm</button></div>`:""}</div>`;
 }
 function derivStepHTML(label,control,conf,hint,info){
   return `<div class="deriv-step">
@@ -5337,6 +5327,7 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
   const myIdx=(b.branches||[]).indexOf(myBranch);
   return `
     ${natureFieldHTML(b)}
+    ${classFieldHTML(b)}
     <div class="deriv-pass-h">${escHtml(TY(myBranch.typology).label)}'s model${myIdx>=0?rerunControlHTML("leaf:"+b.id+"::"+myIdx, myBranch.typology, branchRerunBlockedReason(myBranch)):""}</div>
     ${derivStepHTML("ABS", absControlHTML(b,derivSrc), derivSrc.abs)}
     ${derivStepHTML("PBS", pbsControlHTML(b,derivSrc), derivSrc.pbs, null, TENDER_KEYS?"The product element the requirement bears on — from the PBS key, grouped by family.":null)}
@@ -5393,7 +5384,7 @@ function pmClassificationHTML(b){
       `<select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
       null)}
 
-    ${derivStepHTML(`Type${b.techAI?` <span class="deriv-scope" style="color:var(--ia)">· AI, unconfirmed</span>`:""}`,
+    ${derivStepHTML(`Class${b.techAI?` <span class="deriv-scope" style="color:var(--ia)">· AI, unconfirmed</span>`:""}`,
       `<select class="ui-select" id="f-tech">
         <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
         <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
@@ -5402,7 +5393,7 @@ function pmClassificationHTML(b){
     ${useAbs
       ? derivStepHTML("ABS", `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim?{c:dim.conf}:null, null,
           `Non-technical — pass 1 reads the ABS and nothing else.`)
-      : derivStepHTML("PBS", `<select class="ui-select" id="f-type">${["Functional","Performance","Security","Interface","Regulatory"].map(t=>`<option ${b.type===t?"selected":""}>${t}</option>`).join("")}</select>`, dim?{c:dim.conf}:null, null,
+      : derivStepHTML("PBS", pbsControlHTML(b,b), dim?{c:dim.conf}:null, null,
           `Technical — pass 1 reads the PBS and nothing else.`)}
 
     <div class="deriv-step">
@@ -5504,7 +5495,7 @@ function activityDetailHTML(b,bidx){
       ${derivStepHTML("Type", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
       ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-system within this system."):""}
         ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
-        ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||b.type||"—")}</div>`, t.pbs)}
+        ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||"—")}</div>`, t.pbs)}
         ${derivStepHTML("OBS · team", `<div class="fval">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label)}</div>`, t.obs,
         "The team or service within this system — this is what casting staffs.")}
     </div>
@@ -5640,9 +5631,8 @@ function renderSettings(){
         ? contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx)
         : "";
     if(!pmTurnkey && !(isReq && myBranch)) html += `
-      ${!isReq?`<div class="field"><label>Type</label>
-        <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
-      </div>`:""}
+      ${natureFieldHTML(b)}
+      ${isReq?classFieldHTML(b):""}
       ${isReq&&!myBranch&&!IS_SIG_TENDER?`<div class="field"><label>System ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <div class="msel ${state.typoOpen?"open":""}" id="typo-msel">
           <button class="msel-btn" id="typo-btn">
@@ -5658,7 +5648,6 @@ function renderSettings(){
         ${isTurnkey(b)?`<div class="tky-note"><b>Turnkey.</b> Supervises the whole scope — needs a coordinating owner plus one specialist per perimeter.</div>`:""}
       </div>`:""}
 
-      ${isReq?natureFieldHTML(b):""}
       ${isReq?`<div class="set-sep"></div>${derivationChainHTML(b,myBranch,derivSrc,rmView)}`:""}
 
       ${showBranchPanel&&!pmTurnkey?(function(){
@@ -5734,6 +5723,7 @@ function renderSettings(){
       if(id) assignPerson(target,id); else target.manager=null;
       refresh(); toast(id?`Assigned to ${personLabel(id)}`:"Unassigned","ok");
     });
+    body.querySelector("#f-tech-confirm")?.addEventListener("click",()=>{ b.techAI=false; markCharEdited(b); logFeedback("char",b.id,b.tech,b.tech,null); refresh(); toast(`${b.id} — class confirmed: ${b.tech==="tech"?"Technical":"Non-technical"}`,"ok"); });
     body.querySelector("#f-tech")?.addEventListener("change",e=>{
       const before=b.tech, was=b.techAI;
       b.tech=e.target.value; b.techAI=false; markCharEdited(b);
@@ -5749,12 +5739,7 @@ function renderSettings(){
       if(!cleared.length) return;
       toast(`${changed.toUpperCase()} changed — ${cleared.map(c=>c.toUpperCase()).join(" and ")} cleared, they were derived from it`,"warn");
     };
-    /* The nature is off the chain (DEC-062): changing it invalidates nothing. */
-    body.querySelector("#f-type")?.addEventListener("change",e=>{
-      const before=b.type; b.type=e.target.value;
-      logFeedback("char",b.id,before,e.target.value,null);
-      markAllocEdited(b); refresh(); toast("Nature updated","ok");
-    });
+    body.querySelector("#f-nature-confirm")?.addEventListener("click",()=>reclassify(b.id, blockNature(b)));
     /* A human pick carries no confidence: the badge goes, the value stays. On a
        single-system requirement the branch mirrors the requirement, as
        everywhere else in this file. */
@@ -6023,7 +6008,7 @@ function rexFor(b){ return (b && b.id && REX_BASE[b.id]) ? REX_BASE[b.id] : []; 
 
 function activityFor(b){
   const base = [
-    {k:"ia",who:"Segmentation AI",what:`Block detected and typed as "${b.type||"Text"}" during v2.1 processing.`,time:"Jul 16, 2026, 9:14 AM"},
+    {k:"ia",who:"Segmentation AI",what:`Block detected and typed as ${NATURE_LABEL[blockNature(b)]||"Text"} during capture.`,time:"Jul 16, 2026, 9:14 AM"},
   ];
   if(b.branchLog&&b.branchLog.length) base.unshift(...b.branchLog);
   if(b.id==="SRM-00017"){
@@ -6399,7 +6384,6 @@ function bulkRerun(productId){
 [
   {id:"sel-mgr-sel", opts:MANAGERS.filter(m=>!m.admin).map(m=>({v:m.id,l:`${m.name} · ${m.role}`})), unassign:true,  apply:v=>bulkAssignManager(v||null)},
   {id:"sel-typo-sel",opts:TYPO.map(t=>({v:t.id,l:`${t.code} — ${t.label}`})),                        unassign:false, apply:v=>bulkSetTypology(v)},
-  {id:"sel-type-sel",opts:["Functional","Performance","Security","Interface","Regulatory"].map(t=>({v:t,l:t})), unassign:false, apply:v=>bulkSetType(v)},
 ].forEach(f=>{
   const el=document.getElementById(f.id);
   el.innerHTML=`<option value="__keep">Keep current</option>`
@@ -6467,7 +6451,7 @@ function renderSortIndicators(){
    right visual position without the row-render code needing to know about ordering. */
 const RCOLS=[
   {k:"sel",w:"32px"},{k:"id",w:"98px"},{k:"req",w:"minmax(325px,1.82fr)"},
-  {k:"class",w:"78px"},{k:"typo",w:"136px"},{k:"abs",w:"120px"},{k:"pbs",w:"150px"},{k:"type",w:"100px"},
+  {k:"class",w:"78px"},{k:"typo",w:"136px"},{k:"abs",w:"120px"},{k:"pbs",w:"150px"},
   {k:"tkobs",w:"124px"},{k:"obs",w:"140px"},{k:"mgr",w:"118px"},{k:"status",w:"92px"},{k:"compliance",w:"108px"},
 ];
 const RCOLS_BY_KEY=Object.fromEntries(RCOLS.map(c=>[c.k,c]));
@@ -6478,8 +6462,8 @@ const RCOLS_BY_KEY=Object.fromEntries(RCOLS.map(c=>[c.k,c]));
    view switch — after that the View menu wins, so a deliberate choice is never
    overwritten on the next click. */
 const VIEW_COLUMNS={
-  pm:       {hide:["abs","pbs","type","obs","mgr"], show:["typo","tkobs","status","compliance"]},
-  activity: {hide:["tkobs"],                        show:["abs","pbs","type","obs","mgr","status","compliance"]},
+  pm:       {hide:["abs","pbs","obs","mgr"], show:["typo","tkobs","status","compliance"]},
+  activity: {hide:["tkobs"],                 show:["abs","pbs","obs","mgr","status","compliance"]},
 };
 function applyViewColumns(){
   if(!runsPassOne()) return;              // no pass 1, no two views to switch between
@@ -6610,7 +6594,7 @@ function renderColFilterIndicators(){
    three fields the spec promises were unreachable in the UI — fixed. */
 const ADV_FIELD_GROUPS=[
   {g:"Progress",         fields:["status","compliance","doubtfield","passdoubt","changed"]},
-  {g:"Characterisation", fields:["nature","class","type","typo"]},
+  {g:"Characterisation", fields:["nature","class","typo"]},
   {g:"Allocation",       fields:["abs","pbs","obs","mgr","alloclevel","manualalloc"]},
   {g:"Content & source", fields:["id","text","section","doc"]},
 ];
@@ -6946,7 +6930,7 @@ const colsPanelState={open:false};
    grouping that can only ever hold one value would be noise. TK OBS goes with
    it — it belongs to the distribution pass that does not run here. */
 const COLUMN_TOGGLE_DEFS=[
-  {k:"class",label:"Class"},{k:"typo",label:"System"},{k:"abs",label:"ABS"},{k:"pbs",label:"PBS"},{k:"type",label:"Nature"},
+  {k:"class",label:"Class"},{k:"typo",label:"System"},{k:"abs",label:"ABS"},{k:"pbs",label:"PBS"},
   {k:"tkobs",label:"TK OBS (system)"},{k:"obs",label:TENDER_KEYS?"OBS (role)":"OBS (team)"},{k:"mgr",label:"Assigned to"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
 ].filter(c=>!IS_SIG_TENDER || (c.k!=="typo" && c.k!=="tkobs"));
 function renderColumnsPanel(){
