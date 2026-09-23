@@ -1279,10 +1279,10 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **file**: revue-documentaire.html
 - **variants**: single entry (no remove), several entries (remove per row), keyed ("role", select-based add) vs free ("organisation", text add)
 - **tokens**: --text-sm, --text-xs, --text-3
-- **built-from**: UI List (`.ui-list`), Confidence Badge, Icon Button (remove ✕)
+- **built-from**: UI List (`.ui-list`), Confidence Badge, Icon Button (remove ✕), Text Input (search field of the add picker)
 - **added**: 2026-09-08
 - **changed**: 2026-09-23
-- **notes**: `obsListHTML()` / `bindObsList()`. The noun comes from `OBS_NOUN` — "role" on a keyed Mainline tender (DEC-062), "organisation" elsewhere — for the remove tooltip, add button, toasts and confirm. Removing down to one entry re-syncs the system's and (single-system) the requirement's person and OBS, so the table's "Assigned to" never shows the removed entry's person.
+- **notes**: `obsListHTML()` / `bindObsList()`. The noun comes from `OBS_NOUN` — "role" on a keyed Mainline tender (DEC-062), "organisation" elsewhere — for the remove tooltip, add button, toasts and confirm. Removing down to one entry re-syncs the system's and (single-system) the requirement's person and OBS, so the table's "Assigned to" never shows the removed entry's person. Adding (2026-09-23) is a search, not a dropdown: `+ Add role` opens a full-width field over an inline list (`.obs-pick`), filtered as you type on title and the workbook's skill/SoA/job codes; click or Enter adds, ↑/↓ move, Escape or ✕ cancels. On a keyed tender the roles filed under the requirement's ABS are grouped first (sticky group headers); elsewhere it suggests organisations already used on the tender and offers "Add “…”" for what was typed. It replaced a native select of ~45 titles, truncated in the panel width, plus a separate Add button. List max-height 240px and code line 10px hardcoded.
 
 ### Custom Column Cell
 - **level**: molecule

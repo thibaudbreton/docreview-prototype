@@ -1150,8 +1150,19 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 /* §3.6 — OBS-as-list row remove + inline add form */
 .ui-list-rm{flex-shrink:0;width:20px;height:20px;border-radius:50%;color:var(--text-3);display:grid;place-items:center;font-size:11px}
 .ui-list-rm:hover{background:var(--warn-soft);color:var(--warn)}
-.obs-add-form{display:flex;gap:var(--space-2);align-items:center;padding:var(--space-2) var(--space-3);background:var(--panel-2)}
-.obs-add-form .ui-input{flex:1}
+/* OBS picker — a search field with an inline list, not a dropdown */
+.obs-pick{padding:var(--space-2) var(--space-3);background:var(--panel-2)}
+.obs-pick-row{display:flex;align-items:center;gap:var(--space-2)}
+.obs-pick-row .ui-input{flex:1;min-width:0}
+.obs-pick-x{flex:none;width:28px;height:28px;border-radius:var(--radius-sm);color:var(--text-3)}
+.obs-pick-x:hover{color:var(--text);background:var(--panel-3)}
+.obs-pick-list{margin-top:6px;max-height:240px;overflow-y:auto;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel)}
+.obs-pick-group{position:sticky;top:0;padding:6px var(--space-3) 4px;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);background:var(--panel)}
+.obs-pick-opt{display:flex;flex-direction:column;gap:1px;padding:6px var(--space-3);cursor:pointer}
+.obs-pick-opt .t{font-size:var(--text-sm);color:var(--text);line-height:1.35}
+.obs-pick-opt .c{font-family:var(--font-mono);font-size:10px;color:var(--text-3)}
+.obs-pick-opt.active{background:var(--accent-soft)}
+.obs-pick-empty{padding:var(--space-3);font-size:var(--text-sm);color:var(--text-3)}
 /* an explanation that used to sit permanently under the field it was about —
    costing space on every view — now lives behind a small ⓘ next to the
    label of the step it actually explains, on hover only. Native title
@@ -3588,52 +3599,83 @@ function obsListHTML(myBranch, ctx){
   </div>`;
 }
 function bindObsList(body,myBranch,b){
+  /* Adding an OBS entry is a search, not a dropdown. It used to be a native
+     select of ~45 job titles — truncated to "Project & Pr…" in the panel's
+     width, no way to type, grouped only by optgroup — followed by a separate
+     Add button. Now: one full-width field, the list filters as you type (title
+     and the workbook's skill / SoA / job codes), and a click or Enter adds.
+     Same gesture as picking a person. On a keyed tender the roles filed under
+     the requirement's ABS come first, as the workbook nests them; elsewhere
+     the field suggests organisations already used on this tender and offers
+     to add what was typed. ↑/↓ move, Escape or ✕ cancels. */
   body.querySelector("#obs-add-btn")?.addEventListener("click",()=>{
     const row=body.querySelector("#obs-add-row");
-    if(TENDER_KEYS){
-      /* Roles under the requirement's ABS first, every other flagged role after
-         — the workbook's nesting is the default, not a wall. */
-      const absId=(myBranch.abs&&myBranch.abs.id)||(b.abs&&b.abs.id)||null;
-      const taken=new Set(ensureTeams(myBranch).map(t=>t.obs&&t.obs.id).filter(Boolean));
-      const under=TENDER_KEYS.obsList.filter(o=>o.abs===absId && !taken.has(o.id));
-      const rest=TENDER_KEYS.obsList.filter(o=>o.abs!==absId && !taken.has(o.id));
-      const opt=o=>`<option value="${o.id}">${escHtml(o.title)}</option>`;
-      row.innerHTML=`<div class="obs-add-form">
-        <select class="ui-select" id="obs-add-input"><option value="">— Pick a role —</option>
-          ${under.length?`<optgroup label="Under ${escHtml((KEY_ABS(absId)||{}).label||"this ABS")}">${under.map(opt).join("")}</optgroup>`:""}
-          <optgroup label="Other roles on this product">${rest.map(opt).join("")}</optgroup></select>
-        <button class="mini-btn" id="obs-add-cancel">Cancel</button>
-        <button class="mgr-done" id="obs-add-confirm">Add</button>
-      </div>`;
-      row.querySelector("#obs-add-cancel").addEventListener("click",()=>refresh());
-      row.querySelector("#obs-add-confirm").addEventListener("click",()=>{
-        const o=KEY_OBS(row.querySelector("#obs-add-input").value);
-        if(!o){ toast("Pick a role","warn"); return; }
-        ensureTeams(myBranch).push({team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",obs:{v:o.title,id:o.id,c:null}});
-        deriveRequirementCompliance(b);
-        toast(`${o.title} added`,"ok");
-        refresh();
-      });
-      return;
-    }
-    row.innerHTML=`<div class="obs-add-form">
-      <input class="ui-input" type="text" id="obs-add-input" placeholder="Organisation name…" autocomplete="off">
-      <button class="mini-btn" id="obs-add-cancel">Cancel</button>
-      <button class="mgr-done" id="obs-add-confirm">Add</button>
-    </div>`;
-    const input=row.querySelector("#obs-add-input");
-    input.focus();
-    row.querySelector("#obs-add-cancel").addEventListener("click",()=>refresh());
-    const doAdd=()=>{
-      const val=(input.value||"").trim();
-      if(!val){ toast("Enter an organisation name","warn"); return; }
-      ensureTeams(myBranch).push({team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",obs:{v:val,c:null}});
+    const teams=ensureTeams(myBranch);
+    const addEntry=(obs)=>{
+      teams.push({team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",obs:Object.assign({c:null},obs)});
       deriveRequirementCompliance(b);
-      toast(`${val} added`,"ok");
+      toast(`${obs.v} added`,"ok");
       refresh();
     };
-    row.querySelector("#obs-add-confirm").addEventListener("click",doAdd);
-    input.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doAdd(); } });
+    let candidates;   // [{key, label, sub, group, obs}]
+    if(TENDER_KEYS){
+      const absId=(myBranch.abs&&myBranch.abs.id)||(b.abs&&b.abs.id)||null;
+      const absLabel=(KEY_ABS(absId)||{}).label;
+      const taken=new Set(teams.map(t=>t.obs&&t.obs.id).filter(Boolean));
+      candidates=TENDER_KEYS.obsList.filter(o=>!taken.has(o.id))
+        .map(o=>({key:o.id, label:o.title, sub:[o.soa,o.code].filter(Boolean).join(" · "),
+                  group:o.abs===absId&&absLabel?`Under ${absLabel}`:"Other roles on this product",
+                  rank:o.abs===absId?0:1, search:[o.title,o.skills,o.soa,o.code].filter(Boolean).join(" ").toLowerCase(),
+                  obs:{v:o.title,id:o.id}}))
+        .sort((x,y)=>x.rank-y.rank);
+    }else{
+      const taken=new Set(teams.map(t=>t.obs&&t.obs.v).filter(Boolean));
+      const used=new Set();
+      SECTIONS.forEach(sec=>sec.blocks.forEach(x=>(x.kind==="table"?x.rows:[x]).forEach(r=>{
+        (r.branches||[]).forEach(br=>ensureTeams(br).forEach(t=>{ if(t.obs&&t.obs.v) used.add(t.obs.v); }));
+        if(r.obs&&r.obs.v) used.add(r.obs.v);
+      })));
+      candidates=[...used].filter(v=>!taken.has(v)).sort()
+        .map(v=>({key:v, label:v, sub:"", group:"Used on this tender", rank:0, search:v.toLowerCase(), obs:{v}}));
+    }
+    row.innerHTML=`<div class="obs-pick">
+      <div class="obs-pick-row">
+        <input class="ui-input" type="text" id="obs-add-input" placeholder="${TENDER_KEYS?"Search a role, or a code (e.g. TIS03)…":"Name the organisation…"}" autocomplete="off">
+        <button class="obs-pick-x" id="obs-add-cancel" title="Cancel (Esc)">✕</button>
+      </div>
+      <div class="obs-pick-list" id="obs-pick-list" role="listbox"></div>
+    </div>`;
+    const input=row.querySelector("#obs-add-input"), list=row.querySelector("#obs-pick-list");
+    let shown=[], active=0;
+    const draw=()=>{
+      const q=input.value.trim().toLowerCase();
+      shown=candidates.filter(c=>!q||c.search.includes(q)).slice(0,60);
+      // free text: what was typed is itself an option, first, unless it already exists
+      if(!TENDER_KEYS && q && !candidates.some(c=>c.search===q) && !teams.some(t=>t.obs&&String(t.obs.v).toLowerCase()===q))
+        shown.unshift({key:"__new", label:`Add “${input.value.trim()}”`, sub:"New organisation", group:"", obs:{v:input.value.trim()}});
+      if(active>=shown.length) active=0;
+      let lastGroup=null;
+      list.innerHTML = shown.length ? shown.map((c,i)=>{
+        const head = c.group && c.group!==lastGroup ? `<div class="obs-pick-group">${escHtml(c.group)}</div>` : "";
+        lastGroup=c.group||lastGroup;
+        return `${head}<div class="obs-pick-opt${i===active?" active":""}" role="option" data-i="${i}"><span class="t">${escHtml(c.label)}</span>${c.sub?`<span class="c">${escHtml(c.sub)}</span>`:""}</div>`;
+      }).join("") : `<div class="obs-pick-empty">${TENDER_KEYS?"No role matches — the list is the product's OBS key.":"Type a name to add an organisation."}</div>`;
+      list.querySelectorAll("[data-i]").forEach(el=>{
+        el.addEventListener("mousedown",e=>{ e.preventDefault(); addEntry(shown[+el.dataset.i].obs); });
+        el.addEventListener("mousemove",()=>{ if(active!==+el.dataset.i){ active=+el.dataset.i; list.querySelectorAll(".obs-pick-opt").forEach(o=>o.classList.toggle("active",+o.dataset.i===active)); } });
+      });
+    };
+    input.addEventListener("input",()=>{ active=0; draw(); });
+    input.addEventListener("keydown",e=>{
+      e.stopPropagation();
+      if(e.key==="ArrowDown"||e.key==="ArrowUp"){ e.preventDefault(); if(!shown.length) return;
+        active=(active+(e.key==="ArrowDown"?1:-1)+shown.length)%shown.length; draw();
+        list.querySelector(".obs-pick-opt.active")?.scrollIntoView({block:"nearest"}); }
+      else if(e.key==="Enter"){ e.preventDefault(); if(shown[active]) addEntry(shown[active].obs); }
+      else if(e.key==="Escape"){ e.preventDefault(); refresh(); }
+    });
+    row.querySelector("#obs-add-cancel").addEventListener("click",()=>refresh());
+    draw(); input.focus();
   });
   body.querySelectorAll("[data-obsrm]").forEach(btn=>btn.addEventListener("click",()=>{
     const idx=+btn.dataset.obsrm;
