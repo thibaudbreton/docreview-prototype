@@ -634,6 +634,14 @@ body.mode-review .doc-scroll{display:none}
    .rcell, current rows and future ones alike — the row-render code never needs to
    know the current order. */
 .rgrid-head .rcell{position:relative}
+/* column resize handle (TE.bindColumnResize) — invisible until the header is
+   hovered, accent while dragging or focused */
+.col-resize{position:absolute;top:0;right:-3px;width:7px;height:100%;cursor:col-resize;z-index:3}
+.col-resize::after{content:"";position:absolute;top:8px;bottom:8px;left:3px;width:1px;background:transparent;transition:background .12s}
+.rgrid-head .rcell:hover .col-resize::after{background:var(--line-2)}
+.col-resize:hover::after,.col-resize:focus-visible::after,body.col-resizing .col-resize::after{background:var(--accent);width:2px;left:2px}
+.col-resize:focus-visible{outline:none}
+body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:none!important}
 .rgrid[data-cc~="class"] .c-class,.rgrid[data-cc~="typo"] .c-typo,.rgrid[data-cc~="abs"] .c-abs,.rgrid[data-cc~="pbs"] .c-pbs,.rgrid[data-cc~="type"] .c-type,.rgrid[data-cc~="tkobs"] .c-tkobs,.rgrid[data-cc~="obs"] .c-obs,.rgrid[data-cc~="mgr"] .c-mgr,.rgrid[data-cc~="status"] .c-status,.rgrid[data-cc~="compliance"] .c-compliance{display:none}
 .rcell.c-sel{order:var(--ord-sel,0)}
 .rcell.c-id{order:var(--ord-id,1)}
@@ -3183,8 +3191,9 @@ const findBlock = id => {
    sub-row per system. "Wrap text" rows grow, so there every tag shows.
    Widths are estimated from the code length — the tags are monospace,
    measured at 32px for 3 letters and 46px for 5 — against the inner width of
-   a 136px column (RCOLS "typo"): 136 − 24 cell padding − 10 button = 102. */
-const TYPO_CELL_BUDGET=102;
+   the column (default 136px, RCOLS "typo", or whatever the user dragged it
+   to): width − 24 cell padding − 10 button. */
+function typoCellBudget(){ const px=(typeof tableLayout==="function" && tableLayout().widths.typo)||136; return px-34; }
 function typoTagsHTML(per, proposed){
   if(!per.length) return `<span class="ph">+ Set</span>`;
   proposed=proposed||new Set();
@@ -3195,7 +3204,7 @@ function typoTagsHTML(per, proposed){
   for(let i=0;i<per.length;i++){
     const rest=per.length-i-1;
     const need=(shown?GAP:0)+w(TY(per[i]).code)+(rest?GAP+w("+"+rest):0);
-    if(used+need>TYPO_CELL_BUDGET) break;
+    if(used+need>typoCellBudget()) break;
     used+=(shown?GAP:0)+w(TY(per[i]).code); shown++;
   }
   if(!shown) shown=1;
@@ -6317,11 +6326,31 @@ function applyViewColumns(){
   set.show.forEach(k=>state.colCollapsed.delete(k));
   applyCols();
 }
+/* Column widths a user dragged (TE.bindColumnResize), per tender, held in the
+   shell so they survive navigating away and back. A dragged width is a fixed
+   px value on top of the RCOLS default — including the Requirement column,
+   which stops being the flexible one once it has been sized by hand;
+   double-clicking its handle gives the flex back. */
+function tableLayout(){
+  try{ if(window.parent!==window && window.parent.getTableLayout) return window.parent.getTableLayout(window.parent.getCurrentProject().id,"allocation"); }catch(e){}
+  window.__layoutLocal=window.__layoutLocal||{widths:{}}; return window.__layoutLocal;
+}
+function colW(k){ const px=tableLayout().widths[k]; return px ? px+"px" : RCOLS_BY_KEY[k].w; }
+const COL_MIN={id:64, req:200};
+function bindHeaderResize(){
+  TE.bindColumnResize(document.getElementById("rgrid-head"),{
+    set:(k,px)=>{ const w=tableLayout().widths; if(px==null) delete w[k]; else w[k]=px; },
+    min:k=>COL_MIN[k]||56,
+    live:()=>applyCols(),
+    // the System cell fits its tags to its width, so it re-renders when that changes
+    commit:k=>{ if(k==="typo") renderReview(); if(colsPanelState.open) renderColumnsPanel(); },
+  });
+}
 function applyCols(){
   const grid=document.querySelector(".rgrid"); if(!grid) return;
   const fullOrder=["sel","id","req",...state.colOrder];
   const visible=fullOrder.filter(k=>!state.colCollapsed.has(k));
-  grid.style.setProperty("--rgrid-cols", visible.map(k=>RCOLS_BY_KEY[k].w).join(" "));
+  grid.style.setProperty("--rgrid-cols", visible.map(colW).join(" "));
   fullOrder.forEach((k,i)=>grid.style.setProperty(`--ord-${k}`, i));
   grid.setAttribute("data-cc",[...state.colCollapsed].join(" "));
 }
@@ -6780,6 +6809,7 @@ function renderColumnsPanel(){
     <div class="view-sec">
       <div class="view-sec-head">Table columns</div>
       ${TE.reorderableColumnListHTML(COLUMN_TOGGLE_DEFS,state.colOrder,state.colCollapsed)}
+      ${Object.keys(tableLayout().widths).length?`<button class="mini-btn" id="pf-reset-widths" style="margin-top:8px">Reset column widths</button>`:""}
     </div>`;
   p.querySelector("#pf-doc-filter").addEventListener("change",e=>{ state.docFilter=e.target.value; state.selection.clear(); refresh(); });
   p.querySelectorAll("#pf-gseg button").forEach(b=>b.addEventListener("click",()=>{
@@ -6789,6 +6819,7 @@ function renderColumnsPanel(){
     renderReview();
   }));
   TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyCols(); renderColumnsPanel(); });
+  p.querySelector("#pf-reset-widths")?.addEventListener("click",e=>{ e.stopPropagation(); const w=tableLayout().widths; Object.keys(w).forEach(k=>delete w[k]); applyCols(); renderReview(); renderColumnsPanel(); toast("Column widths back to default","ok"); });
 }
 document.getElementById("cols-btn")?.addEventListener("click",e=>{ e.stopPropagation(); colsPanelState.open=!colsPanelState.open; renderColumnsPanel(); });
 document.addEventListener("click",e=>{ if(colsPanelState.open && !e.target.closest("#cols-panel") && !e.target.closest("#cols-btn")){ colsPanelState.open=false; renderColumnsPanel(); } });
@@ -6885,6 +6916,7 @@ function cfRenderHead(){
     cell.querySelector("[data-cfedit]").addEventListener("click",e=>{ e.stopPropagation(); cfOpenEditor(d.id); });
   });
   renderSortIndicators(); renderColFilterIndicators();
+  bindHeaderResize();   // idempotent: built-in headers once, custom ones as they appear
 }
 
 /* ---- cells ---- */

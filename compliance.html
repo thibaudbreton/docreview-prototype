@@ -324,6 +324,14 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .colf-handle{cursor:grab;color:var(--text-3);font-size:var(--text-sm);flex-shrink:0;line-height:1;padding:0 4px}
 .colf-row.dragging{opacity:.4}
 .rgrid-head .rcell{position:relative}
+/* column resize handle (TE.bindColumnResize) — invisible until the header is
+   hovered, accent while dragging or focused */
+.col-resize{position:absolute;top:0;right:-3px;width:7px;height:100%;cursor:col-resize;z-index:3}
+.col-resize::after{content:"";position:absolute;top:8px;bottom:8px;left:3px;width:1px;background:transparent;transition:background .12s}
+.rgrid-head .rcell:hover .col-resize::after{background:var(--line-2)}
+.col-resize:hover::after,.col-resize:focus-visible::after,body.col-resizing .col-resize::after{background:var(--accent);width:2px;left:2px}
+.col-resize:focus-visible{outline:none}
+body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:none!important}
 /* Per-column Excel-style filters, ported from revue-documentaire.html's own
    header treatment — a ⏷ on the header opens that column's own values,
    instead of a toolbar dropdown disconnected from the column it narrows. */
@@ -2104,11 +2112,18 @@ function fNavCols(){ return F_NAV_COLS.filter(c=>!state.colCollapsed.has(c)); }
 /* USER-TEST-session-3.md §1.4 — full removal + reorder, same technique as
    revue-documentaire.html's applyCols(): --ord-* customs properties on .rgrid,
    inherited by every .rcell so row-render code stays untouched. */
+/* Column widths a user dragged — same mechanism as Allocation's
+   (TE.bindColumnResize), its own layout per tender. */
+function fTableLayout(){
+  try{ if(window.parent!==window && window.parent.getTableLayout) return window.parent.getTableLayout(window.parent.getCurrentProject().id,"compliance"); }catch(e){}
+  window.__fLayoutLocal=window.__fLayoutLocal||{widths:{}}; return window.__fLayoutLocal;
+}
+function fColW(k){ const px=fTableLayout().widths[k]; return px ? px+"px" : F_RCOLS_BY_KEY[k].w; }
 function applyFCols(){
   const grid=document.querySelector("#view-table .rgrid"); if(!grid) return;
   const fullOrder=["sel","id","req",...state.colOrder];
   const visible=fullOrder.filter(k=>!state.colCollapsed.has(k));
-  grid.style.setProperty("--frgrid-cols", visible.map(k=>F_RCOLS_BY_KEY[k].w).join(" "));
+  grid.style.setProperty("--frgrid-cols", visible.map(fColW).join(" "));
   fullOrder.forEach((k,i)=>grid.style.setProperty(`--ord-${k}`, i));
   grid.setAttribute("data-cc",[...state.colCollapsed].join(" "));
 }
@@ -2118,6 +2133,12 @@ function applyFCols(){
    click made the column vanish with nothing left to click it back — the only
    way back was the View menu. Hiding now goes through View only, as it does
    on Allocation, and a click on a header does nothing on its own. */
+TE.bindColumnResize(document.getElementById("frgrid-head"),{
+  set:(k,px)=>{ const w=fTableLayout().widths; if(px==null) delete w[k]; else w[k]=px; },
+  min:k=>({id:64, req:180})[k]||56,
+  live:()=>applyFCols(),
+  commit:()=>{ if(fColsPanelState.open) renderFColumnsPanel(); },
+});
 // keep the header's horizontal scroll in sync with the body
 (function(){
   const body=document.getElementById("frgrid-body"), head=document.getElementById("frgrid-head");
@@ -2899,8 +2920,10 @@ function renderFColumnsPanel(){
     <div class="view-sec">
       <div class="view-sec-head">Table columns</div>
       ${TE.reorderableColumnListHTML(F_COLUMN_TOGGLE_DEFS,state.colOrder,state.colCollapsed)}
+      ${Object.keys(fTableLayout().widths).length?`<button class="mini-btn" id="f-reset-widths" style="margin-top:8px">Reset column widths</button>`:""}
     </div>`;
   TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyFCols(); renderFColumnsPanel(); });
+  p.querySelector("#f-reset-widths")?.addEventListener("click",e=>{ e.stopPropagation(); const w=fTableLayout().widths; Object.keys(w).forEach(k=>delete w[k]); applyFCols(); renderFColumnsPanel(); toast("Column widths back to default","ok"); });
 }
 document.getElementById("f-cols-btn").addEventListener("click",e=>{ e.stopPropagation(); fColsPanelState.open=!fColsPanelState.open; renderFColumnsPanel(); });
 document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.closest("#f-cols-panel") && !e.target.closest("#f-cols-btn")){ fColsPanelState.open=false; renderFColumnsPanel(); } });

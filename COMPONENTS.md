@@ -230,7 +230,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-09-01
 - **changed**: 2026-09-23
-- **notes**: `.ptag` / `.qa-req` / `.c-id`. Turnkey variant uses a fully hardcoded gray (`#7b8794`), not a token. Letter-spacing (0.6px) hardcoded. Border relies on untracked `--line-2`. In Allocation's System cell (2026-09-23, `typoTagsHTML()`): one line only — as many tags as fit, then "+N" naming the rest on hover; every tag shows in "Wrap text" mode. The fit is estimated from code length (10 + 7.2px per letter, measured on the monospace tags) against a hardcoded 102px budget tied to the 136px column — widen the column and the budget has to move with it.
+- **notes**: `.ptag` / `.qa-req` / `.c-id`. Turnkey variant uses a fully hardcoded gray (`#7b8794`), not a token. Letter-spacing (0.6px) hardcoded. Border relies on untracked `--line-2`. In Allocation's System cell (2026-09-23, `typoTagsHTML()`): one line only — as many tags as fit, then "+N" naming the rest on hover; every tag shows in "Wrap text" mode. The fit is estimated from code length (10 + 7.2px per letter, measured on the monospace tags) against the column's actual width minus 34px of padding (`typoCellBudget()` — the 136px default or whatever the user dragged it to), and the System cells re-render when that column is resized.
 
 ### Status Badge / Chip
 - **level**: atom
@@ -421,6 +421,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-23
 - **changed**: 2026-09-23
 - **notes**: `.set-para`, "§ 2.2.1 Brief Description" under the id in the detail panel header; resolved by `paragraphOf()`. Clicking opens the Document view on the block, same as "View in document". Allocation only: Compliance's requirements carry their top-level section and nothing deeper, so there is no paragraph to show there yet.
+
+### Column Resize Handle
+- **level**: atom
+- **file**: table-engine.js (behaviour, `TE.bindColumnResize`), revue-documentaire.html and compliance.html (CSS `.col-resize`, host wiring)
+- **variants**: idle (invisible), header hover (1px line), hover/focus/dragging (2px accent line)
+- **tokens**: --line-2, --accent
+- **built-from**: none
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: A 7px zone straddling the right edge of every header cell except the selection gutter. Drag, double-click to reset, or focus and ←/→ in 16px steps (role="separator"). Widths are px overrides per tender and per table, held in the shell (`getTableLayout`), cleared by Reset demo and by "Reset column widths" in View. Minimums: 56px, ID 64px, Requirement 200px (180 on Compliance) — hardcoded. Depends on untracked `--line-2`. Handle geometry (7px, right:-3px, 8px inset) hardcoded.
 
 ## Molecules
 
@@ -1344,7 +1354,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Requirement Row, Branch / Allocated-Activity Sub-row, Grid Section / Group Header, Filter Toolbar, Bulk Selection Action Bar, Checkbox, Custom Column Cell, Custom Column Header Cell
 - **added**: 2026-09-01
 - **changed**: 2026-09-23
-- **notes**: `.rgrid`. Explicitly documented in both screens as the same interaction engine (`table-engine.js`) — per-column sort/filter, drag-select across the selection gutter, keyboard active-cell navigation — with only column config differing per screen. Keyboard (revue-documentaire.html, 2026-09-23): ←/→ follow the DRAWN column order (pinned three + `state.colOrder`, so View-menu reordering and custom columns are honoured — it used to be a fixed list); Enter or F2 on the active cell starts editing it; focusing a control inside a cell makes that cell the active one. compliance.html (2026-09-23): a click on a header cell no longer toggles its column hidden — a leftover from when a collapsed column stayed as a clickable sliver; since columns are fully removed (`display:none`), one click made a column vanish with nothing to click it back. Hiding goes through the View menu only, as on Allocation. `--rgrid-cols`/`--frgrid-cols` widths are hardcoded px/fr values.
+- **notes**: `.rgrid`. Explicitly documented in both screens as the same interaction engine (`table-engine.js`) — per-column sort/filter, drag-select across the selection gutter, keyboard active-cell navigation — with only column config differing per screen. Keyboard (revue-documentaire.html, 2026-09-23): ←/→ follow the DRAWN column order (pinned three + `state.colOrder`, so View-menu reordering and custom columns are honoured — it used to be a fixed list); Enter or F2 on the active cell starts editing it; focusing a control inside a cell makes that cell the active one. compliance.html (2026-09-23): a click on a header cell no longer toggles its column hidden — a leftover from when a collapsed column stayed as a clickable sliver; since columns are fully removed (`display:none`), one click made a column vanish with nothing to click it back. Hiding goes through the View menu only, as on Allocation. Both screens (2026-09-23): columns are resizable from a handle on each header's right edge (Column Resize Handle); a dragged width is a fixed px value, so the Requirement column stops being the flexible one until its handle is double-clicked. `--rgrid-cols`/`--frgrid-cols` widths are hardcoded px/fr values.
 
 ### Document Reading View
 - **level**: organism

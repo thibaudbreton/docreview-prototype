@@ -239,7 +239,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={};
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={};
   reassignRequests.length=0;
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -260,6 +260,11 @@ let v22Uploaded = false;
 // nothing. Values are keyed by requirement id, so they also survive a document
 // version resetting a requirement (§8.6) — they are human data, not AI output.
 let customFields = {};
+// Column widths the user dragged, per tender and per table — a layout
+// preference, kept beside the custom columns for the same reason (the screen
+// iframe reloads on every route) and cleared by Reset demo like them.
+let tableLayouts = {};
+window.getTableLayout = (projectId, table)=>{ const k=(projectId||"_")+"::"+table; if(!tableLayouts[k]) tableLayouts[k]={widths:{}}; return tableLayouts[k]; };
 window.getCustomFields = (projectId)=>{ const k=projectId||"_"; if(!customFields[k]) customFields[k]={defs:[],values:{},seq:0}; return customFields[k]; };
 window.isV22Uploaded = ()=>v22Uploaded;
 window.setV22Uploaded = (v)=>{ v22Uploaded = !!v; };

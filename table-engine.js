@@ -166,6 +166,47 @@ handleNavKeydown(e, state, adapter){
   return false;
 },
 
+/* ---------- Column resize ----------
+   A handle on the right edge of every header cell but the selection gutter.
+   Drag to resize, double-click to go back to the default width, or focus it
+   and use ←/→ (16px steps) — the table is keyboard-driven, so its layout is
+   too. The engine only measures and reports: the host owns the widths (px
+   overrides on top of its own defaults), writes the grid variable in live()
+   and re-renders what depends on a width in commit(k). Idempotent: call it
+   again after header cells are added and only the new ones get a handle.
+   opts: { set(k, px|null), min(k), live(), commit(k) } */
+bindColumnResize(headEl, opts){
+  if(!headEl) return;
+  headEl.querySelectorAll(".rcell").forEach(cell=>{
+    const cls=[...cell.classList].find(c=>c.startsWith("c-")); if(!cls) return;
+    const k=cls.slice(2);
+    if(k==="sel" || cell.querySelector(".col-resize")) return;
+    const h=document.createElement("span");
+    h.className="col-resize"; h.tabIndex=0;
+    h.setAttribute("role","separator"); h.setAttribute("aria-orientation","vertical");
+    h.setAttribute("aria-label","Resize column"); h.title="Drag to resize · double-click to reset";
+    cell.appendChild(h);
+    const setTo=px=>{ opts.set(k, px==null?null:Math.max(opts.min(k), Math.round(px))); opts.live(); };
+    h.addEventListener("click", e=>e.stopPropagation());
+    h.addEventListener("mousedown", e=>{
+      if(e.button!==0) return;
+      e.preventDefault(); e.stopPropagation();
+      const startX=e.clientX, startW=cell.getBoundingClientRect().width;
+      document.body.classList.add("col-resizing");
+      const move=ev=>setTo(startW+ev.clientX-startX);
+      const up=()=>{ document.removeEventListener("mousemove",move); document.removeEventListener("mouseup",up);
+        document.body.classList.remove("col-resizing"); opts.commit(k); };
+      document.addEventListener("mousemove",move); document.addEventListener("mouseup",up);
+    });
+    h.addEventListener("dblclick", e=>{ e.preventDefault(); e.stopPropagation(); setTo(null); opts.commit(k); });
+    h.addEventListener("keydown", e=>{
+      if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;
+      e.preventDefault(); e.stopPropagation();
+      setTo(cell.getBoundingClientRect().width+(e.key==="ArrowRight"?16:-16)); opts.commit(k);
+    });
+  });
+},
+
 /* ---------- Column Visibility + Reorder Menu ---------- */
 /* USER-TEST-session-3.md §1.4 — columns must be fully removable (not just collapsed
    to a sliver) and reorderable by the user. columnDefs: [{k,label}] — only the
