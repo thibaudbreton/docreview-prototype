@@ -1158,7 +1158,10 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .act-k{width:110px;flex-shrink:0;font-size:var(--text-xs);color:var(--text-3)}
 .act-v{flex:1;min-width:0;color:var(--text-2)}
 .act-who{color:var(--text-3)}
-.act-open-row{margin-top:var(--space-3);text-align:right}
+.act-open-row{margin-top:var(--space-3);display:flex;align-items:center;justify-content:flex-end;gap:var(--space-2)}
+/* on a system card the re-run sits beside "Open system detail", not pushed away
+   by .rerun-wrap's own margin-left:auto (meant for a title row) */
+.act-open-row .rerun-wrap{margin-left:0}
 .act-detail-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
 .review-why{font-size:var(--text-xs);color:var(--ia);line-height:1.45;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--ia-soft);border-radius:var(--radius-sm)}
 /* RM view: "N assignments" indicator + retractable per-allocated-system sections (collapsed by default) */
@@ -2459,6 +2462,11 @@ const TENDER_KEYS = TENDER_PRODUCT_ID ? keyedVocab(TENDER_PRODUCT_ID) : null;
 /* The table header is static markup, so the one label that changes meaning
    on a keyed tender is patched here rather than templated. */
 if(TENDER_KEYS){ document.querySelectorAll(".rgrid-head .c-obs .cl").forEach(el=>{ el.childNodes[0].textContent="OBS · role"; }); }
+/* What one OBS entry is called on this tender: a job position on the keyed
+   Mainline model (DEC-062), an organisation everywhere else. Every user-facing
+   string about adding, removing or counting OBS entries reads it from here. */
+const OBS_NOUN = TENDER_KEYS ? "role" : "organisation";
+const OBS_NOUN_CAP = OBS_NOUN.charAt(0).toUpperCase()+OBS_NOUN.slice(1);
 const KEY_ABS = id => KEYS.abs.find(a=>a.id===id)||null;
 const KEY_PBS = id => KEYS.pbs.find(e=>e.id===id)||null;
 const KEY_OBS = id => KEYS.obs.find(o=>o.id===id)||null;
@@ -3373,7 +3381,7 @@ function obsListHTML(myBranch, ctx){
     return `<div class="ui-list-row">
       <span class="ui-list-main">${escHtml(val)}</span>
       ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence">${c}%</span>`:""}
-      ${teams.length>1?`<button class="ui-list-rm" data-obsrm="${i}" title="Remove this organisation">✕</button>`:""}
+      ${teams.length>1?`<button class="ui-list-rm" data-obsrm="${i}" title="Remove this ${OBS_NOUN}">✕</button>`:""}
     </div>`;
   }).join("");
   return `<div class="deriv-step">
@@ -3438,12 +3446,21 @@ function bindObsList(body,myBranch,b){
   body.querySelectorAll("[data-obsrm]").forEach(btn=>btn.addEventListener("click",()=>{
     const idx=+btn.dataset.obsrm;
     const teams=ensureTeams(myBranch);
-    if(teams.length<=1){ toast("At least one organisation is required","warn"); return; }
+    if(teams.length<=1){ toast(`At least one ${OBS_NOUN} is required`,"warn"); return; }
     const team=teams[idx];
-    if(team.branchStatus==="answered" && !confirm("This organisation already has a recorded answer. Removing it permanently deletes that work — this can't be undone. Continue?")) return;
+    if(team.branchStatus==="answered" && !confirm(`This ${OBS_NOUN} already has a recorded answer. Removing it permanently deletes that work — this can't be undone. Continue?`)) return;
+    const gone=(team.obs&&team.obs.v)||OBS_NOUN_CAP;
     teams.splice(idx,1);
+    /* Back to a single entry: the system and — when it is the requirement's only
+       one — the requirement itself carry that entry's OBS and person again. The
+       table's "Assigned to" reads b.manager, and it kept showing the person of
+       the entry just removed. Same rule setAllocManager applies on assignment. */
+    if(teams.length===1){
+      myBranch.manager=teams[0].manager; myBranch.obs=teams[0].obs;
+      if((b.branches||[]).length===1){ b.manager=teams[0].manager; b.obs=teams[0].obs; }
+    }
     deriveRequirementCompliance(b);
-    toast("Organisation removed","ok");
+    toast(`${gone} removed`,"ok");
     refresh();
   }));
 }
@@ -5046,8 +5063,12 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
    sequence entirely for the myBranch case, rather than threading one more
    condition through each of those. */
 function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx){
+  /* ALLOC-014 gives the re-run to the project team AND to the contributors of
+     the system concerned; this view had none. Same control, same blocking rule. */
+  const myIdx=(b.branches||[]).indexOf(myBranch);
   return `
     ${natureFieldHTML(b)}
+    <div class="deriv-pass-h">${escHtml(TY(myBranch.typology).label)}'s model${myIdx>=0?rerunControlHTML("leaf:"+b.id+"::"+myIdx, myBranch.typology, branchRerunBlockedReason(myBranch)):""}</div>
     ${derivStepHTML("ABS", absControlHTML(b,derivSrc), derivSrc.abs)}
     ${derivStepHTML("PBS", pbsControlHTML(b,derivSrc), derivSrc.pbs, null, TENDER_KEYS?"The product element the requirement bears on — from the PBS key, grouped by family.":null)}
     ${obsListHTML(myBranch, {reqId:b.id, branchIdx:(b.branches||[]).indexOf(myBranch), systemId:myBranch.typology})}
@@ -5184,7 +5205,7 @@ function activityBlocksHTML(b){
         <div class="branch-sec-body">
           ${obsBreakdownHTML(teams)}
           <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this system's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
-          <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open system detail →</button></div>
+          <div class="act-open-row">${rerunControlHTML("leaf:"+b.id+"::"+bidx, branch.typology, branchRerunBlockedReason(branch))}<button class="mini-btn act-open-btn" data-openact="${bidx}">Open system detail →</button></div>
         </div>
       </div>`;
     }).join("")}
@@ -5382,11 +5403,11 @@ function renderSettings(){
           .concat(MANAGERS.filter(x=>!x.admin).map(x=>`<option value="${x.id}" ${m===x.id?"selected":""}>${escHtml(x.name)} — ${escHtml(x.role)}</option>`)).join("");
         return `<div class="set-sep"></div>
       <div class="branch-sections">
-        <label class="branch-sections-lbl">Allocations (${units.length})${units.length>1?` <span>· each organisation answers for itself, and the verdicts consolidate — most restrictive wins, pending until all have answered</span>`:""}</label>
+        <label class="branch-sections-lbl">Allocations (${units.length})${units.length>1?` <span>· each ${OBS_NOUN} answers for itself, and the verdicts consolidate — most restrictive wins, pending until all have answered</span>`:""}</label>
         ${units.map(({branch,bidx,t,tidx})=>`<div class="branch-sec">
             <div class="branch-sec-head">
               ${showSystem?`<span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}" title="${branch.proposal||branch.reassignRequest?"Proposed change — pending your review":""}">${TY(branch.typology).code}</span>`:""}
-              <span class="branch-sec-org">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label||"— No organisation derived yet —")}</span>
+              <span class="branch-sec-org">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label||`— No ${OBS_NOUN} derived yet —`)}</span>
               <span class="status-pill branch-status-${t.branchStatus||branch.branchStatus}">${BRANCH_STATUS_LABEL[t.branchStatus||branch.branchStatus]||t.branchStatus||branch.branchStatus}</span>
             </div>
             ${tidx===0&&branch.proposal?`<div class="branch-proposal">
@@ -6049,10 +6070,15 @@ document.querySelectorAll("[data-selcls]").forEach(b=>b.addEventListener("click"
 function bulkRerun(productId){
   const product=PRODUCT(productId); if(!product) return;
   const ids=[...state.selection];
-  let done=0, skipped=0, noLeaf=0;
+  let done=0, skipped=0, noLeaf=0, notReq=0;
   ids.forEach(id=>{
     const f=findBlock(id); if(!f) return;
-    const b=f.b; ensureBranches(b);
+    const b=f.b;
+    /* An information block or a heading has nothing to derive. Checked BEFORE
+       ensureBranches(), which would otherwise materialise a branch on it and let
+       the re-run write an ABS/PBS/OBS onto a paragraph of context. */
+    if(blockNature(b)!=="requirement"){ notReq++; return; }
+    ensureBranches(b);
     const branches=b.branches||[];
     if(branches.length!==1){ noLeaf++; return; }   // several systems: ambiguous, leave it to the panel
     if(branchRerunBlockedReason(branches[0])){ skipped++; return; }
@@ -6063,6 +6089,7 @@ function bulkRerun(productId){
   const parts=[`${done} re-derived with ${product.label}`];
   if(skipped) parts.push(`${skipped} left alone — answered or waiting on the client`);
   if(noLeaf) parts.push(`${noLeaf} span several systems — re-run those from the panel`);
+  if(notReq) parts.push(`${notReq} not requirement${notReq>1?"s":""} — nothing to derive`);
   toast(parts.join(" · "), done?"ok":"warn");
   refresh();
 }

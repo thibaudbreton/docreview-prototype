@@ -67,6 +67,8 @@ Choisir l'autre produit à la relance **ne change pas le produit du tender**, qu
 
 **Droits.** L'équipe de gestion du projet et les contributeurs du système concerné (DEC-003, DEC-012). La relance n'ouvre aucun droit nouveau et n'en retire aucun.
 
+**Où se trouve le contrôle.** En tête du bloc de qualification pour le PM sur un tender à un système ; **sur chaque carte système** dans la vue PM d'un Turnkey, puisque chaque système a son propre modèle ; en tête de la vue contributeur. Un contrôle réservé au détail d'un système, un clic plus loin, n'a pas été trouvé à l'usage (23 septembre 2026). La relance **en masse** ne touche que les exigences : blocs d'information et titres sont écartés et comptés à part.
+
 **Confiance.** Les scores issus d'une relance suivent ALLOC-006 et ALLOC-007 : affichés par champ, et sans jamais dispenser de la validation humaine. Une relance ne vaut pas validation.
 
 ## Dérivation sur les clés
@@ -128,5 +130,8 @@ Conserver la distinction Incomplete / To review / To validate / Allocated ; ne p
 - ALLOC-T18 : le nombre d'allocations affiché égale le nombre d'organisations de l'exigence, et non celui de ses systèmes.
 - ALLOC-T19 : aucun écran ne propose deux endroits pour désigner la personne d'une même organisation.
 - ALLOC-T20 : affecter une personne sur une exigence à organisation unique donne la même personne partout où l'exigence l'affiche — table comprise.
+- ALLOC-T21 : supprimer des organisations jusqu'à n'en garder qu'une rend à la table la personne de celle qui reste.
+- ALLOC-T22 : une relance en masse ne dérive rien sur un bloc qui n'est pas une exigence.
+- ALLOC-T23 : le contrôle de relance est visible sans navigation supplémentaire pour le PM (y compris sur un Turnkey) comme pour le contributeur du système.
 
 Une correction des métadonnées n’est pas assimilée par défaut à une modification du texte source/de travail. Toute modification du texte/traduction entraîne une revue selon LIFE-008 ; les modifications structurelles d'allocation suivent la réallocation.

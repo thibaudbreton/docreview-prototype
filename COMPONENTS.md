@@ -1234,6 +1234,26 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.cast-add-flow`, driven by `bindCastAddFlow`/`bindPMAddFlow`. Its confirm button (`.cast-add-confirm`) duplicates Primary Button's exact styling under a separate class instead of reusing it.
 
+### Re-run Control
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: available (button + menu), blocked (disabled button, reason in title)
+- **tokens**: --panel, --line-2, --radius-md, --text-xs
+- **built-from**: Ghost Button (`.mini-btn`), menu options
+- **added**: 2026-09-17
+- **changed**: 2026-09-23
+- **notes**: `rerunControlHTML()`. Menu groups the system's own products first, then borrowable models under a distinct header. Placed in three spots: the model header of the qualification block (manager, single system), each system card in the Turnkey PM view (added 2026-09-23 — it used to sit only behind "Open system detail"), and the head of the contributor view (added 2026-09-23 — ALLOC-014 gives contributors the right). `.rerun-wrap` has `margin-left:auto` for title rows; the system card overrides it to 0. Menu `min-width:210px` hardcoded. Depends on untracked `--line-2`.
+
+### OBS List
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: single entry (no remove), several entries (remove per row), keyed ("role", select-based add) vs free ("organisation", text add)
+- **tokens**: --text-sm, --text-xs, --text-3
+- **built-from**: UI List (`.ui-list`), Confidence Badge, Icon Button (remove ✕)
+- **added**: 2026-09-08
+- **changed**: 2026-09-23
+- **notes**: `obsListHTML()` / `bindObsList()`. The noun comes from `OBS_NOUN` — "role" on a keyed Mainline tender (DEC-062), "organisation" elsewhere — for the remove tooltip, add button, toasts and confirm. Removing down to one entry re-syncs the system's and (single-system) the requirement's person and OBS, so the table's "Assigned to" never shows the removed entry's person.
+
 ## Organisms
 
 ### App Header
@@ -1353,8 +1373,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-2, --space-3, --radius-lg, --radius-md, --ok
 - **built-from**: Select Dropdown, menu options
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.sel-bar`, explicitly documented as shared between these two screens' tables. Fixed to viewport bottom (24px) — a code comment explains centering via `margin-inline:auto` was chosen deliberately over `left:50%;translateX(-50%)` to avoid capping width at half the viewport.
+- **changed**: 2026-09-23
+- **notes**: `.sel-bar`, explicitly documented as shared between these two screens' tables. revue-documentaire.html's bar carries a Re-run menu (`#sel-rerun-menu`); since 2026-09-23 it skips information blocks and headings and counts them apart ("N not requirements") instead of deriving onto them. Fixed to viewport bottom (24px) — a code comment explains centering via `margin-inline:auto` was chosen deliberately over `left:50%;translateX(-50%)` to avoid capping width at half the viewport.
 
 ### Finalize / Export Modal
 - **level**: organism
