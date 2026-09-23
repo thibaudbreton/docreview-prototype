@@ -7,7 +7,7 @@ Applicabilité : [variantes de tender](TENDER-PROFILES.md). Le prototype est la 
 | ID | Règle | Statut et portée |
 |---|---|---|
 | ALLOC-001 | Turnkey distribue entre systèmes, puis applique leur modèle. Un tender SIG commence directement dans SIG. | DEC-005/006, DOC autres non-Turnkey |
-| ALLOC-002 | Passe 1 Turnkey : classe technique vers PBS, non technique vers ABS, puis système TK OBS. Cette distinction ne s'applique pas à l'allocation SIG. | DOC passe 1, DEC-008 exclusion SIG |
+| ALLOC-002 | Passe 1 Turnkey : classe technique vers PBS, non technique vers ABS, puis système TK OBS — affiché dans la colonne System, avec la certitude du routage à côté (DEC-077 ; il n'y a plus de colonne TK OBS). Cette distinction ne s'applique pas à l'allocation SIG. | DOC passe 1, DEC-008 exclusion SIG |
 | ALLOC-003 | Allocation SIG : **ABS → PBS → OBS → personne**. Aucune différence de chaîne technique/non technique. Corriger un champ invalide les propositions qui en dépendent ; les corrections de décisions déjà validées suivent LIFE-008. | DEC-008 prime sur l'ancien PBS → ABS → OBS |
 | ALLOC-004 | Distribution multiple entre systèmes en Turnkey, puis affectations d'équipes ; ne pas dupliquer l'exigence pour représenter les branches. | DOC, consolidation confirmée DEC-014 |
 | ALLOC-005 | Système sans modèle : allocation manuelle, identifiée et filtrable, sans bloquer les autres systèmes. | DOC ; contenu/gestion des modèles hors spec fonctionnelle |
