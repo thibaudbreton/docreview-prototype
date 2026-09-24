@@ -467,12 +467,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Filter Toolbar
 - **level**: molecule
 - **file**: documents.html, qa.html, compliance.html
-- **variants**: search + one select (documents.html, qa.html), search + two selects + toggle (compliance.html `.f10-tools`)
+- **variants**: search + one select (documents.html, qa.html), compliance.html `.f10-tools` (search box, sort reset, Wrap text, Filter, ＋ Column, View, shortcut help)
 - **tokens**: --space-2, --space-3
-- **built-from**: Text Input, Select Dropdown
+- **built-from**: Text Input, Select Dropdown, Search Box, Toggle Switch, Ghost Button, Shortcut Help
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Same "filter row" pattern re-implemented per screen. documents.html's input hardcodes `8px` padding instead of `var(--space-2)`; qa.html's hardcodes `7px`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html's toolbar now has the same right-hand group as Allocation's — Wrap text, Filter, ＋ Column, View, ⌨ side by side; ＋ Column and View used to sit in the title row. The two sort selects and the Needs my action toggle are gone (DEC-078, DEC-083). Same "filter row" pattern re-implemented per screen. documents.html's input hardcodes `8px` padding instead of `var(--space-2)`; qa.html's hardcodes `7px`.
 
 ### Toast
 - **level**: molecule

@@ -1014,11 +1014,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
              owning a full row on its own. #export-ready now only renders in the
              completed state, where it carries a real CTA worth the space. -->
         <div class="view view-pad on" id="view-table">
-          <div class="view-head"><h2>Compliance</h2><span class="sub" id="table-sub"></span>
-            <button class="btn-ghost" id="cf-add-btn" style="font-size:var(--text-sm);margin-left:auto" title="Add a column of your own to this tender's Compliance table">＋ Column</button>
-            <div class="view-wrap"><button class="btn-ghost" id="f-cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
-              <div class="view-panel" id="f-cols-panel"></div></div>
-          </div>
+          <div class="view-head"><h2>Compliance</h2><span class="sub" id="table-sub"></span></div>
           <div class="export-ready" id="export-ready"></div>
           <div class="f10-tools" id="f10-tools">
             <!-- §3.5 treatment, applied here too (§4.2): the search bar is the
@@ -1043,6 +1039,10 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
               <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once">⏷ Filter ▾</button>
               <div class="adv-panel" id="adv-filter-panel"></div>
             </div>
+            <!-- Filter, + Column and View side by side, as on Allocation (2026-09-24) -->
+            <button class="btn-ghost" id="cf-add-btn" style="font-size:var(--text-sm)" title="Add a column of your own to this tender's Compliance table">＋ Column</button>
+            <div class="view-wrap" style="position:relative"><button class="btn-ghost" id="f-cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
+              <div class="view-panel" id="f-cols-panel"></div></div>
             <div class="kbd-help" tabindex="0" aria-label="Keyboard shortcuts"><span class="kbd-help-ic">⌨</span>
               <div class="kbd-help-pop" role="tooltip">
                 <div class="kbd-help-h">Move</div>
