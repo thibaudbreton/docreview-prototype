@@ -1406,6 +1406,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.doc-scroll`/`.paper`. Deliberately a fixed light "page" regardless of app theme (`--paper`/`--paper-ink` are identical in both theme blocks). Width, padding, and box-shadow all hardcoded.
 
+### Decision Panel
+- **level**: organism
+- **file**: compliance.html
+- **variants**: default, Not compliant open (Category + Topic), return form open, a resource open (Document, Similar, REX, Chat), set aside, wide
+- **tokens**: --paper, --paper-ink, --font-doc, --text-lg, --text-sm, --text-xs, --ok, --warn, --accent, --accent-soft, --line, --radius-md, --radius-sm, --radius-pill, --space-2, --space-3, --space-4, --space-5
+- **built-from**: Reassignment Request Form, REX Match Item, Compliance Pill, Tab Bar (`.dp-res-tabs`)
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: `renderDecisionPanel()` / `.dp`, SPEC-compliance-decision-panel.md, DEC-079. Replaces the Detail / Assignment Panel when a contributor opens an assignment of their own that waits on their verdict (`isDeciding()`); the project manager's panel and every other state keep the old one. Top to bottom: queue progress ("N left · this is k of N · n set aside", Next ›), id + clickable § section + set-aside ⚐/⚑ (S) + widen ⇤, one "Yours · system · person" line, the requirement text in full on paper (`pre-wrap`, dominant), the decision zone (reassurance line on internal vs client verdict, comment, "✓ Compliant" one gesture / "✕ Not compliant…" then Category + Topic then "✕ Not compliant"), two quieter secondary actions ("⇗ Ask the client", "↩ Not mine — return it"), and resources as collapsed tabs. Drafts (pick, comment, category, topic) save on input into `window.parent.__cmpPersonal`, per viewer, so they survive leaving the panel or the screen (not a reload of the whole app); set aside is kept there too, personal, shown as ⚑/✎ on the row's ID cell. Similar = word-overlap stand-in (three best ≥ 25 %) for the platform's similarity capability. Wide = `min(720px,62vw)`. Hardcoded: button text `#fff`, Next hover, the 52px progress bar, `padding:10px` on the verdict buttons. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
+
 ### Detail / Assignment Panel
 - **level**: organism
 - **file**: compliance.html, revue-documentaire.html
@@ -1413,8 +1423,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3, --space-4, --line, --accent, --panel
 - **built-from**: Detail Field / Frozen Field, Status/Verdict Pill, Manager Assignment Card, AI Suggestion Card, Allocated-Activity Detail Card, Propose/Reassign Form / Inline Form Shell, Activity Timeline Entry / Timeline Item, REX Match Item, Role Recap Row, Comment Composer
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.settings`. Fixed width (326px in revue-documentaire.html), narrows under a hardcoded breakpoint. The single largest, most role-branching render path in the app — output differs substantially by viewer role, block type, and branch count. compliance.html's version has an unbuilt Chat tab, present only as an empty-state stub per its own code comment.
+- **changed**: 2026-09-24
+- **notes**: compliance.html (2026-09-24): a contributor's own open assignment renders the Decision Panel instead. `.settings`. Fixed width (326px in revue-documentaire.html), narrows under a hardcoded breakpoint. The single largest, most role-branching render path in the app — output differs substantially by viewer role, block type, and branch count. compliance.html's version has an unbuilt Chat tab, present only as an empty-state stub per its own code comment.
 
 ### Role Recap Card
 - **level**: organism
@@ -1636,16 +1646,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.arb-card`. A code comment calls this "the interaction that decides whether this screen works at volume" — one item, full context, decide, auto-advance, fully keyboard-operable.
 
-### Verdict Entry Form
-- **level**: organism
-- **file**: compliance.html
-- **variants**: Compliant (with comment), Not compliant (with placeholder category + topic)
-- **tokens**: --ok, --warn, --radius-md, --space-2, --space-4, --text-sm
-- **built-from**: Inline Form Shell, Detail Field, Textarea, Select Dropdown
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Two-way toggle — a code comment notes a prior three-way ("R&D Needed") version was demoted to free text on merge from a removed screen. Category list is an explicit placeholder.
-
 ### Reassignment Request Form
 - **level**: organism
 - **file**: compliance.html
@@ -1653,8 +1653,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --warn, --radius-md, --space-2, --space-3, --text-sm
 - **built-from**: Inline Form Shell, Detail Field, Select Dropdown, Textarea
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Reuses Inline Form Shell for two distinct flows depending on context.
+- **changed**: 2026-09-24
+- **notes**: Since 2026-09-24 the contributor-initiated variant opens from the Decision Panel's "↩ Not mine — return it" (submit reads "Return it"). Reuses Inline Form Shell for two distinct flows depending on context.
 
 ### Activity Timeline
 - **level**: organism
@@ -1846,3 +1846,5 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Needs My Action Button — removed 2026-09-24, no longer needed (compliance.html `.f10-needsme`; never had its own entry)
 
 ### Client Decision Block — removed 2026-09-24, no longer needed (compliance.html `.decide`, "What the client receives" in the panel header; the table's External compliance and Risk accepted columns carry it, and the declaration form still opens from the next-step action; never had its own entry)
+
+### Verdict Entry Form — removed 2026-09-24, replaced by the Decision Panel's decision zone (DEC-079)
