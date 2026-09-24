@@ -1567,6 +1567,43 @@ body.restricted .cf-edit, body.restricted #cf-add-btn{display:none}
    control would read as an error. Exact brand red still to be confirmed. */
 h1,h2,h3,.cfg-h,.set-title,.view-panel-head,.fb-bh{font-family:var(--font-heading)}
 h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;border-radius:2px;background:var(--brand-red);margin-right:.45em;vertical-align:-.08em}
+/* icons (2026-09-24): one stroke style for every UI icon, drawn with a CSS mask so it takes the text colour.
+   Replaces emoji (rendered as coloured Apple emoji) and symbols Noto Sans doesn't carry (rendered tiny or
+   in a fallback font). Markup: <i class=ic-NAME></i> — no quotes, so it is safe inside any JS string. */
+i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.16em;flex-shrink:0;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat;font-style:normal}
+.ic-file{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 3v5h5'/%3E%3C/svg%3E")}
+.ic-lock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E")}
+.ic-bell{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.94 1.94 0 0 0 3.4 0'/%3E%3C/svg%3E")}
+.ic-camera{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z'/%3E%3Ccircle cx='12' cy='13' r='3'/%3E%3C/svg%3E")}
+.ic-trash{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M8 6V4h8v2'/%3E%3Cpath d='M19 6l-1 14H6L5 6'/%3E%3C/svg%3E")}
+.ic-copy{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1'/%3E%3C/svg%3E")}
+.ic-eye{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E")}
+.ic-clock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E")}
+.ic-hourglass{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4'/%3E%3C/svg%3E")}
+.ic-chat{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E")}
+.ic-globe{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18'/%3E%3C/svg%3E")}
+.ic-clip{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 8.5'/%3E%3C/svg%3E")}
+.ic-ask{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E")}
+.ic-keyboard{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10'/%3E%3C/svg%3E")}
+.ic-search{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E")}
+.ic-flag{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22V4M5 4h13l-2.5 4.5L18 13H5'/%3E%3C/svg%3E")}
+.ic-flagfill{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22V4'/%3E%3Cpath d='M5 4h13l-2.5 4.5L18 13H5z' fill='black'/%3E%3C/svg%3E")}
+.ic-fork{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='5' r='2'/%3E%3Ccircle cx='18' cy='5' r='2'/%3E%3Ccircle cx='12' cy='19' r='2'/%3E%3Cpath d='M6 7v1a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 11v6'/%3E%3C/svg%3E")}
+.ic-merge{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='18' r='2'/%3E%3Ccircle cx='6' cy='6' r='2'/%3E%3Ccircle cx='18' cy='12' r='2'/%3E%3Cpath d='M6 8v8M8 6c5 0 8 2 8 6'/%3E%3C/svg%3E")}
+.ic-upload{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4M7 9l5-5 5 5'/%3E%3Cpath d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E")}
+.ic-download{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v12M7 11l5 5 5-5'/%3E%3Cpath d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E")}
+.ic-corner{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4v7a4 4 0 0 0 4 4h10M15 11l4 4-4 4'/%3E%3C/svg%3E")}
+.ic-chevron{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E")}
+.ic-filter{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4h18l-7 8v6l-4 2v-8z'/%3E%3C/svg%3E")}
+.ic-columns{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Cpath d='M9 4v16M15 4v16'/%3E%3C/svg%3E")}
+.ic-sliders{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0'/%3E%3Ccircle cx='16' cy='6' r='2'/%3E%3Ccircle cx='10' cy='12' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/svg%3E")}
+.ic-users{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20a6.5 6.5 0 0 1 13 0'/%3E%3Cpath d='M16 4.5a3.5 3.5 0 0 1 0 7M18.5 20a6.5 6.5 0 0 0-3-5.5'/%3E%3C/svg%3E")}
+.ic-flow{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h13M13 3l4 4-4 4M20 17H7M11 13l-4 4 4 4'/%3E%3C/svg%3E")}
+.ic-refresh{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11a8 8 0 1 0-2.3 5.7'/%3E%3Cpath d='M20 4v7h-7'/%3E%3C/svg%3E")}
+.ic-contrast{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 3v18a9 9 0 0 0 0-18z' fill='black'/%3E%3C/svg%3E")}
+.ic-sparkle{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z'/%3E%3Cpath d='M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z'/%3E%3C/svg%3E")}
+.ic-undo{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 11a8 8 0 1 1 2.3 5.7'/%3E%3Cpath d='M4 4v7h7'/%3E%3C/svg%3E")}
+.ic-lang{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h9M8.5 3v2M6 5c1 3.5 3 6 6 7.5M11 5c-1 3.5-3 6-7 8'/%3E%3Cpath d='M13 21l4-9 4 9M14.5 18h5'/%3E%3C/svg%3E")}
 </style>
 <script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 </head>
@@ -1635,7 +1672,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
         </button>
       </div>
       <div class="exp-wrap" style="position:relative">
-        <button class="btn-ghost" id="export-btn" style="font-size:var(--text-sm)">⬇ Export ▾</button>
+        <button class="btn-ghost" id="export-btn" style="font-size:var(--text-sm)"><i class=ic-download></i> Export ▾</button>
         <div class="export-panel" id="export-panel" style="top:calc(100% + 6px)"></div>
       </div>
       <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
@@ -1644,7 +1681,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
   </header>
 
   <div class="restrict-banner">
-    <span>🔒 Restricted view — showing only requirements assigned to <b id="restrict-who"></b>. Passages outside their scope are redacted.</span>
+    <span><i class=ic-lock></i> Restricted view — showing only requirements assigned to <b id="restrict-who"></b>. Passages outside their scope are redacted.</span>
     <span class="exit" id="restrict-exit">Exit to admin view</span>
   </div>
 
@@ -1696,7 +1733,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
         </div>
       </div>
       <div class="nav-list" id="nav-list"></div>
-      <a class="btn-ghost nav-add-doc" id="add-doc-btn" href="javascript:parent.route('documents')" title="Opens Documents &amp; versions, where documents are added and reordered">⬆ Add a document</a>
+      <a class="btn-ghost nav-add-doc" id="add-doc-btn" href="javascript:parent.route('documents')" title="Opens Documents &amp; versions, where documents are added and reordered"><i class=ic-upload></i> Add a document</a>
       <div class="nav-count" id="nav-count"></div>
     </aside>
 
@@ -1740,15 +1777,15 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
               <span class="wrap-switch-label">Wrap text</span>
             </label>
             <div class="view-wrap" style="position:relative">
-              <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once">⏷ Filter <span class="view-badge" id="view-badge" style="display:none"></span> ▾</button>
+              <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once"><i class=ic-filter></i> Filter <span class="view-badge" id="view-badge" style="display:none"></span> ▾</button>
               <div class="adv-panel" id="adv-filter-panel"></div>
             </div>
             <button class="btn-ghost" id="cf-add-btn" style="font-size:var(--text-sm)" title="Add a column of your own to this tender's Allocation table">＋ Column</button>
             <div class="view-wrap" style="position:relative">
-              <button class="btn-ghost" id="cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
+              <button class="btn-ghost" id="cols-btn" style="font-size:var(--text-sm)"><i class=ic-columns></i> View ▾</button>
               <div class="view-panel" id="cols-panel"></div>
             </div>
-            <div class="kbd-help" tabindex="0" aria-label="Keyboard shortcuts"><span class="kbd-help-ic">⌨</span>
+            <div class="kbd-help" tabindex="0" aria-label="Keyboard shortcuts"><span class="kbd-help-ic"><i class=ic-keyboard></i></span>
               <div class="kbd-help-pop" role="tooltip">
                 <div class="kbd-help-h">Move</div>
                 <div class="kbd-help-row"><span class="k"><kbd>↑</kbd><kbd>↓</kbd> or <kbd>J</kbd><kbd>K</kbd></span><span>Previous / next row</span></div><div class="kbd-help-row"><span class="k"><kbd>←</kbd><kbd>→</kbd></span><span>Previous / next column</span></div><div class="kbd-help-row"><span class="k"><kbd>Space</kbd></span><span>Select the row (on the checkbox column)</span></div>
@@ -1772,13 +1809,13 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
             <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" id="sel-all" title="Select all in view"></label></div>
             <div class="rcell c-id" data-sortcol="id"><span class="cl">ID<span class="sort-arrow"></span></span></div>
             <div class="rcell c-req"><span class="cl">Requirement</span></div>
-            <div class="rcell c-class" data-col="class" data-sortcol="class"><span class="cl">Class<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="class" title="Filter this column">⏷</button></div>
-            <div class="rcell c-typo" data-col="typo" data-sortcol="typo" title="The system(s) the requirement is routed to — on Turnkey, with the routing model's confidence."><span class="cl">System<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
+            <div class="rcell c-class" data-col="class" data-sortcol="class"><span class="cl">Class<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="class" title="Filter this column"><i class=ic-filter></i></button></div>
+            <div class="rcell c-typo" data-col="typo" data-sortcol="typo" title="The system(s) the requirement is routed to — on Turnkey, with the routing model's confidence."><span class="cl">System<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="typo" title="Filter this column"><i class=ic-filter></i></button></div>
             <div class="rcell c-abs" data-col="abs" data-sortcol="abs"><span class="cl">ABS<span class="sort-arrow"></span></span></div>
             <div class="rcell c-pbs" data-col="pbs" data-sortcol="pbs" title="Product Breakdown Structure — the product element the requirement bears on"><span class="cl">PBS<span class="sort-arrow"></span></span></div>
             <div class="rcell c-obs" data-col="obs" data-sortcol="obs" title="The team or service within the system — informational, not a separate person to assign."><span class="cl">OBS · team<span class="sort-arrow"></span></span></div>
-            <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Assigned to<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="mgr" title="Filter this column">⏷</button></div>
-            <div class="rcell c-status" data-col="status" data-sortcol="status"><span class="cl">Status<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="status" title="Filter this column">⏷</button></div>
+            <div class="rcell c-mgr" data-col="mgr" data-sortcol="mgr"><span class="cl">Assigned to<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="mgr" title="Filter this column"><i class=ic-filter></i></button></div>
+            <div class="rcell c-status" data-col="status" data-sortcol="status"><span class="cl">Status<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="status" title="Filter this column"><i class=ic-filter></i></button></div>
             <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
           </div>
           <div class="rgrid-body" id="rgrid-body">
@@ -4034,7 +4071,7 @@ function renderNav(){
       const docHead = document.createElement("div");
       docHead.className = "nav-doc"+(docCollapsed?" collapsed":"");
       docHead.innerHTML = `<svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
-        <span class="nd-icon">📄</span><span class="nd-t">${doc.name}</span><span class="nh-c">${docReqCounts[doc.id]||0}</span>`;
+        <span class="nd-icon"><i class=ic-file></i></span><span class="nd-t">${doc.name}</span><span class="nh-c">${docReqCounts[doc.id]||0}</span>`;
       docHead.addEventListener("click",()=>{ docCollapsed?state.docNavCollapsed.delete(doc.id):state.docNavCollapsed.add(doc.id); renderNav(); });
       list.appendChild(docHead);
       docTarget = document.createElement("div");
@@ -4218,7 +4255,7 @@ function renderDoc(){
               <div class="fig-cap">${b.caption||b.text}</div>
             </div>
             <span class="type-chip">${natureLabelChip(b)}</span>${natureTag(b)}
-            <span class="img-lock" title="Source image — never edited or deleted here">🔒</span>
+            <span class="img-lock" title="Source image — never edited or deleted here"><i class=ic-lock></i></span>
             ${kids.length?`<span class="cbadge container-count-badge" style="position:absolute;top:-9px;left:10px">${kids.length} requirement${kids.length===1?"":"s"} captured</span>`:""}
             ${b.id?`<span class="blk-id">${b.id}</span>`:""}`;
           attachReclassify(el,b);
@@ -4234,7 +4271,7 @@ function renderDoc(){
         // requirement
         let inner = `<span class="type-chip">${NATURE_LABEL.requirement+" · "+STATUS_LABEL[b.status]}</span>`;
         inner += `<span class="blk-id">${b.id}</span>`;
-        if(b.sourceImage) inner += `<span class="prov-marker" title="Captured from ${b.sourceImage}">📷 From ${b.sourceImage}</span>`;
+        if(b.sourceImage) inner += `<span class="prov-marker" title="Captured from ${b.sourceImage}"><i class=ic-camera></i> From ${b.sourceImage}</span>`;
         inner += (cch && cch.type==="modified" && cch.prevText) ? wordDiffHTML(cch.prevText, b.text) : b.text;
         if(b.comments) inner += `<span class="marker" title="${b.comments} comment(s)">${b.comments}</span>`;
         if(state.seg) inner += segTools(b.id);
@@ -4429,7 +4466,7 @@ function rowInnerHTML(b){
   const mgrOptions = ['<option value="">— Unassigned —</option>']
     .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${b.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
   const hasBranches = (b.branches||[]).length>1;
-  const branchBadge = hasBranches?`<span class="cbadge branch-count-badge" title="${b.branches.length} parallel allocations">⑂ ${b.branches.length}</span>`:"";
+  const branchBadge = hasBranches?`<span class="cbadge branch-count-badge" title="${b.branches.length} parallel allocations"><i class=ic-fork></i> ${b.branches.length}</span>`:"";
   // B1/B10 — computed live from branchStatus (blockedBranchOf), not just the
   // hand-typed demo field: any row with a branch stuck on "reassignment
   // needed" shows this on the COLLAPSED row, single-system or not — that's
@@ -4442,13 +4479,13 @@ function rowInnerHTML(b){
   // B9 — image-sourced rows never carry typed text; the text cell shows the same
   // small image-jump button as before, just promoted to the row's main content
   // (see below), plus Duplicate / Delete-duplicate actions instead of an excerpt.
-  const imgSrcBtn = b.sourceImage?`<button type="button" class="img-src-btn" data-gotoimg="${b.sourceImage}" title="Captured from ${b.sourceImage} — click to view in the document">📷 ${b.sourceImage}${b.duplicatedFrom?` <span class="img-dup-tag">duplicate</span>`:""}</button>`:"";
-  const imgRowActions = b.sourceImage?`<button class="mini-btn row-dup" data-dup="${b.id}" title="Duplicate — attach another requirement to ${b.sourceImage}">⎘ Duplicate</button>${b.duplicatedFrom?`<button class="mini-btn row-deldup" data-deldup="${b.id}" title="Delete this duplicate">🗑 Delete</button>`:""}`:"";
-  const badges = `${branchBadge}${blockingBadge}${b.comments?`<span class="cbadge">💬 ${b.comments}</span>`:""}${b.change&&latestChange(b)?`<span class="cbadge" style="color:var(--ia)" title="${b.change==="added"?"Added":"Modified"} in ${latestChange(b).to} of its document">Δ ${latestChange(b).to}</span>`:""}`;
+  const imgSrcBtn = b.sourceImage?`<button type="button" class="img-src-btn" data-gotoimg="${b.sourceImage}" title="Captured from ${b.sourceImage} — click to view in the document"><i class=ic-camera></i> ${b.sourceImage}${b.duplicatedFrom?` <span class="img-dup-tag">duplicate</span>`:""}</button>`:"";
+  const imgRowActions = b.sourceImage?`<button class="mini-btn row-dup" data-dup="${b.id}" title="Duplicate — attach another requirement to ${b.sourceImage}"><i class=ic-copy></i> Duplicate</button>${b.duplicatedFrom?`<button class="mini-btn row-deldup" data-deldup="${b.id}" title="Delete this duplicate"><i class=ic-trash></i> Delete</button>`:""}`:"";
+  const badges = `${branchBadge}${blockingBadge}${b.comments?`<span class="cbadge"><i class=ic-chat></i> ${b.comments}</span>`:""}${b.change&&latestChange(b)?`<span class="cbadge" style="color:var(--ia)" title="${b.change==="added"?"Added":"Modified"} in ${latestChange(b).to} of its document">Δ ${latestChange(b).to}</span>`:""}`;
   const proposedTypos = new Set((b.branches||[]).filter(br=>br.proposal).map(br=>br.typology));
   const typoTags = typoTagsHTML(b.perim||[], proposedTypos);
   const caretHTML = hasBranches
-    ? `<button class="branch-caret${state.expandedBranches.has(b.id)?" open":""}" data-branchtoggle="${b.id}" title="${state.expandedBranches.has(b.id)?"Collapse allocations":"Expand allocations"}">▸</button>`
+    ? `<button class="branch-caret${state.expandedBranches.has(b.id)?" open":""}" data-branchtoggle="${b.id}" title="${state.expandedBranches.has(b.id)?"Collapse allocations":"Expand allocations"}"><i class=ic-chevron></i></button>`
     : "";
   const mgrCellHTML = hasBranches
     ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see managers per branch">Multiple (${b.branches.length})</span>`
@@ -4563,7 +4600,7 @@ function branchRowHTML(parent, branch, idx){
   const multiTeam=teams.length>1;
   const teamKey=`${parent.id}::${idx}`;
   const teamCaret = multiTeam
-    ? `<button class="branch-caret team-caret${state.expandedTeams.has(teamKey)?" open":""}" data-teamtoggle="${teamKey}" title="${state.expandedTeams.has(teamKey)?"Collapse teams":`Expand ${teams.length} teams`}">▸</button>`
+    ? `<button class="branch-caret team-caret${state.expandedTeams.has(teamKey)?" open":""}" data-teamtoggle="${teamKey}" title="${state.expandedTeams.has(teamKey)?"Collapse teams":`Expand ${teams.length} teams`}"><i class=ic-chevron></i></button>`
     : "";
   const manualFlag = needsManualAllocation(branch)
     ? `<span class="manual-alloc-tag" title="This system has no allocation model — its contributors allocate within it by hand. A normal way of working, not a failure.">manual</span>`
@@ -4809,7 +4846,7 @@ function renderReview(){
   if(!VROWS.length){ spacer.style.height="0px"; win.style.transform="none"; win.innerHTML=`<div class="empty-rows">No requirement matches the current view.</div>`; scroller.classList.remove("rgrid-full"); syncSelAll(rows); renderSelBar(); paintActiveCell(); return; }
 
   function rowHTML(it){
-    if(it.type==="doctitle") return `<div class="rgrid-doctitle"><span class="rd-icon">📄</span><span class="rd-t">${it.doc.name}</span><span class="rd-file">${it.doc.file}</span></div>`;
+    if(it.type==="doctitle") return `<div class="rgrid-doctitle"><span class="rd-icon"><i class=ic-file></i></span><span class="rd-t">${it.doc.name}</span><span class="rd-file">${it.doc.file}</span></div>`;
     if(it.type==="group") return `<div class="rgrid-group" style="--gc:${groupColor(it.g)}"><span class="gt">${groupTitle(it.g)}</span><span class="gn">${it.n}</span><span class="gd">${groupDesc(it.g)}</span></div>`;
     if(it.type==="sec")   return `<div class="rgrid-sec"><span class="rs-num">${it.sec.num}</span><span class="rs-t">${it.sec.title}</span><span class="gn" style="margin-left:auto;color:var(--text-3)">${it.n}</span></div>`;
     if(it.type==="head"){
@@ -5786,9 +5823,9 @@ function renderSettings(){
         ${b.sourceImage?`<button class="mini-btn" id="back-to-container" style="margin-left:auto" title="Back to ${b.sourceImage}">← Image</button>`:""}
       </div>
       ${b.sourceImage?`<div class="prov-hint" style="color:var(--human);margin-bottom:4px;display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap">
-        <span>📷 Captured from <b>${b.sourceImage}</b>${b.duplicatedFrom?` — duplicate of <b>${b.duplicatedFrom}</b>`:""}</span>
-        <button class="mini-btn" id="panel-dup" title="Duplicate — attach another requirement to ${b.sourceImage}">⎘ Duplicate</button>
-        ${b.duplicatedFrom?`<button class="mini-btn" id="panel-deldup" title="Delete this duplicate">🗑 Delete</button>`:""}
+        <span><i class=ic-camera></i> Captured from <b>${b.sourceImage}</b>${b.duplicatedFrom?` — duplicate of <b>${b.duplicatedFrom}</b>`:""}</span>
+        <button class="mini-btn" id="panel-dup" title="Duplicate — attach another requirement to ${b.sourceImage}"><i class=ic-copy></i> Duplicate</button>
+        ${b.duplicatedFrom?`<button class="mini-btn" id="panel-deldup" title="Delete this duplicate"><i class=ic-trash></i> Delete</button>`:""}
       </div>`:""}
       ${(function(){ const p=paragraphOf(b.id); if(!p||(!p.num&&!p.title)) return "";
         return `<button class="set-para" id="set-para" title="${escHtml(p.path)} — view in document">${p.num?`<b>§ ${escHtml(p.num)}</b>`:"§"}<span>${escHtml(p.title)}</span></button>`; })()}
@@ -6760,7 +6797,7 @@ function renderColFilterIndicators(){
    These used to live in a "Filter" popover that listed every filterable column's
    values at once — a second place to learn, disconnected from the header it was
    narrowing, and competing with the advanced builder for the same button. Now a
-   ⏷ on the header opens that column's values, and the toolbar's Filter button
+   <i class=ic-filter></i> on the header opens that column's values, and the toolbar's Filter button
    goes straight to the advanced builder (the only thing a header can't express).
    "Review field" has no column of its own, so it is advanced-filter-only now. */
 const colfPop={open:null};
@@ -7029,7 +7066,7 @@ function renderAdvFilterPanel(){
       <button class="mini-btn" id="adv-close">Close</button>
     </div>
     <div class="adv-body">
-      ${advInheritedCount?`<div class="adv-inherit"><span>⤵</span><span>Started from your ${advInheritedCount} active column filter${advInheritedCount>1?"s":""} — remove any you don't want. Nothing changes on the table until you press Apply.</span></div>`:""}
+      ${advInheritedCount?`<div class="adv-inherit"><span><i class=ic-corner></i></span><span>Started from your ${advInheritedCount} active column filter${advInheritedCount>1?"s":""} — remove any you don't want. Nothing changes on the table until you press Apply.</span></div>`:""}
       ${d.items.length>1?`<div class="adv-toplevel">${advMatchSwitchHTML(d.op,{cls:"adv-topop",data:""})}</div>`:""}
       <div class="adv-list">${itemsHTML||`<div class="field-hint" style="margin-bottom:8px">No conditions yet — add one below. Column filters stay in charge until you do.</div>`}</div>
       <div class="adv-addrow"><button class="mini-btn" id="adv-add-cond">+ Add condition</button><button class="mini-btn" id="adv-add-group">+ Add group</button></div>
@@ -7298,7 +7335,7 @@ function cfRenderHead(){
     cell.className=`rcell c-${k}`; cell.dataset.col=k; cell.dataset.sortcol=k; cell.dataset.cfhead=d.id;
     cell.title=`${d.name} — a column of this tender's own. Entered by people, never by the AI.`;
     cell.innerHTML=`<span class="cl">${escHtml(d.name)}<span class="sort-arrow"></span></span>`
-      + (d.type==="list"?`<button class="colf-btn" data-colf="${k}" title="Filter this column">⏷</button>`:"")
+      + (d.type==="list"?`<button class="colf-btn" data-colf="${k}" title="Filter this column"><i class=ic-filter></i></button>`:"")
       + `<button class="cf-edit" data-cfedit="${d.id}" title="Edit or delete this column">✎</button>`;
     head.appendChild(cell);
     cell.querySelector(".cl").addEventListener("click",e=>{ e.stopPropagation(); setSortCol(k); });
@@ -7575,7 +7612,7 @@ function renderExportPanel(){
     <div class="exp-sec-lbl">Document</div>
     <select id="exp-doc" class="exp-format">${docOptions}</select>
     <div id="exp-scope">${exportScopeHTML()}</div>
-    ${TENDER_LANGUAGE!=="en"?`<div class="exp-lang-note">🌐 Requirement text exports in ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} — the original, never a round trip through English. Comments and non-compliance categories export in English, as written.</div>`:""}
+    ${TENDER_LANGUAGE!=="en"?`<div class="exp-lang-note"><i class=ic-globe></i> Requirement text exports in ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} — the original, never a round trip through English. Comments and non-compliance categories export in English, as written.</div>`:""}
     <div class="exp-sec-lbl">Include steps</div>
     ${EXPORT_STEPS.map(s=>`<label class="exp-row"><input type="checkbox" data-estep="${s.k}" ${exportState.steps.has(s.k)?"checked":""}><span><span class="exp-t">${s.label}</span><span class="exp-d">${s.desc}</span></span></label>`).join("")}
     ${cfDefs().length?`<div class="exp-note" style="margin:8px 0 4px">${cfDefs().length} custom column${cfDefs().length>1?"s":""} included — internal exports only. Never sent in the client compliance matrix.</div>`:""}

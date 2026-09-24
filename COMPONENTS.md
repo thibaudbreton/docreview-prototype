@@ -52,6 +52,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.btn-danger` duplicates Primary Button's box model with `--warn` swapped for `--accent`, as a fully separate ruleset rather than a modifier class. Text hardcoded `#fff`.
 
+### Icon
+- **level**: atom
+- **file**: revue-documentaire.html, compliance.html, dashboard-et-config.html, creation-projet.html, accueil.html, documents.html, qa.html
+- **variants**: file, lock, bell, camera, trash, copy, eye, clock, hourglass, chat, globe, clip, ask (arrow up-right), keyboard, search, flag, flagfill, fork, merge, upload, download, corner, chevron, filter, columns, and for the settings menu sliders, users, flow, refresh, contrast, sparkle, undo, lang
+- **tokens**: currentColor (inherits the text colour); size 1.05em
+- **built-from**: none
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: `<i class=ic-NAME></i>` — an inline SVG (24px grid, 2px stroke, round caps) used as a CSS mask over `currentColor`, so it follows the text colour and size. The markup has no quotes on purpose: it sits inside JS strings of every quoting style. Replaced glyph icons that rendered badly: emoji (📄 🔒 🔔 📷 🗑 🎭 🕐 💬 🌐 📎 ⏳ — coloured Apple emoji) and symbols Noto Sans lacks (⇗ ⌨ ⎘ ⌕ ⚐ ⑂ ◷ ⇲ ⏷ ▤ ▸ ▶ ⤵, and the heavy ⬆ ⬇), plus the whole settings-menu set (◈ ◉ ⇄ ↻ ◐ ✦ ↺ ⇗ ◷ Aa) so it reads as one family. Plain arrows, ✓ ✕ ⚠ ✎ ⚑ (outside Compliance) ↻ ↺ ▾ stay text — they render correctly. CSS (the `i[class^="ic-"]` rule and one `--i` data URI per icon) is duplicated in each of the seven files, before the first `</style>`. Vertical alignment `-.16em` hardcoded.
+
 ### Icon Button
 - **level**: atom
 - **file**: documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html

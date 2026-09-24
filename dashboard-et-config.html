@@ -654,6 +654,43 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
    control would read as an error. Exact brand red still to be confirmed. */
 h1,h2,h3,.cfg-h,.set-title,.view-panel-head,.fb-bh{font-family:var(--font-heading)}
 h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;border-radius:2px;background:var(--brand-red);margin-right:.45em;vertical-align:-.08em}
+/* icons (2026-09-24): one stroke style for every UI icon, drawn with a CSS mask so it takes the text colour.
+   Replaces emoji (rendered as coloured Apple emoji) and symbols Noto Sans doesn't carry (rendered tiny or
+   in a fallback font). Markup: <i class=ic-NAME></i> — no quotes, so it is safe inside any JS string. */
+i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.16em;flex-shrink:0;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat;font-style:normal}
+.ic-file{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 3v5h5'/%3E%3C/svg%3E")}
+.ic-lock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E")}
+.ic-bell{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.94 1.94 0 0 0 3.4 0'/%3E%3C/svg%3E")}
+.ic-camera{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z'/%3E%3Ccircle cx='12' cy='13' r='3'/%3E%3C/svg%3E")}
+.ic-trash{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M8 6V4h8v2'/%3E%3Cpath d='M19 6l-1 14H6L5 6'/%3E%3C/svg%3E")}
+.ic-copy{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1'/%3E%3C/svg%3E")}
+.ic-eye{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E")}
+.ic-clock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E")}
+.ic-hourglass{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4'/%3E%3C/svg%3E")}
+.ic-chat{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E")}
+.ic-globe{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18'/%3E%3C/svg%3E")}
+.ic-clip{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 8.5'/%3E%3C/svg%3E")}
+.ic-ask{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E")}
+.ic-keyboard{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10'/%3E%3C/svg%3E")}
+.ic-search{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E")}
+.ic-flag{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22V4M5 4h13l-2.5 4.5L18 13H5'/%3E%3C/svg%3E")}
+.ic-flagfill{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22V4'/%3E%3Cpath d='M5 4h13l-2.5 4.5L18 13H5z' fill='black'/%3E%3C/svg%3E")}
+.ic-fork{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='5' r='2'/%3E%3Ccircle cx='18' cy='5' r='2'/%3E%3Ccircle cx='12' cy='19' r='2'/%3E%3Cpath d='M6 7v1a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 11v6'/%3E%3C/svg%3E")}
+.ic-merge{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='18' r='2'/%3E%3Ccircle cx='6' cy='6' r='2'/%3E%3Ccircle cx='18' cy='12' r='2'/%3E%3Cpath d='M6 8v8M8 6c5 0 8 2 8 6'/%3E%3C/svg%3E")}
+.ic-upload{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4M7 9l5-5 5 5'/%3E%3Cpath d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E")}
+.ic-download{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v12M7 11l5 5 5-5'/%3E%3Cpath d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E")}
+.ic-corner{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4v7a4 4 0 0 0 4 4h10M15 11l4 4-4 4'/%3E%3C/svg%3E")}
+.ic-chevron{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E")}
+.ic-filter{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4h18l-7 8v6l-4 2v-8z'/%3E%3C/svg%3E")}
+.ic-columns{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Cpath d='M9 4v16M15 4v16'/%3E%3C/svg%3E")}
+.ic-sliders{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0'/%3E%3Ccircle cx='16' cy='6' r='2'/%3E%3Ccircle cx='10' cy='12' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/svg%3E")}
+.ic-users{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20a6.5 6.5 0 0 1 13 0'/%3E%3Cpath d='M16 4.5a3.5 3.5 0 0 1 0 7M18.5 20a6.5 6.5 0 0 0-3-5.5'/%3E%3C/svg%3E")}
+.ic-flow{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h13M13 3l4 4-4 4M20 17H7M11 13l-4 4 4 4'/%3E%3C/svg%3E")}
+.ic-refresh{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11a8 8 0 1 0-2.3 5.7'/%3E%3Cpath d='M20 4v7h-7'/%3E%3C/svg%3E")}
+.ic-contrast{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 3v18a9 9 0 0 0 0-18z' fill='black'/%3E%3C/svg%3E")}
+.ic-sparkle{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z'/%3E%3Cpath d='M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z'/%3E%3C/svg%3E")}
+.ic-undo{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 11a8 8 0 1 1 2.3 5.7'/%3E%3Cpath d='M4 4v7h7'/%3E%3C/svg%3E")}
+.ic-lang{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h9M8.5 3v2M6 5c1 3.5 3 6 6 7.5M11 5c-1 3.5-3 6-7 8'/%3E%3Cpath d='M13 21l4-9 4 9M14.5 18h5'/%3E%3C/svg%3E")}
 </style>
 <script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 </head>
@@ -779,7 +816,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
           <span class="ph-open-btn">→</span>
         </div>
         <a class="phase is-support" id="ph-documents" href="javascript:parent.route('documents')" title="Documents &amp; versions — upload tender documents and track what changed between versions.">
-          <div class="ph-num transversal">▤</div>
+          <div class="ph-num transversal"><i class=ic-columns></i></div>
           <div class="ph-info">
             <div class="ph-name">Documents &amp; versions</div>
             <div class="ph-desc">Upload tender documents and track what changed between versions.</div>
@@ -831,12 +868,12 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
             <span class="att-go">Fix in review →</span>
           </div>
           <div class="att" id="att-overdue" data-go="compliance.html">
-            <div class="att-ic warn">🔔</div>
+            <div class="att-ic warn"><i class=ic-bell></i></div>
             <div><div class="att-t"><b id="att-overdue-t">1 contributor response overdue</b></div><div class="att-sub" id="att-overdue-sub">Sophie Lang — SRM-00006 unopened for 6 days</div></div>
             <span class="att-go">Remind →</span>
           </div>
           <div class="att" data-go="compliance.html">
-            <div class="att-ic accent">⇗</div>
+            <div class="att-ic accent"><i class=ic-ask></i></div>
             <div><div class="att-t"><b>2 questions awaiting internal review</b></div><div class="att-sub">A possible duplicate was detected (TLS on legacy gateways) — merge before sending</div></div>
             <span class="att-go">Open Q&amp;A →</span>
           </div>
@@ -1011,16 +1048,16 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
   <!-- ===================== CONFIGURATION ===================== -->
   <div class="cfg-layout" id="cfg-screen" style="display:none">
     <aside class="cfg-nav" id="cfg-nav">
-      <div class="cfg-nav-item on" data-sec="general"><span class="ci">◈</span> General</div>
-      <div class="cfg-nav-item" data-sec="team"><span class="ci">◉</span> Team &amp; contributors</div>
-      <div class="cfg-nav-item" data-sec="workflow"><span class="ci">⇄</span> Workflow &amp; milestones</div>
-      <div class="cfg-nav-item" data-sec="model"><span class="ci">↻</span> Allocation model</div>
-      <div class="cfg-nav-item" data-sec="appearance"><span class="ci">◐</span> Appearance</div>
-      <div class="cfg-nav-item" data-sec="ai"><span class="ci">✦</span> Capture &amp; segmentation</div>
-      <div class="cfg-nav-item" data-sec="feedback"><span class="ci">↺</span> AI feedback</div>
-      <div class="cfg-nav-item" data-sec="qa"><span class="ci">⇗</span> Q&amp;A &amp; submission</div>
-      <div class="cfg-nav-item" data-sec="versions"><span class="ci">◷</span> Versions</div>
-      <div class="cfg-nav-item" data-sec="lang"><span class="ci">Aa</span> Language</div>
+      <div class="cfg-nav-item on" data-sec="general"><span class="ci"><i class=ic-sliders></i></span> General</div>
+      <div class="cfg-nav-item" data-sec="team"><span class="ci"><i class=ic-users></i></span> Team &amp; contributors</div>
+      <div class="cfg-nav-item" data-sec="workflow"><span class="ci"><i class=ic-flow></i></span> Workflow &amp; milestones</div>
+      <div class="cfg-nav-item" data-sec="model"><span class="ci"><i class=ic-refresh></i></span> Allocation model</div>
+      <div class="cfg-nav-item" data-sec="appearance"><span class="ci"><i class=ic-contrast></i></span> Appearance</div>
+      <div class="cfg-nav-item" data-sec="ai"><span class="ci"><i class=ic-sparkle></i></span> Capture &amp; segmentation</div>
+      <div class="cfg-nav-item" data-sec="feedback"><span class="ci"><i class=ic-undo></i></span> AI feedback</div>
+      <div class="cfg-nav-item" data-sec="qa"><span class="ci"><i class=ic-ask></i></span> Q&amp;A &amp; submission</div>
+      <div class="cfg-nav-item" data-sec="versions"><span class="ci"><i class=ic-clock></i></span> Versions</div>
+      <div class="cfg-nav-item" data-sec="lang"><span class="ci"><i class=ic-lang></i></span> Language</div>
     </aside>
     <div class="cfg-body">
       <div class="cfg-body-inner">
@@ -1193,7 +1230,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
         <select id="team-viewer"></select>
       </div>
       <div class="cast-head-row">
-        <div class="cast-search-wrap"><span class="ic">⌕</span><input id="cast-roster-search" placeholder="Search the roster — is this person already staffed, and where?" autocomplete="off"></div>
+        <div class="cast-search-wrap"><span class="ic"><i class=ic-search></i></span><input id="cast-roster-search" placeholder="Search the roster — is this person already staffed, and where?" autocomplete="off"></div>
         <button class="cast-unstaffed-toggle" id="cast-unstaffed-toggle">⚠ Unstaffed only</button>
         <!-- PM-only: shown/hidden in renderTeamScreen alongside the coverage
              strip, since adding a system is a project-wide structural
@@ -1208,7 +1245,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
              narrative on this screen — coverage counts, the "just added" chip —
              is tuned around), a repeatable control generates the scale on demand
              so the claim stays demonstrable, not just asserted in a commit message. -->
-        <button class="demo-link" id="cast-simulate-scale" title="Generates ~185 additional staffed rows across every system/perimeter, to demonstrate the screen at the ticket's real scale">🎭 <b>DEMO</b> Simulate 200 roster</button>
+        <button class="demo-link" id="cast-simulate-scale" title="Generates ~185 additional staffed rows across every system/perimeter, to demonstrate the screen at the ticket's real scale"><i class=ic-eye></i> <b>DEMO</b> Simulate 200 roster</button>
       </div>
       <div id="cast-coverage"></div>
       <div id="team-body"></div>
@@ -1822,7 +1859,7 @@ function castGroupHTML(a,viewerIsAdmin){
   if(!a.managerId){
     bodyInner=`<div class="cast-noperm">This system hasn't been cast to a manager yet — nobody can staff it until it is.<br><b>Assign a system manager in the project wizard or from here once that flow is wired.</b></div>`;
   } else if(!editable && !viewerIsAdmin){
-    bodyInner=`<div class="cast-readonly-note">🔒 Read-only — ${mgr.name} manages this system, not you.</div>` + groups.join("");
+    bodyInner=`<div class="cast-readonly-note"><i class=ic-lock></i> Read-only — ${mgr.name} manages this system, not you.</div>` + groups.join("");
   } else {
     bodyInner=(editable?castAddFlowHTML(a.id):"") + groups.join("");
   }

@@ -361,7 +361,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .col-resize:focus-visible{outline:none}
 body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:none!important}
 /* Per-column Excel-style filters, ported from revue-documentaire.html's own
-   header treatment — a ⏷ on the header opens that column's own values,
+   header treatment — a <i class=ic-filter></i> on the header opens that column's own values,
    instead of a toolbar dropdown disconnected from the column it narrows. */
 .colf-actions{display:flex;gap:8px}
 .colf-actions span{color:var(--accent);cursor:pointer;font-weight:600;text-transform:none;letter-spacing:0}
@@ -901,6 +901,43 @@ textarea.resp-in:focus{border-color:var(--accent)}
    control would read as an error. Exact brand red still to be confirmed. */
 h1,h2,h3,.cfg-h,.set-title,.view-panel-head,.fb-bh{font-family:var(--font-heading)}
 h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;border-radius:2px;background:var(--brand-red);margin-right:.45em;vertical-align:-.08em}
+/* icons (2026-09-24): one stroke style for every UI icon, drawn with a CSS mask so it takes the text colour.
+   Replaces emoji (rendered as coloured Apple emoji) and symbols Noto Sans doesn't carry (rendered tiny or
+   in a fallback font). Markup: <i class=ic-NAME></i> — no quotes, so it is safe inside any JS string. */
+i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.16em;flex-shrink:0;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat;font-style:normal}
+.ic-file{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 3v5h5'/%3E%3C/svg%3E")}
+.ic-lock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E")}
+.ic-bell{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.94 1.94 0 0 0 3.4 0'/%3E%3C/svg%3E")}
+.ic-camera{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z'/%3E%3Ccircle cx='12' cy='13' r='3'/%3E%3C/svg%3E")}
+.ic-trash{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M8 6V4h8v2'/%3E%3Cpath d='M19 6l-1 14H6L5 6'/%3E%3C/svg%3E")}
+.ic-copy{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1'/%3E%3C/svg%3E")}
+.ic-eye{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E")}
+.ic-clock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E")}
+.ic-hourglass{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4'/%3E%3C/svg%3E")}
+.ic-chat{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E")}
+.ic-globe{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18'/%3E%3C/svg%3E")}
+.ic-clip{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 8.5'/%3E%3C/svg%3E")}
+.ic-ask{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E")}
+.ic-keyboard{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10'/%3E%3C/svg%3E")}
+.ic-search{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E")}
+.ic-flag{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22V4M5 4h13l-2.5 4.5L18 13H5'/%3E%3C/svg%3E")}
+.ic-flagfill{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22V4'/%3E%3Cpath d='M5 4h13l-2.5 4.5L18 13H5z' fill='black'/%3E%3C/svg%3E")}
+.ic-fork{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='5' r='2'/%3E%3Ccircle cx='18' cy='5' r='2'/%3E%3Ccircle cx='12' cy='19' r='2'/%3E%3Cpath d='M6 7v1a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 11v6'/%3E%3C/svg%3E")}
+.ic-merge{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='18' r='2'/%3E%3Ccircle cx='6' cy='6' r='2'/%3E%3Ccircle cx='18' cy='12' r='2'/%3E%3Cpath d='M6 8v8M8 6c5 0 8 2 8 6'/%3E%3C/svg%3E")}
+.ic-upload{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4M7 9l5-5 5 5'/%3E%3Cpath d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E")}
+.ic-download{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v12M7 11l5 5 5-5'/%3E%3Cpath d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E")}
+.ic-corner{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4v7a4 4 0 0 0 4 4h10M15 11l4 4-4 4'/%3E%3C/svg%3E")}
+.ic-chevron{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E")}
+.ic-filter{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4h18l-7 8v6l-4 2v-8z'/%3E%3C/svg%3E")}
+.ic-columns{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Cpath d='M9 4v16M15 4v16'/%3E%3C/svg%3E")}
+.ic-sliders{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0'/%3E%3Ccircle cx='16' cy='6' r='2'/%3E%3Ccircle cx='10' cy='12' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/svg%3E")}
+.ic-users{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20a6.5 6.5 0 0 1 13 0'/%3E%3Cpath d='M16 4.5a3.5 3.5 0 0 1 0 7M18.5 20a6.5 6.5 0 0 0-3-5.5'/%3E%3C/svg%3E")}
+.ic-flow{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h13M13 3l4 4-4 4M20 17H7M11 13l-4 4 4 4'/%3E%3C/svg%3E")}
+.ic-refresh{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11a8 8 0 1 0-2.3 5.7'/%3E%3Cpath d='M20 4v7h-7'/%3E%3C/svg%3E")}
+.ic-contrast{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 3v18a9 9 0 0 0 0-18z' fill='black'/%3E%3C/svg%3E")}
+.ic-sparkle{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z'/%3E%3Cpath d='M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z'/%3E%3C/svg%3E")}
+.ic-undo{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 11a8 8 0 1 1 2.3 5.7'/%3E%3Cpath d='M4 4v7h7'/%3E%3C/svg%3E")}
+.ic-lang{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h9M8.5 3v2M6 5c1 3.5 3 6 6 7.5M11 5c-1 3.5-3 6-7 8'/%3E%3Cpath d='M13 21l4-9 4 9M14.5 18h5'/%3E%3C/svg%3E")}
 </style>
 <script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 </head>
@@ -947,7 +984,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
            the same convention dashboard-et-config.html uses for its
            contributor-walkthrough link. -->
       <div class="view-wrap">
-        <button class="demo-link" id="demo-viewas-btn" title="Demo control — render this screen as another role or person. Not part of the product.">🎭 <b>DEMO</b> <span id="demo-viewas-label">Project manager</span> ▾</button>
+        <button class="demo-link" id="demo-viewas-btn" title="Demo control — render this screen as another role or person. Not part of the product."><i class=ic-eye></i> <b>DEMO</b> <span id="demo-viewas-label">Project manager</span> ▾</button>
         <div class="view-panel demo-panel" id="demo-viewas-panel">
           <div class="view-panel-head">Demo control</div>
           <div class="team-scope">
@@ -994,7 +1031,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
         <button class="tpill p-wait" data-filter="await"><span class="n" id="n-await">0</span> awaiting answer</button>
         <button class="tpill p-clar" data-filter="qa"><span class="n" id="n-qa">0</span> awaiting Q&amp;A</button>
         <button class="tpill p-reassign" data-filter="reassign"><span class="n" id="n-reassign">0</span> reassignment needed</button>
-        <button class="tpill p-aside" data-filter="aside" id="tp-aside" style="display:none" title="Your set-aside assignments — only you see them"><span class="n" id="n-aside">0</span> ⚑ set aside</button>
+        <button class="tpill p-aside" data-filter="aside" id="tp-aside" style="display:none" title="Your set-aside assignments — only you see them"><span class="n" id="n-aside">0</span> <i class=ic-flagfill></i> set aside</button>
       </div>
       <button class="clear-filter" id="clear2">✕ Clear filter</button>
       <div class="triage-right">
@@ -1036,14 +1073,14 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
               <span class="wrap-switch-label">Wrap text</span>
             </label>
             <div class="view-wrap" style="position:relative">
-              <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once">⏷ Filter ▾</button>
+              <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once"><i class=ic-filter></i> Filter ▾</button>
               <div class="adv-panel" id="adv-filter-panel"></div>
             </div>
             <!-- Filter, + Column and View side by side, as on Allocation (2026-09-24) -->
             <button class="btn-ghost" id="cf-add-btn" style="font-size:var(--text-sm)" title="Add a column of your own to this tender's Compliance table">＋ Column</button>
-            <div class="view-wrap" style="position:relative"><button class="btn-ghost" id="f-cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
+            <div class="view-wrap" style="position:relative"><button class="btn-ghost" id="f-cols-btn" style="font-size:var(--text-sm)"><i class=ic-columns></i> View ▾</button>
               <div class="view-panel" id="f-cols-panel"></div></div>
-            <div class="kbd-help" tabindex="0" aria-label="Keyboard shortcuts"><span class="kbd-help-ic">⌨</span>
+            <div class="kbd-help" tabindex="0" aria-label="Keyboard shortcuts"><span class="kbd-help-ic"><i class=ic-keyboard></i></span>
               <div class="kbd-help-pop" role="tooltip">
                 <div class="kbd-help-h">Move</div>
                 <div class="kbd-help-row"><span class="k"><kbd>↑</kbd><kbd>↓</kbd> or <kbd>J</kbd><kbd>K</kbd></span><span>Previous / next row</span></div><div class="kbd-help-row"><span class="k"><kbd>←</kbd><kbd>→</kbd></span><span>Previous / next column</span></div><div class="kbd-help-row"><span class="k"><kbd>Space</kbd></span><span>Select the row (on the checkbox column)</span></div>
@@ -1070,8 +1107,8 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
               <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" id="f-sel-all" title="Select all in view"></label></div>
               <div class="rcell c-id"><span class="cl">ID</span></div>
               <div class="rcell c-req"><span class="cl">Requirement / assignment</span></div>
-              <div class="rcell c-typo" data-col="typo"><span class="cl">System</span><button class="colf-btn" data-colf="typo" title="Filter this column">⏷</button></div>
-              <div class="rcell c-expert" data-col="expert"><span class="cl">Assigned to</span><button class="colf-btn" data-colf="expert" title="Filter this column">⏷</button></div>
+              <div class="rcell c-typo" data-col="typo"><span class="cl">System</span><button class="colf-btn" data-colf="typo" title="Filter this column"><i class=ic-filter></i></button></div>
+              <div class="rcell c-expert" data-col="expert"><span class="cl">Assigned to</span><button class="colf-btn" data-colf="expert" title="Filter this column"><i class=ic-filter></i></button></div>
               <div class="rcell c-status" data-col="status"><span class="cl">Status</span></div>
               <div class="rcell c-compliance" data-col="compliance"><span class="cl">Compliance</span></div>
               <div class="rcell c-comment" data-col="comment"><span class="cl">Compliance comment</span></div>
@@ -1102,7 +1139,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
       <span class="sel-sep"></span>
 
       <button class="sel-btn" id="f-sel-reassign">↪ Reassign contributor</button>
-      <button class="sel-btn primary" id="f-sel-remind">🔔 Send reminder</button>
+      <button class="sel-btn primary" id="f-sel-remind"><i class=ic-bell></i> Send reminder</button>
 
       <button class="sel-clear" id="f-sel-clear" title="Clear selection" aria-label="Clear selection">✕</button>
     </div>
@@ -2177,7 +2214,7 @@ function renderNav2(){
         const docHead=document.createElement("div");
         docHead.className="nav-doc"+(docCollapsed?" collapsed":"");
         docHead.innerHTML=`<svg class="caret" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
-          <span class="nd-icon">📄</span><span class="nd-t">${doc.name}</span>`;
+          <span class="nd-icon"><i class=ic-file></i></span><span class="nd-t">${doc.name}</span>`;
         docHead.addEventListener("click",()=>{ docCollapsed?state.docNavCollapsed.delete(doc.id):state.docNavCollapsed.add(doc.id); renderNav2(); });
         nav.appendChild(docHead);
         docTarget=document.createElement("div");
@@ -2209,7 +2246,7 @@ function renderNav2(){
         <div class="exp-top">
           <div class="exp-avatar" style="background:${e.color}">${e.init}</div>
           <div><div class="exp-name">${e.name}</div><div class="exp-team">${e.role}</div></div>
-          <button class="exp-remind" data-remind="${e.id}" ${pending?"":"disabled"}>🔔 Remind</button>
+          <button class="exp-remind" data-remind="${e.id}" ${pending?"":"disabled"}><i class=ic-bell></i> Remind</button>
         </div>
         <div class="exp-bar"><div style="width:${mine.length?done/mine.length*100:0}%"></div></div>
         <div class="exp-counts">
@@ -2486,13 +2523,13 @@ function fRowInnerHTML(r){
   const multi=r.branches.length>1;
   const expanded=multi&&state.expandedBranches.has(r.id);
   const caretHTML=multi
-    ? `<button class="branch-caret${expanded?" open":""}" data-branchtoggle="${r.id}" title="${expanded?"Collapse systems":`Expand ${r.branches.length} systems`}">▸</button>`
+    ? `<button class="branch-caret${expanded?" open":""}" data-branchtoggle="${r.id}" title="${expanded?"Collapse systems":`Expand ${r.branches.length} systems`}"><i class=ic-chevron></i></button>`
     : "";
   const lastFollowup=r.branches.reduce((latest,b)=>b.lastFollowup?b.lastFollowup:latest,null);
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${r.id}" ${state.selection.has(r.id)?"checked":""}></label></div>
     <div class="rcell c-id">${r.id}${(function(){ if(state.role!=="contributor") return ""; const mb=r.branches.find(isDeciding); if(!mb) return "";
-      return (isAside(r,mb)?`<span class="row-mark is-aside" title="Set aside — only you see this">⚑</span>`:"")+(draftOf(r,mb)?`<span class="row-mark" title="Draft verdict in progress">✎</span>`:""); })()}</div>
+      return (isAside(r,mb)?`<span class="row-mark is-aside" title="Set aside — only you see this"><i class=ic-flagfill></i></span>`:"")+(draftOf(r,mb)?`<span class="row-mark" title="Draft verdict in progress">✎</span>`:""); })()}</div>
     <div class="rcell c-req">${caretHTML}<div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div></div>
     <div class="rcell c-typo">${single?`<span class="ptag${ptagCls(single.typology)}">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} systems</span>`}</div>
     <div class="rcell c-expert">${single?branchWhoHTML(single):`<span class="multi-ph">Multiple (${r.branches.length})</span>`}</div>
@@ -2604,7 +2641,7 @@ function renderTable2(){
     win.innerHTML=`<div class="empty-rows">No assignment matches the current view.</div>`;
   } else {
     win.innerHTML=fVROWS.map(it=>{
-      if(it.type==="doctitle") return `<div class="rgrid-doctitle"><span class="rd-icon">📄</span><span class="rd-t">${esc(it.doc.name)}</span><span class="rd-file">${esc(it.doc.file)}</span></div>`;
+      if(it.type==="doctitle") return `<div class="rgrid-doctitle"><span class="rd-icon"><i class=ic-file></i></span><span class="rd-t">${esc(it.doc.name)}</span><span class="rd-file">${esc(it.doc.file)}</span></div>`;
       if(it.type==="sec"){ const m=String(it.sec).match(/^([\d.]+)\s+(.*)$/);
         return `<div class="rgrid-sec"><span class="rs-num">${esc(m?m[1]:"")}</span><span class="rs-t">${esc(m?m[2]:it.sec)}</span><span class="rs-n">${it.n}</span></div>`; }
       if(it.type==="branch") return cfAppendCells(fBranchRowHTML(it.parent,it.branch,it.idx), cfCellsHTML(null));
@@ -2754,17 +2791,17 @@ function renderPanel2(){
       b.innerHTML=whoBlock+`
         <div class="field"><label>Response · ${br.resp.date}${isPartner(br.typology)?` <span>· entered by the project manager from ${esc(TY(br.typology).label)}'s reply</span>`:""}</label>
           <div class="resp-note">${esc(br.resp.note)}</div>
-          ${br.resp.att?`<span class="attach">📎 evidence-${r.id.toLowerCase()}-${TY(br.typology).code.toLowerCase()}.pdf</span>`:""}</div>
+          ${br.resp.att?`<span class="attach"><i class=ic-clip></i> evidence-${r.id.toLowerCase()}-${TY(br.typology).code.toLowerCase()}.pdf</span>`:""}</div>
         ${r.branches.length>1?`<div class="field"><label>This assignment's verdict <span>· technical assessment</span></label>
           <div class="fval">${cmpPillHTML(br.internal)}</div></div>`:""}
         <div class="next-step${next.act?"":" is-idle"}">${next.t}</div>
         ${next.act==="declare"?`<button class="cta blue" id="a-declare">✎ Declare what the client receives</button>`:""}
-        <button class="cta line" id="a-escalate">⇗ Escalate to client Q&amp;A</button>`;
+        <button class="cta line" id="a-escalate"><i class=ic-ask></i> Escalate to client Q&amp;A</button>`;
       b.querySelector("#a-escalate")?.addEventListener("click",()=>escalate(r,br));
       b.querySelector("#a-declare")?.addEventListener("click",()=>{ state.openForm="external"; state.externalPick=r.external||null; renderPanel2(); });
     }else if(br.status==="awaiting_qa"){
       b.innerHTML=whoBlock+`
-        <div class="qa-block"><div class="qa-block-h">⇗ Blocked on the issuer</div>
+        <div class="qa-block"><div class="qa-block-h"><i class=ic-ask></i> Blocked on the issuer</div>
           <div class="qa-block-t">${esc(br.qaNote||"The contributor needs a precision from the tender issuer before answering.")}</div>
           ${br.qaRef?`<div class="qa-block-ref">Question <b>${br.qaRef}</b> — see the Q&amp;A register</div>`:""}</div>
         <div class="next-step is-idle">Counts as not answered, so it blocks consolidation of ${r.id}. <b>Nothing is due from you</b> until the client replies.</div>
@@ -2823,7 +2860,7 @@ function renderPanel2(){
     }else{
       b.innerHTML=whoBlock+`
         <div class="next-step${nextStepFor(r,br).act?"":" is-idle"}">${nextStepFor(r,br).t}</div>
-        ${e?`<button class="cta blue" id="a-remind">🔔 Send a reminder</button>`:""}`;
+        ${e?`<button class="cta blue" id="a-remind"><i class=ic-bell></i> Send a reminder</button>`:""}`;
       b.querySelector("#a-remind")?.addEventListener("click",()=>toast(`Reminder sent to ${e.name} for ${r.id} · ${TY(br.typology).label}`,"ok"));
     }
   }else if(state.tab==="activity"){
@@ -2836,7 +2873,7 @@ function renderPanel2(){
     b.innerHTML=`<div class="timeline">${items.map(i=>`<div class="tl-item ${i.k}"><div class="tl-who">${i.who}</div><div class="tl-what">${i.what}</div><div class="tl-time">${i.time}</div></div>`).join("")}</div>`;
   }else if(state.tab==="req"){
     b.innerHTML=`
-      <div class="lock-note">🔒 Frozen at review export — editable only through a new document version (Versions &amp; exchanges).</div>
+      <div class="lock-note"><i class=ic-lock></i> Frozen at review export — editable only through a new document version (Versions &amp; exchanges).</div>
       <div class="frozen"><div class="fk">Type</div><div class="fv">${r.type}</div></div>
       <div class="frozen"><div class="fk">Assignments</div><div class="fv">${r.branches.map(x=>TY(x.typology).label).join(", ")}</div></div>
       <div class="frozen"><div class="fk">Consolidated</div><div class="fv">${c.pending?`Pending — blocked by ${TY(c.blocking.typology).label} (${BST[c.blocking.status]})`:CMP[c.internal]}</div></div>
@@ -2985,18 +3022,18 @@ function renderDecisionPanel(p,r,br){
         ${nextB?`<button class="dp-next" id="dp-next" title="Next in your queue (set-aside ones skipped)">Next ›</button>`:""}
       </div>
       <div class="dp-tools">
-        <button class="dp-tool${aside?" on":""}" id="dp-aside" title="${aside?"Put it back in your queue":"Come back to it later — only you see this marker"}">${aside?"⚑ Set aside":"⚐ Set aside"}</button>
+        <button class="dp-tool${aside?" on":""}" id="dp-aside" title="${aside?"Put it back in your queue":"Come back to it later — only you see this marker"}">${aside?"<i class=ic-flagfill></i> Set aside":"<i class=ic-flag></i> Set aside"}</button>
         <button class="dp-tool" id="dp-wide" title="${state.panelWide?"Back to the normal width":"More room for long text, figures or formulas"}">${state.panelWide?"⇥ Narrow panel":"⇤ Widen panel"}</button>
       </div>
       <div class="dp-head">
         <span class="set-id">${r.id}</span>
         <button class="dp-para" id="dp-para" title="Open the clause in its document">§ ${esc(r.sec)}</button>
       </div>
-      ${myQ?`<div class="dp-asked">⇗ Question <b>${esc(myQ.id)}</b> is in the Q&amp;A register · ${esc(myQ.ans?"answered":(QA_ST[myQ.st]||myQ.st).toLowerCase())}. You can decide now, or wait for the reply.</div>`:""}
+      ${myQ?`<div class="dp-asked"><i class=ic-ask></i> Question <b>${esc(myQ.id)}</b> is in the Q&amp;A register · ${esc(myQ.ans?"answered":(QA_ST[myQ.st]||myQ.st).toLowerCase())}. You can decide now, or wait for the reply.</div>`:""}
       <div class="dp-label">Requirement${showOrig?` <span class="dp-label-l">· original, ${esc(origLang)}</span>`:""}</div>
       <div class="dp-text${showOrig?" is-orig":""}" ${showOrig?`lang="${TENDER_LANGUAGE}"`:""}>${esc(showOrig?r.textOriginal:r.text)}</div>
       <div class="dp-textbar">
-        <button class="dp-docbtn" id="dp-docview" title="Switch to the Document view at this requirement — this panel stays">📄 View in the document</button>
+        <button class="dp-docbtn" id="dp-docview" title="Switch to the Document view at this requirement — this panel stays"><i class=ic-file></i> View in the document</button>
         ${hasOrig?`<label class="wrap-switch dp-orig" title="Show the requirement as written in the tender, in ${esc(origLang)}">
           <input type="checkbox" id="dp-orig" ${showOrig?"checked":""}>
           <span class="wrap-switch-track"><span class="wrap-switch-knob"></span></span>
@@ -3022,7 +3059,7 @@ function renderDecisionPanel(p,r,br){
       </div>
 
       <div class="dp-secondary">
-        <button class="propose-btn dp-sec${state.openForm==="ask"?" on":""}" id="dp-ask" title="Write a question to the client — it goes into the Q&amp;A register">⇗ Ask the client</button>
+        <button class="propose-btn dp-sec${state.openForm==="ask"?" on":""}" id="dp-ask" title="Write a question to the client — it goes into the Q&amp;A register"><i class=ic-ask></i> Ask the client</button>
         <button class="propose-btn dp-sec" id="dp-return" title="Not yours — send it back to the project management team">↩ Not mine — return it</button>
       </div>
       ${askForm}${returnForm}
@@ -3245,7 +3282,7 @@ function refreshAll(){
 }
 document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 /* ---------- Column filters: on the column header, not in the toolbar ----------
-   §4.2 — same treatment as revue-documentaire.html's Allocation table: a ⏷ on
+   §4.2 — same treatment as revue-documentaire.html's Allocation table: a <i class=ic-filter></i> on
    the header opens that column's own values, replacing the old toolbar's
    "All contributors"/"All systems" selects, which were disconnected from
    the columns they narrowed. */
