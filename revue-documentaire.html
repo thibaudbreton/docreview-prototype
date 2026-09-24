@@ -434,6 +434,7 @@ body.mode-review .doc-scroll{display:none}
 .review-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
 .review-head .sub{font-size:var(--text-sm);color:var(--text-3)}
 /* ---- virtualized grid ---- */
+:root{ --partner:#1b9aaa; --partner-soft:rgba(27,154,170,.14); }
 :root{ --rrow-h:44px; --rgrid-cols:32px 98px minmax(325px,1.82fr) 78px 136px 120px 100px 124px 140px 118px 92px 108px; }
 .rgrid{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
 /* TH2 — this used to opt out of the flex-column default stretch (align-self:
@@ -1046,6 +1047,8 @@ body.seg-on .tbl-gran{display:inline-flex}
 .ptag{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;letter-spacing:.6px;padding:1px var(--space-1);border:1px solid var(--line-2);border-radius:var(--radius-xs);color:var(--text-3);line-height:1.6;white-space:nowrap}
 .ptag.ai{border-style:dashed;border-color:rgba(224,164,60,.55);color:var(--ia)}
 .ptag.tky{background:#7b8794;border-color:#7b8794;color:#fff}
+/* a partner system (SPEC-external-partners.md): its own colour, one meaning — not from the model */
+.ptag.partner{background:var(--partner-soft);border-color:var(--partner);color:var(--partner);letter-spacing:.2px}
 .ptag.tky.ai{background:transparent;color:#93a0af;border-color:#7b8794;border-style:dashed}
 /* B1 — allocation-change proposal pending project-manager review */
 .ptag.proposed{background:var(--human-soft);border-color:var(--human);color:var(--human)}
@@ -1158,6 +1161,11 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .ui-list-rm:hover{background:var(--warn-soft);color:var(--warn)}
 /* OBS picker — a search field with an inline list, not a dropdown */
 .obs-pick{padding:var(--space-2) var(--space-3);background:var(--panel-2)}
+.obs-pick-opt .t.is-partner{color:var(--partner)}
+.ui-list-tag.is-partner{color:var(--partner);border-color:var(--partner);background:var(--partner-soft)}
+.partner-who{font-size:var(--text-sm);color:var(--partner);font-weight:600;white-space:nowrap}
+.partner-note{color:var(--partner)}
+.partner-box{margin:var(--space-3) 0;padding:var(--space-3);border-radius:var(--radius-md);background:var(--partner-soft);border-left:3px solid var(--partner);font-size:var(--text-sm);line-height:1.55;color:var(--text-2)}
 .obs-pick-row{display:flex;align-items:center;gap:var(--space-2)}
 .obs-pick-row .ui-input{flex:1;min-width:0}
 .obs-pick-x{flex:none;width:28px;height:28px;border-radius:var(--radius-sm);color:var(--text-3)}
@@ -2459,6 +2467,16 @@ const TYPO=[
  {id:"trk",code:"TRK",label:"TRK"},
 ];
 const TY=id=>TYPO.find(t=>t.id===id)||{code:id.toUpperCase(),label:id};
+/* SPEC-external-partners.md — systems the project manager added to this
+   Turnkey tender's OBS list (a partner company). They join the list the UI
+   offers everywhere — never the model's label set: the model never predicts
+   them, they have no model and no teams (pass 1 is where they stop). */
+var PARTNERS=(function(){ try{ const p=window.parent.getCurrentProject(); if(!p||p.line!=="Turnkey") return []; return (window.parent.getPartners(p.id)||[]).slice(); }catch(e){ return []; } })();
+PARTNERS.forEach(x=>{ if(!TYPO.some(t=>t.id===x.id)) TYPO.push({id:x.id, code:x.code, label:x.label, partner:true}); });
+function isPartner(id){ return PARTNERS.some(x=>x.id===id); }
+function ptagCls(id){ return id==="tky"?" tky":isPartner(id)?" partner":""; }
+const PARTNER_TIP=id=>`${TY(id).label} — added for this tender, not part of the Turnkey model. The AI never predicts it; the partner works outside the tool.`;
+document.addEventListener("mouseover",e=>{ const t=e.target.closest&&e.target.closest(".ptag.partner"); if(t&&!t.dataset.tip){ const id=(TYPO.find(x=>x.code===t.textContent.trim())||{}).id; if(id){ t.title=PARTNER_TIP(id); t.dataset.tip="1"; } } });
 
 /* =====================================================
    ALLOCATION RE-RUN — ALLOC-014, DEC-040 to DEC-043 and DEC-051 to DEC-053
@@ -2807,7 +2825,7 @@ function perimHTML(b){
   if(!per.length) return "";
   const ai=b.perimAI?" ai":"";
   const shown=per.slice(0,2), rest=per.length-shown.length;
-  let out=shown.map(p=>`<span class="ptag${p==="tky"?" tky":""}${ai}" title="${TY(p).label}">${TY(p).code}</span>`).join("");
+  let out=shown.map(p=>`<span class="ptag${ptagCls(p)}${ai}" title="${TY(p).label}">${TY(p).code}</span>`).join("");
   if(rest>0) out+=`<span class="ptag${ai}" title="${per.slice(2).map(p=>TY(p).label).join(", ")}">+${rest}</span>`;
   return `<span class="perim">${out}</span>`;
 }
@@ -3209,7 +3227,7 @@ function typoCellBudget(){ const px=(typeof tableLayout==="function" && tableLay
 function typoTagsHTML(per, proposed){
   if(!per.length) return `<span class="ph">+ Set</span>`;
   proposed=proposed||new Set();
-  const tag=p=>`<span class="ptag${p==="tky"?" tky":""}${proposed.has(p)?" proposed":""}" title="${escHtml(TY(p).label)}${proposed.has(p)?" — proposed change, pending project-manager review":""}">${TY(p).code}</span>`;
+  const tag=p=>`<span class="ptag${ptagCls(p)}${proposed.has(p)?" proposed":""}" title="${escHtml(TY(p).label)}${proposed.has(p)?" — proposed change, pending project-manager review":""}">${TY(p).code}</span>`;
   if(state.wrapText || per.length===1) return per.map(tag).join("");
   const w=code=>10+7.2*code.length, GAP=4;
   let used=0, shown=0;
@@ -3529,7 +3547,8 @@ function openAddSystem(b, body){
   const row=body.querySelector("#pm-add-row"); if(!row) return;
   const used=new Set([...(b.perim||[]), ...(b.branches||[]).map(br=>br.typology)]);
   const cands=TYPO.filter(t=>t.id!=="tky" && !used.has(t.id))
-    .map(t=>({id:t.id, code:t.code, label:t.label, search:(t.code+" "+t.label).toLowerCase()}));
+    .map(t=>({id:t.id, code:t.code, label:t.label, partner:!!t.partner, search:(t.code+" "+t.label).toLowerCase()}))
+    .sort((a,b)=>(a.partner-b.partner));
   row.innerHTML=`<div class="obs-pick">
     <div class="obs-pick-row">
       <input class="ui-input" type="text" id="sys-add-input" placeholder="Search a system…" autocomplete="off">
@@ -3551,7 +3570,9 @@ function openAddSystem(b, body){
     const q=input.value.trim().toLowerCase();
     shown=cands.filter(c=>!q||c.search.includes(q));
     if(active>=shown.length) active=0;
-    list.innerHTML=shown.length?shown.map((c,i)=>`<div class="obs-pick-opt${i===active?" active":""}" role="option" data-i="${i}"><span class="t">${escHtml(c.code)}</span>${c.label&&c.label!==c.code?`<span class="c">${escHtml(c.label)}</span>`:""}</div>`).join("")
+    let lastP=null;
+    list.innerHTML=shown.length?shown.map((c,i)=>{ const head=c.partner&&lastP!==true?`<div class="obs-pick-group">Added for this tender — not in the model</div>`:""; lastP=c.partner;
+      return `${head}<div class="obs-pick-opt${i===active?" active":""}" role="option" data-i="${i}"><span class="t${c.partner?" is-partner":""}">${escHtml(c.code)}</span>${c.label&&c.label!==c.code?`<span class="c">${escHtml(c.label)}</span>`:""}</div>`; }).join("")
       :`<div class="obs-pick-empty">${cands.length?"No system matches.":"Every system is already on this requirement."}</div>`;
     list.querySelectorAll("[data-i]").forEach(el=>el.addEventListener("mousedown",e=>{ e.preventDefault(); add(shown[+el.dataset.i]); }));
   };
@@ -3578,7 +3599,9 @@ function syncBranchesFromPerim(b){
   ensureBranches(b);
   const have=new Set(b.branches.map(br=>br.typology));
   b.perim.forEach(t=>{
-    if(!have.has(t)) b.branches.push({typology:t, label:TY(t).label, manager:null, branchStatus:"proposed", compliance:"pending"});
+    if(!have.has(t)) b.branches.push(isPartner(t)
+      ? {typology:t, label:TY(t).label, manager:null, branchStatus:"proposed", compliance:"pending", allocStatus:"allocated", partner:true}   // stops at pass 1
+      : {typology:t, label:TY(t).label, manager:null, branchStatus:"proposed", compliance:"pending"});
   });
 }
 
@@ -3856,6 +3879,7 @@ SECTIONS.forEach(s=>s.blocks.forEach(b=>{
    question being asked here is coarser than that one. */
 const ACT_ALLOC_LABEL={notstarted:"Not started", inprogress:"In progress", allocated:"Allocated"};
 function activityAllocStatus(branch){
+  if(branch && isPartner(branch.typology)) return "allocated";   // assigned to the partner is the whole allocation
   const teams=ensureTeams(branch);
   const resolved=teams.filter(t=>t.manager||t.obs).length;
   if(!resolved) return "notstarted";
@@ -3865,7 +3889,7 @@ function activityAllocStatus(branch){
    fine allocation still to be done by hand. A routine mode of working, not a
    failure, and a real queue of work that has to be filterable. */
 function needsManualAllocation(branch){
-  if(!branch) return false;
+  if(!branch || isPartner(branch.typology)) return false;
   if(activityHasModel(branch.typology)) return false;
   return ensureTeams(branch).some(t=>!t.obs && !t.manager);
 }
@@ -4392,6 +4416,7 @@ function rowInnerHTML(b){
     : "";
   const mgrCellHTML = hasBranches
     ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see managers per branch">Multiple (${b.branches.length})</span>`
+    : ((b.perim||[]).length===1 && isPartner(b.perim[0])) ? `<span class="partner-who" title="The partner works outside the tool — the project manager answers for it">PM · for partner</span>`
     : `<select class="cell-select${b.manager?"":" empty"}" data-mgr="${b.id}">${mgrOptions}</select>`;
   /* Pass 1's output is the SYSTEM the requirement is routed to, with its own
      confidence. It had a column of its own ("TK OBS") that repeated the System
@@ -4514,13 +4539,13 @@ function branchRowHTML(parent, branch, idx){
     <div class="rcell c-id"></div>
     <div class="rcell c-req">${teamCaret}<span class="branch-connector">↳</span><span class="branch-label">${branch.label}</span>${manualFlag}${multiTeam?`<span class="team-count" title="${teams.length} teams allocated within this system">${teams.length} teams</span>`:""}</div>
     <div class="rcell c-class"></div>
-    <div class="rcell c-typo"><span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending project-manager review":""}">${TY(branch.typology).code}</span>${branchConf}</div>
+    <div class="rcell c-typo"><span class="ptag${ptagCls(branch.typology)}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending project-manager review":""}">${TY(branch.typology).code}</span>${branchConf}</div>
     <div class="rcell c-abs"></div>
     <div class="rcell c-pbs"></div>
-    <div class="rcell c-obs">${multiTeam
+    <div class="rcell c-obs">${isPartner(branch.typology)?`<span class="ph" title="A partner system has no teams">—</span>`:multiTeam
       ? `<span class="multi-ph" title="${teams.length} teams within this system — expand to see each">Multiple (${teams.length})</span>`
       : `<span class="fval">${escHtml((branch.obs&&branch.obs.v)||TEAM(teams[0]&&teams[0].team).label||"—")}</span>`}</div>
-    <div class="rcell c-mgr">${multiTeam
+    <div class="rcell c-mgr">${isPartner(branch.typology)?`<span class="partner-who" title="The partner works outside the tool — the project manager answers for it">PM · for partner</span>`:multiTeam
       ? `<span class="multi-ph">Multiple (${teams.length})</span>`
       : `<select class="cell-select branch-edit${branch.manager?"":" empty"}" data-branchmgr="${parent.id}::${idx}">${mgrOptions}</select>`}</div>
     <div class="rcell c-status">${branchStatusHTML}</div>
@@ -5309,7 +5334,7 @@ function distributionBlockHTML(b, compact){
           const hasModel=activityHasModel(a.typology);
           const label=escHtml(a.label||TY(a.typology).label);
           return `<span class="distrib-chip${hasModel?"":" manual"}" title="${label}${hasModel?" — has a model":" — allocated manually"}">
-            <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>${confBadgeHTML(a.tkObs)}
+            <span class="ptag${ptagCls(a.typology)}">${TY(a.typology).code}</span>${confBadgeHTML(a.tkObs)}
           </span>`;
         }).join(""):`<span class="deriv-hint">No system yet.</span>`}
       </div>
@@ -5321,7 +5346,7 @@ function distributionBlockHTML(b, compact){
     ${acts.length?acts.map(a=>{
       const hasModel=activityHasModel(a.typology);
       return `<div class="deriv-act">
-        <span class="ptag${a.typology==="tky"?" tky":""}">${TY(a.typology).code}</span>
+        <span class="ptag${ptagCls(a.typology)}">${TY(a.typology).code}</span>
         <span class="deriv-act-label">${escHtml(a.label||TY(a.typology).label)}</span>
         ${confBadgeHTML(a.tkObs)}
         <span class="deriv-act-model${hasModel?"":" none"}" title="${hasModel?"Routed into this system's own model automatically.":"No allocation model for this system. Its contributors allocate within it by hand — a routine way of working, not a failure."}">${hasModel?"→ has a model":"→ allocate manually"}</span>
@@ -5531,7 +5556,7 @@ function pmClassificationHTML(b){
           const showName = name && name!==TY(a.typology).code;
           const c=a.tkObs&&a.tkObs.c;
           return `<div class="ui-list-row">
-            <span class="ui-list-tag">${TY(a.typology).code}</span>
+            <span class="ui-list-tag${isPartner(a.typology)?" is-partner":""}" ${isPartner(a.typology)?`title="${escHtml(PARTNER_TIP(a.typology))}"`:""}>${TY(a.typology).code}</span>
             <span class="ui-list-main">${showName?escHtml(name):""}</span>
             ${hasModel?`<span class="ui-list-note is-accent" title="Routed into this system's own allocation model.">has a model</span>`:""}
             ${/* Provenance, one or the other (2026-09-23): the AI's confidence when
@@ -5587,7 +5612,7 @@ function activityBlocksHTML(b){
       const teams=ensureTeams(branch);
       return `<div class="branch-sec">
         <div class="branch-sec-head">
-          <span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}">${TY(branch.typology).code}</span>
+          <span class="ptag${ptagCls(branch.typology)}${branch.proposal||branch.reassignRequest?" proposed":""}">${TY(branch.typology).code}</span>
           ${(function(){
             /* Capture rows carry the code itself as the label, which printed
                "SEN SEN" — the tag beside it already says it. */
@@ -5597,7 +5622,7 @@ function activityBlocksHTML(b){
           <span class="act-alloc-pill s-${st}" title="Derived from this system's ${teams.length} team${teams.length>1?"s":""} — nobody enters it">${ACT_ALLOC_LABEL[st]}</span>
         </div>
         <div class="branch-sec-body">
-          ${obsBreakdownHTML(teams)}
+          ${isPartner(branch.typology)?`<div class="act-line"><span class="act-k">Allocation</span><span class="act-v partner-note">${escHtml(TY(branch.typology).label)} · outside the tool — the project manager enters its verdict in Compliance</span></div>`:obsBreakdownHTML(teams)}
           <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this system's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
           <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open system detail →</button></div>
         </div>
@@ -5608,6 +5633,16 @@ function activityBlocksHTML(b){
 function activityDetailHTML(b,bidx){
   const branch=(b.branches||[])[bidx];
   if(!branch) return `<div class="deriv-hint">That system is gone.</div>`;
+  if(isPartner(branch.typology)) return `<div class="act-detail-head">
+      <button class="mini-btn" id="act-back">← All systems</button>
+      <span class="ptag partner">${TY(branch.typology).code}</span>
+      <span class="act-block-name">${escHtml(TY(branch.typology).label)}</span>
+    </div>
+    <div class="partner-box">
+      <b>A partner company, added for this tender.</b> It is not part of the Turnkey model and has no model of its own, so the requirement stops here: no ABS / PBS / OBS below it, no team, nobody to assign.
+      <br><br>To send it the requirements, filter the table on <b>${escHtml(TY(branch.typology).code)}</b> and export what the filter shows. The project manager then enters the partner's verdict in Compliance.
+    </div>
+    ${proposeBlockHTML(b, true, branch)}`;
   const teams=ensureTeams(branch);
   const t=teams[0];
   const mgr=t.manager?(MGR(t.manager)||{}).name:null;
@@ -5620,7 +5655,7 @@ function activityDetailHTML(b,bidx){
     : null;
   return `<div class="act-detail-head">
       <button class="mini-btn" id="act-back">← All systems</button>
-      <span class="ptag${branch.typology==="tky"?" tky":""}">${TY(branch.typology).code}</span>
+      <span class="ptag${ptagCls(branch.typology)}">${TY(branch.typology).code}</span>
       <span class="act-block-name">${escHtml(branch.label||TY(branch.typology).label)}</span>
     </div>
     <div class="deriv-pass">
@@ -5761,7 +5796,7 @@ function renderSettings(){
       ${isReq&&!myBranch&&!IS_SIG_TENDER?`<div class="field"><label>System ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
         <div class="msel ${state.typoOpen?"open":""}" id="typo-msel">
           <button class="msel-btn" id="typo-btn">
-            <span class="mval">${(b.perim||[]).length?(b.perim||[]).map(p=>`<span class="ptag${p==="tky"?" tky":""}">${TY(p).code}</span>`).join(""):'<span class="placeholder">Select systems…</span>'}</span>
+            <span class="mval">${(b.perim||[]).length?(b.perim||[]).map(p=>`<span class="ptag${ptagCls(p)}">${TY(p).code}</span>`).join(""):'<span class="placeholder">Select systems…</span>'}</span>
             <span class="caret">▼</span>
           </button>
           <div class="msel-menu">
@@ -5795,7 +5830,7 @@ function renderSettings(){
         <label class="branch-sections-lbl">Allocations (${units.length})${units.length>1?` <span>· each ${OBS_NOUN} answers for itself, and the verdicts consolidate — most restrictive wins, pending until all have answered</span>`:""}</label>
         ${units.map(({branch,bidx,t,tidx})=>`<div class="branch-sec">
             <div class="branch-sec-head">
-              ${showSystem?`<span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal||branch.reassignRequest?" proposed":""}" title="${branch.proposal||branch.reassignRequest?"Proposed change — pending your review":""}">${TY(branch.typology).code}</span>`:""}
+              ${showSystem?`<span class="ptag${ptagCls(branch.typology)}${branch.proposal||branch.reassignRequest?" proposed":""}" title="${branch.proposal||branch.reassignRequest?"Proposed change — pending your review":""}">${TY(branch.typology).code}</span>`:""}
               <span class="branch-sec-org">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label||`— No ${OBS_NOUN} derived yet —`)}</span>
               <span class="status-pill branch-status-${t.branchStatus||branch.branchStatus}">${BRANCH_STATUS_LABEL[t.branchStatus||branch.branchStatus]||t.branchStatus||branch.branchStatus}</span>
             </div>
@@ -7623,6 +7658,18 @@ if(MODE!=="ai"){
 // demo's own "several days into review" one.
 if(MODE==="ai" && isFreshProject()) applyFreshProjectStatuses();
 applyVersionChanges();
+/* SPEC-external-partners.md demo: on the Turnkey tender, the seeded partner
+   takes part of the first two single-system requirements in document order.
+   (Compliance's demo data is its own, with other ids — it seeds its own two.) */
+(function seedPartnerBranches(){
+  if(!isPartner("p_voltara")) return;
+  let n=0;
+  SECTIONS.forEach(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x]).forEach(b=>{
+    if(n>=2 || blockNature(b)!=="requirement" || (b.branches||[]).length!==1) return;
+    b.perim=b.perim||[]; if(b.perim.includes("p_voltara")) return;
+    b.perim.push("p_voltara"); syncBranchesFromPerim(b); n++;
+  }));
+})();
 snapshotCharacterisation();
 // Review is the default working view — setMode also collapses the nav panel and shows the kbd hints
 setMode("review");

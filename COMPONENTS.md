@@ -225,12 +225,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Activity / Requirement Tag
 - **level**: atom
 - **file**: qa.html, compliance.html, revue-documentaire.html
-- **variants**: default, `.ai` (dashed, AI-unconfirmed), `.tky` (turnkey, filled), `.proposed` (pending PM review), `.ptag-more` ("+N" overflow count, dashed — takes `.proposed` when a hidden system is a pending change)
+- **variants**: default, `.ai` (dashed, AI-unconfirmed), `.tky` (turnkey, filled), `.partner` (a system added for the tender, not from the model — teal, revue-documentaire.html and compliance.html), `.proposed` (pending PM review), `.ptag-more` ("+N" overflow count, dashed — takes `.proposed` when a hidden system is a pending change)
 - **tokens**: --font-mono, --text-xs, --ia, --human, --radius-xs, --space-1, --text-2
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-23
-- **notes**: `.ptag` / `.qa-req` / `.c-id`. Turnkey variant uses a fully hardcoded gray (`#7b8794`), not a token. Letter-spacing (0.6px) hardcoded. Border relies on untracked `--line-2`. In Allocation's System cell (2026-09-23, `typoTagsHTML()`): one line only — as many tags as fit, then "+N" naming the rest on hover; every tag shows in "Wrap text" mode. The fit is estimated from code length (10 + 7.2px per letter, measured on the monospace tags) against the column's actual width minus 34px of padding (`typoCellBudget()` — the 136px default or whatever the user dragged it to), and the System cells re-render when that column is resized. On Turnkey (DEC-077, 2026-09-23) the System cell also carries the routing confidence beside the tag (`.sys-conf`, `--text-xs`/`--text-3`, `--ia` bold below threshold): on a single-system row and on each system's branch row, never on a multi-system parent (the "+N" budget is unchanged). It replaces the "TK OBS" column, which repeated the system; `margin-left:5px` hardcoded.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24 (DEC-082): `.partner` uses `--partner` / `--partner-soft` (`#1b9aaa`), a custom property added for it and **not on the tracked token scale** — `--human` (violet) was taken by `.proposed`. Set through `ptagCls(id)` in both screens (returns " tky", " partner" or ""), with a hover tooltip saying it was added for this tender and isn't part of the model. `.ptag` / `.qa-req` / `.c-id`. Turnkey variant uses a fully hardcoded gray (`#7b8794`), not a token. Letter-spacing (0.6px) hardcoded. Border relies on untracked `--line-2`. In Allocation's System cell (2026-09-23, `typoTagsHTML()`): one line only — as many tags as fit, then "+N" naming the rest on hover; every tag shows in "Wrap text" mode. The fit is estimated from code length (10 + 7.2px per letter, measured on the monospace tags) against the column's actual width minus 34px of padding (`typoCellBudget()` — the 136px default or whatever the user dragged it to), and the System cells re-render when that column is resized. On Turnkey (DEC-077, 2026-09-23) the System cell also carries the routing confidence beside the tag (`.sys-conf`, `--text-xs`/`--text-3`, `--ia` bold below threshold): on a single-system row and on each system's branch row, never on a multi-system parent (the "+N" budget is unchanged). It replaces the "TK OBS" column, which repeated the system; `margin-left:5px` hardcoded.
 
 ### Status Badge / Chip
 - **level**: atom
@@ -1405,6 +1405,26 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.doc-scroll`/`.paper`. Deliberately a fixed light "page" regardless of app theme (`--paper`/`--paper-ink` are identical in both theme blocks). Width, padding, and box-shadow all hardcoded.
+
+### Partner Verdict Entry
+- **level**: molecule
+- **file**: compliance.html
+- **variants**: verdict not chosen (green / red), Compliant (their answer as received + confirm), Not compliant (Category + Topic + their answer + confirm)
+- **tokens**: --ok, --warn, --partner, --partner-soft, --radius-md, --text-sm, --space-3
+- **built-from**: Inline Form Shell, the Decision Panel's choice / confirm buttons (`.dp-c`, `.dp-confirm`, `.dp-picked`), Textarea, Select Dropdown
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: SPEC-external-partners.md §3, DEC-082. In the project manager's Assignment tab of a branch on a partner system: a `.partner-box` explains who answers, then the PM records the partner's verdict at system level; it consolidates like any other. The answered view labels the response "entered by the project manager from <partner>'s reply" — the provenance is read from the system, no marker field (§6.1 option b). `--partner` is not on the tracked scale.
+
+### Turnkey OBS List Setting
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: Turnkey tender (shown), any other line (hidden)
+- **tokens**: --font-mono, --text-xs, --line-2, --radius-xs, --text-3, --space-2, --space-3, --partner, --partner-soft
+- **built-from**: Text Input (`.inp`), Ghost Button, Activity / Requirement Tag (as `.pt-tag`)
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: `renderPartnersSetting()`, in Settings › Allocation model. Lists the model's 16 systems (neutral, not editable) then the added ones (`.pt-tag.partner`), with a name field and "＋ Add"; the code is derived from the first word of the name. Stored in the shell (`window.getPartners` / `window.addPartner`, reset with the demo). Add only in v1 — no removal. The added tags use `--partner` / `--partner-soft`, declared in this file too — not on the tracked token scale.
 
 ### Decision Panel
 - **level**: organism

@@ -239,7 +239,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={};
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners();
   reassignRequests.length=0;
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -266,6 +266,22 @@ let customFields = {};
 let tableLayouts = {};
 window.getTableLayout = (projectId, table)=>{ const k=(projectId||"_")+"::"+table; if(!tableLayouts[k]) tableLayouts[k]={widths:{}}; return tableLayouts[k]; };
 window.getCustomFields = (projectId)=>{ const k=projectId||"_"; if(!customFields[k]) customFields[k]={defs:[],values:{},seq:0}; return customFields[k]; };
+// SPEC-external-partners.md — systems a project manager adds to a Turnkey
+// tender's OBS list (a partner company taking part of the scope). Per tender,
+// in the shell like custom columns. The model never predicts them. One seeded
+// partner on the Turnkey demo tender so the flow can be shown end to end.
+function seedPartners(){ return { stb2026:[{id:"p_voltara", code:"VOLTARA", label:"Voltara Engineering"}] }; }
+let partners = seedPartners();
+window.getPartners = (projectId)=>{ const k=projectId||"_"; if(!partners[k]) partners[k]=[]; return partners[k]; };
+window.addPartner = (projectId, name)=>{
+  const list=window.getPartners(projectId), label=String(name||"").trim();
+  if(!label) return {error:"empty"};
+  if(list.some(x=>x.label.toLowerCase()===label.toLowerCase())) return {error:"duplicate"};
+  let code=(label.split(" ").filter(Boolean)[0]||"PARTNER").replace(/[^A-Za-z0-9]/g,"").toUpperCase().slice(0,8)||"PARTNER", base=code, n=2;
+  while(list.some(x=>x.code===code)) code=base.slice(0,7)+(n++);
+  const entry={id:"p_"+code.toLowerCase(), code, label};
+  list.push(entry); return {entry};
+};
 window.isV22Uploaded = ()=>v22Uploaded;
 window.setV22Uploaded = (v)=>{ v22Uploaded = !!v; };
 let projectMode = 'ai';

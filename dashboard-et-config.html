@@ -449,6 +449,13 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .frow .fl .flt{font-size:var(--text-base);font-weight:600}
 .frow .fl .fld{font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-1);line-height:1.45}
 .frow .fc{flex:1}
+/* Turnkey OBS list (SPEC-external-partners.md): model systems neutral, added ones in the partner colour */
+.pt-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:var(--space-3)}
+.pt-tag{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;letter-spacing:.6px;padding:1px var(--space-2);border:1px solid var(--line-2);border-radius:var(--radius-xs);color:var(--text-3)}
+:root{ --partner:#1b9aaa; --partner-soft:rgba(27,154,170,.14); }
+.pt-tag.partner{color:var(--partner);border-color:var(--partner);background:var(--partner-soft);letter-spacing:.2px}
+.pt-add{display:flex;gap:var(--space-2);max-width:420px}
+.pt-add .inp{flex:1}
 .inp,.sel,textarea.inp{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base);transition:border-color .15s}
 .inp:focus,.sel:focus,textarea.inp:focus{border-color:var(--accent)}
 textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
@@ -1060,6 +1067,13 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
           <div class="warnbox" style="margin-bottom:16px">⚠ Demo only: this screen shows the setting and what changing it would destroy. Nothing here is wired — selecting another model changes no derivation, and no re-run is performed in this build.</div>
 
           <div class="frow"><div class="fl"><div class="flt">System</div><div class="fld">What the tender is issued on. One per tender.</div></div><div class="fc"><div class="fval" id="cfg-model-system">—</div></div></div>
+
+          <div class="frow" id="cfg-partners-row" style="display:none"><div class="fl"><div class="flt">Turnkey OBS list</div><div class="fld">The systems a requirement can be assigned to at pass 1. Add a partner company that takes part of the scope — it joins this list for this tender only.</div></div>
+            <div class="fc">
+              <div class="pt-list" id="cfg-partners-list"></div>
+              <div class="pt-add"><input class="inp" id="cfg-partner-name" placeholder="Partner company name" autocomplete="off"><button class="btn-ghost" id="cfg-partner-add">＋ Add</button></div>
+              <div class="opt-desc">An added system is not part of the Turnkey model: the AI never predicts it, and the partner has no access to the tool. It has no model and no teams — a requirement assigned to it stops at the system — and the project manager enters its compliance verdict from the partner's answer.</div>
+            </div></div>
 
           <div class="frow"><div class="fl"><div class="flt">Product</div><div class="fld">Chosen at creation and fixed afterwards — it describes what the tender <i>is</i> (DEC-049). Correcting it means recreating the tender.</div></div><div class="fc"><div class="fval" id="cfg-model-product">—</div><div class="opt-desc">Not editable, by decision — not a missing control.</div></div></div>
 
@@ -2669,7 +2683,34 @@ function renderNarrativeCards(){
    this screen's own mirror rather than typed, so the warning cannot drift from
    the tender it describes: a destructive action that misstates what it destroys
    is worse than no warning at all. */
+/* SPEC-external-partners.md §2.1 — Turnkey tenders only. The model's systems
+   are listed for context (closed, not editable here); added ones in violet. */
+const TK_MODEL_SYSTEMS=["AFC","CJV","COM","CYB","DEQ","ILS","OCS","POS","PSD","RAMS","RST","SCADA","SEN","SIG","SPM","TRK"];
+function renderPartnersSetting(){
+  const row=document.getElementById("cfg-partners-row"); if(!row) return;
+  const turnkey=!!CURRENT_PROJECT && CURRENT_PROJECT.line==="Turnkey";
+  row.style.display=turnkey?"":"none"; if(!turnkey) return;
+  let list=[]; try{ list=window.parent.getPartners(CURRENT_PROJECT.id)||[]; }catch(e){}
+  document.getElementById("cfg-partners-list").innerHTML=
+    TK_MODEL_SYSTEMS.map(c=>`<span class="pt-tag" title="From the Turnkey model">${c}</span>`).join("")
+    + list.map(x=>`<span class="pt-tag partner" title="${x.label} — added for this tender, not part of the model">${x.code} · ${x.label}</span>`).join("");
+}
+(function(){
+  const btn=document.getElementById("cfg-partner-add"), inp=document.getElementById("cfg-partner-name");
+  if(!btn||!inp) return;
+  const add=()=>{
+    let res={error:"shell"}; try{ res=window.parent.addPartner(CURRENT_PROJECT.id, inp.value); }catch(e){}
+    if(res.error==="empty"){ toast("Type the partner's name","warn"); inp.focus(); return; }
+    if(res.error==="duplicate"){ toast("That partner is already in the list","warn"); return; }
+    if(res.error){ toast("Could not add the partner","warn"); return; }
+    inp.value=""; renderPartnersSetting();
+    toast(`${res.entry.label} added to the Turnkey OBS list as ${res.entry.code}`,"ok");
+  };
+  btn.addEventListener("click",add);
+  inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); add(); } });
+})();
 function renderAllocationModelSection(){
+  renderPartnersSetting();
   const sysEl=document.getElementById("cfg-model-system");
   const prodEl=document.getElementById("cfg-model-product");
   const sel=document.getElementById("cfg-model-select");
