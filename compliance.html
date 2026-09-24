@@ -546,7 +546,12 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 /* Q&A card additions — allocated system link + blocking flag on a raised question */
 /* T9/T10 — toolbar + "what needs you now" banner, above the tracking list */
 .f10-tools{display:flex;gap:var(--space-2);align-items:center;margin-bottom:var(--space-3);flex-wrap:wrap}
-.f10-tools input{flex:1;min-width:160px;font-size:var(--text-sm);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text)}
+/* search: the same fixed-width box as Allocation's (2026-09-24) — it used to stretch across the toolbar */
+.search-box{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--panel-2);border:1px solid var(--line);transition:border-color .15s;flex-shrink:0}
+.search-box:focus-within{border-color:var(--accent)}
+.search-box input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text);font-size:var(--text-base)}
+.search-box input::placeholder{color:var(--text-3)}
+.search-box svg{flex-shrink:0}
 .f10-tools select{font-size:var(--text-sm);padding:var(--space-2) var(--space-2);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2)}
 /* T12 — export readiness banner */
 .export-ready{margin-bottom:12px}
@@ -1005,7 +1010,10 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
                  anchor and never moves; the active-filter chip sits right after
                  it and wraps to its own row when there isn't room, rather than
                  being compressed or hidden. -->
-            <input id="f10-search" placeholder="Search requirement ref or text…" autocomplete="off">
+            <div class="search-box" style="width:220px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input type="text" id="f10-search" placeholder="Search requirement, ID…" autocomplete="off">
+            </div>
             <div class="active-filter" id="adv-filter-banner" style="display:none">
               <span class="active-filter-t" id="adv-filter-banner-text"></span>
               <button id="adv-filter-banner-clear" title="Clear every filter">✕</button>

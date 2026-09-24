@@ -446,13 +446,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Search Box
 - **level**: molecule
-- **file**: dashboard-et-config.html, revue-documentaire.html
+- **file**: dashboard-et-config.html, revue-documentaire.html, compliance.html
 - **variants**: nav search (full width), toolbar search (fixed 220px), Team-screen search (`.cast-search-wrap`, with leading icon)
 - **tokens**: --space-2, --space-3, --radius-md, --accent, --text-base
 - **built-from**: Text Input
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: revue-documentaire.html's two instances (`#nav-search`, `#table-search`) are kept in sync via JS. dashboard-et-config.html's icon-offset padding (34px/11px) is hardcoded and relies on untracked `--panel-2`/`--line-2`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html's toolbar search is now the same `.search-box` (icon + 220px, CSS copied) — it was a bare input stretching across the toolbar (`flex:1`). There it doesn't shrink (`flex-shrink:0`); Allocation's does, down to ~193px when the toolbar is full. revue-documentaire.html's two instances (`#nav-search`, `#table-search`) are kept in sync via JS. dashboard-et-config.html's icon-offset padding (34px/11px) is hardcoded and relies on untracked `--panel-2`/`--line-2`.
 
 ### Filter Toolbar
 - **level**: molecule
