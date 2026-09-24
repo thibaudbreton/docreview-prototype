@@ -350,7 +350,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-09-01
 - **changed**: 2026-09-24
-- **notes**: 2026-09-24: compliance.html no longer displays any shortcut hint (the triage bar's J/K · R · Q strip and the `<kbd>` in the Escalate and Reminder buttons are gone); the shortcuts themselves still work. Same "keyboard shortcut hint" concept, two different markup strategies. qa.html's version is a fixed 20×20px square. Borders/backgrounds rely on untracked `--line-2`/`--panel-2`/`--panel-3`.
+- **notes**: 2026-09-24 (later): the shortcuts are listed again, on demand — see Shortcut Help. 2026-09-24: compliance.html no longer displays any shortcut hint (the triage bar's J/K · R · Q strip and the `<kbd>` in the Escalate and Reminder buttons are gone); the shortcuts themselves still work. Same "keyboard shortcut hint" concept, two different markup strategies. qa.html's version is a fixed 20×20px square. Borders/backgrounds rely on untracked `--line-2`/`--panel-2`/`--panel-3`.
 
 ### Spinner
 - **level**: atom
@@ -443,6 +443,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **notes**: Document view only since 2026-09-23 — the table row's compact "▾" variant (`.row-natpick`, on requirement and information rows) was removed; in the table, nature is corrected in the detail panel's Nature field. `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
 
 ## Molecules
+
+### Shortcut Help
+- **level**: molecule
+- **file**: revue-documentaire.html, compliance.html
+- **variants**: Allocation list (move, edit, validate), Compliance list (move, remind, ask the client, set aside, custom columns)
+- **tokens**: --line-2, --radius-md, --radius-xs, --panel, --panel-2, --text, --text-2, --text-3, --text-sm, --text-xs, --font-mono, --accent, --space-2, --space-3
+- **built-from**: Kbd Key
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: `.kbd-help`, a 30px "⌨" at the right end of the filter toolbar; the list (`.kbd-help-pop`, 320px, right-aligned under the icon) opens on hover and on keyboard focus (`:focus-within`, tabindex 0), pure CSS. The rows are written by hand from each screen's keydown handlers — a new shortcut has to be added here too. CSS duplicated in both files. Hardcoded: 30px square, 320px width, 96px key column, shadow `rgba(0,0,0,.25)`. Depends on untracked `--line-2`, `--panel-2`.
 
 ### Search Box
 - **level**: molecule

@@ -547,6 +547,19 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 /* T9/T10 — toolbar + "what needs you now" banner, above the tracking list */
 .f10-tools{display:flex;gap:var(--space-2);align-items:center;margin-bottom:var(--space-3);flex-wrap:wrap}
 /* search: the same fixed-width box as Allocation's (2026-09-24) — it used to stretch across the toolbar */
+/* keyboard shortcuts — an icon at the right end of the filter bar; the list
+   shows on hover or keyboard focus (2026-09-24). Replaces the hint strips that
+   used to sit permanently in the toolbars. */
+.kbd-help{position:relative;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-3);cursor:default;flex-shrink:0;outline:none}
+.kbd-help:hover,.kbd-help:focus-visible{color:var(--text);border-color:var(--accent)}
+.kbd-help-ic{font-size:var(--text-base);line-height:1}
+.kbd-help-pop{display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:70;width:320px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-md);box-shadow:0 12px 36px rgba(0,0,0,.25);padding:var(--space-3);text-align:left;cursor:default}
+.kbd-help:hover .kbd-help-pop,.kbd-help:focus-within .kbd-help-pop{display:block}
+.kbd-help-h{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin:0 0 var(--space-2)}
+.kbd-help-h:not(:first-child){margin-top:var(--space-3)}
+.kbd-help-row{display:flex;align-items:baseline;gap:var(--space-3);padding:3px 0;font-size:var(--text-sm);color:var(--text-2)}
+.kbd-help-row .k{flex:0 0 96px;display:flex;gap:3px;flex-wrap:wrap}
+.kbd-help kbd{font-family:var(--font-mono);font-size:var(--text-xs);padding:0 5px;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:var(--radius-xs);background:var(--panel-2);color:var(--text);white-space:nowrap}
 .search-box{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--panel-2);border:1px solid var(--line);transition:border-color .15s;flex-shrink:0}
 .search-box:focus-within{border-color:var(--accent)}
 .search-box input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text);font-size:var(--text-base)}
@@ -1027,6 +1040,16 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
             <div class="view-wrap" style="position:relative">
               <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once">⏷ Filter ▾</button>
               <div class="adv-panel" id="adv-filter-panel"></div>
+            </div>
+            <div class="kbd-help" tabindex="0" aria-label="Keyboard shortcuts"><span class="kbd-help-ic">⌨</span>
+              <div class="kbd-help-pop" role="tooltip">
+                <div class="kbd-help-h">Move</div>
+                <div class="kbd-help-row"><span class="k"><kbd>↑</kbd><kbd>↓</kbd> or <kbd>J</kbd><kbd>K</kbd></span><span>Previous / next row</span></div><div class="kbd-help-row"><span class="k"><kbd>←</kbd><kbd>→</kbd></span><span>Previous / next column</span></div><div class="kbd-help-row"><span class="k"><kbd>Space</kbd></span><span>Select the row (on the checkbox column)</span></div>
+                <div class="kbd-help-h">Act on the selected assignment</div>
+                <div class="kbd-help-row"><span class="k"><kbd>R</kbd></span><span>Send a reminder to its contributor</span></div><div class="kbd-help-row"><span class="k"><kbd>Q</kbd></span><span>Ask the client — opens the question</span></div><div class="kbd-help-row"><span class="k"><kbd>S</kbd></span><span>Set aside / back in your queue (contributor)</span></div>
+                <div class="kbd-help-h">Custom columns</div>
+                <div class="kbd-help-row"><span class="k"><kbd>Enter</kbd></span><span>Confirm the value</span></div><div class="kbd-help-row"><span class="k"><kbd>Esc</kbd></span><span>Put the previous value back</span></div>
+              </div>
             </div>
           </div>
           <div class="filter-sel-banner" id="filter-sel-banner" style="display:none">

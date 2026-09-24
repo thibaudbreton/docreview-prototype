@@ -973,6 +973,19 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
   padding:6px var(--space-3);border-radius:var(--radius-sm);border:1px solid var(--line-2);color:var(--text-2);font-size:var(--text-sm);
 }
 .ia-actions .reject:hover{border-color:var(--warn);color:var(--warn)}
+/* keyboard shortcuts — an icon at the right end of the filter bar; the list
+   shows on hover or keyboard focus (2026-09-24). Replaces the hint strips that
+   used to sit permanently in the toolbars. */
+.kbd-help{position:relative;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-3);cursor:default;flex-shrink:0;outline:none}
+.kbd-help:hover,.kbd-help:focus-visible{color:var(--text);border-color:var(--accent)}
+.kbd-help-ic{font-size:var(--text-base);line-height:1}
+.kbd-help-pop{display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:70;width:320px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-md);box-shadow:0 12px 36px rgba(0,0,0,.25);padding:var(--space-3);text-align:left;cursor:default}
+.kbd-help:hover .kbd-help-pop,.kbd-help:focus-within .kbd-help-pop{display:block}
+.kbd-help-h{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin:0 0 var(--space-2)}
+.kbd-help-h:not(:first-child){margin-top:var(--space-3)}
+.kbd-help-row{display:flex;align-items:baseline;gap:var(--space-3);padding:3px 0;font-size:var(--text-sm);color:var(--text-2)}
+.kbd-help-row .k{flex:0 0 96px;display:flex;gap:3px;flex-wrap:wrap}
+.kbd-help kbd{font-family:var(--font-mono);font-size:var(--text-xs);padding:0 5px;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:var(--radius-xs);background:var(--panel-2);color:var(--text);white-space:nowrap}
 .validate-why{font-size:var(--text-xs);color:var(--text-3);margin-top:6px;line-height:1.45}
 .validate-why.inline{margin:0}
 .validate-sys{margin-top:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3)}
@@ -1734,6 +1747,16 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
             <div class="view-wrap" style="position:relative">
               <button class="btn-ghost" id="cols-btn" style="font-size:var(--text-sm)">▤ View ▾</button>
               <div class="view-panel" id="cols-panel"></div>
+            </div>
+            <div class="kbd-help" tabindex="0" aria-label="Keyboard shortcuts"><span class="kbd-help-ic">⌨</span>
+              <div class="kbd-help-pop" role="tooltip">
+                <div class="kbd-help-h">Move</div>
+                <div class="kbd-help-row"><span class="k"><kbd>↑</kbd><kbd>↓</kbd> or <kbd>J</kbd><kbd>K</kbd></span><span>Previous / next row</span></div><div class="kbd-help-row"><span class="k"><kbd>←</kbd><kbd>→</kbd></span><span>Previous / next column</span></div><div class="kbd-help-row"><span class="k"><kbd>Space</kbd></span><span>Select the row (on the checkbox column)</span></div>
+                <div class="kbd-help-h">Edit</div>
+                <div class="kbd-help-row"><span class="k"><kbd>Enter</kbd> or <kbd>F2</kbd></span><span>Edit the active cell</span></div><div class="kbd-help-row"><span class="k"><kbd>Enter</kbd></span><span>While editing: confirm and go down</span></div><div class="kbd-help-row"><span class="k"><kbd>Esc</kbd></span><span>While editing: cancel</span></div><div class="kbd-help-row"><span class="k"><kbd>A</kbd></span><span>Go to the selected row's Assigned to</span></div>
+                <div class="kbd-help-h">Act</div>
+                <div class="kbd-help-row"><span class="k"><kbd>V</kbd></span><span>Validate the selected requirement — its next step</span></div>
+              </div>
             </div>
           </div>
         </div>
