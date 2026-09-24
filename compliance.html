@@ -348,6 +348,10 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .colf-handle{cursor:grab;color:var(--text-3);font-size:var(--text-sm);flex-shrink:0;line-height:1;padding:0 4px}
 .colf-row.dragging{opacity:.4}
 .rgrid-head .rcell{position:relative}
+.rgrid-head [data-sortcol] .cl{cursor:pointer;display:inline-flex;align-items:center;gap:var(--space-1);user-select:none}
+.rgrid-head [data-sortcol] .cl:hover{color:var(--text)}
+.rgrid-head [data-sortcol].sorted .cl{color:var(--accent)}
+.sort-arrow{font-size:var(--text-xs);color:var(--accent)}
 /* column resize handle (TE.bindColumnResize) — invisible until the header is
    hovered, accent while dragging or focused */
 .col-resize{position:absolute;top:0;right:-3px;width:7px;height:100%;cursor:col-resize;z-index:3}
@@ -1006,13 +1010,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
               <span class="active-filter-t" id="adv-filter-banner-text"></span>
               <button id="adv-filter-banner-clear" title="Clear every filter">✕</button>
             </div>
-            <select id="f10-sort">
-              <option value="doc">Sort: document order</option>
-              <option value="action">Sort: action needed first</option>
-              <option value="status">Sort: status</option>
-              <option value="expert">Sort: contributor</option>
-              <option value="req">Sort: requirement ref</option>
-            </select>
+            <button class="btn-ghost" id="sort-reset" style="font-size:var(--text-xs);display:none;margin-left:auto" title="Clear the column sort and go back to document order">↺ Document order</button>
             <label class="wrap-switch" style="margin-left:auto" title="Show the full requirement text instead of a single-line excerpt">
               <input type="checkbox" id="wrap-toggle">
               <span class="wrap-switch-track"><span class="wrap-switch-knob"></span></span>
@@ -1517,7 +1515,7 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
      manager lands on everything, a contributor lands on their own system only.
      contribTypo is which system a contributor is currently viewing as. */
   role:"pm",contribTypo:"sig",openForm:null,verdictPick:null,externalPick:null,
-  search:"",sortBy:"doc",needsMe:false,wrapText:false,
+  search:"",sortCol:null,sortDir:"asc",needsMe:false,wrapText:false,
   advFilter:{op:"AND",items:[]}, advFilterDraft:null, advFilterOpen:false,
   /* B5 — shared table engine state (see table-engine.js / TE). colFilters holds
      EXCLUDED values per column (empty Set = show all) — §4.2's Excel-style
@@ -2181,31 +2179,72 @@ function remindExpert(e){
 /* =====================================================
    TABLE (screen 2)
 ===================================================== */
-/* action items first: reassignment requests, then Q&A blocks, then the rest */
-function actionScore(r){
-  const brs=r.branches||[];
-  if(brs.some(needsReassign))return 0;
-  if(brs.some(isAwaitingQA))return 1;
-  if(!isConsolidated(r))return 4;
-  return 5;
-}
-/* T10 — sort options. "action" is the default (reassignments/Q&A/overdue first); the
-   others are plain manager conveniences layered on top of the same filtered set. */
-/* Document order (default since 2026-09-24): document, then section, then the
-   requirement's reference — the order the tender is read in. The table then
-   shows the document titles and section headings as rows, as Allocation does. */
+/* Sorting is done from the column headers (2026-09-24), as on Allocation — the
+   "Sort: …" dropdown is gone. No header sorted = document order, shown with
+   its document titles and section headings. Click a header: ascending, again:
+   descending, a third time: back to document order. */
 function docRank(r){ const d=SEC_DOC[r.sec]; const i=d?DOCS.findIndex(x=>x.id===d):-1; return i<0?99:i; }
 function secCmp(a,b){ return String(a||"").localeCompare(String(b||""),undefined,{numeric:true}); }
 function statusScore(r){ const st=r.branches.map(b=>b.status); return BLOCK_PRIORITY.findIndex(s=>st.includes(s))+ (st.includes("answered")?0:100); }
 function firstExpertName(r){ const b=r.branches.find(x=>x.manager); return b?mgrOf(b.manager).name:"~"; }
+const F_SORT_KEYS={
+  id:r=>r.id,
+  req:r=>r.text.toLowerCase(),
+  typo:r=>r.branches.map(b=>TY(b.typology).code).join(","),
+  expert:r=>firstExpertName(r),
+  status:r=>statusScore(r),
+  compliance:r=>{ const c=consolidate(r); return c.pending?2:(c.internal==="compliant"?0:1); },
+  comment:r=>String(consolidate(r).comment||"~").toLowerCase(),
+  external:r=>externalOf(r).v||"~",
+  risk:r=>String(r.externalRisk||"~").toLowerCase(),
+  lastfu:r=>r.branches.reduce((l,b)=>b.lastFollowup||l,"") || "~",
+  age:r=>Math.max(0,...r.branches.filter(b=>!isAnswered(b)).map(b=>b.age||0)),
+};
+function sortKeyOf(col){
+  if(F_SORT_KEYS[col]) return F_SORT_KEYS[col];
+  if(col.startsWith("cf_")){ const fid=col.slice(3); return r=>String(cfDisplay(cfGet(r.id,fid))||"~").toLowerCase(); }
+  return null;
+}
 function tableRows(){
   const rows=REQS.filter(passes);
-  if(state.sortBy==="status") return rows.sort((a,b)=>statusScore(a)-statusScore(b)||a.id.localeCompare(b.id));
-  if(state.sortBy==="expert") return rows.sort((a,b)=>firstExpertName(a).localeCompare(firstExpertName(b))||a.id.localeCompare(b.id));
-  if(state.sortBy==="req") return rows.sort((a,b)=>a.id.localeCompare(b.id));
-  if(state.sortBy==="doc") return rows.sort((a,b)=>docRank(a)-docRank(b)||secCmp(a.sec,b.sec)||a.id.localeCompare(b.id));
-  return rows.sort((a,b)=>actionScore(a)-actionScore(b)||a.id.localeCompare(b.id));
+  const key=state.sortCol?sortKeyOf(state.sortCol):null;
+  if(key){
+    const dir=state.sortDir==="desc"?-1:1;
+    return rows.sort((a,b)=>{ const x=key(a), y=key(b);
+      const c = (typeof x==="number"&&typeof y==="number") ? x-y : String(x).localeCompare(String(y),undefined,{numeric:true});
+      return c*dir || a.id.localeCompare(b.id); });
+  }
+  return rows.sort((a,b)=>docRank(a)-docRank(b)||secCmp(a.sec,b.sec)||a.id.localeCompare(b.id));
 }
+function setSortCol(col){
+  if(col==null) state.sortCol=null;
+  else if(state.sortCol!==col){ state.sortCol=col; state.sortDir="asc"; }
+  else if(state.sortDir==="asc") state.sortDir="desc";
+  else state.sortCol=null;
+  renderTable2(); renderSortIndicators();
+}
+/* headers become sortable here, custom columns included (syncCustomColumns calls it again) */
+function bindSortHeaders(){
+  document.querySelectorAll("#frgrid-head .rcell").forEach(cell=>{
+    const k=([...cell.classList].find(c=>c.startsWith("c-"))||"").slice(2);
+    if(!k || k==="sel" || !sortKeyOf(k) || cell.dataset.sortcol) return;
+    cell.dataset.sortcol=k;
+    const cl=cell.querySelector(".cl"); if(!cl) return;
+    cl.insertAdjacentHTML("beforeend",`<span class="sort-arrow"></span>`);
+    cl.title="Sort by this column";
+    cl.addEventListener("click",e=>{ e.stopPropagation(); setSortCol(k); });
+  });
+  renderSortIndicators();
+}
+function renderSortIndicators(){
+  document.querySelectorAll("#frgrid-head [data-sortcol]").forEach(cell=>{
+    const on=state.sortCol===cell.dataset.sortcol;
+    cell.classList.toggle("sorted",on);
+    const ar=cell.querySelector(".sort-arrow"); if(ar) ar.textContent=on?(state.sortDir==="asc"?"▲":"▼"):"";
+  });
+  const reset=document.getElementById("sort-reset"); if(reset) reset.style.display=state.sortCol?"inline-flex":"none";
+}
+document.getElementById("sort-reset")?.addEventListener("click",()=>setSortCol(null));
 /* Two columns, not one (reverses the earlier "one status per row" merge — the PM
    now wants the verdict split back out, on its own, iconed, so it reads at a glance
    instead of competing with progress text in the same cell). Status stays the plain
@@ -2358,7 +2397,7 @@ function buildFVRows(){
   const rows=tableRows();
   currentVisIds=rows.map(r=>r.id);
   fVROWS=[];
-  const structured = state.sortBy==="doc" && !state.filterToSelection;
+  const structured = !state.sortCol && !state.filterToSelection;
   const secCount={}; if(structured) rows.forEach(r=>{ secCount[r.sec]=(secCount[r.sec]||0)+1; });
   let lastDoc=null, lastSec=null;
   rows.forEach(r=>{
@@ -3197,7 +3236,6 @@ document.querySelectorAll("[data-colf]").forEach(btn=>btn.addEventListener("clic
 /* T9/T10 toolbar */
 (function initF10(){
   document.getElementById("f10-search").addEventListener("input",e=>{state.search=e.target.value;renderTable2();});
-  document.getElementById("f10-sort").addEventListener("change",e=>{state.sortBy=e.target.value;renderTable2();});
   document.getElementById("wrap-toggle")?.addEventListener("change",e=>{ state.wrapText=e.target.checked; renderTable2(); });
   document.getElementById("filter-btn").addEventListener("click",()=>{
     state.advFilterOpen ? closeAdvFilterPanel() : openAdvFilterPanel();
@@ -3375,6 +3413,7 @@ function syncCustomColumns(){
       set:(k,px)=>{ const w=fTableLayout().widths; if(px==null) delete w[k]; else w[k]=px; },
       min:k=>({id:64, req:180})[k]||56, live:()=>applyFCols(), commit:()=>{ if(fColsPanelState.open) renderFColumnsPanel(); },
     });
+    bindSortHeaders();
   }
   const addBtn=document.getElementById("cf-add-btn"); if(addBtn) addBtn.style.display=state.role==="pm"?"":"none";
 }
