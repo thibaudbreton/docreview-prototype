@@ -175,7 +175,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .doc-file{font-size:var(--text-xs);color:var(--text-3);font-family:var(--font-mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 /* 3 — state, one fixed column so it sits at the same x on every row */
 .pstate{font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-pill);white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
-.pstate::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+/* no leading dot on status pills (2026-09-24) — the colour already carries the state */
 .pstate.ready{background:var(--ok-soft);color:var(--ok)}
 .pstate.running{background:var(--accent-soft);color:var(--accent)}
 .pstate.queued{background:var(--panel-3);color:var(--text-3)}

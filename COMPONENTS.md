@@ -239,8 +239,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text-xs, --space-1, --space-2, --radius-pill, --radius-lg, --accent, --accent-soft, --ia, --ok, --warn, --human
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Same "soft background + bold colored text" grammar reimplemented under four unrelated class names with inconsistent radius (`--radius-pill` vs `--radius-lg` for what reads as the same pill). Backgrounds rely on untracked `--ia-soft`/`--ok-soft`/`--warn-soft`/`--human-soft`. Sibling family: Status Pill (below), which reimplements the same idea again in three more screens.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: documents.html's `.pstate` lost its leading 5px dot, like the other status pills. Same "soft background + bold colored text" grammar reimplemented under four unrelated class names with inconsistent radius (`--radius-pill` vs `--radius-lg` for what reads as the same pill). Backgrounds rely on untracked `--ia-soft`/`--ok-soft`/`--warn-soft`/`--human-soft`. Sibling family: Status Pill (below), which reimplements the same idea again in three more screens.
 
 ### Status Pill (Requirement Workflow State)
 - **level**: atom
@@ -249,8 +249,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --radius-xs, --radius-pill, --text-xs, --warn, --ia, --human, --ok, --accent
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-23
-- **notes**: Backgrounds use the untracked `--warn-soft`/`--ia-soft`/`--human-soft`/`--ok-soft`/`--accent-soft` family (only `--accent-soft` is an actual tracked token). Sibling of Status Badge / Chip (above) and Verdict/Progress Status Chip (below) — three independent codings of "small colored status label" across the app, none sharing a base class. Requirements only since 2026-09-23 (DEC-073): a heading or an information block never shows one — not in its table row, its panel header, the document view or the navigation dot.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: revue-documentaire.html's `.status-pill` lost its leading 6px dot, like Compliance's `.spill` and Documents' `.pstate`. Backgrounds use the untracked `--warn-soft`/`--ia-soft`/`--human-soft`/`--ok-soft`/`--accent-soft` family (only `--accent-soft` is an actual tracked token). Sibling of Status Badge / Chip (above) and Verdict/Progress Status Chip (below) — three independent codings of "small colored status label" across the app, none sharing a base class. Requirements only since 2026-09-23 (DEC-073): a heading or an information block never shows one — not in its table row, its panel header, the document view or the navigation dot.
 
 ### Verdict Pill
 - **level**: atom
@@ -269,8 +269,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --radius-pill, --text-xs
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.spill`. Leading dot is a hardcoded 6px `currentColor` circle. Backgrounds rely on untracked `--panel-3`/`--ok-soft`/`--warn-soft`.
+- **changed**: 2026-09-24
+- **notes**: `.spill`. No leading dot since 2026-09-24 (it was a hardcoded 6px `currentColor` circle) — the colour carries the state. Backgrounds rely on untracked `--panel-3`/`--ok-soft`/`--warn-soft`.
 
 ### Blocking Chip
 - **level**: atom

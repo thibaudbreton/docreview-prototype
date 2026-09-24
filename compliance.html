@@ -432,7 +432,7 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .exp-mini{display:inline-flex;align-items:center;gap:var(--space-2);white-space:nowrap}
 .exp-mini .exp-avatar{width:22px;height:22px;font-size:var(--text-xs)}
 .spill{display:inline-flex;align-items:center;gap:6px;padding:var(--space-1) var(--space-2);border-radius:var(--radius-pill);font-size:var(--text-xs);font-weight:600;white-space:nowrap}
-.spill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+/* no leading dot on status pills (2026-09-24) — the colour already carries the state */
 /* allocated system status (T2 — progress axis) */
 .spill.proposed,.spill.assigned{background:var(--panel-3);color:var(--text-2)}
 .spill.awaiting_answer{background:var(--panel-3);color:var(--text-2)}
