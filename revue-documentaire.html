@@ -1754,8 +1754,15 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
                 <div class="kbd-help-row"><span class="k"><kbd>↑</kbd><kbd>↓</kbd> or <kbd>J</kbd><kbd>K</kbd></span><span>Previous / next row</span></div><div class="kbd-help-row"><span class="k"><kbd>←</kbd><kbd>→</kbd></span><span>Previous / next column</span></div><div class="kbd-help-row"><span class="k"><kbd>Space</kbd></span><span>Select the row (on the checkbox column)</span></div>
                 <div class="kbd-help-h">Edit</div>
                 <div class="kbd-help-row"><span class="k"><kbd>Enter</kbd> or <kbd>F2</kbd></span><span>Edit the active cell</span></div><div class="kbd-help-row"><span class="k"><kbd>Enter</kbd></span><span>While editing: confirm and go down</span></div><div class="kbd-help-row"><span class="k"><kbd>Esc</kbd></span><span>While editing: cancel</span></div><div class="kbd-help-row"><span class="k"><kbd>A</kbd></span><span>Go to the selected row's Assigned to</span></div>
+                <div class="kbd-help-h">Select</div>
+                <div class="kbd-help-row"><span class="k"><kbd>X</kbd></span><span>Tick / untick the active row, from any column</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>⇧</kbd><kbd>↑</kbd><kbd>↓</kbd></span><span>Extend the selection row by row</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>⌘/Ctrl</kbd><kbd>A</kbd></span><span>Select everything the filters show</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>Esc</kbd></span><span>Clear the selection</span></div>
                 <div class="kbd-help-h">Act</div>
-                <div class="kbd-help-row"><span class="k"><kbd>V</kbd></span><span>Validate the selected requirement — its next step</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>V</kbd></span><span>Validate — the selection if there is one, else the active requirement</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>N</kbd></span><span>Next requirement to review or validate</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>⌘/Ctrl</kbd><kbd>Z</kbd></span><span>Undo the last action</span></div>
               </div>
             </div>
           </div>
@@ -4384,11 +4391,16 @@ function bulkReclassifyInfo(){
    else in the selection is skipped, not blocked — the summary says how many. */
 function bulkValidate(){
   let done=0, skipped=0;
+  const snaps=[];
   state.selection.forEach(id=>{
     const f=findBlock(id); if(!f) return;
+    const b=f.b, brs=b.branches||[];
+    snaps.push({b, s:{status:b.status,doubtField:b.doubtField,reviewReason:b.reviewReason,allocStatus:b.allocStatus,allocDoubtField:b.allocDoubtField,allocReviewReason:b.allocReviewReason},
+      br:brs.map(x=>({x, s:{allocStatus:x.allocStatus,allocDoubtField:x.allocDoubtField,allocReviewReason:x.allocReviewReason,branchStatus:x.branchStatus}}))});
     if(validateProgress(id)) done++; else skipped++;
   });
-  if(done) toast(`${done} of ${done+skipped} validated`+(skipped?` — ${skipped} were not ready`:""),skipped?"warn":"ok");
+  const undo=()=>{ snaps.forEach(o=>{ Object.assign(o.b,o.s); o.br.forEach(q=>Object.assign(q.x,q.s)); }); refresh(); };
+  if(done) toast(`${done} of ${done+skipped} validated`+(skipped?` — ${skipped} were not ready`:""),skipped?"warn":"ok",undo);
   else toast(`Nothing to validate — ${skipped} row${skipped>1?"s were":" was"} not ready`,"warn");
   state.selection.clear(); lastSel=null; refresh();
 }
@@ -4866,6 +4878,28 @@ const navAdapter={
   onSelectionToggle:()=>{ lastSel=state.activeCell.id; renderReview(); },
 };
 function paintActiveCell(){ TE.paintActiveCell(state,navAdapter); }
+/* N — the next requirement, after the active one, that waits on a human here:
+   To review or To validate, on the requirement or on one of its systems. */
+function needsAllocAction(b){
+  if(blockNature(b)!=="requirement") return false;
+  const es=effectiveStatus(b);
+  if(es.val==="doubt"||es.val==="tovalidate") return true;
+  return (b.branches||[]).length>1 && b.status==="allocated" && b.branches.some(br=>br.allocStatus==="doubt"||br.allocStatus==="tovalidate");
+}
+function nextNeedingAction(){
+  const ids=currentVisIds||[]; if(!ids.length) return;
+  const cur=state.activeCell.id||state.selected, start=Math.max(-1,ids.indexOf(cur));
+  for(let k=1;k<=ids.length;k++){
+    const id=ids[(start+k)%ids.length], f=findBlock(id);
+    if(f && needsAllocAction(f.b)){
+      selectBlock(id);
+      state.activeCell={id,bidx:null,col:(state.activeCell.col&&state.activeCell.col!=="sel")?state.activeCell.col:"id"};
+      paintActiveCell(); scrollActiveCellIntoView();
+      return;
+    }
+  }
+  toast("Nothing left to review or validate in this view","ok");
+}
 function scrollActiveCellIntoView(){ TE.scrollActiveCellIntoView(state,navAdapter); }
 function moveActiveCellDelta(dRow,dCol){ TE.moveActiveCellDelta(state,dRow,dCol,navAdapter); }
 function focusActiveCellControl(){ TE.focusActiveCellControl(state,navAdapter); }
@@ -6464,12 +6498,28 @@ function renderTriage(){
 /* =====================================================
    TOASTS
 ===================================================== */
+/* Ctrl/Cmd+Z (2026-09-24, DEC-085): every action whose toast offers "Undo"
+   also goes on this stack, so it can be undone from the keyboard after the
+   toast has gone — last done, first undone. The toast's own button and the
+   shortcut undo the same entry, once. */
+var UNDO_STACK=[];
+function undoLast(){
+  const u=UNDO_STACK.pop();
+  if(!u){ toast("Nothing to undo","warn"); return; }
+  u.fn(); if(u.el) u.el.remove();
+  toast(`Undone — ${u.msg}`,"ok");
+}
 function toast(msg,kind="ok",undo){
   const zone = document.getElementById("toast-zone");
   const t = document.createElement("div");
   t.className="toast";
-  t.innerHTML = `<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>${undo?'<button class="undo">Undo</button>':""}`;
-  if(undo) t.querySelector(".undo").addEventListener("click",()=>{undo();t.remove()});
+  t.innerHTML = `<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>${undo?'<button class="undo" title="Undo (Ctrl/⌘ Z)">Undo</button>':""}`;
+  if(undo){
+    const entry={msg:String(msg).replace(/<[^>]+>/g,""), fn:undo, el:t};
+    UNDO_STACK.push(entry); if(UNDO_STACK.length>30) UNDO_STACK.shift();
+    t.querySelector(".undo").addEventListener("click",()=>{ const i=UNDO_STACK.indexOf(entry); if(i>=0) UNDO_STACK.splice(i,1); undo(); t.remove(); });
+    setTimeout(()=>{ entry.el=null; },3800);   // the toast is gone; the entry stays undoable
+  }
   zone.appendChild(t);
   setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3400);
 }
@@ -7603,12 +7653,35 @@ document.addEventListener("keydown",e=>{
   // a multi-value picker opened with the mouse: the table must not move under it
   const cfPop=document.getElementById("cf-pop");
   if(cfPop && cfPop.classList.contains("on") && !cfPop.contains(e.target)){ if(e.key==="Escape"){ e.preventDefault(); cfCloseMulti(); } return; }
-  if(e.target.matches("input,select,textarea")) return;
+  if(e.target.matches("input,select,textarea")) return;   // native undo / select-all inside fields
+  const mod=e.metaKey||e.ctrlKey;
+  if(mod && (e.key==="z"||e.key==="Z") && !e.shiftKey){ e.preventDefault(); undoLast(); return; }
   if(state.mode!=="review") return;
+  if(document.querySelector(".overlay.open")) return;
+  /* Selection from the keyboard (DEC-085): X ticks the active row from any
+     column, Shift+↑/↓ (or J/K) extends, Ctrl/⌘+A takes everything the filters
+     show, Esc empties it. N jumps to the next requirement waiting on you. */
+  if(mod && (e.key==="a"||e.key==="A")){ e.preventDefault(); currentVisIds.forEach(id=>state.selection.add(id)); lastSel=currentVisIds[currentVisIds.length-1]||null; renderReview(); toast(`${state.selection.size} selected — everything in view`,"ok"); return; }
+  if(e.key==="Escape" && state.selection.size){ e.preventDefault(); state.selection.clear(); lastSel=null; renderReview(); return; }
+  if(mod) return;
+  const kbRow=()=>{ if(!state.activeCell.id && state.selected){ state.activeCell={id:state.selected,bidx:null,col:"id"}; } return state.activeCell.id; };
+  if(e.shiftKey && ["ArrowDown","ArrowUp","J","K","j","k"].includes(e.key)){
+    e.preventDefault();
+    const from=kbRow(); if(!from) return;
+    state.selection.add(from);
+    moveActiveCellDelta((e.key==="ArrowDown"||e.key==="j"||e.key==="J")?1:-1,0);
+    if(state.activeCell.id) state.selection.add(state.activeCell.id);
+    lastSel=state.activeCell.id; renderReview(); return;
+  }
+  if(e.key==="x"||e.key==="X"){
+    const id=kbRow(); if(!id) return;
+    TE.toggleSelect(state.selection,id); lastSel=id; renderReview(); return;
+  }
+  if(e.key==="n"||e.key==="N"){ e.preventDefault(); nextNeedingAction(); return; }
   const navKey=(e.key==="j"||e.key==="J")?"ArrowDown":(e.key==="k"||e.key==="K")?"ArrowUp":e.key;
   if(TE.handleNavKeydown({key:navKey},state,navAdapter)){ e.preventDefault(); return; }
   if((e.key==="Enter"||e.key==="F2") && !e.target.closest("button,a,.overlay.open,#cf-pop") && editActiveCell()){ e.preventDefault(); return; }
-  if((e.key==="v"||e.key==="V") && state.selected){ validateBlock(state.selected); }
+  if(e.key==="v"||e.key==="V"){ if(state.selection.size) bulkValidate(); else if(state.selected) validateBlock(state.selected); }
   else if((e.key==="a"||e.key==="A") && state.selected){
     const sel = document.querySelector(`.rrow[data-id="${state.selected}"] select`);
     if(sel){ sel.focus(); e.preventDefault(); }

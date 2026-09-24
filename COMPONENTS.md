@@ -447,12 +447,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Shortcut Help
 - **level**: molecule
 - **file**: revue-documentaire.html, compliance.html
-- **variants**: Allocation list (move, edit, validate), Compliance list (move, remind, ask the client, set aside, custom columns)
+- **variants**: Allocation list (move, select, edit, validate, next, undo), Compliance list (move, select, remind, ask the client, set aside, next, undo, custom columns)
 - **tokens**: --line-2, --radius-md, --radius-xs, --panel, --panel-2, --text, --text-2, --text-3, --text-sm, --text-xs, --font-mono, --accent, --space-2, --space-3
 - **built-from**: Kbd Key
 - **added**: 2026-09-24
 - **changed**: 2026-09-24
-- **notes**: `.kbd-help`, a 30px "⌨" at the right end of the filter toolbar; the list (`.kbd-help-pop`, 320px, right-aligned under the icon) opens on hover and on keyboard focus (`:focus-within`, tabindex 0), pure CSS. The rows are written by hand from each screen's keydown handlers — a new shortcut has to be added here too. CSS duplicated in both files. Hardcoded: 30px square, 320px width, 96px key column, shadow `rgba(0,0,0,.25)`. Depends on untracked `--line-2`, `--panel-2`.
+- **notes**: 2026-09-24 (DEC-085): lists the new selection keys (X, Shift+↑/↓, ⌘/Ctrl+A, Esc), N and ⌘/Ctrl+Z. `.kbd-help`, a 30px "⌨" at the right end of the filter toolbar; the list (`.kbd-help-pop`, 320px, right-aligned under the icon) opens on hover and on keyboard focus (`:focus-within`, tabindex 0), pure CSS. The rows are written by hand from each screen's keydown handlers — a new shortcut has to be added here too. CSS duplicated in both files. Hardcoded: 30px square, 320px width, 96px key column, shadow `rgba(0,0,0,.25)`. Depends on untracked `--line-2`, `--panel-2`.
 
 ### Search Box
 - **level**: molecule
@@ -481,8 +481,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-2, --space-3, --space-4, --radius-lg, --text-base, --ok, --warn
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.toast` + shared `toast(msg, kind)` JS helper — verbatim-identical CSS/JS in most screens, but accueil.html colors its "warn" toast with `--ia` (amber) via `.t-warn` while creation-projet.html/documents.html/qa.html/compliance.html/dashboard-et-config.html color the same warn-kind toast with `--warn` (red) via inline style — the same component signals "warning" in two different colors depending on screen. Box-shadow (`rgba(0,0,0,.5)`) and easing are hardcoded everywhere (no shadow/motion token exists in the codebase). Auto-dismiss duration also drifts per file (2600/3200/3400/3600ms).
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24 (DEC-085): a toast that offers Undo also pushes onto `UNDO_STACK` (30 max), so ⌘/Ctrl+Z undoes the last one after the toast has gone; the button and the shortcut undo the same entry once. compliance.html's toast gained the Undo button (it had none). `.toast` + shared `toast(msg, kind)` JS helper — verbatim-identical CSS/JS in most screens, but accueil.html colors its "warn" toast with `--ia` (amber) via `.t-warn` while creation-projet.html/documents.html/qa.html/compliance.html/dashboard-et-config.html color the same warn-kind toast with `--warn` (red) via inline style — the same component signals "warning" in two different colors depending on screen. Box-shadow (`rgba(0,0,0,.5)`) and easing are hardcoded everywhere (no shadow/motion token exists in the codebase). Auto-dismiss duration also drifts per file (2600/3200/3400/3600ms).
 
 ### Tab Bar
 - **level**: molecule

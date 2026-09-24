@@ -817,6 +817,8 @@ textarea.resp-in:focus{border-color:var(--accent)}
 
 #toast-zone{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:var(--space-2);align-items:center}
 .toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.34,1.3,.64,1)}
+.toast .undo{color:var(--accent);font-weight:600;font-size:var(--text-sm);margin-left:var(--space-2)}
+.toast .undo:hover{text-decoration:underline}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .toast .t-ok{color:var(--ok)}
 
@@ -1045,7 +1047,14 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
               <div class="kbd-help-pop" role="tooltip">
                 <div class="kbd-help-h">Move</div>
                 <div class="kbd-help-row"><span class="k"><kbd>↑</kbd><kbd>↓</kbd> or <kbd>J</kbd><kbd>K</kbd></span><span>Previous / next row</span></div><div class="kbd-help-row"><span class="k"><kbd>←</kbd><kbd>→</kbd></span><span>Previous / next column</span></div><div class="kbd-help-row"><span class="k"><kbd>Space</kbd></span><span>Select the row (on the checkbox column)</span></div>
+                <div class="kbd-help-h">Select</div>
+                <div class="kbd-help-row"><span class="k"><kbd>X</kbd></span><span>Tick / untick the active row, from any column</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>⇧</kbd><kbd>↑</kbd><kbd>↓</kbd></span><span>Extend the selection row by row</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>⌘/Ctrl</kbd><kbd>A</kbd></span><span>Select everything the filters show</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>Esc</kbd></span><span>Clear the selection</span></div>
                 <div class="kbd-help-h">Act on the selected assignment</div>
+                <div class="kbd-help-row"><span class="k"><kbd>N</kbd></span><span>Next requirement waiting on you</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>⌘/Ctrl</kbd><kbd>Z</kbd></span><span>Undo the last action</span></div>
                 <div class="kbd-help-row"><span class="k"><kbd>R</kbd></span><span>Send a reminder to its contributor</span></div><div class="kbd-help-row"><span class="k"><kbd>Q</kbd></span><span>Ask the client — opens the question</span></div><div class="kbd-help-row"><span class="k"><kbd>S</kbd></span><span>Set aside / back in your queue (contributor)</span></div>
                 <div class="kbd-help-h">Custom columns</div>
                 <div class="kbd-help-row"><span class="k"><kbd>Enter</kbd></span><span>Confirm the value</span></div><div class="kbd-help-row"><span class="k"><kbd>Esc</kbd></span><span>Put the previous value back</span></div>
@@ -1797,10 +1806,28 @@ function renderNotifDrop(){
   document.addEventListener("click",e=>{ if(!drop.contains(e.target)&&!btn.contains(e.target)) drop.classList.remove("open"); });
 })();
 
-function toast(msg,kind="ok"){
+/* Undo (2026-09-24, DEC-085): the verdict, the partner's verdict, asking the
+   client, returning an assignment, reallocating one and setting aside can be
+   undone — from the toast's button or with Ctrl/⌘+Z, last done first. */
+var UNDO_STACK=[];
+const BR_UNDO_FIELDS=["status","internal","resp","qaRef","qaNote","reassignRequest","reassignComment","manager","age","reassignedAt"];
+function snapBranch(br){ const o={}; BR_UNDO_FIELDS.forEach(k=>o[k]=br[k]); return o; }
+function undoLast(){
+  const u=UNDO_STACK.pop();
+  if(!u){ toast("Nothing to undo","warn"); return; }
+  u.fn(); if(u.el) u.el.remove();
+  toast(`Undone — ${u.msg}`,"ok");
+}
+function toast(msg,kind="ok",undo){
   const z=document.getElementById("toast-zone"),t=document.createElement("div");
   t.className="toast";
-  t.innerHTML=`<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>`;
+  t.innerHTML=`<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>${undo?'<button class="undo" title="Undo (Ctrl/⌘ Z)">Undo</button>':""}`;
+  if(undo){
+    const entry={msg:String(msg).replace(/<[^>]+>/g,""), fn:undo, el:t};
+    UNDO_STACK.push(entry); if(UNDO_STACK.length>30) UNDO_STACK.shift();
+    t.querySelector(".undo").addEventListener("click",()=>{ const i=UNDO_STACK.indexOf(entry); if(i>=0) UNDO_STACK.splice(i,1); undo(); t.remove(); });
+    setTimeout(()=>{ entry.el=null; },3900);
+  }
   z.appendChild(t);
   setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3600);
 }
@@ -2756,10 +2783,11 @@ function renderPanel2(){
         const nm=b.querySelector("#ra-mgr").value||null;
         if(!nm){ toast("Pick someone before reassigning","warn"); return; }
         const requestId=br.reassignRequest&&br.reassignRequest.requestId;
+        const before=snapBranch(br);
         br.manager=nm; br.status="awaiting_answer"; br.age=0;
         br.reassignComment=null; br.reassignRequest=null; br.reassignedAt="Today";
         try{ if(window.parent!==window && window.parent.updateReassignRequest && requestId) window.parent.updateReassignRequest(requestId, {requestStatus:"approved"}); }catch(e){}
-        toast(`${r.id} · ${TY(br.typology).label} reassigned to ${mgrOf(nm).name} — awaiting answer`,"ok");
+        toast(`${r.id} · ${TY(br.typology).label} reassigned to ${mgrOf(nm).name} — awaiting answer`,"ok",()=>{ Object.assign(br,before); refreshAll(); });
         refreshAll();
       });
     }else if(isPartner(br.typology) && state.role==="pm"){
@@ -2781,13 +2809,15 @@ function renderPanel2(){
       b.querySelector("#pp-change")?.addEventListener("click",()=>{ state.partnerPick=null; state.openForm=null; renderPanel2(); });
       b.querySelector("#pp-confirm")?.addEventListener("click",()=>{
         const note=(b.querySelector("#pp-note").value||"").trim();
+        const before_resp=br.resp;
         if(pick==="not_compliant"){
           const topic=(b.querySelector("#pp-topic").value||"").trim();
           if(!topic){ toast("Name the topic — a Not compliant verdict gets documented","warn"); b.querySelector("#pp-topic").focus(); return; }
           br.resp={note:`${b.querySelector("#pp-category").value} — ${topic}${note?`. ${note}`:""}`,att:0,date:"Today",byPM:true};
         } else br.resp={note:note||`${TY(br.typology).label}: compliant.`,att:0,date:"Today",byPM:true};
+        const beforeP=Object.assign(snapBranch(br),{resp:before_resp});
         br.status="answered"; br.internal=pick; state.openForm=null; state.partnerPick=null;
-        toast(`${r.id} · ${TY(br.typology).code} — ${pick==="compliant"?"Compliant":"Not compliant"}, entered for ${TY(br.typology).label}`,pick==="compliant"?"ok":"warn");
+        toast(`${r.id} · ${TY(br.typology).code} — ${pick==="compliant"?"Compliant":"Not compliant"}, entered for ${TY(br.typology).label}`,pick==="compliant"?"ok":"warn",()=>{ Object.assign(br,beforeP); refreshAll(); });
         refreshAll();
       });
     }else{
@@ -2871,7 +2901,7 @@ function myQueue(){ return allBranches().filter(isDeciding); }
 function toggleAside(r,br){
   const k=personalKey(r,br);
   if(CMP_PERSONAL.aside[k]) delete CMP_PERSONAL.aside[k]; else CMP_PERSONAL.aside[k]=true;
-  toast(CMP_PERSONAL.aside[k]?`${r.id} set aside — only you see this marker`:`${r.id} back in your queue`,"ok");
+  toast(CMP_PERSONAL.aside[k]?`${r.id} set aside — only you see this marker`:`${r.id} back in your queue`,"ok",()=>{ if(CMP_PERSONAL.aside[k]) delete CMP_PERSONAL.aside[k]; else CMP_PERSONAL.aside[k]=true; refreshAll(); });
   refreshAll();
 }
 /* "Have we already answered this?" — plain word overlap against the tender's
@@ -3023,6 +3053,7 @@ function renderDecisionPanel(p,r,br){
   p.querySelector("#dp-change")?.addEventListener("click",()=>{ saveDraft({pick:null}); renderPanel2(); });
   p.querySelector("#dp-confirm")?.addEventListener("click",()=>{
     const com=(p.querySelector("#dp-comment")?.value||"").trim();
+    const beforeV=snapBranch(br), k0=personalKey(r,br), draft0=CMP_PERSONAL.drafts[k0]?Object.assign({},CMP_PERSONAL.drafts[k0]):null, aside0=!!CMP_PERSONAL.aside[k0];
     if(pick==="not_compliant"){
       const topic=(p.querySelector("#dp-topic")?.value||"").trim();
       if(!topic){ toast("Name the topic — a Not compliant verdict gets documented","warn"); p.querySelector("#dp-topic").focus(); return; }
@@ -3031,7 +3062,8 @@ function renderDecisionPanel(p,r,br){
     br.status="answered"; br.internal=pick;
     clearDraft(); delete CMP_PERSONAL.aside[personalKey(r,br)];
     state.openForm=null;
-    toast(`${r.id} · ${TY(br.typology).label} — ${pick==="compliant"?"Compliant":"Not compliant"}`,pick==="compliant"?"ok":"warn");
+    toast(`${r.id} · ${TY(br.typology).label} — ${pick==="compliant"?"Compliant":"Not compliant"}`,pick==="compliant"?"ok":"warn",()=>{
+      Object.assign(br,beforeV); if(draft0) CMP_PERSONAL.drafts[k0]=draft0; if(aside0) CMP_PERSONAL.aside[k0]=true; refreshAll(); });
     refreshAll();
   });
   p.querySelector("#dp-ask").addEventListener("click",()=>{ state.openForm=state.openForm==="ask"?null:"ask"; renderPanel2(); p.querySelector("#ask-text")?.focus(); });
@@ -3077,11 +3109,16 @@ function renderDecisionPanel(p,r,br){
       replacementTypologyLabel: replacementTypology?TY(replacementTypology).label:null,
       prevStatus:br.status };
     let shared=null;
+    const beforeR=snapBranch(br);
     try{ if(window.parent!==window && window.parent.pushReassignRequest) shared=window.parent.pushReassignRequest(Object.assign({},req)); }catch(err){}
     br.reassignRequest=Object.assign({requestId:shared?shared.id:null}, req);
     br.reassignComment=note; br.status="reassignment_needed";
     state.openForm=null;
-    toast(`${r.id} · ${TY(br.typology).label} — returned to the project management team`,"warn");
+    toast(`${r.id} · ${TY(br.typology).label} — returned to the project management team`,"warn",()=>{
+      Object.assign(br,beforeR);
+      // withdraw the request from the shared mailbox too, so Allocation's queue doesn't keep it
+      try{ if(shared && window.parent.updateReassignRequest) window.parent.updateReassignRequest(shared.id,{requestStatus:"withdrawn"}); }catch(err){}
+      refreshAll(); });
     refreshAll();
   });
 }
@@ -3089,6 +3126,7 @@ function renderDecisionPanel(p,r,br){
    branch becomes blocked on the issuer and therefore stops counting as answered */
 function escalate(r,br,question){
   const id="QA-0"+(QA.length+2);
+  const beforeE=br?snapBranch(br):null;
   const seed=(br&&br.resp)?br.resp.note.split(".")[0]+".":r.text.slice(0,80)+"…";
   const asker=state.role==="contributor"?((MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).name):"Thibaud Breton";
   QA.unshift({id,st:"draft",q:question||`[Draft] Clarification needed on ${r.id}: ${seed}`,reqs:[r.id],
@@ -3096,7 +3134,10 @@ function escalate(r,br,question){
   if(br){ br.status="awaiting_qa"; br.qaRef=id; br.qaNote=br.qaNote||(state.role==="contributor"
       ? "The contributor asked the client before answering — awaiting the client's reply."
       : "Escalated to the issuer by the manager — awaiting an answer before this branch can be closed."); }
-  toast(`${r.id}${br?` · ${TY(br.typology).label}`:""} escalated — draft question ${id} created`,"ok");
+  toast(`${r.id}${br?` · ${TY(br.typology).label}`:""} escalated — draft question ${id} created`,"ok",()=>{
+    const i=QA.findIndex(q=>q.id===id); if(i>=0) QA.splice(i,1);
+    if(br) Object.assign(br,beforeE);
+    refreshAll(); });
   refreshAll();
 }
 /* SPEC-internal-external-compliance.md §4.3 — a hard reset, not a stale-work flag
@@ -3578,8 +3619,26 @@ document.getElementById("cf-overlay")?.addEventListener("click",e=>{ if(e.target
    revue-documentaire.html for the same behaviour). j/k alias arrows; r/q stay
    this screen's own shortcuts, same pattern as v/a on the review table. */
 document.addEventListener("keydown",e=>{
-  if(e.target.matches("input,select,textarea"))return;
+  if(e.target.matches("input,select,textarea"))return;   // native undo / select-all inside fields
+  const mod=e.metaKey||e.ctrlKey;
+  if(mod && (e.key==="z"||e.key==="Z") && !e.shiftKey){ e.preventDefault(); undoLast(); return; }
   if(state.screen!==2||state.view!=="table")return;
+  if(document.querySelector(".overlay.open")) return;
+  /* Selection from the keyboard (DEC-085) — same keys as Allocation. */
+  if(mod && (e.key==="a"||e.key==="A")){ e.preventDefault(); currentVisIds.forEach(id=>state.selection.add(id)); renderTable2(); toast(`${state.selection.size} selected — everything in view`,"ok"); return; }
+  if(e.key==="Escape" && state.selection.size){ e.preventDefault(); state.selection.clear(); renderTable2(); return; }
+  if(mod) return;
+  const kbRow=()=>{ if(!state.activeCell.id && state.sel){ state.activeCell={id:state.sel,bidx:null,col:"id"}; } return state.activeCell.id; };
+  if(e.shiftKey && ["ArrowDown","ArrowUp","J","K","j","k"].includes(e.key)){
+    e.preventDefault();
+    const from=kbRow(); if(!from) return;
+    state.selection.add(from);
+    TE.moveActiveCellDelta(state,(e.key==="ArrowDown"||e.key==="j"||e.key==="J")?1:-1,0,fNavAdapter);
+    if(state.activeCell.id) state.selection.add(state.activeCell.id);
+    renderTable2(); return;
+  }
+  if(e.key==="x"||e.key==="X"){ const id=kbRow(); if(!id) return; TE.toggleSelect(state.selection,id); renderTable2(); return; }
+  if(e.key==="n"||e.key==="N"){ e.preventDefault(); nextNeedingAction(); return; }
   const navKey=(e.key==="j"||e.key==="J")?"ArrowDown":(e.key==="k"||e.key==="K")?"ArrowUp":e.key;
   if(TE.handleNavKeydown({key:navKey},state,fNavAdapter)){ e.preventDefault(); return; }
   if((e.key==="r"||e.key==="R")&&state.sel){
@@ -3598,6 +3657,30 @@ document.addEventListener("keydown",e=>{
     escalate(r,br);
   }
 });
+/* N — the next requirement waiting on the viewer. A contributor: an assignment
+   of theirs to decide (set-aside ones skipped). The project manager: one to
+   reallocate, a partner's verdict to enter, or a Not compliant with nothing
+   declared to the client. */
+function needsMyTurn(r){
+  if(state.role==="contributor") return r.branches.some(b=>isDeciding(b) && !isAside(r,b));
+  const c=consolidate(r);
+  return r.branches.some(b=>needsReassign(b) || (isPartner(b.typology) && !isAnswered(b)))
+    || (!c.pending && c.internal==="not_compliant" && !r.external);
+}
+function nextNeedingAction(){
+  const ids=currentVisIds||[]; if(!ids.length) return;
+  const cur=state.activeCell.id||state.sel, start=Math.max(-1,ids.indexOf(cur));
+  for(let k=1;k<=ids.length;k++){
+    const id=ids[(start+k)%ids.length], r=findR(id);
+    if(r && needsMyTurn(r)){
+      select(id);
+      state.activeCell={id,bidx:null,col:(state.activeCell.col&&state.activeCell.col!=="sel")?state.activeCell.col:"id"};
+      TE.paintActiveCell(state,fNavAdapter); TE.scrollActiveCellIntoView(state,fNavAdapter);
+      return;
+    }
+  }
+  toast(state.role==="contributor"?"Nothing left waiting on you in this view":"Nothing waiting on you in this view","ok");
+}
 /* B5 — Filter to Selection, Bulk Action Bar actions, Column Visibility Menu,
    drag-select and "my team only" scope. Shared mechanics live in table-engine.js. */
 document.getElementById("f-sel-show-only").addEventListener("click",()=>{ TE.enterFilterToSelection(state,()=>({typo:new Set(),expert:new Set()})); renderTable2(); renderColFilterIndicators(); });
