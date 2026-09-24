@@ -568,11 +568,35 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .dp-para{font-size:var(--text-xs);color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .dp-para:hover{color:var(--accent);text-decoration:underline}
 .dp-head-tools{margin-left:auto;display:flex;gap:2px;flex-shrink:0}
-.dp-icon{width:26px;height:26px;border-radius:var(--radius-sm);color:var(--text-3);font-size:var(--text-sm)}
-.dp-icon:hover{background:var(--panel-2);color:var(--text)}
-.dp-icon.on{color:var(--warn)}
-.dp-mine{font-size:var(--text-xs);color:var(--text-3)}
-.dp-mine-o{color:var(--text-3);opacity:.8}
+.dp-tools{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.dp-tool{display:inline-flex;align-items:center;gap:4px;padding:4px var(--space-3);border-radius:var(--radius-pill);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);font-size:var(--text-xs);font-weight:600}
+.dp-tool:hover{border-color:var(--accent);color:var(--accent)}
+.dp-tool.on{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.dp-asked{font-size:var(--text-xs);line-height:1.5;color:var(--accent);background:var(--accent-soft);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3)}
+.dp-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:calc(-1 * var(--space-2))}
+.dp-docbtn{align-self:flex-start;margin-top:calc(-1 * var(--space-1));font-size:var(--text-sm);font-weight:600;color:var(--accent);padding:4px var(--space-2);border-radius:var(--radius-sm)}
+.dp-docbtn:hover{background:var(--accent-soft)}
+.dblk.dp-flash{box-shadow:0 0 0 3px var(--accent)}
+.dp-choice{display:flex;gap:var(--space-2)}
+.dp-c{flex:1;padding:10px var(--space-3);border-radius:var(--radius-md);font-weight:700;font-size:var(--text-base);background:var(--panel);border:1px solid var(--line-2);color:var(--text)}
+.dp-c.ok:hover{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.dp-c.warn:hover{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.dp-picked{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2)}
+.dp-confirm{width:100%;padding:10px var(--space-3);border-radius:var(--radius-md);font-weight:700;font-size:var(--text-base);color:#fff}
+.dp-confirm.ok{background:var(--ok)}
+.dp-confirm.warn{background:var(--warn)}
+.dp-confirm:hover{filter:brightness(1.08)}
+.dp-sec.on{border-color:var(--accent);color:var(--accent)}
+.dp-qa{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-2);display:flex;flex-direction:column;gap:4px}
+.dp-qa.theirs{background:var(--panel-2)}
+.dp-qa-top{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-2)}
+.dp-qa-src{color:var(--text-3)}
+.dp-qa-date{margin-left:auto;color:var(--text-3)}
+.dp-qa-q{font-size:var(--text-sm);color:var(--text);line-height:1.45}
+.dp-qa-a{font-size:var(--text-sm);color:var(--text-2);line-height:1.45;border-left:2px solid var(--ok);padding-left:var(--space-2)}
+.dp-qa-a span{display:block;font-size:var(--text-xs);font-weight:700;color:var(--ok)}
+.dp-qa-a.none{border-left-color:var(--line-2);color:var(--text-3);font-style:italic}
+.dp-decide textarea#ask-text,#ask-form textarea{width:100%;font-family:var(--font-ui);font-size:var(--text-sm);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);box-sizing:border-box;margin:var(--space-2) 0}
 .dp-text{font-family:var(--font-doc);font-size:var(--text-lg);line-height:1.6;color:var(--paper-ink);background:var(--paper);padding:var(--space-4);border-radius:var(--radius-md);white-space:pre-wrap;overflow-wrap:anywhere}
 .dp-decide{border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2);background:var(--panel)}
 .dp-decide-h{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3)}
@@ -580,12 +604,6 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .dp-decide textarea,.dp-nc input,.dp-nc select{width:100%;font-family:var(--font-ui);font-size:var(--text-sm);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);box-sizing:border-box}
 .dp-decide textarea{resize:vertical}
 .dp-nc .field{margin-bottom:var(--space-2)}
-.dp-verdict{display:flex;gap:var(--space-2)}
-.dp-v{flex:1;padding:10px var(--space-3);border-radius:var(--radius-md);font-weight:700;font-size:var(--text-base);transition:filter .12s}
-.dp-v.ok{background:var(--ok);color:#fff}
-.dp-v.warn{background:transparent;border:1px solid var(--warn);color:var(--warn)}
-.dp-v.warn.on{background:var(--warn);color:#fff}
-.dp-v:hover{filter:brightness(1.08)}
 .dp-link{align-self:flex-start;font-size:var(--text-xs);color:var(--text-3)}
 .dp-link:hover{color:var(--text);text-decoration:underline}
 .dp-draft{font-size:var(--text-xs);color:var(--text-3)}
@@ -2618,6 +2636,17 @@ function renderPanel2(){
       <div class="set-empty"><div class="big">Chat isn't built yet</div><div>Read-only, ask-about-this-requirement chat — separate from "Escalate to client Q&amp;A" above, which leaves the company and blocks consolidation. This one never does either.</div></div>`;
   }
 }
+/* Clarifications the client published to every bidder — questions asked by
+   OTHER companies, with the client's answer. Hand-authored demo data, keyed by
+   requirement; shown in the decision panel's Q&A tab next to our own questions. */
+const PUBLISHED_QA = IS_SIG_TENDER ? [
+  {id:"CL-07",reqs:["L4-0006"],q:"In degraded mode under line-side signals, is a maximum speed imposed by the client, or left to the operating rules?",ans:"Maximum 40 km/h in degraded mode, per operating rule OR-12 (Annex D).",date:"Jul 11"},
+  {id:"CL-09",reqs:["L4-0008"],q:"Is the 90-second headway measured at the platform or at the entry signal?",ans:"At the platform stopping point, departure to departure.",date:"Jul 12"},
+] : [
+  {id:"CL-03",reqs:["SRM-00001","SRM-00002"],q:"Should telemetry routing tolerate the loss of one site gateway without data loss, or is buffering at the gateway sufficient?",ans:"Buffering at the gateway for 24 hours is sufficient; no data loss is accepted beyond that.",date:"Jul 09"},
+  {id:"CL-05",reqs:["SRM-00004"],q:"Are consolidated dashboards required per site, or only network-wide?",ans:"Both: per site and network-wide, with drill-down.",date:"Jul 10"},
+  {id:"CL-08",reqs:["SRM-00010"],q:"Does the one-year history depth apply to raw measurements or to aggregates only?",ans:"Raw measurements for 90 days, aggregates for one year.",date:"Jul 12"},
+];
 /* =====================================================
    DECISION PANEL — SPEC-compliance-decision-panel.md (DEC-079)
    The contributor's own open assignment. One thing to read (the requirement,
@@ -2625,7 +2654,9 @@ function renderPanel2(){
    quieter secondary action (ask the client, return it) or consultation, one
    gesture away (document, similar, REX, chat). The PM's panel is unchanged.
 ===================================================== */
-function isDeciding(br){ return !!br && canAnswer(br) && !["answered","awaiting_qa","reassignment_needed"].includes(br.status); }
+/* awaiting_qa included (2026-09-24): asking the client must not lock the
+   contributor out — they can come back and decide without the reply. */
+function isDeciding(br){ return !!br && canAnswer(br) && !["answered","reassignment_needed"].includes(br.status); }
 /* Personal, per viewer — kept on the shell so it survives leaving the panel and
    the screen (a draft can span two sessions; set aside is "come back to this",
    never a shared status). */
@@ -2660,11 +2691,23 @@ function renderDecisionPanel(p,r,br){
   const mineAll=allBranches().filter(b=>canAnswer(b)), done=mineAll.filter(isAnswered).length;
   const nextB=qSorted.find((b,i)=>i>=pos && !isAside(b.req,b)) || qSorted.find(b=>!same(b) && !isAside(b.req,b));
   const d=draftOf(r,br)||{};
-  const pick=state.openForm==="reassign"?null:(d.pick||null);
+  const pick=d.pick||null;
   const aside=isAside(r,br);
-  const me=mgrOf(br.manager)||MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0];
+  if(state.resTab==="doc") state.resTab="qa";   // the Document resource became Q&A (2026-09-24)
   const res=state.resTab||null;
   const sim=similarReqs(r);
+  const ourQA=QA.filter(q=>(q.reqs||[]).includes(r.id));
+  const theirQA=PUBLISHED_QA.filter(q=>q.reqs.includes(r.id));
+  const qaN=ourQA.length+theirQA.length;
+  const QA_ST={draft:"Draft",internal:"Internal review",sent:"Sent to the client",answered:"Answered"};
+  const myQ = br.status==="awaiting_qa" ? QA.find(q=>q.id===br.qaRef) : null;
+  const askForm=state.openForm!=="ask"?"":`
+    <div class="inline-form" id="ask-form">
+      <div class="if-label">Ask the client</div>
+      <div class="dp-truth">Official: it goes into the Q&amp;A register, the project team sends it, and consolidation of ${r.id} waits for the reply. You can still decide before it comes back.</div>
+      <textarea id="ask-text" rows="4" placeholder="Your question to the client — required"></textarea>
+      <div class="form-actions"><button class="btn-cancel" id="ask-cancel">Cancel</button><button class="btn-submit" id="ask-submit">Add to the Q&amp;A register</button></div>
+    </div>`;
   const otherExperts=MANAGERS.filter(x=>x.id!==br.manager);
   const otherTypos=Object.keys(TYPOS).filter(t=>t!==br.typology);
   const returnForm=state.openForm!=="reassign"?"":`
@@ -2680,9 +2723,15 @@ function renderDecisionPanel(p,r,br){
       <div class="field"><label>Why</label><textarea id="reassign-text" rows="3" placeholder="Required — why should this be reassigned?"></textarea></div>
       <div class="form-actions"><button class="btn-cancel" id="reassign-cancel">Cancel</button><button class="btn-submit warn" id="reassign-submit">Return it</button></div>
     </div>`;
-  const resBody = !res ? "" : res==="doc" ? (function(){
-      const secReqs=REQS.filter(x=>x.sec===r.sec);
-      return `<div class="dp-res-note">${esc(r.sec)}${SEC_DOC[r.sec]?` · ${esc(DOC(SEC_DOC[r.sec]).name)}`:""}</div><div class="doc-mini">`+secReqs.map(x=>`<p class="doc-req-para${x.id===r.id?" hl":""}" id="docp-${x.id}">${x.id===r.id?`<mark>${esc(x.text)}</mark>`:esc(x.text)}</p>`).join("")+`</div>`; })()
+  const qaItem=(q,theirs)=>`<div class="dp-qa${theirs?" theirs":""}">
+      <div class="dp-qa-top"><b>${esc(q.id)}</b>${theirs?`<span class="dp-qa-src">Another bidder · published by the client</span>`:`<span class="dp-qa-src">${esc(q.from||"")} · ${esc(QA_ST[q.st]||q.st)}</span>`}<span class="dp-qa-date">${esc(q.date||"")}</span></div>
+      <div class="dp-qa-q">${esc(q.q)}</div>
+      ${q.ans?`<div class="dp-qa-a"><span>Client</span>${esc(q.ans)}</div>`:`<div class="dp-qa-a none">No answer yet</div>`}
+    </div>`;
+  const resBody = !res ? "" : res==="qa" ? (qaN
+      ? `${ourQA.length?`<div class="dp-res-note">Our questions</div>${ourQA.map(q=>qaItem(q,false)).join("")}`:""}
+         ${theirQA.length?`<div class="dp-res-note" style="margin-top:var(--space-3)">Asked by other bidders</div>${theirQA.map(q=>qaItem(q,true)).join("")}`:""}`
+      : `<div class="dp-res-empty">No question on this requirement yet — neither ours nor another bidder's.</div>`)
     : res==="sim" ? (sim.length ? `<div class="dp-sim">${sim.map(m=>{ const cc=consolidate(m.x), mb=m.x.branches.find(b=>isAnswered(b));
         return `<button class="dp-sim-item" data-simgo="${m.x.id}"><span class="dp-sim-top"><b>${m.x.id}</b><span class="dp-sim-score">${m.score}% similar</span>${cc.pending?(mb?cmpPillHTML(mb.internal):`<span class="dp-sim-open">not answered yet</span>`):cmpPillHTML(cc.internal)}</span>
           <span class="dp-sim-t">${esc(m.x.text)}</span>${mb&&mb.resp&&mb.resp.note?`<span class="dp-sim-note">“${esc(mb.resp.note)}” — ${esc((mgrOf(mb.manager)||{}).name||"")}</span>`:""}</button>`; }).join("")}</div>`
@@ -2701,41 +2750,42 @@ function renderDecisionPanel(p,r,br){
       <div class="dp-head">
         <span class="set-id">${r.id}</span>
         <button class="dp-para" id="dp-para" title="Open the clause in its document">§ ${esc(r.sec)}</button>
-        <span class="dp-head-tools">
-          <button class="dp-icon${aside?" on":""}" id="dp-aside" title="${aside?"Back in your queue":"Set aside — come back to it later (only you see it)"} · S">${aside?"⚑":"⚐"}</button>
-          <button class="dp-icon" id="dp-wide" title="${state.panelWide?"Narrow the panel":"Widen the panel — for long text, figures or formulas"}">${state.panelWide?"⇥":"⇤"}</button>
-        </span>
       </div>
-      <div class="dp-mine">Yours${IS_SIG_TENDER?"":` · ${esc(TY(br.typology).label)}`} · ${esc(me.name)}${r.branches.length>1?` <span class="dp-mine-o">· ${r.branches.length-1} other system${r.branches.length>2?"s":""} answer${r.branches.length>2?"":"s"} too</span>`:""}</div>
+      <div class="dp-tools">
+        <button class="dp-tool${aside?" on":""}" id="dp-aside" title="${aside?"Put it back in your queue":"Come back to it later — only you see this marker"} (S)">${aside?"⚑ Set aside":"⚐ Set aside"}</button>
+        <button class="dp-tool" id="dp-wide" title="${state.panelWide?"Back to the normal width":"More room for long text, figures or formulas"}">${state.panelWide?"⇥ Narrow panel":"⇤ Widen panel"}</button>
+      </div>
+      ${myQ?`<div class="dp-asked">⇗ Question <b>${esc(myQ.id)}</b> is in the Q&amp;A register · ${esc(myQ.ans?"answered":(QA_ST[myQ.st]||myQ.st).toLowerCase())}. You can decide now, or wait for the reply.</div>`:""}
+      <div class="dp-label">Requirement</div>
       <div class="dp-text">${esc(r.text)}</div>
+      <button class="dp-docbtn" id="dp-docview" title="Switch to the Document view at this requirement — this panel stays">📄 View in the document</button>
 
       <div class="dp-decide">
         <div class="dp-decide-h">Your verdict</div>
         <div class="dp-truth">Give the technical truth. What the client is told is the project manager's call — if they declare Compliant over your Not compliant, the risk is theirs and on record.</div>
-        <textarea id="dp-comment" rows="2" placeholder="Comment — optional for Compliant. Say so here if R&amp;D work is needed.">${esc(d.comment||"")}</textarea>
-        ${pick==="not_compliant"?`<div class="dp-nc">
-          <div class="field"><label>Category</label><select id="dp-category">${CATEGORY_LIST.map(c=>`<option ${d.category===c?"selected":""}>${c}</option>`).join("")}</select><div class="field-hint">Placeholder list — the real categories aren't defined yet.</div></div>
-          <div class="field"><label>Topic</label><input type="text" id="dp-topic" value="${esc(d.topic||"")}" placeholder="Required — what specifically fails"></div>
-        </div>`:""}
-        <div class="dp-verdict">
-          <button class="dp-v ok" id="dp-compliant">✓ Compliant</button>
-          ${pick==="not_compliant"
-            ?`<button class="dp-v warn on" id="dp-nc-confirm">✕ Not compliant</button>`
-            :`<button class="dp-v warn" id="dp-nc-open" title="Opens Category and Topic — a refusal gets documented">✕ Not compliant…</button>`}
-        </div>
-        ${pick==="not_compliant"?`<button class="dp-link" id="dp-nc-back">Back</button>`:""}
+        ${!pick?`<div class="dp-choice">
+            <button class="dp-c ok" data-dpick="compliant">✓ Compliant</button>
+            <button class="dp-c warn" data-dpick="not_compliant">✕ Not compliant</button>
+          </div>`:`
+          <div class="dp-picked">Verdict: ${cmpPillHTML(pick)} <button class="dp-link" id="dp-change">Change</button></div>
+          ${pick==="not_compliant"?`<div class="dp-nc">
+            <div class="field"><label>Category</label><select id="dp-category">${CATEGORY_LIST.map(c=>`<option ${d.category===c?"selected":""}>${c}</option>`).join("")}</select><div class="field-hint">Placeholder list — the real categories aren't defined yet.</div></div>
+            <div class="field"><label>Topic</label><input type="text" id="dp-topic" value="${esc(d.topic||"")}" placeholder="Required — what specifically fails"></div>
+          </div>`:""}
+          <textarea id="dp-comment" rows="2" placeholder="${pick==="compliant"?"Comment — optional. Say so here if R&amp;D work is needed.":"Comment — optional"}">${esc(d.comment||"")}</textarea>
+          <button class="dp-confirm ${pick==="compliant"?"ok":"warn"}" id="dp-confirm">Confirm — ${pick==="compliant"?"Compliant":"Not compliant"}</button>`}
         <div class="dp-draft" id="dp-draft">${d.savedAt?`Draft saved · ${d.savedAt}`:"Drafts save themselves"}</div>
       </div>
 
       <div class="dp-secondary">
-        <button class="dp-sec" id="dp-ask" title="Opens a question to the client in the Q&amp;A register — official, and it blocks consolidation until answered · Q">⇗ Ask the client</button>
+        <button class="dp-sec${state.openForm==="ask"?" on":""}" id="dp-ask" title="Write a question to the client — it goes into the Q&amp;A register">⇗ Ask the client</button>
         <button class="dp-sec" id="dp-return" title="Not yours — send it back to the project management team">↩ Not mine — return it</button>
       </div>
-      ${returnForm}
+      ${askForm}${returnForm}
 
       <div class="dp-res">
         <div class="dp-res-tabs">
-          ${[["doc","Document"],["sim",`Similar${sim.length?` <span class="dp-count">${sim.length}</span>`:""}`],["rex",`REX${(REX_BASE[r.id]||[]).length?` <span class="dp-count">${(REX_BASE[r.id]||[]).length}</span>`:""}`],["chat","Chat"]]
+          ${[["qa",`Q&amp;A${qaN?` <span class="dp-count">${qaN}</span>`:""}`],["sim",`Similar${sim.length?` <span class="dp-count">${sim.length}</span>`:""}`],["rex",`REX${(REX_BASE[r.id]||[]).length?` <span class="dp-count">${(REX_BASE[r.id]||[]).length}</span>`:""}`],["chat","Chat"]]
             .map(([k,l])=>`<button data-res="${k}" class="${res===k?"active":""}">${l}</button>`).join("")}
         </div>
         ${res?`<div class="dp-res-body">${resBody}</div>`:""}
@@ -2750,39 +2800,46 @@ function renderDecisionPanel(p,r,br){
     const el=p.querySelector("#dp-draft"); if(el) el.textContent=`Draft saved · ${nd.savedAt}`;
   };
   const clearDraft=()=>{ delete CMP_PERSONAL.drafts[personalKey(r,br)]; };
-  p.querySelector("#dp-comment").addEventListener("input",e=>saveDraft({comment:e.target.value}));
+  p.querySelector("#dp-comment")?.addEventListener("input",e=>saveDraft({comment:e.target.value}));
   p.querySelector("#dp-topic")?.addEventListener("input",e=>saveDraft({topic:e.target.value}));
   p.querySelector("#dp-category")?.addEventListener("change",e=>saveDraft({category:e.target.value}));
-  p.querySelector("#dp-compliant").addEventListener("click",()=>{
-    br.status="answered"; br.internal="compliant";
-    br.resp={note:p.querySelector("#dp-comment").value.trim(),att:0,date:"Today"};
+  /* Decide first, then document: the choice is one of two, and only then the
+     fields that choice needs, with one button that commits it. */
+  p.querySelectorAll("[data-dpick]").forEach(btn=>btn.addEventListener("click",()=>{ saveDraft({pick:btn.dataset.dpick}); renderPanel2(); (p.querySelector("#dp-topic")||p.querySelector("#dp-comment"))?.focus(); }));
+  p.querySelector("#dp-change")?.addEventListener("click",()=>{ saveDraft({pick:null}); renderPanel2(); });
+  p.querySelector("#dp-confirm")?.addEventListener("click",()=>{
+    const com=(p.querySelector("#dp-comment")?.value||"").trim();
+    if(pick==="not_compliant"){
+      const topic=(p.querySelector("#dp-topic")?.value||"").trim();
+      if(!topic){ toast("Name the topic — a Not compliant verdict gets documented","warn"); p.querySelector("#dp-topic").focus(); return; }
+      br.resp={note:`${p.querySelector("#dp-category").value} — ${topic}${com?`. ${com}`:""}`,att:0,date:"Today"};
+    } else br.resp={note:com,att:0,date:"Today"};
+    br.status="answered"; br.internal=pick;
     clearDraft(); delete CMP_PERSONAL.aside[personalKey(r,br)];
     state.openForm=null;
-    toast(`${r.id} · ${TY(br.typology).label} — Compliant`,"ok");
+    toast(`${r.id} · ${TY(br.typology).label} — ${pick==="compliant"?"Compliant":"Not compliant"}`,pick==="compliant"?"ok":"warn");
     refreshAll();
   });
-  p.querySelector("#dp-nc-open")?.addEventListener("click",()=>{ saveDraft({pick:"not_compliant", comment:p.querySelector("#dp-comment").value}); renderPanel2(); p.querySelector("#dp-topic")?.focus(); });
-  p.querySelector("#dp-nc-back")?.addEventListener("click",()=>{ saveDraft({pick:null}); renderPanel2(); });
-  p.querySelector("#dp-nc-confirm")?.addEventListener("click",()=>{
-    const topic=p.querySelector("#dp-topic").value.trim();
-    if(!topic){ toast("Name the topic — a Not compliant verdict gets documented","warn"); p.querySelector("#dp-topic").focus(); return; }
-    const cat=p.querySelector("#dp-category").value, com=p.querySelector("#dp-comment").value.trim();
-    br.status="answered"; br.internal="not_compliant";
-    br.resp={note:`${cat} — ${topic}${com?`. ${com}`:""}`,att:0,date:"Today"};
-    clearDraft(); delete CMP_PERSONAL.aside[personalKey(r,br)];
-    state.openForm=null;
-    toast(`${r.id} · ${TY(br.typology).label} — Not compliant`,"warn");
-    refreshAll();
+  p.querySelector("#dp-ask").addEventListener("click",()=>{ state.openForm=state.openForm==="ask"?null:"ask"; renderPanel2(); p.querySelector("#ask-text")?.focus(); });
+  p.querySelector("#ask-cancel")?.addEventListener("click",()=>{ state.openForm=null; renderPanel2(); });
+  p.querySelector("#ask-submit")?.addEventListener("click",()=>{
+    const q=(p.querySelector("#ask-text").value||"").trim();
+    if(!q){ toast("Write the question first","warn"); p.querySelector("#ask-text").focus(); return; }
+    state.openForm=null; state.resTab="qa";
+    escalate(r,br,q);
   });
-  p.querySelector("#dp-ask").addEventListener("click",()=>escalate(r,br));
+  p.querySelector("#dp-docview").addEventListener("click",()=>{
+    setView("doc");
+    const el=document.querySelector(`.dblk[data-id="${CSS.escape(r.id)}"]`);
+    if(el){ el.scrollIntoView({block:"center",behavior:"smooth"}); el.classList.add("dp-flash"); setTimeout(()=>el.classList.remove("dp-flash"),1600); }
+  });
   p.querySelector("#dp-return").addEventListener("click",()=>{ state.openForm=state.openForm==="reassign"?null:"reassign"; renderPanel2(); });
   p.querySelector("#dp-aside").addEventListener("click",()=>toggleAside(r,br));
   p.querySelector("#dp-wide").addEventListener("click",()=>{ state.panelWide=!state.panelWide; renderPanel2(); });
   p.querySelector("#dp-next")?.addEventListener("click",()=>{ state.openForm=null; select(nextB.req.id, nextB.req.branches.findIndex(x=>x.typology===nextB.typology)); });
-  p.querySelector("#dp-para").addEventListener("click",()=>{ state.resTab="doc"; renderPanel2(); });
+  p.querySelector("#dp-para").addEventListener("click",()=>p.querySelector("#dp-docview").click());
   p.querySelectorAll("[data-res]").forEach(t=>t.addEventListener("click",()=>{ state.resTab = state.resTab===t.dataset.res ? null : t.dataset.res; renderPanel2(); }));
   p.querySelectorAll("[data-simgo]").forEach(t=>t.addEventListener("click",()=>select(t.dataset.simgo)));
-  if(res==="doc") p.querySelector(`#docp-${CSS.escape(r.id)}`)?.scrollIntoView({block:"nearest"});
   // return form
   p.querySelector("#reassign-cancel")?.addEventListener("click",()=>{ state.openForm=null; renderPanel2(); });
   p.querySelectorAll('input[name="reassign-reason"]').forEach(radio=>radio.addEventListener("change",()=>{
@@ -2815,10 +2872,12 @@ function renderDecisionPanel(p,r,br){
 }
 /* escalate a specific BRANCH to the client Q&A: the assignment does not change, but the
    branch becomes blocked on the issuer and therefore stops counting as answered */
-function escalate(r,br){
+function escalate(r,br,question){
   const id="QA-0"+(QA.length+2);
   const seed=(br&&br.resp)?br.resp.note.split(".")[0]+".":r.text.slice(0,80)+"…";
-  QA.unshift({id,st:"draft",q:`[Draft] Clarification needed on ${r.id}: ${seed}`,reqs:[r.id],from:"Thibaud Breton",date:"Today"});
+  const asker=state.role==="contributor"?((MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).name):"Thibaud Breton";
+  QA.unshift({id,st:"draft",q:question||`[Draft] Clarification needed on ${r.id}: ${seed}`,reqs:[r.id],
+    branch:br?{req:r.id,typology:br.typology}:null,from:asker,date:"Today"});
   if(br){ br.status="awaiting_qa"; br.qaRef=id; br.qaNote=br.qaNote||(state.role==="contributor"
       ? "The contributor asked the client before answering — awaiting the client's reply."
       : "Escalated to the issuer by the manager — awaiting an answer before this branch can be closed."); }
@@ -3057,6 +3116,8 @@ document.addEventListener("keydown",e=>{
   }
   if((e.key==="q"||e.key==="Q")&&state.sel){
     const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
+    // a contributor writes their own question — Q opens the form instead of drafting a canned one
+    if(isDeciding(br)){ e.preventDefault(); state.openForm="ask"; renderPanel2(); document.getElementById("ask-text")?.focus(); return; }
     escalate(r,br);
   }
 });
