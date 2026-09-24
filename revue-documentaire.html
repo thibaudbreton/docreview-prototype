@@ -802,7 +802,8 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 /* expand/collapse caret + "Multiple (N)" placeholder on multi-allocation rows */
 /* multi-allocation expand/collapse — real button chrome (background + border) so it reads
    as clickable at a glance, not just a faint glyph next to the ID */
-.branch-caret{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-right:var(--space-1);border-radius:var(--radius-sm);border:1px solid var(--line-2);background:var(--panel-3);color:var(--text-2);transition:all .15s;flex-shrink:0;font-size:var(--text-xs);font-weight:700;cursor:pointer}
+/* in the Requirement cell, before the text — same place as Compliance's (2026-09-24) */
+.branch-caret{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:var(--radius-sm);border:1px solid var(--line-2);background:var(--panel-3);color:var(--text-2);transition:all .15s;flex-shrink:0;font-size:var(--text-xs);font-weight:700;cursor:pointer}
 .branch-caret:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .branch-caret.open{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);transform:rotate(90deg)}
 .multi-ph{color:var(--text-3);font-size:var(--text-xs);font-style:italic}
@@ -4436,8 +4437,8 @@ function rowInnerHTML(b){
     : `<span class="ph">—</span>`;
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
-    <div class="rcell c-id">${caretHTML}${b.id}</div>
-    <div class="rcell c-req">${b.sourceImage?imgSrcBtn:`<div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div>`}<div class="req-badges">${imgRowActions}${badges}</div></div>
+    <div class="rcell c-id">${b.id}</div>
+    <div class="rcell c-req">${caretHTML}${b.sourceImage?imgSrcBtn:`<div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div>`}<div class="req-badges">${imgRowActions}${badges}</div></div>
     <div class="rcell c-class"><button class="cls-flip ${b.techAI?"ia":""}" data-clsflip="${b.id}" title="${b.techAI?"AI-detected, unconfirmed — ":""}Click to switch classification">${b.tech==="tech"?"Tech":"Non-tech"}</button></div>
     <div class="rcell c-typo"><button class="typo-cell" data-typocell="${b.id}" title="${escHtml((b.perim||[]).map(p=>TY(p).label).join(", ")||"No system yet")} — click to edit">${typoTags}${typoConf}</button></div>
     <div class="rcell c-abs">${TENDER_KEYS
@@ -4510,8 +4511,8 @@ function branchRowHTML(parent, branch, idx){
     ? `<span class="sys-conf${branch.tkObs.c<OBS_THRESHOLD?" weak":""}" title="Turnkey routing — ${branch.tkObs.c}% confidence${branch.tkObs.c<OBS_THRESHOLD?" (below threshold — this system may be the wrong destination)":""}">${branch.tkObs.c}%</span>` : "";
   return `<div class="rrow branch-row" data-branchof="${parent.id}" data-branchidx="${idx}">
     <div class="rcell c-sel"></div>
-    <div class="rcell c-id">${teamCaret}</div>
-    <div class="rcell c-req"><span class="branch-connector">↳</span><span class="branch-label">${branch.label}</span>${manualFlag}${multiTeam?`<span class="team-count" title="${teams.length} teams allocated within this system">${teams.length} teams</span>`:""}</div>
+    <div class="rcell c-id"></div>
+    <div class="rcell c-req">${teamCaret}<span class="branch-connector">↳</span><span class="branch-label">${branch.label}</span>${manualFlag}${multiTeam?`<span class="team-count" title="${teams.length} teams allocated within this system">${teams.length} teams</span>`:""}</div>
     <div class="rcell c-class"></div>
     <div class="rcell c-typo"><span class="ptag${branch.typology==="tky"?" tky":""}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending project-manager review":""}">${TY(branch.typology).code}</span>${branchConf}</div>
     <div class="rcell c-abs"></div>

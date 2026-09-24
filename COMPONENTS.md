@@ -324,13 +324,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Disclosure / Expand Chevron
 - **level**: atom
-- **file**: documents.html, dashboard-et-config.html, revue-documentaire.html
+- **file**: documents.html, dashboard-et-config.html, revue-documentaire.html, compliance.html
 - **variants**: collapsed, expanded (rotated)
 - **tokens**: --text-3, --text-xs, --radius-sm
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Row/group-level expand affordance — `▶` glyph in documents.html (9px, no tokens at all), `.cast-caret` (▾) in dashboard-et-config.html, `.branch-caret` in revue-documentaire.html (has real button chrome, hardcoded 20×20px). Distinct from Panel Toggle Chevron (below), which collapses whole side panels rather than a row.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: Allocation's `.branch-caret` now sits in the Requirement cell before the text, as on Compliance (it was beside the ID); `margin-right` dropped, the cell's gap spaces it. Row/group-level expand affordance — `▶` glyph in documents.html (9px, no tokens at all), `.cast-caret` (▾) in dashboard-et-config.html, `.branch-caret` in revue-documentaire.html (has real button chrome, hardcoded 20×20px). Distinct from Panel Toggle Chevron (below), which collapses whole side panels rather than a row.
 
 ### Panel Toggle Chevron
 - **level**: atom
@@ -349,8 +349,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --font-mono, --text-xs, --radius-xs, --space-1
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Same "keyboard shortcut hint" concept, two different markup strategies. qa.html's version is a fixed 20×20px square. Borders/backgrounds rely on untracked `--line-2`/`--panel-2`/`--panel-3`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html no longer displays any shortcut hint (the triage bar's J/K · R · Q strip and the `<kbd>` in the Escalate and Reminder buttons are gone); the shortcuts themselves still work. Same "keyboard shortcut hint" concept, two different markup strategies. qa.html's version is a fixed 20×20px square. Borders/backgrounds rely on untracked `--line-2`/`--panel-2`/`--panel-3`.
 
 ### Spinner
 - **level**: atom
@@ -394,13 +394,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Custom Column Tag
 - **level**: atom
-- **file**: revue-documentaire.html
+- **file**: revue-documentaire.html, compliance.html
 - **variants**: none
 - **tokens**: --text-3, --line-2, --radius-pill
 - **built-from**: none
 - **added**: 2026-09-23
-- **changed**: 2026-09-23
-- **notes**: `.cf-tag`, the small "custom" pill beside a custom column's name in the View menu's column list. Font size hardcoded 10px, off the type scale. Depends on untracked `--line-2`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: also marks custom columns as "internal" in compliance.html's export column list. `.cf-tag`, the small "custom" pill beside a custom column's name in the View menu's column list. Font size hardcoded 10px, off the type scale. Depends on untracked `--line-2`.
 
 ### Paragraph Reference
 - **level**: atom
@@ -1027,7 +1027,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Filter Pill
 - **level**: molecule
 - **file**: compliance.html
-- **variants**: p-wait, p-clar, p-done, p-reassign; active (p-over "overdue" and p-out "outdated version" removed 2026-09-24)
+- **variants**: p-wait, p-clar, p-done, p-reassign, p-aside (contributor only, `--human`); active (p-over "overdue" and p-out "outdated version" removed 2026-09-24)
 - **tokens**: --space-1, --space-3, --radius-pill, --line, --text-sm, --text-2, --accent, --accent-soft, --warn, --ia, --ok
 - **built-from**: Count Badge-like `.n` span
 - **added**: 2026-09-01
@@ -1276,23 +1276,23 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Custom Column Cell
 - **level**: molecule
-- **file**: revue-documentaire.html
+- **file**: revue-documentaire.html, compliance.html
 - **variants**: free text (inline input), single-value list (select), multi-value list (button + checkbox popover `#cf-pop`), empty (system/team sub-rows, information rows)
 - **tokens**: --text, --text-3, --line-2, --radius-sm, --text-sm; popover --panel, --line-2, --radius-md
 - **built-from**: Text Input (`.cell-text`), Select Dropdown (`.cell-select`), Checkbox
 - **added**: 2026-09-23
-- **changed**: 2026-09-23 (keyboard)
-- **notes**: `cfCellsHTML()`, appended to every grid row centrally in `rowHTML()` rather than inside each row renderer, so a new row type cannot forget it. Keyboard: reachable with the arrows like any column; Enter/F2 edits; text and single-list cells get the engine's Enter (confirm + move down) / Escape (restore) through `.cell-text`/`.cell-select`; the multi-value picker takes the same contract (↑/↓ between options, Space ticks, Enter confirms and moves down, Escape restores the previous values). Column width hardcoded 150px. Popover min-width 190px / max-height 280px hardcoded. Depends on untracked `--line-2`, `--panel-2`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html has its own (DEC-081, phase "compliance"): `.cf-cell` input/select and `.cf-multi`, appended in `renderTable2()`; empty on system/team sub-rows; Enter commits, Escape restores. No per-column header filter there (Compliance's column filters work on assignments, custom values live on the requirement) — the advanced filter covers them. `cfCellsHTML()`, appended to every grid row centrally in `rowHTML()` rather than inside each row renderer, so a new row type cannot forget it. Keyboard: reachable with the arrows like any column; Enter/F2 edits; text and single-list cells get the engine's Enter (confirm + move down) / Escape (restore) through `.cell-text`/`.cell-select`; the multi-value picker takes the same contract (↑/↓ between options, Space ticks, Enter confirms and moves down, Escape restores the previous values). Column width hardcoded 150px. Popover min-width 190px / max-height 280px hardcoded. Depends on untracked `--line-2`, `--panel-2`.
 
 ### Custom Column Header Cell
 - **level**: molecule
-- **file**: revue-documentaire.html
+- **file**: revue-documentaire.html, compliance.html
 - **variants**: text (sort + edit), list (sort + column filter + edit), contributor view (edit hidden)
 - **tokens**: --text-3, --accent, --accent-soft, --radius-sm, --text-xs
 - **built-from**: Column Filter Button (`.colf-btn`), edit button (`.cf-edit`)
 - **added**: 2026-09-23
-- **changed**: 2026-09-23
-- **notes**: Injected into `#rgrid-head` by `cfRenderHead()`; its grid order and hidden state come from a generated `<style id="cf-style">`, since the static per-column CSS rules cannot know these keys in advance. The ✎ is hidden by `body.restricted`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html injects them into `#frgrid-head` from `syncCustomColumns()` — name + ✎ (project manager only), no sort (the screen sorts from its dropdown), resizable. Injected into `#rgrid-head` by `cfRenderHead()`; its grid order and hidden state come from a generated `<style id="cf-style">`, since the static per-column CSS rules cannot know these keys in advance. The ✎ is hidden by `body.restricted`.
 
 ### Custom Fields Panel Section
 - **level**: molecule
@@ -1373,8 +1373,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-3, --space-4, --radius-pill, --warn, --ia, --human, --ok, --accent, --font-mono
 - **built-from**: Progress Bar, Filter Pill / status-count pills, Tab Bar, Ghost Button, Kbd Key
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.triage`, fixed 42–44px height. Both screens independently implement their own `.tpill` rather than sharing one, despite driving the same five/six-state status vocabulary as Status Pill.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24 (compliance.html): the 120px bar + "N/M consolidated · % · assignments answered" became a 16px ring (`.p2-ring`, conic-gradient, mask radial hardcoded 4/5px) + "N/M consolidated", the rest in its tooltip; the "By section / By contributor" switch and the shortcut hints are removed; a "⚑ set aside" pill (`.p-aside`, contributor only) filters to the viewer's set-aside assignments. `.triage`, fixed 42–44px height. Both screens independently implement their own `.tpill` rather than sharing one, despite driving the same five/six-state status vocabulary as Status Pill.
 
 ### Left Navigator Panel
 - **level**: organism
@@ -1409,12 +1409,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Decision Panel
 - **level**: organism
 - **file**: compliance.html
-- **variants**: verdict not chosen (two choices), Compliant chosen (comment + confirm), Not compliant chosen (Category + Topic + comment + confirm), ask form open, return form open, question pending (banner), a resource open (Q&A, Similar, REX, Chat), set aside, wide
+- **variants**: verdict not chosen (green / red choices), Compliant chosen (comment + confirm), Not compliant chosen (Category + Topic + comment + confirm), ask form open, return form open, question pending (banner), original language shown, a resource open (Q&A, Similar, REX, Chat), set aside, wide
 - **tokens**: --paper, --paper-ink, --font-doc, --text-lg, --text-sm, --text-xs, --ok, --warn, --accent, --accent-soft, --line, --radius-md, --radius-sm, --radius-pill, --space-2, --space-3, --space-4, --space-5
 - **built-from**: Reassignment Request Form, REX Match Item, Compliance Pill, Tab Bar (`.dp-res-tabs`)
 - **added**: 2026-09-24
 - **changed**: 2026-09-24
-- **notes**: `renderDecisionPanel()` / `.dp`, SPEC-compliance-decision-panel.md, DEC-079. Replaces the Detail / Assignment Panel when a contributor opens an assignment of their own that waits on their verdict (`isDeciding()`); the project manager's panel and every other state keep the old one. Revised 2026-09-24 (user review): the verdict is a choice first — "✓ Compliant" / "✕ Not compliant" — then only that choice's fields and one "Confirm — …" button, with "Change" to go back (no longer a Compliant button beside an open Not compliant); set aside and widen are labelled pill buttons ("⚐ Set aside", "⇤ Widen panel"); the "Yours · system · person" line is gone; a "Requirement" label heads the text and "📄 View in the document" under it switches to the Document view at that block without leaving the panel (the § link does the same); "⇗ Ask the client" opens a question form (required text) that files the question in the Q&A register, and the contributor keeps the panel and can still decide while it waits (awaiting_qa counts as deciding, with a banner); the Document resource tab became Q&A — our questions on the requirement with their status and answer, then the client's published answers to other bidders' questions (`PUBLISHED_QA`, demo data). Q opens the ask form. Earlier layout, top to bottom: queue progress ("N left · this is k of N · n set aside", Next ›), id + clickable § section + set-aside ⚐/⚑ (S) + widen ⇤, one "Yours · system · person" line, the requirement text in full on paper (`pre-wrap`, dominant), the decision zone (reassurance line on internal vs client verdict, comment, "✓ Compliant" one gesture / "✕ Not compliant…" then Category + Topic then "✕ Not compliant"), two quieter secondary actions ("⇗ Ask the client", "↩ Not mine — return it"), and resources as collapsed tabs. Drafts (pick, comment, category, topic) save on input into `window.parent.__cmpPersonal`, per viewer, so they survive leaving the panel or the screen (not a reload of the whole app); set aside is kept there too, personal, shown as ⚑/✎ on the row's ID cell. Similar = word-overlap stand-in (three best ≥ 25 %) for the platform's similarity capability. Wide = `min(720px,62vw)`. Hardcoded: button text `#fff`, Next hover, the 52px progress bar, `padding:10px` on the verdict buttons. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
+- **notes**: 2026-09-24, second review: Set aside / Widen buttons moved above the ID and § line; the requirement text sits on a tinted `--accent-soft` block with an `--accent` left edge (`--ia` when the original is shown); beside "View in the document" an on/off switch "Original · French" (Toggle Switch) shows the tender's own wording when its language isn't English (`r.textOriginal` — demo French originals written for the seeded STB-2026 requirements, composed for generated ones); the verdict choices are filled green and red again; Ask the client / Not mine use `.propose-btn`, Allocation's reassignment button; Q&A items are one column — id + status pill, question, answer, then "Asked by … · date"; set aside uses `--human` (violet) for the pill, the row's tinted ID cell and the button. `renderDecisionPanel()` / `.dp`, SPEC-compliance-decision-panel.md, DEC-079. Replaces the Detail / Assignment Panel when a contributor opens an assignment of their own that waits on their verdict (`isDeciding()`); the project manager's panel and every other state keep the old one. Revised 2026-09-24 (user review): the verdict is a choice first — "✓ Compliant" / "✕ Not compliant" — then only that choice's fields and one "Confirm — …" button, with "Change" to go back (no longer a Compliant button beside an open Not compliant); set aside and widen are labelled pill buttons ("⚐ Set aside", "⇤ Widen panel"); the "Yours · system · person" line is gone; a "Requirement" label heads the text and "📄 View in the document" under it switches to the Document view at that block without leaving the panel (the § link does the same); "⇗ Ask the client" opens a question form (required text) that files the question in the Q&A register, and the contributor keeps the panel and can still decide while it waits (awaiting_qa counts as deciding, with a banner); the Document resource tab became Q&A — our questions on the requirement with their status and answer, then the client's published answers to other bidders' questions (`PUBLISHED_QA`, demo data). Q opens the ask form. Earlier layout, top to bottom: queue progress ("N left · this is k of N · n set aside", Next ›), id + clickable § section + set-aside ⚐/⚑ (S) + widen ⇤, one "Yours · system · person" line, the requirement text in full on paper (`pre-wrap`, dominant), the decision zone (reassurance line on internal vs client verdict, comment, "✓ Compliant" one gesture / "✕ Not compliant…" then Category + Topic then "✕ Not compliant"), two quieter secondary actions ("⇗ Ask the client", "↩ Not mine — return it"), and resources as collapsed tabs. Drafts (pick, comment, category, topic) save on input into `window.parent.__cmpPersonal`, per viewer, so they survive leaving the panel or the screen (not a reload of the whole app); set aside is kept there too, personal, shown as ⚑/✎ on the row's ID cell. Similar = word-overlap stand-in (three best ≥ 25 %) for the platform's similarity capability. Wide = `min(720px,62vw)`. Hardcoded: button text `#fff`, Next hover, the 52px progress bar, `padding:10px` on the verdict buttons. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
 
 ### Detail / Assignment Panel
 - **level**: organism
@@ -1465,6 +1465,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.view-panel#cols-panel`, reuses the Filter Panel's `.view-panel` shell with a single section.
+
+### Export Options Modal
+- **level**: organism
+- **file**: compliance.html
+- **variants**: format (Excel, CSV, PDF), rows (all, current view, selection — disabled when nothing is selected), columns (all, as in the table, one by one; custom columns tagged internal and unticked), requirement text language (original / English — non-English tenders only)
+- **tokens**: --panel, --panel-2, --line, --line-2, --radius-lg, --radius-pill, --text-sm, --text-xs, --text-3, --accent, --space-2, --space-3, --space-4, --space-5
+- **built-from**: Modal (`.overlay` + `.modal`), Segmented Control (`.gseg`), Checkbox, Radio, Custom Column Tag, Primary Button, Ghost Button
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: `openExport()` / `renderExport()`, opened by Compliance's Export button (and the export-ready banner). It used to generate one fixed register straight away. Generation is still a toast in the prototype (file name, rows, columns, risk summary, a warning when internal custom columns are included, the text language). Columns ticked by default follow what's visible in the table. Modal backdrop `rgba(6,8,12,.7)` and shadow hardcoded. Depends on untracked `--panel-2`, `--line-2`.
 
 ### Export Panel (header ad-hoc export)
 - **level**: organism
@@ -1808,13 +1818,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Custom Column Editor
 - **level**: organism
-- **file**: revue-documentaire.html
+- **file**: revue-documentaire.html, compliance.html
 - **variants**: create, edit, delete confirmation (states the number of values lost)
 - **tokens**: --panel, --line, --radius-md, --text-sm, --warn, --warn-soft, --space-2, --space-3
 - **built-from**: Modal (`.overlay` + `.modal`), Text Input, Tab Bar / Segmented Control (`.gseg`), Checkbox, Primary Button, Ghost Button
 - **added**: 2026-09-23
-- **changed**: 2026-09-23
-- **notes**: `cfOpenEditor()` / `cfRenderEditor()`. Locks are explained in place rather than silently disabled: type change once values exist, going back to single value once a requirement holds several, removing an option in use (refused with a count). The delete button is warn-coloured inline style on `.btn-primary`, not its own class. Depends on untracked `--warn-soft`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: ported to compliance.html with the same states and locks, for columns of phase "compliance"; the modal CSS (`.overlay`/`.modal`) was added to that file, which had none. `cfOpenEditor()` / `cfRenderEditor()`. Locks are explained in place rather than silently disabled: type change once values exist, going back to single value once a requirement holds several, removing an option in use (refused with a count). The delete button is warn-coloured inline style on `.btn-primary`, not its own class. Depends on untracked `--warn-soft`.
 
 ## Removed
 

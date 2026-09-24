@@ -56,6 +56,8 @@ Retenu par défaut, sur la recommandation de la spec : **incluses dans les expor
 
 Construit **dans Allocation uniquement** (DEC-064) ; Compliance viendra ensuite sur le même modèle.
 
+**24 septembre 2026 (DEC-081) : Compliance a ses propres colonnes**, même modèle, phase « compliance » — une colonne créée dans Compliance n'existe que là, et celles d'Allocation n'y apparaissent pas (la portée par phase tient). Mêmes règles d'édition, de verrou et de suppression ; valeurs par exigence, vides sur les lignes système/équipe. Différences : pas de filtre depuis l'en-tête (les filtres de colonne de Compliance portent sur les affectations) — le constructeur de filtres les couvre ; pas de tri par en-tête (l'écran trie par sa liste). À l'export, une colonne personnalisée est **décochée par défaut et marquée « internal »** ; la cocher déclenche un avertissement.
+
 - Bouton **＋ Column** dans la barre de la table, visible des seuls chefs de projet ; ✎ sur l'en-tête de chaque colonne personnalisée pour la modifier ou la supprimer.
 - Cellules éditables dans la table : champ texte, liste déroulante, ou sélecteur à cases pour le choix multiple. Les sous-lignes système/équipe et les blocs d'information ont une cellule vide, pour garder la grille alignée.
 - Section dans le panneau de détail, avec une ligne qui rappelle que ce sont des données humaines.
@@ -77,3 +79,4 @@ Construit **dans Allocation uniquement** (DEC-064) ; Compliance viendra ensuite 
 - CUST-T08 : aucune colonne personnalisée ne figure dans la matrice de conformité client.
 - CUST-T09 : une valeur survit à la navigation entre écrans et à la remise à zéro d'une exigence par une nouvelle version.
 - CUST-T10 : une colonne personnalisée se remplit entièrement au clavier : l'atteindre aux flèches, l'éditer avec Entrée, valider en descendant, annuler avec Échap — y compris une liste à choix multiple.
+- CUST-T11 : dans Compliance, une colonne créée n'apparaît que dans Compliance ; à l'export, elle est proposée décochée et marquée interne.
