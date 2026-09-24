@@ -114,13 +114,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Toggle Switch
 - **level**: atom
-- **file**: creation-projet.html, dashboard-et-config.html, revue-documentaire.html
+- **file**: creation-projet.html, dashboard-et-config.html, revue-documentaire.html, compliance.html
 - **variants**: on, off
 - **tokens**: --radius-pill, --accent, --accent-soft
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Three independent implementations (`.tog` in dashboard-et-config.html at 40×22px, creation-projet.html's at 38×21px, revue-documentaire.html's bespoke `.wrap-switch` at 30×17px) — same concept, three different hardcoded geometries, none on any scale.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html gets the same "Wrap text" `.wrap-switch` as Allocation, CSS copied (no shared stylesheet) — full requirement text, comments and risk notes wrap; rows grow. Three independent implementations (`.tog` in dashboard-et-config.html at 40×22px, creation-projet.html's at 38×21px, revue-documentaire.html's bespoke `.wrap-switch` at 30×17px) — same concept, three different hardcoded geometries, none on any scale.
 
 ### Chip Toggle
 - **level**: atom
@@ -302,16 +302,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.type-chip`, floats above a Document Block. All four colors are **fully hardcoded hex pairs**, deliberately not `--warn`/`--ia`/`--human`/`--ok` (the paper background is always light regardless of app theme) — but this means the chip's palette silently can't be updated by changing the tokens. Same disconnect as compliance.html's `.vtag` inside Document Block there.
 
-### Flag Tag
-- **level**: atom
-- **file**: compliance.html
-- **variants**: none
-- **tokens**: --text-xs, --space-2
-- **built-from**: none
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.flag-out` ("Δ outdated"). Background relies on untracked `--ia-soft`.
-
 ### Deadline Chip
 - **level**: atom
 - **file**: accueil.html
@@ -491,8 +481,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --space-4, --space-5, --line, --text-3, --text-2, --text, --accent, --text-base, --text-xs
 - **built-from**: none (buttons are plain, not reusing any button atom)
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: At least four independent implementations of "group of switchable tabs" across the app with two different visual languages and inconsistent hardcoded padding (5–10px). `.mode-switch` CSS exists in qa.html but is never instantiated there — dead code. Active-tab box-shadow hardcoded (`rgba(0,0,0,.15–.4)`) in several variants.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: the detail panel's `.set-tabs` (revue-documentaire.html and compliance.html) scroll horizontally instead of wrapping or squeezing (`overflow-x:auto`, tabs `flex-shrink:0`/`nowrap`); the per-system tab is labelled "Activity" (was "System") on both screens; compliance.html's "Document" tab is removed. At least four independent implementations of "group of switchable tabs" across the app with two different visual languages and inconsistent hardcoded padding (5–10px). `.mode-switch` CSS exists in qa.html but is never instantiated there — dead code. Active-tab box-shadow hardcoded (`rgba(0,0,0,.15–.4)`) in several variants.
 
 ### Segmented Control
 - **level**: molecule
@@ -616,13 +606,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Grid Section / Group Header
 - **level**: molecule
-- **file**: revue-documentaire.html
+- **file**: revue-documentaire.html, compliance.html
 - **variants**: doctitle, sec (H1), sub (H2/H3), group (Activity group-by header)
 - **tokens**: --space-2, --space-3, --space-4, --font-mono, --text-xs, --text-base, --accent
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Sticky structural divider rows inside the Requirement Row grid. Group header's left accent color comes from a per-typology hardcoded hex palette (`GROUP_PALETTE`) set via inline `style`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html's table shows `doctitle` and `sec` rows too, in its new default "Sort: document order" (document, then section, then reference); any other sort is flat. CSS copied, not shared; its data has no H2/H3 level, so no `sub`. Keyboard navigation skips them. Sticky structural divider rows inside the Requirement Row grid. Group header's left accent color comes from a per-typology hardcoded hex palette (`GROUP_PALETTE`) set via inline `style`.
 
 ### Nav Tree Item
 - **level**: molecule
@@ -1037,11 +1027,11 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Filter Pill
 - **level**: molecule
 - **file**: compliance.html
-- **variants**: p-wait, p-clar, p-over, p-out, p-done, p-reassign; active
+- **variants**: p-wait, p-clar, p-done, p-reassign; active (p-over "overdue" and p-out "outdated version" removed 2026-09-24)
 - **tokens**: --space-1, --space-3, --radius-pill, --line, --text-sm, --text-2, --accent, --accent-soft, --warn, --ia, --ok
 - **built-from**: Count Badge-like `.n` span
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
+- **changed**: 2026-09-24
 - **notes**: `.tpill`, drives the Triage Bar status filters — the compliance.html equivalent of revue-documentaire.html's own `.tpill` (Triage Bar organism), independently implemented.
 
 ### Icon Cluster
@@ -1850,3 +1840,9 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 
 ### Row Reclassify Button — removed 2026-09-23, replaced by the detail panel's Nature field (Nature and Class Fields)
+
+### Flag Tag — removed 2026-09-24, no longer needed ("outdated" is not a status on Compliance any more)
+
+### Needs My Action Button — removed 2026-09-24, no longer needed (compliance.html `.f10-needsme`; never had its own entry)
+
+### Client Decision Block — removed 2026-09-24, no longer needed (compliance.html `.decide`, "What the client receives" in the panel header; the table's External compliance and Risk accepted columns carry it, and the declaration form still opens from the next-step action; never had its own entry)

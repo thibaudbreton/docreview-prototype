@@ -57,6 +57,7 @@ Les règles qui en sortent :
 | CONF-019 | **Le panneau dit en une phrase ce qui est attendu**, dans tous ses états, y compris « rien ». Sans quoi l'absence d'action se déduit de l'absence de bouton, ce qui ne se distingue pas d'un écran incomplet. |
 | CONF-020 | **La hiérarchie des actions suit cette phrase.** L'action nommée est primaire, les autres restent disponibles en secondaire. Une position déjà arbitrée avec son risque n'a **pas** d'action primaire : escalader n'y est plus la suite logique. |
 | CONF-021 | Aucun écran ne propose à quelqu'un une action **adressée à lui-même** — pas de bouton de relance chez la personne dont on attend précisément la réponse. |
+| CONF-022 | DEC-078 : **l'écran Compliance est allégé et suit la structure du document.** La table est par défaut en ordre du document, avec les titres de document et de section en lignes (les autres tris restent à plat). Plus de statut « overdue » ni « outdated version » (pastilles, marques, filtres, tri, fil d'activité), plus de bouton « Needs my action », plus d'onglet Document, plus de bloc « What the client receives » en tête du panneau — les colonnes External compliance et Risk accepted le portent, et le formulaire de déclaration s'ouvre toujours depuis l'action proposée. Un interrupteur « Wrap text » affiche le texte complet. **Remplace CONF-016** sur la pastille en tête. |
 
 ## Transitions
 

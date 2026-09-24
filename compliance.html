@@ -139,8 +139,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .tpill .n{font-weight:700;font-variant-numeric:tabular-nums}
 .tpill.p-wait .n{color:var(--text-2)}
 .tpill.p-clar .n{color:var(--accent)}
-.tpill.p-over .n{color:var(--warn)}
-.tpill.p-out .n{color:var(--ia)}
 .tpill.p-done .n{color:var(--ok)}
 .tpill.p-reassign .n{color:var(--warn)}
 .p2-sub{color:var(--text-3);font-size:var(--text-xs)}
@@ -267,6 +265,30 @@ html[data-theme="light"] .logo-mark-light{display:block}
    column — and the row backgrounds behind it — never become fully reachable
    by scrolling. min-width:100% is just the floor for narrower content. */
 .rgrid-window{position:absolute;top:0;left:0;min-width:100%}
+/* document structure rows — same look as Allocation's (revue-documentaire.html) */
+.rgrid-doctitle{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--panel-3);border-bottom:1px solid var(--line-2);border-top:1px solid var(--line-2);box-sizing:border-box}
+.rgrid-doctitle:first-child{border-top:none}
+.rgrid-doctitle .rd-icon{font-size:var(--text-sm);flex-shrink:0}
+.rgrid-doctitle .rd-t{font-size:var(--text-base);font-weight:700;color:var(--text);letter-spacing:-.2px}
+.rgrid-doctitle .rd-file{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3);margin-left:auto}
+.rgrid-sec{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-4) 6px;background:var(--panel);border-bottom:1px solid var(--line);box-sizing:border-box}
+.rgrid-sec .rs-num{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent);font-weight:700}
+.rgrid-sec .rs-t{font-size:var(--text-base);font-weight:700;color:var(--text);letter-spacing:-.2px}
+.rgrid-sec .rs-n{margin-left:auto;font-size:var(--text-xs);color:var(--text-3)}
+/* wrap text — same switch and behaviour as Allocation */
+.rgrid-body.wrap-text .rrow{height:auto;min-height:var(--rrow-h)}
+.rgrid-body.wrap-text .rrow .rcell{align-items:flex-start;padding-top:var(--space-2);padding-bottom:var(--space-2)}
+.rgrid-body.wrap-text .rrow .c-sel{align-items:center;padding-top:0;padding-bottom:0}
+.rgrid-body.wrap-text .c-req .excerpt{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.5}
+.rgrid-body.wrap-text .verdict-comment,.rgrid-body.wrap-text .risk-note{white-space:normal;overflow:visible;text-overflow:clip}
+.wrap-switch{display:flex;align-items:center;gap:var(--space-2);cursor:pointer;user-select:none;position:relative}
+.wrap-switch input{position:absolute;opacity:0;width:0;height:0}
+.wrap-switch-track{position:relative;width:30px;height:17px;flex-shrink:0;background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-pill);transition:background .15s,border-color .15s}
+.wrap-switch-knob{position:absolute;top:1px;left:1px;width:13px;height:13px;border-radius:50%;background:var(--text-3);transition:transform .15s,background .15s}
+.wrap-switch input:checked+.wrap-switch-track{background:var(--accent-soft);border-color:var(--accent)}
+.wrap-switch input:checked+.wrap-switch-track .wrap-switch-knob{transform:translateX(13px);background:var(--accent)}
+.wrap-switch:hover .wrap-switch-track{border-color:var(--accent)}
+.wrap-switch-label{font-size:var(--text-sm);color:var(--text-2);white-space:nowrap}
 .rrow{display:grid;grid-template-columns:var(--frgrid-cols);height:var(--rrow-h);border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;box-sizing:border-box}
 .rrow:hover{background:var(--panel-2)}
 .rrow.bulk-sel{background:var(--panel-3)}
@@ -477,8 +499,6 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .reassign-h{font-size:var(--text-sm);font-weight:700;color:var(--warn);margin-bottom:6px}
 .reassign-t{font-size:var(--text-sm);color:var(--text-2);line-height:1.5;font-style:italic}
 .age{font-variant-numeric:tabular-nums;color:var(--text-2);white-space:nowrap}
-.age.over{color:var(--warn);font-weight:700}
-.flag-out{display:inline-flex;font-size:var(--text-xs);font-weight:700;padding:1px var(--space-2);border-radius:var(--radius-lg);background:var(--ia-soft);color:var(--ia);margin-left:6px;white-space:nowrap}
 
 /* Document view */
 .doc-scroll{padding:var(--space-6) 0 80px}
@@ -521,8 +541,6 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .f10-tools{display:flex;gap:var(--space-2);align-items:center;margin-bottom:var(--space-3);flex-wrap:wrap}
 .f10-tools input{flex:1;min-width:160px;font-size:var(--text-sm);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text)}
 .f10-tools select{font-size:var(--text-sm);padding:var(--space-2) var(--space-2);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2)}
-.f10-needsme{font-size:var(--text-sm);font-weight:600;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);white-space:nowrap}
-.f10-needsme.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 /* T12 — export readiness banner */
 .export-ready{margin-bottom:12px}
 /* pending renders nothing now — don't leave its margin behind on a short screen */
@@ -544,8 +562,8 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .set-id-row{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-1);flex-wrap:wrap;padding-left:18px}
 .set-id{font-family:var(--font-mono);font-size:var(--text-sm);color:var(--accent);font-weight:600}
 .set-title{font-size:var(--text-base);font-weight:600;line-height:1.4;margin-bottom:var(--space-3);color:var(--text)}
-.set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px}
-.set-tabs button{padding:8px var(--space-3);font-size:var(--text-base);font-weight:500;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;scrollbar-width:thin}
+.set-tabs button{flex-shrink:0;white-space:nowrap;padding:8px var(--space-3);font-size:var(--text-base);font-weight:500;color:var(--text-3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
 .set-tabs button:hover{color:var(--text-2)}
 .set-tabs button.active{color:var(--text);border-bottom-color:var(--accent)}
 .set-body{flex:1;overflow-y:auto;padding:16px}
@@ -826,12 +844,9 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
         <button class="tpill p-wait" data-filter="await"><span class="n" id="n-await">0</span> awaiting answer</button>
         <button class="tpill p-clar" data-filter="qa"><span class="n" id="n-qa">0</span> awaiting Q&amp;A</button>
         <button class="tpill p-reassign" data-filter="reassign"><span class="n" id="n-reassign">0</span> reassignment needed</button>
-        <button class="tpill p-over" data-filter="over"><span class="n" id="n-over">0</span> overdue</button>
-        <button class="tpill p-out" data-filter="out"><span class="n" id="n-out">0</span> outdated version</button>
       </div>
       <button class="clear-filter" id="clear2">✕ Clear filter</button>
       <div class="triage-right">
-        <button class="btn-ghost" id="remind-all">🔔 Remind all overdue</button>
         <div class="nav-toggle"><button data-by="section" class="on">By section</button><button data-by="expert">By contributor</button></div>
         <div class="kbd-hint"><span><kbd>J</kbd>/<kbd>K</kbd></span><span><kbd>R</kbd> remind</span><span><kbd>Q</kbd> to Q&amp;A</span></div>
       </div>
@@ -866,13 +881,18 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
               <button id="adv-filter-banner-clear" title="Clear every filter">✕</button>
             </div>
             <select id="f10-sort">
+              <option value="doc">Sort: document order</option>
               <option value="action">Sort: action needed first</option>
               <option value="status">Sort: status</option>
               <option value="expert">Sort: contributor</option>
               <option value="req">Sort: requirement ref</option>
             </select>
-            <button class="f10-needsme" id="f10-needsme">⚡ Needs my action</button>
-            <div class="view-wrap" style="position:relative;margin-left:auto">
+            <label class="wrap-switch" style="margin-left:auto" title="Show the full requirement text instead of a single-line excerpt">
+              <input type="checkbox" id="wrap-toggle">
+              <span class="wrap-switch-track"><span class="wrap-switch-knob"></span></span>
+              <span class="wrap-switch-label">Wrap text</span>
+            </label>
+            <div class="view-wrap" style="position:relative">
               <button class="btn-ghost" id="filter-btn" style="font-size:var(--text-sm)" title="Build a filter across several fields at once">⏷ Filter ▾</button>
               <div class="adv-panel" id="adv-filter-panel"></div>
             </div>
@@ -1329,7 +1349,7 @@ const state={screen:2,view:"table",navBy:"section",sel:null,selBranch:0,filter:n
      manager lands on everything, a contributor lands on their own system only.
      contribTypo is which system a contributor is currently viewing as. */
   role:"pm",contribTypo:"sig",openForm:null,verdictPick:null,externalPick:null,
-  search:"",sortBy:"action",needsMe:false,
+  search:"",sortBy:"doc",needsMe:false,wrapText:false,
   advFilter:{op:"AND",items:[]}, advFilterDraft:null, advFilterOpen:false,
   /* B5 — shared table engine state (see table-engine.js / TE). colFilters holds
      EXCLUDED values per column (empty Set = show all) — §4.2's Excel-style
@@ -1381,7 +1401,8 @@ const isAwaitingQA=b=>b.status==="awaiting_qa";
 const needsReassign=b=>b.status==="reassignment_needed";
 /* only an allocated system actually waiting on its expert can be "overdue" — an allocated system blocked on the
    issuer (awaiting_qa) or bounced back to the manager (reassignment_needed) is not the expert's delay */
-const isOverB=b=>isAwaitingAnswer(b)&&b.age>=OVERDUE_DAYS;
+/* "Overdue" is no longer a status on this screen (2026-09-24): an assignment
+   waiting on its contributor shows its age, and that is all. */
 
 /* T3 — requirement-level consolidation, DERIVED (unlike the review table, where the
    rollup is hand-written). Rule: pending until every branch is answered, then the most
@@ -1487,16 +1508,11 @@ function clientDecisionHTML(r){
       : x.declared
         ? `Declared, and the same as the teams' answer.`
         : `Nothing declared — it goes out with the teams' answer as it stands.`;
-  return `<div class="decide${deviates?" is-deviation":""}">
-      <div class="decide-top">
-        <span class="decide-k">What the client receives</span>
-        ${externalPillHTML(r)}
-        ${canDeclare&&!open?`<button class="mini-btn" id="ext-declare">${r.external?"Edit":"Declare"}</button>`:""}
-      </div>
-      <div class="decide-line">${line}</div>
-      ${deviates&&r.externalRisk?`<div class="decide-risk"><span class="decide-risk-k">Risk accepted</span>${esc(r.externalRisk)}</div>`:""}
-    </div>
-    ${form}`;
+  /* The "What the client receives" block is gone from the header (2026-09-24):
+     the table's External compliance / Risk accepted columns carry it. Only the
+     declaration form remains, opened from the next-step action. */
+  void line; void canDeclare;
+  return form;
 }
 /* Names the one thing waiting on the reader, in words, so the panel answers
    "what must I do" instead of leaving it to be guessed from which button is
@@ -1506,14 +1522,12 @@ function clientDecisionHTML(r){
    escalation is exactly the wrong move. */
 function nextStepFor(r, br){
   const c=consolidate(r);
-  if(r.outdated && br && br.status==="answered") return {t:`<b>Answered on an outdated version.</b> Reset it before anything else counts.`, act:"reset"};
-  if(r.outdated) return {t:`<b>The requirement changed in a later version.</b> Nothing answered here yet, so there is nothing to reset on this assignment.`, act:null};
   if(br && br.status==="awaiting_qa") return {t:`<b>Waiting on the client.</b> Nothing to do here until the question comes back.`, act:null};
   if(br && br.status==="reassignment_needed") return {t:`<b>Returned to you.</b> Reallocate it and send it back out.`, act:"reassign"};
   if(br && !isAnswered(br)){
     if(canAnswer(br)) return {t:`<b>Your answer is what this is waiting for.</b> Render a verdict, or return it if the allocation is wrong.`, act:"answer"};
     if(br.status==="proposed") return {t:`<b>Not dispatched yet.</b> It leaves Allocation before anyone can answer it.`, act:null};
-    return {t:`<b>Waiting on ${br.manager?esc(mgrOf(br.manager).name):"a contributor"}</b> — sent ${br.age} days ago${isOverB(br)?`, past the ${OVERDUE_DAYS}-day threshold`:""}. Nothing is due from you but a reminder.`, act:"remind"};
+    return {t:`<b>Waiting on ${br.manager?esc(mgrOf(br.manager).name):"a contributor"}</b> — sent ${br.age} days ago. Nothing is due from you but a reminder.`, act:"remind"};
   }
   if(c.pending) return {t:`This assignment is answered; <b>${c.remaining} other${c.remaining>1?"s":""}</b> still ${c.remaining>1?"are":"is"} not, so the requirement cannot consolidate yet.`, act:null};
   if(c.internal==="not_compliant" && !r.external && state.role==="pm")
@@ -1526,7 +1540,7 @@ function nextStepFor(r, br){
    TOASTS
 ===================================================== */
 /* What Compliance knows is waiting: returned assignments to reallocate, answers
-   the client is blocking, and assignments past the overdue threshold. */
+   the client is blocking. */
 function notifItems(){
   /* One line per kind, with its count — not one per assignment. On the capture
      dataset the per-assignment version produced fifty-one rows, which is a
@@ -1546,10 +1560,6 @@ function notifItems(){
        b=>`<b>${b.req.id}</b> returned by the contributor — reallocate it`,
        n=>`<b>${n} assignments</b> returned by contributors — reallocate them`,
        "waiting on you", "reassign"),
-    mk(brs.filter(isOverB), "var(--warn)",
-       b=>`<b>${b.req.id}</b> has had no answer for ${b.age} days`,
-       n=>`<b>${n} assignments</b> past the ${OVERDUE_DAYS}-day threshold with no answer`,
-       "chase the contributors", "over"),
     mk(brs.filter(isAwaitingQA), "var(--accent)",
        b=>`<b>${b.req.id}</b> blocked on the client${b.qaRef?` — question ${b.qaRef}`:""}`,
        n=>`<b>${n} assignments</b> blocked on the client`,
@@ -1630,9 +1640,7 @@ function passesB(b){
   if(state.filter==="await")return isAwaitingAnswer(b);
   if(state.filter==="qa")return isAwaitingQA(b);
   if(state.filter==="reassign")return needsReassign(b);
-  if(state.filter==="over")return isOverB(b);
   if(!passesColFilters(b))return false;
-  if(state.needsMe&&!needsMyAction(b))return false;
   return true;
 }
 /* T10 — search matches the requirement itself or any of its allocated systems (system/expert) */
@@ -1648,7 +1656,6 @@ function matchesSearch(r){
 function passes(r){
   if(state.filterToSelection) return state.selection.has(r.id);
   if(!matchesSearch(r))return false;
-  if(state.filter==="out")return !!r.outdated;
   return (r.branches||[]).some(passesB) && passesAdvFilter(r);
 }
 
@@ -1673,7 +1680,6 @@ const ADV_FILTER_FIELDS={
   status:{label:"Status",type:"enum",options:Object.keys(BST).map(k=>({v:k,l:BST[k]})),get:r=>(r.branches||[]).map(b=>b.status)},
   contributor:{label:"Contributor",type:"enum",options:MANAGERS.map(m=>({v:m.id,l:m.name})),get:r=>(r.branches||[]).map(b=>b.manager||"")},
   age:{label:"Age (days)",type:"text",get:r=>(r.branches||[]).map(b=>String(b.age??""))},
-  outdated:{label:"Outdated version",type:"boolean",get:r=>[!!r.outdated]},
   doc:{label:"Document",type:"enum",options:DOCS.map(d=>({v:d.id,l:d.name})),get:r=>[SEC_DOC[r.sec]||""]},
   section:{label:"Section",type:"text",get:r=>[r.sec||""]},
 };
@@ -1685,7 +1691,7 @@ if(IS_SIG_TENDER){ delete COL_FILTER_DEFS.typo; delete ADV_FILTER_FIELDS.typo; }
 const ADV_FIELD_GROUPS=[
   {g:"Progress",       fields:["status","internal","external","risk"]},
   {g:"Assignment",     fields:["typo","contributor","age"]},
-  {g:"Content & source", fields:["id","text","section","doc","outdated"]},
+  {g:"Content & source", fields:["id","text","section","doc"]},
 ];
 const ADV_FIELD_ORDER=ADV_FIELD_GROUPS.reduce((a,g)=>a.concat(g.fields),[]);
 function passesAdvFilter(r){ return TE.matchesFilter(ADV_FILTER_FIELDS, state.advFilter, r); }
@@ -1970,8 +1976,6 @@ function renderNav2(){
       const done=mine.filter(isAnswered).length;
       const pending=mine.filter(isAwaitingAnswer).length;
       const blocked=mine.filter(isAwaitingQA).length;
-      const over=mine.filter(isOverB).length;
-      const silence=Math.max(0,...mine.filter(isAwaitingAnswer).map(b=>b.age));
       const card=document.createElement("div");
       card.className="exp-card";
       card.innerHTML=`
@@ -1987,7 +1991,7 @@ function renderNav2(){
           <span class="ec ec-blocked">${blocked} blocked</span>
         </div>
         <div class="exp-meta"><span></span>
-          <span>${over?`<span class="exp-silence">${over} overdue · silent ${silence} d</span>`:mine.length?(done===mine.length?"all done ✓":""):"no assignment"}</span></div>`;
+          <span>${mine.length?(done===mine.length?"all done ✓":""):"no assignment"}</span></div>`;
       card.addEventListener("click",ev=>{
         if(ev.target.closest("[data-remind]"))return;
         const first=mine.find(b=>passes(b.req))||mine[0];
@@ -2006,18 +2010,21 @@ function remindExpert(e){
 /* =====================================================
    TABLE (screen 2)
 ===================================================== */
-/* action items first: reassignment requests, then Q&A blocks, then overdue, then the rest */
+/* action items first: reassignment requests, then Q&A blocks, then the rest */
 function actionScore(r){
   const brs=r.branches||[];
   if(brs.some(needsReassign))return 0;
   if(brs.some(isAwaitingQA))return 1;
-  if(brs.some(isOverB))return 2;
-  if(r.outdated)return 3;
   if(!isConsolidated(r))return 4;
   return 5;
 }
 /* T10 — sort options. "action" is the default (reassignments/Q&A/overdue first); the
    others are plain manager conveniences layered on top of the same filtered set. */
+/* Document order (default since 2026-09-24): document, then section, then the
+   requirement's reference — the order the tender is read in. The table then
+   shows the document titles and section headings as rows, as Allocation does. */
+function docRank(r){ const d=SEC_DOC[r.sec]; const i=d?DOCS.findIndex(x=>x.id===d):-1; return i<0?99:i; }
+function secCmp(a,b){ return String(a||"").localeCompare(String(b||""),undefined,{numeric:true}); }
 function statusScore(r){ const st=r.branches.map(b=>b.status); return BLOCK_PRIORITY.findIndex(s=>st.includes(s))+ (st.includes("answered")?0:100); }
 function firstExpertName(r){ const b=r.branches.find(x=>x.manager); return b?mgrOf(b.manager).name:"~"; }
 function tableRows(){
@@ -2025,6 +2032,7 @@ function tableRows(){
   if(state.sortBy==="status") return rows.sort((a,b)=>statusScore(a)-statusScore(b)||a.id.localeCompare(b.id));
   if(state.sortBy==="expert") return rows.sort((a,b)=>firstExpertName(a).localeCompare(firstExpertName(b))||a.id.localeCompare(b.id));
   if(state.sortBy==="req") return rows.sort((a,b)=>a.id.localeCompare(b.id));
+  if(state.sortBy==="doc") return rows.sort((a,b)=>docRank(a)-docRank(b)||secCmp(a.sec,b.sec)||a.id.localeCompare(b.id));
   return rows.sort((a,b)=>actionScore(a)-actionScore(b)||a.id.localeCompare(b.id));
 }
 /* Two columns, not one (reverses the earlier "one status per row" merge — the PM
@@ -2178,11 +2186,19 @@ function buildFVRows(){
   const rows=tableRows();
   currentVisIds=rows.map(r=>r.id);
   fVROWS=[];
+  const structured = state.sortBy==="doc" && !state.filterToSelection;
+  const secCount={}; if(structured) rows.forEach(r=>{ secCount[r.sec]=(secCount[r.sec]||0)+1; });
+  let lastDoc=null, lastSec=null;
   rows.forEach(r=>{
+    if(structured){
+      const d=SEC_DOC[r.sec]||null;
+      if(d && d!==lastDoc){ fVROWS.push({type:"doctitle",doc:DOC(d)}); lastDoc=d; lastSec=null; }
+      if(r.sec && r.sec!==lastSec){ fVROWS.push({type:"sec",sec:r.sec,n:secCount[r.sec]}); lastSec=r.sec; }
+    }
     fVROWS.push({type:"row",r});
     if(r.branches.length<2) return; // one system concerned — stays on a single line, no sub-row
     if(!state.expandedBranches.has(r.id)) return; // collapsed — caret not opened yet
-    const branchFilterActive=(state.filter&&state.filter!=="out")||colFilterActiveCount()||state.needsMe||state.ownTeamOnly;
+    const branchFilterActive=!!state.filter||colFilterActiveCount()||state.ownTeamOnly;
     r.branches.forEach((b,i)=>{
       if(!passesB(b) && branchFilterActive) return;
       fVROWS.push({type:"branch",parent:r,branch:b,idx:i});
@@ -2207,7 +2223,7 @@ function fRowInnerHTML(r){
   return `
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${r.id}" ${state.selection.has(r.id)?"checked":""}></label></div>
     <div class="rcell c-id">${r.id}</div>
-    <div class="rcell c-req">${caretHTML}<div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div>${r.outdated?'<span class="flag-out">Δ outdated</span>':""}</div>
+    <div class="rcell c-req">${caretHTML}<div class="excerpt" title="${esc(r.text)}">${esc(r.text)}</div></div>
     <div class="rcell c-typo">${single?`<span class="ptag">${TY(single.typology).code}</span>`:`<span class="multi-ph">${r.branches.length} systems</span>`}</div>
     <div class="rcell c-expert">${single?branchWhoHTML(single):`<span class="multi-ph">Multiple (${r.branches.length})</span>`}</div>
     <div class="rcell c-status">${consolidatedProgressHTML(c)}</div>
@@ -2216,7 +2232,7 @@ function fRowInnerHTML(r){
     <div class="rcell c-external">${externalPillHTML(r)}</div>
     <div class="rcell c-risk">${riskCellHTML(r)}</div>
     <div class="rcell c-lastfu">${fLastFollowupHTML({lastFollowup})}</div>
-    <div class="rcell c-age ${single&&isOverB(single)?"over":""}">${single?(isAnswered(single)?"":single.age+" d"):""}</div>`;
+    <div class="rcell c-age">${single?(isAnswered(single)?"":single.age+" d"):""}</div>`;
 }
 function fBranchRowHTML(parent,b,idx){
   const teams=ensureFTeams(b), multiTeam=teams.length>1;
@@ -2232,7 +2248,7 @@ function fBranchRowHTML(parent,b,idx){
     <div class="rcell c-external"></div>
     <div class="rcell c-risk"></div>
     <div class="rcell c-lastfu">${fLastFollowupHTML(b)}</div>
-    <div class="rcell c-age ${isOverB(b)?"over":""}">${isAnswered(b)?"":b.age+" d"}</div>
+    <div class="rcell c-age">${isAnswered(b)?"":b.age+" d"}</div>
   </div>`;
 }
 /* Level 2 — one contributor/team within a system, per §4.4. */
@@ -2253,7 +2269,7 @@ function fTeamRowHTML(parent,branch,bidx,team,tidx){
     <div class="rcell c-external"></div>
     <div class="rcell c-risk"></div>
     <div class="rcell c-lastfu">${fLastFollowupHTML(team)}</div>
-    <div class="rcell c-age ${isOverB(team)?"over":""}">${isAnswered(team)?"":team.age+" d"}</div>
+    <div class="rcell c-age">${isAnswered(team)?"":team.age+" d"}</div>
   </div>`;
 }
 const fNavAdapter={
@@ -2318,6 +2334,9 @@ function renderTable2(){
     win.innerHTML=`<div class="empty-rows">No assignment matches the current view.</div>`;
   } else {
     win.innerHTML=fVROWS.map(it=>{
+      if(it.type==="doctitle") return `<div class="rgrid-doctitle"><span class="rd-icon">📄</span><span class="rd-t">${esc(it.doc.name)}</span><span class="rd-file">${esc(it.doc.file)}</span></div>`;
+      if(it.type==="sec"){ const m=String(it.sec).match(/^([\d.]+)\s+(.*)$/);
+        return `<div class="rgrid-sec"><span class="rs-num">${esc(m?m[1]:"")}</span><span class="rs-t">${esc(m?m[2]:it.sec)}</span><span class="rs-n">${it.n}</span></div>`; }
       if(it.type==="branch") return fBranchRowHTML(it.parent,it.branch,it.idx);
       if(it.type==="team") return fTeamRowHTML(it.parent,it.branch,it.bidx,it.team,it.tidx);
       const r=it.r;
@@ -2325,6 +2344,7 @@ function renderTable2(){
     }).join("");
     bindFRows(win);
   }
+  document.getElementById("frgrid-body")?.classList.toggle("wrap-text", !!state.wrapText);
   applyFCols();
   renderFSelBar();
   TE.paintActiveCell(state,fNavAdapter);
@@ -2386,7 +2406,7 @@ function renderPanel2(){
     const consolidated=REQS.filter(isConsolidated).length;
     p.innerHTML=`<div class="set-empty"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
       <div class="big">No assignment selected</div>
-      <div>Select a requirement or one of its assignments to see the contributor's response.<br><br><b style="color:var(--text-2)">${consolidated}/${REQS.length}</b> requirements consolidated · <b style="color:var(--text-2)">${allBranches().filter(isOverB).length}</b> overdue assignments.</div></div>`;
+      <div>Select a requirement or one of its assignments to see the contributor's response.<br><br><b style="color:var(--text-2)">${consolidated}/${REQS.length}</b> requirements consolidated.</div></div>`;
     return;
   }
   const r=findR(state.sel);
@@ -2394,11 +2414,12 @@ function renderPanel2(){
   const idx=Math.min(state.selBranch||0, r.branches.length-1);
   const br=r.branches[idx];
   const e=br.manager?mgrOf(br.manager):null;
+  if(state.tab==="doc") state.tab="response";   // the Document tab is gone (2026-09-24)
   p.innerHTML=`
     <div class="set-head">
       <div class="set-id-row"><span class="set-id">${r.id}</span>
         ${c.pending?`<span class="vpill none pending-pill">Pending consolidation</span>`:""}
-        ${r.outdated?'<span class="flag-out">Δ outdated version</span>':""}</div>
+</div>
       <div class="set-title">${esc(r.text.slice(0,90))}…</div>
       ${r.branches.length>1?`<div class="branch-switch" id="branch-switch">
         ${r.branches.map((x,i)=>`<button data-bi="${i}" class="${i===idx?"on":""}" title="${TY(x.typology).label} · ${BST[x.status]}">
@@ -2408,9 +2429,8 @@ function renderPanel2(){
     </div>
     <div class="set-tabs">
       <button data-t="response" class="${state.tab==="response"?"active":""}">Assignment</button>
-      ${IS_SIG_TENDER?"":`<button data-t="activity" class="${state.tab==="activity"?"active":""}">System</button>`}
+      ${IS_SIG_TENDER?"":`<button data-t="activity" class="${state.tab==="activity"?"active":""}">Activity</button>`}
       <button data-t="req" class="${state.tab==="req"?"active":""}">Requirement</button>
-      <button data-t="doc" class="${state.tab==="doc"?"active":""}">Document</button>
       <button data-t="rex" class="${state.tab==="rex"?"active":""}">REX</button>
       <button data-t="chat" class="${state.tab==="chat"?"active":""}">Chat</button>
     </div>
@@ -2460,11 +2480,9 @@ function renderPanel2(){
         ${r.branches.length>1?`<div class="field"><label>This assignment's verdict <span>· technical assessment</span></label>
           <div class="fval">${cmpPillHTML(br.internal)}</div></div>`:""}
         <div class="next-step${next.act?"":" is-idle"}">${next.t}</div>
-        ${next.act==="reset"?`<button class="cta blue" id="a-reset-version">↺ Reset for new version — back to Allocation</button>`:""}
         ${next.act==="declare"?`<button class="cta blue" id="a-declare">✎ Declare what the client receives</button>`:""}
         <button class="cta line" id="a-escalate">⇗ Escalate to client Q&amp;A <kbd style="font-family:var(--font-mono);font-size:var(--text-xs);opacity:.7">Q</kbd></button>`;
       b.querySelector("#a-escalate")?.addEventListener("click",()=>escalate(r,br));
-      b.querySelector("#a-reset-version")?.addEventListener("click",()=>resetForNewVersion(r,br));
       b.querySelector("#a-declare")?.addEventListener("click",()=>{ state.openForm="external"; state.externalPick=r.external||null; renderPanel2(); });
     }else if(br.status==="awaiting_qa"){
       b.innerHTML=whoBlock+`
@@ -2603,7 +2621,6 @@ function renderPanel2(){
     if(br.status==="answered"&&br.resp)items.push({k:"tl-ok",who,what:`Responded — compliance "${CMP[br.internal]||"—"}".`,time:br.resp.date});
     if(br.status==="awaiting_qa")items.push({k:"tl-send",who,what:`Raised a question to the issuer — assignment blocked until answered.`,time:`${br.age} d ago`});
     if(br.status==="reassignment_needed")items.push({k:"tl-warn",who:"Contributor",what:`Returned the assignment — wrong allocation.`,time:`${br.age} d ago`});
-    if(isOverB(br))items.push({k:"tl-warn",who:"System",what:`Overdue threshold reached (${OVERDUE_DAYS} days without response).`,time:`${Math.max(1,br.age-OVERDUE_DAYS+1)} d ago`});
     items.push({k:"tl-send",who:"Thibaud Breton",what:`Assignment created for ${TY(br.typology).label}${e?` and sent to ${e.name}`:""}.`,time:`${br.age} d ago (export from Allocation)`});
     b.innerHTML=`<div class="timeline">${items.map(i=>`<div class="tl-item ${i.k}"><div class="tl-who">${i.who}</div><div class="tl-what">${i.what}</div><div class="tl-time">${i.time}</div></div>`).join("")}</div>`;
   }else if(state.tab==="req"){
@@ -2682,8 +2699,6 @@ function renderTriage2(){
   document.getElementById("n-await").textContent=brs.filter(isAwaitingAnswer).length;
   document.getElementById("n-qa").textContent=brs.filter(isAwaitingQA).length;
   document.getElementById("n-reassign").textContent=brs.filter(needsReassign).length;
-  document.getElementById("n-over").textContent=brs.filter(isOverB).length;
-  document.getElementById("n-out").textContent=REQS.filter(r=>r.outdated).length;
 }
 
 /* =====================================================
@@ -2818,9 +2833,7 @@ document.querySelectorAll("[data-colf]").forEach(btn=>btn.addEventListener("clic
 (function initF10(){
   document.getElementById("f10-search").addEventListener("input",e=>{state.search=e.target.value;renderTable2();});
   document.getElementById("f10-sort").addEventListener("change",e=>{state.sortBy=e.target.value;renderTable2();});
-  document.getElementById("f10-needsme").addEventListener("click",function(){
-    state.needsMe=!state.needsMe;this.classList.toggle("on",state.needsMe);refreshAll();
-  });
+  document.getElementById("wrap-toggle")?.addEventListener("change",e=>{ state.wrapText=e.target.checked; renderTable2(); });
   document.getElementById("filter-btn").addEventListener("click",()=>{
     state.advFilterOpen ? closeAdvFilterPanel() : openAdvFilterPanel();
   });
@@ -2859,12 +2872,6 @@ document.getElementById("clear2").addEventListener("click",()=>{
   document.querySelectorAll(".tpill").forEach(x=>x.classList.remove("active"));
   document.getElementById("clear2").classList.remove("visible");
   refreshAll();
-});
-document.getElementById("remind-all").addEventListener("click",()=>{
-  const over=allBranches().filter(isOverB);
-  if(!over.length){toast("Nothing overdue — all good","ok");return;}
-  const exps=[...new Set(over.map(b=>b.manager).filter(Boolean))].map(id=>mgrOf(id).name);
-  toast(`Reminders sent to ${exps.join(" and ")} — ${over.length} overdue assignment${over.length>1?"s":""}`,"ok");
 });
 document.getElementById("export2-btn").addEventListener("click",()=>{
   const non=REQS.filter(r=>consolidate(r).internal==="not_compliant").length;

@@ -869,8 +869,11 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .mini-btn:disabled{opacity:.4;cursor:default}
 .mini-btn:hover{border-color:var(--accent);color:var(--text)}
 .set-title{font-size:var(--text-base);font-weight:600;line-height:1.4;margin-bottom:var(--space-3);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px}
+/* scrolls sideways when the tabs are wider than the panel (2026-09-24) — they
+   used to wrap or get squeezed, and the last ones went out of reach */
+.set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;scrollbar-width:thin}
 .set-tabs button{
+  flex-shrink:0;white-space:nowrap;
   padding:8px var(--space-3);font-size:var(--text-base);font-weight:500;color:var(--text-3);
   border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;
   display:inline-flex;align-items:center;gap:6px;
@@ -5700,7 +5703,7 @@ function renderSettings(){
     </div>
     <div class="set-tabs">
       <button data-tab="details" class="${state.tab==="details"?"active":""}">Details</button>
-      <button data-tab="activity" class="${state.tab==="activity"?"active":""}">System ${b.comments?`<span class="tab-count">${b.comments}</span>`:""}</button>
+      <button data-tab="activity" class="${state.tab==="activity"?"active":""}">Activity ${b.comments?`<span class="tab-count">${b.comments}</span>`:""}</button>
       ${isReq&&rexFor(b).length?`<button data-tab="rex" class="${state.tab==="rex"?"active":""}">REX <span class="tab-count rex-count">${rexFor(b).length}</span></button>`:""}
       ${latestChange(b)?`<button data-tab="versions" class="${state.tab==="versions"?"active":""}">Versions</button>`:""}
       ${b.textOriginal!==undefined?`<button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translation${b.translationCorrected?` <span class="tab-count corr-count" title="Translation corrected">✓</span>`:""}</button>`:""}
