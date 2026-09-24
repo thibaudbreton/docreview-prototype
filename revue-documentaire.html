@@ -973,6 +973,13 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
   padding:6px var(--space-3);border-radius:var(--radius-sm);border:1px solid var(--line-2);color:var(--text-2);font-size:var(--text-sm);
 }
 .ia-actions .reject:hover{border-color:var(--warn);color:var(--warn)}
+.validate-why{font-size:var(--text-xs);color:var(--text-3);margin-top:6px;line-height:1.45}
+.validate-why.inline{margin:0}
+.validate-sys{margin-top:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3)}
+.validate-sys-h{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-2)}
+.validate-sys-row{display:flex;align-items:center;gap:var(--space-2);padding:4px 0}
+.validate-sys-btn{margin-left:auto}
+.validate-done{margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--ok)}
 .validate-cta{
   width:100%;padding:var(--space-2);border-radius:var(--radius-md);background:var(--ok);color:#fff;
   font-weight:600;font-size:var(--text-base);margin-top:var(--space-1);transition:all .15s;
@@ -1618,10 +1625,6 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
         <button class="btn-ghost" id="export-btn" style="font-size:var(--text-sm)">⬇ Export ▾</button>
         <div class="export-panel" id="export-panel" style="top:calc(100% + 6px)"></div>
       </div>
-      <button class="btn-primary" id="finalize-btn" style="background:var(--ok)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-        Finalize allocation
-      </button>
       <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
       <div class="avatar" id="header-avatar" title="Thibaud Breton">TB</div>
     </div>
@@ -1773,36 +1776,6 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
 <div class="overlay" id="cf-overlay"><div class="modal cf-ed" id="cf-modal"></div></div>
 <div class="cf-pop" id="cf-pop"></div>
 
-<!-- ===================== EXPORT MODAL ===================== -->
-<div class="overlay" id="export-overlay">
-  <div class="modal">
-    <div class="modal-head">
-      <h3>Finalize allocation</h3>
-      <p>This closes the allocation phase: generates the register and notifies assigned contributors.</p>
-    </div>
-    <div class="modal-body">
-      <div class="export-opt" id="opt-xls">
-        <div class="eo-icon xls">⬇</div>
-        <div>
-          <div class="eo-title">Export requirements register (.xlsx)</div>
-          <div class="eo-desc" id="eo-xls-desc">14 requirements · characterization, assignment, status, source section, traceability ID and link to original passage.</div>
-        </div>
-      </div>
-      <div class="export-opt" id="opt-send">
-        <div class="eo-icon send">✉</div>
-        <div style="flex:1">
-          <div class="eo-title">Send to assigned contributors</div>
-          <div class="eo-desc">Each contributor receives their requirements with a link to the qualification screen.</div>
-          <div class="expert-list" id="eo-expert-list"></div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn-ghost" id="modal-cancel">Cancel</button>
-      <button class="btn-primary" id="modal-confirm" style="background:var(--ok)">✓ Finalize allocation</button>
-    </div>
-  </div>
-</div>
 
 <!-- Bulk action bar -->
 <div id="sel-bar" class="sel-bar">
@@ -3097,29 +3070,57 @@ function effectiveStatus(b){
     if(b.status!=="allocated") return {val:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason};
     return {val:"allocated", doubtField:null, reviewReason:null};
   }
-  const allocVal = b.allocStatus||"incomplete";
+  const h = allocHolder(b);
+  const allocVal = h.allocStatus||"incomplete";
   if(STATUS_RANK[b.status] <= STATUS_RANK[allocVal]) return {val:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason};
-  return {val:allocVal, doubtField:b.allocDoubtField, reviewReason:b.allocReviewReason};
+  return {val:allocVal, doubtField:h.allocDoubtField, reviewReason:h.allocReviewReason};
+}
+/* Where a single-system requirement's allocation status actually lives
+   (2026-09-24, DEC-084). Edits on the panel — ABS / PBS / OBS, the person —
+   write to its one branch (derivTarget), but the status read the requirement's
+   own mirror, which nothing updated: on SIG a requirement whose system was
+   allocated still read Incomplete, and could never be validated. The branch
+   wins when it carries a status; seeded rows that only set the requirement's
+   field keep working. */
+function allocHolder(b){
+  const brs=b.branches||[];
+  return (brs.length===1 && brs[0].allocStatus!=null) ? brs[0] : b;
 }
 /* Fully through this screen's pipeline: characterisation allocated, and
    every branch's own allocation allocated too (B6 — each branch on its own). */
 function isFullyAllocated(b){
   if(b.status!=="allocated") return false;
   if((b.branches||[]).length>1) return b.branches.every(br=>br.allocStatus==="allocated");
-  return b.allocStatus==="allocated";
+  return allocHolder(b).allocStatus==="allocated";
 }
-/* B6/B7 — the detail panel's own validate CTA. A multi-system parent only
-   ever validates its own characterisation here; once that's allocated, each
-   branch validates its own allocation individually from its table row (B6),
-   so there is nothing left for this panel-level button to do. */
+/* The detail panel's validate zone (reworked 2026-09-24, DEC-084). It used to
+   treat any requirement with a branch as multi-system — which is nearly all of
+   them, since a single system is one branch — so once the characterisation was
+   validated the button gave way to "each system validates its own", even with
+   one system, and the only way left was the unmarked row pill. Now:
+   - one system: characterisation, then allocation, then "Allocated";
+   - several: characterisation, then one line per system with its own button;
+   - a step that can't run yet shows its button disabled, with why, instead of
+     a live button that fails on click. */
 function validateCtaHTML(b,hasBranches,es){
-  if(hasBranches){
-    if(b.status!=="allocated") return `<button class="validate-cta" id="validate-btn">✓ Validate characterisation</button>`;
-    return `<div class="set-hint" style="opacity:.7;font-size:var(--text-xs);padding:8px 0">Characterisation allocated — each allocated system below validates its own allocation individually.</div>`;
+  const brs=b.branches||[];
+  const btn=(label,attrs,why)=> why
+    ? `<button class="validate-cta" disabled title="${escHtml(why)}">${label}</button><div class="validate-why">${escHtml(why)}</div>`
+    : `<button class="validate-cta" ${attrs}>${label}</button>`;
+  if(b.status!=="allocated")
+    return btn("✓ Validate characterisation",`id="validate-btn"`, b.status==="incomplete"?"Characterisation incomplete — set its nature and class first.":null);
+  if(brs.length>1){
+    return `<div class="validate-sys"><div class="validate-sys-h">Characterisation validated · allocation per system</div>
+      ${brs.map((br,i)=>{
+        const done=br.allocStatus==="allocated", noOne=!br.allocStatus||br.allocStatus==="incomplete";
+        return `<div class="validate-sys-row"><span class="ptag${ptagCls(br.typology)}">${TY(br.typology).code}</span>
+          ${done?`<span class="validate-done">✓ Allocated — sent</span>`
+            :`<button class="mini-btn validate-sys-btn" data-validatebranch="${i}" ${noOne?`disabled title="Nobody assigned yet — assign someone on this system first"`:""}>✓ Validate &amp; send</button>${noOne?`<span class="validate-why inline">assign someone first</span>`:""}`}
+        </div>`; }).join("")}</div>`;
   }
   if(es.val==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Contributor Review</button>`;
-  if(b.status!=="allocated") return `<button class="validate-cta" id="validate-btn">✓ Validate characterisation</button>`;
-  return `<button class="validate-cta" id="validate-btn">✓ Validate & send to Contributor Review</button>`;
+  const incomplete=(allocHolder(b).allocStatus||"incomplete")==="incomplete";
+  return btn("✓ Validate allocation &amp; send to Contributor Review",`id="validate-btn"`, incomplete?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null);
 }
 
 /* =====================================================
@@ -5786,7 +5787,7 @@ function renderSettings(){
        the propose block below them belong to every view and stay shared. */
     html += pmTurnkey
       ? (actView ? activityDetailHTML(b,state.panelActivity)
-                 : pmClassificationHTML(b)+activityBlocksHTML(b))
+                 : pmClassificationHTML(b)+activityBlocksHTML(b)+(isReq?validateCtaHTML(b,hasBranches,es):""))
       : (isReq && myBranch)
         ? contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx)
         : "";
@@ -5962,6 +5963,7 @@ function renderSettings(){
       refresh();
     }));
     body.querySelector("#validate-btn")?.addEventListener("click",()=>validateBlock(b.id));
+    body.querySelectorAll("[data-validatebranch]").forEach(x=>x.addEventListener("click",()=>validateBlock(b.id,+x.dataset.validatebranch)));
     body.querySelector("#ia-accept")?.addEventListener("click",()=>{setManagerAssignment(b.id,suggestion.alloc);toast("AI assignment accepted","ok")});
     body.querySelector("#ia-reject")?.addEventListener("click",()=>{logFeedback("alloc",b.id,"AI suggestion","rejected",null);delete TYPE_SUGGEST[b.id];refresh();toast("Suggestion rejected — manual assignment required","ok")});
     body.querySelector("#goto-doc")?.addEventListener("click",()=>{setMode("document");selectBlock(b.id,{scroll:true})});
@@ -6335,7 +6337,12 @@ function validateProgress(id, branchIdx){
       return "char";
     }
     if((b.branches||[]).length>1) return null; // each allocated system validates its own allocation individually
-    return validateAllocTarget(b,false) ? "alloc" : null;
+    const h=allocHolder(b);
+    if(!validateAllocTarget(h, h!==b)) return null;
+    // keep the requirement's mirror and its one branch in step, whichever held it
+    const other = h===b ? (b.branches||[])[0] : b;
+    if(other){ other.allocStatus=h.allocStatus; other.allocDoubtField=null; delete other.allocReviewReason; if(other!==b && !other.branchStatus) other.branchStatus="awaiting_answer"; }
+    return "alloc";
   }
   return validateAllocTarget((b.branches||[])[branchIdx],true) ? "alloc" : null;
 }
@@ -6352,6 +6359,9 @@ function validateBlock(id, branchIdx){
   const snap = {status:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason,
     allocStatus:target.allocStatus, allocDoubtField:target.allocDoubtField, allocReviewReason:target.allocReviewReason,
     branchStatus:target.branchStatus};
+  // single system: the status may live on its one branch (allocHolder) — undo restores both
+  const only = branchIdx==null && (b.branches||[]).length===1 ? b.branches[0] : null;
+  const snapOnly = only ? {allocStatus:only.allocStatus, allocDoubtField:only.allocDoubtField, allocReviewReason:only.allocReviewReason, branchStatus:only.branchStatus} : null;
   const wasWeak = derivWeak(target);
   const stage = validateProgress(id, branchIdx);
   if(!stage){ toast("Nothing to validate yet — fill this in first","warn"); return; }
@@ -6362,6 +6372,7 @@ function validateBlock(id, branchIdx){
   toast(msg,"ok",()=>{
     b.status=snap.status; b.doubtField=snap.doubtField; b.reviewReason=snap.reviewReason;
     target.allocStatus=snap.allocStatus; target.allocDoubtField=snap.allocDoubtField; target.allocReviewReason=snap.allocReviewReason; target.branchStatus=snap.branchStatus;
+    if(only) Object.assign(only, snapOnly);
     refresh();
   });
 }
@@ -7558,71 +7569,9 @@ notifDrop.querySelectorAll(".nd-item").forEach(i=>i.addEventListener("click",()=
   state.tab="activity"; renderSettings();
 }));
 
-/* TB3 — display metadata for the Finalize modal's per-person breakdown.
-   Mirrors three of MANAGERS' entries with the avatar init/color already used
-   elsewhere on this screen; kept as its own small dict for the modal's demo
-   scope rather than pulling in the whole roster. */
-const EXPORT_EXPERTS = {
-  sup:{name:"Sophie Lang",team:"Monitoring Team",init:"SL",color:"#6e7bf2"},
-  infra:{name:"Karim Benali",team:"Infrastructure Team",init:"KB",color:"#3fb27f"},
-  cyber:{name:"Claire Moreau",team:"Cybersecurity",init:"CM",color:"#e0a43c"},
-};
-/* TB3 — compute the Finalize modal's totals from the live requirement set instead
-   of typing them into the markup. The per-contributor breakdown excludes image-sourced
-   requirements (b.sourceImage) — they don't sync into the contributor-facing Compliance
-   screen yet (see TD3), so counting them here would overstate what contributors actually
-   receive. */
-let EXPORT_STATS = {total:0, expertCount:0};
-function renderExportModal(){
-  const all = reqs();
-  document.getElementById("eo-xls-desc").textContent =
-    `${all.length} requirement${all.length>1?"s":""} · characterization, assignment, status, source section, traceability ID and link to original passage.`
-    + (TENDER_LANGUAGE!=="en" ? ` Requirement text in ${LANGUAGE_LABEL[TENDER_LANGUAGE]||TENDER_LANGUAGE} (the original); comments and categories in English.` : "");
-  const sendable = all.filter(b=>!b.sourceImage);
-  const counts = {};
-  sendable.forEach(b=>{ if(b.manager) counts[b.manager]=(counts[b.manager]||0)+1; });
-  const list = document.getElementById("eo-expert-list");
-  list.innerHTML = Object.keys(counts).map(id=>{
-    const e = EXPORT_EXPERTS[id]; if(!e) return "";
-    const n = counts[id];
-    return `<div class="expert-row">
-      <div class="exp-avatar" style="background:${e.color}">${e.init}</div>
-      <span class="exp-name">${e.name}</span><span style="color:var(--text-3);font-size:var(--text-xs)">${e.team}</span>
-      <span class="exp-count">${n} requirement${n>1?"s":""}</span>
-    </div>`;
-  }).join("");
-  EXPORT_STATS = {total:all.length, expertCount:Object.keys(counts).length};
-}
-
-/* Finalize review (milestone) */
-const overlay = document.getElementById("export-overlay");
-document.getElementById("finalize-btn").addEventListener("click",()=>{
-  const r = reqs();
-  const notDone = r.filter(b=>!isFullyAllocated(b)).length;
-  if(notDone>0){
-    toast(`Review milestone not reached — ${notDone} requirement${notDone>1?"s":""} not yet allocated. All requirements must be assigned and validated before export.`,"warn");
-    return;
-  }
-  renderExportModal();
-  overlay.classList.add("open");
-});
-document.getElementById("modal-cancel").addEventListener("click",()=>overlay.classList.remove("open"));
-overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.classList.remove("open")});
-document.getElementById("modal-confirm").addEventListener("click",()=>{
-  overlay.classList.remove("open");
-  toast("Allocation finalized — register STB-2026_requirements.xlsx generated","ok");
-  try{ if(window.parent!==window && window.parent.setReviewValidated) window.parent.setReviewValidated(true); }catch(e){}
-  const n=EXPORT_STATS.expertCount;
-  setTimeout(()=>toast(`${n} contributor${n>1?"s":""} notified`,"ok"),900);
-  setTimeout(()=>{ try{ if(window.parent!==window && window.parent.route) window.parent.route("dashboard"); }catch(e){} },1900);
-});
-document.getElementById("opt-xls").addEventListener("click",()=>toast(`Preview: ${EXPORT_STATS.total} rows · 8 columns · traceability links included`,"ok"));
-// TB4 — this row's click already showed a confirmation toast (nothing to "wire" that wasn't
-// there); made it match the live count computed by renderExportModal() instead of a fixed "3".
-document.getElementById("opt-send").addEventListener("click",()=>{
-  const n=EXPORT_STATS.expertCount;
-  toast(`Preview: ${n} expert${n>1?"s":""} will be notified with their requirement links`,"ok");
-});
+/* "Finalize allocation" is gone (2026-09-24, DEC-084): Allocation gates nothing
+   since D15 / DEC-035, each requirement is sent to its contributor the moment
+   it is validated, and the register export lives in the Export menu. */
 
 /* Keyboard — Review: active-cell navigation (row × column, spreadsheet-style).
    Arrows/space are ignored while any input/select has focus — that's "editing state",

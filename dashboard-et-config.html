@@ -817,8 +817,8 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
           <h3>What needs you now <span class="count" id="att-count">5</span></h3>
           <div class="att p1only" data-go="revue-documentaire.html">
             <div class="att-ic warn">✓</div>
-            <div><div class="att-t"><b>Allocation not finalized</b></div><div class="att-sub" id="att-review-sub">9 requirements still to validate</div></div>
-            <span class="att-go">Finalize allocation →</span>
+            <div><div class="att-t"><b>Requirements still to validate</b></div><div class="att-sub" id="att-review-sub">9 requirements still to validate</div></div>
+            <span class="att-go">Open Allocation →</span>
           </div>
           <div class="att v22only hidden" data-go="documents.html">
             <div class="att-ic ia">⇄</div>
@@ -1053,8 +1053,7 @@ h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;bor
         <section class="cfg-sec" data-sec="workflow">
           <div class="cfg-h">Workflow &amp; milestones</div>
           <div class="cfg-sub">Rules that govern phase transitions, reminders and the review gate.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls change real behavior in this build. Allocation and Compliance run side by side — finalizing Allocation doesn't gate Compliance, and this toggle doesn't enforce anything on export; the overdue threshold Compliance's own overdue logic uses is a fixed constant, not this slider.</div>
-          <div class="frow"><div class="fl"><div class="flt">Allocation completeness gate</div><div class="fld">Requires 100% of requirements assigned and validated before Finalize allocation can export the register.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="gate"></span><span class="tl">Enforce full validation before export</span></div></div></div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls change real behavior in this build. Allocation and Compliance run side by side, and nothing gates one on the other; the overdue threshold Compliance's own overdue logic uses is a fixed constant, not this slider.</div>
           <div class="frow"><div class="fl"><div class="flt">Overdue threshold</div><div class="fld">Days without a contributor response before a request is flagged overdue.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="1" max="14" value="5" id="over-range"><span class="range-val" id="over-val">5 days</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Maximum reminder cadence</div><div class="fld">Prevents reminder spam to contributors.</div></div><div class="fc"><select class="sel"><option>Once every 2 days</option><option>Daily</option><option>Once every 3 days</option><option>Manual only</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Outdated-response re-flag</div><div class="fld">When a new version changes a requirement that already had a response.</div></div><div class="fc"><div class="segc" data-seg="reflag"><button class="on">Substantive changes only</button><button>Any change</button></div><div class="opt-desc"><b>Substantive changes only:</b> typo-level edits don't invalidate an existing contributor response — a human arbitrates borderline cases.</div></div></div>

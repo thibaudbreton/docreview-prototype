@@ -87,6 +87,8 @@ ALLOC-020 — DEC-076 : **tout OBS et tout système se supprime, jusqu'à zéro.
 
 ALLOC-021 — DEC-082 : **un partenaire externe est un système de la liste OBS Turnkey**, ajouté par le chef de projet dans les paramètres du tender, jamais prédit par le modèle. Couleur propre partout, pas de passe 2 (la branche est allouée dès qu'elle est attribuée au partenaire), responsable affiché « PM · for partner ». Critère : ALLOC-T29 — sur le Turnkey de démo, Voltara Engineering apparaît en bleu-vert dans la cellule System, dans la liste System du détail et dans « + Add system » ; son détail ne montre ni ABS / PBS / OBS ni équipe.
 
+ALLOC-022 — DEC-084 : **pas de jalon « Finalize allocation »** ; la validation se fait exigence par exigence (pastille de statut, bouton du panneau, touche V, ou action groupée). Le panneau montre toujours l'étape suivante — grisée avec sa raison quand elle n'est pas possible. Critère : ALLOC-T30 — sur une exigence SIG à un système, valider la caractérisation fait apparaître « Validate allocation & send » ; une exigence Turnkey à deux systèmes montre une ligne par système ; aucun bouton Finalize nulle part.
+
 ## Une allocation par organisation
 
 ALLOC-016 — DEC-060 : **une allocation est une organisation et la personne qui y répond.** Une exigence qui atteint trois organisations est **trois allocations à faire**, et le compte affiché est celui des organisations, pas celui des systèmes.

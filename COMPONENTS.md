@@ -674,16 +674,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.peek-paper`. Styled and functional in revue-documentaire.html (legacy hidden markup kept for compare/segmentation reuse); in compliance.html the CSS exists but no render call was found — likely dead/unwired. Hardcoded max-width and box-shadow.
 
-### Export Option Card
-- **level**: molecule
-- **file**: revue-documentaire.html
-- **variants**: xls, send (with nested expert list)
-- **tokens**: --space-2, --space-3, --radius-lg, --radius-md, --accent-soft, --ok, --accent, --text-base, --text-sm
-- **built-from**: Person Avatar
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.export-opt`, used in the Finalize/Export Modal.
-
 ### Export Readiness Summary
 - **level**: molecule
 - **file**: qa.html, compliance.html
@@ -1436,6 +1426,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-24
 - **notes**: 2026-09-24, second review: Set aside / Widen buttons moved above the ID and § line; the requirement text sits on a tinted `--accent-soft` block with an `--accent` left edge (`--ia` when the original is shown); beside "View in the document" an on/off switch "Original · French" (Toggle Switch) shows the tender's own wording when its language isn't English (`r.textOriginal` — demo French originals written for the seeded STB-2026 requirements, composed for generated ones); the verdict choices are filled green and red again; Ask the client / Not mine use `.propose-btn`, Allocation's reassignment button; Q&A items are one column — id + status pill, question, answer, then "Asked by … · date"; set aside uses `--human` (violet) for the pill, the row's tinted ID cell and the button. `renderDecisionPanel()` / `.dp`, SPEC-compliance-decision-panel.md, DEC-079. Replaces the Detail / Assignment Panel when a contributor opens an assignment of their own that waits on their verdict (`isDeciding()`); the project manager's panel and every other state keep the old one. Revised 2026-09-24 (user review): the verdict is a choice first — "✓ Compliant" / "✕ Not compliant" — then only that choice's fields and one "Confirm — …" button, with "Change" to go back (no longer a Compliant button beside an open Not compliant); set aside and widen are labelled pill buttons ("⚐ Set aside", "⇤ Widen panel"); the "Yours · system · person" line is gone; a "Requirement" label heads the text and "📄 View in the document" under it switches to the Document view at that block without leaving the panel (the § link does the same); "⇗ Ask the client" opens a question form (required text) that files the question in the Q&A register, and the contributor keeps the panel and can still decide while it waits (awaiting_qa counts as deciding, with a banner); the Document resource tab became Q&A — our questions on the requirement with their status and answer, then the client's published answers to other bidders' questions (`PUBLISHED_QA`, demo data). Q opens the ask form. Earlier layout, top to bottom: queue progress ("N left · this is k of N · n set aside", Next ›), id + clickable § section + set-aside ⚐/⚑ (S) + widen ⇤, one "Yours · system · person" line, the requirement text in full on paper (`pre-wrap`, dominant), the decision zone (reassurance line on internal vs client verdict, comment, "✓ Compliant" one gesture / "✕ Not compliant…" then Category + Topic then "✕ Not compliant"), two quieter secondary actions ("⇗ Ask the client", "↩ Not mine — return it"), and resources as collapsed tabs. Drafts (pick, comment, category, topic) save on input into `window.parent.__cmpPersonal`, per viewer, so they survive leaving the panel or the screen (not a reload of the whole app); set aside is kept there too, personal, shown as ⚑/✎ on the row's ID cell. Similar = word-overlap stand-in (three best ≥ 25 %) for the platform's similarity capability. Wide = `min(720px,62vw)`. Hardcoded: button text `#fff`, Next hover, the 52px progress bar, `padding:10px` on the verdict buttons. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
 
+### Validate Zone
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: validate characterisation, validate allocation & send (single system), per-system list with a Validate & send button each (several systems), disabled with its reason (incomplete characterisation, incomplete allocation, nobody assigned on a system), allocated (disabled "✓ Allocated — sent")
+- **tokens**: --ok, --line, --radius-md, --text-xs, --text-3, --space-2, --space-3
+- **built-from**: Primary Button (`.validate-cta`), Ghost Button (`.mini-btn`), Activity / Requirement Tag
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: `validateCtaHTML()`, at the bottom of the detail panel — now also in the Turnkey project manager's view, which never had it; never in the contributor's view (validating sends to Contributor Review, a PM act). Not recorded before; reworked when the user found the button missing (DEC-084): it treated every requirement with a branch as multi-system, so after the characterisation a single-system requirement showed only a hint. A step that can't run shows its button disabled with the reason underneath instead of a live button that fails on click. Reads the allocation status through `allocHolder(b)` — the single branch when it carries one. Same action as the row's status pill and the V key.
+
 ### Detail / Assignment Panel
 - **level**: organism
 - **file**: compliance.html, revue-documentaire.html
@@ -1515,16 +1515,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-23
 - **notes**: `.sel-bar`, explicitly documented as shared between these two screens' tables. revue-documentaire.html's bar carries a Re-run menu (`#sel-rerun-menu`); since 2026-09-23 it skips information blocks and headings and counts them apart ("N not requirements") instead of deriving onto them. Fixed to viewport bottom (24px) — a code comment explains centering via `margin-inline:auto` was chosen deliberately over `left:50%;translateX(-50%)` to avoid capping width at half the viewport. Its Assign menu lost the "PBS" field that set Functional / Performance / Security / Interface / Regulatory on the selection (DEC-074) — it now holds Assigned to and System.
-
-### Finalize / Export Modal
-- **level**: organism
-- **file**: revue-documentaire.html
-- **variants**: none (blocked with a Toast if requirements aren't fully allocated)
-- **tokens**: --space-4, --space-5, --radius-lg, --ok, --line, --panel
-- **built-from**: Export Option Card, Primary Button, Ghost Button
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.overlay`/`.modal`, fixed width 480px — the generic Modal shell, worth tracking as reusable layout even with one instance here. See Modal Dialog (documents.html) for the sibling shell used elsewhere.
 
 ### Modal Dialog
 - **level**: organism
@@ -1878,3 +1868,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Client Decision Block — removed 2026-09-24, no longer needed (compliance.html `.decide`, "What the client receives" in the panel header; the table's External compliance and Risk accepted columns carry it, and the declaration form still opens from the next-step action; never had its own entry)
 
 ### Verdict Entry Form — removed 2026-09-24, replaced by the Decision Panel's decision zone (DEC-079)
+
+### Finalize / Export Modal — removed 2026-09-24, no longer needed (DEC-084): Allocation gates nothing, validation sends each requirement to its contributor, the register export is in the Export menu
+
+### Export Option Card — removed 2026-09-24 with the Finalize / Export Modal, its only use
