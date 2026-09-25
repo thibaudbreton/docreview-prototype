@@ -10,6 +10,15 @@
 
 ---
 
+## Run log
+
+**2026-09-25 (nightly ticket routine)**
+- Completed: none.
+- Blocked: TH1 — 8 duplicate unmerged fix/flag branches and 6 open PRs already exist (#17, #18, #19, #22, #25, #26; oldest 2026-09-09). Implemented the fix independently before discovering this, then discarded that redundant work rather than opening a 7th duplicate. See the note under TH1 for the full list and what's needed (a human merge, not another implementation).
+- Remaining untouched: TH2, TH3, TH4, TH5, TH6.
+
+---
+
 ## Group A — Cross-project data binding (do first, almost everything else assumes this)
 
 - [x] **TA1 — DONE.** Reframed against `HANDOVER.md`'s own documented scope ("Only one project is fully navigable... steer test participants to the EMS project") rather than building four more full datasets: the four illustration-only seeds (`rfp114`/`ao088`/`stb133`/`stb2025`) are now blocked from opening in `accueil.html`, with an explicit "Demo project — list & status only" card label and a warn-toast on click, instead of silently substituting stb2026's content (`build_merge.py`'s `seedProjects()` gained a `builtOut` flag; `accueil.html`'s `cardHTML()`/click handler read it). Projects created via the wizard stay exempt from the block. A newly created project's Dashboard now also shows its own name/ref/line (previously always "Energy Monitoring System") plus an explicit "Prototype scope" banner explaining that Allocation/Follow-up/Expert Space below still reuse the EMS reference content for this phase. Verified in-browser: opening a demo-only card no longer navigates and shows the toast; a freshly created project's dashboard shows its own identity + banner; `stb2026` renders unchanged (no regression).
@@ -173,6 +182,8 @@ Original ticket text, for reference:
 Test participants run the prototype on laptops with limited vertical screen real estate (Windows taskbar + Chrome tab/URL/bookmarks bars eating ~150-180px before the page even starts). Audited every screen and several reusable sub-components in a Chrome viewport of 1366×650 — a realistic worst case for this environment — measuring actual DOM heights rather than eyeballing. Two full audit passes: one across the six main screens, one across shared components (nav columns, detail panels, dropdowns, bulk-action bar, form fields). Findings below are ordered by how much visible content they cost on a constrained screen; Follow-up (TH3) is by far the worst offender. Not itself a continuity/consistency issue like Groups A–G — a straight information-density problem.
 
 - [ ] **TH1 — Drop the unjustified 80px bottom padding on Home and Dashboard**
+  > **Blocked (nightly routine, 2026-09-25):** the correct fix already exists, repeatedly, in open/unmerged PRs — this ticket doesn't need more implementations, it needs one human merge. Confirmed via `git ls-remote` and a GitHub PR search: **8 `claude/th1-*` branches** and **6 open PRs** (#17 2026-09-09, #18 2026-09-10, #19 2026-09-15, #22 2026-09-16, #25 2026-09-18, #26 2026-09-21), none merged, none reviewed, spanning over two weeks. PRs #25 and #26 are themselves prior nightly runs correctly declining to pile on a duplicate fix and instead leaving a blocker note under this ticket — same as this note — but since neither merged either, `main`'s queue file never picked up the flag, so later runs (including one after #26, branch `claude/th1-wrap-padding`, 2026-09-23) couldn't see it and redid the fix a 5th time anyway. This run found that too, discarded its own redundant implementation rather than opening a 7th duplicate, and is only pushing this note.
+  > **What's actually needed:** a human merges one of the existing fix PRs (#17/#18/#19/#22 are functionally equivalent — drop the hardcoded 80px trailing `.wrap` padding to a spacing token on `accueil.html`/`dashboard-et-config.html`) and closes the rest, including #25/#26 and this run's branch, as superseded. Until a merge lands on `main`, every future nightly run will keep re-discovering this same state — the checkbox can only flip via a merge, and merges aren't happening.
   Files: `accueil.html` (`.wrap`, line 58), `dashboard-et-config.html` (`.wrap`, line 100).
   `.wrap{padding:...80px}` on both files reserves 80px of trailing whitespace at the end of every scroll. That padding value is copied from `revue-documentaire.html`/`suivi-experts-et-versions.html`'s `.doc-scroll`, where it's load-bearing — it stops the last table row from being hidden behind the floating `.sel-bar` bulk-action bar. Neither Home nor Dashboard has any floating element covering their bottom edge, so on these two screens it's just 80px of dead space. Measured on Dashboard: total content is 949px against 598px of usable height (header deducted) on a 650px-tall viewport — this padding alone is ~9% of that overflow.
   Fix: reduce to `var(--space-6)` (24px) or `var(--space-8)` (32px) on both files' `.wrap`.
