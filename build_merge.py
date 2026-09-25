@@ -239,7 +239,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false;
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners();
   reassignRequests.length=0;
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -254,6 +254,34 @@ window.setReviewValidated = (v)=>{ reviewValidated = !!v; };
 // already-arrived; this flag lets it gate that on the real trigger (Compliance's
 // "Simulate upload — v2.2" button) instead of asserting it as fact on load.
 let v22Uploaded = false;
+// SPEC-custom-columns.md — column definitions and their values, per tender.
+// Held here in the shell, not in the screen: every route reloads the screen's
+// iframe, and a column that vanished on the first navigation would demonstrate
+// nothing. Values are keyed by requirement id, so they also survive a document
+// version resetting a requirement (§8.6) — they are human data, not AI output.
+let customFields = {};
+// Column widths the user dragged, per tender and per table — a layout
+// preference, kept beside the custom columns for the same reason (the screen
+// iframe reloads on every route) and cleared by Reset demo like them.
+let tableLayouts = {};
+window.getTableLayout = (projectId, table)=>{ const k=(projectId||"_")+"::"+table; if(!tableLayouts[k]) tableLayouts[k]={widths:{}}; return tableLayouts[k]; };
+window.getCustomFields = (projectId)=>{ const k=projectId||"_"; if(!customFields[k]) customFields[k]={defs:[],values:{},seq:0}; return customFields[k]; };
+// SPEC-external-partners.md — systems a project manager adds to a Turnkey
+// tender's OBS list (a partner company taking part of the scope). Per tender,
+// in the shell like custom columns. The model never predicts them. One seeded
+// partner on the Turnkey demo tender so the flow can be shown end to end.
+function seedPartners(){ return { stb2026:[{id:"p_voltara", code:"VOLTARA", label:"Voltara Engineering"}] }; }
+let partners = seedPartners();
+window.getPartners = (projectId)=>{ const k=projectId||"_"; if(!partners[k]) partners[k]=[]; return partners[k]; };
+window.addPartner = (projectId, name)=>{
+  const list=window.getPartners(projectId), label=String(name||"").trim();
+  if(!label) return {error:"empty"};
+  if(list.some(x=>x.label.toLowerCase()===label.toLowerCase())) return {error:"duplicate"};
+  let code=(label.split(" ").filter(Boolean)[0]||"PARTNER").replace(/[^A-Za-z0-9]/g,"").toUpperCase().slice(0,8)||"PARTNER", base=code, n=2;
+  while(list.some(x=>x.code===code)) code=base.slice(0,7)+(n++);
+  const entry={id:"p_"+code.toLowerCase(), code, label};
+  list.push(entry); return {entry};
+};
 window.isV22Uploaded = ()=>v22Uploaded;
 window.setV22Uploaded = (v)=>{ v22Uploaded = !!v; };
 let projectMode = 'ai';
@@ -355,6 +383,15 @@ def main():
     with open(KEYS_FILE, encoding="utf-8") as f:
         keys_js = f.read()
 
+    # Antarctica (the brand title face) is licensed and not versioned. The
+    # screens declare it with a url() fallback so dropping the files under
+    # fonts/ needs no code change — but while they are missing that url() is
+    # a 404 on every screen load, which reads as "broken" in any devtools.
+    # Same treatment as data.js: keep the reference only when the files exist.
+    antarctica_present = all(Path(f"fonts/Antarctica-{w}.woff2").is_file() for w in ("Regular", "Bold"))
+    if not antarctica_present:
+        print("Note: fonts/Antarctica-*.woff2 not found — titles fall back to Noto Sans (see fonts/README.md).")
+
     blob_lines = []
     for key, filename in SOURCES:
         with open(filename, encoding="utf-8") as f:
@@ -364,6 +401,9 @@ def main():
         if DATA_INCLUDE_MARKER in html:
             html = html.replace(DATA_INCLUDE_MARKER, capture_js)
             html = html.replace(KEYS_INCLUDE_MARKER, keys_js)
+        if not antarctica_present:  # every screen declares the face, not just the one with data.js
+            html = html.replace(',url("fonts/Antarctica-Regular.woff2") format("woff2")', "")
+            html = html.replace(',url("fonts/Antarctica-Bold.woff2") format("woff2")', "")
         if CSS_INCLUDE_MARKER in html:
             html = html.replace(CSS_INCLUDE_MARKER, shared_css)
         b64 = base64.b64encode(html.encode("utf-8")).decode("ascii")

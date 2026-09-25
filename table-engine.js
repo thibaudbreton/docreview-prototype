@@ -128,7 +128,11 @@ scrollActiveCellIntoView(state, adapter){
 focusActiveCellControl(state, adapter){
   const row = adapter.activeCellRowEl(state.activeCell); if(!row) return;
   const cell = row.querySelector(`.rcell.c-${state.activeCell.col}`); if(!cell) return;
-  const ctrl = cell.querySelector("input,select"); if(ctrl) ctrl.focus();
+  const ctrl = cell.querySelector("input,select");
+  // Remember what Escape restores now, not only on the focus event: that
+  // event does not fire when the window lacks system focus, and Escape then
+  // had nothing to put back.
+  if(ctrl){ if(ctrl.tagName==="INPUT") ctrl.dataset.orig = ctrl.value; ctrl.focus(); }
 },
 /* wires Enter (confirm + move down, "type down a column") / Escape (cancel + blur)
    on one editable control; call once per .cell-text/.cell-select after each render */
@@ -160,6 +164,47 @@ handleNavKeydown(e, state, adapter){
     return true;
   }
   return false;
+},
+
+/* ---------- Column resize ----------
+   A handle on the right edge of every header cell but the selection gutter.
+   Drag to resize, double-click to go back to the default width, or focus it
+   and use ←/→ (16px steps) — the table is keyboard-driven, so its layout is
+   too. The engine only measures and reports: the host owns the widths (px
+   overrides on top of its own defaults), writes the grid variable in live()
+   and re-renders what depends on a width in commit(k). Idempotent: call it
+   again after header cells are added and only the new ones get a handle.
+   opts: { set(k, px|null), min(k), live(), commit(k) } */
+bindColumnResize(headEl, opts){
+  if(!headEl) return;
+  headEl.querySelectorAll(".rcell").forEach(cell=>{
+    const cls=[...cell.classList].find(c=>c.startsWith("c-")); if(!cls) return;
+    const k=cls.slice(2);
+    if(k==="sel" || cell.querySelector(".col-resize")) return;
+    const h=document.createElement("span");
+    h.className="col-resize"; h.tabIndex=0;
+    h.setAttribute("role","separator"); h.setAttribute("aria-orientation","vertical");
+    h.setAttribute("aria-label","Resize column"); h.title="Drag to resize · double-click to reset";
+    cell.appendChild(h);
+    const setTo=px=>{ opts.set(k, px==null?null:Math.max(opts.min(k), Math.round(px))); opts.live(); };
+    h.addEventListener("click", e=>e.stopPropagation());
+    h.addEventListener("mousedown", e=>{
+      if(e.button!==0) return;
+      e.preventDefault(); e.stopPropagation();
+      const startX=e.clientX, startW=cell.getBoundingClientRect().width;
+      document.body.classList.add("col-resizing");
+      const move=ev=>setTo(startW+ev.clientX-startX);
+      const up=()=>{ document.removeEventListener("mousemove",move); document.removeEventListener("mouseup",up);
+        document.body.classList.remove("col-resizing"); opts.commit(k); };
+      document.addEventListener("mousemove",move); document.addEventListener("mouseup",up);
+    });
+    h.addEventListener("dblclick", e=>{ e.preventDefault(); e.stopPropagation(); setTo(null); opts.commit(k); });
+    h.addEventListener("keydown", e=>{
+      if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;
+      e.preventDefault(); e.stopPropagation();
+      setTo(cell.getBoundingClientRect().width+(e.key==="ArrowRight"?16:-16)); opts.commit(k);
+    });
+  });
 },
 
 /* ---------- Column Visibility + Reorder Menu ---------- */
@@ -217,6 +262,9 @@ OPS_BY_TYPE:{
   enum:["is","is_not","is_any_of","is_none_of","is_empty"],
   date:["before","after","between","in_last","is_empty"],
   boolean:["is_true","is_false"],
+  // a list column that holds several values per row (SPEC-custom-columns.md):
+  // "is any of" matches a row holding at least one of the picked values
+  multi:["is_any_of","is_none_of","is_empty","is_not_empty"],
 },
 OP_LABEL:{contains:"contains",not_contains:"does not contain",is:"is",is_not:"is not",starts_with:"starts with",
   is_empty:"is empty",is_not_empty:"is not empty",is_any_of:"is any of",is_none_of:"is none of",

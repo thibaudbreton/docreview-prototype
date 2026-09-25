@@ -4,7 +4,7 @@ _Maintained alongside the code. Updated in the same commit as any component chan
 
 This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CSS/JS in full (`accueil.html`, `creation-projet.html`, `documents.html`, `qa.html`, `compliance.html`, `dashboard-et-config.html`, `revue-documentaire.html`) — the merged files (`index.html`, `docreview-app.html`) were not read; per `README.md`, sources are always edited, never the merged output. See `CLAUDE.md` for the rules that keep this file current from here on.
 
-**Design tokens actually defined** (both theme blocks, same names, different values): `--bg`, `--panel`, `--line`, `--text`, `--text-2`, `--text-3`, `--accent`, `--accent-soft`, `--ia`, `--ok`, `--human`, `--warn`, `--paper`, `--paper-ink`, `--text-xs/sm/base/lg/xl`, `--space-1` through `--space-8` (4/8/12/16/20/24/32px), `--radius-xs/sm/md/lg/pill`, `--font-ui/doc/mono`.
+**Design tokens actually defined** (both theme blocks, same names, different values): `--bg`, `--panel`, `--line`, `--text`, `--text-2`, `--text-3`, `--accent`, `--accent-soft`, `--ia`, `--ok`, `--human`, `--warn`, `--paper`, `--paper-ink`, `--text-xs/sm/base/lg/xl`, `--space-1` through `--space-8` (4/8/12/16/20/24/32px), `--radius-xs/sm/md/lg/pill`, `--font-ui/doc/mono`, and since 2026-09-22 `--font-heading` (Antarctica → Noto Sans fallback) and `--brand-red` (decorative only, exact value to confirm).
 
 **Untracked custom properties in near-constant use** — not part of the token scale above, so not swappable by theme the way real tokens are, and a likely first fix before any Figma pass: `--panel-2`, `--panel-3`, `--line-2`, `--accent-hover`, `--ok-soft`, `--warn-soft`, `--ia-soft`, `--human-soft`. They're flagged per-entry below wherever a component depends on one.
 
@@ -51,6 +51,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.btn-danger` duplicates Primary Button's box model with `--warn` swapped for `--accent`, as a fully separate ruleset rather than a modifier class. Text hardcoded `#fff`.
+
+### Icon
+- **level**: atom
+- **file**: revue-documentaire.html, compliance.html, dashboard-et-config.html, creation-projet.html, accueil.html, documents.html, qa.html
+- **variants**: file, lock, bell, camera, trash, copy, eye, clock, hourglass, chat, globe, clip, ask (arrow up-right), keyboard, search, flag, flagfill, fork, merge, upload, download, corner, chevron, filter, columns, and for the settings menu sliders, users, flow, refresh, contrast, sparkle, undo, lang
+- **tokens**: currentColor (inherits the text colour); size 1.05em
+- **built-from**: none
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: `<i class=ic-NAME></i>` — an inline SVG (24px grid, 2px stroke, round caps) used as a CSS mask over `currentColor`, so it follows the text colour and size. The markup has no quotes on purpose: it sits inside JS strings of every quoting style. Replaced glyph icons that rendered badly: emoji (📄 🔒 🔔 📷 🗑 🎭 🕐 💬 🌐 📎 ⏳ — coloured Apple emoji) and symbols Noto Sans lacks (⇗ ⌨ ⎘ ⌕ ⚐ ⑂ ◷ ⇲ ⏷ ▤ ▸ ▶ ⤵, and the heavy ⬆ ⬇), plus the whole settings-menu set (◈ ◉ ⇄ ↻ ◐ ✦ ↺ ⇗ ◷ Aa) so it reads as one family. Plain arrows, ✓ ✕ ⚠ ✎ ⚑ (outside Compliance) ↻ ↺ ▾ stay text — they render correctly. CSS (the `i[class^="ic-"]` rule and one `--i` data URI per icon) is duplicated in each of the seven files, before the first `</style>`. Vertical alignment `-.16em` hardcoded.
 
 ### Icon Button
 - **level**: atom
@@ -114,13 +124,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Toggle Switch
 - **level**: atom
-- **file**: creation-projet.html, dashboard-et-config.html, revue-documentaire.html
+- **file**: creation-projet.html, dashboard-et-config.html, revue-documentaire.html, compliance.html
 - **variants**: on, off
 - **tokens**: --radius-pill, --accent, --accent-soft
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Three independent implementations (`.tog` in dashboard-et-config.html at 40×22px, creation-projet.html's at 38×21px, revue-documentaire.html's bespoke `.wrap-switch` at 30×17px) — same concept, three different hardcoded geometries, none on any scale.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html gets the same "Wrap text" `.wrap-switch` as Allocation, CSS copied (no shared stylesheet) — full requirement text, comments and risk notes wrap; rows grow. Three independent implementations (`.tog` in dashboard-et-config.html at 40×22px, creation-projet.html's at 38×21px, revue-documentaire.html's bespoke `.wrap-switch` at 30×17px) — same concept, three different hardcoded geometries, none on any scale.
 
 ### Chip Toggle
 - **level**: atom
@@ -225,12 +235,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Activity / Requirement Tag
 - **level**: atom
 - **file**: qa.html, compliance.html, revue-documentaire.html
-- **variants**: default, `.ai` (dashed, AI-unconfirmed), `.tky` (turnkey, filled), `.proposed` (pending PM review)
-- **tokens**: --font-mono, --text-xs, --ia, --human, --radius-xs, --space-1
+- **variants**: default, `.ai` (dashed, AI-unconfirmed), `.tky` (turnkey, filled), `.partner` (a system added for the tender, not from the model — teal, revue-documentaire.html and compliance.html), `.proposed` (pending PM review), `.ptag-more` ("+N" overflow count, dashed — takes `.proposed` when a hidden system is a pending change)
+- **tokens**: --font-mono, --text-xs, --ia, --human, --radius-xs, --space-1, --text-2
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.ptag` / `.qa-req` / `.c-id`. Turnkey variant uses a fully hardcoded gray (`#7b8794`), not a token. Letter-spacing (0.6px) hardcoded. Border relies on untracked `--line-2`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24 (DEC-082): `.partner` uses `--partner` / `--partner-soft` (`#1b9aaa`), a custom property added for it and **not on the tracked token scale** — `--human` (violet) was taken by `.proposed`. Set through `ptagCls(id)` in both screens (returns " tky", " partner" or ""), with a hover tooltip saying it was added for this tender and isn't part of the model. `.ptag` / `.qa-req` / `.c-id`. Turnkey variant uses a fully hardcoded gray (`#7b8794`), not a token. Letter-spacing (0.6px) hardcoded. Border relies on untracked `--line-2`. In Allocation's System cell (2026-09-23, `typoTagsHTML()`): one line only — as many tags as fit, then "+N" naming the rest on hover; every tag shows in "Wrap text" mode. The fit is estimated from code length (10 + 7.2px per letter, measured on the monospace tags) against the column's actual width minus 34px of padding (`typoCellBudget()` — the 136px default or whatever the user dragged it to), and the System cells re-render when that column is resized. On Turnkey (DEC-077, 2026-09-23) the System cell also carries the routing confidence beside the tag (`.sys-conf`, `--text-xs`/`--text-3`, `--ia` bold below threshold): on a single-system row and on each system's branch row, never on a multi-system parent (the "+N" budget is unchanged). It replaces the "TK OBS" column, which repeated the system; `margin-left:5px` hardcoded.
 
 ### Status Badge / Chip
 - **level**: atom
@@ -239,8 +249,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text-xs, --space-1, --space-2, --radius-pill, --radius-lg, --accent, --accent-soft, --ia, --ok, --warn, --human
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Same "soft background + bold colored text" grammar reimplemented under four unrelated class names with inconsistent radius (`--radius-pill` vs `--radius-lg` for what reads as the same pill). Backgrounds rely on untracked `--ia-soft`/`--ok-soft`/`--warn-soft`/`--human-soft`. Sibling family: Status Pill (below), which reimplements the same idea again in three more screens.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: documents.html's `.pstate` lost its leading 5px dot, like the other status pills. Same "soft background + bold colored text" grammar reimplemented under four unrelated class names with inconsistent radius (`--radius-pill` vs `--radius-lg` for what reads as the same pill). Backgrounds rely on untracked `--ia-soft`/`--ok-soft`/`--warn-soft`/`--human-soft`. Sibling family: Status Pill (below), which reimplements the same idea again in three more screens.
 
 ### Status Pill (Requirement Workflow State)
 - **level**: atom
@@ -249,8 +259,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --radius-xs, --radius-pill, --text-xs, --warn, --ia, --human, --ok, --accent
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Backgrounds use the untracked `--warn-soft`/`--ia-soft`/`--human-soft`/`--ok-soft`/`--accent-soft` family (only `--accent-soft` is an actual tracked token). Sibling of Status Badge / Chip (above) and Verdict/Progress Status Chip (below) — three independent codings of "small colored status label" across the app, none sharing a base class.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: revue-documentaire.html's `.status-pill` lost its leading 6px dot, like Compliance's `.spill` and Documents' `.pstate`. Backgrounds use the untracked `--warn-soft`/`--ia-soft`/`--human-soft`/`--ok-soft`/`--accent-soft` family (only `--accent-soft` is an actual tracked token). Sibling of Status Badge / Chip (above) and Verdict/Progress Status Chip (below) — three independent codings of "small colored status label" across the app, none sharing a base class. Requirements only since 2026-09-23 (DEC-073): a heading or an information block never shows one — not in its table row, its panel header, the document view or the navigation dot.
 
 ### Verdict Pill
 - **level**: atom
@@ -269,8 +279,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --radius-pill, --text-xs
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.spill`. Leading dot is a hardcoded 6px `currentColor` circle. Backgrounds rely on untracked `--panel-3`/`--ok-soft`/`--warn-soft`.
+- **changed**: 2026-09-24
+- **notes**: `.spill`. No leading dot since 2026-09-24 (it was a hardcoded 6px `currentColor` circle) — the colour carries the state. Backgrounds rely on untracked `--panel-3`/`--ok-soft`/`--warn-soft`.
 
 ### Blocking Chip
 - **level**: atom
@@ -302,16 +312,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.type-chip`, floats above a Document Block. All four colors are **fully hardcoded hex pairs**, deliberately not `--warn`/`--ia`/`--human`/`--ok` (the paper background is always light regardless of app theme) — but this means the chip's palette silently can't be updated by changing the tokens. Same disconnect as compliance.html's `.vtag` inside Document Block there.
 
-### Flag Tag
-- **level**: atom
-- **file**: compliance.html
-- **variants**: none
-- **tokens**: --text-xs, --space-2
-- **built-from**: none
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.flag-out` ("Δ outdated"). Background relies on untracked `--ia-soft`.
-
 ### Deadline Chip
 - **level**: atom
 - **file**: accueil.html
@@ -334,13 +334,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Disclosure / Expand Chevron
 - **level**: atom
-- **file**: documents.html, dashboard-et-config.html, revue-documentaire.html
+- **file**: documents.html, dashboard-et-config.html, revue-documentaire.html, compliance.html
 - **variants**: collapsed, expanded (rotated)
 - **tokens**: --text-3, --text-xs, --radius-sm
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Row/group-level expand affordance — `▶` glyph in documents.html (9px, no tokens at all), `.cast-caret` (▾) in dashboard-et-config.html, `.branch-caret` in revue-documentaire.html (has real button chrome, hardcoded 20×20px). Distinct from Panel Toggle Chevron (below), which collapses whole side panels rather than a row.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: Allocation's `.branch-caret` now sits in the Requirement cell before the text, as on Compliance (it was beside the ID); `margin-right` dropped, the cell's gap spaces it. Row/group-level expand affordance — `▶` glyph in documents.html (9px, no tokens at all), `.cast-caret` (▾) in dashboard-et-config.html, `.branch-caret` in revue-documentaire.html (has real button chrome, hardcoded 20×20px). Distinct from Panel Toggle Chevron (below), which collapses whole side panels rather than a row.
 
 ### Panel Toggle Chevron
 - **level**: atom
@@ -349,8 +349,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --radius-sm, --text-3, --text-xs, --text
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.panel-toggle`. A code comment in compliance.html states this is deliberately "the same pattern as revue-documentaire.html." Hardcoded 20px size.
+- **changed**: 2026-09-23
+- **notes**: `.panel-toggle`. A code comment in compliance.html states this is deliberately "the same pattern as revue-documentaire.html." Hardcoded 20px size. The detail-panel variant is absolutely positioned at left:6px and sat on top of the requirement id; since 2026-09-23 `.set-id-row` carries `padding-left:18px` on both screens to clear it — a hardcoded offset tied to this button's size, not a space token.
 
 ### Kbd Key
 - **level**: atom
@@ -359,8 +359,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --font-mono, --text-xs, --radius-xs, --space-1
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Same "keyboard shortcut hint" concept, two different markup strategies. qa.html's version is a fixed 20×20px square. Borders/backgrounds rely on untracked `--line-2`/`--panel-2`/`--panel-3`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24 (later): the shortcuts are listed again, on demand — see Shortcut Help. 2026-09-24: compliance.html no longer displays any shortcut hint (the triage bar's J/K · R · Q strip and the `<kbd>` in the Escalate and Reminder buttons are gone); the shortcuts themselves still work. Same "keyboard shortcut hint" concept, two different markup strategies. qa.html's version is a fixed 20×20px square. Borders/backgrounds rely on untracked `--line-2`/`--panel-2`/`--panel-3`.
 
 ### Spinner
 - **level**: atom
@@ -382,27 +382,107 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.rex-ring`, a `conic-gradient` donut for REX match-percentage, driven by an inline `--p` variable. Entirely hardcoded geometry (22–26px, mask radius, gradient stops) — no tokens beyond the fill color.
 
+### Logo Mark
+- **level**: atom
+- **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html
+- **variants**: dark, light (two inline SVGs toggled by `html[data-theme]`)
+- **tokens**: none
+- **built-from**: none
+- **added**: 2026-09-22
+- **changed**: 2026-09-23
+- **notes**: The three lobes and the dot are hardcoded `#fff` / `#1E3246` inside the SVG, not tokens. Height hardcoded 22px. The dot took `--brand-red` on 2026-09-22 and went back to white on 2026-09-23 at the user's request — brand red stays off the logo. The shell's favicon is a base64 copy of the same SVG.
+
+### Page Title
+- **level**: atom
+- **file**: every screen (`h1`, `h2`), plus `.cfg-h`, `.set-title`, `.view-panel-head`, `.fb-bh` as section titles
+- **variants**: page (h1/h2, carries the red mark), section (h3 and the class-based titles, no mark)
+- **tokens**: --font-heading, --brand-red (h1/h2 mark only), --text-lg / --text-xl where sized
+- **built-from**: none
+- **added**: 2026-09-22
+- **changed**: 2026-09-22
+- **notes**: The red mark is a `::before` inline-block so it survives flex and block title containers alike; its height is `.85em`, deliberately relative rather than on the space scale. Red is never applied to interactive or stateful elements — see `--warn`.
+
+### Custom Column Tag
+- **level**: atom
+- **file**: revue-documentaire.html, compliance.html
+- **variants**: none
+- **tokens**: --text-3, --line-2, --radius-pill
+- **built-from**: none
+- **added**: 2026-09-23
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: also marks custom columns as "internal" in compliance.html's export column list. `.cf-tag`, the small "custom" pill beside a custom column's name in the View menu's column list. Font size hardcoded 10px, off the type scale. Depends on untracked `--line-2`.
+
+### Paragraph Reference
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: section only (no sub-heading above the requirement), sub-heading (deepest heading wins, full path in the tooltip)
+- **tokens**: --text-xs, --text-3, --text-2, --font-mono, --accent
+- **built-from**: none
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `.set-para`, "§ 2.2.1 Brief Description" under the id in the detail panel header; resolved by `paragraphOf()`. Clicking opens the Document view on the block, same as "View in document". Allocation only: Compliance's requirements carry their top-level section and nothing deeper, so there is no paragraph to show there yet.
+
+### Column Resize Handle
+- **level**: atom
+- **file**: table-engine.js (behaviour, `TE.bindColumnResize`), revue-documentaire.html and compliance.html (CSS `.col-resize`, host wiring)
+- **variants**: idle (invisible), header hover (1px line), hover/focus/dragging (2px accent line)
+- **tokens**: --line-2, --accent
+- **built-from**: none
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: A 7px zone straddling the right edge of every header cell except the selection gutter. Drag, double-click to reset, or focus and ←/→ in 16px steps (role="separator"). Widths are px overrides per tender and per table, held in the shell (`getTableLayout`), cleared by Reset demo and by "Reset column widths" in View. Minimums: 56px, ID 64px, Requirement 200px (180 on Compliance) — hardcoded. Depends on untracked `--line-2`. Handle geometry (7px, right:-3px, 8px inset) hardcoded.
+
+### Word Diff
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: deleted (`.diff-del`, struck through), inserted (`.diff-ins`)
+- **tokens**: --radius-xs
+- **built-from**: none
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `wordDiffHTML(prev, cur)`, a word-level LCS diff computed at render time — the current text no longer carries diff markup inside it. Used in Compare (document blocks) and in the Versions tab. Colours hardcoded (`#f6d5d2`/`#8c2f28`, `#cfe9db`/`#155c3c`), not tokens — same values as the older Compare-mode rules.
+
+### Nature Picker
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: default, AI-typed (`.is-ai`, dashed `--ia` border — type detected by the AI, not confirmed)
+- **tokens**: --text-xs, --radius-sm, --ia, --paper-ink-2
+- **built-from**: none
+- **added**: 2026-09-01
+- **changed**: 2026-09-23
+- **notes**: Document view only since 2026-09-23 — the table row's compact "▾" variant (`.row-natpick`, on requirement and information rows) was removed; in the table, nature is corrected in the detail panel's Nature field. `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
+
 ## Molecules
+
+### Shortcut Help
+- **level**: molecule
+- **file**: revue-documentaire.html, compliance.html
+- **variants**: Allocation list (move, select, edit, validate, next, undo), Compliance list (move, select, remind, ask the client, set aside, next, undo, custom columns)
+- **tokens**: --line-2, --radius-md, --radius-xs, --panel, --panel-2, --text, --text-2, --text-3, --text-sm, --text-xs, --font-mono, --accent, --space-2, --space-3
+- **built-from**: Kbd Key
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24 (DEC-085): lists the new selection keys (X, Shift+↑/↓, ⌘/Ctrl+A, Esc), N and ⌘/Ctrl+Z. `.kbd-help`, a 30px "⌨" at the right end of the filter toolbar; the list (`.kbd-help-pop`, 320px, right-aligned under the icon) opens on hover and on keyboard focus (`:focus-within`, tabindex 0), pure CSS. The rows are written by hand from each screen's keydown handlers — a new shortcut has to be added here too. CSS duplicated in both files. Hardcoded: 30px square, 320px width, 96px key column, shadow `rgba(0,0,0,.25)`. Depends on untracked `--line-2`, `--panel-2`.
 
 ### Search Box
 - **level**: molecule
-- **file**: dashboard-et-config.html, revue-documentaire.html
+- **file**: dashboard-et-config.html, revue-documentaire.html, compliance.html
 - **variants**: nav search (full width), toolbar search (fixed 220px), Team-screen search (`.cast-search-wrap`, with leading icon)
 - **tokens**: --space-2, --space-3, --radius-md, --accent, --text-base
 - **built-from**: Text Input
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: revue-documentaire.html's two instances (`#nav-search`, `#table-search`) are kept in sync via JS. dashboard-et-config.html's icon-offset padding (34px/11px) is hardcoded and relies on untracked `--panel-2`/`--line-2`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html's toolbar search is now the same `.search-box` (icon + 220px, CSS copied) — it was a bare input stretching across the toolbar (`flex:1`). There it doesn't shrink (`flex-shrink:0`); Allocation's does, down to ~193px when the toolbar is full. revue-documentaire.html's two instances (`#nav-search`, `#table-search`) are kept in sync via JS. dashboard-et-config.html's icon-offset padding (34px/11px) is hardcoded and relies on untracked `--panel-2`/`--line-2`.
 
 ### Filter Toolbar
 - **level**: molecule
 - **file**: documents.html, qa.html, compliance.html
-- **variants**: search + one select (documents.html, qa.html), search + two selects + toggle (compliance.html `.f10-tools`)
+- **variants**: search + one select (documents.html, qa.html), compliance.html `.f10-tools` (search box, sort reset, Wrap text, Filter, ＋ Column, View, shortcut help)
 - **tokens**: --space-2, --space-3
-- **built-from**: Text Input, Select Dropdown
+- **built-from**: Text Input, Select Dropdown, Search Box, Toggle Switch, Ghost Button, Shortcut Help
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Same "filter row" pattern re-implemented per screen. documents.html's input hardcodes `8px` padding instead of `var(--space-2)`; qa.html's hardcodes `7px`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html's toolbar now has the same right-hand group as Allocation's — Wrap text, Filter, ＋ Column, View, ⌨ side by side; ＋ Column and View used to sit in the title row. The two sort selects and the Needs my action toggle are gone (DEC-078, DEC-083). Same "filter row" pattern re-implemented per screen. documents.html's input hardcodes `8px` padding instead of `var(--space-2)`; qa.html's hardcodes `7px`.
 
 ### Toast
 - **level**: molecule
@@ -411,8 +491,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-2, --space-3, --space-4, --radius-lg, --text-base, --ok, --warn
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.toast` + shared `toast(msg, kind)` JS helper — verbatim-identical CSS/JS in most screens, but accueil.html colors its "warn" toast with `--ia` (amber) via `.t-warn` while creation-projet.html/documents.html/qa.html/compliance.html/dashboard-et-config.html color the same warn-kind toast with `--warn` (red) via inline style — the same component signals "warning" in two different colors depending on screen. Box-shadow (`rgba(0,0,0,.5)`) and easing are hardcoded everywhere (no shadow/motion token exists in the codebase). Auto-dismiss duration also drifts per file (2600/3200/3400/3600ms).
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24 (DEC-085): a toast that offers Undo also pushes onto `UNDO_STACK` (30 max), so ⌘/Ctrl+Z undoes the last one after the toast has gone; the button and the shortcut undo the same entry once. compliance.html's toast gained the Undo button (it had none). `.toast` + shared `toast(msg, kind)` JS helper — verbatim-identical CSS/JS in most screens, but accueil.html colors its "warn" toast with `--ia` (amber) via `.t-warn` while creation-projet.html/documents.html/qa.html/compliance.html/dashboard-et-config.html color the same warn-kind toast with `--warn` (red) via inline style — the same component signals "warning" in two different colors depending on screen. Box-shadow (`rgba(0,0,0,.5)`) and easing are hardcoded everywhere (no shadow/motion token exists in the codebase). Auto-dismiss duration also drifts per file (2600/3200/3400/3600ms).
 
 ### Tab Bar
 - **level**: molecule
@@ -421,8 +501,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --space-4, --space-5, --line, --text-3, --text-2, --text, --accent, --text-base, --text-xs
 - **built-from**: none (buttons are plain, not reusing any button atom)
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: At least four independent implementations of "group of switchable tabs" across the app with two different visual languages and inconsistent hardcoded padding (5–10px). `.mode-switch` CSS exists in qa.html but is never instantiated there — dead code. Active-tab box-shadow hardcoded (`rgba(0,0,0,.15–.4)`) in several variants.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: the detail panel's `.set-tabs` (revue-documentaire.html and compliance.html) scroll horizontally instead of wrapping or squeezing (`overflow-x:auto`, tabs `flex-shrink:0`/`nowrap`); the per-system tab is labelled "Activity" (was "System") on both screens; compliance.html's "Document" tab is removed. At least four independent implementations of "group of switchable tabs" across the app with two different visual languages and inconsistent hardcoded padding (5–10px). `.mode-switch` CSS exists in qa.html but is never instantiated there — dead code. Active-tab box-shadow hardcoded (`rgba(0,0,0,.15–.4)`) in several variants.
 
 ### Segmented Control
 - **level**: molecule
@@ -433,16 +513,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.segc` (dashboard-et-config.html, 8 instances), creation-projet.html's Segmented Choice Group, and revue-documentaire.html's `.gseg`/`.tbl-gran`/`.mode-switch`/`.screen-nav .sn` are five separately-named classes implementing the same "pill-track, active segment gets elevated" pattern with independently hardcoded padding/radius/shadow — the single clearest consolidation candidate in the codebase alongside Progress Bar. Relies on untracked `--panel-2`/`--panel-3`/`--line-2`.
-
-### Version Pill
-- **level**: molecule
-- **file**: revue-documentaire.html
-- **variants**: none
-- **tokens**: --space-1, --space-2, --radius-pill, --text-sm, --ok
-- **built-from**: Status Dot
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.version-pill`, header breadcrumb ("v2.1 active"). Border relies on untracked `--line-2`.
 
 ### Multiselect Dropdown
 - **level**: molecule
@@ -556,13 +626,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Grid Section / Group Header
 - **level**: molecule
-- **file**: revue-documentaire.html
+- **file**: revue-documentaire.html, compliance.html
 - **variants**: doctitle, sec (H1), sub (H2/H3), group (Activity group-by header)
 - **tokens**: --space-2, --space-3, --space-4, --font-mono, --text-xs, --text-base, --accent
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Sticky structural divider rows inside the Requirement Row grid. Group header's left accent color comes from a per-typology hardcoded hex palette (`GROUP_PALETTE`) set via inline `style`.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html's table shows `doctitle` and `sec` rows too, in its new default "Sort: document order" (document, then section, then reference); any other sort is flat. CSS copied, not shared; its data has no H2/H3 level, so no `sub`. Keyboard navigation skips them. Sticky structural divider rows inside the Requirement Row grid. Group header's left accent color comes from a per-typology hardcoded hex palette (`GROUP_PALETTE`) set via inline `style`.
 
 ### Nav Tree Item
 - **level**: molecule
@@ -623,26 +693,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.peek-paper`. Styled and functional in revue-documentaire.html (legacy hidden markup kept for compare/segmentation reuse); in compliance.html the CSS exists but no render call was found — likely dead/unwired. Hardcoded max-width and box-shadow.
-
-### Change Card
-- **level**: molecule
-- **file**: revue-documentaire.html
-- **variants**: add, mod, rem
-- **tokens**: --space-2, --space-3, --radius-md, --radius-lg, --text-xs, --ok, --ia, --warn
-- **built-from**: none
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.change-card`, Detail Panel's Change view (Compare mode).
-
-### Export Option Card
-- **level**: molecule
-- **file**: revue-documentaire.html
-- **variants**: xls, send (with nested expert list)
-- **tokens**: --space-2, --space-3, --radius-lg, --radius-md, --accent-soft, --ok, --accent, --text-base, --text-sm
-- **built-from**: Person Avatar
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.export-opt`, used in the Finalize/Export Modal.
 
 ### Export Readiness Summary
 - **level**: molecule
@@ -741,8 +791,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-3, --radius-pill, --text-sm, --ok, --ia, --warn
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.csum`, Compare Bar ("+1 added / ~2 modified / −1 removed").
+- **changed**: 2026-09-23
+- **notes**: `.csum`, Compare Bar ("+1 added / ~2 modified / −1 removed"). Counts are computed for the compared document and range since 2026-09-23 — they were hardcoded.
 
 ### Advanced Filter Condition Row
 - **level**: molecule
@@ -758,11 +808,11 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **level**: molecule
 - **file**: revue-documentaire.html
 - **variants**: add-activity proposal, reassignment request (3 radio reasons)
-- **tokens**: --space-2, --space-3, --radius-md
-- **built-from**: Select Dropdown, Text Input
+- **tokens**: --accent, --accent-soft, --space-1, --space-2, --space-3, --radius-md, --text-sm
+- **built-from**: Propose Button (`.propose-btn`), Select Dropdown, Text Input
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.propose-form`/`.reassign-reasons`, Detail Panel for non-admin managers. Sibling of Inline Form Shell (below), which serves the same purpose in compliance.html — two independently-built form containers for the same "propose a change" idea.
+- **changed**: 2026-09-23
+- **notes**: 2026-09-23 — one propose block everywhere: `proposeBlockHTML()` ("Propose a change", pending requests, "↩ Request reassignment" + "+ Missing system" as filled `.propose-btn`, the 2026-09-10 version) now also renders in a Turnkey system's detail, replacing an older "Raise a problem" copy with `.mini-btn` buttons and its own ids (`#act-reassign`/`#act-missing`, gone). There the reassignment targets the system opened (`renderReassignForm(b,body,branch)`), not the viewer's or the first. Request reassignment is disabled once a request is pending on that system. compliance.html's contributor "↩ Request reassignment" uses the same `.propose-btn` (CSS duplicated there — no shared stylesheet for it); its PM-side "↪ Reassign and send back out" is a different action and keeps `.cta ok`. `.propose-btn:hover` text `#fff` hardcoded; disabled state depends on untracked `--panel-2`/`--line-2`. `.propose-form`/`.reassign-reasons`, Detail Panel for non-admin managers. Sibling of Inline Form Shell (below), which serves the same purpose in compliance.html — two independently-built form containers for the same "propose a change" idea.
 
 ### Inline Form Shell
 - **level**: molecule
@@ -987,11 +1037,11 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Filter Pill
 - **level**: molecule
 - **file**: compliance.html
-- **variants**: p-wait, p-clar, p-over, p-out, p-done, p-reassign; active
+- **variants**: p-wait, p-clar, p-done, p-reassign, p-aside (contributor only, `--human`); active (p-over "overdue" and p-out "outdated version" removed 2026-09-24)
 - **tokens**: --space-1, --space-3, --radius-pill, --line, --text-sm, --text-2, --accent, --accent-soft, --warn, --ia, --ok
 - **built-from**: Count Badge-like `.n` span
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
+- **changed**: 2026-09-24
 - **notes**: `.tpill`, drives the Triage Bar status filters — the compliance.html equivalent of revue-documentaire.html's own `.tpill` (Triage Bar organism), independently implemented.
 
 ### Icon Cluster
@@ -1214,6 +1264,106 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.cast-add-flow`, driven by `bindCastAddFlow`/`bindPMAddFlow`. Its confirm button (`.cast-add-confirm`) duplicates Primary Button's exact styling under a separate class instead of reusing it.
 
+### Re-run Control
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: available (button + menu), blocked (disabled button, reason in title)
+- **tokens**: --panel, --line-2, --radius-md, --text-xs
+- **built-from**: Ghost Button (`.mini-btn`), menu options
+- **added**: 2026-09-17
+- **changed**: 2026-09-23
+- **notes**: `rerunControlHTML()`. Menu groups the system's own products first, then borrowable models under a distinct header. Placed in: the model header of the qualification block (manager, single system), the header of a Turnkey system's detail ("Open system detail"), and the head of the contributor view (added 2026-09-23 — ALLOC-014 gives contributors the right). It sat on each system card of the Turnkey PM view from 2026-09-23 until removed the same day at the user's request; the system's detail keeps it. `.rerun-wrap` has `margin-left:auto` for title rows. Menu `min-width:210px` hardcoded. Depends on untracked `--line-2`.
+
+### OBS List
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: empty ("No role yet" / "No organisation yet"), one or several entries (remove on every row), keyed ("role", select-based add) vs free ("organisation", text add)
+- **tokens**: --text-sm, --text-xs, --text-3
+- **built-from**: UI List (`.ui-list`), Confidence Badge, Icon Button (remove ✕), Text Input (search field of the add picker)
+- **added**: 2026-09-08
+- **changed**: 2026-09-23
+- **notes**: DEC-076 (2026-09-23): every row has its ✕, the last one included — removing the last empties the system's single slot (`obsSlotEmpty()`; organisation, team and person go together) and shows the empty state; the next add fills that slot rather than adding a second. `obsListHTML()` / `bindObsList()`. The noun comes from `OBS_NOUN` — "role" on a keyed Mainline tender (DEC-062), "organisation" elsewhere — for the remove tooltip, add button, toasts and confirm. Removing down to one entry re-syncs the system's and (single-system) the requirement's person and OBS, so the table's "Assigned to" never shows the removed entry's person. Adding (2026-09-23) is a search, not a dropdown: `+ Add role` opens a full-width field over an inline list (`.obs-pick`), filtered as you type on title and the workbook's skill/SoA/job codes; click or Enter adds, ↑/↓ move, Escape or ✕ cancels. On a keyed tender the roles filed under the requirement's ABS are grouped first (sticky group headers); elsewhere it suggests organisations already used on the tender and offers "Add “…”" for what was typed. It replaced a native select of ~45 titles, truncated in the panel width, plus a separate Add button. List max-height 240px and code line 10px hardcoded.
+
+### Custom Column Cell
+- **level**: molecule
+- **file**: revue-documentaire.html, compliance.html
+- **variants**: free text (inline input), single-value list (select), multi-value list (button + checkbox popover `#cf-pop`), empty (system/team sub-rows, information rows)
+- **tokens**: --text, --text-3, --line-2, --radius-sm, --text-sm; popover --panel, --line-2, --radius-md
+- **built-from**: Text Input (`.cell-text`), Select Dropdown (`.cell-select`), Checkbox
+- **added**: 2026-09-23
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html has its own (DEC-081, phase "compliance"): `.cf-cell` input/select and `.cf-multi`, appended in `renderTable2()`; empty on system/team sub-rows; Enter commits, Escape restores. No per-column header filter there (Compliance's column filters work on assignments, custom values live on the requirement) — the advanced filter covers them. `cfCellsHTML()`, appended to every grid row centrally in `rowHTML()` rather than inside each row renderer, so a new row type cannot forget it. Keyboard: reachable with the arrows like any column; Enter/F2 edits; text and single-list cells get the engine's Enter (confirm + move down) / Escape (restore) through `.cell-text`/`.cell-select`; the multi-value picker takes the same contract (↑/↓ between options, Space ticks, Enter confirms and moves down, Escape restores the previous values). Column width hardcoded 150px. Popover min-width 190px / max-height 280px hardcoded. Depends on untracked `--line-2`, `--panel-2`.
+
+### Custom Column Header Cell
+- **level**: molecule
+- **file**: revue-documentaire.html, compliance.html
+- **variants**: text (sort + edit), list (sort + column filter + edit), contributor view (edit hidden)
+- **tokens**: --text-3, --accent, --accent-soft, --radius-sm, --text-xs
+- **built-from**: Column Filter Button (`.colf-btn`), edit button (`.cf-edit`)
+- **added**: 2026-09-23
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: compliance.html injects them into `#frgrid-head` from `syncCustomColumns()` — name + ✎ (project manager only), sortable from its header like every column there, resizable. Injected into `#rgrid-head` by `cfRenderHead()`; its grid order and hidden state come from a generated `<style id="cf-style">`, since the static per-column CSS rules cannot know these keys in advance. The ✎ is hidden by `body.restricted`.
+
+### Custom Fields Panel Section
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: text, single list, multi list (toggle chips `.advv-chip`)
+- **tokens**: --text-xs, --text-3
+- **built-from**: Text Input (`.ui-input`), Select Dropdown (`.ui-select`), Chip Toggle
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `cfPanelHTML()`, in both the manager panel and the contributor view. One quiet hint line under the fields — the label stays a label (see Page Title / Nature field convention). Reuses the advanced filter's chip style for multi values.
+
+### Versions Tab
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: modified (diff + full previous text), added (no earlier text), with earlier versions listed; pending review vs checked since
+- **tokens**: --ia, --ia-soft, --ok, --ok-soft, --paper, --paper-ink, --font-doc, --text-sm, --text-xs, --radius-pill, --radius-sm
+- **built-from**: Word Diff, Next-Step line (`.next-step`), Ghost Button (`.mini-btn`)
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `versionsTabHTML()`. Only shown when the requirement changed in the version of its document in force (DEC-071) — no tab otherwise. No "reviewed / action" state of its own: the change sets the requirement back to To review and validating it is the treatment (DEC-072); the tab says when a more restrictive status (e.g. Incomplete) is what the pill shows. "Open in Compare" jumps to the document and range. Replaces the Change Card. Depends on untracked `--ia-soft`, `--ok-soft`, `--panel-2`.
+
+### Removed Requirement Panel
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: none
+- **tokens**: --paper, --paper-ink, --font-doc, --text-xs, --text-3
+- **built-from**: Status Pill (Requirement Workflow State), detail field
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `renderRemovedPanel()`, what a removed requirement (a ghost block, Compare only — LIFE-006) was and when it went. Read-only. Replaces the Change Card for removals.
+
+### Nature and Class Fields
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: nature only (heading, information), nature + class (requirement); AI-detected (hint + Confirm button)
+- **tokens**: --ia, --text-xs
+- **built-from**: Select Dropdown (`.ui-select`), Ghost Button (`.mini-btn`)
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `natureFieldHTML()` / `classFieldHTML()`, at the top of every block's details (SIG and other single-pass tenders, the contributor view; the Turnkey PM view has the same two fields in its own layout, now labelled "Class" too, not "Type"). Nature offers only Information / Heading / Requirement (DEC-074) — it briefly held Functional / Performance / Security / Interface / Regulatory, which are gone from Allocation. Confirm buttons exist because re-picking the current value in a select fires no change event.
+
+### Re-run Prompt
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: action (accent-filled button — "↻ Re-run the model" + reason), blocked (muted strip, no button), no model (muted strip, "check ABS / PBS / OBS by hand")
+- **tokens**: --accent, --ia, --radius-md, --text-xs, --space-2, --space-3
+- **built-from**: none
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: `rerunPromptHTML()`, `.rerun-prompt`. DEC-075: shown above ABS when the nature or class differs from what the derivation was made with (`b.derivedWith`, snapshotted at load, reset by `applyRerunTo`). One row, 25px, `nowrap` — the reason (`.rp-why`) truncates first so the action stays readable in a narrow panel. Hardcoded: text `#fff`, `padding:5px`, a `rgba(0,0,0,.12)` shadow, hover `brightness(1.12)`. Muted variant depends on untracked `--ia-soft`. Distinct from Re-run Control, which is the always-available menu in the model header.
+
+### Derivation Chain
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: single-system model block ("SIG's model" — ABS, PBS, OBS), Turnkey pass 1 (Nature, Class, PBS/ABS, System), contributor view
+- **tokens**: --panel-2, --line, --radius-md, --space-3, --text-xs, --text-3
+- **built-from**: Derivation Step (`derivStepHTML()` — label, confidence badge, control, hint), OBS List, Re-run Control, Re-run Prompt
+- **added**: 2026-09-23
+- **changed**: 2026-09-23
+- **notes**: Turnkey pass 1's System list has a ✕ per system since 2026-09-23 (DEC-076, `removeSystem()`), down to none — empty state "No system yet". Each system row carries its provenance, one or the other (2026-09-23): the AI's confidence badge when the Turnkey model proposed it, a "manual" note when a person added it — "manual" used to mean "no allocation model" and sat beside the percentage; "has a model" (accent) stays as a separate note. Its "+ Add system" (`openAddSystem()`, 2026-09-23) adds directly through the OBS List's search picker (`.obs-pick`, reused as-is); it used to open the contributor's proposal form, absent from the PM view, and did nothing. Since 2026-09-23 the model block can carry a Re-run Prompt between its header and ABS (DEC-075). `.deriv-pass` / `.deriv-step`. Not recorded before; entered when the small "↓" between PBS and OBS was removed (2026-09-23) — the steps already read top to bottom and the arrow only took height, so the three steps now sit 16px apart. The only arrow left is Turnkey's "routes into" between the distribution and the system's model, which carries information. Depends on untracked `--panel-2`.
+
 ## Organisms
 
 ### App Header
@@ -1223,7 +1373,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-4, --space-5, --panel, --line
 - **built-from**: Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
+- **changed**: 2026-09-22
 - **notes**: Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
@@ -1233,8 +1383,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-3, --space-4, --radius-pill, --warn, --ia, --human, --ok, --accent, --font-mono
 - **built-from**: Progress Bar, Filter Pill / status-count pills, Tab Bar, Ghost Button, Kbd Key
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.triage`, fixed 42–44px height. Both screens independently implement their own `.tpill` rather than sharing one, despite driving the same five/six-state status vocabulary as Status Pill.
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24 (compliance.html): the 120px bar + "N/M consolidated · % · assignments answered" became a 16px ring (`.p2-ring`, conic-gradient, mask radial hardcoded 4/5px) + "N/M consolidated", the rest in its tooltip; the "By section / By contributor" switch and the shortcut hints are removed; a "⚑ set aside" pill (`.p-aside`, contributor only) filters to the viewer's set-aside assignments. `.triage`, fixed 42–44px height. Both screens independently implement their own `.tpill` rather than sharing one, despite driving the same five/six-state status vocabulary as Status Pill.
 
 ### Left Navigator Panel
 - **level**: organism
@@ -1251,10 +1401,10 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **file**: compliance.html, revue-documentaire.html
 - **variants**: document-order, sorted, grouped-by-activity, filtered-to-selection, wrap-text, scale-test (revue-documentaire.html — 12,000-row virtualized mode)
 - **tokens**: --space-3, --space-5, --radius-lg, --line, --panel, --accent-soft
-- **built-from**: Requirement Row, Branch / Allocated-Activity Sub-row, Grid Section / Group Header, Filter Toolbar, Bulk Selection Action Bar, Checkbox
+- **built-from**: Requirement Row, Branch / Allocated-Activity Sub-row, Grid Section / Group Header, Filter Toolbar, Bulk Selection Action Bar, Checkbox, Custom Column Cell, Custom Column Header Cell
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.rgrid`. Explicitly documented in both screens as the same interaction engine (`table-engine.js`) — per-column sort/filter, drag-select across the selection gutter, keyboard active-cell navigation — with only column config differing per screen. `--rgrid-cols`/`--frgrid-cols` widths are hardcoded px/fr values.
+- **changed**: 2026-09-24
+- **notes**: compliance.html (2026-09-24): the "Sort: …" dropdown is gone — every column header sorts, custom columns included (`F_SORT_KEYS`, `setSortCol()`, `bindSortHeaders()`): ▲ then ▼ then back to document order, with "↺ Document order" in the toolbar while a sort is on, same behaviour and CSS as Allocation; with no sort the document titles and section headings show. The "action needed first" order has no header equivalent and went with the dropdown. `.rgrid`. Explicitly documented in both screens as the same interaction engine (`table-engine.js`) — per-column sort/filter, drag-select across the selection gutter, keyboard active-cell navigation — with only column config differing per screen. Keyboard (revue-documentaire.html, 2026-09-23): ←/→ follow the DRAWN column order (pinned three + `state.colOrder`, so View-menu reordering and custom columns are honoured — it used to be a fixed list); Enter or F2 on the active cell starts editing it; focusing a control inside a cell makes that cell the active one. compliance.html (2026-09-23): a click on a header cell no longer toggles its column hidden — a leftover from when a collapsed column stayed as a clickable sliver; since columns are fully removed (`display:none`), one click made a column vanish with nothing to click it back. Hiding goes through the View menu only, as on Allocation. Both screens (2026-09-23): columns are resizable from a handle on each header's right edge (Column Resize Handle); a dragged width is a fixed px value, so the Requirement column stops being the flexible one until its handle is double-clicked. `--rgrid-cols`/`--frgrid-cols` widths are hardcoded px/fr values. Allocation's table has no Nature column (DEC-074): a block's nature (Information / Heading / Requirement) is read and changed in its details.
 
 ### Document Reading View
 - **level**: organism
@@ -1266,6 +1416,46 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.doc-scroll`/`.paper`. Deliberately a fixed light "page" regardless of app theme (`--paper`/`--paper-ink` are identical in both theme blocks). Width, padding, and box-shadow all hardcoded.
 
+### Partner Verdict Entry
+- **level**: molecule
+- **file**: compliance.html
+- **variants**: verdict not chosen (green / red), Compliant (their answer as received + confirm), Not compliant (Category + Topic + their answer + confirm)
+- **tokens**: --ok, --warn, --partner, --partner-soft, --radius-md, --text-sm, --space-3
+- **built-from**: Inline Form Shell, the Decision Panel's choice / confirm buttons (`.dp-c`, `.dp-confirm`, `.dp-picked`), Textarea, Select Dropdown
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: SPEC-external-partners.md §3, DEC-082. In the project manager's Assignment tab of a branch on a partner system: a `.partner-box` explains who answers, then the PM records the partner's verdict at system level; it consolidates like any other. The answered view labels the response "entered by the project manager from <partner>'s reply" — the provenance is read from the system, no marker field (§6.1 option b). `--partner` is not on the tracked scale.
+
+### Turnkey OBS List Setting
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: Turnkey tender (shown), any other line (hidden)
+- **tokens**: --font-mono, --text-xs, --line-2, --radius-xs, --text-3, --space-2, --space-3, --partner, --partner-soft
+- **built-from**: Text Input (`.inp`), Ghost Button, Activity / Requirement Tag (as `.pt-tag`)
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: `renderPartnersSetting()`, in Settings › Allocation model. Lists the model's 16 systems (neutral, not editable) then the added ones (`.pt-tag.partner`), with a name field and "＋ Add"; the code is derived from the first word of the name. Stored in the shell (`window.getPartners` / `window.addPartner`, reset with the demo). Add only in v1 — no removal. The added tags use `--partner` / `--partner-soft`, declared in this file too — not on the tracked token scale.
+
+### Decision Panel
+- **level**: organism
+- **file**: compliance.html
+- **variants**: verdict not chosen (green / red choices), Compliant chosen (comment + confirm), Not compliant chosen (Category + Topic + comment + confirm), ask form open, return form open, question pending (banner), original language shown, a resource open (Q&A, Similar, REX, Chat), set aside, wide
+- **tokens**: --paper, --paper-ink, --font-doc, --text-lg, --text-sm, --text-xs, --ok, --warn, --accent, --accent-soft, --line, --radius-md, --radius-sm, --radius-pill, --space-2, --space-3, --space-4, --space-5
+- **built-from**: Reassignment Request Form, REX Match Item, Compliance Pill, Tab Bar (`.dp-res-tabs`)
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24, second review: Set aside / Widen buttons moved above the ID and § line; the requirement text sits on a tinted `--accent-soft` block with an `--accent` left edge (`--ia` when the original is shown); beside "View in the document" an on/off switch "Original · French" (Toggle Switch) shows the tender's own wording when its language isn't English (`r.textOriginal` — demo French originals written for the seeded STB-2026 requirements, composed for generated ones); the verdict choices are filled green and red again; Ask the client / Not mine use `.propose-btn`, Allocation's reassignment button; Q&A items are one column — id + status pill, question, answer, then "Asked by … · date"; set aside uses `--human` (violet) for the pill, the row's tinted ID cell and the button. `renderDecisionPanel()` / `.dp`, SPEC-compliance-decision-panel.md, DEC-079. Replaces the Detail / Assignment Panel when a contributor opens an assignment of their own that waits on their verdict (`isDeciding()`); the project manager's panel and every other state keep the old one. Revised 2026-09-24 (user review): the verdict is a choice first — "✓ Compliant" / "✕ Not compliant" — then only that choice's fields and one "Confirm — …" button, with "Change" to go back (no longer a Compliant button beside an open Not compliant); set aside and widen are labelled pill buttons ("⚐ Set aside", "⇤ Widen panel"); the "Yours · system · person" line is gone; a "Requirement" label heads the text and "📄 View in the document" under it switches to the Document view at that block without leaving the panel (the § link does the same); "⇗ Ask the client" opens a question form (required text) that files the question in the Q&A register, and the contributor keeps the panel and can still decide while it waits (awaiting_qa counts as deciding, with a banner); the Document resource tab became Q&A — our questions on the requirement with their status and answer, then the client's published answers to other bidders' questions (`PUBLISHED_QA`, demo data). Q opens the ask form. Earlier layout, top to bottom: queue progress ("N left · this is k of N · n set aside", Next ›), id + clickable § section + set-aside ⚐/⚑ (S) + widen ⇤, one "Yours · system · person" line, the requirement text in full on paper (`pre-wrap`, dominant), the decision zone (reassurance line on internal vs client verdict, comment, "✓ Compliant" one gesture / "✕ Not compliant…" then Category + Topic then "✕ Not compliant"), two quieter secondary actions ("⇗ Ask the client", "↩ Not mine — return it"), and resources as collapsed tabs. Drafts (pick, comment, category, topic) save on input into `window.parent.__cmpPersonal`, per viewer, so they survive leaving the panel or the screen (not a reload of the whole app); set aside is kept there too, personal, shown as ⚑/✎ on the row's ID cell. Similar = word-overlap stand-in (three best ≥ 25 %) for the platform's similarity capability. Wide = `min(720px,62vw)`. Hardcoded: button text `#fff`, Next hover, the 52px progress bar, `padding:10px` on the verdict buttons. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
+
+### Validate Zone
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: validate characterisation, validate allocation & send (single system), per-system list with a Validate & send button each (several systems), disabled with its reason (incomplete characterisation, incomplete allocation, nobody assigned on a system), allocated (disabled "✓ Allocated — sent")
+- **tokens**: --ok, --line, --radius-md, --text-xs, --text-3, --space-2, --space-3
+- **built-from**: Primary Button (`.validate-cta`), Ghost Button (`.mini-btn`), Activity / Requirement Tag
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: `validateCtaHTML()`, at the bottom of the detail panel — now also in the Turnkey project manager's view, which never had it; never in the contributor's view (validating sends to Contributor Review, a PM act). Not recorded before; reworked when the user found the button missing (DEC-084): it treated every requirement with a branch as multi-system, so after the characterisation a single-system requirement showed only a hint. A step that can't run shows its button disabled with the reason underneath instead of a live button that fails on click. Reads the allocation status through `allocHolder(b)` — the single branch when it carries one. Same action as the row's status pill and the V key.
+
 ### Detail / Assignment Panel
 - **level**: organism
 - **file**: compliance.html, revue-documentaire.html
@@ -1273,8 +1463,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3, --space-4, --line, --accent, --panel
 - **built-from**: Detail Field / Frozen Field, Status/Verdict Pill, Manager Assignment Card, AI Suggestion Card, Allocated-Activity Detail Card, Propose/Reassign Form / Inline Form Shell, Activity Timeline Entry / Timeline Item, REX Match Item, Role Recap Row, Comment Composer
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.settings`. Fixed width (326px in revue-documentaire.html), narrows under a hardcoded breakpoint. The single largest, most role-branching render path in the app — output differs substantially by viewer role, block type, and branch count. compliance.html's version has an unbuilt Chat tab, present only as an empty-state stub per its own code comment.
+- **changed**: 2026-09-24
+- **notes**: compliance.html (2026-09-24): a contributor's own open assignment renders the Decision Panel instead. `.settings`. Fixed width (326px in revue-documentaire.html), narrows under a hardcoded breakpoint. The single largest, most role-branching render path in the app — output differs substantially by viewer role, block type, and branch count. compliance.html's version has an unbuilt Chat tab, present only as an empty-state stub per its own code comment.
 
 ### Role Recap Card
 - **level**: organism
@@ -1316,6 +1506,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.view-panel#cols-panel`, reuses the Filter Panel's `.view-panel` shell with a single section.
 
+### Export Options Modal
+- **level**: organism
+- **file**: compliance.html
+- **variants**: format (Excel, CSV, PDF), rows (all, current view, selection — disabled when nothing is selected), columns (all, as in the table, one by one; custom columns tagged internal and unticked), requirement text language (original / English — non-English tenders only)
+- **tokens**: --panel, --panel-2, --line, --line-2, --radius-lg, --radius-pill, --text-sm, --text-xs, --text-3, --accent, --space-2, --space-3, --space-4, --space-5
+- **built-from**: Modal (`.overlay` + `.modal`), Segmented Control (`.gseg`), Checkbox, Radio, Custom Column Tag, Primary Button, Ghost Button
+- **added**: 2026-09-24
+- **changed**: 2026-09-24
+- **notes**: `openExport()` / `renderExport()`, opened by Compliance's Export button (and the export-ready banner). It used to generate one fixed register straight away. Generation is still a toast in the prototype (file name, rows, columns, risk summary, a warning when internal custom columns are included, the text language). Columns ticked by default follow what's visible in the table. Modal backdrop `rgba(6,8,12,.7)` and shadow hardcoded. Depends on untracked `--panel-2`, `--line-2`.
+
 ### Export Panel (header ad-hoc export)
 - **level**: organism
 - **file**: revue-documentaire.html
@@ -1333,18 +1533,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-2, --space-3, --radius-lg, --radius-md, --ok
 - **built-from**: Select Dropdown, menu options
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.sel-bar`, explicitly documented as shared between these two screens' tables. Fixed to viewport bottom (24px) — a code comment explains centering via `margin-inline:auto` was chosen deliberately over `left:50%;translateX(-50%)` to avoid capping width at half the viewport.
-
-### Finalize / Export Modal
-- **level**: organism
-- **file**: revue-documentaire.html
-- **variants**: none (blocked with a Toast if requirements aren't fully allocated)
-- **tokens**: --space-4, --space-5, --radius-lg, --ok, --line, --panel
-- **built-from**: Export Option Card, Primary Button, Ghost Button
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.overlay`/`.modal`, fixed width 480px — the generic Modal shell, worth tracking as reusable layout even with one instance here. See Modal Dialog (documents.html) for the sibling shell used elsewhere.
+- **changed**: 2026-09-23
+- **notes**: `.sel-bar`, explicitly documented as shared between these two screens' tables. revue-documentaire.html's bar carries a Re-run menu (`#sel-rerun-menu`); since 2026-09-23 it skips information blocks and headings and counts them apart ("N not requirements") instead of deriving onto them. Fixed to viewport bottom (24px) — a code comment explains centering via `margin-inline:auto` was chosen deliberately over `left:50%;translateX(-50%)` to avoid capping width at half the viewport. Its Assign menu lost the "PBS" field that set Functional / Performance / Security / Interface / Regulatory on the selection (DEC-074) — it now holds Assigned to and System.
 
 ### Modal Dialog
 - **level**: organism
@@ -1373,8 +1563,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3, --space-4
 - **built-from**: Select Dropdown, Compare Summary Chip
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.compare-bar`, Compare mode only. Includes change navigation (Change 1/3, ‹ ›) through `changesOrder`.
+- **changed**: 2026-09-23
+- **notes**: `.compare-bar`, Compare mode only. Rendered by `renderCompareBar()` since 2026-09-23 (it was static markup whose version selects did nothing): document select first, then that document's earlier versions, "→ vX (in force)", counts and change navigation computed for the selected document and range (`cmpChangeIds()`). A document with one version says so instead of showing an empty comparison. Versions are per document (DEC-069).
 
 ### AI Feedback Panel (Why Box)
 - **level**: organism
@@ -1496,16 +1686,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.arb-card`. A code comment calls this "the interaction that decides whether this screen works at volume" — one item, full context, decide, auto-advance, fully keyboard-operable.
 
-### Verdict Entry Form
-- **level**: organism
-- **file**: compliance.html
-- **variants**: Compliant (with comment), Not compliant (with placeholder category + topic)
-- **tokens**: --ok, --warn, --radius-md, --space-2, --space-4, --text-sm
-- **built-from**: Inline Form Shell, Detail Field, Textarea, Select Dropdown
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Two-way toggle — a code comment notes a prior three-way ("R&D Needed") version was demoted to free text on merge from a removed screen. Category list is an explicit placeholder.
-
 ### Reassignment Request Form
 - **level**: organism
 - **file**: compliance.html
@@ -1513,8 +1693,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --warn, --radius-md, --space-2, --space-3, --text-sm
 - **built-from**: Inline Form Shell, Detail Field, Select Dropdown, Textarea
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Reuses Inline Form Shell for two distinct flows depending on context.
+- **changed**: 2026-09-24
+- **notes**: Since 2026-09-24 the contributor-initiated variant opens from the Decision Panel's "↩ Not mine — return it" (submit reads "Return it"). Reuses Inline Form Shell for two distinct flows depending on context.
 
 ### Activity Timeline
 - **level**: organism
@@ -1666,6 +1846,49 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `#team-screen`, the full "Team casting" view. Text and available actions change based on simulated viewer identity.
 
+### Custom Column Editor
+- **level**: organism
+- **file**: revue-documentaire.html, compliance.html
+- **variants**: create, edit, delete confirmation (states the number of values lost)
+- **tokens**: --panel, --line, --radius-md, --text-sm, --warn, --warn-soft, --space-2, --space-3
+- **built-from**: Modal (`.overlay` + `.modal`), Text Input, Tab Bar / Segmented Control (`.gseg`), Checkbox, Primary Button, Ghost Button
+- **added**: 2026-09-23
+- **changed**: 2026-09-24
+- **notes**: 2026-09-24: ported to compliance.html with the same states and locks, for columns of phase "compliance"; the modal CSS (`.overlay`/`.modal`) was added to that file, which had none. `cfOpenEditor()` / `cfRenderEditor()`. Locks are explained in place rather than silently disabled: type change once values exist, going back to single value once a requirement holds several, removing an option in use (refused with a count). The delete button is warn-coloured inline style on `.btn-primary`, not its own class. Depends on untracked `--warn-soft`.
+
 ## Removed
 
-_(none yet — this section starts empty as of the 2026-09-01 seed)_
+### Version Pill — removed 2026-09-23, replaced by per-document versions in the Compare Bar (DEC-069)
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: none
+- **tokens**: --space-1, --space-2, --radius-pill, --text-sm, --ok
+- **built-from**: Status Dot
+- **added**: 2026-09-01
+- **changed**: 2026-09-01
+- **notes**: `.version-pill`, header breadcrumb ("v2.1 active"). Border relies on untracked `--line-2`.
+
+### Change Card — removed 2026-09-23, replaced by the Versions Tab and the Removed Requirement Panel (DEC-071/072)
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: add, mod, rem
+- **tokens**: --space-2, --space-3, --radius-md, --radius-lg, --text-xs, --ok, --ia, --warn
+- **built-from**: none
+- **added**: 2026-09-01
+- **changed**: 2026-09-01
+- **notes**: `.change-card`, Detail Panel's Change view (Compare mode).
+
+
+### Row Reclassify Button — removed 2026-09-23, replaced by the detail panel's Nature field (Nature and Class Fields)
+
+### Flag Tag — removed 2026-09-24, no longer needed ("outdated" is not a status on Compliance any more)
+
+### Needs My Action Button — removed 2026-09-24, no longer needed (compliance.html `.f10-needsme`; never had its own entry)
+
+### Client Decision Block — removed 2026-09-24, no longer needed (compliance.html `.decide`, "What the client receives" in the panel header; the table's External compliance and Risk accepted columns carry it, and the declaration form still opens from the next-step action; never had its own entry)
+
+### Verdict Entry Form — removed 2026-09-24, replaced by the Decision Panel's decision zone (DEC-079)
+
+### Finalize / Export Modal — removed 2026-09-24, no longer needed (DEC-084): Allocation gates nothing, validation sends each requirement to its contributor, the register export is in the Export menu
+
+### Export Option Card — removed 2026-09-24 with the Finalize / Export Modal, its only use
