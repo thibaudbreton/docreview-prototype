@@ -50,7 +50,7 @@ Retenu par défaut, sur la recommandation de la spec : **incluses dans les expor
 
 **Rien n'est comparable d'un tender à l'autre.** Les colonnes personnalisées n'alimentent ni les statistiques transverses ni le tableau de bord VIP — c'est voulu. Si un champ s'avère utile partout, c'est le signe qu'il doit devenir un vrai champ modélisé.
 
-**Un champ utile en Allocation et en Compliance doit être créé deux fois**, comme deux colonnes indépendantes aux données sans lien. Acceptable en principe, irritant en pratique — à confirmer quand Compliance sera construit.
+**Un champ utile en Allocation et en Compliance doit être créé deux fois**, comme deux colonnes indépendantes aux données sans lien. Acceptable en principe, irritant en pratique — confirmé le 24 septembre 2026, maintenant que Compliance a ses propres colonnes (DEC-081, ci-dessous) : la duplication est le comportement retenu, pas une limitation temporaire.
 
 ## État du prototype (23 septembre 2026)
 
