@@ -67,7 +67,7 @@ Choisir l'autre produit à la relance **ne change pas le produit du tender**, qu
 
 **Droits.** L'équipe de gestion du projet et les contributeurs du système concerné (DEC-003, DEC-012). La relance n'ouvre aucun droit nouveau et n'en retire aucun.
 
-**Où se trouve le contrôle.** En tête du bloc de qualification pour le PM sur un tender à un système ; **sur chaque carte système** dans la vue PM d'un Turnkey, puisque chaque système a son propre modèle ; en tête de la vue contributeur. Un contrôle réservé au détail d'un système, un clic plus loin, n'a pas été trouvé à l'usage (23 septembre 2026). La relance **en masse** ne touche que les exigences : blocs d'information et titres sont écartés et comptés à part.
+**Où se trouve le contrôle.** En tête du bloc de qualification pour le PM sur un tender à un système ; en tête de la vue contributeur ; sur un Turnkey, dans le détail d'un système (« Open system detail »). Il a été essayé sur chaque carte système de la vue PM Turnkey le 23 septembre 2026, puis retiré ce jour-là à la demande de l'utilisateur — un clic de plus jusqu'au détail du système est le comportement retenu, pas une régression. La relance **en masse** ne touche que les exigences : blocs d'information et titres sont écartés et comptés à part.
 
 **Confiance.** Les scores issus d'une relance suivent ALLOC-006 et ALLOC-007 : affichés par champ, et sans jamais dispenser de la validation humaine. Une relance ne vaut pas validation.
 
@@ -88,6 +88,8 @@ ALLOC-020 — DEC-076 : **tout OBS et tout système se supprime, jusqu'à zéro.
 ALLOC-021 — DEC-082 : **un partenaire externe est un système de la liste OBS Turnkey**, ajouté par le chef de projet dans les paramètres du tender, jamais prédit par le modèle. Couleur propre partout, pas de passe 2 (la branche est allouée dès qu'elle est attribuée au partenaire), responsable affiché « PM · for partner ». Critère : ALLOC-T29 — sur le Turnkey de démo, Voltara Engineering apparaît en bleu-vert dans la cellule System, dans la liste System du détail et dans « + Add system » ; son détail ne montre ni ABS / PBS / OBS ni équipe.
 
 ALLOC-022 — DEC-084 : **pas de jalon « Finalize allocation »** ; la validation se fait exigence par exigence (pastille de statut, bouton du panneau, touche V, ou action groupée). Le panneau montre toujours l'étape suivante — grisée avec sa raison quand elle n'est pas possible. Critère : ALLOC-T30 — sur une exigence SIG à un système, valider la caractérisation fait apparaître « Validate allocation & send » ; une exigence Turnkey à deux systèmes montre une ligne par système ; aucun bouton Finalize nulle part.
+
+ALLOC-023 — DEC-085 : **raccourcis de sélection et annulation, sur Allocation.** X coche la ligne active depuis n'importe quelle colonne ; Maj + ↑/↓ (ou J/K) étend la sélection ; ⌘/Ctrl + A sélectionne tout ce que les filtres montrent ; Échap vide la sélection. V valide la sélection s'il y en a une, sinon l'exigence active. N va à la prochaine exigence qui attend (To review / To validate). **⌘/Ctrl + Z annule la dernière action annulable**, même après la disparition du toast : assignation et validation, unitaire ou groupée. Dans un champ texte, ⌘/Ctrl + Z et ⌘/Ctrl + A gardent leur comportement natif. Voir CONF-030 pour le pendant côté Compliance ; même décision, DEC-085. Critère : ALLOC-T31 — sélectionner trois exigences puis Échap vide la sélection sans annuler une action ; valider une exigence puis ⌘/Ctrl + Z la remet dans son état précédent tant qu'aucune autre action annulable n'a eu lieu depuis.
 
 ## Une allocation par organisation
 
@@ -144,6 +146,6 @@ Conserver la distinction Incomplete / To review / To validate / Allocated ; ne p
 - ALLOC-T20 : affecter une personne sur une exigence à organisation unique donne la même personne partout où l'exigence l'affiche — table comprise.
 - ALLOC-T21 : supprimer des organisations jusqu'à n'en garder qu'une rend à la table la personne de celle qui reste.
 - ALLOC-T22 : une relance en masse ne dérive rien sur un bloc qui n'est pas une exigence.
-- ALLOC-T23 : le contrôle de relance est visible sans navigation supplémentaire pour le PM (y compris sur un Turnkey) comme pour le contributeur du système.
+- ALLOC-T23 : le contrôle de relance est visible sans navigation supplémentaire pour le PM sur un tender à un système et pour le contributeur du système ; sur un Turnkey, le PM le trouve dans le détail du système, un clic plus loin (retenu ainsi le 23 septembre 2026).
 
 Une correction des métadonnées n’est pas assimilée par défaut à une modification du texte source/de travail. Toute modification du texte/traduction entraîne une revue selon LIFE-008 ; les modifications structurelles d'allocation suivent la réallocation.

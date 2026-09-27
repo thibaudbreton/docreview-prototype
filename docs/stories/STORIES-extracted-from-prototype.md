@@ -472,16 +472,18 @@
 3. A banner names whose view it is and offers a way back to the admin view; bulk selection is cleared on switch.
 4. The manager's own status is the status of their activity, not the requirement's overall rollup.
 
-### Finalize the allocation
+### Validate allocation per requirement
 
-**Description:** As a project manager, I want to close the allocation step in one gesture, so that the register is produced and every assigned expert is told what to answer.
+**Description:** As a project manager, I want to validate each requirement's allocation as soon as it's ready, so that its assigned contributors are told what to answer without waiting on a separate closing step.
 
-**Design:** Allocation, "Finalize allocation" — `revue-documentaire.html`; state shared via `build_merge.py`
+**Design:** Allocation, per-requirement validate button in the detail panel — `revue-documentaire.html` (DEC-084)
 
 **Acceptance criteria:**
-1. Finalizing is refused while any requirement is not fully allocated, with the count.
-2. The confirmation lists what will happen: export the requirements register (.xlsx, with its column set) and send each assigned expert their requirements with a link to the qualification screen, with a per-expert count.
-3. Confirming generates the register, notifies the experts and returns to the dashboard, where Allocation reads Done.
+1. There is no "Finalize allocation" milestone anywhere — no button, modal, dashboard link, or completeness-gate setting; the requirements register is exported from the Export panel instead.
+2. The panel always shows the next step (characterisation, then allocation), one line per system on a multi-system requirement, greyed out with its reason when the step can't run yet.
+3. Validating a single-system requirement's allocation shows "Validate allocation & send"; validating can also be done via the table's status pill, the V key, or a bulk action on a selection.
+4. A single-system requirement's allocation status is read from its own system, so it isn't left at Incomplete once that system's allocation is done.
+5. Undo restores both characterisation and allocation together.
 
 ### Export requirements from the review
 
@@ -550,15 +552,15 @@
 4. A declaration can be updated or cleared, in which case the internal verdict travels to the client again.
 5. Both values are filterable in the advanced filter (External compliance, Risk accepted).
 
-### Chase overdue contributors
+### Chase slow-to-answer contributors
 
-**Description:** As a project manager, I want to see which assignments are overdue and remind their contributors, so that consolidation doesn't stall silently.
+**Description:** As a project manager, I want to see how long an assignment has been waiting on its contributor and remind them, so that consolidation doesn't stall silently.
 
-**Design:** Compliance, overdue pill, reminders, bulk bar — `compliance.html`
+**Design:** Compliance, age column, reminders, bulk bar — `compliance.html` (DEC-078 removed the "overdue" status, pill and filter: an assignment waiting on its contributor shows its age, and that is all)
 
 **Acceptance criteria:**
-1. An assignment is overdue when it is awaiting an answer for at least the configured threshold; the age column and the overdue pill reflect it.
-2. Reminders can be sent per assignment (panel button or R key), per contributor (navigation card), to everyone overdue at once, or to a bulk selection of requirements.
+1. An assignment awaiting its contributor's answer shows its age; there is no separate "overdue" status, pill, or filter driving it.
+2. Reminders can be sent per assignment (panel button or R key), per contributor (navigation card), or to a bulk selection of requirements.
 3. A reminder updates the assignment's last follow-up date.
 
 ### Escalate a requirement to the client Q&A
