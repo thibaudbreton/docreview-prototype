@@ -9,7 +9,26 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
+- Last run: 2026-09-28T00:00Z (covered commits after `5b6c11e` through
+  `e7dbc91`, DEC-073 to DEC-085, 2026-09-23 to 2026-09-25).
+- Findings this run:
+  - Every decision in the range (DEC-073 to DEC-085, custom columns,
+    external partners, Compliance panel/sort, keyboard shortcuts) landed its
+    `docs/current` and `OPEN-QUESTIONS.md` entry in the same commit as the
+    code. Consistent, no direct edits.
+  - **Opened #28:** DEC-084 removed "Finalize allocation", but
+    `docs/stories/STORIES-extracted-from-prototype.md` still has the
+    "Finalize the allocation" story and finalize references (L107, L116,
+    L475-487, L769, L785-798). Flagged rather than edited: product call.
+  - #12, #15 (PR #14) and #20 not re-checked against new commits: none in
+    this range touch their files (`COMPLIANCE.md` changed for DEC-078 to
+    DEC-083 but that is new-model content, not the #20 reversal); still open.
+- Baseline for the next run: commits after `e7dbc91`, plus #12, #15,
+  #20 and #28.
+
+## Previous run
+
+- Run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
   `ccf3bb4`). Most of that range is the previous run landing and a
   same-day reconciliation merge (`c07f072`, `db8fa39`, `ccf3bb4`) that
   touch only this file — already accounted for by the 2026-09-21 entry
