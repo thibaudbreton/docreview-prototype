@@ -1450,6 +1450,11 @@ body.restricted .restrict-banner{display:flex}
 .cf-edit{margin-left:2px;padding:0 4px;border-radius:var(--radius-sm);color:var(--text-3);font-size:var(--text-xs);line-height:1.6}
 .cf-edit:hover{color:var(--accent);background:var(--accent-soft)}
 body.restricted .cf-edit, body.restricted #cf-add-btn{display:none}
+body.restricted #sel-class-btn{display:none}   /* DEC-086 — no bulk Classify for a contributor */
+.char-ro{font-size:var(--text-xs);color:var(--text-3);margin-top:4px}
+.char-ro-ai{font-size:var(--text-xs);color:var(--ia);font-weight:600}
+.cls-flip:disabled{cursor:default;opacity:.75}
+.nat-pick:disabled{cursor:default}
 .cf-tag{margin-left:6px;font-size:10px;font-weight:600;color:var(--text-3);border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:0 6px}
 .cf-multi{width:100%;text-align:left;padding:3px 6px;border-radius:var(--radius-sm);border:1px solid transparent;color:var(--text);font-size:var(--text-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cf-multi:hover{border-color:var(--line-2)}
@@ -3487,7 +3492,13 @@ function deleteAllocationData(b){
   delete b.pbs; delete b.abs; delete b.obs; delete b.domain;
 }
 /* reclassify a block between natures (AI mis-detection correction) */
+/* DEC-086 — nature and class are the project manager's: a contributing
+   system reads them but cannot change them, anywhere (panel, table, bulk bar,
+   Document view). They drive what the model derives for every system. */
+function canCharacterise(){ return !!isAdmin(); }
+function charDenied(){ toast("Nature and class are set by the project manager","warn"); }
 function reclassify(id, nature){
+  if(!canCharacterise()){ charDenied(); return; }
   const f=findBlock(id); if(!f) return;
   const b=f.b, before=blockNature(b);
   // picking the type it already has is how an AI-detected type gets confirmed
@@ -4163,6 +4174,7 @@ function natureOptions(b){
 }
 function attachReclassify(el,b){
   const btn=el.querySelector(".nat-pick"); if(!btn) return;
+  if(!canCharacterise()){ btn.disabled=true; btn.title="Set by the project manager"; return; }
   btn.addEventListener("click",e=>{
     e.stopPropagation();
     document.querySelectorAll(".nat-menu").forEach(m=>m.remove());
@@ -4396,6 +4408,7 @@ function bulkSetTypology(pid){
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkSetClass(cls){
+  if(!canCharacterise()){ charDenied(); return; }
   let c=0;
   state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.tech=cls; f.b.techAI=false; markCharEdited(f.b); c++; } });
   toast(`Classification set to ${cls==="tech"?"Technical":"Non-technical"} for ${c} requirement${c>1?"s":""}`,"ok");
@@ -4537,7 +4550,7 @@ function rowInnerHTML(b){
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
     <div class="rcell c-id">${b.id}</div>
     <div class="rcell c-req">${caretHTML}${b.sourceImage?imgSrcBtn:`<div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div>`}<div class="req-badges">${imgRowActions}${badges}</div></div>
-    <div class="rcell c-class"><button class="cls-flip ${b.techAI?"ia":""}" data-clsflip="${b.id}" title="${b.techAI?"AI-detected, unconfirmed — ":""}Click to switch classification">${b.tech==="tech"?"Tech":"Non-tech"}</button></div>
+    <div class="rcell c-class"><button class="cls-flip ${b.techAI?"ia":""}" data-clsflip="${b.id}" ${canCharacterise()?"":"disabled"} title="${b.techAI?"AI-detected, unconfirmed — ":""}${canCharacterise()?"Click to switch classification":"Set by the project manager"}">${b.tech==="tech"?"Tech":"Non-tech"}</button></div>
     <div class="rcell c-typo"><button class="typo-cell" data-typocell="${b.id}" title="${escHtml((b.perim||[]).map(p=>TY(p).label).join(", ")||"No system yet")} — click to edit">${typoTags}${typoConf}</button></div>
     <div class="rcell c-abs">${TENDER_KEYS
       ? `<select class="cell-select" data-abs="${b.id}"><option value="">—</option>${TENDER_KEYS.absList.map(a=>`<option value="${a.id}" ${a.label===b.domain?"selected":""}>${escHtml(a.label)}</option>`).join("")}</select>`
@@ -5052,6 +5065,7 @@ function bindVRows(win){
   }));
   win.querySelectorAll("[data-clsflip]").forEach(btn=>btn.addEventListener("click",e=>{
     e.stopPropagation();
+    if(!canCharacterise()){ charDenied(); return; }
     const id=btn.dataset.clsflip, f=findBlock(id); if(!f)return;
     const before=f.b.tech, was=f.b.techAI;
     f.b.tech = before==="tech" ? "nontech" : "tech"; f.b.techAI=false; markCharEdited(f.b);
@@ -5383,6 +5397,7 @@ function pbsControlHTML(b, derivSrc){
    An AI-detected nature says so and can be confirmed in place. */
 function natureFieldHTML(b){
   const ai=b.typeAI && b.kind!=="image";
+  if(!canCharacterise()) return `<div class="field"><label>Nature</label><div class="fval">${NATURE_LABEL[blockNature(b)]||"—"}${ai?` <span class="char-ro-ai">· AI, unconfirmed</span>`:""}</div><div class="char-ro">Set by the project manager</div></div>`;
   return `<div class="field"><label>Nature</label>
     <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
     ${ai?`<div class="deriv-hint" style="display:flex;align-items:center;gap:8px;color:var(--ia)">Detected by the AI, not confirmed yet <button class="mini-btn" id="f-nature-confirm">Confirm</button></div>`:""}</div>`;
@@ -5391,6 +5406,7 @@ function natureFieldHTML(b){
    requirement's details (it was only in the Turnkey project-manager view,
    so a SIG tender never showed it). */
 function classFieldHTML(b){
+  if(!canCharacterise()) return `<div class="field"><label>Class</label><div class="fval">${b.tech==="tech"?"Technical":b.tech==="nontech"?"Non-technical":"— Not set —"}${b.techAI?` <span class="char-ro-ai">· AI, unconfirmed</span>`:""}</div><div class="char-ro">Set by the project manager</div></div>`;
   return `<div class="field"><label>Class</label>
     <select class="ui-select" id="f-tech">
       <option value="" ${b.tech==null?"selected":""} disabled>— Not set —</option>

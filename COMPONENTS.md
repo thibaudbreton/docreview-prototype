@@ -445,12 +445,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Nature Picker
 - **level**: atom
 - **file**: revue-documentaire.html
-- **variants**: default, AI-typed (`.is-ai`, dashed `--ia` border — type detected by the AI, not confirmed)
+- **variants**: default, AI-typed (`.is-ai`, dashed `--ia` border — type detected by the AI, not confirmed), read-only (contributor)
 - **tokens**: --text-xs, --radius-sm, --ia, --paper-ink-2
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-23
-- **notes**: Document view only since 2026-09-23 — the table row's compact "▾" variant (`.row-natpick`, on requirement and information rows) was removed; in the table, nature is corrected in the detail panel's Nature field. `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
+- **changed**: 2026-09-28
+- **notes**: 2026-09-28 (DEC-086): disabled for a contributor, in the Document view too (`attachReclassify` leaves it inert with a "Set by the project manager" title). Document view only since 2026-09-23 — the table row's compact "▾" variant (`.row-natpick`, on requirement and information rows) was removed; in the table, nature is corrected in the detail panel's Nature field. `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
 
 ## Molecules
 
@@ -1337,12 +1337,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Nature and Class Fields
 - **level**: molecule
 - **file**: revue-documentaire.html
-- **variants**: nature only (heading, information), nature + class (requirement); AI-detected (hint + Confirm button)
+- **variants**: nature only (heading, information), nature + class (requirement); AI-detected (hint + Confirm button), read-only (contributor)
 - **tokens**: --ia, --text-xs
 - **built-from**: Select Dropdown (`.ui-select`), Ghost Button (`.mini-btn`)
 - **added**: 2026-09-23
-- **changed**: 2026-09-23
-- **notes**: `natureFieldHTML()` / `classFieldHTML()`, at the top of every block's details (SIG and other single-pass tenders, the contributor view; the Turnkey PM view has the same two fields in its own layout, now labelled "Class" too, not "Type"). Nature offers only Information / Heading / Requirement (DEC-074) — it briefly held Functional / Performance / Security / Interface / Regulatory, which are gone from Allocation. Confirm buttons exist because re-picking the current value in a select fires no change event.
+- **changed**: 2026-09-28
+- **notes**: 2026-09-28 (DEC-086): read-only for a contributor — the value as text, "· AI, unconfirmed" when it applies, and "Set by the project manager" (`.char-ro`) underneath; no select, no Confirm. `natureFieldHTML()` / `classFieldHTML()`, at the top of every block's details (SIG and other single-pass tenders, the contributor view; the Turnkey PM view has the same two fields in its own layout, now labelled "Class" too, not "Type"). Nature offers only Information / Heading / Requirement (DEC-074) — it briefly held Functional / Performance / Security / Interface / Regulatory, which are gone from Allocation. Confirm buttons exist because re-picking the current value in a select fires no change event.
 
 ### Re-run Prompt
 - **level**: molecule
