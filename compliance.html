@@ -3162,17 +3162,26 @@ function renderDecisionPanel(p,r,br){
 /* escalate a specific BRANCH to the client Q&A: the assignment does not change, but the
    branch becomes blocked on the issuer and therefore stops counting as answered */
 function escalate(r,br,question){
-  const id="QA-0"+(QA.length+2);
+  /* DEC-088 — the question enters the tender's Q&A register as a draft (via the
+     shell), where the project manager reviews and sends it; the id comes from
+     there so both screens name it the same. */
+  const pid=(function(){ try{ return window.parent.getCurrentProject().id; }catch(e){ return null; } })();
+  let id="QA-0"+(QA.length+2);
   const beforeE=br?snapBranch(br):null;
   const seed=(br&&br.resp)?br.resp.note.split(".")[0]+".":r.text.slice(0,80)+"…";
   const asker=state.role==="contributor"?((MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).name):"Thibaud Breton";
-  QA.unshift({id,st:"draft",q:question||`[Draft] Clarification needed on ${r.id}: ${seed}`,reqs:[r.id],
+  const qtext=question||`[Draft] Clarification needed on ${r.id}: ${seed}`;
+  try{ if(window.parent!==window && window.parent.pushQuestion){
+    const shared=window.parent.pushQuestion(pid,{st:"draft",q:qtext,refs:[{req:r.id,typology:br?br.typology:null}],from:asker,date:"Today",origin:"compliance"});
+    id=shared.id; } }catch(e){}
+  QA.unshift({id,st:"draft",q:qtext,reqs:[r.id],
     branch:br?{req:r.id,typology:br.typology}:null,from:asker,date:"Today"});
   if(br){ br.status="awaiting_qa"; br.qaRef=id; br.qaNote=br.qaNote||(state.role==="contributor"
       ? "The contributor asked the client before answering — awaiting the client's reply."
       : "Escalated to the issuer by the manager — awaiting an answer before this branch can be closed."); }
-  toast(`${r.id}${br?` · ${TY(br.typology).label}`:""} escalated — draft question ${id} created`,"ok",()=>{
+  toast(`${r.id}${br?` · ${TY(br.typology).label}`:""} — question ${id} added to the Q&A register as a draft`,"ok",()=>{
     const i=QA.findIndex(q=>q.id===id); if(i>=0) QA.splice(i,1);
+    try{ if(window.parent.withdrawQuestion) window.parent.withdrawQuestion(pid,id); }catch(e){}
     if(br) Object.assign(br,beforeE);
     refreshAll(); });
   refreshAll();

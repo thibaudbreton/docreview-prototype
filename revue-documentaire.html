@@ -2650,7 +2650,8 @@ function runAllocationModel(productId, seedId){
 function rerunBlockedReason(leaf){
   const st=leaf&&leaf.branchStatus;
   if(st==="answered") return "an answer has been recorded";
-  if(st==="awaiting_qa") return "a question is with the client";
+  // DEC-089 — a question with the client no longer blocks: nothing is answered
+  // on this assignment yet, so a re-run loses nothing.
   const verdict=leaf&&(leaf.compliance||leaf.rollupCompliance);
   if(verdict&&verdict!=="pending") return "a verdict has been recorded";
   return null;
@@ -5981,7 +5982,7 @@ function renderSettings(){
         <div class="fval">${s.num}. ${s.title} · <button class="peek-btn" id="goto-doc">View in document →</button></div></div>
       ${isReq&&!rmView&&!actView?`<div class="set-sep"></div>
       <div class="mgr-block" id="mgr-block">
-        <label class="mgr-lbl">Assigned to <span>· handles this requirement</span></label>
+        <label class="mgr-lbl">Assigned to <span>· responsible for its compliance</span></label>
         ${personSearchHTML("req-manager",b.manager)}
       </div>`:""}
       ${isReq && !isAdmin() ? proposeBlockHTML(b,hasBranches,myBranch) : ""}

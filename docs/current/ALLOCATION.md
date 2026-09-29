@@ -16,7 +16,7 @@ Applicabilité : [variantes de tender](TENDER-PROFILES.md). Le prototype est la 
 | ALLOC-008 | La validation d'allocation rend le travail disponible pour la suite de conformité ; pas de construction de Compliance exigée dans le premier pilote. | DOC + DEC-022 |
 | ALLOC-009 | Les exigences progressent indépendamment. Un cas incomplet n'arrête pas les autres. | DOC |
 | ALLOC-010 | L’allocation peut être validée sans responsable. L’absence reste visible, sans bloquer cette exigence ni les autres. | DEC-025 |
-| ALLOC-011 | **Au plus une personne responsable du suivi par exigence**, pas une par système ou équipe. Tous les contributeurs du système peuvent répondre. | DEC-010 + DEC-002 |
+| ALLOC-011 | **La personne assignée à un OBS est responsable de sa conformité** : elle répond et c'est elle qu'on relance. L'outil ne désigne **pas** de responsable du suivi global, ni par exigence ni par activité. Plusieurs personnes dans un même périmètre = plusieurs entrées OBS, une personne chacune. Tous les contributeurs du système peuvent répondre. | DEC-087 (remplace DEC-010) + DEC-002 |
 | ALLOC-012 | La validation relève de l'équipe de gestion du projet, composée de bid managers et requirement managers de SIG selon la réponse utilisateur. Ces fonctions ne créent pas une hiérarchie des contributeurs. | DEC-009 ; portée générale aux autres types OPEN-15 |
 
 ## Absence de responsable — décision
@@ -112,7 +112,7 @@ ALLOC-015 — DEC-050 : les paramètres du projet permettent de **changer le mod
 
 **Les deux relances ne se remplacent pas.** L'unitaire est chirurgicale, donc protégée (ALLOC-014, interdite si réponse). La globale est un changement de prémisse du projet, donc totale. Ne pas offrir l'une comme repli de l'autre, et ne pas fusionner leurs contrôles.
 
-**Ce qui bloque, précisément** (DEC-051). Une réponse enregistrée, et **aussi l'attente d'une réponse du client** (`awaiting_qa`). Une question en vol suppose que le client a été interrogé sur la dérivation actuelle ; la changer sous la question rendrait sa réponse inexploitable. Les états qui ne bloquent pas : proposé, assigné, en attente de réponse du contributeur, réallocation demandée.
+**Ce qui bloque, précisément** (DEC-089, remplace DEC-051 sur ce point). **Seule une réponse enregistrée** (ou un verdict) bloque. L'attente d'une réponse du client (`awaiting_qa`) **ne bloque plus** : rien n'est encore répondu sur l'affectation, une relance n'y perd rien. Les états qui ne bloquent pas : proposé, assigné, en attente de réponse du contributeur, en attente de réponse client, réallocation demandée.
 
 **Relance en masse** (DEC-052). Disponible depuis la barre d'actions groupées de la table, sur une sélection. Même règle de blocage feuille par feuille : les feuilles bloquées sont sautées et comptées, jamais relancées de force. Couvre le cas « dix exigences mal dérivées » sans passer par un changement de modèle global, qui lui est destructeur.
 
@@ -126,7 +126,7 @@ Conserver la distinction Incomplete / To review / To validate / Allocated ; ne p
 - ALLOC-T02 : en SIG, corriger ABS invalide ses propositions PBS/OBS dépendantes ; corriger PBS invalide OBS. Ancien ordre interdit pour SIG.
 - ALLOC-T03 : système sans modèle : travail manuel possible, autres exigences indépendantes.
 - ALLOC-T04 : résultat IA complet reste à valider explicitement.
-- ALLOC-T05 : personne responsable unique malgré plusieurs systèmes/équipes.
+- ALLOC-T05 : chaque entrée OBS porte au plus une personne, responsable de sa conformité ; aucun champ « responsable du suivi » au niveau exigence (DEC-087).
 - ALLOC-T06 : validation sans responsable autorisée, absence affichée ; aucun blocage de validation lié au seul responsable manquant.
 - ALLOC-T07 : demande sans motif explicatif refusée ; refus d'une demande restaure l'état précédent.
 - ALLOC-T08 : aucune colonne/section de passe 1 dans le parcours SIG ; détail SIG direct.

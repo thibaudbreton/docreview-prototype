@@ -240,7 +240,7 @@ window.resetDemo = function(){
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
   aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners();
-  reassignRequests.length=0;
+  reassignRequests.length=0; sharedQuestions={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
   window.route("home");
@@ -307,6 +307,21 @@ window.pushReassignRequest = function(req){
   return req;
 };
 window.getReassignRequests = ()=>reassignRequests;
+// DEC-088 — a question to the client raised on Compliance goes into the tender's
+// Q&A register as a draft, for the project manager to review, merge and send in a
+// batch. The shell is the mailbox between the two screens (same idea as the
+// reassignment requests above); ids are given here so both screens agree.
+let sharedQuestions = {};
+window.pushQuestion = function(projectId, q){
+  const k=projectId||"_", list=sharedQuestions[k]=sharedQuestions[k]||[];
+  q.id = q.id || ('QA-'+(50+list.length+1));
+  list.push(q); return q;
+};
+window.getQuestions = (projectId)=>sharedQuestions[projectId||"_"]||[];
+window.withdrawQuestion = function(projectId, id){
+  const l=sharedQuestions[projectId||"_"]; if(!l) return;
+  const i=l.findIndex(x=>x.id===id); if(i>=0) l.splice(i,1);
+};
 window.updateReassignRequest = function(id, patch){
   const r = reassignRequests.find(x=>x.id===id);
   if(r) Object.assign(r, patch);

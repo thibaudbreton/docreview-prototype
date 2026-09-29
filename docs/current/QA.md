@@ -15,6 +15,7 @@ DEC-021 : même fonctionnement Q&A pour Turnkey et SIG. Fonction décrite pour l
 | QA-007 | Les associations incertaines sont arbitrées par le PM dans une file ; passer et « aucune exigence correspondante » sont des issues valides. | DOC/OBS |
 | QA-008 | Dates de clôture des questions et de retour prévu optionnelles ; retard visible, sans blocage absolu des questions tardives. | DOC/OBS |
 | QA-009 | Chat de recherche et question officielle au client doivent rester distincts. | DOC |
+| QA-010 | **Une question posée depuis Compliance entre dans le registre Q&A du tender en brouillon** (DEC-088). Le chef de projet la relit, la fusionne si c'est un doublon et l'envoie avec le lot ; le contributeur ne l'envoie pas lui-même. L'affectation concernée compte comme non répondue pour la consolidation jusqu'à la réponse, mais le contributeur peut rendre son verdict sans attendre. Annuler la question (Undo) la retire du registre. | DEC-088 |
 
 ## Points de vigilance fonctionnels
 
