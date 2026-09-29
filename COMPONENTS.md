@@ -1341,8 +1341,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --ia, --text-xs
 - **built-from**: Select Dropdown (`.ui-select`), Ghost Button (`.mini-btn`)
 - **added**: 2026-09-23
-- **changed**: 2026-09-28
-- **notes**: 2026-09-28 (DEC-086): read-only for a contributor — the value as text, "· AI, unconfirmed" when it applies, and "Set by the project manager" (`.char-ro`) underneath; no select, no Confirm. `natureFieldHTML()` / `classFieldHTML()`, at the top of every block's details (SIG and other single-pass tenders, the contributor view; the Turnkey PM view has the same two fields in its own layout, now labelled "Class" too, not "Type"). Nature offers only Information / Heading / Requirement (DEC-074) — it briefly held Functional / Performance / Security / Interface / Regulatory, which are gone from Allocation. Confirm buttons exist because re-picking the current value in a select fires no change event.
+- **changed**: 2026-09-29
+- **notes**: 2026-09-29 (DEC-099): the "Detected by the AI, not confirmed yet" line and its Confirm button are gone for everyone — validating the requirement confirms them. 2026-09-28 (DEC-086): read-only for a contributor — the value as text, "· AI, unconfirmed" when it applies, and "Set by the project manager" (`.char-ro`) underneath; no select, no Confirm. `natureFieldHTML()` / `classFieldHTML()`, at the top of every block's details (SIG and other single-pass tenders, the contributor view; the Turnkey PM view has the same two fields in its own layout, now labelled "Class" too, not "Type"). Nature offers only Information / Heading / Requirement (DEC-074) — it briefly held Functional / Performance / Security / Interface / Regulatory, which are gone from Allocation. Confirm buttons exist because re-picking the current value in a select fires no change event.
 
 ### Re-run Prompt
 - **level**: molecule
@@ -1361,8 +1361,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --panel-2, --line, --radius-md, --space-3, --text-xs, --text-3
 - **built-from**: Derivation Step (`derivStepHTML()` — label, confidence badge, control, hint), OBS List, Re-run Control, Re-run Prompt
 - **added**: 2026-09-23
-- **changed**: 2026-09-23
-- **notes**: Turnkey pass 1's System list has a ✕ per system since 2026-09-23 (DEC-076, `removeSystem()`), down to none — empty state "No system yet". Each system row carries its provenance, one or the other (2026-09-23): the AI's confidence badge when the Turnkey model proposed it, a "manual" note when a person added it — "manual" used to mean "no allocation model" and sat beside the percentage; "has a model" (accent) stays as a separate note. Its "+ Add system" (`openAddSystem()`, 2026-09-23) adds directly through the OBS List's search picker (`.obs-pick`, reused as-is); it used to open the contributor's proposal form, absent from the PM view, and did nothing. Since 2026-09-23 the model block can carry a Re-run Prompt between its header and ABS (DEC-075). `.deriv-pass` / `.deriv-step`. Not recorded before; entered when the small "↓" between PBS and OBS was removed (2026-09-23) — the steps already read top to bottom and the arrow only took height, so the three steps now sit 16px apart. The only arrow left is Turnkey's "routes into" between the distribution and the system's model, which carries information. Depends on untracked `--panel-2`.
+- **changed**: 2026-09-29
+- **notes**: 2026-09-29: optional `opts.noDistrib` drops the distribution block; the Turnkey system detail (DEC-101) renders the chain for the system opened, edits going to that branch. Turnkey pass 1's System list has a ✕ per system since 2026-09-23 (DEC-076, `removeSystem()`), down to none — empty state "No system yet". Each system row carries its provenance, one or the other (2026-09-23): the AI's confidence badge when the Turnkey model proposed it, a "manual" note when a person added it — "manual" used to mean "no allocation model" and sat beside the percentage; "has a model" (accent) stays as a separate note. Its "+ Add system" (`openAddSystem()`, 2026-09-23) adds directly through the OBS List's search picker (`.obs-pick`, reused as-is); it used to open the contributor's proposal form, absent from the PM view, and did nothing. Since 2026-09-23 the model block can carry a Re-run Prompt between its header and ABS (DEC-075). `.deriv-pass` / `.deriv-step`. Not recorded before; entered when the small "↓" between PBS and OBS was removed (2026-09-23) — the steps already read top to bottom and the arrow only took height, so the three steps now sit 16px apart. The only arrow left is Turnkey's "routes into" between the distribution and the system's model, which carries information. Depends on untracked `--panel-2`.
 
 ## Organisms
 
@@ -1449,12 +1449,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Validate Zone
 - **level**: molecule
 - **file**: revue-documentaire.html
-- **variants**: validate characterisation, validate allocation & send (single system), per-system list with a Validate & send button each (several systems), disabled with its reason (incomplete characterisation, incomplete allocation, nobody assigned on a system), allocated (disabled "✓ Allocated — sent")
+- **variants**: single system (one validation), several systems (one per system), disabled with its reason, allocated
 - **tokens**: --ok, --line, --radius-md, --text-xs, --text-3, --space-2, --space-3
 - **built-from**: Primary Button (`.validate-cta`), Ghost Button (`.mini-btn`), Activity / Requirement Tag
 - **added**: 2026-09-24
-- **changed**: 2026-09-24
-- **notes**: `validateCtaHTML()`, at the bottom of the detail panel — now also in the Turnkey project manager's view, which never had it; never in the contributor's view (validating sends to Contributor Review, a PM act). Not recorded before; reworked when the user found the button missing (DEC-084): it treated every requirement with a branch as multi-system, so after the characterisation a single-system requirement showed only a hint. A step that can't run shows its button disabled with the reason underneath instead of a live button that fails on click. Reads the allocation status through `allocHolder(b)` — the single branch when it carries one. Same action as the row's status pill and the V key.
+- **changed**: 2026-09-29
+- **notes**: 2026-09-29 (DEC-099): one button per requirement — "✓ Validate & send to Compliance" validates characterisation and allocation together; with several systems, one "Validate & send" per system, each also validating the characterisation. Not shown in the read-only view (DEC-100). `validateCtaHTML()`, at the bottom of the detail panel — now also in the Turnkey project manager's view, which never had it; never in the contributor's view (validating sends to Contributor Review, a PM act). Not recorded before; reworked when the user found the button missing (DEC-084): it treated every requirement with a branch as multi-system, so after the characterisation a single-system requirement showed only a hint. A step that can't run shows its button disabled with the reason underneath instead of a live button that fails on click. Reads the allocation status through `allocHolder(b)` — the single branch when it carries one. Same action as the row's status pill and the V key.
 
 ### Detail / Assignment Panel
 - **level**: organism
@@ -1463,8 +1463,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3, --space-4, --line, --accent, --panel
 - **built-from**: Detail Field / Frozen Field, Status/Verdict Pill, Manager Assignment Card, AI Suggestion Card, Allocated-Activity Detail Card, Propose/Reassign Form / Inline Form Shell, Activity Timeline Entry / Timeline Item, REX Match Item, Role Recap Row, Comment Composer
 - **added**: 2026-09-01
-- **changed**: 2026-09-24
-- **notes**: compliance.html (2026-09-24): a contributor's own open assignment renders the Decision Panel instead. `.settings`. Fixed width (326px in revue-documentaire.html), narrows under a hardcoded breakpoint. The single largest, most role-branching render path in the app — output differs substantially by viewer role, block type, and branch count. compliance.html's version has an unbuilt Chat tab, present only as an empty-state stub per its own code comment.
+- **changed**: 2026-09-29
+- **notes**: 2026-09-29: revue-documentaire.html gains a read-only mode for a contributor on a requirement that isn't theirs (`readOnlyReqHTML`, `.ro-note`, DEC-100; table rows locked by `lockForeignRows`), and the Turnkey system detail is now the SIG panel plus reassignment (DEC-101). compliance.html (2026-09-24): a contributor's own open assignment renders the Decision Panel instead. `.settings`. Fixed width (326px in revue-documentaire.html), narrows under a hardcoded breakpoint. The single largest, most role-branching render path in the app — output differs substantially by viewer role, block type, and branch count. compliance.html's version has an unbuilt Chat tab, present only as an empty-state stub per its own code comment.
 
 ### Role Recap Card
 - **level**: organism

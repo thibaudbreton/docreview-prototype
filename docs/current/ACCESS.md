@@ -16,6 +16,7 @@
 | ACC-010 | Pas de hiérarchie de permissions entre contributeurs d'un système ; hiérarchie organisationnelle hors SRM. | DEC-012 |
 | ACC-011 | Le PM peut saisir et modifier directement des réponses, en plus de remplacer/verrouiller le verdict final. | DEC-013 |
 | ACC-012 | **La nature et la classe d'une exigence appartiennent au chef de projet.** Un contributeur (le responsable d'un système) les voit mais ne peut pas les modifier — ni dans le détail, ni dans la table, ni par l'action groupée « Classify », ni dans la vue Document. Elles déterminent ce que le modèle dérive pour chaque système. | DEC-086 |
+| ACC-013 | **Un contributeur ne modifie rien sur une exigence dont aucun système ne lui est assigné** : il la lit (nature, classe, allocation de chaque système), sans aucun contrôle actif, dans le panneau comme dans la table. | DEC-100 |
 
 ## Matrice métier
 
