@@ -56,7 +56,7 @@ Persistance après reconnexion ; droits sur requêtes directes ; enregistrement 
 
 ## Borne de pilote et recette
 
-DEC-022 : Turnkey, SIG, Mainline et RSC jusqu’à validation de l’allocation. Le pilote vérifie création, documents, traitements enchaînés, interfaces adaptées au type, corrections/réallocation, responsable facultatif unique et validation finale. La conformité complète, Q&A et l’export client restent au-delà de cette borne. L’inclusion d’un connecteur DOORS direct n’est pas déduite du support des fichiers DOORS.
+DEC-022 : Turnkey, SIG, Mainline et RSC jusqu’à validation de l’allocation. Le pilote vérifie création, documents, traitements enchaînés, interfaces adaptées au type, corrections/réallocation, personne facultative par OBS (DEC-087) et validation finale. La conformité complète, Q&A et l’export client restent au-delà de cette borne. L’inclusion d’un connecteur DOORS direct n’est pas déduite du support des fichiers DOORS.
 
 Charge : constituer un jeu de 100 000 lignes et 10 sessions concurrentes ; vérifier recherche/filtrage sur le jeu complet, fluidité de la navigation et conservation des modifications. Les seuils chronométrés restent OPEN-08. Sécurité confirmée comme exigence ; règles internes spécifiques/rétention à fournir via le chantier technique, pas inventées ici.
 

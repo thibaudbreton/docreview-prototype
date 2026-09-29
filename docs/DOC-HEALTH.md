@@ -9,7 +9,35 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
+- Last run: 2026-09-29T22:00Z (covered commits after `e7dbc91` through
+  `e22702d`: DEC-086 to DEC-098 and two Turnkey-demo data commits).
+- Findings this run:
+  - DEC-086 to DEC-098 each landed their `docs/current` and
+    `OPEN-QUESTIONS.md` entries in the same commit as the code. Checked
+    for leftover wording contradicting a superseding decision and fixed
+    three spots directly (pure supersession, no new behavior):
+    - `CUSTOM-COLUMNS.md`: DEC-097 made custom columns per-tender and
+      shared between Allocation and Compliance, but the "created twice"
+      caveat, the DEC-081 "phase scope holds" sentence, CUST-T01 and
+      CUST-T11 still said the opposite. Annotated/reworded.
+    - `DOMAIN.md` DOM-008 and `PLATFORM.md` pilot line still referred to
+      a single follow-up owner, which DEC-087 replaced with one person
+      per OBS entry.
+  - Not edited, judged fine or ambiguous: `PLATFORM.md` "Blocage client"
+    row and `COMPLIANCE.md` `awaiting_qa` rows vs DEC-092 (a client
+    question no longer blocks compliance) — how the dashboard should
+    treat `awaiting_qa` is a product call; `AUDIT.md` is a dated
+    historical record.
+  - Turnkey demo commits (`f44fd3e`, `22f1f11`) change demo data only.
+  - #28 (stories still specify "Finalize allocation"), #20, #15/PR #14
+    and #12 remain open; no commit in this range touches their files.
+    PR #27 and #29 (earlier doc-health runs) are still unmerged.
+- Baseline for the next run: commits after `e22702d`, plus #12, #15, #20
+  and #28.
+
+## Previous run
+
+- Run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
   `ccf3bb4`). Most of that range is the previous run landing and a
   same-day reconciliation merge (`c07f072`, `db8fa39`, `ccf3bb4`) that
   touch only this file — already accounted for by the 2026-09-21 entry
