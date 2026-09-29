@@ -3196,9 +3196,9 @@ function validateCtaHTML(b,hasBranches,es){
             :`<button class="mini-btn validate-sys-btn" data-validatebranch="${i}" ${noOne?`disabled title="Nobody assigned yet — assign someone on this system first"`:""}>✓ Validate &amp; send</button>${noOne?`<span class="validate-why inline">assign someone first</span>`:""}`}
         </div>`; }).join("")}</div>`;
   }
-  if(es.val==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Contributor Review</button>`;
+  if(es.val==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`;
   const incomplete=(allocHolder(b).allocStatus||"incomplete")==="incomplete";
-  return btn("✓ Validate allocation &amp; send to Contributor Review",`id="validate-btn"`, incomplete?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null);
+  return btn("✓ Validate allocation &amp; send to Compliance",`id="validate-btn"`, incomplete?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null);
 }
 
 /* =====================================================
@@ -4543,10 +4543,10 @@ function rowInnerHTML(b){
     statusCls="s-"+es.val; statusLbl=STATUS_LABEL[es.val];
     statusEligible = es.val!=="incomplete";
     if(es.val==="allocated"){
-      statusTitle="Allocated — sent to Contributor Review";
+      statusTitle="Allocated — sent to Compliance";
     } else {
       const nextIsAlloc = b.status==="allocated"; // characterisation already done — the next click acts on allocation
-      statusTitle=(es.reviewReason?es.reviewReason+" — ":"")+(statusEligible?("Click to validate"+(nextIsAlloc?" — sends to Contributor Review":"")):"Nothing to validate yet");
+      statusTitle=(es.reviewReason?es.reviewReason+" — ":"")+(statusEligible?("Click to validate"+(nextIsAlloc?" — sends to Compliancw":"")):"Nothing to validate yet");
     }
   }
   const complianceHTML = hasBranches
@@ -4604,10 +4604,10 @@ function branchRowHTML(parent, branch, idx){
   const branchStatusHTML = (branch.allocStatus && branch.allocStatus!=="allocated")
     ? (()=>{
         const eligible = branch.allocStatus!=="incomplete";
-        const title=(branch.allocReviewReason?branch.allocReviewReason+" — ":"")+(eligible?"Click to validate — sends to Contributor Review":"Nothing to validate yet");
+        const title=(branch.allocReviewReason?branch.allocReviewReason+" — ":"")+(eligible?"Click to validate — sends to Compliance":"Nothing to validate yet");
         return `<button class="status-pill s-${branch.allocStatus}" data-branchcycle="${parent.id}::${idx}" title="${title.replace(/"/g,'&quot;')}">${STATUS_LABEL[branch.allocStatus]}</button>`;
       })()
-    : `<span class="status-pill branch-status-${branch.branchStatus}" title="In Contributor Review">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>`;
+    : `<span class="status-pill branch-status-${branch.branchStatus}" title="In Compliance">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>`;
   /* TICKET-two-pass-allocation.md §6 — a system that branches again at pass 2
      stops being editable in place: its manager/team/verdict belong to the teams
      underneath it, and its own verdict is DERIVED, never entered. A single-team
@@ -5777,7 +5777,7 @@ function activityDetailHTML(b,bidx){
     </div>
     <div class="deriv-pass">
       <div class="deriv-pass-h">${escHtml(TY(branch.typology).label)}'s own model${rerunControlHTML("leaf:"+b.id+"::"+bidx,branch.typology,branchRerunBlockedReason(branch))}</div>
-      ${derivStepHTML("Type", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
+      ${derivStepHTML("Class", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
       ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-system within this system."):""}
         ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
         ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||"—")}</div>`, t.pbs)}
@@ -5859,7 +5859,7 @@ function renderSettings(){
       <button data-tab="activity" class="${state.tab==="activity"?"active":""}">Activity ${b.comments?`<span class="tab-count">${b.comments}</span>`:""}</button>
       ${isReq&&rexFor(b).length?`<button data-tab="rex" class="${state.tab==="rex"?"active":""}">REX <span class="tab-count rex-count">${rexFor(b).length}</span></button>`:""}
       ${latestChange(b)?`<button data-tab="versions" class="${state.tab==="versions"?"active":""}">Versions</button>`:""}
-      ${b.textOriginal!==undefined?`<button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translation${b.translationCorrected?` <span class="tab-count corr-count" title="Translation corrected">✓</span>`:""}</button>`:""}
+      ${b.textOriginal!==undefined&&TENDER_LANGUAGE!=="en"?`<button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translation${b.translationCorrected?` <span class="tab-count corr-count" title="Translation corrected">✓</span>`:""}</button>`:""}
     </div>
     <div class="set-body" id="set-body"></div>`;
 
@@ -5879,7 +5879,7 @@ function renderSettings(){
 
   const body = panel.querySelector("#set-body");
   if(state.tab==="rex" && !(isReq && rexFor(b).length)) state.tab="details";
-  if(state.tab==="translate" && b.textOriginal===undefined) state.tab="details";
+  if(state.tab==="translate" && (b.textOriginal===undefined||TENDER_LANGUAGE==="en")) state.tab="details";
   if(state.tab==="versions" && !latestChange(b)) state.tab="details";   // DEC-071: no tab when nothing changed in the version in force
   if(state.tab==="details"){
     let html = "";
@@ -6295,7 +6295,7 @@ function activityFor(b){
       {k:"human",who:"Thibaud Breton",what:'Criterion text clarified.<span class="before-after"><span class="ba-del">under 2 seconds</span> → <span class="ba-ins">under 2 seconds … at the 95th percentile</span></span>',time:"Yesterday, 5:40 PM"},
     );
   }
-  if(isFullyAllocated(b)) base.unshift({k:"ok",who:"Thibaud Breton",what:"Requirement allocated — characterisation and assignment confirmed, sent to Contributor Review.",time:"Jul 15, 2026, 11:02 AM"});
+  if(isFullyAllocated(b)) base.unshift({k:"ok",who:"Thibaud Breton",what:"Requirement allocated — characterisation and assignment confirmed, sent to Compliance.",time:"Jul 15, 2026, 11:02 AM"});
   if(b.id==="SRM-00021") base.unshift({k:"comment",who:"Claire Moreau",what:'"Is the 3-year retention period aligned with group policy (5 years)?"',time:"Jul 14, 2026, 4:20 PM"});
   return base;
 }
@@ -6484,7 +6484,7 @@ function validateBlock(id, branchIdx){
   refresh();
   if(wasWeak && stage==="alloc"){ logFeedback("deriv", id, `weak OBS ${target.obs.c}%`, "validated as-is", target.obs.c); setTimeout(()=>toast("Weak derivation confirmed by you — recorded as AI feedback","ok"),700); }
   const label = branchIdx!=null ? `${id} · ${TY(target.typology).label}` : id;
-  const msg = stage==="alloc" ? `${label} allocated — sent to Contributor Review` : `${label} characterisation validated`;
+  const msg = stage==="alloc" ? `${label} allocated — sent to Compliance` : `${label} characterisation validated`;
   toast(msg,"ok",()=>{
     b.status=snap.status; b.doubtField=snap.doubtField; b.reviewReason=snap.reviewReason;
     target.allocStatus=snap.allocStatus; target.allocDoubtField=snap.allocDoubtField; target.allocReviewReason=snap.allocReviewReason; target.branchStatus=snap.branchStatus;

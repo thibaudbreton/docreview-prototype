@@ -2797,7 +2797,7 @@ function renderPanel2(){
           <div class="fval">${cmpPillHTML(br.internal)}</div></div>`:""}
         <div class="next-step${next.act?"":" is-idle"}">${next.t}</div>
         ${next.act==="declare"?`<button class="cta blue" id="a-declare">✎ Declare what the client receives</button>`:""}
-        <button class="cta line" id="a-escalate"><i class=ic-ask></i> Escalate to client Q&amp;A</button>`;
+        <button class="cta line" id="a-escalate"><i class=ic-ask></i> Ask the client</button>`;
       b.querySelector("#a-escalate")?.addEventListener("click",()=>escalate(r,br));
       b.querySelector("#a-declare")?.addEventListener("click",()=>{ state.openForm="external"; state.externalPick=r.external||null; renderPanel2(); });
     }else if(br.status==="awaiting_qa"){
@@ -2870,12 +2870,11 @@ function renderPanel2(){
     if(br.status==="answered"&&br.resp)items.push({k:"tl-ok",who,what:`Responded — compliance "${CMP[br.internal]||"—"}".`,time:br.resp.date});
     if(br.status==="awaiting_qa")items.push({k:"tl-send",who,what:`Raised a question to the issuer — assignment blocked until answered.`,time:`${br.age} d ago`});
     if(br.status==="reassignment_needed")items.push({k:"tl-warn",who:"Contributor",what:`Returned the assignment — wrong allocation.`,time:`${br.age} d ago`});
-    items.push({k:"tl-send",who:"Thibaud Breton",what:`Assignment created for ${TY(br.typology).label}${e?` and sent to ${e.name}`:""}.`,time:`${br.age} d ago (export from Allocation)`});
+    items.push({k:"tl-send",who:"Thibaud Breton",what:`Assignment created for ${TY(br.typology).label}${e?` and sent to ${e.name}`:""}.`,time:`${br.age} d ago (validated in Allocation)`});
     b.innerHTML=`<div class="timeline">${items.map(i=>`<div class="tl-item ${i.k}"><div class="tl-who">${i.who}</div><div class="tl-what">${i.what}</div><div class="tl-time">${i.time}</div></div>`).join("")}</div>`;
   }else if(state.tab==="req"){
     b.innerHTML=`
-      <div class="lock-note"><i class=ic-lock></i> Frozen at review export — editable only through a new document version (Versions &amp; exchanges).</div>
-      <div class="frozen"><div class="fk">Type</div><div class="fv">${r.type}</div></div>
+      <div class="lock-note"><i class=ic-lock></i> The requirement text changes only through a new document version (Documents &amp; versions).</div>
       <div class="frozen"><div class="fk">Assignments</div><div class="fv">${r.branches.map(x=>TY(x.typology).label).join(", ")}</div></div>
       <div class="frozen"><div class="fk">Consolidated</div><div class="fv">${c.pending?`Pending — blocked by ${TY(c.blocking.typology).label} (${BST[c.blocking.status]})`:CMP[c.internal]}</div></div>
       <div class="frozen"><div class="fk">Source section</div><div class="fv">${r.sec}</div></div>
@@ -2904,7 +2903,7 @@ function renderPanel2(){
     // Chat never leaves the company and has no consequence, escalating does.
     b.innerHTML=`
       <div class="chat-scope-switch"><button class="on">Tender document</button><button>Company's internal documents</button></div>
-      <div class="set-empty"><div class="big">Chat isn't built yet</div><div>Read-only, ask-about-this-requirement chat — separate from "Escalate to client Q&amp;A" above, which leaves the company and blocks consolidation. This one never does either.</div></div>`;
+      <div class="set-empty"><div class="big">Chat isn't built yet</div><div>Read-only, ask-about-this-requirement chat — separate from "Ask the client", which files an official question in the Q&amp;A register. This one never does either.</div></div>`;
   }
 }
 /* Clarifications the client published to every bidder — questions asked by
