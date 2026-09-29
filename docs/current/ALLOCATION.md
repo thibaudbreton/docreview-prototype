@@ -89,6 +89,8 @@ ALLOC-021 — DEC-082 : **un partenaire externe est un système de la liste OBS 
 
 ALLOC-022 — DEC-084 : **pas de jalon « Finalize allocation »** ; la validation se fait exigence par exigence (pastille de statut, bouton du panneau, touche V, ou action groupée). Le panneau montre toujours l'étape suivante — grisée avec sa raison quand elle n'est pas possible. Critère : ALLOC-T30 — sur une exigence SIG à un système, valider la caractérisation fait apparaître « Validate allocation & send » ; une exigence Turnkey à deux systèmes montre une ligne par système ; aucun bouton Finalize nulle part.
 
+ALLOC-023 — DEC-091 : une relance au résultat identique ne dit rien ; le journal note « same result ». DEC-093 : un partenaire ajouté se retire des paramètres tant qu'aucune exigence ne lui est attribuée. DEC-094 : aucun bloc capturé ne se supprime à la main — on le reclasse en Information.
+
 ## Une allocation par organisation
 
 ALLOC-016 — DEC-060 : **une allocation est une organisation et la personne qui y répond.** Une exigence qui atteint trois organisations est **trois allocations à faire**, et le compte affiché est celui des organisations, pas celui des systèmes.

@@ -455,6 +455,8 @@ html[data-theme="light"] .logo-mark-light{display:block}
 :root{ --partner:#1b9aaa; --partner-soft:rgba(27,154,170,.14); }
 .pt-tag.partner{color:var(--partner);border-color:var(--partner);background:var(--partner-soft);letter-spacing:.2px}
 .pt-add{display:flex;gap:var(--space-2);max-width:420px}
+.pt-rm{margin-left:6px;color:inherit;opacity:.6;font-size:var(--text-xs);line-height:1}
+.pt-rm:hover{opacity:1}
 .pt-add .inp{flex:1}
 .inp,.sel,textarea.inp{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base);transition:border-color .15s}
 .inp:focus,.sel:focus,textarea.inp:focus{border-color:var(--accent)}
@@ -2729,7 +2731,14 @@ function renderPartnersSetting(){
   let list=[]; try{ list=window.parent.getPartners(CURRENT_PROJECT.id)||[]; }catch(e){}
   document.getElementById("cfg-partners-list").innerHTML=
     TK_MODEL_SYSTEMS.map(c=>`<span class="pt-tag" title="From the Turnkey model">${c}</span>`).join("")
-    + list.map(x=>`<span class="pt-tag partner" title="${x.label} — added for this tender, not part of the model">${x.code} · ${x.label}</span>`).join("");
+    + list.map(x=>`<span class="pt-tag partner" title="${x.label} — added for this tender, not part of the model">${x.code} · ${x.label}<button class="pt-rm" data-ptrm="${x.id}" title="Remove — only while no requirement is assigned to it">✕</button></span>`).join("");
+  /* DEC-093 — removal only while unused; otherwise say how many to reassign first */
+  document.querySelectorAll("[data-ptrm]").forEach(b=>b.addEventListener("click",()=>{
+    let res={error:"shell"}; try{ res=window.parent.removePartner(CURRENT_PROJECT.id, b.dataset.ptrm); }catch(e){}
+    if(res.error==="used"){ const n=window.parent.getPartnerUsage(CURRENT_PROJECT.id, b.dataset.ptrm); toast(`Still assigned to ${n} requirement${n>1?"s":""} — reassign ${n>1?"them":"it"} to another system first`,"warn"); return; }
+    if(res.error){ toast("Could not remove the partner","warn"); return; }
+    toast(`${res.removed.label} removed from the Turnkey OBS list`,"ok"); renderPartnersSetting();
+  }));
 }
 (function(){
   const btn=document.getElementById("cfg-partner-add"), inp=document.getElementById("cfg-partner-name");

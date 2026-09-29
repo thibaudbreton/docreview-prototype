@@ -1224,7 +1224,8 @@ function ptagCls(id){ return isPartner(id)?" partner":""; }
 document.addEventListener("mouseover",e=>{ const t=e.target.closest&&e.target.closest(".ptag.partner"); if(t&&!t.dataset.tip){ const x=PARTNERS.find(p=>p.code===t.textContent.trim()); if(x){ t.title=`${x.label} — added for this tender, not part of the Turnkey model. The AI never predicts it; the partner works outside the tool.`; t.dataset.tip="1"; } } });
 /* T2 — two separate axes.
    BST = progress (where the assignment stands). CMP = result (only meaningful once answered).
-   `awaiting_qa` is a progress status, never a verdict, and it blocks consolidation. */
+   `awaiting_qa` is a progress status, never a verdict. Since DEC-092 it holds
+   nothing up: the assignment consolidates on its verdict, not on the client. */
 const BST={proposed:"Proposed",assigned:"Assigned",awaiting_answer:"Awaiting answer",awaiting_qa:"Awaiting Q&A",reassignment_needed:"Reassignment needed",answered:"Answered"};
 /* TICKET-merge-expert-space-into-compliance.md — two-way verdict, not three. "R&D
    Needed" is not a value anymore; it's written as plain text inside a Compliant
@@ -1765,7 +1766,7 @@ function clientDecisionHTML(r){
    escalation is exactly the wrong move. */
 function nextStepFor(r, br){
   const c=consolidate(r);
-  if(br && br.status==="awaiting_qa") return {t:`<b>Waiting on the client.</b> Nothing to do here until the question comes back.`, act:null};
+  if(br && br.status==="awaiting_qa") return {t:`<b>A question is with the client.</b> It doesn't hold the assignment up — its contributor can give the verdict at any time.`, act:null};
   if(br && br.status==="reassignment_needed") return {t:`<b>Returned to you.</b> Reallocate it and send it back out.`, act:"reassign"};
   if(br && !isAnswered(br) && isPartner(br.typology))
     return {t:`<b>Waiting on ${esc(TY(br.typology).label)}, outside the tool.</b> When their answer comes back — email, Excel, a call — enter their verdict here.`, act:state.role==="pm"?"partner":null};
@@ -1806,8 +1807,8 @@ function notifItems(){
        n=>`<b>${n} assignments</b> returned by contributors — reallocate them`,
        "waiting on you", "reassign"),
     mk(brs.filter(isAwaitingQA), "var(--accent)",
-       b=>`<b>${b.req.id}</b> blocked on the client${b.qaRef?` — question ${b.qaRef}`:""}`,
-       n=>`<b>${n} assignments</b> blocked on the client`,
+       b=>`<b>${b.req.id}</b> has a question with the client${b.qaRef?` — ${b.qaRef}`:""}`,
+       n=>`<b>${n} assignments</b> have a question with the client`,
        "nothing due from you", "qa"),
   ].filter(Boolean);
 }
@@ -1847,7 +1848,7 @@ function renderNotifDrop(){
    client, returning an assignment, reallocating one and setting aside can be
    undone — from the toast's button or with Ctrl/⌘+Z, last done first. */
 var UNDO_STACK=[];
-const BR_UNDO_FIELDS=["status","internal","resp","qaRef","qaNote","reassignRequest","reassignComment","manager","age","reassignedAt"];
+const BR_UNDO_FIELDS=["status","internal","resp","qaRef","qaRefs","qaNote","reassignRequest","reassignComment","manager","age","reassignedAt"];
 function snapBranch(br){ const o={}; BR_UNDO_FIELDS.forEach(k=>o[k]=br[k]); return o; }
 function undoLast(){
   const u=UNDO_STACK.pop();
@@ -2801,10 +2802,10 @@ function renderPanel2(){
       b.querySelector("#a-declare")?.addEventListener("click",()=>{ state.openForm="external"; state.externalPick=r.external||null; renderPanel2(); });
     }else if(br.status==="awaiting_qa"){
       b.innerHTML=whoBlock+`
-        <div class="qa-block"><div class="qa-block-h"><i class=ic-ask></i> Blocked on the issuer</div>
+        <div class="qa-block"><div class="qa-block-h"><i class=ic-ask></i> Question with the client</div>
           <div class="qa-block-t">${esc(br.qaNote||"The contributor needs a precision from the tender issuer before answering.")}</div>
-          ${br.qaRef?`<div class="qa-block-ref">Question <b>${br.qaRef}</b> — see the Q&amp;A register</div>`:""}</div>
-        <div class="next-step is-idle">Counts as not answered, so it blocks consolidation of ${r.id}. <b>Nothing is due from you</b> until the client replies.</div>
+          ${(br.qaRefs||(br.qaRef?[br.qaRef]:[])).length?`<div class="qa-block-ref">Question${(br.qaRefs||[br.qaRef]).length>1?"s":""} <b>${(br.qaRefs||[br.qaRef]).join(", ")}</b> — see the Q&amp;A register</div>`:""}</div>
+        <div class="next-step is-idle">It doesn't hold anything up: ${r.id} consolidates on its contributor's verdict, not on the client's reply. <b>Nothing is due from you.</b></div>
         <a class="cta line" id="a-goqa" href="javascript:parent.route('qa')">→ Open the Q&amp;A register</a>`;
     }else if(br.status==="reassignment_needed"){
       // T5 — internal loop: the manager reallocates, the allocated system goes back out to a contributor.
@@ -2973,11 +2974,12 @@ function renderDecisionPanel(p,r,br){
   const theirQA=PUBLISHED_QA.filter(q=>q.reqs.includes(r.id));
   const qaN=ourQA.length+theirQA.length;
   const QA_ST={draft:"Draft",internal:"Internal review",sent:"Sent to the client",answered:"Answered"};
-  const myQ = br.status==="awaiting_qa" ? QA.find(q=>q.id===br.qaRef) : null;
+  // DEC-092 — several questions can be open on one assignment; none holds it up
+  const myQs = (br.qaRefs||(br.qaRef?[br.qaRef]:[])).map(id=>QA.find(q=>q.id===id)).filter(Boolean);
   const askForm=state.openForm!=="ask"?"":`
     <div class="inline-form" id="ask-form">
       <div class="if-label">Ask the client</div>
-      <div class="dp-truth">Official: it goes into the Q&amp;A register, the project team sends it, and consolidation of ${r.id} waits for the reply. You can still decide before it comes back.</div>
+      <div class="dp-truth">Official: it goes into the Q&amp;A register, the project team sends it, and it doesn't hold anything up — you can give your verdict at any time.</div>
       <textarea id="ask-text" rows="4" placeholder="Your question to the client — required"></textarea>
       <div class="form-actions"><button class="btn-cancel" id="ask-cancel">Cancel</button><button class="btn-submit" id="ask-submit">Add to the Q&amp;A register</button></div>
     </div>`;
@@ -3029,7 +3031,7 @@ function renderDecisionPanel(p,r,br){
         <span class="set-id">${r.id}</span>
         <button class="dp-para" id="dp-para" title="Open the clause in its document">§ ${esc(r.sec)}</button>
       </div>
-      ${myQ?`<div class="dp-asked"><i class=ic-ask></i> Question <b>${esc(myQ.id)}</b> is in the Q&amp;A register · ${esc(myQ.ans?"answered":(QA_ST[myQ.st]||myQ.st).toLowerCase())}. You can decide now, or wait for the reply.</div>`:""}
+      ${myQs.length?`<div class="dp-asked"><i class=ic-ask></i> ${myQs.length>1?`${myQs.length} questions`:"Question"} in the Q&amp;A register: ${myQs.map(q=>`<b>${esc(q.id)}</b> ${esc(q.ans?"answered":(QA_ST[q.st]||q.st).toLowerCase())}`).join(" · ")}. They don't hold your verdict up.</div>`:""}
       <div class="dp-label">Requirement${showOrig?` <span class="dp-label-l">· original, ${esc(origLang)}</span>`:""}</div>
       <div class="dp-text${showOrig?" is-orig":""}" ${showOrig?`lang="${TENDER_LANGUAGE}"`:""}>${esc(showOrig?r.textOriginal:r.text)}</div>
       <div class="dp-textbar">
@@ -3176,9 +3178,9 @@ function escalate(r,br,question){
     id=shared.id; } }catch(e){}
   QA.unshift({id,st:"draft",q:qtext,reqs:[r.id],
     branch:br?{req:r.id,typology:br.typology}:null,from:asker,date:"Today"});
-  if(br){ br.status="awaiting_qa"; br.qaRef=id; br.qaNote=br.qaNote||(state.role==="contributor"
-      ? "The contributor asked the client before answering — awaiting the client's reply."
-      : "Escalated to the issuer by the manager — awaiting an answer before this branch can be closed."); }
+  if(br){ br.status="awaiting_qa"; br.qaRefs=[...(br.qaRefs||(br.qaRef?[br.qaRef]:[])), id]; br.qaRef=id; br.qaNote=br.qaNote||(state.role==="contributor"
+      ? "The contributor asked the client — the answer can come before or after the verdict."
+      : "Escalated to the client by the project manager — it doesn't hold the assignment up."); }
   toast(`${r.id}${br?` · ${TY(br.typology).label}`:""} — question ${id} added to the Q&A register as a draft`,"ok",()=>{
     const i=QA.findIndex(q=>q.id===id); if(i>=0) QA.splice(i,1);
     try{ if(window.parent.withdrawQuestion) window.parent.withdrawQuestion(pid,id); }catch(e){}
@@ -3284,6 +3286,8 @@ document.getElementById("nav2-toggle")?.addEventListener("click",()=>{ state.nav
 document.getElementById("settings2-toggle")?.addEventListener("click",()=>{ state.detailPanelCollapsed=!state.detailPanelCollapsed; applyFPanels(); });
 function refreshAll(){
   syncReassignRequestsFromShell();
+  if(PARTNERS.length){ const counts={}; REQS.forEach(r=>r.branches.forEach(b=>{ if(isPartner(b.typology)) counts[b.typology]=(counts[b.typology]||0)+1; }));
+    try{ window.parent.reportPartnerUsage(window.parent.getCurrentProject().id,"compliance",counts); }catch(e){} }   // DEC-093
   if(typeof syncCustomColumns==="function"){ const want=state.role; if(refreshAll._role!==want){ refreshAll._role=want; syncCustomColumns(); applyFCols(); } }
   renderNav2();renderTable2();renderDoc2();renderPanel2();renderTriage2();renderExportReady();
   renderAdvFilterBanner();

@@ -239,7 +239,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners();
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage();
   reassignRequests.length=0; sharedQuestions={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -272,6 +272,21 @@ window.getCustomFields = (projectId)=>{ const k=projectId||"_"; if(!customFields
 // partner on the Turnkey demo tender so the flow can be shown end to end.
 function seedPartners(){ return { stb2026:[{id:"p_voltara", code:"VOLTARA", label:"Voltara Engineering"}] }; }
 let partners = seedPartners();
+// DEC-093 — a partner can be removed only while no requirement is assigned to it.
+// Allocation and Compliance each report how many of their requirements use each
+// partner (they own their data; the shell only keeps the counts). Seeded with the
+// demo's own use so Settings knows before either screen has been opened.
+function seedPartnerUsage(){ return { stb2026:{ p_voltara:{allocation:2, compliance:2} } }; }
+let partnerUsage = seedPartnerUsage();
+window.reportPartnerUsage = (projectId, screen, counts)=>{ const k=projectId||"_"; const u=partnerUsage[k]=partnerUsage[k]||{};
+  (window.getPartners(k)||[]).forEach(p=>{ u[p.id]=u[p.id]||{}; u[p.id][screen]=counts[p.id]||0; }); };
+window.getPartnerUsage = (projectId, partnerId)=>{ const u=((partnerUsage[projectId||"_"]||{})[partnerId])||{}; return Math.max(0,...Object.values(u)); };
+window.removePartner = (projectId, partnerId)=>{
+  if(window.getPartnerUsage(projectId, partnerId)>0) return {error:"used"};
+  const list=window.getPartners(projectId), i=list.findIndex(x=>x.id===partnerId);
+  if(i<0) return {error:"missing"};
+  const [gone]=list.splice(i,1); return {removed:gone};
+};
 window.getPartners = (projectId)=>{ const k=projectId||"_"; if(!partners[k]) partners[k]=[]; return partners[k]; };
 window.addPartner = (projectId, name)=>{
   const list=window.getPartners(projectId), label=String(name||"").trim();
