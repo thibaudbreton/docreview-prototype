@@ -239,8 +239,8 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners();
-  reassignRequests.length=0;
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={};
+  reassignRequests.length=0; sharedQuestions={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
   window.route("home");
@@ -272,6 +272,26 @@ window.getCustomFields = (projectId)=>{ const k=projectId||"_"; if(!customFields
 // partner on the Turnkey demo tender so the flow can be shown end to end.
 function seedPartners(){ return { stb2026:[{id:"p_voltara", code:"VOLTARA", label:"Voltara Engineering"}] }; }
 let partners = seedPartners();
+// DEC-093 — a partner can be removed only while no requirement is assigned to it.
+// Allocation and Compliance each report how many of their requirements use each
+// partner (they own their data; the shell only keeps the counts). Seeded with the
+// demo's own use so Settings knows before either screen has been opened.
+function seedPartnerUsage(){ return { stb2026:{ p_voltara:{allocation:2, compliance:2} } }; }
+let partnerUsage = seedPartnerUsage();
+window.reportPartnerUsage = (projectId, screen, counts)=>{ const k=projectId||"_"; const u=partnerUsage[k]=partnerUsage[k]||{};
+  (window.getPartners(k)||[]).forEach(p=>{ u[p.id]=u[p.id]||{}; u[p.id][screen]=counts[p.id]||0; }); };
+// DEC-098 — Allocation reports its real progress so the dashboard's Allocation
+// card can turn Done when every requirement is allocated (Finalize is gone).
+let allocProgress = {};
+window.reportAllocationProgress = (projectId, p)=>{ allocProgress[projectId||"_"]=p; };
+window.getAllocationProgress = (projectId)=>allocProgress[projectId||"_"]||null;
+window.getPartnerUsage = (projectId, partnerId)=>{ const u=((partnerUsage[projectId||"_"]||{})[partnerId])||{}; return Math.max(0,...Object.values(u)); };
+window.removePartner = (projectId, partnerId)=>{
+  if(window.getPartnerUsage(projectId, partnerId)>0) return {error:"used"};
+  const list=window.getPartners(projectId), i=list.findIndex(x=>x.id===partnerId);
+  if(i<0) return {error:"missing"};
+  const [gone]=list.splice(i,1); return {removed:gone};
+};
 window.getPartners = (projectId)=>{ const k=projectId||"_"; if(!partners[k]) partners[k]=[]; return partners[k]; };
 window.addPartner = (projectId, name)=>{
   const list=window.getPartners(projectId), label=String(name||"").trim();
@@ -307,6 +327,21 @@ window.pushReassignRequest = function(req){
   return req;
 };
 window.getReassignRequests = ()=>reassignRequests;
+// DEC-088 — a question to the client raised on Compliance goes into the tender's
+// Q&A register as a draft, for the project manager to review, merge and send in a
+// batch. The shell is the mailbox between the two screens (same idea as the
+// reassignment requests above); ids are given here so both screens agree.
+let sharedQuestions = {};
+window.pushQuestion = function(projectId, q){
+  const k=projectId||"_", list=sharedQuestions[k]=sharedQuestions[k]||[];
+  q.id = q.id || ('QA-'+(50+list.length+1));
+  list.push(q); return q;
+};
+window.getQuestions = (projectId)=>sharedQuestions[projectId||"_"]||[];
+window.withdrawQuestion = function(projectId, id){
+  const l=sharedQuestions[projectId||"_"]; if(!l) return;
+  const i=l.findIndex(x=>x.id===id); if(i>=0) l.splice(i,1);
+};
 window.updateReassignRequest = function(id, patch){
   const r = reassignRequests.find(x=>x.id===id);
   if(r) Object.assign(r, patch);

@@ -9,12 +9,13 @@
 | ACC-003 | Casting permanent, après création ; absence de staffing ne bloque pas globalement la capture. | DOC/OBS |
 | ACC-004 | Personne choisie dans l'annuaire, rattachée à un système et à un périmètre optionnel. | Maquette, DEC-003 |
 | ACC-005 | Même personne/système/périmètre non ajouté deux fois ; rattachements multiples possibles. | OBS |
-| ACC-006 | Retrait d'une personne avec travail assigné exige une réaffectation préalable dans la maquette. Appliquer au responsable unique de l'exigence. | OBS + DEC-010 |
+| ACC-006 | Retrait d'une personne avec travail assigné exige une réaffectation préalable dans la maquette. S'applique à la personne de chaque OBS, responsable de sa conformité. | OBS + DEC-087 |
 | ACC-007 | Un contributeur peut **tout consulter dans son projet**, mais ne peut pas modifier les autres systèmes. Aucun accès aux projets dont il n'est pas membre n'est déduit. | DEC-012 |
 | ACC-008 | PM : casting du projet. Contributeurs : gestion des rattachements dans leur système. Aucun manager de système obligatoire. | DEC-003 |
 | ACC-009 | Tous les contributeurs du système peuvent répondre ; la personne responsable de l'exigence, si désignée, garde le suivi. | DEC-002/010 |
 | ACC-010 | Pas de hiérarchie de permissions entre contributeurs d'un système ; hiérarchie organisationnelle hors SRM. | DEC-012 |
 | ACC-011 | Le PM peut saisir et modifier directement des réponses, en plus de remplacer/verrouiller le verdict final. | DEC-013 |
+| ACC-012 | **La nature et la classe d'une exigence appartiennent au chef de projet.** Un contributeur (le responsable d'un système) les voit mais ne peut pas les modifier — ni dans le détail, ni dans la table, ni par l'action groupée « Classify », ni dans la vue Document. Elles déterminent ce que le modèle dérive pour chaque système. | DEC-086 |
 
 ## Matrice métier
 

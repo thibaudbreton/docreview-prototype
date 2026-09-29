@@ -1224,7 +1224,8 @@ function ptagCls(id){ return isPartner(id)?" partner":""; }
 document.addEventListener("mouseover",e=>{ const t=e.target.closest&&e.target.closest(".ptag.partner"); if(t&&!t.dataset.tip){ const x=PARTNERS.find(p=>p.code===t.textContent.trim()); if(x){ t.title=`${x.label} — added for this tender, not part of the Turnkey model. The AI never predicts it; the partner works outside the tool.`; t.dataset.tip="1"; } } });
 /* T2 — two separate axes.
    BST = progress (where the assignment stands). CMP = result (only meaningful once answered).
-   `awaiting_qa` is a progress status, never a verdict, and it blocks consolidation. */
+   `awaiting_qa` is a progress status, never a verdict. Since DEC-092 it holds
+   nothing up: the assignment consolidates on its verdict, not on the client. */
 const BST={proposed:"Proposed",assigned:"Assigned",awaiting_answer:"Awaiting answer",awaiting_qa:"Awaiting Q&A",reassignment_needed:"Reassignment needed",answered:"Answered"};
 /* TICKET-merge-expert-space-into-compliance.md — two-way verdict, not three. "R&D
    Needed" is not a value anymore; it's written as plain text inside a Compliant
@@ -1765,7 +1766,7 @@ function clientDecisionHTML(r){
    escalation is exactly the wrong move. */
 function nextStepFor(r, br){
   const c=consolidate(r);
-  if(br && br.status==="awaiting_qa") return {t:`<b>Waiting on the client.</b> Nothing to do here until the question comes back.`, act:null};
+  if(br && br.status==="awaiting_qa") return {t:`<b>A question is with the client.</b> It doesn't hold the assignment up — its contributor can give the verdict at any time.`, act:null};
   if(br && br.status==="reassignment_needed") return {t:`<b>Returned to you.</b> Reallocate it and send it back out.`, act:"reassign"};
   if(br && !isAnswered(br) && isPartner(br.typology))
     return {t:`<b>Waiting on ${esc(TY(br.typology).label)}, outside the tool.</b> When their answer comes back — email, Excel, a call — enter their verdict here.`, act:state.role==="pm"?"partner":null};
@@ -1806,8 +1807,8 @@ function notifItems(){
        n=>`<b>${n} assignments</b> returned by contributors — reallocate them`,
        "waiting on you", "reassign"),
     mk(brs.filter(isAwaitingQA), "var(--accent)",
-       b=>`<b>${b.req.id}</b> blocked on the client${b.qaRef?` — question ${b.qaRef}`:""}`,
-       n=>`<b>${n} assignments</b> blocked on the client`,
+       b=>`<b>${b.req.id}</b> has a question with the client${b.qaRef?` — ${b.qaRef}`:""}`,
+       n=>`<b>${n} assignments</b> have a question with the client`,
        "nothing due from you", "qa"),
   ].filter(Boolean);
 }
@@ -1847,7 +1848,7 @@ function renderNotifDrop(){
    client, returning an assignment, reallocating one and setting aside can be
    undone — from the toast's button or with Ctrl/⌘+Z, last done first. */
 var UNDO_STACK=[];
-const BR_UNDO_FIELDS=["status","internal","resp","qaRef","qaNote","reassignRequest","reassignComment","manager","age","reassignedAt"];
+const BR_UNDO_FIELDS=["status","internal","resp","qaRef","qaRefs","qaNote","reassignRequest","reassignComment","manager","age","reassignedAt"];
 function snapBranch(br){ const o={}; BR_UNDO_FIELDS.forEach(k=>o[k]=br[k]); return o; }
 function undoLast(){
   const u=UNDO_STACK.pop();
@@ -2801,10 +2802,10 @@ function renderPanel2(){
       b.querySelector("#a-declare")?.addEventListener("click",()=>{ state.openForm="external"; state.externalPick=r.external||null; renderPanel2(); });
     }else if(br.status==="awaiting_qa"){
       b.innerHTML=whoBlock+`
-        <div class="qa-block"><div class="qa-block-h"><i class=ic-ask></i> Blocked on the issuer</div>
+        <div class="qa-block"><div class="qa-block-h"><i class=ic-ask></i> Question with the client</div>
           <div class="qa-block-t">${esc(br.qaNote||"The contributor needs a precision from the tender issuer before answering.")}</div>
-          ${br.qaRef?`<div class="qa-block-ref">Question <b>${br.qaRef}</b> — see the Q&amp;A register</div>`:""}</div>
-        <div class="next-step is-idle">Counts as not answered, so it blocks consolidation of ${r.id}. <b>Nothing is due from you</b> until the client replies.</div>
+          ${(br.qaRefs||(br.qaRef?[br.qaRef]:[])).length?`<div class="qa-block-ref">Question${(br.qaRefs||[br.qaRef]).length>1?"s":""} <b>${(br.qaRefs||[br.qaRef]).join(", ")}</b> — see the Q&amp;A register</div>`:""}</div>
+        <div class="next-step is-idle">It doesn't hold anything up: ${r.id} consolidates on its contributor's verdict, not on the client's reply. <b>Nothing is due from you.</b></div>
         <a class="cta line" id="a-goqa" href="javascript:parent.route('qa')">→ Open the Q&amp;A register</a>`;
     }else if(br.status==="reassignment_needed"){
       // T5 — internal loop: the manager reallocates, the allocated system goes back out to a contributor.
@@ -2973,11 +2974,12 @@ function renderDecisionPanel(p,r,br){
   const theirQA=PUBLISHED_QA.filter(q=>q.reqs.includes(r.id));
   const qaN=ourQA.length+theirQA.length;
   const QA_ST={draft:"Draft",internal:"Internal review",sent:"Sent to the client",answered:"Answered"};
-  const myQ = br.status==="awaiting_qa" ? QA.find(q=>q.id===br.qaRef) : null;
+  // DEC-092 — several questions can be open on one assignment; none holds it up
+  const myQs = (br.qaRefs||(br.qaRef?[br.qaRef]:[])).map(id=>QA.find(q=>q.id===id)).filter(Boolean);
   const askForm=state.openForm!=="ask"?"":`
     <div class="inline-form" id="ask-form">
       <div class="if-label">Ask the client</div>
-      <div class="dp-truth">Official: it goes into the Q&amp;A register, the project team sends it, and consolidation of ${r.id} waits for the reply. You can still decide before it comes back.</div>
+      <div class="dp-truth">Official: it goes into the Q&amp;A register, the project team sends it, and it doesn't hold anything up — you can give your verdict at any time.</div>
       <textarea id="ask-text" rows="4" placeholder="Your question to the client — required"></textarea>
       <div class="form-actions"><button class="btn-cancel" id="ask-cancel">Cancel</button><button class="btn-submit" id="ask-submit">Add to the Q&amp;A register</button></div>
     </div>`;
@@ -3029,7 +3031,7 @@ function renderDecisionPanel(p,r,br){
         <span class="set-id">${r.id}</span>
         <button class="dp-para" id="dp-para" title="Open the clause in its document">§ ${esc(r.sec)}</button>
       </div>
-      ${myQ?`<div class="dp-asked"><i class=ic-ask></i> Question <b>${esc(myQ.id)}</b> is in the Q&amp;A register · ${esc(myQ.ans?"answered":(QA_ST[myQ.st]||myQ.st).toLowerCase())}. You can decide now, or wait for the reply.</div>`:""}
+      ${myQs.length?`<div class="dp-asked"><i class=ic-ask></i> ${myQs.length>1?`${myQs.length} questions`:"Question"} in the Q&amp;A register: ${myQs.map(q=>`<b>${esc(q.id)}</b> ${esc(q.ans?"answered":(QA_ST[q.st]||q.st).toLowerCase())}`).join(" · ")}. They don't hold your verdict up.</div>`:""}
       <div class="dp-label">Requirement${showOrig?` <span class="dp-label-l">· original, ${esc(origLang)}</span>`:""}</div>
       <div class="dp-text${showOrig?" is-orig":""}" ${showOrig?`lang="${TENDER_LANGUAGE}"`:""}>${esc(showOrig?r.textOriginal:r.text)}</div>
       <div class="dp-textbar">
@@ -3162,17 +3164,26 @@ function renderDecisionPanel(p,r,br){
 /* escalate a specific BRANCH to the client Q&A: the assignment does not change, but the
    branch becomes blocked on the issuer and therefore stops counting as answered */
 function escalate(r,br,question){
-  const id="QA-0"+(QA.length+2);
+  /* DEC-088 — the question enters the tender's Q&A register as a draft (via the
+     shell), where the project manager reviews and sends it; the id comes from
+     there so both screens name it the same. */
+  const pid=(function(){ try{ return window.parent.getCurrentProject().id; }catch(e){ return null; } })();
+  let id="QA-0"+(QA.length+2);
   const beforeE=br?snapBranch(br):null;
   const seed=(br&&br.resp)?br.resp.note.split(".")[0]+".":r.text.slice(0,80)+"…";
   const asker=state.role==="contributor"?((MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).name):"Thibaud Breton";
-  QA.unshift({id,st:"draft",q:question||`[Draft] Clarification needed on ${r.id}: ${seed}`,reqs:[r.id],
+  const qtext=question||`[Draft] Clarification needed on ${r.id}: ${seed}`;
+  try{ if(window.parent!==window && window.parent.pushQuestion){
+    const shared=window.parent.pushQuestion(pid,{st:"draft",q:qtext,refs:[{req:r.id,typology:br?br.typology:null}],from:asker,date:"Today",origin:"compliance"});
+    id=shared.id; } }catch(e){}
+  QA.unshift({id,st:"draft",q:qtext,reqs:[r.id],
     branch:br?{req:r.id,typology:br.typology}:null,from:asker,date:"Today"});
-  if(br){ br.status="awaiting_qa"; br.qaRef=id; br.qaNote=br.qaNote||(state.role==="contributor"
-      ? "The contributor asked the client before answering — awaiting the client's reply."
-      : "Escalated to the issuer by the manager — awaiting an answer before this branch can be closed."); }
-  toast(`${r.id}${br?` · ${TY(br.typology).label}`:""} escalated — draft question ${id} created`,"ok",()=>{
+  if(br){ br.status="awaiting_qa"; br.qaRefs=[...(br.qaRefs||(br.qaRef?[br.qaRef]:[])), id]; br.qaRef=id; br.qaNote=br.qaNote||(state.role==="contributor"
+      ? "The contributor asked the client — the answer can come before or after the verdict."
+      : "Escalated to the client by the project manager — it doesn't hold the assignment up."); }
+  toast(`${r.id}${br?` · ${TY(br.typology).label}`:""} — question ${id} added to the Q&A register as a draft`,"ok",()=>{
     const i=QA.findIndex(q=>q.id===id); if(i>=0) QA.splice(i,1);
+    try{ if(window.parent.withdrawQuestion) window.parent.withdrawQuestion(pid,id); }catch(e){}
     if(br) Object.assign(br,beforeE);
     refreshAll(); });
   refreshAll();
@@ -3275,6 +3286,8 @@ document.getElementById("nav2-toggle")?.addEventListener("click",()=>{ state.nav
 document.getElementById("settings2-toggle")?.addEventListener("click",()=>{ state.detailPanelCollapsed=!state.detailPanelCollapsed; applyFPanels(); });
 function refreshAll(){
   syncReassignRequestsFromShell();
+  if(PARTNERS.length){ const counts={}; REQS.forEach(r=>r.branches.forEach(b=>{ if(isPartner(b.typology)) counts[b.typology]=(counts[b.typology]||0)+1; }));
+    try{ window.parent.reportPartnerUsage(window.parent.getCurrentProject().id,"compliance",counts); }catch(e){} }   // DEC-093
   if(typeof syncCustomColumns==="function"){ const want=state.role; if(refreshAll._role!==want){ refreshAll._role=want; syncCustomColumns(); applyFCols(); } }
   renderNav2();renderTable2();renderDoc2();renderPanel2();renderTriage2();renderExportReady();
   renderAdvFilterBanner();
@@ -3469,7 +3482,13 @@ function cfStore(){
   try{ if(window.parent!==window && window.parent.getCustomFields) return window.parent.getCustomFields(window.parent.getCurrentProject().id); }catch(e){}
   window.__cfLocal=window.__cfLocal||{defs:[],values:{},seq:0}; return window.__cfLocal;
 }
-function cfDefs(){ return cfStore().defs.filter(d=>d.phase==="compliance"); }
+/* DEC-097 — one set of custom columns for the tender, shared by Allocation and
+   Compliance (same values). A column shows by default on the screen it was
+   created on; on the other it starts hidden and can be turned on from View —
+   that choice is kept on the definition (d.shownIn), per screen. */
+function cfDefs(){ return cfStore().defs; }
+function cfShownHere(d){ return d.shownIn ? d.shownIn["compliance"]!==false : d.phase==="compliance"; }
+function cfRememberVisibility(){ cfDefs().forEach(d=>{ d.shownIn=d.shownIn||{}; d.shownIn["compliance"]=!state.colCollapsed.has(cfKey(d.id)); }); }
 function cfDef(id){ return cfDefs().find(d=>d.id===id)||null; }
 function cfKey(id){ return "cf_"+id; }
 function cfHas(v){ return v!=null && v!=="" && !(Array.isArray(v)&&!v.length); }
@@ -3491,6 +3510,9 @@ function syncCustomColumns(){
   const prune=f=>{ if(!f||!f.items) return f; f.items=f.items.filter(it=>it.items?true:!(String(it.field).startsWith("cf_")&&!keys.has(it.field))); f.items.forEach(it=>{ if(it.items) prune(it); }); return f; };
   prune(state.advFilter);
   CF_SYNCED.clear();
+  // first time a column is met on this screen: apply its default visibility
+  window.__cfSeen = window.__cfSeen || new Set();
+  defs.forEach(d=>{ if(window.__cfSeen.has(d.id)) return; window.__cfSeen.add(d.id); if(!cfShownHere(d)) state.colCollapsed.add(cfKey(d.id)); });
   defs.forEach(d=>{
     const k=cfKey(d.id), list=d.type==="list";
     if(!F_RCOLS_BY_KEY[k]){ const c={k,w:"150px"}; F_RCOLS.push(c); F_RCOLS_BY_KEY[k]=c; }
@@ -3513,7 +3535,7 @@ function syncCustomColumns(){
     defs.forEach(d=>{
       const k=cfKey(d.id), cell=document.createElement("div");
       cell.className=`rcell c-${k}`; cell.dataset.col=k; cell.dataset.cfhead=d.id;
-      cell.title=`${d.name} — a column of this tender's own, Compliance only. Entered by people, never by the AI.`;
+      cell.title=`${d.name} — a column of this tender's own, shared by Allocation and Compliance. Entered by people, never by the AI.`;
       cell.innerHTML=`<span class="cl">${esc(d.name)}</span>${state.role==="pm"?`<button class="cf-edit" data-cfedit="${d.id}" title="Edit or delete this column">✎</button>`:""}`;
       head.appendChild(cell);
       cell.querySelector("[data-cfedit]")?.addEventListener("click",e=>{ e.stopPropagation(); cfOpenEditor(d.id); });
@@ -3587,7 +3609,7 @@ function cfRenderEditor(){
   const m=document.getElementById("cf-modal"), E=cfEditor; if(!m||!E) return;
   const editing=!!E.id, used=editing?cfUsage(E.id):0, typeLocked=editing&&used>0, multiLocked=editing&&E.multi&&cfMultiHeld(E.id)>0;
   if(E.confirmDelete){
-    m.innerHTML=`<div class="modal-head"><h3>Delete “${esc(E.name)}”?</h3><p>This removes the column from this tender's Compliance table.</p></div>
+    m.innerHTML=`<div class="modal-head"><h3>Delete “${esc(E.name)}”?</h3><p>This removes the column from this tender's Allocation and Compliance tables.</p></div>
       <div class="cf-danger">${used?`<b>${used} requirement${used>1?"s hold":" holds"} a value in this column.</b> Deleting the column deletes ${used>1?"all "+used+" values":"that value"} with it. This cannot be undone.`:`<b>No requirement holds a value yet</b> — only the column itself goes.`}</div>
       <div class="modal-foot"><button class="btn-ghost" id="cf-keep">Keep it</button><button class="btn-primary" id="cf-del-go" style="background:var(--warn)">Delete column${used?` and ${used} value${used>1?"s":""}`:""}</button></div>`;
     m.querySelector("#cf-keep").onclick=()=>{ E.confirmDelete=false; cfRenderEditor(); };
@@ -3600,7 +3622,7 @@ function cfRenderEditor(){
   }
   const optRows=E.options.map((o,i)=>{ const n=editing?cfOptionUsage(E.id,o):0;
     return `<div class="cf-opt-row"><span class="t">${esc(o)}</span>${n?`<span class="u">used by ${n}</span>`:""}<button class="mini-btn" data-cfoptrm="${i}" title="${n?`In use on ${n} requirement${n>1?"s":""} — clear those values first`:"Remove this option"}">✕</button></div>`; }).join("");
-  m.innerHTML=`<div class="modal-head"><h3>${editing?"Edit column":"New column"}</h3><p>A column of this tender's own, in Compliance only.</p></div>
+  m.innerHTML=`<div class="modal-head"><h3>${editing?"Edit column":"New column"}</h3><p>A column of this tender's own, shared with Allocation.</p></div>
     <div class="modal-body">
       <div class="field"><label>Name</label><input type="text" class="ui-input" id="cf-name" value="${esc(E.name)}" placeholder="e.g. Commercial risk"></div>
       <div class="field"><label>Type</label>
@@ -3609,7 +3631,7 @@ function cfRenderEditor(){
       ${E.type==="list"?`<div class="field"><label>Options</label>${optRows||`<div class="cf-hint">No option yet.</div>`}
         <div class="cf-opt-add"><input type="text" class="ui-input" id="cf-opt-new" placeholder="Add an option…"><button class="mini-btn" id="cf-opt-add">Add</button></div>
         <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:var(--text-sm);text-transform:none;letter-spacing:0;font-weight:500;color:var(--text-2)"><input type="checkbox" id="cf-multi" ${E.multi?"checked":""} ${multiLocked?"disabled":""}> Allow several values per requirement</label></div>`:""}
-      <div class="cf-scope">This tender only, Compliance only — Allocation won't show it. Internal: never ticked by default in the export. Always optional; the AI never fills it.</div>
+      <div class="cf-scope">This tender only. Shown here; Allocation has it too, with the same values, hidden until turned on from its View menu. Internal: never ticked by default in the export. Always optional; the AI never fills it.</div>
     </div>
     <div class="modal-foot">${editing?`<button class="btn-ghost cf-del" id="cf-del">Delete column…</button>`:""}<button class="btn-ghost" id="cf-cancel">Cancel</button><button class="btn-primary" id="cf-save">${editing?"Save":"Create column"}</button></div>`;
   m.querySelector("#cf-name").addEventListener("input",e=>{ E.name=e.target.value; });
@@ -3755,7 +3777,7 @@ function renderFColumnsPanel(){
       ${TE.reorderableColumnListHTML(F_COLUMN_TOGGLE_DEFS,state.colOrder,state.colCollapsed)}
       ${Object.keys(fTableLayout().widths).length?`<button class="mini-btn" id="f-reset-widths" style="margin-top:8px">Reset column widths</button>`:""}
     </div>`;
-  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyFCols(); renderFColumnsPanel(); });
+  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ cfRememberVisibility(); applyFCols(); renderFColumnsPanel(); });
   p.querySelector("#f-reset-widths")?.addEventListener("click",e=>{ e.stopPropagation(); const w=fTableLayout().widths; Object.keys(w).forEach(k=>delete w[k]); applyFCols(); renderFColumnsPanel(); toast("Column widths back to default","ok"); });
 }
 document.getElementById("f-cols-btn").addEventListener("click",e=>{ e.stopPropagation(); fColsPanelState.open=!fColsPanelState.open; renderFColumnsPanel(); });

@@ -8,7 +8,7 @@ Spec reçue le 23 septembre 2026 (`SPEC-custom-columns.md`), reprise ici avec le
 
 Une **définition de champ** créée par un chef de projet, qui porte une donnée **saisie par des humains** sur chaque exigence.
 
-- **Portée : un tender, une phase.** Une colonne créée dans Allocation n'existe que dans Allocation, sur ce tender. Elle n'apparaît pas dans Compliance et ne passe pas au tender suivant.
+- **Portée : un tender, les deux étapes** (DEC-097, remplace « une phase »). Une colonne appartient au tender et porte les mêmes valeurs dans Allocation et Compliance. Elle est visible par défaut sur l'écran où elle a été créée et masquée par défaut sur l'autre, où le menu View l'affiche ; ce choix est retenu par écran. Elle ne passe pas au tender suivant.
 - **Deux types** : **texte libre** et **liste** — un ensemble fermé d'options défini à la création. Une liste est à **choix unique ou multiple** (DEC-066).
 - **Seuls les chefs de projet** créent, modifient et suppriment les colonnes. Les contributeurs les remplissent, dans leur périmètre, comme n'importe quel champ.
 - **L'IA ne les remplit jamais.** Pas de confiance, pas de doute, et elles ne font jamais passer une exigence « à revoir ».
@@ -80,3 +80,4 @@ Construit **dans Allocation uniquement** (DEC-064) ; Compliance viendra ensuite 
 - CUST-T09 : une valeur survit à la navigation entre écrans et à la remise à zéro d'une exigence par une nouvelle version.
 - CUST-T10 : une colonne personnalisée se remplit entièrement au clavier : l'atteindre aux flèches, l'éditer avec Entrée, valider en descendant, annuler avec Échap — y compris une liste à choix multiple.
 - CUST-T11 : dans Compliance, une colonne créée n'apparaît que dans Compliance ; à l'export, elle est proposée décochée et marquée interne.
+- CUST-T12 : une colonne créée dans Allocation apparaît dans Compliance masquée, avec les mêmes valeurs ; l'afficher depuis View y reste retenu d'une visite à l'autre ; la supprimer la retire des deux écrans (DEC-097).

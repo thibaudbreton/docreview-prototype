@@ -1450,6 +1450,11 @@ body.restricted .restrict-banner{display:flex}
 .cf-edit{margin-left:2px;padding:0 4px;border-radius:var(--radius-sm);color:var(--text-3);font-size:var(--text-xs);line-height:1.6}
 .cf-edit:hover{color:var(--accent);background:var(--accent-soft)}
 body.restricted .cf-edit, body.restricted #cf-add-btn{display:none}
+body.restricted #sel-class-btn{display:none}   /* DEC-086 — no bulk Classify for a contributor */
+.char-ro{font-size:var(--text-xs);color:var(--text-3);margin-top:4px}
+.char-ro-ai{font-size:var(--text-xs);color:var(--ia);font-weight:600}
+.cls-flip:disabled{cursor:default;opacity:.75}
+.nat-pick:disabled{cursor:default}
 .cf-tag{margin-left:6px;font-size:10px;font-weight:600;color:var(--text-3);border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:0 6px}
 .cf-multi{width:100%;text-align:left;padding:3px 6px;border-radius:var(--radius-sm);border:1px solid transparent;color:var(--text);font-size:var(--text-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cf-multi:hover{border-color:var(--line-2)}
@@ -2645,7 +2650,8 @@ function runAllocationModel(productId, seedId){
 function rerunBlockedReason(leaf){
   const st=leaf&&leaf.branchStatus;
   if(st==="answered") return "an answer has been recorded";
-  if(st==="awaiting_qa") return "a question is with the client";
+  // DEC-089 — a question with the client no longer blocks: nothing is answered
+  // on this assignment yet, so a re-run loses nothing.
   const verdict=leaf&&(leaf.compliance||leaf.rollupCompliance);
   if(verdict&&verdict!=="pending") return "a verdict has been recorded";
   return null;
@@ -2676,6 +2682,8 @@ function rerunModelChoices(systemId){
 function applyRerunTo(b, branchIdx, productId){
   const branch=(b.branches||[])[branchIdx]; if(!branch) return null;
   const teams=ensureTeams(branch);
+  const sig=()=>JSON.stringify([branch.abs&&(branch.abs.id||branch.abs.v), branch.pbs&&(branch.pbs.id||branch.pbs.v), teams.map(t=>t.obs&&(t.obs.id||t.obs.v))]);
+  const before=sig();
   const r=runAllocationModel(productId, b.id+"#"+branchIdx); if(!r) return null;
   b.derivedWith={nature:blockNature(b), tech:b.tech??null};   // the derivation now matches the characterisation
   // one characterisation, shared by every organisation below it
@@ -2700,6 +2708,9 @@ function applyRerunTo(b, branchIdx, productId){
   });
   branch.obs=teams[0].obs;
   if((b.branches||[]).length===1 && teams.length===1) b.obs=teams[0].obs;
+  /* DEC-091 — a re-run that lands on the same ABS / PBS / OBS says nothing:
+     the journal records it, no toast. */
+  r.changed = sig()!==before;
   return r;
 }
 
@@ -3487,7 +3498,13 @@ function deleteAllocationData(b){
   delete b.pbs; delete b.abs; delete b.obs; delete b.domain;
 }
 /* reclassify a block between natures (AI mis-detection correction) */
+/* DEC-086 — nature and class are the project manager's: a contributing
+   system reads them but cannot change them, anywhere (panel, table, bulk bar,
+   Document view). They drive what the model derives for every system. */
+function canCharacterise(){ return !!isAdmin(); }
+function charDenied(){ toast("Nature and class are set by the project manager","warn"); }
 function reclassify(id, nature){
+  if(!canCharacterise()){ charDenied(); return; }
   const f=findBlock(id); if(!f) return;
   const b=f.b, before=blockNature(b);
   // picking the type it already has is how an AI-detected type gets confirmed
@@ -4163,6 +4180,7 @@ function natureOptions(b){
 }
 function attachReclassify(el,b){
   const btn=el.querySelector(".nat-pick"); if(!btn) return;
+  if(!canCharacterise()){ btn.disabled=true; btn.title="Set by the project manager"; return; }
   btn.addEventListener("click",e=>{
     e.stopPropagation();
     document.querySelectorAll(".nat-menu").forEach(m=>m.remove());
@@ -4396,6 +4414,7 @@ function bulkSetTypology(pid){
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkSetClass(cls){
+  if(!canCharacterise()){ charDenied(); return; }
   let c=0;
   state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.tech=cls; f.b.techAI=false; markCharEdited(f.b); c++; } });
   toast(`Classification set to ${cls==="tech"?"Technical":"Non-technical"} for ${c} requirement${c>1?"s":""}`,"ok");
@@ -4537,7 +4556,7 @@ function rowInnerHTML(b){
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
     <div class="rcell c-id">${b.id}</div>
     <div class="rcell c-req">${caretHTML}${b.sourceImage?imgSrcBtn:`<div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div>`}<div class="req-badges">${imgRowActions}${badges}</div></div>
-    <div class="rcell c-class"><button class="cls-flip ${b.techAI?"ia":""}" data-clsflip="${b.id}" title="${b.techAI?"AI-detected, unconfirmed — ":""}Click to switch classification">${b.tech==="tech"?"Tech":"Non-tech"}</button></div>
+    <div class="rcell c-class"><button class="cls-flip ${b.techAI?"ia":""}" data-clsflip="${b.id}" ${canCharacterise()?"":"disabled"} title="${b.techAI?"AI-detected, unconfirmed — ":""}${canCharacterise()?"Click to switch classification":"Set by the project manager"}">${b.tech==="tech"?"Tech":"Non-tech"}</button></div>
     <div class="rcell c-typo"><button class="typo-cell" data-typocell="${b.id}" title="${escHtml((b.perim||[]).map(p=>TY(p).label).join(", ")||"No system yet")} — click to edit">${typoTags}${typoConf}</button></div>
     <div class="rcell c-abs">${TENDER_KEYS
       ? `<select class="cell-select" data-abs="${b.id}"><option value="">—</option>${TENDER_KEYS.absList.map(a=>`<option value="${a.id}" ${a.label===b.domain?"selected":""}>${escHtml(a.label)}</option>`).join("")}</select>`
@@ -5052,6 +5071,7 @@ function bindVRows(win){
   }));
   win.querySelectorAll("[data-clsflip]").forEach(btn=>btn.addEventListener("click",e=>{
     e.stopPropagation();
+    if(!canCharacterise()){ charDenied(); return; }
     const id=btn.dataset.clsflip, f=findBlock(id); if(!f)return;
     const before=f.b.tech, was=f.b.techAI;
     f.b.tech = before==="tech" ? "nontech" : "tech"; f.b.techAI=false; markCharEdited(f.b);
@@ -5383,6 +5403,7 @@ function pbsControlHTML(b, derivSrc){
    An AI-detected nature says so and can be confirmed in place. */
 function natureFieldHTML(b){
   const ai=b.typeAI && b.kind!=="image";
+  if(!canCharacterise()) return `<div class="field"><label>Nature</label><div class="fval">${NATURE_LABEL[blockNature(b)]||"—"}${ai?` <span class="char-ro-ai">· AI, unconfirmed</span>`:""}</div><div class="char-ro">Set by the project manager</div></div>`;
   return `<div class="field"><label>Nature</label>
     <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
     ${ai?`<div class="deriv-hint" style="display:flex;align-items:center;gap:8px;color:var(--ia)">Detected by the AI, not confirmed yet <button class="mini-btn" id="f-nature-confirm">Confirm</button></div>`:""}</div>`;
@@ -5391,6 +5412,7 @@ function natureFieldHTML(b){
    requirement's details (it was only in the Turnkey project-manager view,
    so a SIG tender never showed it). */
 function classFieldHTML(b){
+  if(!canCharacterise()) return `<div class="field"><label>Class</label><div class="fval">${b.tech==="tech"?"Technical":b.tech==="nontech"?"Non-technical":"— Not set —"}${b.techAI?` <span class="char-ro-ai">· AI, unconfirmed</span>`:""}</div><div class="char-ro">Set by the project manager</div></div>`;
   return `<div class="field"><label>Class</label>
     <select class="ui-select" id="f-tech">
       <option value="" ${b.tech==null?"selected":""} disabled>— Not set —</option>
@@ -5488,12 +5510,12 @@ function bindRerunControls(root, b){
     const blocked=branchRerunBlockedReason(branch);
     if(blocked){ toast(`Cannot re-run — ${blocked}.`,"warn"); return; }
     const borrowed = productSystem(productId)!==branch.typology;
-    applyRerunTo(b, idx, productId);
+    const res=applyRerunTo(b, idx, productId);
     // DEC-043 — the borrow leaves no persistent marker anywhere a reader looks;
     // the branch history is the one place it survives, and that is deliberate.
     pushBranchLog(b, MGR(VIEWER).name,
-      `Re-ran allocation with ${product.label}${borrowed?" (borrowed — this system has no model of its own)":""}`, "ok");
-    toast(`${b.id} — re-derived with ${product.label}`,"ok");
+      `Re-ran allocation with ${product.label}${borrowed?" (borrowed — this system has no model of its own)":""}${res&&!res.changed?" — same result":""}`, "ok");
+    if(res && res.changed) toast(`${b.id} — re-derived with ${product.label}`,"ok");
     refresh();
   }));
   document.addEventListener("click",()=>root.querySelectorAll(".rerun-menu.on").forEach(m=>m.classList.remove("on")),{once:true});
@@ -5501,9 +5523,9 @@ function bindRerunControls(root, b){
     const idx=+btn.dataset.rerunNow, product=PRODUCT(btn.dataset.product);
     const branch=(b.branches||[])[idx]; if(!branch||!product) return;
     const why=charChange(b);
-    applyRerunTo(b, idx, product.id);
-    pushBranchLog(b, MGR(VIEWER).name, `Re-ran allocation with ${product.label} after its ${why&&why.nature?"nature":"class"} changed`, "ok");
-    toast(`${b.id} — re-derived with ${product.label}`,"ok");
+    const res2=applyRerunTo(b, idx, product.id);
+    pushBranchLog(b, MGR(VIEWER).name, `Re-ran allocation with ${product.label} after its ${why&&why.nature?"nature":"class"} changed${res2&&!res2.changed?" — same result":""}`, "ok");
+    if(res2 && res2.changed) toast(`${b.id} — re-derived with ${product.label}`,"ok");
     refresh();
   }));
 }
@@ -5965,7 +5987,7 @@ function renderSettings(){
         <div class="fval">${s.num}. ${s.title} · <button class="peek-btn" id="goto-doc">View in document →</button></div></div>
       ${isReq&&!rmView&&!actView?`<div class="set-sep"></div>
       <div class="mgr-block" id="mgr-block">
-        <label class="mgr-lbl">Assigned to <span>· handles this requirement</span></label>
+        <label class="mgr-lbl">Assigned to <span>· responsible for its compliance</span></label>
         ${personSearchHTML("req-manager",b.manager)}
       </div>`:""}
       ${isReq && !isAdmin() ? proposeBlockHTML(b,hasBranches,myBranch) : ""}
@@ -6564,8 +6586,22 @@ function toast(msg,kind="ok",undo){
 /* =====================================================
    GLOBAL REFRESH
 ===================================================== */
+function reportPartnerUse(){
+  if(!PARTNERS.length) return;
+  const counts={};
+  SECTIONS.forEach(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x]).forEach(b=>{ (b.perim||[]).forEach(t=>{ if(isPartner(t)) counts[t]=(counts[t]||0)+1; }); }));
+  try{ window.parent.reportPartnerUsage(window.parent.getCurrentProject().id,"allocation",counts); }catch(e){}
+}
+function reportAllocProgress(){
+  try{
+    const reqsNow=SECTIONS.flatMap(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x])).filter(b=>blockNature(b)==="requirement");
+    window.parent.reportAllocationProgress(window.parent.getCurrentProject().id,{allocated:reqsNow.filter(isFullyAllocated).length,total:reqsNow.length});
+  }catch(e){}
+}
 function refresh(){
   syncReassignRequestsFromShell();
+  reportPartnerUse();
+  reportAllocProgress();   // DEC-098 — the dashboard card reads it   // DEC-093 — Settings refuses to remove a partner in use
   renderNav(); renderDoc(); renderReview(); renderSettings(); renderTriage();
 }
 
@@ -6642,15 +6678,15 @@ function bulkRerun(productId){
     const branches=b.branches||[];
     if(branches.length!==1){ noLeaf++; return; }   // several systems: ambiguous, leave it to the panel
     if(branchRerunBlockedReason(branches[0])){ skipped++; return; }
-    applyRerunTo(b, 0, productId);
-    pushBranchLog(b, MGR(VIEWER).name, `Re-ran allocation with ${product.label} (bulk)`, "ok");
-    done++;
+    const res=applyRerunTo(b, 0, productId);
+    pushBranchLog(b, MGR(VIEWER).name, `Re-ran allocation with ${product.label} (bulk)${res&&!res.changed?" — same result":""}`, "ok");
+    if(res && res.changed) done++;
   });
-  const parts=[`${done} re-derived with ${product.label}`];
-  if(skipped) parts.push(`${skipped} left alone — answered or waiting on the client`);
+  const parts=done?[`${done} re-derived with ${product.label}`]:[];   // unchanged ones are not mentioned (DEC-091)
+  if(skipped) parts.push(`${skipped} left alone — already answered`);
   if(noLeaf) parts.push(`${noLeaf} span several systems — re-run those from the panel`);
   if(notReq) parts.push(`${notReq} not requirement${notReq>1?"s":""} — nothing to derive`);
-  toast(parts.join(" · "), done?"ok":"warn");
+  if(parts.length) toast(parts.join(" · "), done?"ok":"warn");
   refresh();
 }
 (function(){
@@ -7245,7 +7281,7 @@ function renderColumnsPanel(){
     p.querySelectorAll("#pf-gseg button").forEach(x=>x.classList.toggle("on",x===b));
     renderReview();
   }));
-  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyCols(); renderColumnsPanel(); });
+  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ cfRememberVisibility(); applyCols(); renderColumnsPanel(); });
   p.querySelector("#pf-reset-widths")?.addEventListener("click",e=>{ e.stopPropagation(); const w=tableLayout().widths; Object.keys(w).forEach(k=>delete w[k]); applyCols(); renderReview(); renderColumnsPanel(); toast("Column widths back to default","ok"); });
 }
 document.getElementById("cols-btn")?.addEventListener("click",e=>{ e.stopPropagation(); colsPanelState.open=!colsPanelState.open; renderColumnsPanel(); });
@@ -7270,7 +7306,13 @@ function cfStore(){
   window.__cfLocal = window.__cfLocal || {defs:[],values:{},seq:0};
   return window.__cfLocal;
 }
-function cfDefs(){ return cfStore().defs.filter(d=>d.phase==="allocation"); }
+/* DEC-097 — one set of custom columns for the tender, shared by Allocation and
+   Compliance (same values). A column shows by default on the screen it was
+   created on; on the other it starts hidden and can be turned on from View —
+   that choice is kept on the definition (d.shownIn), per screen. */
+function cfDefs(){ return cfStore().defs; }
+function cfShownHere(d){ return d.shownIn ? d.shownIn["allocation"]!==false : d.phase==="allocation"; }
+function cfRememberVisibility(){ cfDefs().forEach(d=>{ d.shownIn=d.shownIn||{}; d.shownIn["allocation"]=!state.colCollapsed.has(cfKey(d.id)); }); }
 function cfDef(id){ return cfDefs().find(d=>d.id===id)||null; }
 const cfKey = id => "cf_"+id;
 function cfHas(v){ return v!=null && v!=="" && !(Array.isArray(v)&&!v.length); }
@@ -7305,6 +7347,9 @@ function syncCustomColumns(){
   const prune=f=>{ if(!f||!f.items) return f; f.items=f.items.filter(it=>it.items?true:!(String(it.field).startsWith("cf_")&&!keys.has(it.field))); f.items.forEach(it=>{ if(it.items) prune(it); }); return f; };
   prune(state.advFilter);
   CF_SYNCED.clear();
+  // first time a column is met on this screen: apply its default visibility
+  window.__cfSeen = window.__cfSeen || new Set();
+  defs.forEach(d=>{ if(window.__cfSeen.has(d.id)) return; window.__cfSeen.add(d.id); if(!cfShownHere(d)) state.colCollapsed.add(cfKey(d.id)); });
   defs.forEach(d=>{
     const k=cfKey(d.id), list=d.type==="list";
     if(!RCOLS_BY_KEY[k]){ const c={k,w:"150px"}; RCOLS.push(c); RCOLS_BY_KEY[k]=c; }
@@ -7454,7 +7499,7 @@ function cfRenderEditor(){
   const multiLocked=editing && E.multi && cfMultiHeld(E.id)>0;
   if(E.confirmDelete){
     m.innerHTML=`<div class="modal-head"><h3>Delete “${escHtml(E.name)}”?</h3>
-        <p>This removes the column from this tender's Allocation table.</p></div>
+        <p>This removes the column from this tender's Allocation and Compliance tables.</p></div>
       <div class="cf-danger">${used?`<b>${used} requirement${used>1?"s hold":" holds"} a value in this column.</b> Deleting the column deletes ${used>1?"all "+used+" values":"that value"} with it. This cannot be undone.`:`<b>No requirement holds a value yet</b> — only the column itself goes.`}</div>
       <div class="modal-foot"><button class="btn-ghost" id="cf-keep">Keep it</button>
         <button class="btn-primary" id="cf-del-go" style="background:var(--warn)">Delete column${used?` and ${used} value${used>1?"s":""}`:""}</button></div>`;
@@ -7472,7 +7517,7 @@ function cfRenderEditor(){
     return `<div class="cf-opt-row"><span class="t">${escHtml(o)}</span>${n?`<span class="u">used by ${n}</span>`:""}<button class="mini-btn" data-cfoptrm="${i}" title="${n?`In use on ${n} requirement${n>1?"s":""} — clear those values first`:"Remove this option"}">✕</button></div>`;
   }).join("");
   m.innerHTML=`<div class="modal-head"><h3>${editing?"Edit column":"New column"}</h3>
-      <p>A column of this tender's own, in Allocation only.</p></div>
+      <p>A column of this tender's own, shared with Compliance.</p></div>
     <div class="modal-body">
       <div class="field"><label>Name</label><input type="text" class="ui-input" id="cf-name" value="${escHtml(E.name)}" placeholder="e.g. Commercial risk"></div>
       <div class="field"><label>Type</label>
@@ -7489,7 +7534,7 @@ function cfRenderEditor(){
           <input type="checkbox" id="cf-multi" ${E.multi?"checked":""} ${multiLocked?"disabled":""}> Allow several values per requirement</label>
         ${multiLocked?`<div class="deriv-hint">Can't go back to a single value — ${cfMultiHeld(E.id)} requirement${cfMultiHeld(E.id)>1?"s hold":" holds"} more than one.</div>`:""}
       </div>`:""}
-      <div class="cf-scope">This tender only, Allocation only — Compliance won't show it. Internal: included in Allocation exports, <b>never</b> in the client compliance matrix. Always optional; the AI never fills it.</div>
+      <div class="cf-scope">This tender only. Shown here; Compliance has it too, with the same values, hidden until turned on from its View menu. Internal: included in exports only when ticked, <b>never</b> by default in the client compliance matrix. Always optional; the AI never fills it.</div>
     </div>
     <div class="modal-foot">
       ${editing?`<button class="btn-ghost cf-del" id="cf-del">Delete column…</button>`:""}

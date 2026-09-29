@@ -556,7 +556,7 @@ function renderQuestions(){
           ${inBatch?`<span class="qa-inbatch">In the batch</span><button class="qa-card-act" data-exclude="${q.id}" title="Remove from this export — the question stays on record, but ${esc(q.from)} isn't told it was dropped">Exclude</button>`:""}
           ${st==="excluded"?`<button class="qa-card-act undo" data-include="${q.id}">↺ Include again</button>`:""}</div>
         <div class="qa-meta">${q.refs.map(r=>`<span class="qa-req">${r.req}</span>`).join("")}
-          <span>${esc(refsLabel(q))}</span><span>raised by ${esc(q.from)} · ${q.date}</span></div>
+          <span>${esc(refsLabel(q))}</span><span>raised by ${esc(q.from)} · ${q.date}${q.origin==="compliance"?" · from Compliance":""}</span></div>
         ${st==="excluded"?`<div class="qa-excluded-note">Removed from export — ${esc(q.from)} hasn't been told; there's no notification for this yet.</div>`:""}
         ${q.ans?`<div class="qa-ans"><b>Issuer answer · ${q.ansDate}</b>${esc(q.ans)}</div>`:""}
       </div>`).join("")}</div>`;
@@ -805,6 +805,16 @@ document.querySelectorAll(".hub-tabs button").forEach(b=>b.addEventListener("cli
   document.getElementById("htab-answers").style.display=state.htab==="answers"?"block":"none";
 }));
 function renderAll(){ renderQuestions(); renderAnswers(); }
+/* DEC-088 — questions raised on Compliance arrive here as drafts, for the
+   project manager to review, merge and send with the batch. */
+(function pullSharedQuestions(){
+  try{
+    const pid=window.parent.getCurrentProject().id;
+    (window.parent.getQuestions(pid)||[]).forEach(q=>{
+      if(!QA.some(x=>x.id===q.id)) QA.unshift({id:q.id, st:"draft", q:q.q, refs:(q.refs||[]).map(r=>({req:r.req, typology:r.typology||""})), from:q.from, date:q.date, origin:"compliance"});
+    });
+  }catch(e){}
+})();
 renderAll();
 </script>
 </body>
