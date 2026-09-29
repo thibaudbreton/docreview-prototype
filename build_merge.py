@@ -239,7 +239,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage();
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={};
   reassignRequests.length=0; sharedQuestions={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -280,6 +280,11 @@ function seedPartnerUsage(){ return { stb2026:{ p_voltara:{allocation:2, complia
 let partnerUsage = seedPartnerUsage();
 window.reportPartnerUsage = (projectId, screen, counts)=>{ const k=projectId||"_"; const u=partnerUsage[k]=partnerUsage[k]||{};
   (window.getPartners(k)||[]).forEach(p=>{ u[p.id]=u[p.id]||{}; u[p.id][screen]=counts[p.id]||0; }); };
+// DEC-098 — Allocation reports its real progress so the dashboard's Allocation
+// card can turn Done when every requirement is allocated (Finalize is gone).
+let allocProgress = {};
+window.reportAllocationProgress = (projectId, p)=>{ allocProgress[projectId||"_"]=p; };
+window.getAllocationProgress = (projectId)=>allocProgress[projectId||"_"]||null;
 window.getPartnerUsage = (projectId, partnerId)=>{ const u=((partnerUsage[projectId||"_"]||{})[partnerId])||{}; return Math.max(0,...Object.values(u)); };
 window.removePartner = (projectId, partnerId)=>{
   if(window.getPartnerUsage(projectId, partnerId)>0) return {error:"used"};

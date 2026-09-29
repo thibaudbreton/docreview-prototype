@@ -6592,9 +6592,16 @@ function reportPartnerUse(){
   SECTIONS.forEach(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x]).forEach(b=>{ (b.perim||[]).forEach(t=>{ if(isPartner(t)) counts[t]=(counts[t]||0)+1; }); }));
   try{ window.parent.reportPartnerUsage(window.parent.getCurrentProject().id,"allocation",counts); }catch(e){}
 }
+function reportAllocProgress(){
+  try{
+    const reqsNow=SECTIONS.flatMap(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x])).filter(b=>blockNature(b)==="requirement");
+    window.parent.reportAllocationProgress(window.parent.getCurrentProject().id,{allocated:reqsNow.filter(isFullyAllocated).length,total:reqsNow.length});
+  }catch(e){}
+}
 function refresh(){
   syncReassignRequestsFromShell();
-  reportPartnerUse();   // DEC-093 — Settings refuses to remove a partner in use
+  reportPartnerUse();
+  reportAllocProgress();   // DEC-098 — the dashboard card reads it   // DEC-093 — Settings refuses to remove a partner in use
   renderNav(); renderDoc(); renderReview(); renderSettings(); renderTriage();
 }
 
@@ -7274,7 +7281,7 @@ function renderColumnsPanel(){
     p.querySelectorAll("#pf-gseg button").forEach(x=>x.classList.toggle("on",x===b));
     renderReview();
   }));
-  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyCols(); renderColumnsPanel(); });
+  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ cfRememberVisibility(); applyCols(); renderColumnsPanel(); });
   p.querySelector("#pf-reset-widths")?.addEventListener("click",e=>{ e.stopPropagation(); const w=tableLayout().widths; Object.keys(w).forEach(k=>delete w[k]); applyCols(); renderReview(); renderColumnsPanel(); toast("Column widths back to default","ok"); });
 }
 document.getElementById("cols-btn")?.addEventListener("click",e=>{ e.stopPropagation(); colsPanelState.open=!colsPanelState.open; renderColumnsPanel(); });
@@ -7299,7 +7306,13 @@ function cfStore(){
   window.__cfLocal = window.__cfLocal || {defs:[],values:{},seq:0};
   return window.__cfLocal;
 }
-function cfDefs(){ return cfStore().defs.filter(d=>d.phase==="allocation"); }
+/* DEC-097 — one set of custom columns for the tender, shared by Allocation and
+   Compliance (same values). A column shows by default on the screen it was
+   created on; on the other it starts hidden and can be turned on from View —
+   that choice is kept on the definition (d.shownIn), per screen. */
+function cfDefs(){ return cfStore().defs; }
+function cfShownHere(d){ return d.shownIn ? d.shownIn["allocation"]!==false : d.phase==="allocation"; }
+function cfRememberVisibility(){ cfDefs().forEach(d=>{ d.shownIn=d.shownIn||{}; d.shownIn["allocation"]=!state.colCollapsed.has(cfKey(d.id)); }); }
 function cfDef(id){ return cfDefs().find(d=>d.id===id)||null; }
 const cfKey = id => "cf_"+id;
 function cfHas(v){ return v!=null && v!=="" && !(Array.isArray(v)&&!v.length); }
@@ -7334,6 +7347,9 @@ function syncCustomColumns(){
   const prune=f=>{ if(!f||!f.items) return f; f.items=f.items.filter(it=>it.items?true:!(String(it.field).startsWith("cf_")&&!keys.has(it.field))); f.items.forEach(it=>{ if(it.items) prune(it); }); return f; };
   prune(state.advFilter);
   CF_SYNCED.clear();
+  // first time a column is met on this screen: apply its default visibility
+  window.__cfSeen = window.__cfSeen || new Set();
+  defs.forEach(d=>{ if(window.__cfSeen.has(d.id)) return; window.__cfSeen.add(d.id); if(!cfShownHere(d)) state.colCollapsed.add(cfKey(d.id)); });
   defs.forEach(d=>{
     const k=cfKey(d.id), list=d.type==="list";
     if(!RCOLS_BY_KEY[k]){ const c={k,w:"150px"}; RCOLS.push(c); RCOLS_BY_KEY[k]=c; }
@@ -7483,7 +7499,7 @@ function cfRenderEditor(){
   const multiLocked=editing && E.multi && cfMultiHeld(E.id)>0;
   if(E.confirmDelete){
     m.innerHTML=`<div class="modal-head"><h3>Delete “${escHtml(E.name)}”?</h3>
-        <p>This removes the column from this tender's Allocation table.</p></div>
+        <p>This removes the column from this tender's Allocation and Compliance tables.</p></div>
       <div class="cf-danger">${used?`<b>${used} requirement${used>1?"s hold":" holds"} a value in this column.</b> Deleting the column deletes ${used>1?"all "+used+" values":"that value"} with it. This cannot be undone.`:`<b>No requirement holds a value yet</b> — only the column itself goes.`}</div>
       <div class="modal-foot"><button class="btn-ghost" id="cf-keep">Keep it</button>
         <button class="btn-primary" id="cf-del-go" style="background:var(--warn)">Delete column${used?` and ${used} value${used>1?"s":""}`:""}</button></div>`;
@@ -7501,7 +7517,7 @@ function cfRenderEditor(){
     return `<div class="cf-opt-row"><span class="t">${escHtml(o)}</span>${n?`<span class="u">used by ${n}</span>`:""}<button class="mini-btn" data-cfoptrm="${i}" title="${n?`In use on ${n} requirement${n>1?"s":""} — clear those values first`:"Remove this option"}">✕</button></div>`;
   }).join("");
   m.innerHTML=`<div class="modal-head"><h3>${editing?"Edit column":"New column"}</h3>
-      <p>A column of this tender's own, in Allocation only.</p></div>
+      <p>A column of this tender's own, shared with Compliance.</p></div>
     <div class="modal-body">
       <div class="field"><label>Name</label><input type="text" class="ui-input" id="cf-name" value="${escHtml(E.name)}" placeholder="e.g. Commercial risk"></div>
       <div class="field"><label>Type</label>
@@ -7518,7 +7534,7 @@ function cfRenderEditor(){
           <input type="checkbox" id="cf-multi" ${E.multi?"checked":""} ${multiLocked?"disabled":""}> Allow several values per requirement</label>
         ${multiLocked?`<div class="deriv-hint">Can't go back to a single value — ${cfMultiHeld(E.id)} requirement${cfMultiHeld(E.id)>1?"s hold":" holds"} more than one.</div>`:""}
       </div>`:""}
-      <div class="cf-scope">This tender only, Allocation only — Compliance won't show it. Internal: included in Allocation exports, <b>never</b> in the client compliance matrix. Always optional; the AI never fills it.</div>
+      <div class="cf-scope">This tender only. Shown here; Compliance has it too, with the same values, hidden until turned on from its View menu. Internal: included in exports only when ticked, <b>never</b> by default in the client compliance matrix. Always optional; the AI never fills it.</div>
     </div>
     <div class="modal-foot">
       ${editing?`<button class="btn-ghost cf-del" id="cf-del">Delete column…</button>`:""}

@@ -106,6 +106,10 @@ DEC-028 à DEC-039 viennent d'une relecture indépendante du prototype (14 septe
 | DEC-092 | **Plusieurs questions au client peuvent être en cours sur une même affectation, et aucune ne bloque la conformité** : l'affectation se consolide sur le verdict de son contributeur, pas sur la réponse du client. Le statut « Awaiting Q&A » reste une information d'avancement. **Précise DEC-088** | Arbitrage utilisateur, 29 septembre 2026 |
 | DEC-093 | **Un partenaire externe se retire de la liste OBS Turnkey tant qu'aucune exigence ne lui est attribuée** ; sinon le retrait est refusé avec le nombre d'exigences à réattribuer d'abord (même règle que les options de colonnes personnalisées) | Arbitrage utilisateur, 29 septembre 2026 |
 | DEC-094 | **Pas de suppression manuelle d'un bloc capturé** : un bloc capturé par erreur se reclasse en Information, ce qui le sort du périmètre (statut, allocation, compteurs). Seules les lignes dupliquées à la main depuis une image restent supprimables. Referme OPEN-07 sur ce point | Arbitrage utilisateur, 29 septembre 2026 |
+| DEC-095 | **La ligne produit (Turnkey, SIG…) et le mode d'assistance IA sont fixés à la création** : ils déterminent la structure d'allocation. Les paramètres les affichent en lecture seule ; se tromper = recréer le tender (comme le produit, DEC-049) | Arbitrage utilisateur, 29 septembre 2026 |
+| DEC-096 | **Une seule langue source par tender** : pas de documents en plusieurs langues dans un même dossier (confirme SPEC-translation §2) | Arbitrage utilisateur, 29 septembre 2026 |
+| DEC-097 | **Les colonnes personnalisées sont communes à Allocation et Compliance**, avec les mêmes valeurs. Une colonne est visible par défaut sur l'écran où elle a été créée, **masquée par défaut sur l'autre** et activable depuis son menu View ; ce choix d'affichage est retenu par écran. Supprimer une colonne la retire des deux. **Remplace la portée « une phase »** de DEC-064 | Arbitrage utilisateur, 29 septembre 2026 |
+| DEC-098 | **La carte « Allocation » du tableau de bord passe à « Done » quand toutes les exigences sont allouées**, et redevient « Current » dès qu'une ne l'est plus (nouvelle version, réouverture). Elle lit la progression réelle d'Allocation | Arbitrage utilisateur, 29 septembre 2026 |
 
 ## Suivi des anciens arbitrages
 
@@ -115,11 +119,11 @@ DEC-028 à DEC-039 viennent d'une relecture indépendante du prototype (14 septe
 | OPEN-02 | Résolu pour droits métier : DEC-003/012/013. Admin/VIP hors détail du pilote ; à préciser si ajoutés |
 | OPEN-03 | Résolu puis révisé : la personne assignée à chaque OBS est responsable de sa conformité, pas de responsable de suivi global (DEC-087, remplace DEC-010) ; absence autorisée, ne bloque pas la validation (DEC-025) |
 | OPEN-04 | Champs et validations de maquette retenus. Liste Category confirmée placeholder explicite (DEC-038) ; elle devient porteuse puisqu'elle qualifie chaque Not Compliant (DEC-031) — vocabulaire réel à fournir avant production Compliance |
-| OPEN-05 | Choix automatique par type résolu. Modification ultérieure du type/mode non répondue explicitement ; ne pas déduire une autorisation du « oui » à la sélection automatique |
+| OPEN-05 | Choix automatique par type résolu. **Ligne produit et mode d'assistance IA fixés à la création** : se tromper = recréer le tender (DEC-095) |
 | OPEN-06 | Lecture projet et exclusion sans action résolues. Cycles multiples/plusieurs questions bloquantes non précisés ; conserver le périmètre maquette décrit, à compléter pour la phase Q&A |
 | OPEN-07 | Texte/traduction : review pour tout changement ; nouvelle version affectée : unlock + pending ; fusion/scission : zéro décision. **Pas de suppression manuelle** : un bloc capturé par erreur se reclasse en Information (DEC-094) |
 | OPEN-08 | Volumes résolus DEC-023. Budgets chronométrés, portée exacte du jeu 100k et protocole de mesure restent à définir avec le développement |
-| OPEN-09 | Séquencement traduction résolu DEC-019/026. Dossiers multilingues non précisés |
+| OPEN-09 | Séquencement traduction résolu DEC-019/026. **Une seule langue source par tender** — pas de dossier multilingue (DEC-096) |
 | OPEN-10 | Pas de chantier de conception des IA dans ces specs. Formats techniques/contrats et PDF entièrement image à préciser à l'intégration, sans caractérisation visuelle implicite |
 | OPEN-11 | Sécurité requise ; standards/rétention et notifications détaillées à fournir par les interlocuteurs concernés |
 | OPEN-12 | Pilote résolu DEC-022 ; REX/Chat hors V1. Connecteur DOORS direct et date de pilote non confirmés |

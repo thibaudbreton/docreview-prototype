@@ -3482,7 +3482,13 @@ function cfStore(){
   try{ if(window.parent!==window && window.parent.getCustomFields) return window.parent.getCustomFields(window.parent.getCurrentProject().id); }catch(e){}
   window.__cfLocal=window.__cfLocal||{defs:[],values:{},seq:0}; return window.__cfLocal;
 }
-function cfDefs(){ return cfStore().defs.filter(d=>d.phase==="compliance"); }
+/* DEC-097 — one set of custom columns for the tender, shared by Allocation and
+   Compliance (same values). A column shows by default on the screen it was
+   created on; on the other it starts hidden and can be turned on from View —
+   that choice is kept on the definition (d.shownIn), per screen. */
+function cfDefs(){ return cfStore().defs; }
+function cfShownHere(d){ return d.shownIn ? d.shownIn["compliance"]!==false : d.phase==="compliance"; }
+function cfRememberVisibility(){ cfDefs().forEach(d=>{ d.shownIn=d.shownIn||{}; d.shownIn["compliance"]=!state.colCollapsed.has(cfKey(d.id)); }); }
 function cfDef(id){ return cfDefs().find(d=>d.id===id)||null; }
 function cfKey(id){ return "cf_"+id; }
 function cfHas(v){ return v!=null && v!=="" && !(Array.isArray(v)&&!v.length); }
@@ -3504,6 +3510,9 @@ function syncCustomColumns(){
   const prune=f=>{ if(!f||!f.items) return f; f.items=f.items.filter(it=>it.items?true:!(String(it.field).startsWith("cf_")&&!keys.has(it.field))); f.items.forEach(it=>{ if(it.items) prune(it); }); return f; };
   prune(state.advFilter);
   CF_SYNCED.clear();
+  // first time a column is met on this screen: apply its default visibility
+  window.__cfSeen = window.__cfSeen || new Set();
+  defs.forEach(d=>{ if(window.__cfSeen.has(d.id)) return; window.__cfSeen.add(d.id); if(!cfShownHere(d)) state.colCollapsed.add(cfKey(d.id)); });
   defs.forEach(d=>{
     const k=cfKey(d.id), list=d.type==="list";
     if(!F_RCOLS_BY_KEY[k]){ const c={k,w:"150px"}; F_RCOLS.push(c); F_RCOLS_BY_KEY[k]=c; }
@@ -3526,7 +3535,7 @@ function syncCustomColumns(){
     defs.forEach(d=>{
       const k=cfKey(d.id), cell=document.createElement("div");
       cell.className=`rcell c-${k}`; cell.dataset.col=k; cell.dataset.cfhead=d.id;
-      cell.title=`${d.name} — a column of this tender's own, Compliance only. Entered by people, never by the AI.`;
+      cell.title=`${d.name} — a column of this tender's own, shared by Allocation and Compliance. Entered by people, never by the AI.`;
       cell.innerHTML=`<span class="cl">${esc(d.name)}</span>${state.role==="pm"?`<button class="cf-edit" data-cfedit="${d.id}" title="Edit or delete this column">✎</button>`:""}`;
       head.appendChild(cell);
       cell.querySelector("[data-cfedit]")?.addEventListener("click",e=>{ e.stopPropagation(); cfOpenEditor(d.id); });
@@ -3600,7 +3609,7 @@ function cfRenderEditor(){
   const m=document.getElementById("cf-modal"), E=cfEditor; if(!m||!E) return;
   const editing=!!E.id, used=editing?cfUsage(E.id):0, typeLocked=editing&&used>0, multiLocked=editing&&E.multi&&cfMultiHeld(E.id)>0;
   if(E.confirmDelete){
-    m.innerHTML=`<div class="modal-head"><h3>Delete “${esc(E.name)}”?</h3><p>This removes the column from this tender's Compliance table.</p></div>
+    m.innerHTML=`<div class="modal-head"><h3>Delete “${esc(E.name)}”?</h3><p>This removes the column from this tender's Allocation and Compliance tables.</p></div>
       <div class="cf-danger">${used?`<b>${used} requirement${used>1?"s hold":" holds"} a value in this column.</b> Deleting the column deletes ${used>1?"all "+used+" values":"that value"} with it. This cannot be undone.`:`<b>No requirement holds a value yet</b> — only the column itself goes.`}</div>
       <div class="modal-foot"><button class="btn-ghost" id="cf-keep">Keep it</button><button class="btn-primary" id="cf-del-go" style="background:var(--warn)">Delete column${used?` and ${used} value${used>1?"s":""}`:""}</button></div>`;
     m.querySelector("#cf-keep").onclick=()=>{ E.confirmDelete=false; cfRenderEditor(); };
@@ -3613,7 +3622,7 @@ function cfRenderEditor(){
   }
   const optRows=E.options.map((o,i)=>{ const n=editing?cfOptionUsage(E.id,o):0;
     return `<div class="cf-opt-row"><span class="t">${esc(o)}</span>${n?`<span class="u">used by ${n}</span>`:""}<button class="mini-btn" data-cfoptrm="${i}" title="${n?`In use on ${n} requirement${n>1?"s":""} — clear those values first`:"Remove this option"}">✕</button></div>`; }).join("");
-  m.innerHTML=`<div class="modal-head"><h3>${editing?"Edit column":"New column"}</h3><p>A column of this tender's own, in Compliance only.</p></div>
+  m.innerHTML=`<div class="modal-head"><h3>${editing?"Edit column":"New column"}</h3><p>A column of this tender's own, shared with Allocation.</p></div>
     <div class="modal-body">
       <div class="field"><label>Name</label><input type="text" class="ui-input" id="cf-name" value="${esc(E.name)}" placeholder="e.g. Commercial risk"></div>
       <div class="field"><label>Type</label>
@@ -3622,7 +3631,7 @@ function cfRenderEditor(){
       ${E.type==="list"?`<div class="field"><label>Options</label>${optRows||`<div class="cf-hint">No option yet.</div>`}
         <div class="cf-opt-add"><input type="text" class="ui-input" id="cf-opt-new" placeholder="Add an option…"><button class="mini-btn" id="cf-opt-add">Add</button></div>
         <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:var(--text-sm);text-transform:none;letter-spacing:0;font-weight:500;color:var(--text-2)"><input type="checkbox" id="cf-multi" ${E.multi?"checked":""} ${multiLocked?"disabled":""}> Allow several values per requirement</label></div>`:""}
-      <div class="cf-scope">This tender only, Compliance only — Allocation won't show it. Internal: never ticked by default in the export. Always optional; the AI never fills it.</div>
+      <div class="cf-scope">This tender only. Shown here; Allocation has it too, with the same values, hidden until turned on from its View menu. Internal: never ticked by default in the export. Always optional; the AI never fills it.</div>
     </div>
     <div class="modal-foot">${editing?`<button class="btn-ghost cf-del" id="cf-del">Delete column…</button>`:""}<button class="btn-ghost" id="cf-cancel">Cancel</button><button class="btn-primary" id="cf-save">${editing?"Save":"Create column"}</button></div>`;
   m.querySelector("#cf-name").addEventListener("input",e=>{ E.name=e.target.value; });
@@ -3768,7 +3777,7 @@ function renderFColumnsPanel(){
       ${TE.reorderableColumnListHTML(F_COLUMN_TOGGLE_DEFS,state.colOrder,state.colCollapsed)}
       ${Object.keys(fTableLayout().widths).length?`<button class="mini-btn" id="f-reset-widths" style="margin-top:8px">Reset column widths</button>`:""}
     </div>`;
-  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ applyFCols(); renderFColumnsPanel(); });
+  TE.bindReorderableColumnList(p,state.colOrder,state.colCollapsed,()=>{ cfRememberVisibility(); applyFCols(); renderFColumnsPanel(); });
   p.querySelector("#f-reset-widths")?.addEventListener("click",e=>{ e.stopPropagation(); const w=fTableLayout().widths; Object.keys(w).forEach(k=>delete w[k]); applyFCols(); renderFColumnsPanel(); toast("Column widths back to default","ok"); });
 }
 document.getElementById("f-cols-btn").addEventListener("click",e=>{ e.stopPropagation(); fColsPanelState.open=!fColsPanelState.open; renderFColumnsPanel(); });

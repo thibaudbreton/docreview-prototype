@@ -1301,8 +1301,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text-3, --accent, --accent-soft, --radius-sm, --text-xs
 - **built-from**: Column Filter Button (`.colf-btn`), edit button (`.cf-edit`)
 - **added**: 2026-09-23
-- **changed**: 2026-09-24
-- **notes**: 2026-09-24: compliance.html injects them into `#frgrid-head` from `syncCustomColumns()` — name + ✎ (project manager only), sortable from its header like every column there, resizable. Injected into `#rgrid-head` by `cfRenderHead()`; its grid order and hidden state come from a generated `<style id="cf-style">`, since the static per-column CSS rules cannot know these keys in advance. The ✎ is hidden by `body.restricted`.
+- **changed**: 2026-09-29
+- **notes**: 2026-09-29 (DEC-097): the same columns on both screens; a column created on the other screen starts hidden here (`cfShownHere`), and turning it on in View is remembered on the definition (`d.shownIn`, `cfRememberVisibility`). 2026-09-24: compliance.html injects them into `#frgrid-head` from `syncCustomColumns()` — name + ✎ (project manager only), sortable from its header like every column there, resizable. Injected into `#rgrid-head` by `cfRenderHead()`; its grid order and hidden state come from a generated `<style id="cf-style">`, since the static per-column CSS rules cannot know these keys in advance. The ✎ is hidden by `body.restricted`.
 
 ### Custom Fields Panel Section
 - **level**: molecule
@@ -1853,8 +1853,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --panel, --line, --radius-md, --text-sm, --warn, --warn-soft, --space-2, --space-3
 - **built-from**: Modal (`.overlay` + `.modal`), Text Input, Tab Bar / Segmented Control (`.gseg`), Checkbox, Primary Button, Ghost Button
 - **added**: 2026-09-23
-- **changed**: 2026-09-24
-- **notes**: 2026-09-24: ported to compliance.html with the same states and locks, for columns of phase "compliance"; the modal CSS (`.overlay`/`.modal`) was added to that file, which had none. `cfOpenEditor()` / `cfRenderEditor()`. Locks are explained in place rather than silently disabled: type change once values exist, going back to single value once a requirement holds several, removing an option in use (refused with a count). The delete button is warn-coloured inline style on `.btn-primary`, not its own class. Depends on untracked `--warn-soft`.
+- **changed**: 2026-09-29
+- **notes**: 2026-09-29 (DEC-097): the texts say the column is shared with the other screen and that deleting it removes it from both. 2026-09-24: ported to compliance.html with the same states and locks, for columns of phase "compliance"; the modal CSS (`.overlay`/`.modal`) was added to that file, which had none. `cfOpenEditor()` / `cfRenderEditor()`. Locks are explained in place rather than silently disabled: type change once values exist, going back to single value once a requirement holds several, removing an option in use (refused with a count). The delete button is warn-coloured inline style on `.btn-primary`, not its own class. Depends on untracked `--warn-soft`.
 
 ## Removed
 

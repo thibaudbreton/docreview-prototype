@@ -63,3 +63,7 @@ Charge : constituer un jeu de 100 000 lignes et 10 sessions concurrentes ; véri
 ## État personnel (DEC-090)
 
 Les **brouillons de verdict** (choix, commentaire, catégorie, topic) et les **mises de côté** du panneau de décision sont stockés **côté serveur, privés à leur auteur** : personne d'autre ne les voit, ils suivent la personne d'un poste et d'une session à l'autre, et un brouillon survit à la sortie du panneau (spec du panneau de décision, §6). Ils ne sont pas un statut partagé et n'entrent dans aucun compteur ni export. Le prototype les garde seulement dans la session de l'application.
+
+## Carte Allocation du tableau de bord (DEC-098)
+
+Elle passe à **Done** quand toutes les exigences du tender sont allouées et redevient **Current** dès qu'une ne l'est plus. Il n'y a plus de jalon « Finalize » (DEC-084) : l'état se lit sur les données, jamais sur un clic.
