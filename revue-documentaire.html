@@ -7797,6 +7797,61 @@ applyVersionChanges();
     b.perim.push("p_voltara"); syncBranchesFromPerim(b); n++;
   }));
 })();
+/* Turnkey demo (STB-2026): 12 % of requirements in To review, for reasons as
+   varied as a real review throws up — not only the AI's own doubts (nature,
+   class, a weak ABS / PBS / OBS) but also what a reader catches: a possible
+   duplicate, a contradiction, ambiguous wording, several obligations in one
+   sentence, a figure without unit or tolerance, a missing annex, an uncertain
+   routing, a contributor's doubt. Deterministic (hash order), so the demo is
+   the same on every load. Demo data only — no rule behind the percentage. */
+(function seedTurnkeyReviewMix(){
+  let pid=null; try{ pid=window.parent.getCurrentProject().id; }catch(e){}
+  if(pid!=="stb2026") return;
+  const reqs=SECTIONS.flatMap(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x])).filter(b=>blockNature(b)==="requirement");
+  if(!reqs.length) return;
+  const target=Math.round(reqs.length*0.12);
+  const byHash=arr=>arr.slice().sort((a,b)=>hashId(a.id+"~rv")-hashId(b.id+"~rv"));
+  const isDoubt=b=>effectiveStatus(b).val==="doubt";
+  const idx=Object.fromEntries(reqs.map((b,i)=>[b.id,i]));
+  const other=(b,k)=>reqs[(idx[b.id]+k+reqs.length)%reqs.length].id;
+  const REASONS=[
+    b=>["typo",  (function(){ const br=(b.branches||[])[0]; const c=58+hashId(b.id)%15; if(br){ br.tkObs=Object.assign({},br.tkObs||{v:TY(br.typology).label},{c}); } return `Routed to ${br?TY(br.typology).code:"a system"} with ${c}% confidence — below the 75% threshold, the system may be wrong`; })()],
+    b=>[null,    `Possible duplicate of ${other(b,1)} — near-identical wording in another section`],
+    b=>[null,    `May contradict ${other(b,-2)} on the same subject — confirm which one applies`],
+    b=>[null,    "Ambiguous wording (“where applicable”, “as required”) — the scope isn't clear"],
+    b=>[null,    "Several obligations in one sentence — consider splitting it before allocating"],
+    b=>[null,    "Quantified target without a unit or tolerance — check the figure with the client"],
+    b=>[null,    "Refers to an annex that isn't in the tender set — the requirement can't be read fully"],
+    b=>["obs",   "Flagged by a contributor: not sure this belongs to their system"],
+    b=>["type",  "Reads like context rather than an obligation — check it is really a requirement"],
+  ];
+  // 1. keep part of the AI's own doubts as they are, turn the rest into other reasons
+  const doubts=byHash(reqs.filter(isDoubt));
+  const aiChar=doubts.filter(b=>b.doubtField==="type"||b.doubtField==="class");
+  let r=0;
+  aiChar.slice(Math.ceil(aiChar.length/2)).forEach(b=>{   // half of the nature/class doubts get a reader's reason instead
+    const [field,reason]=REASONS[r++%REASONS.length](b);
+    b.typeAI=false; b.techAI=false;
+    b.status="doubt"; b.doubtField=field; b.reviewReason=reason;
+  });
+  // …and a third of the weak-derivation doubts (allocation side) too, so the AI's
+  // own doubts and a reader's reasons come out roughly even
+  const allocDoubts=doubts.filter(b=>b.status!=="doubt" && isDoubt(b));
+  allocDoubts.filter((b,i)=>i%3===0).forEach(b=>{
+    const h=allocHolder(b); h.allocStatus="tovalidate"; h.allocDoubtField=null; h.allocReviewReason=null;
+    if(h!==b){ b.allocStatus="tovalidate"; b.allocDoubtField=null; b.allocReviewReason=null; }
+    const [field,reason]=REASONS[r++%REASONS.length](b);
+    b.status="doubt"; b.doubtField=field; b.reviewReason=reason;
+  });
+  // 2. top up to exactly 12 % from requirements waiting for validation
+  const pool=byHash(reqs.filter(b=>effectiveStatus(b).val==="tovalidate"));
+  let n=reqs.filter(isDoubt).length, k=0;
+  while(n<target && k<pool.length){
+    const b=pool[k++]; const [field,reason]=REASONS[r++%REASONS.length](b);
+    b.status="doubt"; b.doubtField=field; b.reviewReason=reason;
+    if(isDoubt(b)) n++;
+  }
+})();
 snapshotCharacterisation();
 // Review is the default working view — setMode also collapses the nav panel and shows the kbd hints
 setMode("review");
