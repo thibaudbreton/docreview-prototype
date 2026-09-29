@@ -1184,13 +1184,17 @@ const LANGUAGE_LABEL={en:"English", fr:"French", de:"German", es:"Spanish"};
    three former EXPERTS entries (sup/infra/cyber) live in it as ordinary contributors
    — every place a viewer picks who they are picks a system's contributor, not "a
    manager" or "an expert". `typology` is what that scoping keys off. */
+/* DEC-102 — people belong to one system (`typology`) and are only ever
+   assigned on that system. Only the two contributors flagged viewAs appear in
+   the demo's View-as picker: one SIG (a system with a model) and one SEN (no
+   model — its allocation is completed by hand). */
 const MANAGERS=[
-  {id:"m_sig",name:"Louis Renaud",role:"SIG contributor",typology:"sig",init:"LR",color:"#3fb27f"},
+  {id:"m_sig",name:"Louis Renaud",role:"SIG contributor",typology:"sig",init:"LR",color:"#3fb27f",viewAs:true},
   {id:"m_mln",name:"Amina Cherif",role:"TRK contributor",typology:"trk",init:"AC",color:"#e0a43c"},
-  {id:"m_inf",name:"Paolo Ferri",role:"OCS contributor",typology:"ocs",init:"PF",color:"#a06ef2"},
-  {id:"sup",name:"Sophie Lang",role:"Monitoring Team contributor",typology:"sig",init:"SL",color:"#6e7bf2"},
-  {id:"infra",name:"Karim Benali",role:"OCS Team contributor",typology:"ocs",init:"KB",color:"#3fb27f"},
-  {id:"cyber",name:"Claire Moreau",role:"Cybersecurity contributor",typology:"rams",init:"CM",color:"#e0a43c"},
+  {id:"m_inf",name:"Paolo Ferri",role:"SEN contributor",typology:"sen",viewAs:true,init:"PF",color:"#a06ef2"},
+  {id:"sup",name:"Sophie Lang",role:"SIG contributor",typology:"sig",init:"SL",color:"#6e7bf2"},
+  {id:"infra",name:"Karim Benali",role:"SEN contributor",typology:"sen",init:"KB",color:"#3fb27f"},
+  {id:"cyber",name:"Claire Moreau",role:"RAMS contributor",typology:"rams",init:"CM",color:"#e0a43c"},
 ];
 /* DEC-032 — system list aligned to revue-documentaire.html's TYPO: the
    capture's real codes, not this screen's own invented 5-way split. label
@@ -1344,18 +1348,18 @@ const REQS_HAND=[
   {id:"SRM-00008",sec:"2. Functional requirements",type:"Interface",
    text:"The system SHALL import weather forecast feeds, refreshed every 15 minutes.",
    branches:[
-     {typology:"com",manager:"m_mln",status:"awaiting_answer",internal:null,age:2},
+     {typology:"com",manager:null,status:"awaiting_answer",internal:null,age:2},
    ]},
   {id:"SRM-00009",sec:"3. Performance requirements",type:"Performance",
    text:"Real-time view refresh SHALL NOT exceed 3 seconds between measurement acquisition and display, for a fleet of 200 simultaneous sites.",
    branches:[
-     {typology:"trk",manager:"m_inf",status:"answered",internal:"compliant",age:8,
+     {typology:"trk",manager:"m_mln",status:"answered",internal:"compliant",age:8,
       resp:{note:"3 s refresh validated in load test for 250 simultaneous sites.",att:1,date:"Jul 12"}},
    ]},
   {id:"SRM-00010",sec:"3. Performance requirements",type:"Performance",
    text:"History query response time SHALL remain under 2 seconds for a one-year depth, at the 95th percentile.",
    branches:[
-     {typology:"trk",manager:"m_inf",status:"awaiting_qa",internal:null,age:7,qaRef:"QA-01",
+     {typology:"trk",manager:"m_mln",status:"awaiting_qa",internal:null,age:7,qaRef:"QA-01",
       qaNote:"Cannot commit without knowing whether the one-year depth is a rolling year or a calendar year — the storage strategy differs."},
    ]},
   {id:"SRM-00011",sec:"3. Performance requirements",type:"Performance",
@@ -1366,10 +1370,10 @@ const REQS_HAND=[
      // system itself reads not_compliant even though the primary cluster
      // alone would have passed. Hand-authored, same convention as the rest
      // of this seed (nothing derived at load time).
-     {typology:"trk",manager:"m_mln",status:"answered",internal:"not_compliant",age:6,
+     {typology:"sen",manager:"m_inf",status:"answered",internal:"not_compliant",age:6,
       resp:{note:"Primary site cluster meets the target; the secondary depot cluster falls short — see teams below.",att:0,date:"Jul 16"},
       teams:[
-        {manager:"m_mln",status:"answered",internal:"compliant",age:5,
+        {manager:"m_inf",status:"answered",internal:"compliant",age:5,
          resp:{note:"99.7% business-hours availability is met by the standard redundant deployment; maintenance windows are already excluded contractually.",att:0,date:"Jul 15"}},
         {manager:"infra",status:"answered",internal:"not_compliant",age:6,
          resp:{note:"Secondary depot cluster runs on older hardware — measured 99.4% over the last quarter, short of the 99.7% target.",att:0,date:"Jul 16"}},
@@ -1407,8 +1411,8 @@ const GEN_OBJ=["site-level consumption data","regional aggregation reports","ope
 const GEN_QUAL=["within the configured retention window","across all connected sites","for every registered operator profile","without manual intervention","in compliance with the applicable security policy","within 2 seconds of the triggering event","for a fleet of up to 300 sites","independently of network conditions","with a full audit trail","on a rolling 24-month basis"];
 const GEN_SEC=["2. Functional requirements","3. Performance requirements","4. Security requirements"];
 const GEN_TYPE={"2. Functional requirements":"Functional","3. Performance requirements":"Performance","4. Security requirements":"Security"};
-const GEN_TYPO=["sig","trk","com","ocs","rams"];
-const GEN_TYPO_MGR={sig:"m_sig",trk:"m_mln",com:"m_mln",ocs:"m_inf",rams:null};
+const GEN_TYPO=["sig","trk","com","sen","rams"];
+const GEN_TYPO_MGR={sig:"m_sig",trk:"m_mln",com:null,sen:"m_inf",rams:"cyber"};   // DEC-102 — only a member of the system
 const GEN_RESP=["Standard configuration covers this out of the box, no deviation.","Achievable with the current architecture; validated in the last integration test.","Meets the requirement as written, no exception noted.","Supported natively; no additional development required.","Confirmed against the reference deployment — compliant as specified."];
 const GEN_STATUS_CYCLE=["answered","answered","answered","answered","answered","awaiting_answer","awaiting_answer","awaiting_qa","proposed","reassignment_needed"];
 const GEN_CMP_CYCLE=["compliant","compliant","compliant","compliant","compliant","not_compliant"];
@@ -2815,7 +2819,7 @@ function renderPanel2(){
           <div class="reassign-t">${esc(br.reassignComment||"The contributor judged this allocation wrong and returned it.")}</div></div>
         <div class="next-step"><b>Reallocate it and send it back out.</b> Internal action — nothing leaves the company here.</div>
         <div class="field"><label>Reallocate to</label>
-          <select id="ra-mgr">${['<option value="">— Nobody —</option>'].concat(MANAGERS.map(x=>`<option value="${x.id}" ${br.manager===x.id?"selected":""}>${x.name} — ${x.role}</option>`)).join("")}</select></div>
+          <select id="ra-mgr">${['<option value="">— Nobody —</option>'].concat(MANAGERS.filter(x=>x.typology===br.typology).map(x=>`<option value="${x.id}" ${br.manager===x.id?"selected":""}>${x.name} — ${x.role}</option>`)).join("")}</select></div>
         <button class="cta ok" id="a-reassign">↪ Reassign and send back out</button>`;
       b.querySelector("#a-reassign").addEventListener("click",()=>{
         const nm=b.querySelector("#ra-mgr").value||null;
@@ -2982,7 +2986,7 @@ function renderDecisionPanel(p,r,br){
       <textarea id="ask-text" rows="4" placeholder="Your question to the client — required"></textarea>
       <div class="form-actions"><button class="btn-cancel" id="ask-cancel">Cancel</button><button class="btn-submit" id="ask-submit">Add to the Q&amp;A register</button></div>
     </div>`;
-  const otherExperts=MANAGERS.filter(x=>x.id!==br.manager);
+  const otherExperts=MANAGERS.filter(x=>x.id!==br.manager && x.typology===br.typology);   // DEC-102 — same system only
   const otherTypos=Object.keys(TYPOS).filter(t=>t!==br.typology);
   const returnForm=state.openForm!=="reassign"?"":`
     <div class="inline-form" id="reassign-form">
@@ -3788,7 +3792,7 @@ document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.clos
 (function initViewer(){
   const roleSel=document.getElementById("f-role");
   const sel=document.getElementById("f-viewer");
-  MANAGERS.forEach(m=>sel.insertAdjacentHTML("beforeend",`<option value="${m.id}">${m.name} — ${m.role}</option>`));
+  MANAGERS.filter(m=>m.viewAs).forEach(m=>sel.insertAdjacentHTML("beforeend",`<option value="${m.id}">${m.name} — ${m.role}</option>`));
   sel.value=VIEWER;
   const chip=document.getElementById("team-chip");
   const syncUI=()=>{

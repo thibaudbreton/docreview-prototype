@@ -93,6 +93,8 @@ ALLOC-023 — DEC-091 : une relance au résultat identique ne dit rien ; le jour
 
 ALLOC-024 — DEC-099 à DEC-101 : une validation par exigence (V compris), sans étape « confirmer l'IA » ; lecture seule complète pour un contributeur sur une exigence qui n'est pas à lui ; détail d'un système Turnkey identique à la vue SIG, plus la réassignation. Critère : ALLOC-T31 — sur L4-0011, V passe l'exigence à Allocated en une fois ; un contributeur sur une exigence d'un autre système n'a aucun contrôle actif ; le PBS modifié dans le détail d'un système Turnkey ne change que ce système.
 
+ALLOC-025 — DEC-102 à DEC-104 : une personne n'est affectable que sur son système ; un système sans modèle démarre vide en « Awaiting manual allocation » ; sur Turnkey, le PM valide l'aiguillage (statut propre au niveau Turnkey, « Reassignment requested » tant qu'une réassignation attend) et chaque système est validé par son contributeur ou le PM. Critère : ALLOC-T32 — en vue Paolo Ferri (SEN), une exigence est en « Awaiting manual allocation » avec ABS/PBS/OBS vides ; remplir ABS, PBS, un OBS et sa personne la passe à To validate, sa validation à Allocated ; le sélecteur de personne SEN ne propose aucun membre SIG ; en vue PM Turnkey, « Validate & send to the systems » passe l'exigence à Allocated sans afficher le statut des systèmes.
+
 ## Une allocation par organisation
 
 ALLOC-016 — DEC-060 : **une allocation est une organisation et la personne qui y répond.** Une exigence qui atteint trois organisations est **trois allocations à faire**, et le compte affiché est celui des organisations, pas celui des systèmes.
