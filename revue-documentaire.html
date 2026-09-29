@@ -7797,6 +7797,40 @@ applyVersionChanges();
     b.perim.push("p_voltara"); syncBranchesFromPerim(b); n++;
   }));
 })();
+/* Turnkey demo (STB-2026): 12 % of requirements in To review, only for the
+   reasons the tool produces today — class, system or (rarely) nature detected
+   by the AI and not confirmed, a weak ABS / PBS / OBS derivation, and a
+   requirement a project manager flagged for review. Deterministic (hash
+   order), so the demo is the same on every load. Demo data only. */
+(function seedTurnkeyReviewMix(){
+  let pid=null; try{ pid=window.parent.getCurrentProject().id; }catch(e){}
+  if(pid!=="stb2026") return;
+  const reqs=SECTIONS.flatMap(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x])).filter(b=>blockNature(b)==="requirement");
+  if(!reqs.length) return;
+  const target=Math.round(reqs.length*0.12);
+  const byHash=arr=>arr.slice().sort((a,b)=>hashId(a.id+"~rv")-hashId(b.id+"~rv"));
+  const isDoubt=b=>effectiveStatus(b).val==="doubt";
+  const NATURE_KEEP=4;   // "Type is AI-detected" stays rare
+  const REASONS=[
+    b=>{ b.techAI=true; return ["class","Class is AI-detected, unconfirmed"]; },
+    b=>{ b.perimAI=true;   // the routing confidence behind it sits under the threshold
+         (b.branches||[]).forEach(br=>{ br.tkObs=Object.assign({},br.tkObs||{v:TY(br.typology).label},{c:58+hashId(b.id+br.typology)%15}); });
+         return ["typo","System is AI-detected, unconfirmed"]; },
+    b=>{ b.techAI=true; return ["class","Class is AI-detected, unconfirmed"]; },
+    b=>{ b.perimAI=true;
+         (b.branches||[]).forEach(br=>{ br.tkObs=Object.assign({},br.tkObs||{v:TY(br.typology).label},{c:58+hashId(b.id+br.typology)%15}); });
+         return ["typo","System is AI-detected, unconfirmed"]; },
+    b=>[null,"Flagged for review in bulk"],
+  ];
+  let r=0;
+  const give=b=>{ b.typeAI=false; const [field,reason]=REASONS[r++%REASONS.length](b); b.status="doubt"; b.doubtField=field; b.reviewReason=reason; };
+  // 1. keep only a few nature doubts; the others get one of the tool's other reasons
+  byHash(reqs.filter(b=>isDoubt(b) && b.doubtField==="type")).slice(NATURE_KEEP).forEach(give);
+  // 2. top up to exactly 12 % from requirements waiting for validation
+  const pool=byHash(reqs.filter(b=>effectiveStatus(b).val==="tovalidate"));
+  let n=reqs.filter(isDoubt).length, k=0;
+  while(n<target && k<pool.length){ const b=pool[k++]; give(b); if(isDoubt(b)) n++; }
+})();
 snapshotCharacterisation();
 // Review is the default working view — setMode also collapses the nav panel and shows the kbd hints
 setMode("review");
