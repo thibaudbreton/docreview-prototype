@@ -1211,18 +1211,18 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
    header, otherwise it and the model tag fight over the free space. */
 /* per-system blocks in the project manager's view */
 .act-block-name{font-size:var(--text-sm);font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.act-alloc-pill{font-size:var(--text-xs);font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);white-space:nowrap}
-.act-alloc-pill.s-notstarted{background:var(--panel-3);color:var(--text-3)}
-.act-alloc-pill.s-inprogress{background:var(--ia-soft);color:var(--ia)}
-.act-alloc-pill.s-allocated{background:var(--ok-soft);color:var(--ok)}
-.act-line{display:flex;align-items:baseline;gap:var(--space-3);padding:5px 0;font-size:var(--text-sm)}
-.act-line+.act-line{border-top:1px solid var(--line)}
-.act-k{width:110px;flex-shrink:0;font-size:var(--text-xs);color:var(--text-3)}
-.act-v{flex:1;min-width:0;color:var(--text-2)}
+.status-pill.is-static{cursor:default}
+.status-pill.is-static:active{transform:none}
+.branch-sec-head .status-pill{margin-left:auto}
+.act-obs{display:flex;flex-direction:column}
+.act-obs-row{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.act-obs-org{min-width:0;color:var(--text);overflow-wrap:anywhere}
+.act-obs-who{flex-shrink:0;color:var(--text-2);text-align:right}
+.act-obs-org.is-empty,.act-obs-who.is-empty{color:var(--text-3);font-style:italic}
+.act-foot{display:flex;align-items:center;gap:var(--space-2);margin-top:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--line)}
+.act-foot-k{font-size:var(--text-xs);color:var(--text-3)}
+.act-foot .act-open-btn{margin-left:auto}
 .act-who{color:var(--text-3)}
-.act-open-row{margin-top:var(--space-3);display:flex;align-items:center;justify-content:flex-end;gap:var(--space-2)}
-/* on a system card the re-run sits beside "Open system detail", not pushed away
-   by .rerun-wrap's own margin-left:auto (meant for a title row) */
 .act-detail-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
 .review-why{font-size:var(--text-xs);color:var(--ia);line-height:1.45;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--ia-soft);border-radius:var(--radius-sm)}
 /* RM view: "N assignments" indicator + retractable per-allocated-system sections (collapsed by default) */
@@ -3073,6 +3073,13 @@ if(window.SRM_DATA && !IS_SIG_TENDER) applyCaptureDemoStatuses();
       if(isPartner(br.typology)) return;
       delete br.teams;
       if(!activityHasModel(br.typology)){ br.pbs=null; br.abs=null; br.obs=null; br.manager=null; return; }
+      /* The capture gives this system's derivation as confidences with empty
+         values: fill the values from the system's own model (Mainline is SIG),
+         keeping the capture's confidences so the To review / To validate mix
+         stays what it was. */
+      const product={sig:"sig-mainline-wayside", rst:"rst-metro"}[br.typology];
+      const r=product && runAllocationModel(product, x.id+"#"+br.typology);
+      if(r) ["abs","pbs","obs"].forEach(k=>{ if(br[k] && !br[k].v) br[k]=Object.assign({}, r[k], {c:br[k].c!=null?br[k].c:r[k].c}); });
       const mem=systemMembers(br.typology);
       br.manager = (br.pbs||br.abs||br.obs) && mem.length ? mem[hashId(x.id+br.typology)%mem.length].id : null;
     });
@@ -4014,20 +4021,6 @@ SECTIONS.forEach(s=>s.blocks.forEach(b=>{
   arr.forEach(r=>{ if(r.kind==="requirement" && (r.branches||[]).length) deriveRequirementCompliance(r); });
 }));
 
-/* The pass-2 allocation status, at SYSTEM level — "has this system done its
-   allocation yet?". Derived from its teams the same way its verdict is, so
-   nobody enters it and it can't drift: no team resolved -> Not started, some ->
-   In progress, all -> Allocated. Deliberately three states, not the four-state
-   Incomplete/To review/To validate/Allocated vocabulary used per team — the
-   question being asked here is coarser than that one. */
-const ACT_ALLOC_LABEL={notstarted:"Not started", inprogress:"In progress", allocated:"Allocated"};
-function activityAllocStatus(branch){
-  if(branch && isPartner(branch.typology)) return "allocated";   // assigned to the partner is the whole allocation
-  const teams=ensureTeams(branch);
-  const resolved=teams.filter(t=>t.manager||t.obs).length;
-  if(!resolved) return "notstarted";
-  return resolved===teams.length ? "allocated" : "inprogress";
-}
 /* §3 — routed to a system that has no allocation model: system known,
    fine allocation still to be done by hand. A routine mode of working, not a
    failure, and a real queue of work that has to be filterable. */
@@ -5803,26 +5796,19 @@ function pmClassificationHTML(b){
    reader to pair two lists by position: the same split the panel had between
    its OBS list and a "Who verifies" block, and the same fix. */
 function obsBreakdownHTML(teams){
-  const who=t=>t.manager?((MGR(t.manager)||{}).name||"—"):"Unassigned";
-  if(teams.length<=1){
-    const t=teams[0];
-    const val=(t&&t.obs&&t.obs.v)||(t&&TEAM(t.team).label)||"—";
-    return `<div class="act-line"><span class="act-k">Allocation</span><span class="act-v">${escHtml(val)} <span class="act-who">· ${escHtml(t?who(t):"Unassigned")}</span></span></div>`;
-  }
-  return `<div class="act-line act-line-obs">
-    <span class="act-k">Allocations (${teams.length})</span>
-    <div class="ui-list is-compact is-flush act-v">
-      ${teams.map(t=>{
-        const val=(t.obs&&t.obs.v)||TEAM(t.team).label||"—";
-        const c=t.obs&&t.obs.c;
-        const status=BRANCH_STATUS_LABEL[t.branchStatus]||t.branchStatus;
-        return `<div class="ui-list-row" title="${escHtml(status)}">
-          <span class="ui-list-main">${escHtml(val)} <span class="act-who">· ${escHtml(who(t))}</span></span>
-          ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence">${c}%</span>`:""}
-        </div>`;
-      }).join("")}
-    </div>
-  </div>`;
+  /* 2026-09-29 — one line per organisation: the organisation on the left,
+     its person on the right, missing values in grey. Replaces the
+     "Allocation · Team not set · Unassigned" key/value line, which read as
+     one run-on sentence. */
+  return `<div class="act-obs">${teams.map(t=>{
+    const org=(t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:"");
+    const c=t.obs&&t.obs.c;
+    const person=t.manager?((MGR(t.manager)||{}).name||"—"):"";
+    return `<div class="act-obs-row">
+      <span class="act-obs-org${org?"":" is-empty"}">${escHtml(org||`No ${OBS_NOUN} yet`)}${c!=null&&c<OBS_THRESHOLD?` <span class="ui-list-badge is-warn" title="${c}% confidence">${c}%</span>`:""}</span>
+      <span class="act-obs-who${person?"":" is-empty"}">${escHtml(person||"Unassigned")}</span>
+    </div>`;
+  }).join("")}</div>`;
 }
 function activityBlocksHTML(b){
   const acts=b.branches||[];
@@ -5831,8 +5817,8 @@ function activityBlocksHTML(b){
   <div class="branch-sections">
     <label class="branch-sections-lbl">Systems (${acts.length})</label>
     ${acts.map((branch,bidx)=>{
-      const st=activityAllocStatus(branch);
       const teams=ensureTeams(branch);
+      const st=isPartner(branch.typology)?null:(branch.allocStatus||"incomplete");
       return `<div class="branch-sec">
         <div class="branch-sec-head">
           <span class="ptag${ptagCls(branch.typology)}${branch.proposal||branch.reassignRequest?" proposed":""}">${TY(branch.typology).code}</span>
@@ -5842,12 +5828,15 @@ function activityBlocksHTML(b){
             const lbl=branch.label||TY(branch.typology).label;
             return lbl===TY(branch.typology).code ? "" : `<span class="act-block-name">${escHtml(lbl)}</span>`;
           })()}
-          ${runsPassOne()&&isAdmin()?"":`<span class="act-alloc-pill s-${st}" title="Derived from this system's ${teams.length} team${teams.length>1?"s":""} — nobody enters it">${ACT_ALLOC_LABEL[st]}</span>`}
+          ${st?`<span class="status-pill is-static s-${st}" title="This system's allocation status">${STATUS_LABEL[st]||st}</span>`:""}
         </div>
         <div class="branch-sec-body">
-          ${isPartner(branch.typology)?`<div class="act-line"><span class="act-k">Allocation</span><span class="act-v partner-note">${escHtml(TY(branch.typology).label)} · outside the tool — the project manager enters its verdict in Compliance</span></div>`:obsBreakdownHTML(teams)}
-          <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this system's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
-          <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open system detail →</button></div>
+          ${isPartner(branch.typology)?`<div class="act-obs"><div class="act-obs-row"><span class="act-obs-org partner-note">${escHtml(TY(branch.typology).label)} · outside the tool — the project manager enters its verdict in Compliance</span></div></div>`:obsBreakdownHTML(teams)}
+          <div class="act-foot">
+            <span class="act-foot-k">Compliance</span>
+            <span class="compliance-pill c-${branch.compliance}" title="Derived from this system's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span>
+            <button class="mini-btn act-open-btn" data-openact="${bidx}">Open →</button>
+          </div>
         </div>
       </div>`;
     }).join("")}

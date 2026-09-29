@@ -1364,6 +1364,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-29
 - **notes**: 2026-09-29: optional `opts.noDistrib` drops the distribution block; the Turnkey system detail (DEC-101) renders the chain for the system opened, edits going to that branch. Turnkey pass 1's System list has a ✕ per system since 2026-09-23 (DEC-076, `removeSystem()`), down to none — empty state "No system yet". Each system row carries its provenance, one or the other (2026-09-23): the AI's confidence badge when the Turnkey model proposed it, a "manual" note when a person added it — "manual" used to mean "no allocation model" and sat beside the percentage; "has a model" (accent) stays as a separate note. Its "+ Add system" (`openAddSystem()`, 2026-09-23) adds directly through the OBS List's search picker (`.obs-pick`, reused as-is); it used to open the contributor's proposal form, absent from the PM view, and did nothing. Since 2026-09-23 the model block can carry a Re-run Prompt between its header and ABS (DEC-075). `.deriv-pass` / `.deriv-step`. Not recorded before; entered when the small "↓" between PBS and OBS was removed (2026-09-23) — the steps already read top to bottom and the arrow only took height, so the three steps now sit 16px apart. The only arrow left is Turnkey's "routes into" between the distribution and the system's model, which carries information. Depends on untracked `--panel-2`.
 
+### Turnkey System Card
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: model system, system with no organisation / person yet (grey italic), partner (outside-the-tool note), low-confidence OBS (warn badge)
+- **tokens**: --space-1, --space-2, --space-3, --line, --text, --text-2, --text-3, --text-sm, --text-xs
+- **built-from**: Activity / Requirement Tag, Status Pill, Compliance Pill, Ghost Button (`.mini-btn`)
+- **added**: 2026-09-29
+- **changed**: 2026-09-29
+- **notes**: `activityBlocksHTML()` + `obsBreakdownHTML()`, the "Systems (N)" list of the Turnkey project manager's detail panel. Head: system tag, then that system's allocation status (`.status-pill.is-static`, not clickable) in the right corner — replaces the three-state `.act-alloc-pill` (Not started / In progress / Allocated), removed with `activityAllocStatus()`. Body: one line per OBS, organisation left and person right (`.act-obs-row`), replacing the "Allocation · Team not set · Unassigned" key/value line. Foot: Compliance pill and "Open →" (was "Open system detail →"). Card frame reuses `.branch-sec` (untracked `--line-2`, `--panel-2`). First recorded on this change; the card existed before without an entry.
+
 ## Organisms
 
 ### App Header
