@@ -747,12 +747,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Allocated-Activity Detail Card
 - **level**: molecule
 - **file**: revue-documentaire.html
-- **variants**: default, with pending add-activity proposal, with pending reassignment request
-- **tokens**: --space-2, --space-3, --radius-md, --human, --text-xs
+- **variants**: default, with pending add-activity proposal, with pending reassignment request, no OBS yet (`.branch-sec-org.is-empty`, --text-3)
+- **tokens**: --space-2, --space-3, --radius-md, --human, --text-xs, --text-3
 - **built-from**: Activity / Requirement Tag, Status Pill, Select Dropdown
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.branch-sec`, Detail Panel's "Allocations (N)" admin/PM view.
+- **changed**: 2026-09-29
+- **notes**: `.branch-sec`, Detail Panel's "Allocations (N)" block. 2026-09-29: one system's version is now `systemAllocationsHTML(branch, bidx)`, shared by the Turnkey system detail and the contributor's own view — which replaces its bare "Assigned to" person search with this block, as on the SIG tender. The person select only offers that system's members (DEC-102). The PM's multi-system version (with proposals and reassignment requests) is still inline in `renderSettings` — known duplication. Borders use the untracked `--line-2`, the head the untracked `--panel-2`.
 
 ### Column Filter Section
 - **level**: molecule

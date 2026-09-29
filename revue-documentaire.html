@@ -1235,6 +1235,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
    tender where the system axis means anything. */
 .branch-sec-org{flex:1;min-width:0;font-size:var(--text-sm);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .branch-sec-head .ptag{flex:none}
+.branch-sec-org.is-empty{color:var(--text-3)}
 .set-sep{height:1px;background:var(--line);margin:6px 0 18px}
 /* B1 — allocation-change proposal: manager trigger + project-manager review */
 .propose-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:9px}
@@ -5668,6 +5669,24 @@ function readOnlyReqHTML(b,s){
       ${derivStepHTML(`OBS${TENDER_KEYS?" · role":""}`, teams.map(t=>`<div class="fval">${escHtml((t.obs&&t.obs.v)||"—")} <span class="act-who">· ${escHtml(who(t.manager))}</span></div>`).join(""), null)}`}
     </div>`; }).join(""):`<div class="deriv-hint">No system yet.</div>`}`;
 }
+/* The "Allocations" block of one system: one card per OBS, its answer status
+   and who it is assigned to — the same block the SIG tender's panel shows.
+   Used by the Turnkey system detail and by the contributor's own view, which
+   used to have a bare "Assigned to" field instead. */
+function systemAllocationsHTML(branch, bidx){
+  const teams=ensureTeams(branch);
+  return `<div class="branch-sections">
+      <label class="branch-sections-lbl">Allocations (${teams.length})${teams.length>1?` <span>· each ${OBS_NOUN} answers for itself, and the verdicts consolidate — most restrictive wins, pending until all have answered</span>`:""}</label>
+      ${teams.map((t,tidx)=>{ const st=t.branchStatus||branch.branchStatus; return `<div class="branch-sec">
+        <div class="branch-sec-head">
+          <span class="branch-sec-org${(t.obs&&t.obs.v)||t.team?"":" is-empty"}">${escHtml((t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:`— No ${OBS_NOUN} yet —`))}</span>
+          ${st?`<span class="status-pill branch-status-${st}">${BRANCH_STATUS_LABEL[st]||st}</span>`:""}
+        </div>
+        <div class="branch-sec-body"><div class="branch-sec-field"><label>Assigned to</label>
+          <select class="branch-sec-select${t.manager?"":" empty"}" data-panelallocmgr="${bidx}::${tidx}">${mgrOptionsFor(branch.typology, t.manager, true)}</select></div></div>
+      </div>`; }).join("")}
+    </div>`;
+}
 function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx){
   /* ALLOC-014 gives the re-run to the project team AND to the contributors of
      the system concerned; this view had none. Same control, same blocking rule. */
@@ -5680,9 +5699,8 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     ${derivStepHTML("ABS", absControlHTML(b,derivSrc), derivSrc.abs)}
     ${derivStepHTML("PBS", pbsControlHTML(b,derivSrc), derivSrc.pbs, null, TENDER_KEYS?"The product element the requirement bears on — from the PBS key, grouped by family.":null)}
     ${obsListHTML(myBranch, {reqId:b.id, branchIdx:(b.branches||[]).indexOf(myBranch), systemId:myBranch.typology})}
-    <div class="field"><label>Assigned to</label>
-      ${personSearchHTML("req-manager",myBranch.manager)}
-    </div>
+    <div class="set-sep"></div>
+    ${systemAllocationsHTML(myBranch, myIdx)}
     ${cfPanelHTML(b)}
     <div class="set-sep"></div>
     ${distributionBlockHTML(b, true)}
@@ -5852,8 +5870,6 @@ function activityDetailHTML(b,bidx){
      SIG tender (nature, class, that system's model ABS / PBS / OBS with its
      re-run, the person on each OBS, the validation), plus the reassignment
      buttons. It used to be a read-only summary with "Type" and a bare name. */
-  const teams=ensureTeams(branch);
-  const mgrOpts=(m,typ)=>mgrOptionsFor(typ||branch.typology,m,true);
   const done=branch.allocStatus==="allocated", noOne=!branch.allocStatus||branch.allocStatus==="incomplete";
   const why=(noOne?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null);
   return `<div class="act-detail-head">
@@ -5866,17 +5882,7 @@ function activityDetailHTML(b,bidx){
     <div class="set-sep"></div>
     ${derivationChainHTML(b, branch, branch, false, {noDistrib:true})}
     <div class="set-sep"></div>
-    <div class="branch-sections">
-      <label class="branch-sections-lbl">Allocations (${teams.length})</label>
-      ${teams.map((t,tidx)=>`<div class="branch-sec">
-        <div class="branch-sec-head">
-          <span class="branch-sec-org">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label||`— No ${OBS_NOUN} derived yet —`)}</span>
-          <span class="status-pill branch-status-${t.branchStatus||branch.branchStatus}">${BRANCH_STATUS_LABEL[t.branchStatus||branch.branchStatus]||t.branchStatus||branch.branchStatus}</span>
-        </div>
-        <div class="branch-sec-body"><div class="branch-sec-field"><label>Assigned to</label>
-          <select class="branch-sec-select${t.manager?"":" empty"}" data-panelallocmgr="${bidx}::${tidx}">${mgrOpts(t.manager, branch.typology)}</select></div></div>
-      </div>`).join("")}
-    </div>
+    ${systemAllocationsHTML(branch, bidx)}
     ${done?`<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`
       :(why?`<button class="validate-cta" disabled title="${escHtml(why)}">✓ Validate &amp; send to Compliance</button><div class="validate-why">${escHtml(why)}</div>`
            :`<button class="validate-cta" data-validatebranch="${bidx}">✓ Validate &amp; send to Compliance</button>`)}
@@ -6172,7 +6178,7 @@ function renderSettings(){
       const [bi,ti]=sel.dataset.panelallocmgr.split("::").map(Number);
       const branch=(b.branches||[])[bi]; if(!branch) return;
       const t=setAllocManager(b, branch, ti, e.target.value); if(!t) return;
-      const who=(t.obs&&t.obs.v)||TEAM(t.team).label||branch.label;
+      const who=(t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:null)||branch.label||TY(branch.typology).code;
       toast(t.manager?`${who}: assigned to ${MGR(t.manager).name}`:`${who}: unassigned`,"ok");
       refresh();
     }));
