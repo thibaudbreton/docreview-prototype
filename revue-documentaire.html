@@ -776,7 +776,6 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
    no human has acted yet, green = a human validated it. */
 .status-pill.s-incomplete{background:var(--warn-soft);color:var(--warn)}
 .status-pill.s-doubt{background:var(--ia-soft);color:var(--ia)}
-.status-pill.s-manual{background:var(--accent-soft);color:var(--accent)}
 .status-pill.s-reassign{background:var(--human-soft);color:var(--human)}
 .status-pill.s-tovalidate{background:var(--human-soft);color:var(--human)}
 .status-pill.s-allocated{background:var(--ok-soft);color:var(--ok)}
@@ -1725,7 +1724,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
            it's a real queue of work, not a failure." Only ever shown on a Turnkey
            tender: everywhere else the tender's own system always has a model by
            definition, so the count would be permanently zero. -->
-      <button class="tpill p-manual" data-filter="manual" id="pill-manual" style="display:none"><span class="n" id="n-manual">0</span> awaiting manual allocation</button>
     </div>
     <button class="clear-filter" id="clear-filter">✕ Clear filter</button>
     <button class="btn-ghost" id="seg-btn" style="margin-left:auto">✂ Edit segmentation</button>
@@ -2424,7 +2422,6 @@ const SECTIONS = IS_SIG_TENDER ? seedSigSections() : (buildDataFromCapture() || 
    through an explicit human action (validate), never from AI confidence
    alone; reaching it also sends the item on to Contributor Review. */
 const STATUS_LABEL = {incomplete:"Incomplete", doubt:"To review", tovalidate:"To validate", allocated:"Allocated",
-  manual:"Awaiting manual allocation",     // DEC-103 — a system without a model: ABS / PBS / OBS to fill by hand
   reassign:"Reassignment requested"};      // DEC-104 — Turnkey level: a system asked for it to be reassigned
 /* which field(s) carry the doubt, when status is "doubt" — same five fields
    across both axes (Class/System on the requirement, ABS/PBS/OBS per
@@ -2943,16 +2940,8 @@ function computeCharStatus(x){
   if(x.perimAI){ x.status="doubt"; x.doubtField="typo"; x.reviewReason="System is AI-detected, unconfirmed"; return; }
   x.status="tovalidate"; x.doubtField=null; x.reviewReason=null;
 }
-/* DEC-103 — on a Turnkey tender, a system without a model gets no derivation:
-   its ABS / PBS / OBS are filled by hand, and until they are the system reads
-   "Awaiting manual allocation". */
-function manualSystemEmpty(target){
-  const typ = target.typology || ((target.branches||[]).length===1 ? target.branches[0].typology : (target.perim||[])[0]);
-  return !!typ && runsPassOne() && !activityHasModel(typ) && !isPartner(typ) && !target.pbs && !target.abs && !target.obs;
-}
 function computeAllocStatus(target){
   if(target.allocStatus==="allocated") return;
-  if(manualSystemEmpty(target)){ target.allocStatus="manual"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
   /* An unassigned target.manager is missing data — full stop. It can never
      read as "To review" or "To validate" no matter how confident the AI's
      OBS *suggestion* is, because a suggestion nobody accepted isn't a
@@ -3169,7 +3158,7 @@ function applyFreshProjectStatuses(){
     x.allocStatus="tovalidate"; x.allocDoubtField=null; x.allocReviewReason=null;
   });
 }
-const STATUS_RANK = {incomplete:0, manual:0, reassign:1, doubt:1, tovalidate:2, allocated:3};
+const STATUS_RANK = {incomplete:0, reassign:1, doubt:1, tovalidate:2, allocated:3};
 /* B7 — combines characterisation and allocation into the ONE status a row's
    pill shows, "most restrictive wins" (same principle as compliance
    consolidation, §4): whichever axis is LESS far along is what's displayed,
@@ -4046,9 +4035,6 @@ function needsManualAllocation(branch){
   if(activityHasModel(branch.typology)) return false;
   return ensureTeams(branch).some(t=>!t.obs && !t.manager);
 }
-function reqNeedsManualAllocation(b){
-  return (b.branches||[]).some(needsManualAllocation);
-}
 
 /* §6 — the tree branches at two independent levels; a requirement's SHAPE is
    one of three states, the deepest branching present. A requirement can be
@@ -4118,7 +4104,6 @@ function matchesFilter(b){
   if(isInfo) return !state.filter; // no other quick filter (changed/reassign) ever applies to an info row
   if(state.filter==="changed") return !!b.change || b.kind==="ghost";
   if(state.filter==="reassign") return blockNature(b)==="requirement" && hasPendingReassign(b);
-  if(state.filter==="manual") return blockNature(b)==="requirement" && reqNeedsManualAllocation(b);
   return true;
 }
 function matchesSearch(b){
@@ -4815,7 +4800,6 @@ const ADV_FILTER_FIELDS={
   // precision, combinable with everything else in the advanced filter.
   alloclevel:{label:"Allocation level",type:"enum",options:[{v:"single",l:"Single (no branching)"},{v:"activity",l:"Branches — multiple systems"},{v:"team",l:"Branches — multiple teams"}],get:b=>[reqAllocLevel(b)]},
   passdoubt:{label:"Doubt — where",type:"enum",options:[{v:"pass1",l:"Which system"},{v:"pass2",l:"Within the system"},{v:"none",l:"No doubt"}],get:b=>[reqPassDoubt(b)]},
-  manualalloc:{label:"Awaiting manual allocation",type:"enum",options:[{v:"yes",l:"Yes"},{v:"no",l:"No"}],get:b=>[reqNeedsManualAllocation(b)?"yes":"no"]},
 };
 function passesAdvFilter(b){ return TE.matchesFilter(ADV_FILTER_FIELDS, state.advFilter, b); }
 function colFilterActiveCount(){ return Object.values(state.colFilters).filter(s=>s.size).length; }
@@ -5716,7 +5700,7 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     ${(function(){   // DEC-104 — the contributor validates their own system
       const i=(b.branches||[]).indexOf(myBranch), st=myBranch.allocStatus;
       if(st==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`;
-      const why = st==="manual" ? "No model for this system — fill ABS / PBS / OBS and assign someone first." : (!st||st==="incomplete") ? "Allocation incomplete — assign someone and complete ABS / PBS / OBS first." : null;
+      const why = (!st||st==="incomplete") ? "Allocation incomplete — assign someone and complete ABS / PBS / OBS first." : null;
       return why ? `<button class="validate-cta" disabled title="${escHtml(why)}">✓ Validate &amp; send to Compliance</button><div class="validate-why">${escHtml(why)}</div>`
                  : `<button class="validate-cta" data-validatebranch="${i}">✓ Validate &amp; send to Compliance</button>`;
     })()}
@@ -5871,7 +5855,7 @@ function activityDetailHTML(b,bidx){
   const teams=ensureTeams(branch);
   const mgrOpts=(m,typ)=>mgrOptionsFor(typ||branch.typology,m,true);
   const done=branch.allocStatus==="allocated", noOne=!branch.allocStatus||branch.allocStatus==="incomplete";
-  const why=branch.allocStatus==="manual"?"No model for this system — fill ABS / PBS / OBS and assign someone first.":(noOne?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null);
+  const why=(noOne?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null);
   return `<div class="act-detail-head">
       <button class="mini-btn" id="act-back">← All systems</button>
       <span class="ptag${ptagCls(branch.typology)}">${TY(branch.typology).code}</span>
@@ -6540,8 +6524,9 @@ function markCharEdited(b){ if(b.status!=="allocated") b.status="tovalidate"; }
    touched this, it's ready to validate". */
 function markAllocEdited(target){
   if(!target || target.allocStatus==="allocated") return;
-  if(manualSystemEmpty(target)){ target.allocStatus="manual"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
-  target.allocStatus = target.manager ? "tovalidate" : "incomplete";
+  // DEC-103 — missing data is Incomplete, whatever the reason (a system with no
+  // model simply starts with ABS / PBS / OBS empty, nothing derived).
+  target.allocStatus = (target.manager && (target.pbs || target.abs || target.obs)) ? "tovalidate" : "incomplete";
   target.allocDoubtField=null; target.allocReviewReason=null;
 }
 /* B6/B7 — the one validate action: the row's status-pill click, each allocated system's
@@ -6553,7 +6538,7 @@ function markAllocEdited(target){
    stage advanced ("char"/"alloc"), or null if nothing was eligible
    (Incomplete, or already Allocated) — the caller decides what to say. */
 function validateAllocTarget(target, isRealBranch){
-  if(!target || ["allocated","incomplete","manual"].includes(target.allocStatus)) return false;
+  if(!target || ["allocated","incomplete"].includes(target.allocStatus)) return false;
   target.allocStatus="allocated"; target.allocDoubtField=null; delete target.allocReviewReason;
   if(isRealBranch && !target.branchStatus) target.branchStatus="awaiting_answer"; // TD2 — sent to Contributor Review, contributor already assigned (allocStatus just became "allocated")
   return true;
@@ -6686,15 +6671,8 @@ function renderTriage(){
     document.getElementById("n-reassign").textContent = pendingReassign;
     if(!pendingReassign && state.filter==="reassign") setFilter("reassign");
   }
-  // TICKET-two-pass-allocation.md §3 — same "only occupy a slot when it means
-  // something" rule as the reassignment pill above.
-  const awaitingManual = runsPassOne() ? r.filter(reqNeedsManualAllocation).length : 0;
-  const manualPill = document.getElementById("pill-manual");
-  if(manualPill){
-    manualPill.style.display = awaitingManual ? "" : "none";
-    document.getElementById("n-manual").textContent = awaitingManual;
-    if(!awaitingManual && state.filter==="manual") setFilter("manual");
-  }
+  // DEC-103 — no "awaiting manual allocation" pill any more: a system with
+  // missing data is simply Incomplete, counted with the rest.
 }
 
 /* =====================================================
@@ -7055,7 +7033,7 @@ function renderColFilterIndicators(){
 const ADV_FIELD_GROUPS=[
   {g:"Progress",         fields:["status","compliance","doubtfield","passdoubt","changed"]},
   {g:"Characterisation", fields:["nature","class","typo"]},
-  {g:"Allocation",       fields:["abs","pbs","obs","mgr","alloclevel","manualalloc"]},
+  {g:"Allocation",       fields:["abs","pbs","obs","mgr","alloclevel"]},
   {g:"Content & source", fields:["id","text","section","doc"]},
 ];
 const ADV_FIELD_ORDER=ADV_FIELD_GROUPS.reduce((a,g)=>a.concat(g.fields),[]);
