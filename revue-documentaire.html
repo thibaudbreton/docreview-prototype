@@ -6660,7 +6660,9 @@ function setFilter(f){
    TRIAGE / PROGRESS
 ===================================================== */
 function renderTriage(){
-  const r = reqs();
+  // counts what the viewer can actually filter to — a contributor's pills
+  // count their own requirements, with their own system's status
+  const r = reqs().filter(visibleTo);
   document.getElementById("total-count").textContent = `${r.length} requirement${r.length>1?"s":""}`;
   document.getElementById("n-incomplete").textContent = r.filter(b=>effectiveStatus(b).val==="incomplete").length;
   document.getElementById("n-doubt").textContent = r.filter(b=>effectiveStatus(b).val==="doubt").length;
