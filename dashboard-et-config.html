@@ -345,16 +345,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .prog-bar span{display:block;height:100%;background:var(--accent)}
 .prog-step.warn .prog-bar span{background:var(--warn)}
 .prog-sub{margin-top:6px;font-size:var(--text-xs);color:var(--text-3);line-height:1.4}
-.mx-table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
-.mx-table th,.mx-table td{padding:6px var(--space-2);border-bottom:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
-.mx-table thead th{font-size:var(--text-xs);font-weight:600;color:var(--text-3);vertical-align:bottom}
-.mx-table tbody th{text-align:left;font-weight:500;white-space:nowrap}
-.mx-table tbody th .dot{display:inline-block;width:9px;height:9px;border-radius:var(--radius-xs);margin-right:6px;vertical-align:-1px}
-.mx-table .dot.s-warn{background:var(--warn)}.mx-table .dot.s-ia{background:var(--ia)}.mx-table .dot.s-ok{background:var(--ok)}.mx-table .dot.s-neutral{background:var(--line-2)}
-.mx-table .tot{font-weight:700}
-.mx-cell{min-width:36px;padding:2px var(--space-2);border-radius:var(--radius-sm);font-weight:600;color:var(--accent)}
-.mx-cell:hover{background:var(--accent-soft)}
-.mx-zero{color:var(--text-3)}
 .gap-side-h{font-size:var(--text-xs);color:var(--text-3);margin-bottom:4px}
 .gap-note{margin-top:10px;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);line-height:1.45;background:var(--warn-soft);color:var(--text-2);cursor:pointer}
 .gap-note b{color:var(--warn)}
@@ -868,8 +858,8 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           <div class="ph-num transversal">!</div>
           <div class="ph-info">
             <div class="ph-name">Risks</div>
-            <div class="ph-desc">Every Not compliant traced to a risk, reused across requirements.</div>
-            <div class="ph-stat"><span class="big" id="ph-risks-n">0</span><span id="ph-risks-txt">open risks</span></div>
+            <div class="ph-desc">Every Not compliant traced to a risk, with its justification.</div>
+            <div class="ph-stat"><span class="big" id="ph-risks-n">0</span><span id="ph-risks-txt">in the list</span></div>
           </div>
           <span class="ph-open-btn">→</span>
         </a>
@@ -1049,7 +1039,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
 
             <div class="stat-block">
               <div class="stat-h">Risks</div>
-              <div class="stat-sub">Open risks, by weight</div>
+              <div class="stat-sub">The tender's list of risks, and how much each is reused</div>
               <div id="stats-risks"></div>
             </div>
 
@@ -1057,12 +1047,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
               <div class="stat-h">Not compliant by gap strategy</div>
               <div class="stat-sub">What each responsible chose to do about their Not compliant</div>
               <div id="stats-nc-strategy"></div>
-            </div>
-
-            <div class="stat-block stat-wide">
-              <div class="stat-h">Weight × gap strategy</div>
-              <div class="stat-sub">Links between requirements and risks — a cell opens the Risks register filtered on it</div>
-              <div id="stats-risk-matrix"></div>
             </div>
 
             <div class="stat-block stat-wide">
@@ -2703,7 +2687,6 @@ function renderStatsAIQuality(){
    Compliance (reportGapStats, refreshed each time it renders); risks, links
    and strategies from the shell's register. Until Compliance has been opened
    in this session there is nothing to count from, and the blocks say so. */
-const RISK_W=[["high","High","s-warn"],["medium","Medium","s-ia"],["low","Low","s-ok"],["negligible","Negligible","s-neutral"]];
 const STRAT_CLS=["s-accent","s-human","s-ia","s-ok","s-warn"];
 const shellGet=(fn,...a)=>{ try{ return window.parent[fn](CURRENT_PROJECT.id,...a); }catch(e){ return null; } };
 const noGapStats=`<div class="stat-empty">Counted from Compliance — open it once and these figures fill in.</div>`;
@@ -2725,10 +2708,12 @@ function renderStatsProgressClient(){
 }
 function renderStatsRisks(){
   const el=document.getElementById("stats-risks"); if(!el) return;
-  const rs=shellGet("getRisks")||[], open=rs.filter(x=>x.status==="open");
+  const rs=shellGet("getRisks")||[];
   if(!rs.length){ el.innerHTML=`<div class="stat-empty">No risk on this tender yet — they are created in Compliance, on each Not compliant.</div>`; return; }
-  el.innerHTML=`<div class="cons-top" data-go="risks.html"><span class="big">${open.length}</span><span>open risk${open.length===1?"":"s"} · ${rs.length} in the register</span></div>`
-    +stackedBarHTML(open.length, RISK_W.map(([k,l,c])=>({label:l, cls:c, n:open.filter(x=>x.weight===k).length})), "risks.html");
+  const n={}; Object.values(shellGet("getGapDocs")||{}).forEach(d=>(d.risks||[]).forEach(id=>{ n[id]=(n[id]||0)+1; }));
+  const links=Object.values(n).reduce((a,b)=>a+b,0), shared=rs.filter(x=>(n[x.id]||0)>1).length;
+  el.innerHTML=`<div class="cons-top" data-go="risks.html"><span class="big">${rs.length}</span><span>risk${rs.length===1?"":"s"} · ${links} link${links===1?"":"s"} to Not compliant assignments</span></div>
+    <div class="stat-empty">${shared} risk${shared===1?" is":"s are"} shared by several requirements — ${rs.length?Math.round(links/rs.length*10)/10:0} links per risk on average.</div>`;
   bindGo(el);
 }
 function renderStatsNCStrategy(){
@@ -2739,19 +2724,6 @@ function renderStatsNCStrategy(){
   const segs=strs.map((s,i)=>({label:s.name, cls:STRAT_CLS[i%STRAT_CLS.length], n:st.byStrategy[s.id]||0}));
   segs.push({label:"Strategy missing", cls:"s-neutral", n:st.noStrategy});
   el.innerHTML=stackedBarHTML(st.nc, segs, "compliance.html"); bindGo(el);
-}
-function renderStatsRiskMatrix(){
-  const el=document.getElementById("stats-risk-matrix"); if(!el) return;
-  const strs=shellGet("getStrategies")||[], rs=shellGet("getRisks")||[], docs=Object.values(shellGet("getGapDocs")||{});
-  const links=[]; docs.forEach(d=>(d.risks||[]).forEach(id=>{ const x=rs.find(r=>r.id===id); if(x) links.push({w:x.weight, s:strs.some(s=>s.id===d.strategy)?d.strategy:"__none"}); }));
-  if(!links.length){ el.innerHTML=`<div class="stat-empty">No requirement is linked to a risk yet.</div>`; return; }
-  const cols=strs.map(s=>({id:s.id, name:s.name})); if(links.some(l=>l.s==="__none")) cols.push({id:"__none", name:"No strategy yet"});
-  const n=(w,s)=>links.filter(l=>l.w===w&&(s==="__all"||l.s===s)).length;
-  const cell=(w,s)=>{ const v=n(w,s); return v?`<button class="mx-cell" data-mx="${w}|${s}">${v}</button>`:`<span class="mx-zero">0</span>`; };
-  el.innerHTML=`<table class="mx-table"><thead><tr><th></th>${cols.map(c=>`<th>${c.name}</th>`).join("")}<th>Total</th></tr></thead>
-    <tbody>${RISK_W.map(([w,l,c])=>`<tr><th><span class="dot ${c}"></span>${l}</th>${cols.map(col=>`<td>${cell(w,col.id)}</td>`).join("")}<td class="tot">${cell(w,"__all")}</td></tr>`).join("")}</tbody></table>`;
-  el.querySelectorAll("[data-mx]").forEach(b=>b.addEventListener("click",()=>{ const [w,s]=b.dataset.mx.split("|");
-    try{ window.parent.setScreenFocus("risks",{cell:{w,s}}); }catch(e){} goRoute("risks.html"); }));
 }
 /* A requirement consolidates only once EVERY assignment has answered, so the
    useful number is not "how many answers came back" but "what is each of the
@@ -2942,8 +2914,7 @@ function renderStrategiesSetting(){
 (function renderRisksCard(){
   const n=document.getElementById("ph-risks-n"), t=document.getElementById("ph-risks-txt"); if(!n||!CURRENT_PROJECT) return;
   let rs=[]; try{ rs=window.parent.getRisks(CURRENT_PROJECT.id)||[]; }catch(e){}
-  const open=rs.filter(x=>x.status==="open").length;
-  n.textContent=open; t.textContent=`open`; n.parentElement.title=`${open} open risk${open===1?"":"s"} · ${rs.length} in the register`;
+  n.textContent=rs.length; t.textContent=`in the list`;
 })();
 function renderAllocationModelSection(){
   renderStrategiesSetting();
@@ -2988,7 +2959,7 @@ function renderStatsPanel(){
   renderStatsProgressDeadline();
   // Compliance tab
   renderStatsComplianceBar("stats-comp-bar","stats-comp-legend");
-  renderStatsProgressClient(); renderStatsRisks(); renderStatsNCStrategy(); renderStatsRiskMatrix();
+  renderStatsProgressClient(); renderStatsRisks(); renderStatsNCStrategy();
   renderStatsConsolidation();
   renderStatsAssignFunnel();
   renderStatsLate();

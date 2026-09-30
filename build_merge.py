@@ -364,27 +364,25 @@ window.removeStrategy = (projectId, id)=>{
 // "<requirement id>#<system>", held here so the Risks page and Compliance read
 // the same links. Risks are created from Compliance and reused across requirements.
 // DEC-112 — demo register. The three "Risk accepted" texts of the old
-// declaration model (SRM-00005, SRM-00007, L4-0010) became risks written to the
-// three-sentence template; the other Not compliant of the Turnkey demo share
+// declaration model (SRM-00005, SRM-00007, L4-0010) became risks answering the
+// template's three questions; the other Not compliant of the Turnkey demo share
 // risks to show reuse (SRM-00026/-00056, SRM-00038/-00068), with different
-// strategies on the same risk, one closed risk, one PM correction, and a few
-// gaps left undocumented so the flags show (SRM-00086, SRM-00098).
+// strategies on the same risk, two risks on one requirement (SRM-00005), one PM
+// correction, and a few gaps left undocumented so the flags show (SRM-00086,
+// SRM-00098).
 function seedRisks(){
-  const R=(id,weight,activities,createdBy,createdAt,desc,extra)=>Object.assign({id,desc,weight,status:"open",activities,createdBy,createdAt,comments:[]},extra||{});
+  const R=(id,activities,createdBy,createdAt,that,cause,impact)=>({id,that,cause,impact,activities,createdBy,createdAt});
   return {
     stb2026:[
-      R("RSK-00001","high",["sig"],"Louis Renaud","Jul 14","There is a risk that third-party tools load the telemetry API beyond its rate limits.\\nThe risk is caused by the current gateway, sized for our own dashboards only.\\nThe direct impact of the risk will be a gateway rework, priced as a contract option.",
-        {comments:[{by:"Louis Renaud",date:"Jul 14",text:"Load test figures attached to SRM-00007's answer."},{by:"Thibaud Breton",date:"Jul 15",text:"Agreed to keep it as a gap — the option is in the price schedule."}]}),
-      R("RSK-00002","medium",["sig"],"Louis Renaud","Jul 13","There is a risk that the issuer's escalation matrix cannot be wired into our alerting as delivered.\\nThe risk is caused by the matrix being provided by the issuer only at contract award.\\nThe direct impact of the risk will be a late integration of escalation rules during delivery.",
-        {comments:[{by:"Louis Renaud",date:"Jul 13",text:"Asked for an adjustment — see QA-05."}]}),
-      R("RSK-00003","high",["sen"],"Paolo Ferri","Jul 16","There is a risk that the secondary depot cluster stays below 99.7% business-hours availability.\\nThe risk is caused by older hardware on that cluster (99.4% measured last quarter).\\nThe direct impact of the risk will be availability penalties on the depot scope."),
-      R("RSK-00004","medium",["trk"],"Amina Cherif","Jul 17","There is a risk that regional aggregation reports are logged later than 2 seconds after the event.\\nThe risk is caused by the batch interval of the aggregation service.\\nThe direct impact of the risk will be a latency deviation on every regional report."),
-      R("RSK-00005","low",["sen"],"Karim Benali","Jul 18","There is a risk that the gateway firmware cannot encrypt dashboard layouts within 2 seconds.\\nThe risk is caused by the encryption library of the current firmware release.\\nThe direct impact of the risk will be a firmware release outside the bid scope."),
-      R("RSK-00006","negligible",["sig"],"Sophie Lang","Jul 10","There is a risk that the escalation matrix contradicts the alert thresholds.\\nThe risk is caused by two sources for the same thresholds.\\nThe direct impact of the risk will be rework of the alert configuration.",
-        {status:"closed", comments:[{by:"Sophie Lang",date:"Jul 13",text:"Closed this risk."},{by:"Sophie Lang",date:"Jul 13",text:"The issuer confirmed in QA-05 that the matrix follows the configured thresholds."}]}),
+      R("RSK-00001",["sig"],"Louis Renaud","Jul 14","third-party tools load the telemetry API beyond its rate limits.","the current gateway, sized for our own dashboards only.","a gateway rework, priced as a contract option."),
+      R("RSK-00002",["sig"],"Louis Renaud","Jul 13","the issuer's escalation matrix cannot be wired into our alerting as delivered.","the matrix being provided by the issuer only at contract award.","a late integration of escalation rules during delivery."),
+      R("RSK-00003",["sen"],"Paolo Ferri","Jul 16","the secondary depot cluster stays below 99.7% business-hours availability.","older hardware on that cluster (99.4% measured last quarter).","availability penalties on the depot scope."),
+      R("RSK-00004",["trk"],"Amina Cherif","Jul 17","regional aggregation reports are logged later than 2 seconds after the event.","the batch interval of the aggregation service.","a latency deviation on every regional report."),
+      R("RSK-00005",["sen"],"Karim Benali","Jul 18","the gateway firmware cannot encrypt dashboard layouts within 2 seconds.","the encryption library of the current firmware release.","a firmware release outside the bid scope."),
+      R("RSK-00006",["sig"],"Sophie Lang","Jul 10","the escalation matrix contradicts the alert thresholds.","two sources for the same thresholds.","rework of the alert configuration."),
     ],
     rfp114:[
-      R("RSK-00001","high",["sig"],"Louis Renaud","Jul 16","There is a risk that a route is released too late when the last track section's detection is lost.\\nThe risk is caused by the standard product releasing routes on the nominal configuration only.\\nThe direct impact of the risk will be a product change for the degraded mode, priced as a contract option."),
+      R("RSK-00001",["sig"],"Louis Renaud","Jul 16","a route is released too late when the last track section's detection is lost.","the standard product releasing routes on the nominal configuration only.","a product change for the degraded mode, priced as a contract option."),
     ],
   };
 }
@@ -410,15 +408,17 @@ function seedGapDocs(){
 let risks = seedRisks();
 let gapDocs = seedGapDocs();
 window.getRisks = (projectId)=>{ const k=projectId||"_"; if(!risks[k]) risks[k]=[]; return risks[k]; };
+// DEC-113 — a risk is its justification, the three answers of the template
+// (that / cause / impact), and the requirements it is linked to. No weight,
+// status, comments or merge: the risk work itself is done outside the tool.
 window.addRisk = (projectId, r)=>{
-  const list=window.getRisks(projectId), desc=String((r&&r.desc)||"").trim();
-  if(!desc) return {error:"empty"};
+  const list=window.getRisks(projectId), t=k=>String((r&&r[k])||"").trim();
+  if(!t("that")||!t("cause")||!t("impact")) return {error:"empty"};
   const n=list.reduce((m,x)=>Math.max(m, parseInt(String(x.id).slice(4),10)||0),0)+1;
-  const entry={id:"RSK-"+String(n).padStart(5,"0"), desc, weight:r.weight||"medium", status:"open",
-    activities:r.activity?[r.activity]:[], createdBy:r.createdBy||null, createdAt:r.createdAt||"Today", comments:[]};
+  const entry={id:"RSK-"+String(n).padStart(5,"0"), that:t("that"), cause:t("cause"), impact:t("impact"),
+    activities:r.activity?[r.activity]:[], createdBy:r.createdBy||null, createdAt:r.createdAt||"Today"};
   list.push(entry); return {entry};
 };
-window.updateRisk = (projectId, id, patch)=>{ const x=window.getRisks(projectId).find(e=>e.id===id); if(!x) return {error:"missing"}; Object.assign(x, patch||{}); return {entry:x}; };
 window.getGapDocs = (projectId)=>{ const k=projectId||"_"; if(!gapDocs[k]) gapDocs[k]={}; return gapDocs[k]; };
 window.getGapDoc = (projectId, key)=>window.getGapDocs(projectId)[key]||null;
 window.setGapDoc = (projectId, key, patch)=>{
@@ -440,25 +440,6 @@ function seedGapStats(){ return {
 let gapStats = seedGapStats();
 window.reportGapStats = (projectId, st)=>{ gapStats[projectId||"_"]=st; };
 window.getGapStats = (projectId)=>gapStats[projectId||"_"]||null;
-window.addRiskComment = (projectId, id, c)=>{ const x=window.getRisks(projectId).find(e=>e.id===id); if(!x) return {error:"missing"};
-  const entry={by:c.by||"—", date:c.date||"Today", text:String(c.text||"").trim()}; if(!entry.text) return {error:"empty"};
-  x.comments.push(entry); return {entry}; };
-// SPEC-risks.md §6.4 — merge: every link moves to the kept risk, the others are
-// deleted, and the kept risk's comments carry the trace.
-window.mergeRisks = (projectId, keepId, ids, by)=>{
-  const list=window.getRisks(projectId), keep=list.find(e=>e.id===keepId); if(!keep) return {error:"missing"};
-  const gone=ids.filter(id=>id!==keepId && list.some(e=>e.id===id)); if(!gone.length) return {error:"nothing"};
-  let moved=0;
-  Object.values(window.getGapDocs(projectId)).forEach(d=>{
-    if(!(d.risks||[]).some(id=>gone.includes(id))) return;
-    moved+=d.risks.filter(id=>gone.includes(id)).length;
-    const next=[]; d.risks.forEach(id=>{ const t=gone.includes(id)?keepId:id; if(!next.includes(t)) next.push(t); }); d.risks=next;
-  });
-  gone.forEach(id=>{ const x=list.find(e=>e.id===id); (x.activities||[]).forEach(a=>{ if(!keep.activities.includes(a)) keep.activities.push(a); }); });
-  for(let i=list.length-1;i>=0;i--) if(gone.includes(list[i].id)) list.splice(i,1);
-  keep.comments.push({by:by||"—", date:"Today", text:`Merged ${gone.join(", ")} into this risk — ${moved} link${moved===1?"":"s"} moved here.`, system:true});
-  return {kept:keep, gone, moved};
-};
 // One-shot hand-off between screens: "open this risk", "filter Compliance on it".
 // The target screen takes it on load; the iframe reloads on every route.
 let screenFocus = {};
