@@ -458,6 +458,20 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .pt-rm{margin-left:6px;color:inherit;opacity:.6;font-size:var(--text-xs);line-height:1}
 .pt-rm:hover{opacity:1}
 .pt-add .inp{flex:1}
+/* Gap strategies (SPEC-risks.md §2.1) */
+.gs-list{display:flex;flex-direction:column;gap:var(--space-2);margin-bottom:var(--space-3)}
+.gs-row{display:flex;align-items:center;gap:var(--space-2)}
+.gs-row .inp{flex:1;min-width:0}
+.gs-row .sel,.gs-add .sel{width:132px;flex-shrink:0}
+.gs-use{width:56px;flex-shrink:0;font-size:var(--text-xs);color:var(--text-3);text-align:right;white-space:nowrap}
+.gs-rm{flex-shrink:0;width:28px;height:28px;border-radius:var(--radius-sm);color:var(--text-3)}
+.gs-rm:hover:not([disabled]){background:var(--panel-2);color:var(--text)}
+.gs-rm[disabled]{opacity:.35;cursor:not-allowed}
+.gs-empty{font-size:var(--text-sm);color:var(--text-3);padding:var(--space-3);border:1px dashed var(--line-2);border-radius:var(--radius-md)}
+.gs-confirm{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2);margin:calc(-1 * var(--space-1)) 0 var(--space-1);padding:var(--space-2) var(--space-3);font-size:var(--text-sm);color:var(--text-2);background:var(--warn-soft);border-radius:var(--radius-md)}
+.gs-confirm span{flex:1;min-width:200px}
+.gs-add{display:flex;gap:var(--space-2);max-width:560px}
+.gs-add .inp{flex:1}
 .inp,.sel,textarea.inp{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base);transition:border-color .15s}
 .inp:focus,.sel:focus,textarea.inp:focus{border-color:var(--accent)}
 textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
@@ -1054,6 +1068,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
       <div class="cfg-nav-item" data-sec="team"><span class="ci"><i class=ic-users></i></span> Team &amp; contributors</div>
       <div class="cfg-nav-item" data-sec="workflow"><span class="ci"><i class=ic-flow></i></span> Workflow &amp; milestones</div>
       <div class="cfg-nav-item" data-sec="model"><span class="ci"><i class=ic-refresh></i></span> Allocation model</div>
+      <div class="cfg-nav-item" data-sec="compliance"><span class="ci"><i class=ic-flag></i></span> Compliance</div>
       <div class="cfg-nav-item" data-sec="appearance"><span class="ci"><i class=ic-contrast></i></span> Appearance</div>
       <div class="cfg-nav-item" data-sec="ai"><span class="ci"><i class=ic-sparkle></i></span> Capture &amp; segmentation</div>
       <div class="cfg-nav-item" data-sec="feedback"><span class="ci"><i class=ic-undo></i></span> AI feedback</div>
@@ -1123,6 +1138,24 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
               <div class="dangerbox" id="cfg-model-danger">—</div>
               <button class="btn-danger" id="cfg-model-rerun" disabled title="Not wired in this build">↻ Change model and re-run everything</button>
               <div class="opt-desc">Unlike the per-requirement re-run, this one does <b>not</b> spare answered requirements (DEC-050): the model that produced them has changed, so what was built on it no longer holds. The two are deliberately not the same action, and one is never offered as a fallback for the other.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Compliance — SPEC-risks.md §2.1, DEC-110 / DEC-111 -->
+        <section class="cfg-sec" data-sec="compliance">
+          <div class="cfg-h">Compliance</div>
+          <div class="cfg-sub">How a Not compliant verdict is handled on this tender.</div>
+          <div class="frow" style="border-bottom:none">
+            <div class="fl"><div class="flt">Gap strategies</div><div class="fld">What the responsible of a requirement can do about a Not compliant — and what each choice declares to the client. Written for this tender.</div></div>
+            <div class="fc">
+              <div class="gs-list" id="gs-list"></div>
+              <div class="gs-add">
+                <input class="inp" id="gs-new-name" placeholder="Strategy name" autocomplete="off">
+                <select class="sel" id="gs-new-ext"><option value="compliant">Compliant</option><option value="not_compliant">Not compliant</option><option value="pending" selected>Pending</option></select>
+                <button class="btn-ghost" id="gs-add-btn">＋ Add</button>
+              </div>
+              <div class="opt-desc">The external compliance of a requirement is <b>derived</b>: Compliant when its responsible answers Compliant, otherwise the result of the strategy they pick. A strategy in use can be renamed but not deleted; changing its result recomputes every requirement that uses it, after you confirm.</div>
             </div>
           </div>
         </section>
@@ -2764,7 +2797,78 @@ function renderPartnersSetting(){
   btn.addEventListener("click",add);
   inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); add(); } });
 })();
+/* SPEC-risks.md §2.1 — the tender's gap strategies, held in the shell like the
+   partners above. DEC-110: empty on a new tender. DEC-111: changing the result
+   of a strategy in use recomputes the requirements that use it — confirmed
+   inline with the count first; PM corrections are kept. */
+const GS_EXT_LABEL={compliant:"Compliant", not_compliant:"Not compliant", pending:"Pending"};
+let gsPending=null;   // {id, ext} — a result change awaiting confirmation
+function renderStrategiesSetting(){
+  const box=document.getElementById("gs-list"); if(!box||!CURRENT_PROJECT) return;
+  let list=[]; try{ list=window.parent.getStrategies(CURRENT_PROJECT.id)||[]; }catch(e){}
+  const use=id=>{ try{ return window.parent.getStrategyUsage(CURRENT_PROJECT.id,id); }catch(e){ return {used:0,corrected:0}; } };
+  const opts=v=>Object.entries(GS_EXT_LABEL).map(([k,l])=>`<option value="${k}" ${k===v?"selected":""}>${l}</option>`).join("");
+  box.innerHTML = list.length ? list.map(x=>{
+    const u=use(x.id);
+    const pend=gsPending&&gsPending.id===x.id?gsPending:null;
+    const moved=u.used-u.corrected;
+    return `<div class="gs-row">
+        <input class="inp" data-gsname="${x.id}" value="${x.name.replace(/"/g,"&quot;")}" title="Rename">
+        <select class="sel" data-gsext="${x.id}">${opts(pend?pend.ext:x.ext)}</select>
+        <span class="gs-use" title="Requirements whose Not compliant uses this strategy">${u.used?`used ${u.used}×`:"unused"}</span>
+        <button class="gs-rm" data-gsrm="${x.id}" ${u.used?"disabled":""} title="${u.used?"In use — rename it instead":"Delete"}"><i class=ic-trash></i></button>
+      </div>
+      ${pend?`<div class="gs-confirm"><span><b>${moved}</b> requirement${moved===1?"":"s"} will change external compliance from ${GS_EXT_LABEL[x.ext]} to <b>${GS_EXT_LABEL[pend.ext]}</b>${u.corrected?` · ${u.corrected} corrected by the PM ${u.corrected===1?"keeps its":"keep their"} value`:""}.</span>
+        <button class="btn-ghost" data-gscancel>Cancel</button><button class="btn-primary" data-gsconfirm>Change and recompute</button></div>`:""}`;
+  }).join("") : `<div class="gs-empty">No strategy yet. Until there is one, a Not compliant is flagged <b>Strategy missing</b> and its external compliance stays Pending.</div>`;
+  box.querySelectorAll("[data-gsname]").forEach(inp=>{
+    const commit=()=>{
+      const id=inp.dataset.gsname, cur=list.find(e=>e.id===id); if(!cur||inp.value.trim()===cur.name) return;
+      let res={error:"shell"}; try{ res=window.parent.renameStrategy(CURRENT_PROJECT.id,id,inp.value); }catch(e){}
+      if(res.error==="empty"){ toast("A strategy needs a name","warn"); inp.value=cur.name; return; }
+      if(res.error==="duplicate"){ toast("Another strategy already has that name","warn"); inp.value=cur.name; return; }
+      if(res.error){ inp.value=cur.name; return; }
+      toast(`Renamed to “${res.entry.name}”`,"ok");
+    };
+    inp.addEventListener("change",commit);
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); inp.blur(); } if(e.key==="Escape"){ inp.value=(list.find(x=>x.id===inp.dataset.gsname)||{}).name||""; inp.blur(); } });
+  });
+  box.querySelectorAll("[data-gsext]").forEach(sel=>sel.addEventListener("change",()=>{
+    const id=sel.dataset.gsext, cur=list.find(e=>e.id===id); if(!cur) return;
+    if(sel.value===cur.ext){ gsPending=null; renderStrategiesSetting(); return; }
+    if(use(id).used-use(id).corrected>0){ gsPending={id, ext:sel.value}; renderStrategiesSetting(); return; }
+    try{ window.parent.setStrategyResult(CURRENT_PROJECT.id,id,sel.value); }catch(e){}
+    gsPending=null; renderStrategiesSetting(); toast(`${cur.name} now declares ${GS_EXT_LABEL[sel.value]}`,"ok");
+  }));
+  box.querySelector("[data-gscancel]")?.addEventListener("click",()=>{ gsPending=null; renderStrategiesSetting(); });
+  box.querySelector("[data-gsconfirm]")?.addEventListener("click",()=>{
+    const cur=list.find(e=>e.id===gsPending.id), n=use(gsPending.id).used-use(gsPending.id).corrected;
+    try{ window.parent.setStrategyResult(CURRENT_PROJECT.id,gsPending.id,gsPending.ext); }catch(e){}
+    toast(`${cur.name} now declares ${GS_EXT_LABEL[gsPending.ext]} — ${n} requirement${n===1?"":"s"} recomputed`,"ok");
+    gsPending=null; renderStrategiesSetting();
+  });
+  box.querySelectorAll("[data-gsrm]").forEach(b=>b.addEventListener("click",()=>{
+    let res={error:"shell"}; try{ res=window.parent.removeStrategy(CURRENT_PROJECT.id,b.dataset.gsrm); }catch(e){}
+    if(res.error==="used"){ toast("In use — rename it instead","warn"); return; }
+    if(res.error) return;
+    toast(`${res.removed.name} deleted`,"ok"); renderStrategiesSetting();
+  }));
+}
+(function(){
+  const btn=document.getElementById("gs-add-btn"), inp=document.getElementById("gs-new-name"), ext=document.getElementById("gs-new-ext");
+  if(!btn||!inp) return;
+  const add=()=>{
+    let res={error:"shell"}; try{ res=window.parent.addStrategy(CURRENT_PROJECT.id, inp.value, ext.value); }catch(e){}
+    if(res.error==="empty"){ toast("Name the strategy","warn"); inp.focus(); return; }
+    if(res.error==="duplicate"){ toast("That strategy already exists","warn"); return; }
+    if(res.error){ toast("Could not add the strategy","warn"); return; }
+    inp.value=""; renderStrategiesSetting(); toast(`${res.entry.name} added — declares ${GS_EXT_LABEL[res.entry.ext]}`,"ok");
+  };
+  btn.addEventListener("click",add);
+  inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); add(); } });
+})();
 function renderAllocationModelSection(){
+  renderStrategiesSetting();
   renderPartnersSetting();
   const gl=document.getElementById("cfg-general-line"); if(gl) gl.textContent=(CURRENT_PROJECT&&CURRENT_PROJECT.line)||"Turnkey";
   const sysEl=document.getElementById("cfg-model-system");

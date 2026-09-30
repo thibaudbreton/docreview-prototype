@@ -1374,6 +1374,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-29
 - **notes**: `activityBlocksHTML()` + `obsBreakdownHTML()`, the "Systems (N)" list of the Turnkey project manager's detail panel. Head: system tag, then that system's allocation status (`.status-pill.is-static`, not clickable) in the right corner — replaces the three-state `.act-alloc-pill` (Not started / In progress / Allocated), removed with `activityAllocStatus()`. Body: one line per OBS, organisation left and person right (`.act-obs-row`), replacing the "Allocation · Team not set · Unassigned" key/value line. Then a Compliance line laid out like the OBS lines (label left, pill right), and "Open system detail →" alone on the last line, full width — a button beside the data was too cramped at the panel's width. Card frame reuses `.branch-sec` (untracked `--line-2`, `--panel-2`). First recorded on this change; the card existed before without an entry.
 
+### Gap Strategy Editor
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: empty (no strategy yet), unused row (deletable), used row (delete disabled, "used N×"), pending result change (inline confirmation with the count)
+- **tokens**: --space-1, --space-2, --space-3, --radius-sm, --radius-md, --text-xs, --text-sm, --text-2, --text-3, --line-2, --warn-soft
+- **built-from**: Text Input (`.inp`), Select (`.sel`), Ghost Button, Primary Button
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: Settings → Compliance → Gap strategies (SPEC-risks.md §2.1, DEC-110/111). `renderStrategiesSetting()`; one row per strategy — name (renamed on change/Enter), external result select, usage, delete. State lives in the shell (`getStrategies`, `addStrategy`, `renameStrategy`, `setStrategyResult`, `removeStrategy`, `reportStrategyUsage`/`getStrategyUsage`) like the partner list, so it survives the iframe reload. Changing the result of a strategy in use asks first, inline under the row (no modal exists on this screen): "N requirements will change external compliance…", PM corrections excepted. Usage is reported by Compliance (step 2 of the Risks build) — until then every strategy reads "unused". Depends on untracked `--line-2` (empty state border) and `--warn-soft` (confirmation); `.gs-rm` is 28px square, hardcoded.
+
 ## Organisms
 
 ### App Header

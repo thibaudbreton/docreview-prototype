@@ -239,7 +239,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={};
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage={};
   reassignRequests.length=0; sharedQuestions={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -301,6 +301,54 @@ window.addPartner = (projectId, name)=>{
   while(list.some(x=>x.code===code)) code=base.slice(0,7)+(n++);
   const entry={id:"p_"+code.toLowerCase(), code, label};
   list.push(entry); return {entry};
+};
+// SPEC-risks.md §2.1 / DEC-110 — the gap strategies of a tender: what a
+// responsible can do about a Not compliant, and the external compliance each
+// one produces. Written per tender by the PM; a new tender starts with none.
+// The demo tenders carry the usual four so the flow can be shown.
+function seedStrategies(){
+  const four=()=>[
+    {id:"gs_1", name:"Declare NC in offer", ext:"not_compliant"},
+    {id:"gs_2", name:"Request adjustment", ext:"pending"},
+    {id:"gs_3", name:"Change to reach compliance", ext:"compliant"},
+    {id:"gs_4", name:"Keep as a gap", ext:"compliant"},
+  ];
+  const out={}; ["stb2026","rfp114","ao088","stb133","stb2025"].forEach(k=>{ out[k]=four(); });
+  return out;
+}
+let strategies = seedStrategies();
+// Compliance reports, per strategy, how many assignments use it and how many of
+// those carry a PM correction of the external compliance (DEC-106). "used" is
+// what forbids deleting; used minus corrected is what a change of result moves.
+let strategyUsage = {};
+window.getStrategies = (projectId)=>{ const k=projectId||"_"; if(!strategies[k]) strategies[k]=[]; return strategies[k]; };
+window.reportStrategyUsage = (projectId, counts)=>{ strategyUsage[projectId||"_"]=counts||{}; };
+window.getStrategyUsage = (projectId, id)=>{ const u=((strategyUsage[projectId||"_"]||{})[id])||{}; return {used:u.used||0, corrected:u.corrected||0}; };
+window.addStrategy = (projectId, name, ext)=>{
+  const list=window.getStrategies(projectId), label=String(name||"").trim();
+  if(!label) return {error:"empty"};
+  if(list.some(x=>x.name.toLowerCase()===label.toLowerCase())) return {error:"duplicate"};
+  let n=list.length+1; while(list.some(x=>x.id==="gs_"+n)) n++;
+  const entry={id:"gs_"+n, name:label, ext:ext||"pending"};
+  list.push(entry); return {entry};
+};
+window.renameStrategy = (projectId, id, name)=>{
+  const list=window.getStrategies(projectId), label=String(name||"").trim(), x=list.find(e=>e.id===id);
+  if(!x) return {error:"missing"};
+  if(!label) return {error:"empty"};
+  if(list.some(e=>e.id!==id && e.name.toLowerCase()===label.toLowerCase())) return {error:"duplicate"};
+  x.name=label; return {entry:x};
+};
+window.setStrategyResult = (projectId, id, ext)=>{
+  const x=window.getStrategies(projectId).find(e=>e.id===id); if(!x) return {error:"missing"};
+  x.ext=ext; return {entry:x};
+};
+// SPEC-risks.md §2.1 — a strategy in use cannot be deleted, only renamed.
+window.removeStrategy = (projectId, id)=>{
+  if(window.getStrategyUsage(projectId, id).used>0) return {error:"used"};
+  const list=window.getStrategies(projectId), i=list.findIndex(e=>e.id===id);
+  if(i<0) return {error:"missing"};
+  const [gone]=list.splice(i,1); return {removed:gone};
 };
 window.isV22Uploaded = ()=>v22Uploaded;
 window.setV22Uploaded = (v)=>{ v22Uploaded = !!v; };
