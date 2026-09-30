@@ -2252,24 +2252,24 @@ const SIG_REVIEW_REQS=[
   {id:"L4-0018",status:"toreview", activity:"sig"},
 ];
 const SIG_FOLLOWUP_REQS=[
-  {id:"L4-0004",compliance:"compliant",    branchStatuses:["answered"],external:"compliant"},
+  {id:"L4-0004",compliance:"compliant",    branchStatuses:["answered"]},
   {id:"L4-0005",compliance:"compliant",    branchStatuses:["answered"]},
   {id:"L4-0006",compliance:null,           branchStatuses:["proposed"]},
   {id:"L4-0008",compliance:null,           branchStatuses:["awaiting_answer"]},
   {id:"L4-0009",compliance:null,           branchStatuses:["awaiting_answer"],overdueBranches:1},
-  {id:"L4-0010",compliance:"not_compliant",branchStatuses:["answered"],external:"compliant",risk:true},
+  {id:"L4-0010",compliance:"not_compliant",branchStatuses:["answered"]},
   {id:"L4-0011",compliance:null,           branchStatuses:["awaiting_qa"]},
   {id:"L4-0012",compliance:null,           branchStatuses:["awaiting_qa"]},
   {id:"L4-0014",compliance:"compliant",    branchStatuses:["answered"]},
   {id:"L4-0015",compliance:null,           branchStatuses:["reassignment_needed"]},
-  {id:"L4-0017",compliance:"compliant",    branchStatuses:["answered"],external:"compliant"},
+  {id:"L4-0017",compliance:"compliant",    branchStatuses:["answered"]},
   {id:"L4-0018",compliance:null,           branchStatuses:["awaiting_answer"]},
 ];
 const SIG_OVERDUE_BRANCHES=[
   {reqId:"L4-0009",expert:"Sophie Lang",days:9},
 ];
 const SIG_COMMENT_FEED=[
-  {kind:"warn",who:"Louis Renaud",what:"flagged a risk on <b>L4-0010</b> — external compliance declared despite internal Not compliant",when:"Jul 16, 3:40 PM",sortKey:"2026-07-16T15:40"},
+  {kind:"warn",who:"Louis Renaud",what:"linked <b>RSK-00001</b> to <b>L4-0010</b> — Not compliant, kept as a gap",when:"Jul 16, 3:40 PM",sortKey:"2026-07-16T15:40"},
   {kind:"ok",who:"Sophie Lang",what:"raised a question on <b>L4-0012</b> — depot approach tracks absent from the coverage drawings",when:"Jul 16, 10:05 AM",sortKey:"2026-07-16T10:05"},
   {kind:"ok",who:"Louis Renaud",what:"responded on <b>L4-0014</b> — platform screen door interface compliant as specified",when:"Jul 15, 2:20 PM",sortKey:"2026-07-15T14:20"},
 ];
@@ -2303,18 +2303,17 @@ const REVIEW_REQS = IS_SIG_TENDER ? SIG_REVIEW_REQS : REVIEW_REQS_BASE;
 /* `branchStatuses` replaces the old branchesAnswered/branchesTotal pair: same
    information, but per assignment, so the assignment funnel and the "what is
    consolidation actually waiting on" split can be derived rather than typed.
-   Values are compliance.html's own BST keys. `external`/`risk` mirror the
-   external declaration and its accepted-risk note (DEC-028) — the only place
-   the gap between what we found and what the client is told gets measured. */
+   Values are compliance.html's own BST keys. Risk figures are not mirrored here:
+   they come from Compliance's own totals and the shell's register (SPEC-risks.md). */
 const FOLLOWUP_REQS_BASE=[
   // TD3 — SRM-00001/SRM-00002 now exist in compliance.html's REQS; kept in sync here.
   {id:"SRM-00001",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
   {id:"SRM-00002",compliance:null,            branchStatuses:["proposed"]},
-  {id:"SRM-00003",compliance:"compliant",     branchStatuses:["answered"],external:"compliant"},
+  {id:"SRM-00003",compliance:"compliant",     branchStatuses:["answered"]},
   {id:"SRM-00004",compliance:"compliant",     branchStatuses:["answered"]},
-  {id:"SRM-00005",compliance:null,            branchStatuses:["answered","awaiting_answer","reassignment_needed"],external:"compliant",risk:true},
+  {id:"SRM-00005",compliance:null,            branchStatuses:["answered","awaiting_answer","reassignment_needed"]},
   {id:"SRM-00006",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
-  {id:"SRM-00007",compliance:"not_compliant", branchStatuses:["answered"],external:"compliant",risk:true},
+  {id:"SRM-00007",compliance:"not_compliant", branchStatuses:["answered"]},
   {id:"SRM-00008",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
   {id:"SRM-00009",compliance:"compliant",     branchStatuses:["answered"]},
   {id:"SRM-00010",compliance:null,            branchStatuses:["awaiting_qa"]},
@@ -2389,7 +2388,7 @@ function renderOverdueCard(){
    system" feed further down. All merged and shown most-recent-first. */
 const COMMENT_FEED_DEMO_BASE=[
   {kind:"ok",who:"Claire Moreau",what:"responded on <b>SRM-00013</b> — verdict Needs clarification",when:"Jul 15, 4:20 PM",sortKey:"2026-07-15T16:20"},
-  {kind:"warn",who:"Paolo Ferri",what:"flagged a risk on <b>SRM-00007</b> — external compliance declared despite internal Not compliant",when:"Jul 14, 11:05 AM",sortKey:"2026-07-14T11:05"},
+  {kind:"warn",who:"Louis Renaud",what:"linked <b>RSK-00001</b> to <b>SRM-00007</b> — Not compliant, kept as a gap",when:"Jul 14, 11:05 AM",sortKey:"2026-07-14T11:05"},
   {kind:"ok",who:"Sophie Lang",what:"commented on <b>SRM-00006</b> — evidence attached, awaiting review",when:"Jul 12, 9:15 AM",sortKey:"2026-07-12T09:15"},
 ];
 const COMMENT_FEED_DEMO = IS_SIG_TENDER ? SIG_COMMENT_FEED : COMMENT_FEED_DEMO_BASE;

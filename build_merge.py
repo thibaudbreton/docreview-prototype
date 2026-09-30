@@ -241,7 +241,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage={}; risks={}; gapDocs={}; gapStats={};
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage=seedStrategyUsage(); risks=seedRisks(); gapDocs=seedGapDocs(); gapStats=seedGapStats();
   reassignRequests.length=0; sharedQuestions={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -322,7 +322,13 @@ let strategies = seedStrategies();
 // Compliance reports, per strategy, how many assignments use it and how many of
 // those carry a PM correction of the external compliance (DEC-106). "used" is
 // what forbids deleting; used minus corrected is what a change of result moves.
-let strategyUsage = {};
+// Seeded with what Compliance reports for the demo data, so Settings knows
+// before Compliance has been opened; Compliance overwrites it on each render.
+function seedStrategyUsage(){ return {
+  stb2026:{gs_1:{used:2,corrected:0}, gs_2:{used:2,corrected:1}, gs_3:{used:2,corrected:0}, gs_4:{used:2,corrected:0}},
+  rfp114:{gs_4:{used:1,corrected:0}},
+}; }
+let strategyUsage = seedStrategyUsage();
 window.getStrategies = (projectId)=>{ const k=projectId||"_"; if(!strategies[k]) strategies[k]=[]; return strategies[k]; };
 window.reportStrategyUsage = (projectId, counts)=>{ strategyUsage[projectId||"_"]=counts||{}; };
 window.getStrategyUsage = (projectId, id)=>{ const u=((strategyUsage[projectId||"_"]||{})[id])||{}; return {used:u.used||0, corrected:u.corrected||0}; };
@@ -357,8 +363,52 @@ window.removeStrategy = (projectId, id)=>{
 // PM correction of the derived external compliance (DEC-106). Keyed
 // "<requirement id>#<system>", held here so the Risks page and Compliance read
 // the same links. Risks are created from Compliance and reused across requirements.
-let risks = {};
-let gapDocs = {};
+// DEC-112 — demo register. The three "Risk accepted" texts of the old
+// declaration model (SRM-00005, SRM-00007, L4-0010) became risks written to the
+// three-sentence template; the other Not compliant of the Turnkey demo share
+// risks to show reuse (SRM-00026/-00056, SRM-00038/-00068), with different
+// strategies on the same risk, one closed risk, one PM correction, and a few
+// gaps left undocumented so the flags show (SRM-00086, SRM-00098).
+function seedRisks(){
+  const R=(id,weight,activities,createdBy,createdAt,desc,extra)=>Object.assign({id,desc,weight,status:"open",activities,createdBy,createdAt,comments:[]},extra||{});
+  return {
+    stb2026:[
+      R("RSK-00001","high",["sig"],"Louis Renaud","Jul 14","There is a risk that third-party tools load the telemetry API beyond its rate limits.\\nThe risk is caused by the current gateway, sized for our own dashboards only.\\nThe direct impact of the risk will be a gateway rework, priced as a contract option.",
+        {comments:[{by:"Louis Renaud",date:"Jul 14",text:"Load test figures attached to SRM-00007's answer."},{by:"Thibaud Breton",date:"Jul 15",text:"Agreed to keep it as a gap — the option is in the price schedule."}]}),
+      R("RSK-00002","medium",["sig"],"Louis Renaud","Jul 13","There is a risk that the issuer's escalation matrix cannot be wired into our alerting as delivered.\\nThe risk is caused by the matrix being provided by the issuer only at contract award.\\nThe direct impact of the risk will be a late integration of escalation rules during delivery.",
+        {comments:[{by:"Louis Renaud",date:"Jul 13",text:"Asked for an adjustment — see QA-05."}]}),
+      R("RSK-00003","high",["sen"],"Paolo Ferri","Jul 16","There is a risk that the secondary depot cluster stays below 99.7% business-hours availability.\\nThe risk is caused by older hardware on that cluster (99.4% measured last quarter).\\nThe direct impact of the risk will be availability penalties on the depot scope."),
+      R("RSK-00004","medium",["trk"],"Amina Cherif","Jul 17","There is a risk that regional aggregation reports are logged later than 2 seconds after the event.\\nThe risk is caused by the batch interval of the aggregation service.\\nThe direct impact of the risk will be a latency deviation on every regional report."),
+      R("RSK-00005","low",["sen"],"Karim Benali","Jul 18","There is a risk that the gateway firmware cannot encrypt dashboard layouts within 2 seconds.\\nThe risk is caused by the encryption library of the current firmware release.\\nThe direct impact of the risk will be a firmware release outside the bid scope."),
+      R("RSK-00006","negligible",["sig"],"Sophie Lang","Jul 10","There is a risk that the escalation matrix contradicts the alert thresholds.\\nThe risk is caused by two sources for the same thresholds.\\nThe direct impact of the risk will be rework of the alert configuration.",
+        {status:"closed", comments:[{by:"Sophie Lang",date:"Jul 13",text:"Closed this risk."},{by:"Sophie Lang",date:"Jul 13",text:"The issuer confirmed in QA-05 that the matrix follows the configured thresholds."}]}),
+    ],
+    rfp114:[
+      R("RSK-00001","high",["sig"],"Louis Renaud","Jul 16","There is a risk that a route is released too late when the last track section's detection is lost.\\nThe risk is caused by the standard product releasing routes on the nominal configuration only.\\nThe direct impact of the risk will be a product change for the degraded mode, priced as a contract option."),
+    ],
+  };
+}
+function seedGapDocs(){
+  const D=(reqId,typology,sec,text,managerName,strategy,risks,override)=>[reqId+"#"+typology,{strategy,risks,override:override||null,meta:{reqId,typology,sec,text,managerName}}];
+  return {
+    stb2026:Object.fromEntries([
+      D("SRM-00005","sig","2. Functional requirements","The system SHALL generate an alert when a site's consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.","Louis Renaud","gs_2",["RSK-00002","RSK-00006"]),
+      D("SRM-00007","sig","2. Functional requirements","The system SHALL expose site telemetry to third-party tools through a documented REST API.","Louis Renaud","gs_4",["RSK-00001"]),
+      D("SRM-00011","sen","3. Performance requirements","The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.","Paolo Ferri","gs_1",["RSK-00003"]),
+      D("SRM-00026","trk","4. Security requirements","The platform SHALL log regional aggregation reports within 2 seconds of the triggering event.","Amina Cherif","gs_3",["RSK-00004"]),
+      D("SRM-00056","trk","4. Security requirements","The platform SHALL log regional aggregation reports within 2 seconds of the triggering event.","Amina Cherif","gs_4",["RSK-00004"]),
+      D("SRM-00086","trk","4. Security requirements","The platform SHALL log regional aggregation reports within 2 seconds of the triggering event.","Amina Cherif","gs_3",[]),
+      D("SRM-00038","sen","4. Security requirements","The gateway firmware SHALL encrypt dashboard widget layouts within 2 seconds of the triggering event.","Paolo Ferri","gs_1",["RSK-00005"]),
+      D("SRM-00068","sen","4. Security requirements","The gateway firmware SHALL encrypt dashboard widget layouts within 2 seconds of the triggering event.","Paolo Ferri","gs_2",["RSK-00005"],
+        {ext:"not_compliant", reason:"The client refused any adjustment on the encryption scope in the Jul 20 clarification meeting.", by:"Thibaud Breton", date:"Jul 20"}),
+    ]),
+    rfp114:Object.fromEntries([
+      D("L4-0010","sig","3. Wayside and interlocking","Each interlocking SHALL guarantee that no conflicting route can be set simultaneously, and SHALL release a route only once the train has been confirmed clear of the last track section.","Louis Renaud","gs_4",["RSK-00001"]),
+    ]),
+  };
+}
+let risks = seedRisks();
+let gapDocs = seedGapDocs();
 window.getRisks = (projectId)=>{ const k=projectId||"_"; if(!risks[k]) risks[k]=[]; return risks[k]; };
 window.addRisk = (projectId, r)=>{
   const list=window.getRisks(projectId), desc=String((r&&r.desc)||"").trim();
@@ -381,7 +431,13 @@ window.setGapDoc = (projectId, key, patch)=>{
 window.clearGapDoc = (projectId, key)=>{ delete window.getGapDocs(projectId)[key]; };
 // SPEC-risks.md §9 — Compliance reports its totals (assignments, verdicts, Not
 // compliant documented, external) each time it renders; the dashboard reads them.
-let gapStats = {};
+// Same reason: the dashboard's risk figures on first load, as Compliance
+// computes them for the demo data (it overwrites them on each render).
+function seedGapStats(){ return {
+  stb2026:{reqs:104, assignments:124, assigned:100, answered:58, compliant:49, nc:9, ncLogged:7, byStrategy:{gs_1:2,gs_2:2,gs_3:2,gs_4:2}, noStrategy:1, ext:{compliant:43,not_compliant:2,pending:1,none:58}},
+  rfp114:{reqs:12, assignments:12, assigned:10, answered:5, compliant:4, nc:1, ncLogged:1, byStrategy:{gs_4:1}, noStrategy:0, ext:{compliant:5,not_compliant:0,pending:0,none:7}},
+}; }
+let gapStats = seedGapStats();
 window.reportGapStats = (projectId, st)=>{ gapStats[projectId||"_"]=st; };
 window.getGapStats = (projectId)=>gapStats[projectId||"_"]||null;
 window.addRiskComment = (projectId, id, c)=>{ const x=window.getRisks(projectId).find(e=>e.id===id); if(!x) return {error:"missing"};

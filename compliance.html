@@ -1360,10 +1360,7 @@ const REQS_HAND=[
    branches:[
      {typology:"sig",manager:null,status:"proposed",internal:null,age:3},
    ]},
-  // external/externalRisk are REQUIREMENT-level (see externalOf): one declaration to
-  // the client per requirement, never one per system. Here it simply confirms the
-  // internal verdict — declared explicitly (solid pill) rather than inherited (dashed).
-  {id:"SRM-00003",sec:"2. Functional requirements",type:"Functional",external:"compliant",
+  {id:"SRM-00003",sec:"2. Functional requirements",type:"Functional",
    text:"The system SHALL continuously collect consumption, production and energy quality measurements from each connected site, with a configurable acquisition interval per equipment family.",
    branches:[
      {typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:9,
@@ -1375,11 +1372,9 @@ const REQS_HAND=[
      {typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:9,
       resp:{note:"Dashboard aggregation (site / region / type) is available out of the box.",att:1,date:"Jul 12"}},
    ]},
-  // declared ahead of full consolidation: two systems are still open, but the PM
-  // has already committed an answer to the client and carries the risk for it
+  // SPEC-risks.md demo — its SIG Not compliant carries two risks (one closed) and
+  // the Request adjustment strategy; two systems are still open
   {id:"SRM-00005",sec:"2. Functional requirements",type:"Functional",outdated:true,
-   external:"compliant",
-   externalRisk:"Escalation matrix gap accepted for bid purposes — a mitigation plan will be finalized during contract negotiation. Client informed of the residual risk.",
    text:"The system SHALL generate an alert when a site's consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.",
    branches:[
      {typology:"sig",manager:"m_sig",status:"answered",internal:"not_compliant",age:8,
@@ -1393,10 +1388,9 @@ const REQS_HAND=[
    branches:[
      {typology:"trk",manager:"m_mln",status:"awaiting_answer",internal:null,age:6},
    ]},
-  // the textbook case for the risk field: fully consolidated Not compliant, declared
-  // Compliant to the client anyway — the one move the risk note is mandatory for
-  {id:"SRM-00007",sec:"2. Functional requirements",type:"Interface",external:"compliant",
-   externalRisk:"Rate-limit shortfall accepted at bid stage — the gateway rework is priced as a contract option, and the client is told the documented API is delivered without the implied third-party load guarantee.",
+  // SPEC-risks.md demo — Not compliant, kept as a gap: the client is told
+  // Compliant and RSK-00001 carries the risk (seeded in build_merge.py)
+  {id:"SRM-00007",sec:"2. Functional requirements",type:"Interface",
    text:"The system SHALL expose site telemetry to third-party tools through a documented REST API.",
    branches:[
      {typology:"sig",manager:"m_sig",status:"answered",internal:"not_compliant",age:7,
@@ -1470,6 +1464,8 @@ const GEN_SEC=["2. Functional requirements","3. Performance requirements","4. Se
 const GEN_TYPE={"2. Functional requirements":"Functional","3. Performance requirements":"Performance","4. Security requirements":"Security"};
 const GEN_TYPO=["sig","trk","com","sen","rams"];
 const GEN_TYPO_MGR={sig:"m_sig",trk:"m_mln",com:null,sen:"m_inf",rams:"cyber"};   // DEC-102 — only a member of the system
+/* a generated Not compliant gets a reason that says why, not a compliant-sounding one */
+const GEN_RESP_NC=["Latency target is not met on the current architecture — measured 3.4 s at the 95th percentile against the 2 s asked.","Not supported by the current gateway firmware; it would need a firmware release outside the bid scope."];
 const GEN_RESP=["Standard configuration covers this out of the box, no deviation.","Achievable with the current architecture; validated in the last integration test.","Meets the requirement as written, no exception noted.","Supported natively; no additional development required.","Confirmed against the reference deployment — compliant as specified."];
 const GEN_STATUS_CYCLE=["answered","answered","answered","answered","answered","awaiting_answer","awaiting_answer","awaiting_qa","proposed","reassignment_needed"];
 const GEN_CMP_CYCLE=["compliant","compliant","compliant","compliant","compliant","not_compliant"];
@@ -1480,7 +1476,7 @@ function genBranch(i,typo){
   const b={typology:typo,manager:mgr,status,internal:null,age};
   if(status==="answered"){
     b.internal=GEN_CMP_CYCLE[i%GEN_CMP_CYCLE.length];
-    b.resp={note:GEN_RESP[i%GEN_RESP.length],att:i%4===0?1:0,date:"Jul "+(1+(i%20))};
+    b.resp={note:b.internal==="not_compliant"?GEN_RESP_NC[i%GEN_RESP_NC.length]:GEN_RESP[i%GEN_RESP.length],att:i%4===0?1:0,date:"Jul "+(1+(i%20))};
   }
   return b;
 }
@@ -1537,7 +1533,7 @@ function genFollowupReqs(n){
    casting keep working untouched; what disappears is the level on screen.
 ===================================================== */
 const SIG_REQS=[
-  {id:"L4-0004",sec:"2. Train control",type:"Functional",external:"compliant",
+  {id:"L4-0004",sec:"2. Train control",type:"Functional",
    text:"The system SHALL enforce a continuous safe braking envelope for every train under ETCS Level 2 supervision, based on its position, speed and the movement authority granted by the radio block centre.",
    branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:8,
      resp:{note:"Standard ETCS L2 protection profile, validated on two previous mainline deployments. No deviation.",att:1,date:"Jul 14"}}]},
@@ -1554,8 +1550,7 @@ const SIG_REQS=[
   {id:"L4-0009",sec:"2. Train control",type:"Regulatory",
    text:"Migration to ETCS Level 2 SHALL be carried out without interrupting commercial service, with mixed-fleet operation supported throughout the transition period.",
    branches:[{typology:"sig",manager:"sup",status:"awaiting_answer",internal:null,age:9,lastFollowup:"Jul 11"}]},
-  {id:"L4-0010",sec:"3. Wayside and interlocking",type:"Functional",external:"compliant",
-   externalRisk:"Route release timing is met on the nominal configuration only; the degraded-mode case is priced as a contract option and the client is told the guarantee does not cover it.",
+  {id:"L4-0010",sec:"3. Wayside and interlocking",type:"Functional",
    text:"Each interlocking SHALL guarantee that no conflicting route can be set simultaneously, and SHALL release a route only once the train has been confirmed clear of the last track section.",
    branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"not_compliant",age:6,
      resp:{note:"Conflicting-route exclusion is met. Release on loss of the last section detection needs a change to the standard product — not feasible within the proposed envelope.",att:1,date:"Jul 16"}}]},
@@ -1575,7 +1570,7 @@ const SIG_REQS=[
    text:"Loss of the interface between the interlocking and a level crossing SHALL result in the crossing remaining closed to road traffic, and SHALL be reported to the control centre within 2 seconds.",
    branches:[{typology:"sig",manager:null,status:"reassignment_needed",internal:null,age:3,
      reassignComment:"Fail-safe behaviour of the level-crossing interface is a safety case matter, not a signalling design one. Please reallocate."}]},
-  {id:"L4-0017",sec:"4. Level crossings and safety",type:"Regulatory",external:"compliant",
+  {id:"L4-0017",sec:"4. Level crossings and safety",type:"Regulatory",
    text:"The supplier SHALL deliver a safety case demonstrating SIL 4 for all train protection functions, in accordance with EN 50126, EN 50128 and EN 50129.",
    branches:[{typology:"sig",manager:"m_sig",status:"answered",internal:"compliant",age:9,
      resp:{note:"SIL 4 safety case delivered on the two most recent ETCS L2 resignalling projects; the same assessment body is proposed here.",att:3,date:"Jul 12"}}]},
