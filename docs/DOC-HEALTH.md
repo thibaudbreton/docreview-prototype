@@ -9,7 +9,21 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
+- Last run: 2026-09-30T22:00Z (covered `e22702d..906bdb9`, DEC-099 to
+  DEC-104; earlier ranges are in the still-open run PRs #27, #29, #30 and
+  are not re-derived here — expect a textual conflict in this file when
+  those land).
+  - DEC-099 to DEC-104 landed their `ACCESS.md`, `ALLOCATION.md`
+    (ALLOC-022/024/025) and `OPEN-QUESTIONS.md` entries in the same
+    commits as the code. Consistent.
+  - Fixed directly: `ALLOCATION.md` (Nature and class paragraph) still
+    said an AI-detected nature/class has a confirm button; DEC-099
+    removed it (validating the requirement confirms it).
+  - Flagged on #28 (not edited): `STORIES-extracted-from-prototype.md`
+    (~l.348) and `TICKET-two-pass-allocation.md` (~l.108) still describe
+    an "awaiting manual allocation" pill/filter, removed by DEC-103.
+  - #20, #15, #12 unchanged, still open.
+- Previous run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
   `ccf3bb4`). Most of that range is the previous run landing and a
   same-day reconciliation merge (`c07f072`, `db8fa39`, `ccf3bb4`) that
   touch only this file — already accounted for by the 2026-09-21 entry
