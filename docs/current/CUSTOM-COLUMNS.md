@@ -50,13 +50,13 @@ Retenu par défaut, sur la recommandation de la spec : **incluses dans les expor
 
 **Rien n'est comparable d'un tender à l'autre.** Les colonnes personnalisées n'alimentent ni les statistiques transverses ni le tableau de bord VIP — c'est voulu. Si un champ s'avère utile partout, c'est le signe qu'il doit devenir un vrai champ modélisé.
 
-**Un champ utile en Allocation et en Compliance doit être créé deux fois**, comme deux colonnes indépendantes aux données sans lien. Acceptable en principe, irritant en pratique — à confirmer quand Compliance sera construit.
+**Un champ utile en Allocation et en Compliance n'est plus créé deux fois** (DEC-097) : une colonne appartient au tender et porte les mêmes valeurs sur les deux écrans.
 
 ## État du prototype (23 septembre 2026)
 
 Construit **dans Allocation uniquement** (DEC-064) ; Compliance viendra ensuite sur le même modèle.
 
-**24 septembre 2026 (DEC-081) : Compliance a ses propres colonnes**, même modèle, phase « compliance » — une colonne créée dans Compliance n'existe que là, et celles d'Allocation n'y apparaissent pas (la portée par phase tient). Mêmes règles d'édition, de verrou et de suppression ; valeurs par exigence, vides sur les lignes système/équipe. Différences : pas de filtre depuis l'en-tête (les filtres de colonne de Compliance portent sur les affectations) — le constructeur de filtres les couvre. À l'export, une colonne personnalisée est **décochée par défaut et marquée « internal »** ; la cocher déclenche un avertissement.
+**24 septembre 2026 (DEC-081) : Compliance a ses propres colonnes**, même modèle, phase « compliance » — _(portée par phase remplacée par DEC-097 : les colonnes sont désormais partagées entre Allocation et Compliance, masquées par défaut sur l'écran de non-création.)_ Mêmes règles d'édition, de verrou et de suppression ; valeurs par exigence, vides sur les lignes système/équipe. Différences : pas de filtre depuis l'en-tête (les filtres de colonne de Compliance portent sur les affectations) — le constructeur de filtres les couvre. À l'export, une colonne personnalisée est **décochée par défaut et marquée « internal »** ; la cocher déclenche un avertissement.
 
 - Bouton **＋ Column** dans la barre de la table, visible des seuls chefs de projet ; ✎ sur l'en-tête de chaque colonne personnalisée pour la modifier ou la supprimer.
 - Cellules éditables dans la table : champ texte, liste déroulante, ou sélecteur à cases pour le choix multiple. Les sous-lignes système/équipe et les blocs d'information ont une cellule vide, pour garder la grille alignée.
@@ -69,7 +69,7 @@ Construit **dans Allocation uniquement** (DEC-064) ; Compliance viendra ensuite 
 
 ## Critères d'acceptation
 
-- CUST-T01 : une colonne créée sur un tender n'apparaît ni sur un autre tender, ni dans Compliance.
+- CUST-T01 : une colonne créée sur un tender n'apparaît pas sur un autre tender (DEC-097 : elle apparaît dans Compliance, masquée par défaut).
 - CUST-T02 : un contributeur remplit une colonne mais ne voit ni la création, ni la modification, ni la suppression.
 - CUST-T03 : aucune colonne personnalisée ne porte de confiance ni ne met une exigence « à revoir ».
 - CUST-T04 : la confirmation de suppression énonce le nombre de valeurs détruites avant d'agir.
@@ -79,5 +79,5 @@ Construit **dans Allocation uniquement** (DEC-064) ; Compliance viendra ensuite 
 - CUST-T08 : aucune colonne personnalisée ne figure dans la matrice de conformité client.
 - CUST-T09 : une valeur survit à la navigation entre écrans et à la remise à zéro d'une exigence par une nouvelle version.
 - CUST-T10 : une colonne personnalisée se remplit entièrement au clavier : l'atteindre aux flèches, l'éditer avec Entrée, valider en descendant, annuler avec Échap — y compris une liste à choix multiple.
-- CUST-T11 : dans Compliance, une colonne créée n'apparaît que dans Compliance ; à l'export, elle est proposée décochée et marquée interne.
+- CUST-T11 : dans Compliance, une colonne personnalisée (créée là ou dans Allocation, DEC-097) est disponible ; à l'export, elle est proposée décochée et marquée interne.
 - CUST-T12 : une colonne créée dans Allocation apparaît dans Compliance masquée, avec les mêmes valeurs ; l'afficher depuis View y reste retenu d'une visite à l'autre ; la supprimer la retire des deux écrans (DEC-097).
