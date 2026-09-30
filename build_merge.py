@@ -239,7 +239,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage={};
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage={}; risks={}; gapDocs={};
   reassignRequests.length=0; sharedQuestions={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -350,6 +350,33 @@ window.removeStrategy = (projectId, id)=>{
   if(i<0) return {error:"missing"};
   const [gone]=list.splice(i,1); return {removed:gone};
 };
+// SPEC-risks.md §4-§5 — the tender's risk register, and for each Not compliant
+// assignment its gap documentation: the strategy picked, the risks linked, and a
+// PM correction of the derived external compliance (DEC-106). Keyed
+// "<requirement id>#<system>", held here so the Risks page and Compliance read
+// the same links. Risks are created from Compliance and reused across requirements.
+let risks = {};
+let gapDocs = {};
+window.getRisks = (projectId)=>{ const k=projectId||"_"; if(!risks[k]) risks[k]=[]; return risks[k]; };
+window.addRisk = (projectId, r)=>{
+  const list=window.getRisks(projectId), desc=String((r&&r.desc)||"").trim();
+  if(!desc) return {error:"empty"};
+  const n=list.reduce((m,x)=>Math.max(m, parseInt(String(x.id).slice(4),10)||0),0)+1;
+  const entry={id:"RSK-"+String(n).padStart(5,"0"), desc, weight:r.weight||"medium", status:"open",
+    activities:r.activity?[r.activity]:[], createdBy:r.createdBy||null, createdAt:r.createdAt||"Today", comments:[]};
+  list.push(entry); return {entry};
+};
+window.updateRisk = (projectId, id, patch)=>{ const x=window.getRisks(projectId).find(e=>e.id===id); if(!x) return {error:"missing"}; Object.assign(x, patch||{}); return {entry:x}; };
+window.getGapDocs = (projectId)=>{ const k=projectId||"_"; if(!gapDocs[k]) gapDocs[k]={}; return gapDocs[k]; };
+window.getGapDoc = (projectId, key)=>window.getGapDocs(projectId)[key]||null;
+window.setGapDoc = (projectId, key, patch)=>{
+  const all=window.getGapDocs(projectId);
+  const d=all[key]=Object.assign(all[key]||{strategy:null, risks:[], override:null}, patch||{});
+  // a risk linked from another activity lists that activity too (§5)
+  if(d.meta && d.meta.typology) (d.risks||[]).forEach(id=>{ const x=window.getRisks(projectId).find(e=>e.id===id); if(x && !x.activities.includes(d.meta.typology)) x.activities.push(d.meta.typology); });
+  return d;
+};
+window.clearGapDoc = (projectId, key)=>{ delete window.getGapDocs(projectId)[key]; };
 window.isV22Uploaded = ()=>v22Uploaded;
 window.setV22Uploaded = (v)=>{ v22Uploaded = !!v; };
 let projectMode = 'ai';

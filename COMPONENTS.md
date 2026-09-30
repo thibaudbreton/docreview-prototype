@@ -265,12 +265,32 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Verdict Pill
 - **level**: atom
 - **file**: compliance.html
-- **variants**: compliant, not_compliant, none, pending (dashed/italic — deliberate, so an unresolved verdict can never read as decided)
-- **tokens**: --space-1, --space-2, --radius-sm, --text-xs, --ok, --warn, --text-3
+- **variants**: compliant, not_compliant, none, pending (dashed/italic — deliberate, so an unresolved verdict can never read as decided), external pending (`.vpill.pending`, filled grey), corrected (`.vpill.corrected`, outlined + ✎)
+- **tokens**: --space-1, --space-2, --radius-sm, --text-xs, --ok, --warn, --text-2, --text-3
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.vpill`. Sibling of Status Pill / Status Badge — same visual grammar, own class.
+- **changed**: 2026-09-30
+- **notes**: 2026-09-30 (DEC-106): external compliance has three values — Compliant / Not compliant / Pending (a gap strategy's result, or no strategy yet) — rendered by `extPillHTML()`; a value the PM corrected carries ✎ and an outline. The old inherited/dashed external look is unused now that nothing is declared. Pending uses the untracked `--panel-3`. `.vpill`. Sibling of Status Pill / Status Badge — same visual grammar, own class.
+
+### Risk Chip
+- **level**: atom
+- **file**: compliance.html
+- **variants**: open, closed (struck through, grey)
+- **tokens**: --font-mono, --text-xs, --radius-xs, --human, --human-soft, --text-3
+- **built-from**: none
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: `.risk-chip` — a risk's `RSK-` ID, in the table's Risk column and the Gap Editor. Closed uses the untracked `--panel-3`; `--human-soft` is untracked too. Sibling: `.gap-miss` ("Strategy missing" / "Risk missing"), a dashed `--warn` flag used in the same cells.
+
+### Risk Weight Pill
+- **level**: atom
+- **file**: compliance.html
+- **variants**: negligible, low, medium, high — also as selectable buttons (`.w-btn`) in the new-risk form
+- **tokens**: --text-xs, --radius-xs, --radius-md, --ok, --ok-soft, --ia, --ia-soft, --warn, --warn-soft, --text-2
+- **built-from**: none
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: `.w-pill` / `.w-btn`. Negligible uses the untracked `--panel-3`; the `-soft` colours are untracked.
 
 ### Progress Status Chip
 - **level**: atom
@@ -1384,6 +1404,26 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-30
 - **notes**: Settings → Compliance → Gap strategies (SPEC-risks.md §2.1, DEC-110/111). `renderStrategiesSetting()`; one row per strategy — name (renamed on change/Enter), external result select, usage, delete. State lives in the shell (`getStrategies`, `addStrategy`, `renameStrategy`, `setStrategyResult`, `removeStrategy`, `reportStrategyUsage`/`getStrategyUsage`) like the partner list, so it survives the iframe reload. Changing the result of a strategy in use asks first, inline under the row (no modal exists on this screen): "N requirements will change external compliance…", PM corrections excepted. Usage is reported by Compliance (step 2 of the Risks build) — until then every strategy reads "unused". Depends on untracked `--line-2` (empty state border) and `--warn-soft` (confirmation); `.gs-rm` is 28px square, hardcoded.
 
+### Gap Editor (Strategy + Risk)
+- **level**: molecule
+- **file**: compliance.html
+- **variants**: editable (responsible, or the PM on a partner verdict), read-only (anyone else — missing values shown as flags), no strategy on the tender, risk search with suggestions, no match, new-risk form open, several risks linked
+- **tokens**: --space-1, --space-2, --space-3, --radius-sm, --radius-md, --text-xs, --text-sm, --text-2, --text-3, --font-ui, --font-mono, --warn, --warn-soft, --ok, --ok-soft, --ia, --ia-soft
+- **built-from**: Verdict Pill, Risk Chip, Risk Weight Pill, Ghost Button (`.risk-new-btn`), Form Actions
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: SPEC-risks.md §3-§4. `gapEditorHTML(r,br,editable)` / `bindGapEditor()`; used in the Decision Panel (Not compliant chosen), on an answered Not compliant assignment, and in the PM's partner-verdict form. Strategy select from the tender's list, with "Declared to the client: <pill>" once picked. Risk: linked risks (ID, first line, weight, unlink), then a search over the tender's risks ordered same heading → same system → rest (closed last), each with "N req." already linked, max six shown; "＋ New risk" opens an inline form pre-filled with the three-sentence template and four weight buttons, "Save and link". Writes go straight to the shell (`setGapDoc`, `addRisk`) — no draft. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
+
+### External Compliance Field (with PM correction)
+- **level**: molecule
+- **file**: compliance.html
+- **variants**: derived, corrected (note with author, date and reason; "Change the correction", "Revert to derived"), correction form open (three choices + required reason)
+- **tokens**: --space-1, --space-2, --space-3, --text-xs, --text-2, --text-3, --radius-md
+- **built-from**: Verdict Pill, Verdict Toggle (`.verdict-toggle`, three-way variant), Form Actions
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: DEC-106. `externalFieldHTML()` / `bindExternalField()` on an answered assignment's panel: what the client is told for that system. Only the project manager sees Correct. Replaces the requirement-level declaration form (`clientDecisionHTML()` now returns nothing).
+
 ## Organisms
 
 ### App Header
@@ -1459,12 +1499,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Decision Panel
 - **level**: organism
 - **file**: compliance.html
-- **variants**: verdict not chosen (green / red choices), Compliant chosen (comment + confirm), Not compliant chosen (Category + Topic + comment + confirm), ask form open, return form open, question pending (banner), original language shown, a resource open (Q&A, Similar, REX, Chat), set aside, wide
+- **variants**: verdict not chosen (green / red choices), Compliant chosen (comment + confirm), Not compliant chosen (Gap Editor, then Category + Topic on a Turnkey tender only, comment, confirm), ask form open, return form open, question pending (banner), original language shown, a resource open (Q&A, Similar, REX, Chat), set aside, wide
 - **tokens**: --paper, --paper-ink, --font-doc, --text-lg, --text-sm, --text-xs, --ok, --warn, --accent, --accent-soft, --line, --radius-md, --radius-sm, --radius-pill, --space-2, --space-3, --space-4, --space-5
 - **built-from**: Reassignment Request Form, REX Match Item, Compliance Pill, Tab Bar (`.dp-res-tabs`)
 - **added**: 2026-09-24
-- **changed**: 2026-09-24
-- **notes**: 2026-09-29 (DEC-092): several questions can be open on one assignment; the banner lists them all and says they don't hold the verdict up. 2026-09-24, second review: Set aside / Widen buttons moved above the ID and § line; the requirement text sits on a tinted `--accent-soft` block with an `--accent` left edge (`--ia` when the original is shown); beside "View in the document" an on/off switch "Original · French" (Toggle Switch) shows the tender's own wording when its language isn't English (`r.textOriginal` — demo French originals written for the seeded STB-2026 requirements, composed for generated ones); the verdict choices are filled green and red again; Ask the client / Not mine use `.propose-btn`, Allocation's reassignment button; Q&A items are one column — id + status pill, question, answer, then "Asked by … · date"; set aside uses `--human` (violet) for the pill, the row's tinted ID cell and the button. `renderDecisionPanel()` / `.dp`, SPEC-compliance-decision-panel.md, DEC-079. Replaces the Detail / Assignment Panel when a contributor opens an assignment of their own that waits on their verdict (`isDeciding()`); the project manager's panel and every other state keep the old one. Revised 2026-09-24 (user review): the verdict is a choice first — "✓ Compliant" / "✕ Not compliant" — then only that choice's fields and one "Confirm — …" button, with "Change" to go back (no longer a Compliant button beside an open Not compliant); set aside and widen are labelled pill buttons ("⚐ Set aside", "⇤ Widen panel"); the "Yours · system · person" line is gone; a "Requirement" label heads the text and "📄 View in the document" under it switches to the Document view at that block without leaving the panel (the § link does the same); "⇗ Ask the client" opens a question form (required text) that files the question in the Q&A register, and the contributor keeps the panel and can still decide while it waits (awaiting_qa counts as deciding, with a banner); the Document resource tab became Q&A — our questions on the requirement with their status and answer, then the client's published answers to other bidders' questions (`PUBLISHED_QA`, demo data). Q opens the ask form. Earlier layout, top to bottom: queue progress ("N left · this is k of N · n set aside", Next ›), id + clickable § section + set-aside ⚐/⚑ (S) + widen ⇤, one "Yours · system · person" line, the requirement text in full on paper (`pre-wrap`, dominant), the decision zone (reassurance line on internal vs client verdict, comment, "✓ Compliant" one gesture / "✕ Not compliant…" then Category + Topic then "✕ Not compliant"), two quieter secondary actions ("⇗ Ask the client", "↩ Not mine — return it"), and resources as collapsed tabs. Drafts (pick, comment, category, topic) save on input into `window.parent.__cmpPersonal`, per viewer, so they survive leaving the panel or the screen (not a reload of the whole app); set aside is kept there too, personal, shown as ⚑/✎ on the row's ID cell. Similar = word-overlap stand-in (three best ≥ 25 %) for the platform's similarity capability. Wide = `min(720px,62vw)`. Hardcoded: button text `#fff`, Next hover, the 52px progress bar, `padding:10px` on the verdict buttons. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
+- **changed**: 2026-09-30
+- **notes**: 2026-09-30 (SPEC-risks.md, DEC-105 to DEC-108): Not compliant opens the Gap Editor first; Category + Topic only on a Turnkey tender (DEC-107), Topic required there only; confirming never waits on a strategy or a risk (DEC-108); confirming Compliant clears any strategy/risk picked. The reassurance line now says the strategy decides what the client is told. 2026-09-29 (DEC-092): several questions can be open on one assignment; the banner lists them all and says they don't hold the verdict up. 2026-09-24, second review: Set aside / Widen buttons moved above the ID and § line; the requirement text sits on a tinted `--accent-soft` block with an `--accent` left edge (`--ia` when the original is shown); beside "View in the document" an on/off switch "Original · French" (Toggle Switch) shows the tender's own wording when its language isn't English (`r.textOriginal` — demo French originals written for the seeded STB-2026 requirements, composed for generated ones); the verdict choices are filled green and red again; Ask the client / Not mine use `.propose-btn`, Allocation's reassignment button; Q&A items are one column — id + status pill, question, answer, then "Asked by … · date"; set aside uses `--human` (violet) for the pill, the row's tinted ID cell and the button. `renderDecisionPanel()` / `.dp`, SPEC-compliance-decision-panel.md, DEC-079. Replaces the Detail / Assignment Panel when a contributor opens an assignment of their own that waits on their verdict (`isDeciding()`); the project manager's panel and every other state keep the old one. Revised 2026-09-24 (user review): the verdict is a choice first — "✓ Compliant" / "✕ Not compliant" — then only that choice's fields and one "Confirm — …" button, with "Change" to go back (no longer a Compliant button beside an open Not compliant); set aside and widen are labelled pill buttons ("⚐ Set aside", "⇤ Widen panel"); the "Yours · system · person" line is gone; a "Requirement" label heads the text and "📄 View in the document" under it switches to the Document view at that block without leaving the panel (the § link does the same); "⇗ Ask the client" opens a question form (required text) that files the question in the Q&A register, and the contributor keeps the panel and can still decide while it waits (awaiting_qa counts as deciding, with a banner); the Document resource tab became Q&A — our questions on the requirement with their status and answer, then the client's published answers to other bidders' questions (`PUBLISHED_QA`, demo data). Q opens the ask form. Earlier layout, top to bottom: queue progress ("N left · this is k of N · n set aside", Next ›), id + clickable § section + set-aside ⚐/⚑ (S) + widen ⇤, one "Yours · system · person" line, the requirement text in full on paper (`pre-wrap`, dominant), the decision zone (reassurance line on internal vs client verdict, comment, "✓ Compliant" one gesture / "✕ Not compliant…" then Category + Topic then "✕ Not compliant"), two quieter secondary actions ("⇗ Ask the client", "↩ Not mine — return it"), and resources as collapsed tabs. Drafts (pick, comment, category, topic) save on input into `window.parent.__cmpPersonal`, per viewer, so they survive leaving the panel or the screen (not a reload of the whole app); set aside is kept there too, personal, shown as ⚑/✎ on the row's ID cell. Similar = word-overlap stand-in (three best ≥ 25 %) for the platform's similarity capability. Wide = `min(720px,62vw)`. Hardcoded: button text `#fff`, Next hover, the 52px progress bar, `padding:10px` on the verdict buttons. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
 
 ### Validate Zone
 - **level**: molecule
