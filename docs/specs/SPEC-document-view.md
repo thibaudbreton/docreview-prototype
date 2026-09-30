@@ -35,7 +35,7 @@ pdf.js gives, per page, text items with a position, a size and a font. The proto
 2. **Ignored areas.** A line found at about the same vertical position on **at least half the pages**, with the same text once digits are ignored, is a running header or footer. A line that is only a number, or "Page N", "N / M", "- N -", in the top or bottom 8% of the page, is a page number. These lines produce **no block**, but they are **kept as ignored areas** and drawn as such (§7.5) — the reader sees what was left out and why.
 3. **Paragraphs.** Consecutive lines form one paragraph unless: the vertical gap to the previous line is larger than 1.5× the usual line spacing of the page; or the line starts with a bullet (`•`, `-`, `*`, `–`, `▪`) or an enumerator (`a)`, `(a)`, `i.`, `1)`); or it starts with a section number (§5); or the previous line looks like a heading. A paragraph continues across a page break when the page's last line does not end with `.`, `;` or `:` and the next page's first line starts with a lowercase letter.
 4. **Hyphenation.** A line ending with a hyphen followed by a line starting with a lowercase letter is joined without the hyphen in the block's text ("require-" + "ments" → "requirements"). The frame still covers both lines.
-5. **Sentences in paragraphs** (the maquette's capture setting): **As in the source** (default) — one paragraph, one block; or **Split** — one block per sentence. A sentence ends at `.`, `;`, `?` or `!` followed by a space and an uppercase letter or a digit; abbreviations (`e.g.`, `i.e.`, `etc.`, `No.`, `Fig.`, `Vol.`, `Art.`, `Ref.`) and numbers (`2.3`, `99.7%`) never end one. A sentence that starts or ends mid-line gets a frame that starts or ends at that character's position (§7.2). Changing the setting re-captures the document and discards reclassifications — say so first ("Re-cut the document? Your N reclassifications will be lost").
+5. **Sentences in paragraphs** (the maquette's capture setting): **Split** (default, decided 2026-09-30) — one block per sentence; or **As in the source** — one paragraph, one block. The default differs from the maquette's on purpose: the prototype tests the finer cut. A sentence ends at `.`, `;`, `?` or `!` followed by a space and an uppercase letter or a digit; abbreviations (`e.g.`, `i.e.`, `etc.`, `No.`, `Fig.`, `Vol.`, `Art.`, `Ref.`) and numbers (`2.3`, `99.7%`) never end one. A sentence that starts or ends mid-line gets a frame that starts or ends at that character's position (§7.2). Changing the setting re-captures the document and discards reclassifications — say so first ("Re-cut the document? Your N reclassifications will be lost").
 6. **Reading order.** Top to bottom, left to right, one column. Two-column pages are not reordered in v1 (§13).
 
 Tables, figures and equations are not recognised in v1: their text, if any, is captured as lines like any other; their drawing is simply visible on the page, since the page is the original.
@@ -47,7 +47,7 @@ Each block gets one **nature** — `heading`, `info` or `requirement` (the maque
 | # | Nature | Detected when |
 |---|---|---|
 | 1 | **Heading** | The text starts with a section number (`^\d+(\.\d+)*\.?\s`) **and** is under 120 characters **and** does not end with `.` or `;` — or its font is at least 1.2× the page's body size, or bold, and under 120 characters. Level = number of numeric parts (`2` → 1, `2.4.1` → 3); 1 when unnumbered |
-| 2 | **Requirement** | An obligation keyword, whole word, case-insensitive: EN `shall`, `shall not`, `must`, `must not`, `is required to`, `are required to`; FR `doit`, `doivent`, `devra`, `devront`, `est tenu de`, `sont tenus de`, `il est exigé` |
+| 2 | **Requirement** | An obligation keyword, whole word, case-insensitive: EN `shall`, `shall not`, `must`, `must not`, `will`, `will not`, `should`, `should not`, `is to be`, `are to be`, `is required to`, `are required to`; FR `doit`, `doivent`, `devra`, `devront`, `est tenu de`, `sont tenus de`, `il est exigé` |
 | 3 | **Information** | Anything else |
 
 **Doubtful cut** (`uncertain`) — the maquette's "Check boundaries": the block has two or more obligation keywords in different sentences (probably two requirements), or it is a requirement that does not end with `.`, `;`, `:` or `)` while the next block starts with a lowercase letter (probably one requirement cut in two). The flag never changes the nature; it is a warning for the reader, who can only reclassify, not re-cut.
@@ -57,7 +57,7 @@ Each block gets one **nature** — `heading`, `info` or `requirement` (the maque
 ```json
 {
   "document": { "title": "WPS 1.06 - OCC Technical Specification", "source": "wps106.pdf", "pages": 84,
-                "pagesWithoutText": [61, 62], "sentenceSplit": false },
+                "pagesWithoutText": [61, 62], "sentenceSplit": true },
   "ignored": [ { "page": 3, "reason": "header", "text": "M-ESD-700000-0000-ESP-000002-13", "rect": [56, 28, 480, 11] } ],
   "blocks": [
     { "id": "SRM-00003", "index": 2, "nature": "requirement", "level": null, "uncertain": true, "edited": false,
@@ -162,7 +162,8 @@ A single bar above the pages — not part of what this spec describes, only what
 - DV-T04: a paragraph continuing on the next page is one block with two frames that highlight together.
 - DV-T05: "require-" / "ments" across two lines reads "requirements" in the read-out; the frame covers both lines.
 - DV-T06: "2.4.1 Commercial speed" is a Heading of level 3; "2.4.1 The Contractor shall provide a speed of 80 km/h." is a Requirement.
-- DV-T07: "The system SHALL log every event." and "Le système doit journaliser chaque événement." are Requirements; "The objective of this document is to…" is Information and is not dimmed.
+- DV-T07: "The system SHALL log every event.", "The Contractor will provide…", "Access should be restricted…", "The cabinet is to be sealed." and "Le système doit journaliser chaque événement." are Requirements; "The objective of this document is to…" is Information and is not dimmed.
+- DV-T07b: by default a paragraph of three sentences gives three blocks; "e.g. the OCC" and "99.7%" never end a sentence.
 - DV-T08: a block with "The Contractor shall… The Supplier must…" is framed in red dashes, chip "Check boundaries".
 - DV-T09: selecting a block opens the read-out with its captured text under the frame; `Esc` closes it.
 - DV-T10: reclassifying a Requirement to Information changes its frame at once (dashes gone, margin bar shown) and Undo restores it.
@@ -179,9 +180,9 @@ A single bar above the pages — not part of what this spec describes, only what
 - OCR of scanned pages; recognising tables, figures and equations as such (their text is captured as lines, their drawing is visible because the page is the original); two-column reading order; drawing a new block by hand over text that was not captured (every text line belongs to a block or an ignored area, so there is nothing uncaptured to draw — revisit if §4.2 turns out to drop real text).
 - Other inputs (`.docx`, pasted text). AI classification — v1 uses the rules of §5; the capture engine can replace them without changing §6–§8.
 
-## 13. Open
+## 13. Decided (2026-09-30)
 
-1. **Keywords.** Should `will` / `should` / `is to be` count as obligations on the tenders being tested? Recommendation: no in v1 — too much descriptive text would turn into requirements — flag such blocks as Check boundaries if testing shows they matter.
-2. **Sentence split default.** The maquette defaults to "As in the source". Keep it? Recommendation: yes, so both cut the same way.
-3. **Layout on the reference tenders.** Two columns, landscape annexes and ruled tables will degrade §4. Recommendation: run v1 on the three documents of the maquette's capture set (Vol.2.2 TSO-Part 1, WPS 1.06, WPS 4.01) and list what breaks before adding layout handling.
-4. **Where this goes in the application.** If the prototype convinces, does the original-PDF view **replace** the maquette's re-typeset Document view, or sit beside it as a "Source" mode? The Compare mode (word diff between versions) only works on text, so it would keep a re-typeset form either way. To decide after testing.
+1. **Keywords.** `will`, `should` and `is to be` count as obligations, like `shall` and `must` (§5). Expect more requirements, including descriptive sentences written in the future tense — reclassifying them is the reader's check. French equivalents of `will` / `should` (`sera`, `devrait`) are **not** added: nobody asked, and `sera` is too common.
+2. **Default cut.** One block per sentence (§4.5). "As in the source" stays available.
+3. **Test documents.** The prototype is tried on PDFs the user provides, not on the maquette's capture set. What breaks on them (two columns, landscape annexes, ruled tables) decides what layout handling comes next.
+4. **Where it goes.** If the prototype convinces, the original-PDF view **replaces** the Allocation screen's Document view. Compare keeps a text form, since a word diff between versions needs text — how Compare looks then is to be designed separately.
