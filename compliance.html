@@ -3475,6 +3475,14 @@ function refreshAll(){
   (function(){ const u={}; REQS.forEach(r=>r.branches.forEach(b=>{ if(!isAnswered(b)||b.internal!=="not_compliant") return;
       const g=gapOf(r,b); if(!g.strategy) return; const x=u[g.strategy]=u[g.strategy]||{used:0,corrected:0}; x.used++; if(g.override) x.corrected++; }));
     shell("reportStrategyUsage",u); })();
+  /* SPEC-risks.md §9 — the dashboard's compliance figures, from this screen's data */
+  (function(){ const st={reqs:REQS.length, assignments:0, assigned:0, answered:0, compliant:0, nc:0, ncLogged:0, byStrategy:{}, noStrategy:0, ext:{compliant:0,not_compliant:0,pending:0,none:0}};
+    REQS.forEach(r=>{ r.branches.forEach(b=>{ st.assignments++; if(b.manager||isPartner(b.typology)) st.assigned++; if(!isAnswered(b)) return; st.answered++;
+        if(b.internal==="compliant") st.compliant++;
+        else if(b.internal==="not_compliant"){ st.nc++; const g=gapOf(r,b); if((g.risks||[]).length) st.ncLogged++;
+          if(strategyById(g.strategy)) st.byStrategy[g.strategy]=(st.byStrategy[g.strategy]||0)+1; else st.noStrategy++; } });
+      const x=externalOf(r).v; st.ext[x||"none"]++; });
+    shell("reportGapStats",st); })();
   if(PARTNERS.length){ const counts={}; REQS.forEach(r=>r.branches.forEach(b=>{ if(isPartner(b.typology)) counts[b.typology]=(counts[b.typology]||0)+1; }));
     try{ window.parent.reportPartnerUsage(window.parent.getCurrentProject().id,"compliance",counts); }catch(e){} }   // DEC-093
   if(typeof syncCustomColumns==="function"){ const want=state.role; if(refreshAll._role!==want){ refreshAll._role=want; syncCustomColumns(); applyFCols(); } }

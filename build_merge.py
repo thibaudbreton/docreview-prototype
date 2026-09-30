@@ -241,7 +241,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage={}; risks={}; gapDocs={};
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage={}; risks={}; gapDocs={}; gapStats={};
   reassignRequests.length=0; sharedQuestions={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -379,6 +379,11 @@ window.setGapDoc = (projectId, key, patch)=>{
   return d;
 };
 window.clearGapDoc = (projectId, key)=>{ delete window.getGapDocs(projectId)[key]; };
+// SPEC-risks.md §9 — Compliance reports its totals (assignments, verdicts, Not
+// compliant documented, external) each time it renders; the dashboard reads them.
+let gapStats = {};
+window.reportGapStats = (projectId, st)=>{ gapStats[projectId||"_"]=st; };
+window.getGapStats = (projectId)=>gapStats[projectId||"_"]||null;
 window.addRiskComment = (projectId, id, c)=>{ const x=window.getRisks(projectId).find(e=>e.id===id); if(!x) return {error:"missing"};
   const entry={by:c.by||"—", date:c.date||"Today", text:String(c.text||"").trim()}; if(!entry.text) return {error:"empty"};
   x.comments.push(entry); return {entry}; };

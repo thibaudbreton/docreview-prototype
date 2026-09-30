@@ -1211,8 +1211,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --radius-lg, --space-4, --text-sm, --text-xs, --text-3
 - **built-from**: none (hosts whichever content it wraps)
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.stat-block`, generic heading+subtitle+content card, 9 instances in the Statistics panel.
+- **changed**: 2026-09-30
+- **notes**: `.stat-block`, generic heading+subtitle+content card, 12 instances in the Statistics panel since 2026-09-30. `.stat-empty` is its "nothing to count yet" line.
 
 ### AI Pattern Row
 - **level**: molecule
@@ -1423,6 +1423,26 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-30
 - **changed**: 2026-09-30
 - **notes**: DEC-106. `externalFieldHTML()` / `bindExternalField()` on an answered assignment's panel: what the client is told for that system. Only the project manager sees Correct. Replaces the requirement-level declaration form (`clientDecisionHTML()` now returns nothing).
+
+### Progress Sequence
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: step default, step warn (Not compliant not all logged), no data yet
+- **tokens**: --space-3, --radius-md, --radius-xs, --text-xl, --text-xs, --text-3, --line, --accent, --warn, --panel
+- **built-from**: none
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: SPEC-risks.md §9 "% NC logged" in a progress sequence — the dashboard had no such sequence, so it was created: Assigned → Internal compliance → Not compliant logged → External compliance, each step a percentage of what it depends on, clickable to its screen. `.prog-seq` / `.prog-step`. Bar track uses the untracked `--panel-3`.
+
+### Risk Summary Matrix
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: no link yet, cells with links (open the Risks page filtered on that cell)
+- **tokens**: --space-2, --radius-sm, --radius-xs, --text-sm, --text-xs, --text-3, --line, --accent, --accent-soft, --warn, --ia, --ok
+- **built-from**: none
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: `.mx-table`, the compact version of risks.html's Risk Matrix — same counting (links), no Total row. Two implementations of one matrix, flagged. Negligible dot uses the untracked `--line-2`.
 
 ## Organisms
 
@@ -1803,8 +1823,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: none beyond its parts
 - **built-from**: Count Badge, Attention List Item
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.att-card` ("What needs you now"), 5 items conditionally gated by phase.
+- **changed**: 2026-09-30
+- **notes**: 2026-09-30: the Not compliant item reads Compliance's totals once available — "N Not compliant verdicts", and how many still lack a risk or a strategy — instead of "declared Compliant to the client". `.att-card` ("What needs you now"), 5 items conditionally gated by phase.
 
 ### Project Health Panel
 - **level**: organism
@@ -1851,10 +1871,10 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **file**: dashboard-et-config.html
 - **variants**: "For you" tab, "For stakeholders" tab
 - **tokens**: --space-4
-- **built-from**: Tab Bar, Stat Block, Bottleneck Row, Q&A Blocked Row, AI Reliability Row, Compliance Bar
+- **built-from**: Tab Bar, Stat Block, Bottleneck Row, Q&A Blocked Row, AI Reliability Row, Compliance Bar, Progress Sequence, Risk Summary Matrix
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.stats-panel`. Also embeds a hand-rolled inline SVG trajectory-to-deadline line chart, drawn with hardcoded pixel geometry — a one-off visualization, not a reusable chart component.
+- **changed**: 2026-09-30
+- **notes**: 2026-09-30 (SPEC-risks.md §9): the Compliance tab loses "Internal vs declared to the client" (DEC-106 — nothing is declared any more) and gains Progress to the client, Risks (open count + by weight), Not compliant by gap strategy (stacked bars) and Weight × gap strategy. Those four read Compliance's own totals (`getGapStats`, reported each time Compliance renders) and the shell's risk register — they say "open Compliance once" until it has been opened in the session. The older blocks (Consolidation, Assignment funnel…) still read this screen's 14-requirement mirror, so the two sets of figures do not describe the same population — known inconsistency. `.stats-panel`. Also embeds a hand-rolled inline SVG trajectory-to-deadline line chart, drawn with hardcoded pixel geometry — a one-off visualization, not a reusable chart component.
 
 ### Config Sidebar Nav
 - **level**: organism

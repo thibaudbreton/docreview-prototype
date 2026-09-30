@@ -601,7 +601,7 @@ function bind(){
   $("#rk-cm-post")?.addEventListener("click",()=>{ const r=shell("addRiskComment",x.id,{by:USER, text:state.comment}); if(!r||r.error) return; state.comment=""; toast(`Comment added to ${x.id}`,"ok"); render(); });
 }
 /* "Open this risk" from Compliance */
-(function(){ const f=(function(){ try{ return window.parent.takeScreenFocus("risks"); }catch(e){ return null; } })(); if(f&&f.risk) state.sel=f.risk; })();
+(function(){ const f=(function(){ try{ return window.parent.takeScreenFocus("risks"); }catch(e){ return null; } })(); if(f&&f.risk) state.sel=f.risk; if(f&&f.cell) state.cell=f.cell; })();
 render();
 </script>
 </body>
