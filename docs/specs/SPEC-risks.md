@@ -13,6 +13,7 @@
 > - §12.3 and §12.4 — as recommended (DEC-111).
 > - §5 IDs — requirements are `SRM-` / `L4-` in the prototype; risks are `RSK-00001`.
 > - **DEC-113 (same day, supersedes parts of the above):** a risk is only its justification — the three answers of the template, entered as three fields — and its links. **No weight, no Open/Closed status, no comments, no merge**: the risk work is done outside the tool. §4.1 stands (pick an existing risk first, create one only if none fits). §4.2's weight, §5's Weight/Status/Comments, §6.1's matrix, §6.3's comment feed, §6.4 entirely, and §9's "Risks by weight" and "Weight × strategy" are dropped; the Risks page is the list of risks with their justification and linked requirements; §12.3 is moot.
+> - **DEC-114:** a risk belongs to the tender, not to a system — §5's Activity field is dropped, and §4.1's ordering is same heading, then the rest of the tender.
 
 ## 1. Principle
 

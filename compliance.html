@@ -1802,18 +1802,18 @@ function riskCellHTML(r){
 function riskLinkCounts(){
   const n={}; Object.values(shell("getGapDocs")||{}).forEach(d=>(d.risks||[]).forEach(id=>{ n[id]=(n[id]||0)+1; })); return n;
 }
-/* §4.1 — existing risks first: same heading, then same activity, then the rest.
-   Picking one of these is the normal case; a new risk only if none fits. */
+/* §4.1 — existing risks first: those already used under the same heading, then
+   the rest of the tender's. Picking one of these is the normal case; a new risk
+   only if none fits. DEC-114: a risk belongs to the tender, not to a system. */
 function riskSuggestions(r,br,q){
   const docs=Object.values(shell("getGapDocs")||{}), linked=gapOf(r,br).risks||[];
-  const sameSec=new Set(), sameAct=new Set();
-  docs.forEach(d=>{ if(!d.meta) return; (d.risks||[]).forEach(id=>{ if(d.meta.sec===r.sec) sameSec.add(id); if(d.meta.typology===br.typology) sameAct.add(id); }); });
-  riskList().forEach(x=>{ if((x.activities||[]).includes(br.typology)) sameAct.add(x.id); });
-  const rank=x=>sameSec.has(x.id)?0:sameAct.has(x.id)?1:2;
+  const sameSec=new Set();
+  docs.forEach(d=>{ if(d.meta && d.meta.sec===r.sec) (d.risks||[]).forEach(id=>sameSec.add(id)); });
+  const rank=x=>sameSec.has(x.id)?0:1;
   const qq=String(q||"").trim().toLowerCase();
   return riskList().filter(x=>!linked.includes(x.id) && (!qq || x.id.toLowerCase().includes(qq) || riskText(x).toLowerCase().includes(qq)))
     .sort((a,b)=>rank(a)-rank(b) || a.id.localeCompare(b.id))
-    .map(x=>({x, why:sameSec.has(x.id)?"same heading":sameAct.has(x.id)?"same system":null}));
+    .map(x=>({x, why:sameSec.has(x.id)?"same heading":null}));
 }
 const riskFirstLine=x=>x?`There is a risk that ${x.that}`:"";
 /* The Strategy + Risk steps (§3-§4), shared by the contributor's decision panel,
@@ -1878,7 +1878,7 @@ function bindGapEditor(p,r,br){
     const ans=Object.fromEntries(RISK_Q.map(([k])=>[k,(p.querySelector("#risk-new-"+k).value||"").trim()]));
     const gap=RISK_Q.find(([k])=>!ans[k]);
     if(gap){ toast(`Answer the three questions — “${gap[1]}” is empty`,"warn"); p.querySelector("#risk-new-"+gap[0]).focus(); return; }
-    const res=shell("addRisk",Object.assign(ans,{activity:br.typology, createdBy:currentPersonName()}));
+    const res=shell("addRisk",Object.assign(ans,{createdBy:currentPersonName()}));
     if(!res||res.error){ toast("Could not save the risk","warn"); return; }
     const g=gapOf(r,br); setGap(r,br,{risks:(g.risks||[]).concat(res.entry.id)});
     state.newRisk=null; toast(`${res.entry.id} created and linked to ${r.id}`,"ok"); refreshAll();

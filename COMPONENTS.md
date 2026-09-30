@@ -1402,7 +1402,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Verdict Pill, Risk Chip, Ghost Button (`.risk-new-btn`), Form Actions
 - **added**: 2026-09-30
 - **changed**: 2026-09-30
-- **notes**: SPEC-risks.md §3-§4. `gapEditorHTML(r,br,editable)` / `bindGapEditor()`; used in the Decision Panel (Not compliant chosen), on an answered Not compliant assignment, and in the PM's partner-verdict form. Strategy select from the tender's list, with "Declared to the client: <pill>" once picked. Risk: linked risks (ID, "There is a risk that…", unlink), then a search over the tender's risks ordered same heading → same system → rest, each with "N req." already linked, max six shown; "＋ New risk" — only if none fits — opens an inline form with the template's three questions as three required fields, "Save and link" (DEC-113: no weight). Writes go straight to the shell (`setGapDoc`, `addRisk`) — no draft. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
+- **notes**: SPEC-risks.md §3-§4. `gapEditorHTML(r,br,editable)` / `bindGapEditor()`; used in the Decision Panel (Not compliant chosen), on an answered Not compliant assignment, and in the PM's partner-verdict form. Strategy select from the tender's list, with "Declared to the client: <pill>" once picked. Risk: linked risks (ID, "There is a risk that…", unlink), then a search over the tender's risks ordered same heading → rest (DEC-114: no system ordering), each with "N req." already linked, max six shown; "＋ New risk" — only if none fits — opens an inline form with the template's three questions as three required fields, "Save and link" (DEC-113: no weight). Writes go straight to the shell (`setGapDoc`, `addRisk`) — no draft. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
 
 ### External Compliance Field (with PM correction)
 - **level**: molecule
@@ -1921,10 +1921,10 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **file**: risks.html
 - **variants**: empty (no risk yet — pointer to Compliance), filtered to nothing, row highlighted (arriving from a risk chip in Compliance)
 - **tokens**: --panel, --panel-2, --line, --line-2, --radius-lg, --radius-md, --radius-xs, --space-2, --space-3, --text-sm, --text-xs, --text-3, --accent, --accent-soft, --font-mono
-- **built-from**: System tag (`.ptag`), Ghost Button
+- **built-from**: Ghost Button
 - **added**: 2026-09-30
 - **changed**: 2026-09-30
-- **notes**: DEC-113 — the whole Risks page: one row per risk with its three answers in three columns (There is a risk that… / caused by… / impact…), systems, linked requirements (each opens it in Compliance; "all →" opens Compliance filtered on the risk), created by. Search, system filter, simulated export. Was "Risk Register" earlier the same day, with weight, status, a selection bar and merge — all removed. Its own table, not the shared table engine. `--line-2`, `--panel-2` untracked.
+- **notes**: DEC-113 — the whole Risks page: one row per risk with its three answers in three columns (There is a risk that… / caused by… / impact…), linked requirements (each opens it in Compliance; "all →" opens Compliance filtered on the risk), created by. Search, simulated export. DEC-114: no system column or filter — a risk belongs to the tender. Was "Risk Register" earlier the same day, with weight, status, a selection bar and merge — all removed. Its own table, not the shared table engine. `--line-2`, `--panel-2` untracked.
 
 ## Removed
 

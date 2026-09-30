@@ -371,18 +371,18 @@ window.removeStrategy = (projectId, id)=>{
 // correction, and a few gaps left undocumented so the flags show (SRM-00086,
 // SRM-00098).
 function seedRisks(){
-  const R=(id,activities,createdBy,createdAt,that,cause,impact)=>({id,that,cause,impact,activities,createdBy,createdAt});
+  const R=(id,createdBy,createdAt,that,cause,impact)=>({id,that,cause,impact,createdBy,createdAt});
   return {
     stb2026:[
-      R("RSK-00001",["sig"],"Louis Renaud","Jul 14","third-party tools load the telemetry API beyond its rate limits.","the current gateway, sized for our own dashboards only.","a gateway rework, priced as a contract option."),
-      R("RSK-00002",["sig"],"Louis Renaud","Jul 13","the issuer's escalation matrix cannot be wired into our alerting as delivered.","the matrix being provided by the issuer only at contract award.","a late integration of escalation rules during delivery."),
-      R("RSK-00003",["sen"],"Paolo Ferri","Jul 16","the secondary depot cluster stays below 99.7% business-hours availability.","older hardware on that cluster (99.4% measured last quarter).","availability penalties on the depot scope."),
-      R("RSK-00004",["trk"],"Amina Cherif","Jul 17","regional aggregation reports are logged later than 2 seconds after the event.","the batch interval of the aggregation service.","a latency deviation on every regional report."),
-      R("RSK-00005",["sen"],"Karim Benali","Jul 18","the gateway firmware cannot encrypt dashboard layouts within 2 seconds.","the encryption library of the current firmware release.","a firmware release outside the bid scope."),
-      R("RSK-00006",["sig"],"Sophie Lang","Jul 10","the escalation matrix contradicts the alert thresholds.","two sources for the same thresholds.","rework of the alert configuration."),
+      R("RSK-00001","Louis Renaud","Jul 14","third-party tools load the telemetry API beyond its rate limits.","the current gateway, sized for our own dashboards only.","a gateway rework, priced as a contract option."),
+      R("RSK-00002","Louis Renaud","Jul 13","the issuer's escalation matrix cannot be wired into our alerting as delivered.","the matrix being provided by the issuer only at contract award.","a late integration of escalation rules during delivery."),
+      R("RSK-00003","Paolo Ferri","Jul 16","the secondary depot cluster stays below 99.7% business-hours availability.","older hardware on that cluster (99.4% measured last quarter).","availability penalties on the depot scope."),
+      R("RSK-00004","Amina Cherif","Jul 17","regional aggregation reports are logged later than 2 seconds after the event.","the batch interval of the aggregation service.","a latency deviation on every regional report."),
+      R("RSK-00005","Karim Benali","Jul 18","the gateway firmware cannot encrypt dashboard layouts within 2 seconds.","the encryption library of the current firmware release.","a firmware release outside the bid scope."),
+      R("RSK-00006","Sophie Lang","Jul 10","the escalation matrix contradicts the alert thresholds.","two sources for the same thresholds.","rework of the alert configuration."),
     ],
     rfp114:[
-      R("RSK-00001",["sig"],"Louis Renaud","Jul 16","a route is released too late when the last track section's detection is lost.","the standard product releasing routes on the nominal configuration only.","a product change for the degraded mode, priced as a contract option."),
+      R("RSK-00001","Louis Renaud","Jul 16","a route is released too late when the last track section's detection is lost.","the standard product releasing routes on the nominal configuration only.","a product change for the degraded mode, priced as a contract option."),
     ],
   };
 }
@@ -415,18 +415,16 @@ window.addRisk = (projectId, r)=>{
   const list=window.getRisks(projectId), t=k=>String((r&&r[k])||"").trim();
   if(!t("that")||!t("cause")||!t("impact")) return {error:"empty"};
   const n=list.reduce((m,x)=>Math.max(m, parseInt(String(x.id).slice(4),10)||0),0)+1;
+  // DEC-114 — a risk belongs to the tender, not to a system
   const entry={id:"RSK-"+String(n).padStart(5,"0"), that:t("that"), cause:t("cause"), impact:t("impact"),
-    activities:r.activity?[r.activity]:[], createdBy:r.createdBy||null, createdAt:r.createdAt||"Today"};
+    createdBy:r.createdBy||null, createdAt:r.createdAt||"Today"};
   list.push(entry); return {entry};
 };
 window.getGapDocs = (projectId)=>{ const k=projectId||"_"; if(!gapDocs[k]) gapDocs[k]={}; return gapDocs[k]; };
 window.getGapDoc = (projectId, key)=>window.getGapDocs(projectId)[key]||null;
 window.setGapDoc = (projectId, key, patch)=>{
   const all=window.getGapDocs(projectId);
-  const d=all[key]=Object.assign(all[key]||{strategy:null, risks:[], override:null}, patch||{});
-  // a risk linked from another activity lists that activity too (§5)
-  if(d.meta && d.meta.typology) (d.risks||[]).forEach(id=>{ const x=window.getRisks(projectId).find(e=>e.id===id); if(x && !x.activities.includes(d.meta.typology)) x.activities.push(d.meta.typology); });
-  return d;
+  return all[key]=Object.assign(all[key]||{strategy:null, risks:[], override:null}, patch||{});
 };
 window.clearGapDoc = (projectId, key)=>{ delete window.getGapDocs(projectId)[key]; };
 // SPEC-risks.md §9 — Compliance reports its totals (assignments, verdicts, Not
