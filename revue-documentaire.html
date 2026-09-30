@@ -776,6 +776,7 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
    no human has acted yet, green = a human validated it. */
 .status-pill.s-incomplete{background:var(--warn-soft);color:var(--warn)}
 .status-pill.s-doubt{background:var(--ia-soft);color:var(--ia)}
+.status-pill.s-reassign{background:var(--human-soft);color:var(--human)}
 .status-pill.s-tovalidate{background:var(--human-soft);color:var(--human)}
 .status-pill.s-allocated{background:var(--ok-soft);color:var(--ok)}
 .status-pill.s-changed{background:var(--accent-soft);color:var(--accent)}
@@ -987,6 +988,8 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .kbd-help-row .k{flex:0 0 96px;display:flex;gap:3px;flex-wrap:wrap}
 .kbd-help kbd{font-family:var(--font-mono);font-size:var(--text-xs);padding:0 5px;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:var(--radius-xs);background:var(--panel-2);color:var(--text);white-space:nowrap}
 .validate-why{font-size:var(--text-xs);color:var(--text-3);margin-top:6px;line-height:1.45}
+.ro-note{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-3);background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);margin-bottom:var(--space-3)}
+.rrow.is-ro .cell-select,.rrow.is-ro .cell-text,.rrow.is-ro .typo-cell,.rrow.is-ro .status-pill{cursor:default}
 .validate-why.inline{margin:0}
 .validate-sys{margin-top:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3)}
 .validate-sys-h{font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-2)}
@@ -1208,18 +1211,18 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
    header, otherwise it and the model tag fight over the free space. */
 /* per-system blocks in the project manager's view */
 .act-block-name{font-size:var(--text-sm);font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.act-alloc-pill{font-size:var(--text-xs);font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);white-space:nowrap}
-.act-alloc-pill.s-notstarted{background:var(--panel-3);color:var(--text-3)}
-.act-alloc-pill.s-inprogress{background:var(--ia-soft);color:var(--ia)}
-.act-alloc-pill.s-allocated{background:var(--ok-soft);color:var(--ok)}
-.act-line{display:flex;align-items:baseline;gap:var(--space-3);padding:5px 0;font-size:var(--text-sm)}
-.act-line+.act-line{border-top:1px solid var(--line)}
-.act-k{width:110px;flex-shrink:0;font-size:var(--text-xs);color:var(--text-3)}
-.act-v{flex:1;min-width:0;color:var(--text-2)}
+.status-pill.is-static{cursor:default}
+.status-pill.is-static:active{transform:none}
+.branch-sec-head .status-pill{margin-left:auto}
+.act-obs{display:flex;flex-direction:column}
+.act-obs-row{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);padding:var(--space-1) 0;font-size:var(--text-sm)}
+.act-obs-org{min-width:0;color:var(--text);overflow-wrap:anywhere}
+.act-obs-who{flex-shrink:0;color:var(--text-2);text-align:right}
+.act-obs-org.is-empty,.act-obs-who.is-empty{color:var(--text-3);font-style:italic}
+.act-cmp-row{align-items:center;margin-top:var(--space-2);padding-top:var(--space-2);border-top:1px solid var(--line)}
+.act-foot-k{font-size:var(--text-xs);color:var(--text-3)}
+.branch-sec-body .act-open-btn{display:block;width:100%;margin-top:var(--space-3);text-align:center}
 .act-who{color:var(--text-3)}
-.act-open-row{margin-top:var(--space-3);display:flex;align-items:center;justify-content:flex-end;gap:var(--space-2)}
-/* on a system card the re-run sits beside "Open system detail", not pushed away
-   by .rerun-wrap's own margin-left:auto (meant for a title row) */
 .act-detail-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
 .review-why{font-size:var(--text-xs);color:var(--ia);line-height:1.45;margin-bottom:var(--space-2);padding:6px var(--space-2);background:var(--ia-soft);border-radius:var(--radius-sm)}
 /* RM view: "N assignments" indicator + retractable per-allocated-system sections (collapsed by default) */
@@ -1232,6 +1235,7 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
    tender where the system axis means anything. */
 .branch-sec-org{flex:1;min-width:0;font-size:var(--text-sm);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .branch-sec-head .ptag{flex:none}
+.branch-sec-org.is-empty{color:var(--text-3)}
 .set-sep{height:1px;background:var(--line);margin:6px 0 18px}
 /* B1 — allocation-change proposal: manager trigger + project-manager review */
 .propose-lbl{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:9px}
@@ -1721,7 +1725,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
            it's a real queue of work, not a failure." Only ever shown on a Turnkey
            tender: everywhere else the tender's own system always has a model by
            definition, so the count would be permanently zero. -->
-      <button class="tpill p-manual" data-filter="manual" id="pill-manual" style="display:none"><span class="n" id="n-manual">0</span> awaiting manual allocation</button>
     </div>
     <button class="clear-filter" id="clear-filter">✕ Clear filter</button>
     <button class="btn-ghost" id="seg-btn" style="margin-left:auto">✂ Edit segmentation</button>
@@ -1938,14 +1941,26 @@ const FLAGS = { captureCorrection:false };
    lead) sees all. */
 const MANAGERS = [
   {id:"admin", name:"Thibaud Breton", role:"Project lead (admin)", init:"TB", color:"#6e7bf2", admin:true},
-  {id:"m_sig", name:"Louis Renaud", role:"SIG manager", init:"LR", color:"#3fb27f"},
-  {id:"m_mln", name:"Amina Cherif", role:"Mainline manager", init:"AC", color:"#e0a43c"},
-  {id:"m_inf", name:"Paolo Ferri", role:"Infrastructure manager", init:"PF", color:"#a06ef2"},
-  {id:"sup", name:"Sophie Lang", role:"Monitoring Team", init:"SL", color:"#3fa9b2"},
-  {id:"infra", name:"Karim Benali", role:"Infrastructure Team", init:"KB", color:"#c46bd6"},
-  {id:"cyber", name:"Claire Moreau", role:"Cybersecurity", init:"CM", color:"#5c9ee0"},
+  /* DEC-102 — every person belongs to a system; that membership, not an
+     assignment, is what "my system" means. Mainline is SIG (its Mainline models
+     run SIG's pass 2), so there is no "Mainline manager". Only two contributors
+     are offered in View as: one SIG, one on a system without a model (SEN). */
+  {id:"m_sig", name:"Louis Renaud", role:"SIG contributor", system:"sig", init:"LR", color:"#3fb27f", viewAs:true},
+  {id:"m_inf", name:"Paolo Ferri", role:"SEN contributor", system:"sen", init:"PF", color:"#a06ef2", viewAs:true},
+  {id:"sup", name:"Sophie Lang", role:"SIG contributor", system:"sig", init:"SL", color:"#3fa9b2"},
+  {id:"m_mln", name:"Amina Cherif", role:"TRK contributor", system:"trk", init:"AC", color:"#e0a43c"},
+  {id:"infra", name:"Karim Benali", role:"SEN contributor", system:"sen", init:"KB", color:"#c46bd6"},
+  {id:"cyber", name:"Claire Moreau", role:"RAMS contributor", system:"rams", init:"CM", color:"#5c9ee0"},
 ];
 const MGR = id => MANAGERS.find(m=>m.id===id);
+function viewerSystem(){ const m=MGR(VIEWER); return m && !m.admin ? (m.system||null) : null; }
+function systemMembers(typ){ return MANAGERS.filter(m=>!m.admin && m.system===typ); }
+/* the people offered on a system's OBS: its members (plus whoever holds it now) */
+function mgrOptionsFor(typ, current, full){
+  const pool = typ ? systemMembers(typ) : MANAGERS.filter(m=>!m.admin);
+  const list = pool.slice(); if(current && !list.some(m=>m.id===current) && MGR(current)) list.push(MGR(current));
+  return ['<option value="">— Unassigned —</option>'].concat(list.map(m=>`<option value="${m.id}" ${current===m.id?"selected":""}>${full?`${escHtml(m.name)} — ${escHtml(m.role)}`:m.name.split(" ")[0]}</option>`)).join("");
+}
 /* Assigning someone used to mean picking from a fixed 4-7 person MANAGERS
    list, full stop. A contributor needing to bring in someone who isn't cast
    yet had no path at all. This is the searchable pool behind the free-text
@@ -2407,7 +2422,8 @@ const SECTIONS = IS_SIG_TENDER ? seedSigSections() : (buildDataFromCapture() || 
    ticket resolves — see SPEC-domain-model.md §8. "Allocated" is reached only
    through an explicit human action (validate), never from AI confidence
    alone; reaching it also sends the item on to Contributor Review. */
-const STATUS_LABEL = {incomplete:"Incomplete", doubt:"To review", tovalidate:"To validate", allocated:"Allocated"};
+const STATUS_LABEL = {incomplete:"Incomplete", doubt:"To review", tovalidate:"To validate", allocated:"Allocated",
+  reassign:"Reassignment requested"};      // DEC-104 — Turnkey level: a system asked for it to be reassigned
 /* which field(s) carry the doubt, when status is "doubt" — same five fields
    across both axes (Class/System on the requirement, ABS/PBS/OBS per
    branch), all treated identically, per the earlier OBS-like-ABS/PBS
@@ -3045,6 +3061,33 @@ function applyCaptureDemoStatuses(){
    content (TYPE-T07), whose ABS/PBS/assignee are written deliberately — this
    would overwrite all three with values spread from a hash. */
 if(window.SRM_DATA && !IS_SIG_TENDER) applyCaptureDemoStatuses();
+/* DEC-102 / DEC-103 on the Turnkey demo: each system's OBS goes to a person of
+   that system (or nobody, when the system has no one); a system without a
+   model gets no ABS / PBS / OBS at all — its contributors fill them in. The
+   routing (which system) keeps its own confidence. */
+(function alignDemoPeopleAndModels(){
+  if(!runsPassOne()) return;
+  SECTIONS.forEach(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x]).forEach(x=>{
+    if(x.kind!=="requirement") return;
+    (x.branches||[]).forEach(br=>{
+      if(isPartner(br.typology)) return;
+      delete br.teams;
+      if(!activityHasModel(br.typology)){ br.pbs=null; br.abs=null; br.obs=null; br.manager=null; return; }
+      /* The capture gives this system's derivation as confidences with empty
+         values: fill the values from the system's own model (Mainline is SIG),
+         keeping the capture's confidences so the To review / To validate mix
+         stays what it was. */
+      const product={sig:"sig-mainline-wayside", rst:"rst-metro"}[br.typology];
+      const r=product && runAllocationModel(product, x.id+"#"+br.typology);
+      if(r) ["abs","pbs","obs"].forEach(k=>{ if(br[k] && !br[k].v) br[k]=Object.assign({}, r[k], {c:br[k].c!=null?br[k].c:r[k].c}); });
+      const mem=systemMembers(br.typology);
+      br.manager = (br.pbs||br.abs||br.obs) && mem.length ? mem[hashId(x.id+br.typology)%mem.length].id : null;
+    });
+    const only=(x.branches||[]).length===1 ? x.branches[0] : null;
+    if(only){ x.manager=only.manager; x.obs=only.obs; }
+    else if((x.branches||[]).length>1){ x.manager=null; }
+  }));
+})();
 (function initProgressionStatus(){
   SECTIONS.forEach(s=>s.blocks.forEach(b=>{
     const arr = (b.kind==="table") ? b.rows : [b];
@@ -3123,7 +3166,7 @@ function applyFreshProjectStatuses(){
     x.allocStatus="tovalidate"; x.allocDoubtField=null; x.allocReviewReason=null;
   });
 }
-const STATUS_RANK = {incomplete:0, doubt:1, tovalidate:2, allocated:3};
+const STATUS_RANK = {incomplete:0, reassign:1, doubt:1, tovalidate:2, allocated:3};
 /* B7 — combines characterisation and allocation into the ONE status a row's
    pill shows, "most restrictive wins" (same principle as compliance
    consolidation, §4): whichever axis is LESS far along is what's displayed,
@@ -3144,6 +3187,16 @@ function effectiveStatus(b){
   // instead of "nothing to show". Type is their only axis — read b.status
   // directly, exactly as computeCharStatus() left it.
   if(blockNature(b)!=="requirement") return {val:null, doubtField:null, reviewReason:null};   // DEC-073
+  /* DEC-104 — on a Turnkey tender the requirement's status is the Turnkey
+     level (nature, class, routing to systems), validated once by the project
+     manager and kept unless a system asks for a reassignment. Each system has
+     its own status, which is what a contributor sees. */
+  if(runsPassOne()){
+    const mine = !isAdmin() ? myBranchOf(b) : null;
+    if(mine) return {val:mine.allocStatus||"incomplete", doubtField:mine.allocDoubtField||null, reviewReason:mine.allocReviewReason||null};
+    if(hasPendingReassign(b)) return {val:"reassign", doubtField:null, reviewReason:"A system asked for this requirement to be reassigned — approve or reject it"};
+    return {val:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason};
+  }
   if((b.branches||[]).length>1){
     if(b.status!=="allocated") return {val:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason};
     return {val:"allocated", doubtField:null, reviewReason:null};
@@ -3185,20 +3238,25 @@ function validateCtaHTML(b,hasBranches,es){
   const btn=(label,attrs,why)=> why
     ? `<button class="validate-cta" disabled title="${escHtml(why)}">${label}</button><div class="validate-why">${escHtml(why)}</div>`
     : `<button class="validate-cta" ${attrs}>${label}</button>`;
-  if(b.status!=="allocated")
-    return btn("✓ Validate characterisation",`id="validate-btn"`, b.status==="incomplete"?"Characterisation incomplete — set its nature and class first.":null);
+  const charWhy = b.status==="incomplete" ? "Characterisation incomplete — set its nature and class first." : null;
+  if(runsPassOne()){   // DEC-104 — the PM validates the Turnkey level; each system validates its own
+    if(hasPendingReassign(b)) return btn("✓ Validate &amp; send to the systems","", "A system asked for a reassignment — approve or reject it first.");
+    if(b.status==="allocated") return `<button class="validate-cta" disabled>✓ Routing validated — sent to the systems</button>`;
+    return btn("✓ Validate &amp; send to the systems",`id="validate-btn"`, charWhy);
+  }
   if(brs.length>1){
-    return `<div class="validate-sys"><div class="validate-sys-h">Characterisation validated · allocation per system</div>
+    return `<div class="validate-sys"><div class="validate-sys-h">Validate per system</div>
       ${brs.map((br,i)=>{
         const done=br.allocStatus==="allocated", noOne=!br.allocStatus||br.allocStatus==="incomplete";
+        const why=charWhy||(noOne?"assign someone first":null);
         return `<div class="validate-sys-row"><span class="ptag${ptagCls(br.typology)}">${TY(br.typology).code}</span>
           ${done?`<span class="validate-done">✓ Allocated — sent</span>`
-            :`<button class="mini-btn validate-sys-btn" data-validatebranch="${i}" ${noOne?`disabled title="Nobody assigned yet — assign someone on this system first"`:""}>✓ Validate &amp; send</button>${noOne?`<span class="validate-why inline">assign someone first</span>`:""}`}
+            :`<button class="mini-btn validate-sys-btn" data-validatebranch="${i}" ${why?`disabled title="${escHtml(why)}"`:""}>✓ Validate &amp; send</button>${why?`<span class="validate-why inline">${escHtml(why)}</span>`:""}`}
         </div>`; }).join("")}</div>`;
   }
-  if(es.val==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Contributor Review</button>`;
-  const incomplete=(allocHolder(b).allocStatus||"incomplete")==="incomplete";
-  return btn("✓ Validate allocation &amp; send to Contributor Review",`id="validate-btn"`, incomplete?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null);
+  if(es.val==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`;
+  const allocWhy=(allocHolder(b).allocStatus||"incomplete")==="incomplete"?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null;
+  return btn("✓ Validate &amp; send to Compliance",`id="validate-btn"`, charWhy||allocWhy);
 }
 
 /* =====================================================
@@ -3548,10 +3606,14 @@ function visibleTo(b){
   if(isAdmin()) return true;
   if(blockNature(b)==="info") return true; // nobody's requirement — not owned by any manager, never restricted
   if(b.manager===VIEWER) return true;
-  return (b.branches||[]).some(br=>br.manager===VIEWER);
+  return !!myBranchOf(b);
 }
 /* the allocated system a given (non-admin) manager owns on a multi-allocation requirement, if any */
-function myBranchOf(b){ return (b.branches||[]).find(br=>br.manager===VIEWER)||null; }
+function myBranchOf(b){
+  const sys=viewerSystem();   // DEC-102 — the branch of MY system, whoever is assigned on it
+  if(sys){ const br=(b.branches||[]).find(x=>x.typology===sys); if(br) return br; }
+  return (b.branches||[]).find(br=>br.manager===VIEWER)||null;
+}
 
 /* =====================================================
    B1 — allocation-change proposal (branch manager → project manager)
@@ -3757,6 +3819,7 @@ function setAllocManager(b, branch, tidx, id){
        two organisations there is no single answer to mirror. */
     if((b.branches||[]).length===1) b.manager=t.manager;
   }
+  markAllocEdited(branch); if((b.branches||[]).length===1) markAllocEdited(b);   // the person can complete the allocation
   return t;
 }
 /* most restrictive wins, pending until everyone has answered — the ticket's
@@ -3843,6 +3906,8 @@ function bindObsList(body,myBranch,b){
         if((b.branches||[]).length===1) b.obs=entry;
       } else
       teams.push({team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",obs:entry});
+      myBranch.obs = myBranch.obs || entry;
+      markAllocEdited(myBranch); if((b.branches||[]).length===1) markAllocEdited(b);   // a filled OBS can move the system out of "awaiting manual allocation"
       deriveRequirementCompliance(b);
       toast(`${obs.v} added`,"ok");
       refresh();
@@ -3956,20 +4021,6 @@ SECTIONS.forEach(s=>s.blocks.forEach(b=>{
   arr.forEach(r=>{ if(r.kind==="requirement" && (r.branches||[]).length) deriveRequirementCompliance(r); });
 }));
 
-/* The pass-2 allocation status, at SYSTEM level — "has this system done its
-   allocation yet?". Derived from its teams the same way its verdict is, so
-   nobody enters it and it can't drift: no team resolved -> Not started, some ->
-   In progress, all -> Allocated. Deliberately three states, not the four-state
-   Incomplete/To review/To validate/Allocated vocabulary used per team — the
-   question being asked here is coarser than that one. */
-const ACT_ALLOC_LABEL={notstarted:"Not started", inprogress:"In progress", allocated:"Allocated"};
-function activityAllocStatus(branch){
-  if(branch && isPartner(branch.typology)) return "allocated";   // assigned to the partner is the whole allocation
-  const teams=ensureTeams(branch);
-  const resolved=teams.filter(t=>t.manager||t.obs).length;
-  if(!resolved) return "notstarted";
-  return resolved===teams.length ? "allocated" : "inprogress";
-}
 /* §3 — routed to a system that has no allocation model: system known,
    fine allocation still to be done by hand. A routine mode of working, not a
    failure, and a real queue of work that has to be filterable. */
@@ -3977,9 +4028,6 @@ function needsManualAllocation(branch){
   if(!branch || isPartner(branch.typology)) return false;
   if(activityHasModel(branch.typology)) return false;
   return ensureTeams(branch).some(t=>!t.obs && !t.manager);
-}
-function reqNeedsManualAllocation(b){
-  return (b.branches||[]).some(needsManualAllocation);
 }
 
 /* §6 — the tree branches at two independent levels; a requirement's SHAPE is
@@ -4050,7 +4098,6 @@ function matchesFilter(b){
   if(isInfo) return !state.filter; // no other quick filter (changed/reassign) ever applies to an info row
   if(state.filter==="changed") return !!b.change || b.kind==="ghost";
   if(state.filter==="reassign") return blockNature(b)==="requirement" && hasPendingReassign(b);
-  if(state.filter==="manual") return blockNature(b)==="requirement" && reqNeedsManualAllocation(b);
   return true;
 }
 function matchesSearch(b){
@@ -4482,8 +4529,7 @@ function renderViewAs(){
 
 function rowInnerHTML(b){
   const plain = (b.text||"").replace(/<[^>]+>/g,"");
-  const mgrOptions = ['<option value="">— Unassigned —</option>']
-    .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${b.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
+  const mgrOptions = mgrOptionsFor(((b.branches||[])[0]||{}).typology || (b.perim||[])[0], b.manager);
   const hasBranches = (b.branches||[]).length>1;
   const branchBadge = hasBranches?`<span class="cbadge branch-count-badge" title="${b.branches.length} parallel allocations"><i class=ic-fork></i> ${b.branches.length}</span>`:"";
   // B1/B10 — computed live from branchStatus (blockedBranchOf), not just the
@@ -4529,7 +4575,7 @@ function rowInnerHTML(b){
      parents only ever show characterisation here; B6 is why the allocation
      stage moved to each branch individually. */
   let statusCls, statusLbl, statusTitle, statusEligible=false;
-  if(hasBranches){
+  if(hasBranches && !runsPassOne()){
     if(b.status!=="allocated"){
       statusCls="s-"+b.status; statusLbl=STATUS_LABEL[b.status];
       statusEligible = b.status!=="incomplete";
@@ -4541,12 +4587,12 @@ function rowInnerHTML(b){
   } else {
     const es = effectiveStatus(b);
     statusCls="s-"+es.val; statusLbl=STATUS_LABEL[es.val];
-    statusEligible = es.val!=="incomplete";
+    statusEligible = es.val==="doubt"||es.val==="tovalidate";
     if(es.val==="allocated"){
-      statusTitle="Allocated — sent to Contributor Review";
+      statusTitle="Allocated — sent to Compliance";
     } else {
       const nextIsAlloc = b.status==="allocated"; // characterisation already done — the next click acts on allocation
-      statusTitle=(es.reviewReason?es.reviewReason+" — ":"")+(statusEligible?("Click to validate"+(nextIsAlloc?" — sends to Contributor Review":"")):"Nothing to validate yet");
+      statusTitle=(es.reviewReason?es.reviewReason+" — ":"")+(statusEligible?("Click to validate — sends to Compliance"):"Nothing to validate yet");
     }
   }
   const complianceHTML = hasBranches
@@ -4596,18 +4642,17 @@ function infoRowHTML(b){
 }
 /* one editable sub-row per allocated system — UI-only, no recomputation of the parent on edit */
 function branchRowHTML(parent, branch, idx){
-  const mgrOptions = ['<option value="">— Unassigned —</option>']
-    .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${branch.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
+  const mgrOptions = mgrOptionsFor(branch.typology, branch.manager);
   /* B7 — per-allocated-system allocation status (B6: each allocated system progresses on its own,
      independent of its siblings) — once allocated, falls through to whatever
      the existing branch-tracking status already shows (Contributor Review). */
-  const branchStatusHTML = (branch.allocStatus && branch.allocStatus!=="allocated")
+  const branchStatusHTML = (runsPassOne() && isAdmin()) ? "" : (branch.allocStatus && branch.allocStatus!=="allocated")
     ? (()=>{
         const eligible = branch.allocStatus!=="incomplete";
-        const title=(branch.allocReviewReason?branch.allocReviewReason+" — ":"")+(eligible?"Click to validate — sends to Contributor Review":"Nothing to validate yet");
+        const title=(branch.allocReviewReason?branch.allocReviewReason+" — ":"")+(eligible?"Click to validate — sends to Compliance":"Nothing to validate yet");
         return `<button class="status-pill s-${branch.allocStatus}" data-branchcycle="${parent.id}::${idx}" title="${title.replace(/"/g,'&quot;')}">${STATUS_LABEL[branch.allocStatus]}</button>`;
       })()
-    : `<span class="status-pill branch-status-${branch.branchStatus}" title="In Contributor Review">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>`;
+    : `<span class="status-pill branch-status-${branch.branchStatus}" title="In Compliance">${BRANCH_STATUS_LABEL[branch.branchStatus]||branch.branchStatus}</span>`;
   /* TICKET-two-pass-allocation.md §6 — a system that branches again at pass 2
      stops being editable in place: its manager/team/verdict belong to the teams
      underneath it, and its own verdict is DERIVED, never entered. A single-team
@@ -4649,8 +4694,7 @@ function branchRowHTML(parent, branch, idx){
    pass 2 branches: manager, team, verdict. Indented past the system row so the
    system grouping stays legible rather than flattening into a list of leaves. */
 function teamRowHTML(parent, branch, bidx, team, tidx){
-  const mgrOptions = ['<option value="">— Unassigned —</option>']
-    .concat(MANAGERS.filter(m=>!m.admin).map(m=>`<option value="${m.id}" ${team.manager===m.id?"selected":""}>${m.name.split(" ")[0]}</option>`)).join("");
+  const mgrOptions = mgrOptionsFor(branch.typology, team.manager);
   const key=`${parent.id}::${bidx}::${tidx}`;
   return `<div class="rrow branch-row team-row" data-teamof="${parent.id}" data-teambranch="${bidx}" data-teamidx="${tidx}">
     <div class="rcell c-sel"></div>
@@ -4750,7 +4794,6 @@ const ADV_FILTER_FIELDS={
   // precision, combinable with everything else in the advanced filter.
   alloclevel:{label:"Allocation level",type:"enum",options:[{v:"single",l:"Single (no branching)"},{v:"activity",l:"Branches — multiple systems"},{v:"team",l:"Branches — multiple teams"}],get:b=>[reqAllocLevel(b)]},
   passdoubt:{label:"Doubt — where",type:"enum",options:[{v:"pass1",l:"Which system"},{v:"pass2",l:"Within the system"},{v:"none",l:"No doubt"}],get:b=>[reqPassDoubt(b)]},
-  manualalloc:{label:"Awaiting manual allocation",type:"enum",options:[{v:"yes",l:"Yes"},{v:"no",l:"No"}],get:b=>[reqNeedsManualAllocation(b)?"yes":"no"]},
 };
 function passesAdvFilter(b){ return TE.matchesFilter(ADV_FILTER_FIELDS, state.advFilter, b); }
 function colFilterActiveCount(){ return Object.values(state.colFilters).filter(s=>s.size).length; }
@@ -4893,6 +4936,7 @@ function renderReview(){
   win.innerHTML=VROWS.map(rowHTML).join("");
   bindVRows(win);
   cfBindCells(win);
+  lockForeignRows(win);
   syncSelAll(rows);
   renderSelBar();
   applyCols();
@@ -5373,7 +5417,10 @@ function confBadgeHTML(f){
    (Functional, Performance…) is not a PBS and gets its own field below the
    chain, which is the correction DEC-062 asked for. */
 function absControlHTML(b, derivSrc){
-  if(!TENDER_KEYS) return `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`;
+  // a system's own ABS when the chain is a system's (DEC-103: a system without a
+  // model starts empty) — the requirement's domain is pass 1's routing input
+  const own = derivSrc && derivSrc!==b;
+  if(!TENDER_KEYS) return `<input class="ui-input" type="text" id="f-domain" value="${escHtml(own?((derivSrc.abs&&derivSrc.abs.v)||""):(b.domain||""))}" placeholder="${own?"Fill in by hand":""}">`;
   const cur=(derivSrc.abs&&derivSrc.abs.id)||(KEYS.abs.find(a=>a.label===b.domain)||{}).id||"";
   return `<select class="ui-select" id="f-domain"><option value="">— Not derived yet —</option>${TENDER_KEYS.absList.map(a=>`<option value="${a.id}" ${a.id===cur?"selected":""}>${escHtml(a.label)}</option>`).join("")}</select>`;
 }
@@ -5406,7 +5453,7 @@ function natureFieldHTML(b){
   if(!canCharacterise()) return `<div class="field"><label>Nature</label><div class="fval">${NATURE_LABEL[blockNature(b)]||"—"}${ai?` <span class="char-ro-ai">· AI, unconfirmed</span>`:""}</div><div class="char-ro">Set by the project manager</div></div>`;
   return `<div class="field"><label>Nature</label>
     <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
-    ${ai?`<div class="deriv-hint" style="display:flex;align-items:center;gap:8px;color:var(--ia)">Detected by the AI, not confirmed yet <button class="mini-btn" id="f-nature-confirm">Confirm</button></div>`:""}</div>`;
+</div>`;   // DEC-099 — no "detected by the AI" line nor Confirm: validating the requirement confirms it
 }
 /* Technical / non-technical — the Class column of the table, now in every
    requirement's details (it was only in the Turnkey project-manager view,
@@ -5419,7 +5466,7 @@ function classFieldHTML(b){
       <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
       <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
     </select>
-    ${b.techAI?`<div class="deriv-hint" style="display:flex;align-items:center;gap:8px;color:var(--ia)">Detected by the AI, not confirmed yet <button class="mini-btn" id="f-tech-confirm">Confirm</button></div>`:""}</div>`;
+</div>`;   // DEC-099
 }
 function derivStepHTML(label,control,conf,hint,info){
   return `<div class="deriv-step">
@@ -5529,8 +5576,8 @@ function bindRerunControls(root, b){
     refresh();
   }));
 }
-function derivationChainHTML(b,myBranch,derivSrc,rmView){
-  const distribHTML = distributionBlockHTML(b);
+function derivationChainHTML(b,myBranch,derivSrc,rmView,opts){
+  const distribHTML = opts&&opts.noDistrib ? "" : distributionBlockHTML(b);
   /* ---- the system's own model, PBS -> ABS -> OBS ---- */
   const scope = myBranch ? `${TY(myBranch.typology).label}` : (runsPassOne()?"The system's own model":`${escHtml(TENDER_LINE)}'s model`);
   const modelHTML = `<div class="deriv-pass">
@@ -5587,6 +5634,52 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView){
    the scattered Classification/System-field/derivationChainHTML/mgr-block
    sequence entirely for the myBranch case, rather than threading one more
    condition through each of those. */
+/* DEC-100 — a contributor looking at a requirement none of whose systems is
+   assigned to them reads it and changes nothing: no system picker, no ABS /
+   PBS / OBS control, no person, no proposal, no validation. One block per
+   system says the whole allocation once (the "Distribution across systems"
+   block and the System field used to say the same thing twice). */
+/* DEC-100 — the table's own editors on a row the viewer has no system on are
+   disabled (the selection checkbox and the expand caret stay). */
+function lockForeignRows(win){
+  if(isAdmin()) return;
+  const lock=el=>{ el.classList.add("is-ro"); el.querySelectorAll("input:not(.rowsel),select,button:not(.branch-caret),textarea").forEach(c=>{ c.disabled=true; c.title=c.title||"Not assigned to you — read only"; }); };
+  win.querySelectorAll(".rrow[data-id]:not(.branch-row)").forEach(r=>{ const f=findBlock(r.dataset.id); if(f && blockNature(f.b)==="requirement" && !myBranchOf(f.b)) lock(r); });
+  win.querySelectorAll(".rrow.branch-row[data-branchof]").forEach(r=>{ const f=findBlock(r.dataset.branchof); const br=f&&(f.b.branches||[])[+r.dataset.branchidx]; if(br && br.manager!==VIEWER) lock(r); });
+  win.querySelectorAll(".rrow[data-teamof]").forEach(r=>{ const f=findBlock(r.dataset.teamof); const br=f&&(f.b.branches||[])[+r.dataset.teambranch]; const t=br&&ensureTeams(br)[+r.dataset.teamidx]; if(t && t.manager!==VIEWER) lock(r); });
+}
+function readOnlyReqHTML(b,s){
+  const brs=b.branches||[];
+  const who=id=>id?((MGR(id)||{}).name||(typeof personLabel==="function"?personLabel(id):id)):"— nobody yet —";
+  return `<div class="ro-note"><i class=ic-lock></i> Not assigned to you — read only.</div>
+    ${natureFieldHTML(b)}
+    ${classFieldHTML(b)}
+    ${brs.length?brs.map(br=>{ const teams=ensureTeams(br); return `<div class="deriv-pass">
+      <div class="deriv-pass-h"><span class="ptag${ptagCls(br.typology)}">${TY(br.typology).code}</span>&nbsp;${escHtml(TY(br.typology).label===TY(br.typology).code?"":TY(br.typology).label)}</div>
+      ${isPartner(br.typology)?`<div class="deriv-hint">Partner company — answered outside the tool.</div>`:`
+      ${derivStepHTML("ABS", `<div class="fval">${escHtml((br.abs&&br.abs.v)||"—")}</div>`, null)}
+      ${derivStepHTML("PBS", `<div class="fval">${escHtml((br.pbs&&br.pbs.v)||"—")}</div>`, null)}
+      ${derivStepHTML(`OBS${TENDER_KEYS?" · role":""}`, teams.map(t=>`<div class="fval">${escHtml((t.obs&&t.obs.v)||"—")} <span class="act-who">· ${escHtml(who(t.manager))}</span></div>`).join(""), null)}`}
+    </div>`; }).join(""):`<div class="deriv-hint">No system yet.</div>`}`;
+}
+/* The "Allocations" block of one system: one card per OBS, its answer status
+   and who it is assigned to — the same block the SIG tender's panel shows.
+   Used by the Turnkey system detail and by the contributor's own view, which
+   used to have a bare "Assigned to" field instead. */
+function systemAllocationsHTML(branch, bidx){
+  const teams=ensureTeams(branch);
+  return `<div class="branch-sections">
+      <label class="branch-sections-lbl">Allocations (${teams.length})${teams.length>1?` <span>· each ${OBS_NOUN} answers for itself, and the verdicts consolidate — most restrictive wins, pending until all have answered</span>`:""}</label>
+      ${teams.map((t,tidx)=>{ const st=t.branchStatus||branch.branchStatus; return `<div class="branch-sec">
+        <div class="branch-sec-head">
+          <span class="branch-sec-org${(t.obs&&t.obs.v)||t.team?"":" is-empty"}">${escHtml((t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:`— No ${OBS_NOUN} yet —`))}</span>
+          ${st?`<span class="status-pill branch-status-${st}">${BRANCH_STATUS_LABEL[st]||st}</span>`:""}
+        </div>
+        <div class="branch-sec-body"><div class="branch-sec-field"><label>Assigned to</label>
+          <select class="branch-sec-select${t.manager?"":" empty"}" data-panelallocmgr="${bidx}::${tidx}">${mgrOptionsFor(branch.typology, t.manager, true)}</select></div></div>
+      </div>`; }).join("")}
+    </div>`;
+}
 function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx){
   /* ALLOC-014 gives the re-run to the project team AND to the contributors of
      the system concerned; this view had none. Same control, same blocking rule. */
@@ -5599,9 +5692,8 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     ${derivStepHTML("ABS", absControlHTML(b,derivSrc), derivSrc.abs)}
     ${derivStepHTML("PBS", pbsControlHTML(b,derivSrc), derivSrc.pbs, null, TENDER_KEYS?"The product element the requirement bears on — from the PBS key, grouped by family.":null)}
     ${obsListHTML(myBranch, {reqId:b.id, branchIdx:(b.branches||[]).indexOf(myBranch), systemId:myBranch.typology})}
-    <div class="field"><label>Assigned to</label>
-      ${personSearchHTML("req-manager",myBranch.manager)}
-    </div>
+    <div class="set-sep"></div>
+    ${systemAllocationsHTML(myBranch, myIdx)}
     ${cfPanelHTML(b)}
     <div class="set-sep"></div>
     ${distributionBlockHTML(b, true)}
@@ -5616,6 +5708,13 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
         <button class="reject" data-reject-reassign="${myReassignIdx}">✕ Reject</button>
       </div>
     </div>`:""}
+    ${(function(){   // DEC-104 — the contributor validates their own system
+      const i=(b.branches||[]).indexOf(myBranch), st=myBranch.allocStatus;
+      if(st==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`;
+      const why = (!st||st==="incomplete") ? "Allocation incomplete — assign someone and complete ABS / PBS / OBS first." : null;
+      return why ? `<button class="validate-cta" disabled title="${escHtml(why)}">✓ Validate &amp; send to Compliance</button><div class="validate-why">${escHtml(why)}</div>`
+                 : `<button class="validate-cta" data-validatebranch="${i}">✓ Validate &amp; send to Compliance</button>`;
+    })()}
     ${proposeBlockHTML(b,true,myBranch)}
     <div class="set-sep"></div>
     <div class="field"><label>Source section</label>
@@ -5697,26 +5796,19 @@ function pmClassificationHTML(b){
    reader to pair two lists by position: the same split the panel had between
    its OBS list and a "Who verifies" block, and the same fix. */
 function obsBreakdownHTML(teams){
-  const who=t=>t.manager?((MGR(t.manager)||{}).name||"—"):"Unassigned";
-  if(teams.length<=1){
-    const t=teams[0];
-    const val=(t&&t.obs&&t.obs.v)||(t&&TEAM(t.team).label)||"—";
-    return `<div class="act-line"><span class="act-k">Allocation</span><span class="act-v">${escHtml(val)} <span class="act-who">· ${escHtml(t?who(t):"Unassigned")}</span></span></div>`;
-  }
-  return `<div class="act-line act-line-obs">
-    <span class="act-k">Allocations (${teams.length})</span>
-    <div class="ui-list is-compact is-flush act-v">
-      ${teams.map(t=>{
-        const val=(t.obs&&t.obs.v)||TEAM(t.team).label||"—";
-        const c=t.obs&&t.obs.c;
-        const status=BRANCH_STATUS_LABEL[t.branchStatus]||t.branchStatus;
-        return `<div class="ui-list-row" title="${escHtml(status)}">
-          <span class="ui-list-main">${escHtml(val)} <span class="act-who">· ${escHtml(who(t))}</span></span>
-          ${c!=null?`<span class="ui-list-badge${c<OBS_THRESHOLD?" is-warn":""}" title="${c}% confidence">${c}%</span>`:""}
-        </div>`;
-      }).join("")}
-    </div>
-  </div>`;
+  /* 2026-09-29 — one line per organisation: the organisation on the left,
+     its person on the right, missing values in grey. Replaces the
+     "Allocation · Team not set · Unassigned" key/value line, which read as
+     one run-on sentence. */
+  return `<div class="act-obs">${teams.map(t=>{
+    const org=(t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:"");
+    const c=t.obs&&t.obs.c;
+    const person=t.manager?((MGR(t.manager)||{}).name||"—"):"";
+    return `<div class="act-obs-row">
+      <span class="act-obs-org${org?"":" is-empty"}">${escHtml(org||`No ${OBS_NOUN} yet`)}${c!=null&&c<OBS_THRESHOLD?` <span class="ui-list-badge is-warn" title="${c}% confidence">${c}%</span>`:""}</span>
+      <span class="act-obs-who${person?"":" is-empty"}">${escHtml(person||"Unassigned")}</span>
+    </div>`;
+  }).join("")}</div>`;
 }
 function activityBlocksHTML(b){
   const acts=b.branches||[];
@@ -5725,8 +5817,8 @@ function activityBlocksHTML(b){
   <div class="branch-sections">
     <label class="branch-sections-lbl">Systems (${acts.length})</label>
     ${acts.map((branch,bidx)=>{
-      const st=activityAllocStatus(branch);
       const teams=ensureTeams(branch);
+      const st=isPartner(branch.typology)?null:(branch.allocStatus||"incomplete");
       return `<div class="branch-sec">
         <div class="branch-sec-head">
           <span class="ptag${ptagCls(branch.typology)}${branch.proposal||branch.reassignRequest?" proposed":""}">${TY(branch.typology).code}</span>
@@ -5736,12 +5828,15 @@ function activityBlocksHTML(b){
             const lbl=branch.label||TY(branch.typology).label;
             return lbl===TY(branch.typology).code ? "" : `<span class="act-block-name">${escHtml(lbl)}</span>`;
           })()}
-          <span class="act-alloc-pill s-${st}" title="Derived from this system's ${teams.length} team${teams.length>1?"s":""} — nobody enters it">${ACT_ALLOC_LABEL[st]}</span>
+          ${st?`<span class="status-pill is-static s-${st}" title="This system's allocation status">${STATUS_LABEL[st]||st}</span>`:""}
         </div>
         <div class="branch-sec-body">
-          ${isPartner(branch.typology)?`<div class="act-line"><span class="act-k">Allocation</span><span class="act-v partner-note">${escHtml(TY(branch.typology).label)} · outside the tool — the project manager enters its verdict in Compliance</span></div>`:obsBreakdownHTML(teams)}
-          <div class="act-line"><span class="act-k">Compliance</span><span class="act-v"><span class="compliance-pill c-${branch.compliance}" title="Derived from this system's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span></span></div>
-          <div class="act-open-row"><button class="mini-btn act-open-btn" data-openact="${bidx}">Open system detail →</button></div>
+          ${isPartner(branch.typology)?`<div class="act-obs"><div class="act-obs-row"><span class="act-obs-org partner-note">${escHtml(TY(branch.typology).label)} · outside the tool — the project manager enters its verdict in Compliance</span></div></div>`:obsBreakdownHTML(teams)}
+          <div class="act-obs-row act-cmp-row">
+            <span class="act-foot-k">Compliance</span>
+            <span class="compliance-pill c-${branch.compliance}" title="Derived from this system's teams — most restrictive wins">${complianceLabel(branch.compliance)}</span>
+          </div>
+          <button class="mini-btn act-open-btn" data-openact="${bidx}">Open system detail →</button>
         </div>
       </div>`;
     }).join("")}
@@ -5760,33 +5855,26 @@ function activityDetailHTML(b,bidx){
       <br><br>To send it the requirements, filter the table on <b>${escHtml(TY(branch.typology).code)}</b> and export what the filter shows. The project manager then enters the partner's verdict in Compliance.
     </div>
     ${proposeBlockHTML(b, true, branch)}`;
-  const teams=ensureTeams(branch);
-  const t=teams[0];
-  const mgr=t.manager?(MGR(t.manager)||{}).name:null;
-  /* Specialty = the sub-system inside the system (Urban, Mainline…), the
-     level the casting model already has between system and perimeter. Read
-     from the system's own label where the source data carries it — not
-     invented as a new field. */
-  const specialty=(branch.label&&branch.label!==TY(branch.typology).label)
-    ? branch.label.replace(TY(branch.typology).code,"").replace(/^[\s&·—-]+/,"").trim()
-    : null;
+  /* DEC-101 — a system's detail on a Turnkey tender is the same panel as on a
+     SIG tender (nature, class, that system's model ABS / PBS / OBS with its
+     re-run, the person on each OBS, the validation), plus the reassignment
+     buttons. It used to be a read-only summary with "Type" and a bare name. */
+  const done=branch.allocStatus==="allocated", noOne=!branch.allocStatus||branch.allocStatus==="incomplete";
+  const why=(noOne?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null);
   return `<div class="act-detail-head">
       <button class="mini-btn" id="act-back">← All systems</button>
       <span class="ptag${ptagCls(branch.typology)}">${TY(branch.typology).code}</span>
       <span class="act-block-name">${escHtml(branch.label||TY(branch.typology).label)}</span>
     </div>
-    <div class="deriv-pass">
-      <div class="deriv-pass-h">${escHtml(TY(branch.typology).label)}'s own model${rerunControlHTML("leaf:"+b.id+"::"+bidx,branch.typology,branchRerunBlockedReason(branch))}</div>
-      ${derivStepHTML("Type", `<div class="fval">${b.tech==="tech"?"Technical":"Non-technical"}</div>`, null)}
-      ${specialty?derivStepHTML("Specialty", `<div class="fval">${escHtml(specialty)}</div>`, null, "Sub-system within this system."):""}
-        ${derivStepHTML("ABS", `<div class="fval">${escHtml((t.abs&&t.abs.v)||b.domain||"—")}</div>`, t.abs)}
-        ${derivStepHTML("PBS", `<div class="fval">${escHtml((t.pbs&&t.pbs.v)||"—")}</div>`, t.pbs)}
-        ${derivStepHTML("OBS · team", `<div class="fval">${escHtml((t.obs&&t.obs.v)||TEAM(t.team).label)}</div>`, t.obs,
-        "The team or service within this system — this is what casting staffs.")}
-    </div>
+    ${natureFieldHTML(b)}
+    ${classFieldHTML(b)}
     <div class="set-sep"></div>
-    <div class="field"><label>Assigned to</label>
-      <div class="fval">${escHtml(mgr||"— nobody yet —")}</div></div>
+    ${derivationChainHTML(b, branch, branch, false, {noDistrib:true})}
+    <div class="set-sep"></div>
+    ${systemAllocationsHTML(branch, bidx)}
+    ${done?`<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`
+      :(why?`<button class="validate-cta" disabled title="${escHtml(why)}">✓ Validate &amp; send to Compliance</button><div class="validate-why">${escHtml(why)}</div>`
+           :`<button class="validate-cta" data-validatebranch="${bidx}">✓ Validate &amp; send to Compliance</button>`)}
     ${proposeBlockHTML(b, true, branch)}`;
 }
 function renderSettings(){
@@ -5837,6 +5925,7 @@ function renderSettings(){
   // the table's own per-branch cycle button reads) is the real answer to
   // "where is MY work on this".
   const myEs = myBranch ? {val:myBranch.allocStatus||"incomplete", doubtField:myBranch.allocDoubtField||null, reviewReason:myBranch.allocReviewReason||null} : es;
+  const roView = isReq && !isAdmin() && !myBranch;   // DEC-100
   panel.innerHTML = `
     <div class="set-head">
       <div class="set-id-row">
@@ -5859,7 +5948,7 @@ function renderSettings(){
       <button data-tab="activity" class="${state.tab==="activity"?"active":""}">Activity ${b.comments?`<span class="tab-count">${b.comments}</span>`:""}</button>
       ${isReq&&rexFor(b).length?`<button data-tab="rex" class="${state.tab==="rex"?"active":""}">REX <span class="tab-count rex-count">${rexFor(b).length}</span></button>`:""}
       ${latestChange(b)?`<button data-tab="versions" class="${state.tab==="versions"?"active":""}">Versions</button>`:""}
-      ${b.textOriginal!==undefined?`<button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translation${b.translationCorrected?` <span class="tab-count corr-count" title="Translation corrected">✓</span>`:""}</button>`:""}
+      ${b.textOriginal!==undefined&&TENDER_LANGUAGE!=="en"?`<button data-tab="translate" class="${state.tab==="translate"?"active":""}">Translation${b.translationCorrected?` <span class="tab-count corr-count" title="Translation corrected">✓</span>`:""}</button>`:""}
     </div>
     <div class="set-body" id="set-body"></div>`;
 
@@ -5879,7 +5968,7 @@ function renderSettings(){
 
   const body = panel.querySelector("#set-body");
   if(state.tab==="rex" && !(isReq && rexFor(b).length)) state.tab="details";
-  if(state.tab==="translate" && b.textOriginal===undefined) state.tab="details";
+  if(state.tab==="translate" && (b.textOriginal===undefined||TENDER_LANGUAGE==="en")) state.tab="details";
   if(state.tab==="versions" && !latestChange(b)) state.tab="details";   // DEC-071: no tab when nothing changed in the version in force
   if(state.tab==="details"){
     let html = "";
@@ -5907,7 +5996,8 @@ function renderSettings(){
       : (isReq && myBranch)
         ? contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx)
         : "";
-    if(!pmTurnkey && !(isReq && myBranch)) html += `
+    if(roView) html += readOnlyReqHTML(b,s);
+    if(!pmTurnkey && !(isReq && myBranch) && !roView) html += `
       ${natureFieldHTML(b)}
       ${isReq?classFieldHTML(b):""}
       ${isReq&&!myBranch&&!IS_SIG_TENDER?`<div class="field"><label>System ${b.perimAI?'<span style="color:var(--ia);font-weight:600;letter-spacing:0;text-transform:none"> · AI-detected, unconfirmed</span>':""}</label>
@@ -5921,7 +6011,6 @@ function renderSettings(){
               <span class="box">✓</span><span class="code">${t.code}</span>${t.label}</div>`).join("")}
           </div>
         </div>
-        ${b.perimAI?`<button class="mini-btn" id="perim-confirm" style="margin-top:var(--space-2);border-color:var(--ok);color:var(--ok)">✓ Confirm AI system</button>`:""}
         ${isTurnkey(b)?`<div class="tky-note"><b>Turnkey.</b> Supervises the whole scope — needs a coordinating owner plus one specialist per perimeter.</div>`:""}
       </div>`:""}
 
@@ -5940,8 +6029,7 @@ function renderSettings(){
            it was the same code on every card. */
         const units=[]; b.branches.forEach((branch,bidx)=>ensureTeams(branch).forEach((t,tidx)=>units.push({branch,bidx,t,tidx})));
         const showSystem = runsPassOne() || b.branches.length>1;
-        const mgrOpts=m=>['<option value="">— Unassigned —</option>']
-          .concat(MANAGERS.filter(x=>!x.admin).map(x=>`<option value="${x.id}" ${m===x.id?"selected":""}>${escHtml(x.name)} — ${escHtml(x.role)}</option>`)).join("");
+        const mgrOpts=(m,typ)=>mgrOptionsFor(typ,m,true);
         return `<div class="set-sep"></div>
       <div class="branch-sections">
         <label class="branch-sections-lbl">Allocations (${units.length})${units.length>1?` <span>· each ${OBS_NOUN} answers for itself, and the verdicts consolidate — most restrictive wins, pending until all have answered</span>`:""}</label>
@@ -5973,7 +6061,7 @@ function renderSettings(){
             <div class="branch-sec-body">
               <div class="branch-sec-field">
                 <label>Assigned to</label>
-                <select class="branch-sec-select${t.manager?"":" empty"}" data-panelallocmgr="${bidx}::${tidx}">${mgrOpts(t.manager)}</select>
+                <select class="branch-sec-select${t.manager?"":" empty"}" data-panelallocmgr="${bidx}::${tidx}">${mgrOpts(t.manager, branch.typology)}</select>
               </div>
             </div>
           </div>`).join("")}
@@ -5993,11 +6081,14 @@ function renderSettings(){
       ${isReq && !isAdmin() ? proposeBlockHTML(b,hasBranches,myBranch) : ""}
       ${isReq ? validateCtaHTML(b,hasBranches,es) : ""}`;
     body.innerHTML = html;
-    if(isReq && myBranch) bindObsList(body,myBranch,b);
+    if(isReq && actView && (b.branches||[])[state.panelActivity]) bindObsList(body,b.branches[state.panelActivity],b);
+    else if(isReq && myBranch) bindObsList(body,myBranch,b);
     else if(isReq && (b.branches||[]).length===1) bindObsList(body,b.branches[0],b);
     bindPersonSearch(body,"req-manager",id=>{
       const target=myBranch||b;
       if(id) assignPerson(target,id); else target.manager=null;
+      const t0=ensureTeams(target)[0]; if(t0 && target!==b) t0.manager=target.manager;
+      markAllocEdited(target); if(target!==b && (b.branches||[]).length===1){ b.manager=target.manager; markAllocEdited(b); }
       refresh(); toast(id?`Assigned to ${personLabel(id)}`:"Unassigned","ok");
     });
     body.querySelector("#f-tech-confirm")?.addEventListener("click",()=>{ b.techAI=false; markCharEdited(b); logFeedback("char",b.id,b.tech,b.tech,null); refresh(); toast(`${b.id} — class confirmed: ${b.tech==="tech"?"Technical":"Non-technical"}`,"ok"); });
@@ -6011,7 +6102,8 @@ function renderSettings(){
        step invalidates what follows it. Leaving a stale ABS and OBS sitting
        there still looking valid is exactly what the ticket asks us to stop
        doing, so the consequence is applied and then stated. */
-    const derivTarget = () => (typeof myBranchOf==="function" && myBranchOf(b)) || b;
+    const actBranch = actView ? (b.branches||[])[state.panelActivity] : null;   // DEC-101 — the system opened
+    const derivTarget = () => actBranch || (typeof myBranchOf==="function" && myBranchOf(b)) || b;
     const announceCleared = (cleared,changed)=>{
       if(!cleared.length) return;
       toast(`${changed.toUpperCase()} changed — ${cleared.map(c=>c.toUpperCase()).join(" and ")} cleared, they were derived from it`,"warn");
@@ -6030,10 +6122,11 @@ function renderSettings(){
         const a=KEY_ABS(e.target.value);
         b.domain=a?a.label:""; writeDeriv("abs", a?{v:a.label,id:a.id,c:null}:null);
       }else{
-        b.domain=e.target.value.trim();
+        const v=e.target.value.trim();
+        if(derivTarget()!==b) writeDeriv("abs", v?{v,c:null}:null); else b.domain=v;
       }
       const cleared=invalidateDownstream(derivTarget(),"abs");
-      markAllocEdited(b); refresh();
+      markAllocEdited(derivTarget()); if(derivTarget()!==b) markAllocEdited(b); refresh();
       announceCleared(cleared,"ABS");
     });
     body.querySelector("#f-pbs")?.addEventListener("change",e=>{
@@ -6044,7 +6137,7 @@ function renderSettings(){
         const v=e.target.value.trim(); writeDeriv("pbs", v?{v,c:null}:null);
       }
       const cleared=invalidateDownstream(derivTarget(),"pbs");
-      markAllocEdited(b); refresh();
+      markAllocEdited(derivTarget()); if(derivTarget()!==b) markAllocEdited(b); refresh();
       cleared.length ? announceCleared(cleared,"PBS") : toast("PBS updated","ok");
     });
     /* One propose block everywhere (the contributor's, "bolder propose buttons"
@@ -6074,7 +6167,7 @@ function renderSettings(){
       const [bi,ti]=sel.dataset.panelallocmgr.split("::").map(Number);
       const branch=(b.branches||[])[bi]; if(!branch) return;
       const t=setAllocManager(b, branch, ti, e.target.value); if(!t) return;
-      const who=(t.obs&&t.obs.v)||TEAM(t.team).label||branch.label;
+      const who=(t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:null)||branch.label||TY(branch.typology).code;
       toast(t.manager?`${who}: assigned to ${MGR(t.manager).name}`:`${who}: unassigned`,"ok");
       refresh();
     }));
@@ -6295,7 +6388,7 @@ function activityFor(b){
       {k:"human",who:"Thibaud Breton",what:'Criterion text clarified.<span class="before-after"><span class="ba-del">under 2 seconds</span> → <span class="ba-ins">under 2 seconds … at the 95th percentile</span></span>',time:"Yesterday, 5:40 PM"},
     );
   }
-  if(isFullyAllocated(b)) base.unshift({k:"ok",who:"Thibaud Breton",what:"Requirement allocated — characterisation and assignment confirmed, sent to Contributor Review.",time:"Jul 15, 2026, 11:02 AM"});
+  if(isFullyAllocated(b)) base.unshift({k:"ok",who:"Thibaud Breton",what:"Requirement allocated — characterisation and assignment confirmed, sent to Compliance.",time:"Jul 15, 2026, 11:02 AM"});
   if(b.id==="SRM-00021") base.unshift({k:"comment",who:"Claire Moreau",what:'"Is the 3-year retention period aligned with group policy (5 years)?"',time:"Jul 14, 2026, 4:20 PM"});
   return base;
 }
@@ -6426,7 +6519,9 @@ function markCharEdited(b){ if(b.status!=="allocated") b.status="tovalidate"; }
    touched this, it's ready to validate". */
 function markAllocEdited(target){
   if(!target || target.allocStatus==="allocated") return;
-  target.allocStatus = target.manager ? "tovalidate" : "incomplete";
+  // DEC-103 — missing data is Incomplete, whatever the reason (a system with no
+  // model simply starts with ABS / PBS / OBS empty, nothing derived).
+  target.allocStatus = (target.manager && (target.pbs || target.abs || target.obs)) ? "tovalidate" : "incomplete";
   target.allocDoubtField=null; target.allocReviewReason=null;
 }
 /* B6/B7 — the one validate action: the row's status-pill click, each allocated system's
@@ -6438,18 +6533,40 @@ function markAllocEdited(target){
    stage advanced ("char"/"alloc"), or null if nothing was eligible
    (Incomplete, or already Allocated) — the caller decides what to say. */
 function validateAllocTarget(target, isRealBranch){
-  if(!target || target.allocStatus==="allocated" || target.allocStatus==="incomplete") return false;
+  if(!target || ["allocated","incomplete"].includes(target.allocStatus)) return false;
   target.allocStatus="allocated"; target.allocDoubtField=null; delete target.allocReviewReason;
   if(isRealBranch && !target.branchStatus) target.branchStatus="awaiting_answer"; // TD2 — sent to Contributor Review, contributor already assigned (allocStatus just became "allocated")
   return true;
 }
+/* DEC-099 — one gesture validates the whole requirement: its characterisation
+   and its allocation together (it used to take two clicks, the first of which
+   changed nothing visible — V seemed not to work). Validating is what confirms
+   what the AI detected, so the AI flags go with it. With several systems, each
+   system's validation also validates the characterisation. */
+function confirmCharacterisation(b){
+  b.status="allocated"; b.doubtField=null; delete b.reviewReason;
+  b.typeAI=false; b.techAI=false; b.perimAI=false;
+}
 function validateProgress(id, branchIdx){
   const f=findBlock(id); if(!f) return null;
   const b=f.b;
+  if(runsPassOne()){   // DEC-104 — two independent levels
+    if(branchIdx==null){
+      if(b.status==="incomplete" || b.status==="allocated" || hasPendingReassign(b)) return null;
+      confirmCharacterisation(b); return "turnkey";
+    }
+    const br=(b.branches||[])[branchIdx]; if(!br) return null;
+    return validateAllocTarget(br,true) ? "alloc" : null;
+  }
   if(branchIdx==null){
-    if(b.status!=="allocated"){
+    if((b.branches||[]).length<=1){
       if(b.status==="incomplete") return null;
-      b.status="allocated"; b.doubtField=null; delete b.reviewReason;
+      const h0=allocHolder(b);
+      if((h0.allocStatus||"incomplete")==="incomplete" || h0.allocStatus==="allocated") return null;
+      confirmCharacterisation(b);
+    } else if(b.status!=="allocated"){
+      if(b.status==="incomplete") return null;
+      confirmCharacterisation(b);
       return "char";
     }
     if((b.branches||[]).length>1) return null; // each allocated system validates its own allocation individually
@@ -6460,7 +6577,10 @@ function validateProgress(id, branchIdx){
     if(other){ other.allocStatus=h.allocStatus; other.allocDoubtField=null; delete other.allocReviewReason; if(other!==b && !other.branchStatus) other.branchStatus="awaiting_answer"; }
     return "alloc";
   }
-  return validateAllocTarget((b.branches||[])[branchIdx],true) ? "alloc" : null;
+  if(b.status==="incomplete") return null;
+  if(!validateAllocTarget((b.branches||[])[branchIdx],true)) return null;
+  if(b.status!=="allocated") confirmCharacterisation(b);
+  return "alloc";
 }
 /* Individual validate — always a real human gesture (B7): this is the only
    way anything reaches Allocated, whether it came from To review (corrected)
@@ -6470,9 +6590,12 @@ function validateProgress(id, branchIdx){
 function validateBlock(id, branchIdx){
   const f = findBlock(id); if(!f) return;
   const b = f.b;
+  if(!isAdmin() && !myBranchOf(b)){ toast("Not your system — read only","warn"); return; }   // DEC-100
+  // a contributor on a Turnkey tender validates their own system
+  if(runsPassOne() && branchIdx==null && !isAdmin()){ const mb=myBranchOf(b); branchIdx=(b.branches||[]).indexOf(mb); }
   const target = branchIdx!=null ? (b.branches||[])[branchIdx] : b;
   if(!target) return;
-  const snap = {status:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason,
+  const snap = {status:b.status, doubtField:b.doubtField, reviewReason:b.reviewReason, typeAI:b.typeAI, techAI:b.techAI, perimAI:b.perimAI,
     allocStatus:target.allocStatus, allocDoubtField:target.allocDoubtField, allocReviewReason:target.allocReviewReason,
     branchStatus:target.branchStatus};
   // single system: the status may live on its one branch (allocHolder) — undo restores both
@@ -6484,9 +6607,9 @@ function validateBlock(id, branchIdx){
   refresh();
   if(wasWeak && stage==="alloc"){ logFeedback("deriv", id, `weak OBS ${target.obs.c}%`, "validated as-is", target.obs.c); setTimeout(()=>toast("Weak derivation confirmed by you — recorded as AI feedback","ok"),700); }
   const label = branchIdx!=null ? `${id} · ${TY(target.typology).label}` : id;
-  const msg = stage==="alloc" ? `${label} allocated — sent to Contributor Review` : `${label} characterisation validated`;
+  const msg = stage==="alloc" ? `${label} allocated — sent to Compliance` : stage==="turnkey" ? `${label} routing validated — sent to its systems` : `${label} characterisation validated`;
   toast(msg,"ok",()=>{
-    b.status=snap.status; b.doubtField=snap.doubtField; b.reviewReason=snap.reviewReason;
+    b.status=snap.status; b.doubtField=snap.doubtField; b.reviewReason=snap.reviewReason; b.typeAI=snap.typeAI; b.techAI=snap.techAI; b.perimAI=snap.perimAI;
     target.allocStatus=snap.allocStatus; target.allocDoubtField=snap.allocDoubtField; target.allocReviewReason=snap.allocReviewReason; target.branchStatus=snap.branchStatus;
     if(only) Object.assign(only, snapOnly);
     refresh();
@@ -6526,7 +6649,9 @@ function setFilter(f){
    TRIAGE / PROGRESS
 ===================================================== */
 function renderTriage(){
-  const r = reqs();
+  // counts what the viewer can actually filter to — a contributor's pills
+  // count their own requirements, with their own system's status
+  const r = reqs().filter(visibleTo);
   document.getElementById("total-count").textContent = `${r.length} requirement${r.length>1?"s":""}`;
   document.getElementById("n-incomplete").textContent = r.filter(b=>effectiveStatus(b).val==="incomplete").length;
   document.getElementById("n-doubt").textContent = r.filter(b=>effectiveStatus(b).val==="doubt").length;
@@ -6543,15 +6668,8 @@ function renderTriage(){
     document.getElementById("n-reassign").textContent = pendingReassign;
     if(!pendingReassign && state.filter==="reassign") setFilter("reassign");
   }
-  // TICKET-two-pass-allocation.md §3 — same "only occupy a slot when it means
-  // something" rule as the reassignment pill above.
-  const awaitingManual = runsPassOne() ? r.filter(reqNeedsManualAllocation).length : 0;
-  const manualPill = document.getElementById("pill-manual");
-  if(manualPill){
-    manualPill.style.display = awaitingManual ? "" : "none";
-    document.getElementById("n-manual").textContent = awaitingManual;
-    if(!awaitingManual && state.filter==="manual") setFilter("manual");
-  }
+  // DEC-103 — no "awaiting manual allocation" pill any more: a system with
+  // missing data is simply Incomplete, counted with the rest.
 }
 
 /* =====================================================
@@ -6725,7 +6843,7 @@ document.addEventListener("click",e=>{ if(!e.target.closest(".sel-drop")) docume
 
 /* View as */
 const vaMenu=document.getElementById("viewas-menu");
-vaMenu.innerHTML=MANAGERS.map(m=>`<div class="va-opt" data-v="${m.id}"><span class="exp-avatar" style="background:${m.color}">${m.init}</span><div><div>${m.name}</div><div class="vr">${m.role}</div></div></div>`).join("");
+vaMenu.innerHTML=MANAGERS.filter(m=>m.admin||m.viewAs).map(m=>`<div class="va-opt" data-v="${m.id}"><span class="exp-avatar" style="background:${m.color}">${m.init}</span><div><div>${m.name}</div><div class="vr">${m.role}</div></div></div>`).join("");
 vaMenu.querySelectorAll("[data-v]").forEach(o=>o.addEventListener("click",e=>{ e.stopPropagation(); setViewer(o.dataset.v); document.getElementById("viewas").classList.remove("open"); }));
 document.getElementById("viewas").addEventListener("click",e=>{
   if(e.target.closest(".viewas-menu")) return;
@@ -6912,7 +7030,7 @@ function renderColFilterIndicators(){
 const ADV_FIELD_GROUPS=[
   {g:"Progress",         fields:["status","compliance","doubtfield","passdoubt","changed"]},
   {g:"Characterisation", fields:["nature","class","typo"]},
-  {g:"Allocation",       fields:["abs","pbs","obs","mgr","alloclevel","manualalloc"]},
+  {g:"Allocation",       fields:["abs","pbs","obs","mgr","alloclevel"]},
   {g:"Content & source", fields:["id","text","section","doc"]},
 ];
 const ADV_FIELD_ORDER=ADV_FIELD_GROUPS.reduce((a,g)=>a.concat(g.fields),[]);

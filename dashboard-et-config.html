@@ -1488,7 +1488,7 @@ cR.addEventListener("input",()=>cV.textContent=cR.value+"%");
 const MANAGERS=[
   {id:"m_sig",name:"Louis Renaud",role:"SIG manager",init:"LR",color:"#3fb27f"},
   {id:"m_mln",name:"Amina Cherif",role:"TRK manager",init:"AC",color:"#e0a43c"},
-  {id:"m_inf",name:"Paolo Ferri",role:"OCS manager",init:"PF",color:"#a06ef2"},
+  {id:"m_inf",name:"Paolo Ferri",role:"SEN manager",init:"PF",color:"#a06ef2"},
   {id:"m_pwr",name:"Nadia Haddad",role:"POS manager",init:"NH",color:"#e5544b"},
   {id:"m_tlc",name:"Julien Roche",role:"COM manager",init:"JR",color:"#3fa9b2"},
   {id:"m_sys",name:"Elena Popescu",role:"RAMS manager",init:"EP",color:"#c46bd6"},
@@ -1580,7 +1580,7 @@ renderExperts();
 const CAST_ACTIVITIES_BASE=[
   {id:"sig",code:"SIG",label:"SIG",managerId:"m_sig",hasModel:true},
   {id:"trk",code:"TRK",label:"TRK",managerId:"m_mln"},
-  {id:"ocs",code:"OCS",label:"OCS",managerId:"m_inf"},
+  {id:"sen",code:"SEN",label:"SEN",managerId:"m_inf"},   // DEC-102 — Paolo is the SEN contributor on Allocation/Compliance; no model, completed by hand
   {id:"pos",code:"POS",label:"POS",managerId:"m_pwr"},
   {id:"com",code:"COM",label:"COM",managerId:"m_tlc"},
   {id:"rst",code:"RST",label:"RST",managerId:null,hasModel:true}, // not yet cast to a manager — a real, distinct empty state
@@ -1604,7 +1604,7 @@ const REFERENCE_ACTIVITIES_BASE=[
   {id:"ils",code:"ILS",label:"ILS"},
   {id:"psd",code:"PSD",label:"PSD"},
   {id:"scada",code:"SCADA",label:"SCADA"},
-  {id:"sen",code:"SEN",label:"SEN"},
+  {id:"ocs",code:"OCS",label:"OCS"},
   {id:"spm",code:"SPM",label:"SPM"},
 ];
 const REFERENCE_ACTIVITIES = IS_SIG_TENDER ? [] : REFERENCE_ACTIVITIES_BASE;
@@ -1649,14 +1649,16 @@ const SIG_ROSTER=[
   {personId:personByName("Claire Moreau").id,activityId:"sig",perimeterId:"vv",addedBy:"Louis Renaud",addedAt:"Jul 12",count:1},
   {personId:personByName("Marc Dubois").id,activityId:"sig",perimeterId:"risk",addedBy:"Louis Renaud",addedAt:"Jul 14",count:0},
 ];
+/* DEC-102 — each person sits in the one system they belong to on
+   Allocation/Compliance (Karim Benali: SEN, Claire Moreau: RAMS). */
 let ROSTER_BASE=[
   {personId:personByName("Sophie Lang").id,activityId:"sig",perimeterId:"wayside",addedBy:"Louis Renaud",addedAt:"Jul 14",count:3},
-  {personId:personByName("Karim Benali").id,activityId:"sig",perimeterId:"design",addedBy:"Louis Renaud",addedAt:"Jul 14",count:0},
-  {personId:personByName("Claire Moreau").id,activityId:"sig",perimeterId:"vv",addedBy:"Louis Renaud",addedAt:"Jul 15",count:0},
+  {personId:personByName("Karim Benali").id,activityId:"sen",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 14",count:0},
+  {personId:personByName("Claire Moreau").id,activityId:"rams",perimeterId:"vv",addedBy:"Elena Popescu",addedAt:"Jul 15",count:0},
   {personId:personByName("Marc Dubois").id,activityId:"trk",perimeterId:"btm",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
   {personId:personByName("Fatima Zahra").id,activityId:"trk",perimeterId:"dbm",addedBy:"Amina Cherif",addedAt:"Jul 12",count:0},
-  {personId:personByName("Thomas Weber").id,activityId:"ocs",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 13",count:1},
-  {personId:personByName("Léa Girard").id,activityId:"ocs",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 16",count:0},
+  {personId:personByName("Thomas Weber").id,activityId:"sen",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 13",count:1},
+  {personId:personByName("Léa Girard").id,activityId:"sen",perimeterId:null,addedBy:"Paolo Ferri",addedAt:"Jul 16",count:0},
   {personId:personByName("Omar Saidi").id,activityId:"pos",perimeterId:"wayside",addedBy:"Nadia Haddad",addedAt:"Jul 15",count:0},
   {personId:personByName("Anaïs Petit").id,activityId:"rams",perimeterId:"risk",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
   {personId:personByName("Hugo Bernard").id,activityId:"rams",perimeterId:"risk",addedBy:"Elena Popescu",addedAt:"Jul 17",count:0},
@@ -2200,7 +2202,7 @@ const REVIEW_REQS_BASE=[
   {id:"SRM-00001",status:"toreview", activity:"sig"},
   {id:"SRM-00002",status:"toreview", activity:"sig"},
   {id:"SRM-00003",status:"allocated",activity:"sig"},
-  {id:"SRM-00004",status:"allocated",activity:"ocs", aiActivity:true},
+  {id:"SRM-00004",status:"allocated",activity:"sen", aiActivity:true},
   {id:"SRM-00005",status:"toreview", activity:"sig", obsWeak:true},
   {id:"SRM-00006",status:"suggested",activity:"trk", aiActivity:true},
   {id:"SRM-00007",status:"suggested",activity:"sig", aiActivity:true},
