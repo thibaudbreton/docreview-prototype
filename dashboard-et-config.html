@@ -199,7 +199,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
    action list off it, and below the fold it stopped being reachable at all.
    Name and figure share one baseline; the description moves to the row's title
    and the progress bar goes — the figure beside the name already carries it. */
-.support-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3);margin-bottom:26px}
+.support-rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3);margin-bottom:26px}
 @media(max-width:1000px){.support-rail{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.support-rail{grid-template-columns:minmax(0,1fr)}}
 .phase.is-support{min-height:0;align-items:center;padding:var(--space-2) var(--space-3);background:var(--panel-2)}
@@ -837,6 +837,15 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
             <div class="ph-name">Documents &amp; versions</div>
             <div class="ph-desc">Upload tender documents and track what changed between versions.</div>
             <div class="ph-stat"><span class="big">3</span><span>docs · 1 processing</span></div>
+          </div>
+          <span class="ph-open-btn">→</span>
+        </a>
+        <a class="phase is-support" id="ph-risks" href="javascript:parent.route('risks')" title="Risks — the tender's risk register, fed from Compliance.">
+          <div class="ph-num transversal">!</div>
+          <div class="ph-info">
+            <div class="ph-name">Risks</div>
+            <div class="ph-desc">Every Not compliant traced to a risk, reused across requirements.</div>
+            <div class="ph-stat"><span class="big" id="ph-risks-n">0</span><span id="ph-risks-txt">open risks</span></div>
           </div>
           <span class="ph-open-btn">→</span>
         </a>
@@ -2866,6 +2875,13 @@ function renderStrategiesSetting(){
   };
   btn.addEventListener("click",add);
   inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); add(); } });
+})();
+/* SPEC-risks.md §6 — the Risks card on the support rail reads the register */
+(function renderRisksCard(){
+  const n=document.getElementById("ph-risks-n"), t=document.getElementById("ph-risks-txt"); if(!n||!CURRENT_PROJECT) return;
+  let rs=[]; try{ rs=window.parent.getRisks(CURRENT_PROJECT.id)||[]; }catch(e){}
+  const open=rs.filter(x=>x.status==="open").length;
+  n.textContent=open; t.textContent=`open`; n.parentElement.title=`${open} open risk${open===1?"":"s"} · ${rs.length} in the register`;
 })();
 function renderAllocationModelSection(){
   renderStrategiesSetting();

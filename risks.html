@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Brand type (22 Sept 2026): Noto Sans for everything, Antarctica for titles.
+     Noto Sans comes from Google Fonts; Antarctica is a licensed brand face with
+     no public CDN — see fonts/README.md for where its files go. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Requirement Manager — STB-2026 · Risks</title>
+<link rel="icon" type="image/svg+xml" media="(prefers-color-scheme: light)" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIyIDIwIDg0IDQ4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMy4wNzAzMSA0NC4yMTczQzMuMDcwMzEgMzEuMzI4NiAxMy41MTg2IDIwLjg4MDMgMjYuNDA3MyAyMC44ODAzSDYxLjE5MDVDNjEuMzEzMiAyMC44ODAzIDYxLjQxMjcgMjAuOTc5OCA2MS40MTI3IDIxLjEwMjVWNjcuMzMyMUM2MS40MTI3IDY3LjQ1NDggNjEuMzEzMiA2Ny41NTQyIDYxLjE5MDUgNjcuNTU0MkgyNi40MDczQzEzLjUxODYgNjcuNTU0MiAzLjA3MDMxIDU3LjEwNTkgMy4wNzAzMSA0NC4yMTczVjQ0LjIxNzNaIiBmaWxsPSJ1cmwoI2ZsYSkiIGZpbGwtb3BhY2l0eT0iLjU0Ii8+CjxwYXRoIGQ9Ik0xOC40MjM4IDQ0LjIxNzNDMTguNDIzOCAzMS4zMjg2IDI4Ljg3MjEgMjAuODgwMyA0MS43NjA4IDIwLjg4MDNINjMuMDg0NkM2My4xNzg5IDIwLjg4MDMgNjMuMjU1MyAyMC45NTY4IDYzLjI1NTMgMjEuMDUxVjY3LjM4MzVDNjMuMjU1MyA2Ny40Nzc4IDYzLjE3ODkgNjcuNTU0MiA2My4wODQ2IDY3LjU1NDJINDEuNzYwOEMyOC44NzIxIDY3LjU1NDIgMTguNDIzOCA1Ny4xMDU5IDE4LjQyMzggNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmbGIpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8cGF0aCBkPSJNMzUuMDA1NCA0NC4yMTczQzM1LjAwNTQgMzEuMzI4NiA0NS40NTM3IDIwLjg4MDMgNTguMzQyMyAyMC44ODAzSDYxLjQxM0M3NC4zMDE2IDIwLjg4MDMgODQuNzQ5OSAzMS4zMjg2IDg0Ljc0OTkgNDQuMjE3M1Y0NC4yMTczQzg0Ljc0OTkgNTcuMTA1OSA3NC4zMDE2IDY3LjU1NDIgNjEuNDEzIDY3LjU1NDJINTguMzQyM0M0NS40NTM3IDY3LjU1NDIgMzUuMDA1NCA1Ny4xMDU5IDM1LjAwNTQgNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmbGMpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8Y2lyY2xlIGN4PSI2MC4zMTA1IiBjeT0iNDQuMzQzMSIgcj0iMTguNTQ5NyIgZmlsbD0iI2ZmZiIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJmbGEiIHgxPSIzLjA3IiB5MT0iNDQuMjIiIHgyPSI2MS40MSIgeTI9IjQ0LjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iIzFFMzI0NiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzFFMzI0NiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJmbGIiIHgxPSIxOC40MiIgeTE9IjQ0LjIyIiB4Mj0iNjMuMjYiIHkyPSI0NC4yMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiMxRTMyNDYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxRTMyNDYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZmxjIiB4MT0iMzUuMDEiIHkxPSI0NC4yMiIgeDI9Ijg0Ljc1IiB5Mj0iNDQuMjIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjMUUzMjQ2Ii8+PHN0b3Agb2Zmc2V0PSIuMTY4IiBzdG9wLWNvbG9yPSIjMUUzMjQ2Ii8+PC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=">
+<link rel="icon" type="image/svg+xml" media="(prefers-color-scheme: dark)" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIyIDIwIDg0IDQ4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMy4wNzAzMSA0NC4yMTczQzMuMDcwMzEgMzEuMzI4NiAxMy41MTg2IDIwLjg4MDMgMjYuNDA3MyAyMC44ODAzSDYxLjE5MDVDNjEuMzEzMiAyMC44ODAzIDYxLjQxMjcgMjAuOTc5OCA2MS40MTI3IDIxLjEwMjVWNjcuMzMyMUM2MS40MTI3IDY3LjQ1NDggNjEuMzEzMiA2Ny41NTQyIDYxLjE5MDUgNjcuNTU0MkgyNi40MDczQzEzLjUxODYgNjcuNTU0MiAzLjA3MDMxIDU3LjEwNTkgMy4wNzAzMSA0NC4yMTczVjQ0LjIxNzNaIiBmaWxsPSJ1cmwoI2ZkYSkiIGZpbGwtb3BhY2l0eT0iLjU0Ii8+CjxwYXRoIGQ9Ik0xOC40MjM4IDQ0LjIxNzNDMTguNDIzOCAzMS4zMjg2IDI4Ljg3MjEgMjAuODgwMyA0MS43NjA4IDIwLjg4MDNINjMuMDg0NkM2My4xNzg5IDIwLjg4MDMgNjMuMjU1MyAyMC45NTY4IDYzLjI1NTMgMjEuMDUxVjY3LjM4MzVDNjMuMjU1MyA2Ny40Nzc4IDYzLjE3ODkgNjcuNTU0MiA2My4wODQ2IDY3LjU1NDJINDEuNzYwOEMyOC44NzIxIDY3LjU1NDIgMTguNDIzOCA1Ny4xMDU5IDE4LjQyMzggNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmZGIpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8cGF0aCBkPSJNMzUuMDA1NCA0NC4yMTczQzM1LjAwNTQgMzEuMzI4NiA0NS40NTM3IDIwLjg4MDMgNTguMzQyMyAyMC44ODAzSDYxLjQxM0M3NC4zMDE2IDIwLjg4MDMgODQuNzQ5OSAzMS4zMjg2IDg0Ljc0OTkgNDQuMjE3M1Y0NC4yMTczQzg0Ljc0OTkgNTcuMTA1OSA3NC4zMDE2IDY3LjU1NDIgNjEuNDEzIDY3LjU1NDJINTguMzQyM0M0NS40NTM3IDY3LjU1NDIgMzUuMDA1NCA1Ny4xMDU5IDM1LjAwNTQgNDQuMjE3M1Y0NC4yMTczWiIgZmlsbD0idXJsKCNmZGMpIiBmaWxsLW9wYWNpdHk9Ii41NCIvPgo8Y2lyY2xlIGN4PSI2MC4zMTA1IiBjeT0iNDQuMzQzMSIgcj0iMTguNTQ5NyIgZmlsbD0iI2ZmZiIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJmZGEiIHgxPSIzLjA3IiB5MT0iNDQuMjIiIHgyPSI2MS40MSIgeTI9IjQ0LjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJmZGIiIHgxPSIxOC40MiIgeTE9IjQ0LjIyIiB4Mj0iNjMuMjYiIHkyPSI0NC4yMiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZmRjIiB4MT0iMzUuMDEiIHkxPSI0NC4yMiIgeDI9Ijg0Ljc1IiB5Mj0iNDQuMjIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjZmZmIi8+PHN0b3Agb2Zmc2V0PSIuMTY4IiBzdG9wLWNvbG9yPSIjZmZmIi8+PC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=">
+<style>
+/* Antarctica — the brand title face. Not on any public CDN and not installed
+   here, so it resolves in this order: an installed copy, then the files under
+   fonts/ (drop Antarctica-Regular.woff2 and Antarctica-Bold.woff2 there — the
+   srcdoc screens resolve relative URLs against index.html), then Noto Sans.
+   Nothing breaks while the files are missing; titles simply stay in Noto. */
+@font-face{font-family:"Antarctica";font-weight:400;font-display:swap;src:local("Antarctica"),local("Antarctica-Regular"),url("fonts/Antarctica-Regular.woff2") format("woff2")}
+@font-face{font-family:"Antarctica";font-weight:700;font-display:swap;src:local("Antarctica Bold"),local("Antarctica-Bold"),url("fonts/Antarctica-Bold.woff2") format("woff2")}
+
+:root{
+  --bg:#071A30; --panel:#0B294A; --panel-2:#143556; --panel-3:#1D4062;
+  --line:#1F3E5F; --line-2:#2E4E70;
+  --text:#EEF1F8; --text-2:#AAB6C6; --text-3:#8B9AAD;
+  --accent:#4C82FF; --accent-soft:#1B3F6B; --accent-hover:color-mix(in srgb, var(--accent) 75%, white);
+  --ia:#E3A64B; --ia-soft:rgba(227,166,75,.12);
+  --ok:#3FBE86; --ok-soft:rgba(63,190,134,.12);
+  --human:#a06ef2; --human-soft:rgba(160,110,242,.12);
+  --warn:#F2604F; --warn-soft:rgba(242,96,79,.12);
+  --paper:#fbfaf6; --paper-ink:#1d2129; --paper-ink-2:#4a5162;
+  --text-xs:11px; --text-sm:12px; --text-base:13px; --text-lg:16px; --text-xl:21px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
+  --radius-xs:4px; --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-pill:999px;
+  --font-ui:"Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-heading:"Antarctica","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --brand-red:#E4002B; /* placeholder — exact brand red to confirm */
+  --font-doc:Georgia,"Times New Roman",serif;
+  --font-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+}
+
+html[data-theme="light"]{
+  --bg:#F4F5FA;
+  --panel:#FFFFFF;
+  --panel-2:#F4F5FA;
+  --panel-3:#E6E6F0;
+  --line:#E1E3EE;
+  --line-2:#CDD2E3;
+  --text:#1E3246;
+  --text-2:#4A5A6E;
+  --text-3:#637187;
+  --accent:#0B294A;
+  --accent-soft:#E6EBF2;
+  --ia:#C67A16;
+  --ia-soft:rgba(198,122,22,.12);
+  --ok:#1E8E5A;
+  --ok-soft:rgba(30,142,90,.12);
+  --human:#8250dc;
+  --human-soft:rgba(130,80,220,.12);
+  --warn:#DC3223;
+  --warn-soft:rgba(220,50,35,.10);
+  --paper:#ffffff;
+  --paper-ink:#1d2129;
+  --paper-ink-2:#4a5162;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);font-size:var(--text-base);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:var(--radius-sm);border:2px solid var(--bg)}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius-xs)}
+#app{display:flex;flex-direction:column;height:100vh}
+main{display:flex;flex:1;min-height:0}
+
+/* ---------- Header ---------- */
+header{display:flex;align-items:center;gap:var(--space-4);height:52px;padding:0 var(--space-4);background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+.logo{display:flex;align-items:center;gap:var(--space-2);font-weight:700;font-size:var(--text-base);letter-spacing:-.2px}
+.logo-mark{height:22px;width:auto;flex-shrink:0;display:block}
+.logo-mark-light{display:none}
+html[data-theme="light"] .logo-mark-dark{display:none}
+html[data-theme="light"] .logo-mark-light{display:block}
+.crumb{display:flex;align-items:center;gap:var(--space-2);color:var(--text-2);min-width:0}
+.crumb .sep{color:var(--text-3)}
+.crumb .project{color:var(--text);font-weight:600;white-space:nowrap;text-decoration:none;cursor:pointer;border-radius:var(--radius-xs);transition:color .15s}
+.crumb .project:hover{color:var(--accent)}
+.mode-switch{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-1);margin-left:auto}
+.mode-switch button{padding:5px var(--space-4);border-radius:var(--radius-sm);color:var(--text-2);font-weight:500;font-size:var(--text-base);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.mode-switch button.active{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.mode-switch button:hover:not(.active){color:var(--text)}
+.mode-switch .mcount{font-size:var(--text-xs);font-weight:700;padding:1px 6px;border-radius:var(--radius-lg);background:var(--accent-soft);color:var(--accent)}
+.hdr-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{position:relative;width:32px;height:32px;border-radius:var(--radius-md);display:grid;place-items:center;color:var(--text-2);transition:all .15s}
+.icon-btn:hover{background:var(--panel-3);color:var(--text)}
+
+/* Notification bell. It was inert here — a control that does nothing on four
+   screens out of five teaches the reader that it does nothing anywhere. The
+   list is computed from THIS screen's own state, never a fixed script: if
+   nothing is waiting, it says so rather than inventing an item. */
+.notif-wrap{position:relative;display:inline-flex}
+.notif-drop{position:absolute;top:calc(100% + 8px);right:0;width:330px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 48px rgba(0,0,0,.28);z-index:60;display:none;overflow:hidden;text-align:left}
+.notif-drop.open{display:block}
+.notif-drop .nd-head{padding:var(--space-3) var(--space-4);font-size:var(--text-base);font-weight:600;border-bottom:1px solid var(--line)}
+.nd-item{display:flex;gap:var(--space-3);width:100%;padding:var(--space-3) var(--space-4);cursor:pointer;transition:background .12s;border-bottom:1px solid var(--line);text-align:left}
+.nd-item:last-child{border-bottom:none}
+.nd-item:hover{background:var(--panel-3)}
+.nd-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.nd-text{font-size:var(--text-sm);color:var(--text-2);line-height:1.45}
+.nd-text b{color:var(--text)}
+.nd-time{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
+.nd-empty{padding:var(--space-4);font-size:var(--text-sm);color:var(--text-3);line-height:1.5}
+.notif-wrap .badge-dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--warn);pointer-events:none}
+
+.badge-dot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--warn);border:2px solid var(--panel)}
+.btn-primary{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-base);transition:all .15s}
+.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
+.btn-ghost{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+/* main menu bar — icon + label button for moving between screens. Reads as a
+   destination rather than a back-arrow, which is what the plain "X →" ghost
+   links had become once the breadcrumb took over "back to the dashboard". */
+.nav-btn{display:inline-flex;align-items:center;gap:7px;padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);font-size:var(--text-sm);font-weight:600;white-space:nowrap;text-decoration:none;transition:all .15s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.nav-btn svg{flex-shrink:0}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#e0a43c,#c4763a);display:grid;place-items:center;font-size:var(--text-xs);font-weight:700;color:#fff;cursor:pointer}
+/* ===================== Risks =====================
+   SPEC-risks.md §6 — the tender's risk register. A support screen like Q&A:
+   open from day one, reached from Compliance and the dashboard. Everything it
+   shows is derived from the one gesture made in Compliance (a strategy and a
+   risk on each Not compliant, DEC-105); nothing is typed here except the risk
+   itself — its description, weight, status and comments. Risks, links and
+   strategies are read from the shell (build_merge.py), the same store
+   Compliance writes to. The viewer is the project management team: every
+   action here (edit, close, merge) is theirs (DEC-111, SPEC-risks.md §5-§6.4).
+*/
+.wrap{max-width:none;margin:0;padding:var(--space-6) var(--space-6) 80px}
+.scroll{flex:1;overflow-y:auto;min-width:0}
+.rk-body{display:flex;flex:1;min-height:0}
+.view-head{display:flex;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap}
+.view-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
+.view-head .sub{font-size:var(--text-sm);color:var(--text-3)}
+.sec-head{display:flex;align-items:baseline;gap:var(--space-3);margin:var(--space-6) 0 var(--space-3);padding-bottom:7px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.sec-head:first-of-type{margin-top:0}
+.sec-head h3{font-size:var(--text-base);font-weight:700;letter-spacing:-.1px}
+.sec-head .hint{font-size:var(--text-xs);color:var(--text-3);line-height:1.4}
+.sec-head .count{margin-left:auto;font-size:var(--text-xs);color:var(--text-3);white-space:nowrap}
+/* KPI strip */
+.rk-kpis{display:flex;gap:var(--space-3);margin-bottom:var(--space-2);flex-wrap:wrap}
+.rk-kpi{flex:1;min-width:150px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4)}
+.rk-kpi .n{font-size:var(--text-xl);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.rk-kpi .n small{font-size:var(--text-sm);font-weight:500;color:var(--text-3);margin-left:4px}
+.rk-kpi .l{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
+.rk-kpi.warn .n{color:var(--warn)}
+/* matrix — weight × strategy, counting links (§6.1) */
+.rk-matrix{border-collapse:separate;border-spacing:0;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;font-size:var(--text-sm)}
+.rk-matrix th,.rk-matrix td{padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums}
+.rk-matrix tr:last-child th,.rk-matrix tr:last-child td{border-bottom:none}
+.rk-matrix thead th{font-size:var(--text-xs);font-weight:600;color:var(--text-3);background:var(--panel-2);vertical-align:bottom;line-height:1.3}
+.rk-matrix thead th .ext{display:block;font-weight:500;margin-top:2px}
+.rk-matrix tbody th{text-align:left;white-space:nowrap;width:130px}
+.rk-matrix .tot{font-weight:700;color:var(--text);background:var(--panel-2)}
+.rk-cell{min-width:44px;padding:3px var(--space-2);border-radius:var(--radius-sm);font-weight:600;color:var(--text)}
+.rk-cell:hover{background:var(--accent-soft);color:var(--accent)}
+.rk-cell.zero{color:var(--text-3);font-weight:400;cursor:default}
+.rk-cell.zero:hover{background:none;color:var(--text-3)}
+.rk-cell.on{background:var(--accent);color:#fff}
+/* register */
+.rk-tools{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
+.rk-tools input,.rk-tools select{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:6px var(--space-3);font-size:var(--text-sm);color:var(--text)}
+.rk-tools input{width:240px}
+.rk-seg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:2px}
+.rk-seg button{padding:4px var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-sm);color:var(--text-2)}
+.rk-seg button.on{background:var(--panel);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.rk-chip{display:inline-flex;align-items:center;gap:var(--space-2);padding:4px var(--space-2) 4px var(--space-3);border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent);font-size:var(--text-xs);font-weight:600}
+.rk-chip button{color:inherit;opacity:.7}
+.rk-chip button:hover{opacity:1}
+.rk-tools .spacer{flex:1}
+.rk-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;font-size:var(--text-sm)}
+.rk-table th{position:sticky;top:0;text-align:left;font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-3);background:var(--panel-2);padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--line);white-space:nowrap}
+.rk-table td{padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--line);vertical-align:middle}
+.rk-table tr:last-child td{border-bottom:none}
+.rk-table tbody tr{cursor:pointer}
+.rk-table tbody tr:hover td{background:var(--panel-2)}
+.rk-table tbody tr.sel td{background:var(--accent-soft)}
+.rk-table .c-chk{width:32px}
+.rk-table .c-id{width:96px;font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;white-space:nowrap}
+.rk-table .c-desc{max-width:0;width:48%}
+.rk-desc{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.rk-table .c-act{white-space:nowrap}
+.rk-table .c-n,.rk-table .c-date{white-space:nowrap}
+.rk-table tr.closed .rk-desc{color:var(--text-3)}
+.rk-links{padding:2px var(--space-2);border-radius:var(--radius-sm);font-weight:600;color:var(--accent);white-space:nowrap}
+.rk-links:hover{background:var(--accent-soft)}
+.rk-links.none{color:var(--text-3);font-weight:400;cursor:default}
+.rk-links.none:hover{background:none}
+.rk-empty{padding:var(--space-8) var(--space-4);text-align:center;color:var(--text-3);font-size:var(--text-sm);line-height:1.6;background:var(--panel);border:1px dashed var(--line-2);border-radius:var(--radius-lg)}
+.rk-empty b{color:var(--text-2)}
+.rk-empty .btn-ghost{margin-top:var(--space-3)}
+.ptag{display:inline-block;font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;padding:1px 6px;border:1px solid var(--line-2);border-radius:var(--radius-xs);color:var(--text-2);margin-right:3px}
+.w-pill{display:inline-block;padding:1px 6px;border-radius:var(--radius-xs);font-size:var(--text-xs);font-weight:600;white-space:nowrap}
+.w-pill.w-negligible,.w-btn.on.w-negligible{background:var(--panel-3);color:var(--text-2)}
+.w-pill.w-low,.w-btn.on.w-low{background:var(--ok-soft);color:var(--ok)}
+.w-pill.w-medium,.w-btn.on.w-medium{background:var(--ia-soft);color:var(--ia)}
+.w-pill.w-high,.w-btn.on.w-high{background:var(--warn-soft);color:var(--warn)}
+.st-pill{display:inline-block;padding:1px 8px;border-radius:var(--radius-pill);font-size:var(--text-xs);font-weight:600;white-space:nowrap}
+.st-pill.open{background:var(--accent-soft);color:var(--accent)}
+.st-pill.closed{background:var(--panel-3);color:var(--text-3)}
+/* merge (§6.4) */
+.rk-selbar{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--accent-soft);font-size:var(--text-sm)}
+.rk-selbar .spacer{flex:1}
+.rk-merge{margin-bottom:var(--space-3);padding:var(--space-4);border:1px solid var(--accent);border-radius:var(--radius-lg);background:var(--panel)}
+.rk-merge-h{font-weight:700;margin-bottom:var(--space-1)}
+.rk-merge-d{font-size:var(--text-sm);color:var(--text-3);margin-bottom:var(--space-3);line-height:1.5}
+.rk-merge label{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-sm);cursor:pointer}
+.rk-merge label:hover{background:var(--panel-2)}
+.rk-merge label b{font-family:var(--font-mono);font-size:var(--text-xs)}
+.rk-merge label span.t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-2)}
+.rk-merge .acts{display:flex;justify-content:flex-end;gap:var(--space-2);margin-top:var(--space-3)}
+/* detail panel (§6.3) */
+.rk-panel{width:420px;flex-shrink:0;border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;display:none}
+.rk-panel.open{display:block}
+.rk-p-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-4);background:var(--panel);border-bottom:1px solid var(--line)}
+.rk-p-id{font-family:var(--font-mono);font-weight:700}
+.rk-p-close{margin-left:auto;width:28px;height:28px;border-radius:var(--radius-sm);color:var(--text-3)}
+.rk-p-close:hover{background:var(--panel-2);color:var(--text)}
+.rk-p-body{padding:var(--space-4)}
+.rk-p-sec{margin-bottom:var(--space-5)}
+.rk-p-lbl{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-3);margin-bottom:var(--space-2);display:flex;align-items:center;gap:var(--space-2)}
+.rk-p-lbl span{text-transform:none;letter-spacing:0;font-weight:500}
+.rk-p-body textarea{width:100%;box-sizing:border-box;font-family:var(--font-ui);font-size:var(--text-sm);line-height:1.55;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);resize:vertical}
+.rk-p-desc{font-size:var(--text-sm);line-height:1.55;white-space:pre-wrap;color:var(--text)}
+.rk-weights{display:flex;gap:var(--space-1)}
+.w-btn{flex:1;padding:var(--space-1) var(--space-2);border:1px solid var(--line-2);border-radius:var(--radius-md);font-size:var(--text-xs);font-weight:600;color:var(--text-2)}
+.w-btn.on{border-color:currentColor}
+.rk-p-meta{font-size:var(--text-xs);color:var(--text-3);line-height:1.6}
+.rk-p-acts{display:flex;gap:var(--space-2);margin-top:var(--space-2)}
+.rk-lk{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;padding:var(--space-2) var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:var(--space-1)}
+.rk-lk:hover{border-color:var(--accent)}
+.rk-lk-top{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs)}
+.rk-lk-top b{font-family:var(--font-mono)}
+.rk-lk-who{margin-left:auto;color:var(--text-3)}
+.rk-lk-t{font-size:var(--text-sm);color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk-lk-s{font-size:var(--text-xs);color:var(--text-2)}
+.rk-lk-s .miss{color:var(--warn)}
+.rk-cm{padding:var(--space-2) 0;border-bottom:1px solid var(--line)}
+.rk-cm:last-of-type{border-bottom:none}
+.rk-cm-h{font-size:var(--text-xs);color:var(--text-3);margin-bottom:2px}
+.rk-cm-h b{color:var(--text-2)}
+.rk-cm-t{font-size:var(--text-sm);line-height:1.5;white-space:pre-wrap}
+.rk-cm.sys .rk-cm-t{color:var(--text-3);font-style:italic}
+.rk-cm-none{font-size:var(--text-sm);color:var(--text-3)}
+.rk-cm-add{margin-top:var(--space-2);display:flex;flex-direction:column;gap:var(--space-2);align-items:flex-end}
+.btn-small{padding:5px var(--space-3);border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-sm)}
+.btn-small[disabled]{opacity:.45;cursor:not-allowed}
+#toast-zone{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:var(--space-2);align-items:center}
+.toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.35)}
+.toast .t-ok{color:var(--ok)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ---- brand touches (22 Sept 2026) ---------------------------------------
+   Titles take the heading face. The red is DECORATIVE ONLY: a small mark
+   ahead of page titles — never on anything clickable or stateful,
+   because red already means "not compliant" / "warn" in this UI and a red
+   control would read as an error. Exact brand red still to be confirmed. */
+h1,h2,h3,.cfg-h,.set-title,.view-panel-head,.fb-bh{font-family:var(--font-heading)}
+h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;border-radius:2px;background:var(--brand-red);margin-right:.45em;vertical-align:-.08em}
+/* icons (2026-09-24): one stroke style for every UI icon, drawn with a CSS mask so it takes the text colour.
+   Replaces emoji (rendered as coloured Apple emoji) and symbols Noto Sans doesn't carry (rendered tiny or
+   in a fallback font). Markup: <i class=ic-NAME></i> — no quotes, so it is safe inside any JS string. */
+i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.16em;flex-shrink:0;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat;font-style:normal}
+.ic-file{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 3v5h5'/%3E%3C/svg%3E")}
+.ic-lock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E")}
+.ic-bell{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.94 1.94 0 0 0 3.4 0'/%3E%3C/svg%3E")}
+.ic-camera{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z'/%3E%3Ccircle cx='12' cy='13' r='3'/%3E%3C/svg%3E")}
+.ic-trash{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M8 6V4h8v2'/%3E%3Cpath d='M19 6l-1 14H6L5 6'/%3E%3C/svg%3E")}
+.ic-copy{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1'/%3E%3C/svg%3E")}
+.ic-eye{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E")}
+.ic-clock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E")}
+.ic-hourglass{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4'/%3E%3C/svg%3E")}
+.ic-chat{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E")}
+.ic-globe{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18'/%3E%3C/svg%3E")}
+.ic-clip{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 8.5'/%3E%3C/svg%3E")}
+.ic-ask{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E")}
+.ic-keyboard{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10'/%3E%3C/svg%3E")}
+.ic-search{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E")}
+.ic-flag{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22V4M5 4h13l-2.5 4.5L18 13H5'/%3E%3C/svg%3E")}
+.ic-flagfill{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22V4'/%3E%3Cpath d='M5 4h13l-2.5 4.5L18 13H5z' fill='black'/%3E%3C/svg%3E")}
+.ic-fork{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='5' r='2'/%3E%3Ccircle cx='18' cy='5' r='2'/%3E%3Ccircle cx='12' cy='19' r='2'/%3E%3Cpath d='M6 7v1a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 11v6'/%3E%3C/svg%3E")}
+.ic-merge{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='18' r='2'/%3E%3Ccircle cx='6' cy='6' r='2'/%3E%3Ccircle cx='18' cy='12' r='2'/%3E%3Cpath d='M6 8v8M8 6c5 0 8 2 8 6'/%3E%3C/svg%3E")}
+.ic-upload{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4M7 9l5-5 5 5'/%3E%3Cpath d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E")}
+.ic-download{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v12M7 11l5 5 5-5'/%3E%3Cpath d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E")}
+.ic-corner{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4v7a4 4 0 0 0 4 4h10M15 11l4 4-4 4'/%3E%3C/svg%3E")}
+.ic-chevron{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E")}
+.ic-filter{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4h18l-7 8v6l-4 2v-8z'/%3E%3C/svg%3E")}
+.ic-columns{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Cpath d='M9 4v16M15 4v16'/%3E%3C/svg%3E")}
+.ic-sliders{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0'/%3E%3Ccircle cx='16' cy='6' r='2'/%3E%3Ccircle cx='10' cy='12' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/svg%3E")}
+.ic-users{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20a6.5 6.5 0 0 1 13 0'/%3E%3Cpath d='M16 4.5a3.5 3.5 0 0 1 0 7M18.5 20a6.5 6.5 0 0 0-3-5.5'/%3E%3C/svg%3E")}
+.ic-flow{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h13M13 3l4 4-4 4M20 17H7M11 13l-4 4 4 4'/%3E%3C/svg%3E")}
+.ic-refresh{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11a8 8 0 1 0-2.3 5.7'/%3E%3Cpath d='M20 4v7h-7'/%3E%3C/svg%3E")}
+.ic-contrast{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 3v18a9 9 0 0 0 0-18z' fill='black'/%3E%3C/svg%3E")}
+.ic-sparkle{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z'/%3E%3Cpath d='M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z'/%3E%3C/svg%3E")}
+.ic-undo{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 11a8 8 0 1 1 2.3 5.7'/%3E%3Cpath d='M4 4v7h7'/%3E%3C/svg%3E")}
+.ic-lang{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h9M8.5 3v2M6 5c1 3.5 3 6 6 7.5M11 5c-1 3.5-3 6-7 8'/%3E%3Cpath d='M13 21l4-9 4 9M14.5 18h5'/%3E%3C/svg%3E")}
+</style>
+<script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo"><a href="javascript:parent.route('dashboard')" style="display:flex;align-items:center;gap:var(--space-2);color:inherit;text-decoration:none"><svg class="logo-mark logo-mark-dark" viewBox="2 20 84 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M3.07031 44.2173C3.07031 31.3286 13.5186 20.8803 26.4073 20.8803H61.1905C61.3132 20.8803 61.4127 20.9798 61.4127 21.1025V67.3321C61.4127 67.4548 61.3132 67.5542 61.1905 67.5542H26.4073C13.5186 67.5542 3.07031 57.1059 3.07031 44.2173V44.2173Z" fill="url(#srmDa)" fill-opacity=".54"/>
+      <path d="M18.4238 44.2173C18.4238 31.3286 28.8721 20.8803 41.7608 20.8803H63.0846C63.1789 20.8803 63.2553 20.9568 63.2553 21.051V67.3835C63.2553 67.4778 63.1789 67.5542 63.0846 67.5542H41.7608C28.8721 67.5542 18.4238 57.1059 18.4238 44.2173V44.2173Z" fill="url(#srmDb)" fill-opacity=".54"/>
+      <path d="M35.0054 44.2173C35.0054 31.3286 45.4537 20.8803 58.3423 20.8803H61.413C74.3016 20.8803 84.7499 31.3286 84.7499 44.2173V44.2173C84.7499 57.1059 74.3016 67.5542 61.413 67.5542H58.3423C45.4537 67.5542 35.0054 57.1059 35.0054 44.2173V44.2173Z" fill="url(#srmDc)" fill-opacity=".54"/>
+      <circle cx="60.3105" cy="44.3431" r="18.5497" fill="#fff"/>
+      <defs>
+      <linearGradient id="srmDa" x1="3.07" y1="44.22" x2="61.41" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <linearGradient id="srmDb" x1="18.42" y1="44.22" x2="63.26" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <linearGradient id="srmDc" x1="35.01" y1="44.22" x2="84.75" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset=".168" stop-color="#fff"/></linearGradient>
+      </defs>
+      </svg>
+      <svg class="logo-mark logo-mark-light" viewBox="2 20 84 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M3.07031 44.2173C3.07031 31.3286 13.5186 20.8803 26.4073 20.8803H61.1905C61.3132 20.8803 61.4127 20.9798 61.4127 21.1025V67.3321C61.4127 67.4548 61.3132 67.5542 61.1905 67.5542H26.4073C13.5186 67.5542 3.07031 57.1059 3.07031 44.2173V44.2173Z" fill="url(#srmLa)" fill-opacity=".54"/>
+      <path d="M18.4238 44.2173C18.4238 31.3286 28.8721 20.8803 41.7608 20.8803H63.0846C63.1789 20.8803 63.2553 20.9568 63.2553 21.051V67.3835C63.2553 67.4778 63.1789 67.5542 63.0846 67.5542H41.7608C28.8721 67.5542 18.4238 57.1059 18.4238 44.2173V44.2173Z" fill="url(#srmLb)" fill-opacity=".54"/>
+      <path d="M35.0054 44.2173C35.0054 31.3286 45.4537 20.8803 58.3423 20.8803H61.413C74.3016 20.8803 84.7499 31.3286 84.7499 44.2173V44.2173C84.7499 57.1059 74.3016 67.5542 61.413 67.5542H58.3423C45.4537 67.5542 35.0054 57.1059 35.0054 44.2173V44.2173Z" fill="url(#srmLc)" fill-opacity=".54"/>
+      <circle cx="60.3105" cy="44.3431" r="18.5497" fill="#fff"/>
+      <defs>
+      <linearGradient id="srmLa" x1="3.07" y1="44.22" x2="61.41" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset="1" stop-color="#1E3246" stop-opacity="0"/></linearGradient>
+      <linearGradient id="srmLb" x1="18.42" y1="44.22" x2="63.26" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset="1" stop-color="#1E3246" stop-opacity="0"/></linearGradient>
+      <linearGradient id="srmLc" x1="35.01" y1="44.22" x2="84.75" y2="44.22" gradientUnits="userSpaceOnUse"><stop stop-color="#1E3246"/><stop offset=".168" stop-color="#1E3246"/></linearGradient>
+      </defs>
+      </svg>SRM</a></div>
+    <div class="crumb"><span class="sep">/</span><a class="project" id="crumb-project" href="javascript:parent.route('dashboard')" title="Back to the project dashboard">STB-2026 · Energy Monitoring System</a></div>
+    <div class="hdr-actions" style="margin-left:auto">
+      <a class="nav-btn" href="javascript:parent.route('compliance')" title="Compliance — where risks are linked to Not compliant requirements"><i class=ic-flag></i>Compliance</a>
+      <span class="notif-wrap"><button class="icon-btn" id="notif-btn" title="Notifications"><i class=ic-bell></i><span class="badge-dot"></span></button><div class="notif-drop" id="notif-drop"></div></span>
+      <a class="icon-btn" href="javascript:parent.route('config')" title="Project configuration — gap strategies are under Compliance"><i class=ic-sliders></i></a>
+      <div class="avatar" id="header-avatar" title="Thibaud Breton">TB</div>
+    </div>
+  </header>
+  <div class="rk-body">
+    <div class="scroll">
+      <div class="wrap">
+        <div class="view-head"><h2>Risks</h2><span class="sub">Every Not compliant is traced to a risk — and risks are reused, not created once per requirement</span></div>
+        <div class="rk-kpis" id="rk-kpis"></div>
+        <div class="sec-head"><h3>Weight × gap strategy</h3><span class="hint">Counts links — one per requirement–risk pair. Click a cell to filter the register.</span></div>
+        <div id="rk-matrix"></div>
+        <div class="sec-head"><h3>Register</h3><span class="hint">Risks are created in Compliance; description, weight, status and comments are kept here.</span><span class="count" id="rk-count"></span></div>
+        <div id="rk-register"></div>
+      </div>
+    </div>
+    <aside class="rk-panel" id="rk-panel"></aside>
+  </div>
+</div>
+<div id="toast-zone"></div>
+<script>
+(function(){
+  try{
+    const u=(window.parent!==window && window.parent.getCurrentUser) ? window.parent.getCurrentUser() : {name:"Thibaud Breton",title:"Bid Director",init:"TB"};
+    const av=document.getElementById("header-avatar");
+    if(av){ av.textContent=u.init; av.title=u.title?`${u.name} — ${u.title}`:u.name; }
+  }catch(e){}
+})();
+(function(){ try{ const p=window.parent.getCurrentProject(); const el=document.getElementById("crumb-project"); if(p&&el) el.textContent=p.ref+" · "+p.name; }catch(e){} })();
+const PROJECT_ID=(function(){ try{ return window.parent.getCurrentProject().id; }catch(e){ return "_"; } })();
+const USER=(function(){ try{ return window.parent.getCurrentUser().name; }catch(e){ return "Thibaud Breton"; } })();
+function shell(name, ...args){ try{ if(window.parent!==window && window.parent[name]) return window.parent[name](PROJECT_ID, ...args); }catch(e){} return undefined; }
+function go(route, focus){ try{ if(focus) window.parent.setScreenFocus(route, focus); window.parent.route(route); }catch(e){} }
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+const WEIGHTS=[["high","High"],["medium","Medium"],["low","Low"],["negligible","Negligible"]];
+const W_LABEL=Object.fromEntries(WEIGHTS);
+const EXT_LABEL={compliant:"Compliant",not_compliant:"Not compliant",pending:"Pending"};
+const code=t=>String(t||"—").toUpperCase().replace(/^P_/,"");
+const weightPill=w=>`<span class="w-pill w-${w}">${W_LABEL[w]||w}</span>`;
+const firstLine=x=>String(x.desc||"").split("\n")[0];
+const state={q:"", status:"all", weight:"", activity:"", cell:null, sel:null, checked:new Set(), merging:false, keep:null, draft:null, comment:""};
+
+const risks=()=>shell("getRisks")||[];
+const strategies=()=>shell("getStrategies")||[];
+/* every requirement–risk pair, read off the gap documentation Compliance writes */
+function links(){
+  const out=[];
+  Object.entries(shell("getGapDocs")||{}).forEach(([key,d])=>{
+    (d.risks||[]).forEach(id=>out.push({key, riskId:id, strategy:d.strategy||null, meta:d.meta||{reqId:key.split("#")[0], typology:key.split("#")[1]}, override:d.override||null}));
+  });
+  return out;
+}
+const linksOf=id=>links().filter(l=>l.riskId===id);
+const riskById=id=>risks().find(x=>x.id===id)||null;
+const lastComment=x=>{ const c=(x.comments||[]).filter(c=>!c.system); return c.length?c[c.length-1].date:null; };
+
+/* ---------- notification bell ---------- */
+function notifItems(){
+  const out=[], rs=risks();
+  const high=rs.filter(x=>x.status==="open"&&x.weight==="high").length;
+  const orphans=rs.filter(x=>!linksOf(x.id).length).length;
+  if(high) out.push({c:"var(--warn)", t:`<b>${high} open High risk${high>1?"s":""}</b>`, time:"on this tender", go:()=>{ state.weight="high"; state.status="open"; render(); }});
+  if(orphans) out.push({c:"var(--ia)", t:`<b>${orphans} risk${orphans>1?"s":""}</b> linked to no requirement`, time:"merge or close them"});
+  return out;
+}
+function renderNotifDrop(){
+  const drop=document.getElementById("notif-drop"); if(!drop) return;
+  let items=[]; try{ items=notifItems()||[]; }catch(e){ items=[]; }
+  const dot=document.querySelector("#notif-btn .badge-dot"); if(dot) dot.style.display=items.length?"":"none";
+  drop.innerHTML=`<div class="nd-head">Notifications${items.length?` · ${items.length}`:""}</div>`
+    +(items.length?items.map((it,i)=>`<button class="nd-item" data-nd="${i}"><span class="nd-dot" style="background:${it.c}"></span><span><span class="nd-text">${it.t}</span><div class="nd-time">${it.time||""}</div></span></button>`).join("")
+      :`<div class="nd-empty">Nothing waiting on you here.</div>`);
+  drop.querySelectorAll("[data-nd]").forEach(el=>el.addEventListener("click",()=>{ drop.classList.remove("open"); const it=items[+el.dataset.nd]; if(it&&it.go) it.go(); }));
+}
+(function wireBell(){
+  const btn=document.getElementById("notif-btn"), drop=document.getElementById("notif-drop"); if(!btn||!drop) return;
+  btn.addEventListener("click",e=>{ e.stopPropagation(); renderNotifDrop(); drop.classList.toggle("open"); });
+  document.addEventListener("click",e=>{ if(!drop.contains(e.target)&&!btn.contains(e.target)) drop.classList.remove("open"); });
+})();
+function toast(msg,kind="ok"){
+  const z=document.getElementById("toast-zone"),t=document.createElement("div");
+  t.className="toast";
+  t.innerHTML=`<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>`;
+  z.appendChild(t);
+  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3600);
+}
+function keepFocus(fn){
+  const a=document.activeElement, id=a&&a.id, s=a&&a.selectionStart, e=a&&a.selectionEnd;
+  fn();
+  if(!id) return; const el=document.getElementById(id);
+  if(el&&(el.tagName==="INPUT"||el.tagName==="TEXTAREA")){ el.focus(); if(s!=null){ try{ el.setSelectionRange(s,e); }catch(err){} } }
+}
+
+/* ---------- matrix (§6.1) ---------- */
+function matrixCols(){
+  const cols=strategies().map(s=>({id:s.id, name:s.name, ext:s.ext}));
+  if(links().some(l=>!strategies().some(s=>s.id===l.strategy))) cols.push({id:"__none", name:"No strategy yet", ext:null});
+  return cols;
+}
+function cellCount(w,sid){
+  return links().filter(l=>{ const x=riskById(l.riskId); if(!x||x.weight!==w) return false;
+    const has=strategies().some(s=>s.id===l.strategy);
+    return sid==="__all" || (sid==="__none"?!has:l.strategy===sid); }).length;
+}
+function matrixHTML(){
+  const cols=matrixCols();
+  if(!cols.length) return `<div class="rk-empty">No gap strategy is defined for this tender yet — the project manager writes them in <b>Settings → Compliance</b>.</div>`;
+  const on=(w,s)=>state.cell&&state.cell.w===w&&state.cell.s===s;
+  const btn=(w,s,n)=>`<button class="rk-cell${n?"":" zero"}${on(w,s)?" on":""}" ${n?`data-cell="${w}|${s}"`:"disabled"} title="${n?`Show the risks behind these ${n} link${n>1?"s":""}`:"No link"}">${n}</button>`;
+  return `<table class="rk-matrix">
+    <thead><tr><th></th>${cols.map(c=>`<th>${esc(c.name)}${c.ext?`<span class="ext">→ ${EXT_LABEL[c.ext]}</span>`:""}</th>`).join("")}<th class="tot">Total</th></tr></thead>
+    <tbody>${WEIGHTS.map(([w,l])=>`<tr><th>${weightPill(w)}</th>${cols.map(c=>`<td>${btn(w,c.id,cellCount(w,c.id))}</td>`).join("")}<td class="tot">${btn(w,"__all",cellCount(w,"__all"))}</td></tr>`).join("")}
+      <tr><th class="tot">Total</th>${cols.map(c=>`<td class="tot">${WEIGHTS.reduce((n,[w])=>n+cellCount(w,c.id),0)}</td>`).join("")}<td class="tot">${links().length}</td></tr></tbody>
+  </table>`;
+}
+
+/* ---------- register (§6.2) ---------- */
+function visibleRisks(){
+  const q=state.q.trim().toLowerCase();
+  return risks().filter(x=>{
+    if(state.status!=="all" && x.status!==state.status) return false;
+    if(state.weight && x.weight!==state.weight) return false;
+    if(state.activity && !(x.activities||[]).includes(state.activity)) return false;
+    if(q && !x.id.toLowerCase().includes(q) && !String(x.desc).toLowerCase().includes(q)) return false;
+    if(state.cell){ if(x.weight!==state.cell.w) return false;
+      if(state.cell.s!=="__all"){ const ls=linksOf(x.id); const has=l=>strategies().some(s=>s.id===l.strategy);
+        if(!ls.some(l=>state.cell.s==="__none"?!has(l):l.strategy===state.cell.s)) return false; } }
+    return true;
+  });
+}
+function registerHTML(){
+  const all=risks(), rows=visibleRisks();
+  if(!all.length) return `<div class="rk-empty"><b>No risk on this tender yet.</b><br>Risks are created in Compliance, when the responsible of a Not compliant requirement documents the gap — and reused from there.<br><button class="btn-ghost" id="go-compliance">Open Compliance →</button></div>`;
+  const acts=[...new Set(all.flatMap(x=>x.activities||[]))].sort();
+  const cellCol=state.cell&&(state.cell.s==="__all"?"all strategies":state.cell.s==="__none"?"no strategy yet":((strategies().find(s=>s.id===state.cell.s)||{}).name||""));
+  const checked=[...state.checked].filter(id=>all.some(x=>x.id===id));
+  return `<div class="rk-tools">
+      <input id="rk-q" placeholder="Search ID or description…" value="${esc(state.q)}" autocomplete="off">
+      <span class="rk-seg">${[["all","All"],["open","Open"],["closed","Closed"]].map(([k,l])=>`<button data-st="${k}" class="${state.status===k?"on":""}">${l}</button>`).join("")}</span>
+      <select id="rk-weight"><option value="">All weights</option>${WEIGHTS.map(([k,l])=>`<option value="${k}" ${state.weight===k?"selected":""}>${l}</option>`).join("")}</select>
+      <select id="rk-act"><option value="">All systems</option>${acts.map(a=>`<option value="${a}" ${state.activity===a?"selected":""}>${code(a)}</option>`).join("")}</select>
+      ${state.cell?`<span class="rk-chip">${W_LABEL[state.cell.w]} · ${esc(cellCol)}<button id="rk-cell-clear" title="Clear the matrix filter">✕</button></span>`:""}
+      <span class="spacer"></span>
+      <button class="btn-ghost" id="rk-export"><i class=ic-download></i> Export${rows.length<all.length?` (${rows.length})`:""}</button>
+    </div>
+    ${checked.length>=2&&!state.merging?`<div class="rk-selbar"><b>${checked.length} risks selected</b><span>Duplicates? Merge them into one.</span><span class="spacer"></span><button class="btn-ghost" id="rk-unsel">Clear</button><button class="btn-primary" id="rk-merge-open"><i class=ic-merge></i> Merge…</button></div>`:""}
+    ${state.merging?mergeHTML(checked):""}
+    ${rows.length?`<table class="rk-table">
+      <thead><tr><th class="c-chk"></th><th>ID</th><th>Description</th><th>Weight</th><th>Status</th><th>Systems</th><th>Linked req.</th><th>Last comment</th></tr></thead>
+      <tbody>${rows.map(x=>{ const n=linksOf(x.id).length, reqs=new Set(linksOf(x.id).map(l=>l.meta.reqId)).size; return `<tr data-risk="${x.id}" class="${state.sel===x.id?"sel":""}${x.status==="closed"?" closed":""}">
+        <td class="c-chk"><input type="checkbox" data-chk="${x.id}" ${state.checked.has(x.id)?"checked":""} title="Select — to merge duplicates"></td>
+        <td class="c-id">${x.id}</td>
+        <td class="c-desc"><span class="rk-desc" title="${esc(x.desc)}">${esc(firstLine(x))}</span></td>
+        <td>${weightPill(x.weight)}</td>
+        <td><span class="st-pill ${x.status}">${x.status==="open"?"Open":"Closed"}</span></td>
+        <td class="c-act">${(x.activities||[]).map(a=>`<span class="ptag">${code(a)}</span>`).join("")||"—"}</td>
+        <td class="c-n">${n?`<button class="rk-links" data-golinks="${x.id}" title="Open Compliance filtered on ${x.id}">${reqs} req. →</button>`:`<span class="rk-links none">none</span>`}</td>
+        <td class="c-date">${lastComment(x)||"—"}</td>
+      </tr>`; }).join("")}</tbody></table>`
+    :`<div class="rk-empty">No risk matches these filters.</div>`}`;
+}
+function mergeHTML(ids){
+  const rs=ids.map(riskById).filter(Boolean);
+  if(!state.keep||!ids.includes(state.keep)) state.keep=rs.slice().sort((a,b)=>linksOf(b.id).length-linksOf(a.id).length)[0].id;
+  const moved=rs.filter(x=>x.id!==state.keep).reduce((n,x)=>n+linksOf(x.id).length,0);
+  return `<div class="rk-merge">
+    <div class="rk-merge-h">Merge ${rs.length} risks — which one do you keep?</div>
+    <div class="rk-merge-d">Every link moves to the one you keep (${moved} link${moved===1?"":"s"}); the others are deleted, and the kept risk's comments record the merge.</div>
+    ${rs.map(x=>`<label><input type="radio" name="rk-keep" value="${x.id}" ${state.keep===x.id?"checked":""}><b>${x.id}</b>${weightPill(x.weight)}<span class="t">${esc(firstLine(x))}</span><span class="rk-lk-who">${linksOf(x.id).length} link${linksOf(x.id).length===1?"":"s"}</span></label>`).join("")}
+    <div class="acts"><button class="btn-ghost" id="rk-merge-cancel">Cancel</button><button class="btn-primary" id="rk-merge-go"><i class=ic-merge></i> Merge into ${state.keep}</button></div>
+  </div>`;
+}
+
+/* ---------- detail panel (§6.3, §5) ---------- */
+function panelHTML(x){
+  const ls=linksOf(x.id), draft=state.draft&&state.draft.id===x.id?state.draft:null;
+  const strat=id=>strategies().find(s=>s.id===id)||null;
+  return `<div class="rk-p-head"><span class="rk-p-id">${x.id}</span><span class="st-pill ${x.status}">${x.status==="open"?"Open":"Closed"}</span>
+      <button class="rk-p-close" id="rk-p-close" title="Close the panel">✕</button></div>
+    <div class="rk-p-body">
+      <div class="rk-p-sec"><div class="rk-p-lbl">Description</div>
+        <textarea id="rk-p-desc" rows="5">${esc(draft?draft.desc:x.desc)}</textarea>
+        ${draft&&draft.desc!==x.desc?`<div class="rk-p-acts"><button class="btn-ghost" id="rk-p-desc-cancel">Cancel</button><button class="btn-small" id="rk-p-desc-save">Save description</button></div>`:""}
+      </div>
+      <div class="rk-p-sec"><div class="rk-p-lbl">Weight</div>
+        <div class="rk-weights">${WEIGHTS.slice().reverse().map(([k,l])=>`<button class="w-btn w-${k}${x.weight===k?" on":""}" data-w="${k}">${l}</button>`).join("")}</div>
+      </div>
+      <div class="rk-p-sec">
+        <div class="rk-p-meta">Created by <b>${esc(x.createdBy||"—")}</b> · ${esc(x.createdAt||"")}<br>Systems: ${(x.activities||[]).map(a=>`<span class="ptag">${code(a)}</span>`).join("")||"—"}</div>
+        <div class="rk-p-acts"><button class="btn-ghost" id="rk-p-status">${x.status==="open"?"Close this risk":"Reopen this risk"}</button></div>
+      </div>
+      <div class="rk-p-sec"><div class="rk-p-lbl">Linked requirements <span>· ${ls.length}</span></div>
+        ${ls.length?ls.map(l=>{ const s=strat(l.strategy); return `<button class="rk-lk" data-goreq="${esc(l.meta.reqId)}" title="Open ${esc(l.meta.reqId)} in Compliance">
+            <span class="rk-lk-top"><b>${esc(l.meta.reqId)}</b><span class="ptag">${code(l.meta.typology)}</span><span class="rk-lk-who">${esc(l.meta.managerName||"Unassigned")}</span></span>
+            ${l.meta.text?`<span class="rk-lk-t">${esc(l.meta.text)}</span>`:""}
+            <span class="rk-lk-s">${s?`${esc(s.name)} → ${EXT_LABEL[s.ext]}`:`<span class="miss">Strategy missing</span>`}${l.override?` · corrected to ${EXT_LABEL[l.override.ext]}`:""}</span>
+          </button>`; }).join(""):`<div class="rk-cm-none">Linked to no requirement — merge it into another risk, or close it.</div>`}
+      </div>
+      <div class="rk-p-sec"><div class="rk-p-lbl">Comments <span>· ${(x.comments||[]).length}</span></div>
+        ${(x.comments||[]).length?(x.comments||[]).map(c=>`<div class="rk-cm${c.system?" sys":""}"><div class="rk-cm-h"><b>${esc(c.by)}</b> · ${esc(c.date)}</div><div class="rk-cm-t">${esc(c.text)}</div></div>`).join(""):`<div class="rk-cm-none">No comment yet.</div>`}
+        <div class="rk-cm-add"><textarea id="rk-cm-text" rows="2" placeholder="Add a comment — dated, signed with your name">${esc(state.comment)}</textarea><button class="btn-small" id="rk-cm-post" ${state.comment.trim()?"":"disabled"}>Post</button></div>
+      </div>
+    </div>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  const rs=risks(), ls=links(), open=rs.filter(x=>x.status==="open").length;
+  const reqs=new Set(ls.map(l=>l.meta.reqId)).size;
+  document.getElementById("rk-kpis").innerHTML=`
+    <div class="rk-kpi"><div class="n">${open}<small>/ ${rs.length}</small></div><div class="l">open risks</div></div>
+    <div class="rk-kpi"><div class="n">${reqs}</div><div class="l">requirements linked to a risk</div></div>
+    <div class="rk-kpi"><div class="n">${ls.length}</div><div class="l">links (requirement–risk pairs)</div></div>
+    <div class="rk-kpi${rs.some(x=>x.status==="open"&&x.weight==="high")?" warn":""}"><div class="n">${rs.filter(x=>x.status==="open"&&x.weight==="high").length}</div><div class="l">open High risks</div></div>`;
+  document.getElementById("rk-matrix").innerHTML=matrixHTML();
+  document.getElementById("rk-count").textContent=`${rs.length} risk${rs.length===1?"":"s"}`;
+  keepFocus(()=>{ document.getElementById("rk-register").innerHTML=registerHTML(); });
+  const panel=document.getElementById("rk-panel"), x=state.sel&&riskById(state.sel);
+  panel.classList.toggle("open",!!x);
+  if(x) keepFocus(()=>{ panel.innerHTML=panelHTML(x); }); else { panel.innerHTML=""; state.sel=null; }
+  bind();
+  renderNotifDrop();
+}
+function bind(){
+  const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+  $$("[data-cell]").forEach(b=>b.addEventListener("click",()=>{ const [w,s]=b.dataset.cell.split("|"); state.cell=(state.cell&&state.cell.w===w&&state.cell.s===s)?null:{w,s}; render(); }));
+  $("#rk-cell-clear")?.addEventListener("click",()=>{ state.cell=null; render(); });
+  $("#rk-q")?.addEventListener("input",e=>{ state.q=e.target.value; render(); });
+  $$("[data-st]").forEach(b=>b.addEventListener("click",()=>{ state.status=b.dataset.st; render(); }));
+  $("#rk-weight")?.addEventListener("change",e=>{ state.weight=e.target.value; render(); });
+  $("#rk-act")?.addEventListener("change",e=>{ state.activity=e.target.value; render(); });
+  $("#go-compliance")?.addEventListener("click",()=>go("compliance"));
+  $("#rk-export")?.addEventListener("click",()=>{ const n=visibleRisks().length; toast(`Risk register exported — ${n} risk${n===1?"":"s"}, as filtered (simulated)`,"ok"); });
+  $$("[data-risk]").forEach(tr=>tr.addEventListener("click",e=>{ if(e.target.closest("[data-chk],[data-golinks]")) return; state.sel=state.sel===tr.dataset.risk?null:tr.dataset.risk; state.draft=null; state.comment=""; render(); }));
+  $$("[data-chk]").forEach(cb=>cb.addEventListener("change",()=>{ if(cb.checked) state.checked.add(cb.dataset.chk); else state.checked.delete(cb.dataset.chk); if(state.checked.size<2) state.merging=false; render(); }));
+  $$("[data-golinks]").forEach(b=>b.addEventListener("click",()=>go("compliance",{risk:b.dataset.golinks})));
+  $("#rk-unsel")?.addEventListener("click",()=>{ state.checked.clear(); render(); });
+  $("#rk-merge-open")?.addEventListener("click",()=>{ state.merging=true; state.keep=null; render(); });
+  $("#rk-merge-cancel")?.addEventListener("click",()=>{ state.merging=false; render(); });
+  $$('input[name="rk-keep"]').forEach(r=>r.addEventListener("change",()=>{ state.keep=r.value; render(); }));
+  $("#rk-merge-go")?.addEventListener("click",()=>{
+    const ids=[...state.checked];
+    const res=shell("mergeRisks", state.keep, ids, USER);
+    if(!res||res.error){ toast("Could not merge these risks","warn"); return; }
+    toast(`${res.gone.join(", ")} merged into ${res.kept.id} — ${res.moved} link${res.moved===1?"":"s"} moved`,"ok");
+    state.checked.clear(); state.merging=false; state.sel=res.kept.id; render();
+  });
+  // panel
+  $("#rk-p-close")?.addEventListener("click",()=>{ state.sel=null; render(); });
+  const x=state.sel&&riskById(state.sel); if(!x) return;
+  $("#rk-p-desc")?.addEventListener("input",e=>{ state.draft={id:x.id, desc:e.target.value}; render(); });
+  $("#rk-p-desc-cancel")?.addEventListener("click",()=>{ state.draft=null; render(); });
+  $("#rk-p-desc-save")?.addEventListener("click",()=>{ const d=state.draft.desc.trim(); if(!d){ toast("A risk needs a description","warn"); return; }
+    shell("updateRisk",x.id,{desc:d}); state.draft=null; toast(`${x.id} — description saved`,"ok"); render(); });
+  $$("[data-w]").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.w===x.weight) return; const before=x.weight; shell("updateRisk",x.id,{weight:b.dataset.w});
+    toast(`${x.id} — weight ${W_LABEL[before]} → ${W_LABEL[b.dataset.w]}`,"ok"); render(); }));
+  $("#rk-p-status")?.addEventListener("click",()=>{ const next=x.status==="open"?"closed":"open"; shell("updateRisk",x.id,{status:next});
+    shell("addRiskComment",x.id,{by:USER, text:next==="closed"?"Closed this risk.":"Reopened this risk."});
+    toast(`${x.id} ${next==="closed"?"closed — it stays linked and in the register":"reopened"}`,"ok"); render(); });
+  $$("[data-goreq]").forEach(b=>b.addEventListener("click",()=>go("compliance",{select:b.dataset.goreq})));
+  $("#rk-cm-text")?.addEventListener("input",e=>{ state.comment=e.target.value; const btn=document.getElementById("rk-cm-post"); if(btn) btn.disabled=!state.comment.trim(); });
+  $("#rk-cm-post")?.addEventListener("click",()=>{ const r=shell("addRiskComment",x.id,{by:USER, text:state.comment}); if(!r||r.error) return; state.comment=""; toast(`Comment added to ${x.id}`,"ok"); render(); });
+}
+/* "Open this risk" from Compliance */
+(function(){ const f=(function(){ try{ return window.parent.takeScreenFocus("risks"); }catch(e){ return null; } })(); if(f&&f.risk) state.sel=f.risk; })();
+render();
+</script>
+</body>
+</html>

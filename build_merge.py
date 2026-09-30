@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Merge the 7 Smart Requirement Manager (SRM) source screens into the single-file docreview-app.html deliverable.
+"""Merge the 8 Smart Requirement Manager (SRM) source screens into the single-file docreview-app.html deliverable.
 
 Usage: python3 build_merge.py
-Reads the 7 source files below, base64-encodes each (UTF-8), and writes docreview-app.html
+Reads the 8 source files below, base64-encodes each (UTF-8), and writes docreview-app.html
 plus an identical index.html (GitHub Pages serves index.html as the site entry point —
 writing both here keeps the hosted copy in sync with the deliverable automatically).
-Always edit the 7 sources — never the merged files directly — then re-run this script.
+Always edit the 8 sources — never the merged files directly — then re-run this script.
 
 Cross-screen navigation is expressed in the sources as parent.route(...) /
 parent.routeUrl(...) / goRoute(...) JS calls (see dashboard-et-config.html's
@@ -48,6 +48,8 @@ SOURCES = [
     # already lives as its own screen in dashboard-et-config.html.
     ("documents", "documents.html"),
     ("qa", "qa.html"),
+    # SPEC-risks.md §6 — the tender's risk register, a support screen like Q&A.
+    ("risks", "risks.html"),
 ]
 
 INCLUDE_MARKER = "/* @include table-engine.js */"
@@ -88,7 +90,7 @@ const BLOBS = {
 
 FOOTER = """
 };
-const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "compliance": ["compliance", "compliance"], "compliance-contributor": ["compliance", "compliance-contributor"], "documents": ["documents", null], "qa": ["qa", null], "new": ["create", null]};
+const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "compliance": ["compliance", "compliance"], "compliance-contributor": ["compliance", "compliance-contributor"], "documents": ["documents", null], "qa": ["qa", null], "risks": ["risks", null], "new": ["create", null]};
 function b64utf8(s){return decodeURIComponent(Array.prototype.map.call(atob(s),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));}
 const frame = document.getElementById('frame');
 
@@ -377,6 +379,30 @@ window.setGapDoc = (projectId, key, patch)=>{
   return d;
 };
 window.clearGapDoc = (projectId, key)=>{ delete window.getGapDocs(projectId)[key]; };
+window.addRiskComment = (projectId, id, c)=>{ const x=window.getRisks(projectId).find(e=>e.id===id); if(!x) return {error:"missing"};
+  const entry={by:c.by||"—", date:c.date||"Today", text:String(c.text||"").trim()}; if(!entry.text) return {error:"empty"};
+  x.comments.push(entry); return {entry}; };
+// SPEC-risks.md §6.4 — merge: every link moves to the kept risk, the others are
+// deleted, and the kept risk's comments carry the trace.
+window.mergeRisks = (projectId, keepId, ids, by)=>{
+  const list=window.getRisks(projectId), keep=list.find(e=>e.id===keepId); if(!keep) return {error:"missing"};
+  const gone=ids.filter(id=>id!==keepId && list.some(e=>e.id===id)); if(!gone.length) return {error:"nothing"};
+  let moved=0;
+  Object.values(window.getGapDocs(projectId)).forEach(d=>{
+    if(!(d.risks||[]).some(id=>gone.includes(id))) return;
+    moved+=d.risks.filter(id=>gone.includes(id)).length;
+    const next=[]; d.risks.forEach(id=>{ const t=gone.includes(id)?keepId:id; if(!next.includes(t)) next.push(t); }); d.risks=next;
+  });
+  gone.forEach(id=>{ const x=list.find(e=>e.id===id); (x.activities||[]).forEach(a=>{ if(!keep.activities.includes(a)) keep.activities.push(a); }); });
+  for(let i=list.length-1;i>=0;i--) if(gone.includes(list[i].id)) list.splice(i,1);
+  keep.comments.push({by:by||"—", date:"Today", text:`Merged ${gone.join(", ")} into this risk — ${moved} link${moved===1?"":"s"} moved here.`, system:true});
+  return {kept:keep, gone, moved};
+};
+// One-shot hand-off between screens: "open this risk", "filter Compliance on it".
+// The target screen takes it on load; the iframe reloads on every route.
+let screenFocus = {};
+window.setScreenFocus = (screen, payload)=>{ screenFocus[screen]=payload; };
+window.takeScreenFocus = (screen)=>{ const f=screenFocus[screen]||null; delete screenFocus[screen]; return f; };
 window.isV22Uploaded = ()=>v22Uploaded;
 window.setV22Uploaded = (v)=>{ v22Uploaded = !!v; };
 let projectMode = 'ai';
@@ -458,6 +484,7 @@ const URLMAP = {
   'compliance.html#contributor':'compliance-contributor',
   'documents.html':'documents',
   'qa.html':'qa',
+  'risks.html':'risks',
   'dashboard-et-config.html':'dashboard',
   'dashboard-et-config.html#config':'config',
   'creation-projet.html':'new'

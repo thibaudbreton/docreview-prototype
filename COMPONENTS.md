@@ -280,7 +280,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-09-30
 - **changed**: 2026-09-30
-- **notes**: `.risk-chip` — a risk's `RSK-` ID, in the table's Risk column and the Gap Editor. Closed uses the untracked `--panel-3`; `--human-soft` is untracked too. Sibling: `.gap-miss` ("Strategy missing" / "Risk missing"), a dashed `--warn` flag used in the same cells.
+- **notes**: `.risk-chip` — a risk's `RSK-` ID, in the table's Risk column and the Gap Editor; a button that opens the risk in risks.html. Closed uses the untracked `--panel-3`; `--human-soft` is untracked too. Sibling: `.gap-miss` ("Strategy missing" / "Risk missing"), a dashed `--warn` flag used in the same cells.
 
 ### Risk Weight Pill
 - **level**: atom
@@ -846,13 +846,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Stat Tile / Card
 - **level**: molecule
-- **file**: documents.html, dashboard-et-config.html
-- **variants**: default, warn (documents.html); default (dashboard-et-config.html's Health Stat Tile and Feedback Stat Card are visually near-identical but independently implemented)
+- **file**: documents.html, dashboard-et-config.html, risks.html
+- **variants**: default, warn (documents.html, risks.html's `.rk-kpi`); default (dashboard-et-config.html's Health Stat Tile and Feedback Stat Card are visually near-identical but independently implemented)
 - **tokens**: --panel, --line, --radius-lg, --space-3, --space-4, --text-xl, --text-xs, --text-3, --ia
 - **built-from**: none
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
-- **notes**: documents.html's `.stat` (min-width 150px, used 4× in the Document Summary Strip) and dashboard-et-config.html's `.hstat`/`.fb-card` all express "big number + label" with independent hardcoded padding/letter-spacing — a missed-reuse opportunity flagged directly in the dashboard scan.
+- **notes**: 2026-09-30: risks.html's `.rk-kpi` is one more copy (open risks / requirements linked / links / open High) — known duplication. documents.html's `.stat` (min-width 150px, used 4× in the Document Summary Strip) and dashboard-et-config.html's `.hstat`/`.fb-card` all express "big number + label" with independent hardcoded padding/letter-spacing — a missed-reuse opportunity flagged directly in the dashboard scan.
 
 ### Version History Entry
 - **level**: molecule
@@ -1793,8 +1793,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3
 - **built-from**: Phase Card (support variant)
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.support-rail`, 3-column grid (2-column below a hardcoded 1000px breakpoint), hosts Team casting / Documents / Q&A cards.
+- **changed**: 2026-09-30
+- **notes**: 2026-09-30: a fourth card, Risks (SPEC-risks.md §6) — open-risk count read from the shell's register; the grid is 4 columns now. `.support-rail`, 2-column below a hardcoded 1000px breakpoint, hosts Team casting / Documents / Risks / Q&A cards.
 
 ### Dashboard Attention Panel
 - **level**: organism
@@ -1915,6 +1915,46 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-23
 - **changed**: 2026-09-29
 - **notes**: 2026-09-29 (DEC-097): the texts say the column is shared with the other screen and that deleting it removes it from both. 2026-09-24: ported to compliance.html with the same states and locks, for columns of phase "compliance"; the modal CSS (`.overlay`/`.modal`) was added to that file, which had none. `cfOpenEditor()` / `cfRenderEditor()`. Locks are explained in place rather than silently disabled: type change once values exist, going back to single value once a requirement holds several, removing an option in use (refused with a count). The delete button is warn-coloured inline style on `.btn-primary`, not its own class. Depends on untracked `--warn-soft`.
+
+### Risk Matrix (weight × strategy)
+- **level**: organism
+- **file**: risks.html
+- **variants**: cells with links (clickable), zero cells (inert), selected cell, "No strategy yet" column (only while some link has none), no strategy on the tender (empty state)
+- **tokens**: --panel, --panel-2, --line, --radius-lg, --radius-sm, --space-2, --space-3, --text-sm, --text-xs, --text-3, --accent, --accent-soft
+- **built-from**: Risk Weight Pill
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: SPEC-risks.md §6.1. Rows High → Negligible, columns the tender's strategies (with their external result) plus Total; counts links (requirement–risk pairs) from the shell's gap documentation. Clicking a cell filters the register below (chip with ✕ to clear). Selected cell text `#fff` hardcoded. `--panel-2` untracked.
+
+### Risk Register
+- **level**: organism
+- **file**: risks.html
+- **variants**: empty (no risk yet — pointer to Compliance), filtered to nothing, rows open/closed, row selected, selection bar (2+ checked), merge box open
+- **tokens**: --panel, --panel-2, --line, --line-2, --radius-lg, --radius-md, --radius-sm, --space-2, --space-3, --text-sm, --text-xs, --text-3, --accent, --accent-soft, --font-mono
+- **built-from**: Risk Weight Pill, Risk Status Pill, System tag (`.ptag`), Segmented Control (`.rk-seg`), Filter Chip, Ghost Button, Primary Button
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: SPEC-risks.md §6.2 and §6.4. ID, description (first line), weight, status, systems, linked requirements ("N req. →" opens Compliance filtered on that risk), last comment. Search, status (All/Open/Closed), weight and system filters, simulated filtered export. Its own table — not the shared table engine (no column menu, no advanced filter panel): the spec's "advanced filters as on every table" is only partly met, flagged. Merge (`.rk-merge`): pick the risk to keep, all links move to it (`mergeRisks` in the shell), the others are deleted, a system comment records it. `--line-2`, `--panel-2`, `--panel-3` untracked.
+
+### Risk Detail Panel
+- **level**: organism
+- **file**: risks.html
+- **variants**: description unchanged / edited (Save, Cancel), open / closed, no linked requirement, with comments / none
+- **tokens**: --panel, --panel-2, --line, --line-2, --radius-md, --radius-sm, --space-2, --space-3, --space-4, --space-5, --text-sm, --text-xs, --text-3, --accent, --font-mono, --font-ui
+- **built-from**: Risk Status Pill, Risk Weight Pill (as buttons), System tag, Ghost Button, `.btn-small`
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: SPEC-risks.md §6.3 and §5. Description, weight (four buttons), created by / systems, Close / Reopen (a dated comment records it), linked requirements — each with system, responsible, strategy → external result, PM correction — opening that requirement in Compliance, and the comment feed with a composer. The viewer is the project management team, so every edit is available (creator-only rights have no second viewer to show them on this screen). 420px wide, hardcoded.
+
+### Risk Status Pill
+- **level**: atom
+- **file**: risks.html
+- **variants**: open, closed
+- **tokens**: --radius-pill, --text-xs, --accent, --accent-soft, --text-3
+- **built-from**: none
+- **added**: 2026-09-30
+- **changed**: 2026-09-30
+- **notes**: `.st-pill`. Closed uses the untracked `--panel-3`. One more "small coloured status label" beside Status Pill / Verdict Pill / Progress Status Chip.
 
 ## Removed
 
