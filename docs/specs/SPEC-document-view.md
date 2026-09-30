@@ -1,14 +1,14 @@
 # SPEC — Document view on the original PDF (standalone prototype)
 
 > Status: draft for a small standalone prototype, 2026-09-30. Rewritten the same day: the first drafts rebuilt the document as HTML; the goal is the opposite — **show the original PDF, untouched, and put the blocks on top of it**.
-> Scope: the document view only — the pages, and the blocks drawn over them. Not the toolbar, not the navigation, not the side panels, not the review table. The prototype has a minimal control strip (§8.7) only because it runs on its own.
-> Reference for the block grammar: `renderDoc()`, `natureTag()`, `segTools()` and the "Blocks" CSS in `revue-documentaire.html`. Where this file and the maquette differ on how a block reads, the maquette wins.
+> Scope: the document view only — the pages, and the blocks drawn over them. Not the toolbar, not the navigation, not the side panels, not the review table. The prototype has a minimal control strip (§8.6) only because it runs on its own.
+> Reference for the block grammar: `renderDoc()`, `natureTag()` and the "Blocks" CSS in `revue-documentaire.html`. Where this file and the maquette differ on how a block reads, the maquette wins.
 
 ## 1. Purpose — trust
 
 In the maquette, the document view shows the tender **re-typeset**: our own rendering of text the tool extracted. A reader cannot tell from it whether the capture missed a line, cut a sentence in two, or read a table wrong — the only thing on screen is the tool's own output.
 
-This prototype shows **the original document, exactly as the client issued it**, and draws the capture on top of it: every block is a frame over the real text. What the tool read, how it cut it and what it thinks each piece is become visible *against the source*. That is what brings trust — and it is where a wrong cut is easiest to spot and to fix.
+This prototype shows **the original document, exactly as the client issued it**, and draws the capture on top of it: every block is a frame over the real text. What the tool read, how it cut it and what it thinks each piece is become visible *against the source*. That is what brings trust — and it is where a wrong cut is easiest to spot.
 
 ## 2. What the prototype does
 
@@ -16,7 +16,7 @@ This prototype shows **the original document, exactly as the client issued it**,
 2. **Capture** it: extract the text with its position, rebuild lines and paragraphs, cut them into blocks — each block keeps the **area it covers on the page** (§4).
 3. **Classify** each block: Heading, Information or Requirement, and flag doubtful cuts (§5).
 4. **Draw** each block as a frame over the page, with the maquette's visual grammar (§7).
-5. Let the reader **hover, select, compare with what was read, reclassify, cut and merge** — on the original (§8).
+5. Let the reader **hover, select, compare with what was read, and reclassify** — on the original (§8). Blocks are not cut, merged or resized by hand: the capture's cut is what is shown and checked.
 6. **Export** the blocks with their text and their areas (§9).
 
 ## 3. Input and page rendering
@@ -35,7 +35,7 @@ pdf.js gives, per page, text items with a position, a size and a font. The proto
 2. **Ignored areas.** A line found at about the same vertical position on **at least half the pages**, with the same text once digits are ignored, is a running header or footer. A line that is only a number, or "Page N", "N / M", "- N -", in the top or bottom 8% of the page, is a page number. These lines produce **no block**, but they are **kept as ignored areas** and drawn as such (§7.5) — the reader sees what was left out and why.
 3. **Paragraphs.** Consecutive lines form one paragraph unless: the vertical gap to the previous line is larger than 1.5× the usual line spacing of the page; or the line starts with a bullet (`•`, `-`, `*`, `–`, `▪`) or an enumerator (`a)`, `(a)`, `i.`, `1)`); or it starts with a section number (§5); or the previous line looks like a heading. A paragraph continues across a page break when the page's last line does not end with `.`, `;` or `:` and the next page's first line starts with a lowercase letter.
 4. **Hyphenation.** A line ending with a hyphen followed by a line starting with a lowercase letter is joined without the hyphen in the block's text ("require-" + "ments" → "requirements"). The frame still covers both lines.
-5. **Sentences in paragraphs** (the maquette's capture setting): **As in the source** (default) — one paragraph, one block; or **Split** — one block per sentence. A sentence ends at `.`, `;`, `?` or `!` followed by a space and an uppercase letter or a digit; abbreviations (`e.g.`, `i.e.`, `etc.`, `No.`, `Fig.`, `Vol.`, `Art.`, `Ref.`) and numbers (`2.3`, `99.7%`) never end one. A sentence that starts or ends mid-line gets a frame that starts or ends at that character's position (§7.2). Changing the setting re-captures and discards manual corrections — say so first ("Re-cut the document? Your N manual corrections will be lost").
+5. **Sentences in paragraphs** (the maquette's capture setting): **As in the source** (default) — one paragraph, one block; or **Split** — one block per sentence. A sentence ends at `.`, `;`, `?` or `!` followed by a space and an uppercase letter or a digit; abbreviations (`e.g.`, `i.e.`, `etc.`, `No.`, `Fig.`, `Vol.`, `Art.`, `Ref.`) and numbers (`2.3`, `99.7%`) never end one. A sentence that starts or ends mid-line gets a frame that starts or ends at that character's position (§7.2). Changing the setting re-captures the document and discards reclassifications — say so first ("Re-cut the document? Your N reclassifications will be lost").
 6. **Reading order.** Top to bottom, left to right, one column. Two-column pages are not reordered in v1 (§13).
 
 Tables, figures and equations are not recognised in v1: their text, if any, is captured as lines like any other; their drawing is simply visible on the page, since the page is the original.
@@ -50,7 +50,7 @@ Each block gets one **nature** — `heading`, `info` or `requirement` (the maque
 | 2 | **Requirement** | An obligation keyword, whole word, case-insensitive: EN `shall`, `shall not`, `must`, `must not`, `is required to`, `are required to`; FR `doit`, `doivent`, `devra`, `devront`, `est tenu de`, `sont tenus de`, `il est exigé` |
 | 3 | **Information** | Anything else |
 
-**Doubtful cut** (`uncertain`) — the maquette's "Check boundaries": the block has two or more obligation keywords in different sentences (probably two requirements), or it is a requirement that does not end with `.`, `;`, `:` or `)` while the next block starts with a lowercase letter (probably one requirement cut in two). The flag never changes the nature; cutting or merging the block clears it.
+**Doubtful cut** (`uncertain`) — the maquette's "Check boundaries": the block has two or more obligation keywords in different sentences (probably two requirements), or it is a requirement that does not end with `.`, `;`, `:` or `)` while the next block starts with a lowercase letter (probably one requirement cut in two). The flag never changes the nature; it is a warning for the reader, who can only reclassify, not re-cut.
 
 ## 6. Data model
 
@@ -67,7 +67,7 @@ Each block gets one **nature** — `heading`, `info` or `requirement` (the maque
 }
 ```
 
-- **id**: `SRM-` + 5 digits, sequential in reading order — the maquette's convention. Not renumbered after edits: a cut adds `-B` to the new block (`SRM-00003-B`), a merge keeps the first id.
+- **id**: `SRM-` + 5 digits, sequential in reading order — the maquette's convention.
 - **areas**: one rectangle per page the block covers, `[x, y, width, height]` in PDF points, origin at the page's top-left. A block that crosses a page break has two areas; a mid-line sentence has an area that starts or ends at that character. Rectangles are what the frames are drawn from — never recomputed from the text.
 - **text**: what the capture read, de-hyphenated. Shown to the reader on selection (§8.2) — the check that the text matches the page.
 - No status, no allocation, no person: those belong to the full application.
@@ -76,7 +76,7 @@ Each block gets one **nature** — `heading`, `info` or `requirement` (the maque
 
 ### 7.1 Layers
 
-Each page is two layers: the **page image** (pdf.js canvas, never modified), and above it an **overlay** of the same size holding the frames, ignored areas and labels. Overlay coordinates are the areas' PDF points × the current scale, so frames stay exactly on the text at every zoom (§8.6).
+Each page is two layers: the **page image** (pdf.js canvas, never modified), and above it an **overlay** of the same size holding the frames, ignored areas and labels. Overlay coordinates are the areas' PDF points × the current scale, so frames stay exactly on the text at every zoom (§8.5).
 
 **Never obscure the original.** Frames have a light tint at most; nothing opaque ever covers text. Unlike the maquette's re-typeset view, Information blocks are **not dimmed** — dimming the source would defeat the purpose.
 
@@ -129,37 +129,29 @@ This is the trust check: the reader compares, at a glance, the frame on the orig
 - On hover and on selection, a **nature pill** shows beside the chip: "Requirement ▾" / "Information ▾" / "Heading ▾" — 11px Noto Sans semibold, `#4a5162`, background `rgba(0,0,0,.05)`, radius 6px, padding `2px 8px`. It is also in the read-out.
 - Clicking it opens a menu with the three natures, the current one marked; choosing one changes the frame at once and marks the block `edited`. A block turned into a heading gets level 2.
 
-### 8.4 Cut and merge — on the original
+### 8.4 Undo and confirmation
 
-A **Segmentation** switch in the control strip. When on:
-- **Cut here.** Hovering inside the selected block shows a horizontal cut line, violet `#8250dc`, that follows the pointer and **snaps to the gaps between lines**. Clicking cuts the block there: the part above keeps the id, the part below becomes `<id>-B`; both keep their exact areas. With the Split sentence setting, the line also snaps to sentence ends inside a line.
-- **Merge ↓.** A small button on the frame's bottom edge (`bottom:-12px`, centred): 11px bold, white on `#8250dc`, radius 12px, shadow `0 2px 8px rgba(0,0,0,.35)`. It joins the block with the next one — the merged frame covers both areas, the text is joined with a space, id and nature of the first are kept. The last block can't merge.
-- **Grow / shrink.** Dragging the top or bottom edge of a selected frame moves that boundary by whole lines, taking lines from — or giving them to — the neighbouring block. This is how a line captured into the wrong block is moved back.
-- Every cut, merge or boundary move marks the blocks `edited` and clears `uncertain`.
+A reclassification is applied at once and confirmed by a toast at the bottom ("SRM-00012 → Information") with **Undo**. `Ctrl/⌘+Z` undoes the last one; one level is enough in v1.
 
-### 8.5 Undo and confirmation
-
-Every reclassification, cut, merge or boundary move is applied at once and confirmed by a toast at the bottom ("SRM-00012 cut in two", "SRM-00012 merged with SRM-00013", "SRM-00012 → Information") with **Undo**. `Ctrl/⌘+Z` undoes the last one; one level is enough in v1.
-
-### 8.6 Zoom and scroll
+### 8.5 Zoom and scroll
 
 - **Fit width** (default), **100%**, and `+` / `−` in 25% steps (50%–300%). Frames, bars, ids and chips follow the scale; label sizes do not.
 - Zooming keeps the selected block — or the page at the top of the view — in place.
 - Only the pages near the viewport are rendered (two before, two after); others are placeholders of the right size, so a 300-page PDF scrolls smoothly and the scrollbar is true from the start.
 
-### 8.7 Control strip (prototype only)
+### 8.6 Control strip (prototype only)
 
-A single bar above the pages — not part of what this spec describes, only what the prototype needs to run: **Open PDF**, sentences setting (As in the source / Split), **Segmentation** switch, **Show ignored areas**, zoom, a count ("84 pages · 1 412 blocks · 389 requirements · 23 to check"), **Export JSON**.
+A single bar above the pages — not part of what this spec describes, only what the prototype needs to run: **Open PDF**, sentences setting (As in the source / Split), **Show ignored areas**, zoom, a count ("84 pages · 1 412 blocks · 389 requirements · 23 to check"), **Export JSON**.
 
 ## 9. Export
 
-**Export JSON** downloads the data model of §6 (`<title>.segmented.json`): blocks with their text, nature, flags and areas, and the ignored areas. Reloading it with the same PDF restores the view and every correction.
+**Export JSON** downloads the data model of §6 (`<title>.segmented.json`): blocks with their text, nature, flags and areas, and the ignored areas. Reloading it with the same PDF restores the view and every reclassification.
 
 ## 10. Build constraints
 
 - One self-contained HTML file, no build step. pdf.js (script and worker) from cdnjs is the only external dependency. The worker does not load from `file://` in every browser: serve the file over `http://localhost` (any static server) and say so in the page if the worker fails.
 - Light theme only. Noto Sans from Google Fonts for labels; Georgia for the read-out text.
-- Capturing a **200-page** PDF finishes in under 20 seconds on a laptop, the progress line moving throughout. Rendering is lazy (§8.6).
+- Capturing a **200-page** PDF finishes in under 20 seconds on a laptop, the progress line moving throughout. Rendering is lazy (§8.5).
 - Hover and selection update the overlay only — never re-render a page canvas.
 
 ## 11. Acceptance
@@ -173,14 +165,15 @@ A single bar above the pages — not part of what this spec describes, only what
 - DV-T07: "The system SHALL log every event." and "Le système doit journaliser chaque événement." are Requirements; "The objective of this document is to…" is Information and is not dimmed.
 - DV-T08: a block with "The Contractor shall… The Supplier must…" is framed in red dashes, chip "Check boundaries".
 - DV-T09: selecting a block opens the read-out with its captured text under the frame; `Esc` closes it.
-- DV-T10: with Segmentation on, clicking between two lines of a selected block cuts it there into `SRM-000NN` and `SRM-000NN-B`, each framing exactly its lines; Merge ↓ restores one block and one frame.
-- DV-T11: dragging a frame's bottom edge up by one line moves that line to the next block; Undo puts it back.
+- DV-T10: reclassifying a Requirement to Information changes its frame at once (dashes gone, margin bar shown) and Undo restores it.
+- DV-T11: there is no control to cut, merge or resize a block.
 - DV-T12: a scanned page is shown with the OCR banner and no frame.
 - DV-T13: a 300-page PDF scrolls without lag; only nearby pages are rendered.
 - DV-T14: the exported JSON reloaded with its PDF gives the same frames, natures and ids.
 
 ## 12. Out of scope (v1)
 
+- Correcting the cut by hand — split, merge, moving a block's boundary (the maquette's Segmentation mode). The reader sees the cut and reclassifies; re-cutting stays in the capture.
 - Everything around the pages in the maquette: toolbar, filters and search, navigation, detail panel, review table, compare mode, redaction, comment markers, "Unassigned" badges, statuses other than the default requirement look, allocation of any kind.
 - Re-typesetting the document (the maquette's current view) — this prototype replaces it for reading, it does not reproduce it.
 - OCR of scanned pages; recognising tables, figures and equations as such (their text is captured as lines, their drawing is visible because the page is the original); two-column reading order; drawing a new block by hand over text that was not captured (every text line belongs to a block or an ignored area, so there is nothing uncaptured to draw — revisit if §4.2 turns out to drop real text).
