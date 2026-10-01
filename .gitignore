@@ -15,3 +15,6 @@ fonts/*.woff
 fonts/*.otf
 fonts/*.ttf
 artifact/
+
+# Deck screenshot tooling: holds the client-name substitution list and derived tender content
+deck/

@@ -621,18 +621,18 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3, --text-xs, --text-sm, --line, --accent, --accent-soft
 - **built-from**: Checkbox, Status/Compliance/Verdict Pill, Activity / Requirement Tag, Disclosure Chevron, Select Dropdown, Text Input, Count Badge
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.rrow`. Explicitly documented in both screens' source comments as the same review-table engine, shared via `table-engine.js`. Row height (`--rrow-h:44px`) and column-width grid (`--rgrid-cols`/`--frgrid-cols`) are locally-scoped custom properties with fully hardcoded pixel values, none aligned to the space scale — column config differs per screen, everything else is shared.
+- **changed**: 2026-10-01
+- **notes**: 2026-10-01: free-text cells (`.cell-text`, e.g. ABS) end with an ellipsis instead of being cut mid-letter. `.rrow`. Explicitly documented in both screens' source comments as the same review-table engine, shared via `table-engine.js`. Row height (`--rrow-h:44px`) and column-width grid (`--rgrid-cols`/`--frgrid-cols`) are locally-scoped custom properties with fully hardcoded pixel values, none aligned to the space scale — column config differs per screen, everything else is shared.
 
 ### Branch / Allocated-Activity Sub-row
 - **level**: molecule
 - **file**: compliance.html, revue-documentaire.html
-- **variants**: editable (Select Dropdowns for expert/manager/compliance), locked (🔒, read-only)
-- **tokens**: --space-6
+- **variants**: editable (Select Dropdowns for expert/manager/compliance), locked (🔒, read-only), team sub-row (one per organisation of a system), weak OBS (confidence below threshold)
+- **tokens**: --space-6, --text-xs, --text-3, --ia
 - **built-from**: Activity / Requirement Tag, Select Dropdown, Status/Verdict Pill
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.rrow.branch-row`, indented under a parent Requirement Row when it has 2+ activities. Tinted with untracked `--panel-2` to read as a child row.
+- **changed**: 2026-10-01
+- **notes**: 2026-10-01 (revue-documentaire.html): the system row now shows its own ABS and PBS values; an OBS below `OBS_THRESHOLD` carries its confidence as `.sys-conf.weak` (`weakObsHTML`), on system and team rows; a team without a named team reads "Organisation N" instead of "Team not set"; a team's status cell stays empty for the project manager on a Turnkey tender (pass 1), where the system row carries it. `.rrow.branch-row`, indented under a parent Requirement Row when it has 2+ activities. Tinted with untracked `--panel-2` to read as a child row.
 
 ### Grid Section / Group Header
 - **level**: molecule
@@ -661,8 +661,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-2, --text-xs, --text-sm, --text-base, --text-3, --ok, --ia, --warn
 - **built-from**: Disclosure Chevron
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.nav-doc`, `.nav-h1`, `.nav-h2/.nav-h3`.
+- **changed**: 2026-10-01
+- **notes**: `.nav-doc`, `.nav-h1`, `.nav-h2/.nav-h3`. 2026-10-01: `.nh-num` takes `min-width:14px` (was a fixed 14px) so "31.1"-style numbers no longer run into the title.
 
 ### Document Block
 - **level**: molecule
@@ -671,8 +671,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --space-3, --space-4, --radius-xs, --paper, --paper-ink, --font-doc, --text-base, --accent
 - **built-from**: Type Chip / Verdict Pill, Status Dot
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.blk` / `.dblk`. compliance.html is the most hardcoded-color spot in the app: verdict borders/backgrounds and `.vtag` badge colors are fixed hex pairs disconnected from `--ok`/`--warn`/`--ia`/`--accent`. revue-documentaire.html's redacted variant uses a hardcoded repeating-gradient "bar-code" fill, fully outside the token system.
+- **changed**: 2026-10-01
+- **notes**: 2026-10-01 (revue-documentaire.html): the image placeholder draws up to three labelled boxes from the figure's `figLabel` ("a → b → c") instead of empty boxes with a caption line; the captured tender gets a demo figure and a four-row interface table in § 31.3 (`addCaptureFigureAndTable`); the image lock icon moved clear of the block ID. `.blk` / `.dblk`. compliance.html is the most hardcoded-color spot in the app: verdict borders/backgrounds and `.vtag` badge colors are fixed hex pairs disconnected from `--ok`/`--warn`/`--ia`/`--accent`. revue-documentaire.html's redacted variant uses a hardcoded repeating-gradient "bar-code" fill, fully outside the token system.
 
 ### REX Match Item
 - **level**: molecule
@@ -1401,8 +1401,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --space-3, --radius-sm, --radius-md, --text-xs, --text-sm, --text-2, --text-3, --font-ui, --font-mono, --warn, --warn-soft, --ok, --ok-soft, --ia, --ia-soft
 - **built-from**: Verdict Pill, Risk Chip, Ghost Button (`.risk-new-btn`), Form Actions
 - **added**: 2026-09-30
-- **changed**: 2026-09-30
-- **notes**: SPEC-risks.md §3-§4. `gapEditorHTML(r,br,editable)` / `bindGapEditor()`; used in the Decision Panel (Not compliant chosen), on an answered Not compliant assignment, and in the PM's partner-verdict form. Strategy select from the tender's list, with "Declared to the client: <pill>" once picked. Risk: linked risks (ID, "There is a risk that…", unlink), then a search over the tender's risks ordered same heading → rest (DEC-114: no system ordering), each with "N req." already linked, max six shown; "＋ New risk" — only if none fits — opens an inline form with the template's three questions as three required fields, "Save and link" (DEC-113: no weight). Writes go straight to the shell (`setGapDoc`, `addRisk`) — no draft. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
+- **changed**: 2026-10-01
+- **notes**: 2026-10-01: a linked risk also shows "N req." (how many requirements share it), like the suggestions. SPEC-risks.md §3-§4. `gapEditorHTML(r,br,editable)` / `bindGapEditor()`; used in the Decision Panel (Not compliant chosen), on an answered Not compliant assignment, and in the PM's partner-verdict form. Strategy select from the tender's list, with "Declared to the client: <pill>" once picked. Risk: linked risks (ID, "There is a risk that…", unlink), then a search over the tender's risks ordered same heading → rest (DEC-114: no system ordering), each with "N req." already linked, max six shown; "＋ New risk" — only if none fits — opens an inline form with the template's three questions as three required fields, "Save and link" (DEC-113: no weight). Writes go straight to the shell (`setGapDoc`, `addRisk`) — no draft. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`.
 
 ### External Compliance Field (with PM correction)
 - **level**: molecule
@@ -1439,12 +1439,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Triage Bar
 - **level**: organism
 - **file**: compliance.html, revue-documentaire.html
-- **variants**: with/without "pending reassignment" pill
-- **tokens**: --space-1, --space-3, --space-4, --radius-pill, --warn, --ia, --human, --ok, --accent, --font-mono
+- **variants**: with/without "pending reassignment" pill, % allocated (revue-documentaire.html)
+- **tokens**: --space-1, --space-3, --space-4, --radius-pill, --warn, --ia, --human, --ok, --accent, --font-mono, --text-sm, --text-2, --text
 - **built-from**: Progress Bar, Filter Pill / status-count pills, Tab Bar, Ghost Button, Kbd Key
 - **added**: 2026-09-01
-- **changed**: 2026-09-24
-- **notes**: 2026-09-24 (compliance.html): the 120px bar + "N/M consolidated · % · assignments answered" became a 16px ring (`.p2-ring`, conic-gradient, mask radial hardcoded 4/5px) + "N/M consolidated", the rest in its tooltip; the "By section / By contributor" switch and the shortcut hints are removed; a "⚑ set aside" pill (`.p-aside`, contributor only) filters to the viewer's set-aside assignments. `.triage`, fixed 42–44px height. Both screens independently implement their own `.tpill` rather than sharing one, despite driving the same five/six-state status vocabulary as Status Pill.
+- **changed**: 2026-10-01
+- **notes**: 2026-10-01 (revue-documentaire.html): "N requirements" is followed by `.alloc-pct` — a 64px mini bar (`--ok` on the untracked `--panel-3`, 6px height and 6px gap hardcoded) and "<b>N%</b> allocated", allocated over the requirements the viewer can see, computed in `renderTriage`. 2026-09-24 (compliance.html): the 120px bar + "N/M consolidated · % · assignments answered" became a 16px ring (`.p2-ring`, conic-gradient, mask radial hardcoded 4/5px) + "N/M consolidated", the rest in its tooltip; the "By section / By contributor" switch and the shortcut hints are removed; a "⚑ set aside" pill (`.p-aside`, contributor only) filters to the viewer's set-aside assignments. `.triage`, fixed 42–44px height. Both screens independently implement their own `.tpill` rather than sharing one, despite driving the same five/six-state status vocabulary as Status Pill.
 
 ### Left Navigator Panel
 - **level**: organism

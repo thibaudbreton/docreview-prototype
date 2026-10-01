@@ -1853,6 +1853,7 @@ function gapEditorHTML(r,br,editable){
       ${linked.length?`<div class="risk-linked">${linked.map(x=>`<div class="risk-link">
           <button class="risk-chip" data-gorisk="${esc(x.id)}" title="Open ${esc(x.id)} in Risks">${esc(x.id)}</button>
           <span class="risk-link-t" title="${esc(riskText(x))}">${esc(riskFirstLine(x))}</span>
+          <span class="risk-sg-n" title="Requirements this risk is linked to">${counts[x.id]||1} req.</span>
           ${editable?`<button class="risk-unlink" data-riskun="${esc(x.id)}" title="Unlink this risk">✕</button>`:""}
         </div>`).join("")}</div>`:(editable?"":`<div class="fval"><span class="gap-miss">Risk missing</span></div>`)}
       ${editable?(nr?`<div class="risk-new">
