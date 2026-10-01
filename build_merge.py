@@ -73,6 +73,9 @@ KEYS_FILE = "keys.js"
 # only answers in the published artifact; ARTIFACT_OUTPUT is that version:
 # the same page without its own <html>/<head> (the publish wraps it).
 CHAT_FILE = "tender-chat.html"
+# Hidden for now (2026-10-01): the chat is not part of what gets built next.
+# Set to True to put it back in both outputs.
+CHAT_ENABLED = False
 ARTIFACT_OUTPUT = "artifact/srm-prototype.html"
 
 OUTPUT = "docreview-app.html"
@@ -654,7 +657,7 @@ def main():
     body = HEADER + "\n".join(blob_lines) + FOOTER
 
     chat = ""
-    if Path(CHAT_FILE).is_file():
+    if CHAT_ENABLED and Path(CHAT_FILE).is_file():
         cap = {"docs": [], "rows": []}
         if capture_js:
             data = json.loads(capture_js[capture_js.index("{"):capture_js.rstrip().rstrip(";").rindex("}") + 1])
