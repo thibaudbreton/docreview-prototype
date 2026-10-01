@@ -241,7 +241,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage=seedStrategyUsage(); risks=seedRisks(); gapDocs=seedGapDocs(); gapStats=seedGapStats();
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage=seedStrategyUsage(); risks=seedRisks(); gapDocs=seedGapDocs(); gapStats=seedGapStats(); reqLog=seedReqLog();
   reassignRequests.length=0; sharedQuestions={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -438,6 +438,62 @@ function seedGapStats(){ return {
 let gapStats = seedGapStats();
 window.reportGapStats = (projectId, st)=>{ gapStats[projectId||"_"]=st; };
 window.getGapStats = (projectId)=>gapStats[projectId||"_"]||null;
+// Activity log, one per requirement, shared by Allocation and Compliance: who
+// did what and when, before -> after, with the four milestones of a
+// requirement's life (captured, allocated, answered, declared to the client).
+// Each screen writes its own events here; both Activity tabs read the merge.
+// Seeded with a credible history on a few demo requirements.
+function seedReqLog(){
+  const E=(iso,who,cat,what,extra)=>Object.assign({ts:Date.parse(iso), time:new Date(Date.parse(iso)).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}), who, cat, what}, extra||{});
+  return {
+    stb2026:{
+      "SRM-00007":[
+        E("2026-07-11T10:05","Thibaud Breton","status","Characterisation validated",{from:"To validate",to:"Requirement · Technical",k:"ok"}),
+        E("2026-07-11T10:06","Thibaud Breton","alloc","SIG — assigned to Louis Renaud",{k:"human"}),
+        E("2026-07-11T10:07","Thibaud Breton","status","Allocated — sent to Compliance",{milestone:"allocated",k:"ok"}),
+        E("2026-07-14T16:30","Louis Renaud","compliance","SIG — verdict",{from:"Awaiting answer",to:"Not compliant",k:"warn"}),
+        E("2026-07-14T16:31","Louis Renaud","status","Every system has answered — consolidated Not compliant",{milestone:"answered",k:"warn"}),
+        E("2026-07-14T16:40","Louis Renaud","compliance","SIG — gap strategy: Keep as a gap (the client is told Compliant)",{k:"human"}),
+        E("2026-07-14T16:42","Louis Renaud","compliance","SIG — linked RSK-00001",{k:"human"}),
+        E("2026-07-14T16:42:30","Louis Renaud","status","Declared to the client: Compliant",{milestone:"declared",k:"ok"}),
+        E("2026-07-15T09:20","Thibaud Breton","comment","Agreed to keep it as a gap — the gateway rework is in the price schedule as an option.",{k:"comment"}),
+      ],
+      "SRM-00068":[
+        E("2026-07-12T11:00","Thibaud Breton","status","Allocated — sent to Compliance",{milestone:"allocated",k:"ok"}),
+        E("2026-07-18T14:10","Paolo Ferri","compliance","SEN — verdict",{from:"Awaiting answer",to:"Not compliant",k:"warn"}),
+        E("2026-07-18T14:12","Paolo Ferri","compliance","SEN — gap strategy: Request adjustment (the client is told Pending)",{k:"human"}),
+        E("2026-07-18T14:13","Paolo Ferri","compliance","SEN — linked RSK-00005",{k:"human"}),
+        E("2026-07-20T17:05","Thibaud Breton","compliance","SEN — external compliance corrected: “The client refused any adjustment on the encryption scope in the Jul 20 clarification meeting.”",{from:"Pending",to:"Not compliant",k:"warn"}),
+        E("2026-07-20T17:05:30","Thibaud Breton","status","Declared to the client: Not compliant",{milestone:"declared",k:"warn"}),
+      ],
+      "SRM-00017":[
+        E("2026-07-16T17:40","Thibaud Breton","alloc","Criterion text clarified",{from:"under 2 seconds",to:"under 2 seconds … at the 95th percentile",k:"human"}),
+        E("2026-07-17T09:35","Karim Benali","comment","The 2 s threshold seems optimistic over a one-year depth. Are we targeting P95 or P99? @Thibaud",{k:"comment"}),
+      ],
+      "SRM-00021":[
+        E("2026-07-14T16:20","Claire Moreau","comment","Is the 3-year retention period aligned with group policy (5 years)?",{k:"comment"}),
+      ],
+    },
+    rfp114:{
+      "L4-0010":[
+        E("2026-07-09T10:20","Thibaud Breton","status","Allocated — sent to Compliance",{milestone:"allocated",k:"ok"}),
+        E("2026-07-16T15:30","Louis Renaud","compliance","SIG — verdict",{from:"Awaiting answer",to:"Not compliant",k:"warn"}),
+        E("2026-07-16T15:31","Louis Renaud","status","Every system has answered — consolidated Not compliant",{milestone:"answered",k:"warn"}),
+        E("2026-07-16T15:38","Louis Renaud","compliance","SIG — gap strategy: Keep as a gap (the client is told Compliant)",{k:"human"}),
+        E("2026-07-16T15:40","Louis Renaud","compliance","SIG — linked RSK-00001",{k:"human"}),
+        E("2026-07-16T15:40:30","Louis Renaud","status","Declared to the client: Compliant",{milestone:"declared",k:"ok"}),
+      ],
+    },
+  };
+}
+let reqLog = seedReqLog();
+window.logReqEvent = (projectId, reqId, ev)=>{
+  const k=projectId||"_", m=reqLog[k]=reqLog[k]||{}, l=m[reqId]=m[reqId]||[];
+  const d=new Date();
+  const e=Object.assign({ts:Date.now()+l.length/1000, time:"Today, "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}, ev);
+  l.push(e); return e;
+};
+window.getReqLog = (projectId, reqId)=>(((reqLog[projectId||"_"]||{})[reqId])||[]).slice().sort((a,b)=>b.ts-a.ts);
 // One-shot hand-off between screens: "open this risk", "filter Compliance on it".
 // The target screen takes it on load; the iframe reloads on every route.
 let screenFocus = {};

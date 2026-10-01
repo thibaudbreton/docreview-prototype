@@ -829,6 +829,23 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .tl-who{font-size:var(--text-sm);font-weight:600;color:var(--text)}
 .tl-what{font-size:var(--text-sm);color:var(--text-2);line-height:1.5;margin-top:2px}
 .tl-time{font-size:var(--text-xs);color:var(--text-3);margin-top:3px}
+.tl-item.tl-human::before{border-color:var(--human)}
+.tl-item.tl-comment::before{border-color:var(--accent)}
+.tl-item.tl-ia::before{border-color:var(--ia)}
+.tl-what .before-after{display:block;margin-top:3px;font-size:var(--text-xs)}
+.tl-what .ba-del{color:var(--warn);text-decoration:line-through}
+.tl-what .ba-ins{color:var(--ok)}
+/* activity log — category filter and the milestones of a requirement's life */
+.log-filter{display:flex;flex-wrap:wrap;gap:var(--space-1);margin-bottom:var(--space-4)}
+.log-filter button{padding:3px var(--space-2);border-radius:var(--radius-pill);border:1px solid var(--line-2);font-size:var(--text-xs);font-weight:600;color:var(--text-2)}
+.log-filter button span{color:var(--text-3);font-weight:500}
+.log-filter button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.log-filter button.on span{color:#fff;opacity:.8}
+.tl-item.tl-milestone::before{background:currentColor;border-color:var(--text);width:11px;height:11px;left:-19px}
+.tl-ms{display:inline-block;margin-bottom:3px;padding:1px var(--space-2);border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent);font-size:var(--text-xs);font-weight:700;letter-spacing:.3px}
+.log-empty{font-size:var(--text-sm);color:var(--text-3);padding:var(--space-2) 0}
+.log-comment{display:flex;gap:var(--space-2);margin-top:var(--space-3)}
+.log-comment input{flex:1;min-width:0;font-family:var(--font-ui);font-size:var(--text-sm);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text)}
 .frozen{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3) var(--space-3);margin-bottom:10px}
 .frozen .fk{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-3)}
 .frozen .fv{font-size:var(--text-base);margin-top:2px}
@@ -1923,6 +1940,73 @@ function bindExternalField(p,r,br){
 /* The declaration form is gone (DEC-106): nothing is declared at requirement
    level any more — each assignment carries its own derived external value. */
 function clientDecisionHTML(){ return ""; }
+/* =====================================================
+   ACTIVITY LOG — shared with Allocation through the shell (logReqEvent /
+   getReqLog). Explicit events where they happen (question to the client,
+   return, reminder, comment); every other change — status, verdict, person,
+   gap strategy, risks, PM correction, consolidation, what the client is told —
+   is caught by diffing a snapshot of each requirement at each refresh, with
+   the person viewing as its author.
+===================================================== */
+function logReq(id, ev){ shell("logReqEvent", id, Object.assign({who:currentPersonName()}, ev)); }
+const reqLogOf=id=>shell("getReqLog", id)||[];
+let LOG_SNAP=null;
+function snapCmp(r){
+  const c=consolidate(r), x=externalOf(r), brs={};
+  r.branches.forEach(b=>{ const g=gapOf(r,b); brs[b.typology]={st:b.status, int:b.internal||null, mgr:b.manager||null,
+    strat:g.strategy||null, risks:(g.risks||[]).join(","), ovr:g.override?g.override.ext:null}; });
+  return {pending:c.pending, internal:c.internal, ext:x.v, brs};
+}
+function logCmpDiffs(){
+  const now={}; REQS.forEach(r=>{ now[r.id]=snapCmp(r); });
+  if(!LOG_SNAP){ LOG_SNAP=now; return; }
+  Object.entries(now).forEach(([id,n])=>{ const o=LOG_SNAP[id]; if(!o) return;
+    Object.entries(n.brs).forEach(([t,nb])=>{ const ob=o.brs[t]; if(!ob) return; const code=TY(t).code;
+      if(ob.int!==nb.int) logReq(id,{cat:"compliance", what:`${code} — verdict`, from:ob.int?CMP[ob.int]:BST[ob.st]||"—", to:nb.int?CMP[nb.int]:"—", k:nb.int==="not_compliant"?"warn":"ok"});
+      if(ob.st!==nb.st) logReq(id,{cat:"status", what:`${code} — status`, from:BST[ob.st]||ob.st, to:BST[nb.st]||nb.st, k:nb.st==="reassignment_needed"?"warn":"human"});
+      if(ob.mgr!==nb.mgr) logReq(id,{cat:"compliance", what:`${code} — assigned to`, from:ob.mgr?(mgrOf(ob.mgr)||{}).name:"Unassigned", to:nb.mgr?(mgrOf(nb.mgr)||{}).name:"Unassigned", k:"human"});
+      if(ob.strat!==nb.strat){ const sNew=strategyById(nb.strat), sOld=strategyById(ob.strat);
+        logReq(id,{cat:"compliance", what:`${code} — gap strategy`, from:sOld?sOld.name:"—", to:sNew?`${sNew.name} (the client is told ${EXT_LABEL[sNew.ext]})`:"—", k:"human"}); }
+      if(ob.risks!==nb.risks){ const a=ob.risks?ob.risks.split(","):[], z=nb.risks?nb.risks.split(","):[];
+        z.filter(x=>!a.includes(x)).forEach(x=>logReq(id,{cat:"compliance", what:`${code} — linked ${x}`, k:"human"}));
+        a.filter(x=>!z.includes(x)).forEach(x=>logReq(id,{cat:"compliance", what:`${code} — unlinked ${x}`, k:"warn"})); }
+      if(ob.ovr!==nb.ovr){ const g=gapOf(REQS.find(r=>r.id===id),{typology:t});
+        logReq(id,{cat:"compliance", what:nb.ovr?`${code} — external compliance corrected${g.override&&g.override.reason?`: “${g.override.reason}”`:""}`:`${code} — correction removed, back to the derived value`,
+          from:ob.ovr?EXT_LABEL[ob.ovr]:"derived", to:nb.ovr?EXT_LABEL[nb.ovr]:"derived", k:"warn"}); }
+    });
+    if(o.pending && !n.pending) logReq(id,{cat:"status", what:`Every system has answered — consolidated ${CMP[n.internal]||"—"}`, milestone:"answered", k:n.internal==="not_compliant"?"warn":"ok"});
+    if(!o.pending && n.pending) logReq(id,{cat:"status", what:"No longer consolidated — a system is open again", k:"warn"});
+    const settled=v=>v==="compliant"||v==="not_compliant";
+    if(n.ext!==o.ext && settled(n.ext)) logReq(id,{cat:"status", what:`Declared to the client: ${EXT_LABEL[n.ext]}`, milestone:"declared", k:n.ext==="not_compliant"?"warn":"ok"});
+    else if(n.ext!==o.ext && settled(o.ext)) logReq(id,{cat:"status", what:`What the client is told changed`, from:EXT_LABEL[o.ext], to:n.ext?EXT_LABEL[n.ext]:"Not settled", k:"warn"});
+  });
+  LOG_SNAP=now;
+}
+const LOG_CATS=[["all","All"],["status","Status"],["alloc","Allocation"],["compliance","Compliance"],["comment","Comments"]];
+const LOG_CAT_LABEL={status:"Status", alloc:"Allocation", compliance:"Compliance", comment:"Comment"};
+const MILESTONE_LABEL={captured:"Captured", allocated:"Allocated", answered:"Answered", declared:"Declared to the client"};
+function activityItemHTML(e){
+  const ba=(e.from!==undefined||e.to!==undefined)?`<span class="before-after"><span class="ba-del">${esc(e.from??"—")}</span> → <span class="ba-ins">${esc(e.to??"—")}</span></span>`:"";
+  return `<div class="tl-item tl-${e.k||"human"}${e.milestone?" tl-milestone":""}">
+      ${e.milestone?`<div class="tl-ms">◆ ${MILESTONE_LABEL[e.milestone]||e.milestone}</div>`:""}
+      <div class="tl-who">${esc(e.who||"—")}</div>
+      <div class="tl-what">${e.cat==="comment"?`“${esc(e.what)}”`:esc(e.what)}${ba}</div>
+      <div class="tl-time">${esc(e.time||"")}${e.cat?` · ${LOG_CAT_LABEL[e.cat]||e.cat}`:""}</div>
+    </div>`;
+}
+/* the shared log, plus what this screen can state from its own data when the
+   log has nothing on it: the capture, and an answer already on record */
+function activityForReq(r){
+  const log=reqLogOf(r.id), derived=[];
+  const doc=DOC(SEC_DOC[r.sec]);
+  derived.push({ts:0, time:"At capture", who:"Capture", cat:"status", k:"ia", milestone:"captured", what:`Captured from ${doc?doc.name:"the tender"}`});
+  r.branches.forEach(b=>{ const code=TY(b.typology).code;
+    if(isAnswered(b) && b.resp && !log.some(e=>String(e.what).startsWith(code+" — verdict")))
+      derived.push({ts:Date.now()-(b.age||0)*86400000-1, time:b.resp.date||"", who:b.manager?(mgrOf(b.manager)||{}).name:(b.resp.byPM?"Thibaud Breton":"—"), cat:"compliance", k:b.internal==="not_compliant"?"warn":"ok",
+        what:`${code} — answered${b.resp.note?`: “${b.resp.note.slice(0,140)}${b.resp.note.length>140?"…":""}”`:""}`, to:CMP[b.internal]||"—"});
+  });
+  return log.concat(derived).sort((x,y)=>y.ts-x.ts);
+}
 /* A risk chip anywhere on this screen opens it in the Risks register. Capture
    phase, so a table row's own click never gets it first. */
 document.addEventListener("click",e=>{
@@ -2930,7 +3014,7 @@ function renderPanel2(){
     </div>
     <div class="set-tabs">
       <button data-t="response" class="${state.tab==="response"?"active":""}">Assignment</button>
-      ${IS_SIG_TENDER?"":`<button data-t="activity" class="${state.tab==="activity"?"active":""}">Activity</button>`}
+      <button data-t="activity" class="${state.tab==="activity"?"active":""}">Activity</button>
       <button data-t="req" class="${state.tab==="req"?"active":""}">Requirement</button>
       <button data-t="rex" class="${state.tab==="rex"?"active":""}">REX</button>
       <button data-t="chat" class="${state.tab==="chat"?"active":""}">Chat</button>
@@ -3032,16 +3116,18 @@ function renderPanel2(){
       b.innerHTML=whoBlock+`
         <div class="next-step${nextStepFor(r,br).act?"":" is-idle"}">${nextStepFor(r,br).t}</div>
         ${e?`<button class="cta blue" id="a-remind"><i class=ic-bell></i> Send a reminder</button>`:""}`;
-      b.querySelector("#a-remind")?.addEventListener("click",()=>toast(`Reminder sent to ${e.name} for ${r.id} · ${TY(br.typology).label}`,"ok"));
+      b.querySelector("#a-remind")?.addEventListener("click",()=>{ logReq(r.id,{cat:"compliance", what:`${TY(br.typology).code} — reminder sent to ${e.name}`, k:"human"}); toast(`Reminder sent to ${e.name} for ${r.id} · ${TY(br.typology).label}`,"ok"); });
     }
   }else if(state.tab==="activity"){
-    const who=e?e.name:"—";
-    const items=[];
-    if(br.status==="answered"&&br.resp)items.push({k:"tl-ok",who,what:`Responded — compliance "${CMP[br.internal]||"—"}".`,time:br.resp.date});
-    if(br.status==="awaiting_qa")items.push({k:"tl-send",who,what:`Raised a question to the issuer — assignment blocked until answered.`,time:`${br.age} d ago`});
-    if(br.status==="reassignment_needed")items.push({k:"tl-warn",who:"Contributor",what:`Returned the assignment — wrong allocation.`,time:`${br.age} d ago`});
-    items.push({k:"tl-send",who:"Thibaud Breton",what:`Assignment created for ${TY(br.typology).label}${e?` and sent to ${e.name}`:""}.`,time:`${br.age} d ago (validated in Allocation)`});
-    b.innerHTML=`<div class="timeline">${items.map(i=>`<div class="tl-item ${i.k}"><div class="tl-who">${i.who}</div><div class="tl-what">${i.what}</div><div class="tl-time">${i.time}</div></div>`).join("")}</div>`;
+    const all=activityForReq(r), cat=state.logCat||"all", items=cat==="all"?all:all.filter(x=>x.cat===cat);
+    b.innerHTML=`<div class="log-filter">${LOG_CATS.map(([k,l])=>`<button data-logcat="${k}" class="${cat===k?"on":""}">${l}${k==="all"?"":` <span>${all.filter(x=>x.cat===k).length}</span>`}</button>`).join("")}</div>
+      <div class="timeline">${items.length?items.map(activityItemHTML).join(""):`<div class="log-empty">Nothing in this category yet.</div>`}</div>
+      <div class="log-comment"><input type="text" id="log-comment-in" placeholder="Comment on ${esc(r.id)}…"><button class="btn-submit" id="log-comment-send">Post</button></div>`;
+    b.querySelectorAll("[data-logcat]").forEach(x=>x.addEventListener("click",()=>{ state.logCat=x.dataset.logcat; renderPanel2(); }));
+    const send=()=>{ const inp=b.querySelector("#log-comment-in"), t=(inp.value||"").trim(); if(!t) return;
+      logReq(r.id,{cat:"comment", what:t, k:"comment"}); toast("Comment posted","ok"); renderPanel2(); };
+    b.querySelector("#log-comment-send").addEventListener("click",send);
+    b.querySelector("#log-comment-in").addEventListener("keydown",ev=>{ if(ev.key==="Enter") send(); });
   }else if(state.tab==="req"){
     b.innerHTML=`
       <div class="lock-note"><i class=ic-lock></i> The requirement text changes only through a new document version (Documents &amp; versions).</div>
@@ -3324,6 +3410,7 @@ function renderDecisionPanel(p,r,br){
     try{ if(window.parent!==window && window.parent.pushReassignRequest) shared=window.parent.pushReassignRequest(Object.assign({},req)); }catch(err){}
     br.reassignRequest=Object.assign({requestId:shared?shared.id:null}, req);
     br.reassignComment=note; br.status="reassignment_needed";
+    logReq(r.id,{cat:"compliance", what:`${TY(br.typology).code} — returned to the project management team (${REASON_LABEL[reason]||reason}): “${note}”`, k:"warn"});
     state.openForm=null;
     toast(`${r.id} · ${TY(br.typology).label} — returned to the project management team`,"warn",()=>{
       Object.assign(br,beforeR);
@@ -3348,6 +3435,7 @@ function escalate(r,br,question){
   try{ if(window.parent!==window && window.parent.pushQuestion){
     const shared=window.parent.pushQuestion(pid,{st:"draft",q:qtext,refs:[{req:r.id,typology:br?br.typology:null}],from:asker,date:"Today",origin:"compliance"});
     id=shared.id; } }catch(e){}
+  logReq(r.id,{cat:"compliance", what:`${br?TY(br.typology).code+" — ":""}question ${id} to the client: “${qtext}”`, k:"human"});
   QA.unshift({id,st:"draft",q:qtext,reqs:[r.id],
     branch:br?{req:r.id,typology:br.typology}:null,from:asker,date:"Today"});
   if(br){ br.status="awaiting_qa"; br.qaRefs=[...(br.qaRefs||(br.qaRef?[br.qaRef]:[])), id]; br.qaRef=id; br.qaNote=br.qaNote||(state.role==="contributor"
@@ -3457,6 +3545,7 @@ function applyFPanels(){
 document.getElementById("nav2-toggle")?.addEventListener("click",()=>{ state.navPanelCollapsed=!state.navPanelCollapsed; applyFPanels(); });
 document.getElementById("settings2-toggle")?.addEventListener("click",()=>{ state.detailPanelCollapsed=!state.detailPanelCollapsed; applyFPanels(); });
 function refreshAll(){
+  logCmpDiffs();
   syncReassignRequestsFromShell();
   /* SPEC-risks.md §2.1 — Settings forbids deleting a strategy in use and
      counts what a change of its result would move (DEC-111) */

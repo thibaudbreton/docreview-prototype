@@ -1024,6 +1024,15 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .tl-what .ba-del{color:var(--warn);text-decoration:line-through}
 .tl-what .ba-ins{color:var(--ok)}
 .tl-time{font-size:var(--text-xs);color:var(--text-3);margin-top:3px}
+/* activity log — category filter and the milestones of a requirement's life */
+.log-filter{display:flex;flex-wrap:wrap;gap:var(--space-1);margin-bottom:var(--space-4)}
+.log-filter button{padding:3px var(--space-2);border-radius:var(--radius-pill);border:1px solid var(--line-2);font-size:var(--text-xs);font-weight:600;color:var(--text-2)}
+.log-filter button span{color:var(--text-3);font-weight:500}
+.log-filter button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.log-filter button.on span{color:#fff;opacity:.8}
+.tl-item.tl-milestone::before{background:currentColor;border-color:var(--text);width:11px;height:11px;left:-19px}
+.tl-ms{display:inline-block;margin-bottom:3px;padding:1px var(--space-2);border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent);font-size:var(--text-xs);font-weight:700;letter-spacing:.3px}
+.log-empty{font-size:var(--text-sm);color:var(--text-3);padding:var(--space-2) 0}
 .comment-input{display:flex;gap:var(--space-2);margin-top:8px}
 .comment-input input{
   flex:1;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);
@@ -2789,6 +2798,7 @@ const LANGUAGE_LABEL={en:"English", fr:"French", de:"German", es:"Spanish"};
 function pushTranslationLog(b,who,before,after){
   b.translationLog=b.translationLog||[];
   b.translationLog.unshift({who,before,after,time:"Today"});
+  logReq(b.id,{who, cat:"alloc", what:"English text corrected", from:before, to:after, k:"human"});
 }
 /* §4 — a few extra reading languages beyond the tender's own original, purely
    for the "more comfortable reading in X" convenience. Demo-only: this
@@ -4075,9 +4085,58 @@ function invalidateDownstream(target,changed){
   });
   return cleared;
 }
-function pushBranchLog(b,who,what,k){
-  b.branchLog=b.branchLog||[];
-  b.branchLog.unshift({k:k||"human",who,what,time:"Today"});
+function pushBranchLog(b,who,what,k){ logReq(b.id,{who, cat:"alloc", what, k:k||"human"}); }
+/* =====================================================
+   ACTIVITY LOG — one per requirement, shared with Compliance through the
+   shell (logReqEvent / getReqLog): who changed what, when, before -> after,
+   and the four milestones of a requirement's life (captured, allocated,
+   answered, declared to the client). Explicit events are written where they
+   happen (systems, reassignment, re-runs, comments, translation); every field
+   change is caught by diffing a snapshot of each requirement at each refresh,
+   so a change made from any control — panel, table, bulk, keyboard — is logged
+   with the person viewing as its author.
+===================================================== */
+const LOG_PID=(function(){ try{ return window.parent.getCurrentProject().id; }catch(e){ return "_"; } })();
+function logReq(id, ev){ try{ if(window.parent!==window && window.parent.logReqEvent) window.parent.logReqEvent(LOG_PID, id, Object.assign({who:(MGR(VIEWER)||{}).name||"—"}, ev)); }catch(e){} }
+function reqLogOf(id){ try{ return (window.parent!==window && window.parent.getReqLog) ? window.parent.getReqLog(LOG_PID, id)||[] : []; }catch(e){ return []; } }
+const TECH_LBL={tech:"Technical", nontech:"Non-technical"};
+const logNames=s=>String(s).split("|").map(id=>id?(personLabel(id)||id):"Unassigned").join(", ");
+let LOG_SNAP=null;
+function snapReq(b){
+  const brs={};
+  (b.branches||[]).forEach(br=>{ const ts=(br.teams&&br.teams.length)?br.teams:[br];
+    brs[br.typology]={st:br.allocStatus||null, abs:(br.abs&&br.abs.v)||"", pbs:(br.pbs&&br.pbs.v)||"",
+      obs:ts.map(t=>(t.obs&&t.obs.v)||"").join(" | "), mgr:ts.map(t=>t.manager||"").join("|")}; });
+  return {nature:blockNature(b), tech:b.tech||null, st:b.status||null, full:isFullyAllocated(b), brs};
+}
+function logReqDiffs(){
+  const now={}; reqs().forEach(b=>{ now[b.id]=snapReq(b); });
+  if(!LOG_SNAP){ LOG_SNAP=now; return; }
+  Object.entries(now).forEach(([id,n])=>{ const o=LOG_SNAP[id]; if(!o) return;
+    if(o.nature!==n.nature) logReq(id,{cat:"alloc", what:"Nature", from:NATURE_LABEL[o.nature]||"—", to:NATURE_LABEL[n.nature]||"—", k:"human"});
+    if(o.tech!==n.tech) logReq(id,{cat:"alloc", what:"Class", from:TECH_LBL[o.tech]||"—", to:TECH_LBL[n.tech]||"—", k:"human"});
+    if(o.st!==n.st) logReq(id,{cat:"status", what:"Characterisation", from:STATUS_LABEL[o.st]||"—", to:STATUS_LABEL[n.st]||"—", k:n.st==="allocated"?"ok":"human"});
+    Object.entries(n.brs).forEach(([t,nb])=>{ const ob=o.brs[t]; if(!ob) return; const c=TY(t).code;
+      if(ob.st!==nb.st) logReq(id,{cat:"status", what:`${c} — allocation`, from:STATUS_LABEL[ob.st]||"—", to:STATUS_LABEL[nb.st]||"—", k:nb.st==="allocated"?"ok":"human"});
+      [["abs","ABS"],["pbs","PBS"],["obs","OBS"]].forEach(([f,l])=>{ if(ob[f]!==nb[f]) logReq(id,{cat:"alloc", what:`${c} — ${l}`, from:ob[f]||"—", to:nb[f]||"—", k:"human"}); });
+      if(ob.mgr!==nb.mgr) logReq(id,{cat:"alloc", what:`${c} — assigned to`, from:logNames(ob.mgr), to:logNames(nb.mgr), k:"human"});
+    });
+    if(!o.full && n.full) logReq(id,{cat:"status", what:"Allocated — sent to Compliance", milestone:"allocated", k:"ok"});
+    if(o.full && !n.full) logReq(id,{cat:"status", what:"No longer fully allocated", k:"warn"});
+  });
+  LOG_SNAP=now;
+}
+const LOG_CATS=[["all","All"],["status","Status"],["alloc","Allocation"],["compliance","Compliance"],["comment","Comments"]];
+const LOG_CAT_LABEL={status:"Status", alloc:"Allocation", compliance:"Compliance", comment:"Comment"};
+const MILESTONE_LABEL={captured:"Captured", allocated:"Allocated", answered:"Answered", declared:"Declared to the client"};
+function activityItemHTML(e){
+  const ba=(e.from!==undefined||e.to!==undefined)?`<span class="before-after"><span class="ba-del">${escHtml(e.from??"—")}</span> → <span class="ba-ins">${escHtml(e.to??"—")}</span></span>`:"";
+  return `<div class="tl-item tl-${e.k||"human"}${e.milestone?" tl-milestone":""}">
+      ${e.milestone?`<div class="tl-ms">◆ ${MILESTONE_LABEL[e.milestone]||e.milestone}</div>`:""}
+      <div class="tl-who">${escHtml(e.who||"—")}</div>
+      <div class="tl-what">${e.cat==="comment"?`“${escHtml(e.what)}”`:escHtml(e.what)}${ba}</div>
+      <div class="tl-time">${escHtml(e.time||"")}${e.cat?` · ${LOG_CAT_LABEL[e.cat]||e.cat}`:""}</div>
+    </div>`;
 }
 function matchesFilter(b){
   if(!visibleTo(b)) return false;
@@ -6324,21 +6383,21 @@ function renderSettings(){
       });
     }
   } else {
-    const items = activityFor(b);
-    body.innerHTML = `${isReq?roleRecapHTML(b):""}<div class="timeline">${items.map(i=>`
-      <div class="tl-item tl-${i.k}">
-        <div class="tl-who">${i.who}</div>
-        <div class="tl-what">${i.what}</div>
-        <div class="tl-time">${i.time}</div>
-      </div>`).join("")}</div>
+    const all = activityFor(b), cat=state.logCat||"all";
+    const items = cat==="all"?all:all.filter(e=>e.cat===cat);
+    body.innerHTML = `${isReq?roleRecapHTML(b):""}
+      <div class="log-filter">${LOG_CATS.map(([k,l])=>`<button data-logcat="${k}" class="${cat===k?"on":""}">${l}${k==="all"?"":` <span>${all.filter(e=>e.cat===k).length}</span>`}</button>`).join("")}</div>
+      <div class="timeline">${items.length?items.map(activityItemHTML).join(""):`<div class="log-empty">Nothing in this category yet.</div>`}</div>
       <div class="comment-input"><input type="text" placeholder="Comment… @ to mention" id="comment-in"><button class="btn-primary" id="comment-send" style="padding:var(--space-2) 12px">↑</button></div>`;
     const send = ()=>{
       const inp = body.querySelector("#comment-in");
       if(!inp.value.trim()) return;
       b.comments = (b.comments||0)+1;
+      logReq(b.id,{cat:"comment", what:inp.value.trim(), k:"comment"});
       toast("Comment posted","ok");
       inp.value=""; refresh();
     };
+    body.querySelectorAll("[data-logcat]").forEach(x=>x.addEventListener("click",()=>{ state.logCat=x.dataset.logcat; renderSettings(); }));
     body.querySelector("#comment-send").addEventListener("click",send);
     body.querySelector("#comment-in").addEventListener("keydown",e=>{if(e.key==="Enter")send()});
   }
@@ -6378,19 +6437,17 @@ const REX_BASE = {
 function rexFor(b){ return (b && b.id && REX_BASE[b.id]) ? REX_BASE[b.id] : []; }
 
 function activityFor(b){
-  const base = [
-    {k:"ia",who:"Segmentation AI",what:`Block detected and typed as ${NATURE_LABEL[blockNature(b)]||"Text"} during capture.`,time:"Jul 16, 2026, 9:14 AM"},
-  ];
-  if(b.branchLog&&b.branchLog.length) base.unshift(...b.branchLog);
-  if(b.id==="SRM-00017"){
-    base.unshift(
-      {k:"comment",who:"Karim Benali",what:'"The 2s threshold seems optimistic over a one-year depth. Are we targeting P95 or P99?" <b>@Thibaud</b>',time:"25 min ago"},
-      {k:"human",who:"Thibaud Breton",what:'Criterion text clarified.<span class="before-after"><span class="ba-del">under 2 seconds</span> → <span class="ba-ins">under 2 seconds … at the 95th percentile</span></span>',time:"Yesterday, 5:40 PM"},
-    );
-  }
-  if(isFullyAllocated(b)) base.unshift({k:"ok",who:"Thibaud Breton",what:"Requirement allocated — characterisation and assignment confirmed, sent to Compliance.",time:"Jul 15, 2026, 11:02 AM"});
-  if(b.id==="SRM-00021") base.unshift({k:"comment",who:"Claire Moreau",what:'"Is the 3-year retention period aligned with group policy (5 years)?"',time:"Jul 14, 2026, 4:20 PM"});
-  return base;
+  /* the shared log, plus what this screen alone knows: the capture and the
+     document versions that touched the requirement */
+  const doc=docOfBlock(b.id)||{};
+  const vers=doc.versions||[];
+  const capDate=vers.length?vers[0].date:null;
+  const derived=[{ts:0, time:capDate||"At capture", who:"Capture", cat:"status", k:"ia", milestone:"captured",
+    what:`Captured from ${doc.name||"the tender"} and typed ${NATURE_LABEL[blockNature(b)]||"Text"}`}];
+  (b.history||[]).forEach((h,i)=>{ const v=vers.find(x=>x.v===h.to)||{};
+    derived.push({ts:Date.parse(v.date||"")||i+1, time:`${h.to}${v.date?` · ${v.date}`:""}`, who:"New document version", cat:"alloc", k:"warn",
+      what:`${h.type==="added"?"Added":h.type==="removed"?"Removed":"Modified"} in ${h.to}${h.desc?` — ${h.desc}`:""}`}); });
+  return reqLogOf(b.id).concat(derived).sort((x,y)=>y.ts-x.ts);
 }
 /* ---------- image-sourced requirements: duplicate / delete ---------- */
 function nextRelReqId(sourceImageId){
@@ -6717,6 +6774,7 @@ function reportAllocProgress(){
   }catch(e){}
 }
 function refresh(){
+  logReqDiffs();
   syncReassignRequestsFromShell();
   reportPartnerUse();
   reportAllocProgress();   // DEC-098 — the dashboard card reads it   // DEC-093 — Settings refuses to remove a partner in use

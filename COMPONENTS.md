@@ -687,12 +687,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Activity Timeline Entry
 - **level**: molecule
 - **file**: compliance.html, revue-documentaire.html
-- **variants**: ok, send/ia, comment, human, warn (colored connector dot per actor/event type)
-- **tokens**: --space-1, --text-sm, --text-xs, --ia, --ok, --accent, --human, --warn
+- **variants**: ok, send/ia, comment, human, warn (colored connector dot per actor/event type); milestone (filled dot + "◆ Captured / Allocated / Answered / Declared to the client" pill, `.tl-ms`); with before → after (`.before-after`, struck old value, green new value)
+- **tokens**: --space-1, --space-2, --radius-pill, --text-sm, --text-xs, --ia, --ok, --accent, --accent-soft, --human, --warn
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.tl-item`. Connector line/dot geometry (offsets, 6–9px dot) hardcoded and coupled between the two rules, not tokenized.
+- **changed**: 2026-10-01
+- **notes**: 2026-10-01: rendered by `activityItemHTML()` in both screens from the shared requirement log — who, what, before → after, time and category. `.tl-item`. Connector line/dot geometry (offsets, 6–9px dot) hardcoded and coupled between the two rules, not tokenized.
 
 ### Peek Paper Excerpt
 - **level**: molecule
@@ -1763,8 +1763,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text-3
 - **built-from**: Timeline Item
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.timeline`, shown only in the Detail Panel's Activity tab.
+- **changed**: 2026-10-01
+- **notes**: 2026-10-01: one log per requirement, shared by Allocation and Compliance through the shell (`logReqEvent` / `getReqLog`) — explicit events where they happen, every field change caught by diffing a snapshot at each refresh, plus what each screen derives (capture, document versions, an answer on record). A category filter on top (All · Status · Allocation · Compliance · Comments, with counts) and a comment field that writes to the log — Compliance gained both, and its Activity tab now shows on SIG tenders too. The four milestones of a requirement's life are marked in the feed rather than as a separate timeline. Replaces the fabricated lines (fixed date, fixed author) and the per-screen `branchLog`. `.log-filter`, `.log-comment`. `.timeline`, shown only in the Detail Panel's Activity tab.
 
 ### Global Header Bar
 - **level**: organism
