@@ -1,0 +1,253 @@
+<!-- Tender chat — inserted into the shell (docreview-app.html / the claude.ai
+     artifact) by build_merge.py, after the iframe. Asks Claude through the
+     artifact runtime's `sample` capability, on the VIEWER's own Claude
+     account: it only works in the version published on claude.ai; anywhere
+     else the panel says so. Claude reads the tender through page tools that
+     search the captured blocks (window.CHAT_CAPTURE, generated from data.js at
+     build time) and the shared compliance records (strategies, risks, the
+     activity log) — never the PDFs. Answers cite block ids, which open the
+     block in Allocation. Solution 5 of the chat study (agentic search on the
+     capture), at prototype scale. -->
+<style>
+.tc-root{
+  --tc-bg:#FFFFFF; --tc-ground:#F4F5FA; --tc-line:#E1E3EE; --tc-line-2:#CDD2E3;
+  --tc-text:#1E3246; --tc-text-2:#4A5A6E; --tc-text-3:#637187;
+  --tc-accent:#0B294A; --tc-accent-soft:#E6EBF2; --tc-on-accent:#FFFFFF;
+  --tc-human:#8250dc; --tc-human-soft:rgba(130,80,220,.12); --tc-warn:#DC3223;
+  --tc-font:"Noto Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --tc-mono:ui-monospace,"SF Mono",Menlo,monospace;
+  font-family:var(--tc-font); color:var(--tc-text);
+}
+.tc-root[data-theme="dark"]{
+  --tc-bg:#0B294A; --tc-ground:#071A30; --tc-line:#1F3E5F; --tc-line-2:#2E4E70;
+  --tc-text:#EEF1F8; --tc-text-2:#AAB6C6; --tc-text-3:#8B9AAD;
+  --tc-accent:#4C82FF; --tc-accent-soft:#1B3F6B; --tc-on-accent:#FFFFFF;
+  --tc-human:#a06ef2; --tc-human-soft:rgba(160,110,242,.16); --tc-warn:#F2604F;
+}
+#tc-fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:50;display:inline-flex;align-items:center;gap:8px;
+  padding:10px 16px;border:0;border-radius:999px;background:var(--tc-accent);color:var(--tc-on-accent);font:600 13px var(--tc-font);cursor:pointer;
+  box-shadow:0 6px 24px rgba(0,0,0,.28)}
+#tc-fab:hover{filter:brightness(1.1)}
+#tc-fab:focus-visible,.tc-root button:focus-visible,.tc-root textarea:focus-visible{outline:2px solid var(--tc-accent);outline-offset:2px}
+#tc-fab svg{flex-shrink:0}
+#tc-panel{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:51;width:min(440px,calc(100vw - 32px));height:min(680px,calc(100vh - 96px));
+  display:flex;flex-direction:column;background:var(--tc-bg);border:1px solid var(--tc-line-2);border-radius:12px;box-shadow:0 18px 60px rgba(0,0,0,.35);overflow:hidden}
+.tc-head{display:flex;align-items:flex-start;gap:8px;padding:14px 16px 12px;border-bottom:1px solid var(--tc-line)}
+.tc-title{font-weight:700;font-size:14px}
+.tc-scope{font-size:11px;color:var(--tc-text-3);margin-top:2px;line-height:1.4}
+.tc-x{margin-left:auto;width:28px;height:28px;border:0;border-radius:6px;background:none;color:var(--tc-text-3);font-size:16px;cursor:pointer}
+.tc-x:hover{background:var(--tc-ground);color:var(--tc-text)}
+.tc-new{border:1px solid var(--tc-line-2);border-radius:6px;background:none;color:var(--tc-text-2);font:600 11px var(--tc-font);padding:4px 8px;cursor:pointer}
+.tc-new:hover{color:var(--tc-text);border-color:var(--tc-accent)}
+.tc-log{flex:1;min-height:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;background:var(--tc-ground)}
+.tc-msg{max-width:92%;font-size:13px;line-height:1.55;min-width:0;overflow-wrap:anywhere}
+.tc-msg.user{align-self:flex-end;background:var(--tc-accent);color:var(--tc-on-accent);padding:8px 12px;border-radius:12px 12px 4px 12px;white-space:pre-wrap}
+.tc-msg.bot{align-self:flex-start;background:var(--tc-bg);border:1px solid var(--tc-line);padding:10px 12px;border-radius:12px 12px 12px 4px}
+.tc-msg.bot p{margin:0 0 8px}.tc-msg.bot p:last-child{margin-bottom:0}
+.tc-msg.bot ul,.tc-msg.bot ol{margin:0 0 8px;padding-left:18px}
+.tc-msg.bot li{margin:2px 0}
+.tc-steps{display:flex;flex-direction:column;gap:2px;margin-bottom:6px;font-size:11px;color:var(--tc-text-3)}
+.tc-steps:empty{display:none}
+.tc-thinking{font-size:12px;color:var(--tc-text-3);font-style:italic}
+.tc-cite{display:inline-block;margin:0 1px;padding:0 5px;border:0;border-radius:4px;background:var(--tc-human-soft);color:var(--tc-human);font:700 11px var(--tc-mono);cursor:pointer;vertical-align:1px}
+.tc-cite:hover{outline:1px solid var(--tc-human)}
+.tc-err{font-size:12px;color:var(--tc-warn);margin-top:6px}
+.tc-note{font-size:11px;color:var(--tc-text-3);margin-top:6px}
+.tc-empty{display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--tc-text-2);line-height:1.5}
+.tc-empty b{color:var(--tc-text)}
+.tc-sugg{display:flex;flex-direction:column;gap:6px}
+.tc-sugg button{text-align:left;border:1px solid var(--tc-line-2);background:var(--tc-bg);color:var(--tc-text);border-radius:8px;padding:8px 10px;font:13px var(--tc-font);cursor:pointer}
+.tc-sugg button:hover{border-color:var(--tc-accent)}
+.tc-off{padding:10px 12px;border-radius:8px;background:var(--tc-accent-soft);color:var(--tc-text);font-size:12px;line-height:1.5}
+.tc-form{display:flex;gap:8px;align-items:flex-end;padding:12px;border-top:1px solid var(--tc-line);background:var(--tc-bg)}
+.tc-form textarea{flex:1;min-width:0;resize:none;max-height:120px;border:1px solid var(--tc-line-2);border-radius:8px;padding:8px 10px;font:13px/1.45 var(--tc-font);color:var(--tc-text);background:var(--tc-ground)}
+.tc-send{border:0;border-radius:8px;padding:8px 14px;background:var(--tc-accent);color:var(--tc-on-accent);font:600 13px var(--tc-font);cursor:pointer}
+.tc-send:disabled{opacity:.45;cursor:not-allowed}
+.tc-send.stop{background:var(--tc-warn)}
+@media (prefers-reduced-motion:reduce){#tc-fab,#tc-panel{transition:none}}
+</style>
+<div class="tc-root" id="tc-root">
+  <button id="tc-fab" type="button" title="Ask a question about the tender">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Ask the tender
+  </button>
+  <section id="tc-panel" hidden aria-label="Ask the tender">
+    <div class="tc-head">
+      <div><div class="tc-title">Ask the tender</div><div class="tc-scope" id="tc-scope"></div></div>
+      <button class="tc-new" id="tc-new" type="button" title="Start a new conversation">New</button>
+      <button class="tc-x" id="tc-close" type="button" title="Close">✕</button>
+    </div>
+    <div class="tc-log" id="tc-log"></div>
+    <form class="tc-form" id="tc-form">
+      <textarea id="tc-input" rows="1" placeholder="Ask anything about the tender…"></textarea>
+      <button class="tc-send" id="tc-send" type="submit">Send</button>
+    </form>
+  </section>
+</div>
+<script>
+(function(){
+  const CAP=window.CHAT_CAPTURE||{docs:[],rows:[]};
+  const ROWS=CAP.rows.map(r=>({id:r[0],doc:r[1],sec:r[2],cat:r[3],text:r[4],lc:(r[4]+" "+r[2]).toLowerCase()}));
+  const BY_ID=new Map(ROWS.map((r,i)=>[r.id,i]));
+  const CAT_LABEL={requirement:"Requirement",information:"Information",heading:"Heading"};
+  const $=id=>document.getElementById(id);
+  const root=$("tc-root"), fab=$("tc-fab"), panel=$("tc-panel"), log=$("tc-log"), form=$("tc-form"), input=$("tc-input"), send=$("tc-send");
+  const state={turns:[], busy:false, ctl:null, sample:undefined, tools:false};
+  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const pid=()=>{ try{ return window.getCurrentProject().id; }catch(e){ return "stb2026"; } };
+
+  /* ---------- the sample capability (viewer's own Claude account) ---------- */
+  const samplePromise=(window.claude&&window.claude.use)?Promise.resolve(window.claude.use("sample")).catch(()=>null):Promise.resolve(null);
+  samplePromise.then(async s=>{ state.sample=s; if(s){ try{ const lim=await s.limits(); state.tools=!!(lim&&lim.tools); }catch(e){ state.tools=false; } } if(!panel.hidden) render(); });
+
+  /* ---------- page tools: search the captured blocks ---------- */
+  const STOP=new Set("the and for with that this from shall must will are was were been have has into than then there their which what when where who whom why how all any can not but its our out per via also such each other more most some very about into onto under over les des une est pour avec dans sur par aux que qui".split(" "));
+  const terms=q=>[...new Set(String(q||"").toLowerCase().match(/[a-zà-ÿ0-9][a-zà-ÿ0-9.%-]{2,}/g)||[])].filter(t=>!STOP.has(t));
+  function filterRows(o){
+    const cat=o&&o.category?String(o.category).toLowerCase():"", doc=o&&o.document!=null&&o.document!==""?Number(o.document):null;
+    return ROWS.filter(r=>(!cat||r.cat===cat)&&(doc==null||r.doc===doc));
+  }
+  function search(q,o){
+    const ts=terms(q), pool=filterRows(o); if(!ts.length) return [];
+    const df=ts.map(t=>pool.reduce((n,r)=>n+(r.lc.includes(t)?1:0),0));
+    const phrase=String(q||"").toLowerCase().trim();
+    return pool.map(r=>{ let s=0; ts.forEach((t,i)=>{ if(r.lc.includes(t)) s+=Math.log(1+pool.length/(1+df[i])); });
+        if(phrase.length>6 && r.lc.includes(phrase)) s+=3; if(r.cat==="requirement") s+=.2; return {r,s}; })
+      .filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+  }
+  const brief=(r,n)=>({id:r.id, document:CAP.docs[r.doc], section:r.sec, type:CAT_LABEL[r.cat]||r.cat, text:r.text.length>(n||400)?r.text.slice(0,n||400)+"…":r.text});
+  const shell=(fn,...a)=>{ try{ return window[fn](pid(),...a); }catch(e){ return null; } };
+  const strategyName=id=>{ const s=(shell("getStrategies")||[]).find(x=>x.id===id); return s?`${s.name} (client told ${s.ext.replace("_"," ")})`:null; };
+  const riskText=x=>`There is a risk that ${x.that} The risk is caused by ${x.cause} The direct impact will be ${x.impact}`;
+  const step=(t)=>{ if(state.steps){ const d=document.createElement("div"); d.textContent=t; state.steps.appendChild(d); log.scrollTop=log.scrollHeight; } };
+
+  const TOOLS=[
+    {name:"search_blocks",
+     description:"Keyword search over the tender's captured blocks (requirements, information paragraphs, headings). Returns up to `limit` best matches with id, document, section, type and text. The tender is written in English: search with English terms and try synonyms if the first search is thin.",
+     inputSchema:{type:"object",properties:{query:{type:"string",description:"Keywords, in English"},category:{type:"string",enum:["requirement","information","heading"]},document:{type:"integer",description:"Document index from list_documents"},limit:{type:"integer",description:"1-15, default 10"}},required:["query"]},
+     execute(i){ const q=String(i.query||""); step(`Searching “${q}”…`); const n=Math.max(1,Math.min(15,Number(i.limit)||10)); const res=search(q,i);
+       return {total_matches:res.length, results:res.slice(0,n).map(x=>brief(x.r,350))}; }},
+    {name:"get_blocks",
+     description:"Full text of blocks by id (up to 10), optionally with the block just before and after each in the document — use it to read a requirement in context before quoting it.",
+     inputSchema:{type:"object",properties:{ids:{type:"array",items:{type:"string"}},with_neighbours:{type:"boolean"}},required:["ids"]},
+     execute(i){ const ids=(Array.isArray(i.ids)?i.ids:[i.ids]).map(String).slice(0,10); step(`Reading ${ids.join(", ")}…`);
+       const out=[]; ids.forEach(id=>{ const k=BY_ID.get(id); if(k==null){ out.push({id,error:"no such block"}); return; }
+         const idx=i.with_neighbours?[k-1,k,k+1]:[k]; idx.forEach(j=>{ const r=ROWS[j]; if(r&&r.doc===ROWS[k].doc&&!out.some(o=>o.id===r.id)) out.push(Object.assign(brief(r,2000),{neighbour:j!==k})); }); });
+       return out; }},
+    {name:"list_documents",
+     description:"The tender's map: each document (with its index), its number of blocks by type, and its headings in order. Use it for broad or 'where does the tender talk about' questions.",
+     execute(){ step("Reading the table of contents…");
+       return CAP.docs.map((name,d)=>{ const rs=ROWS.filter(r=>r.doc===d); return {index:d, name, requirements:rs.filter(r=>r.cat==="requirement").length, information:rs.filter(r=>r.cat==="information").length,
+         headings:rs.filter(r=>r.cat==="heading").slice(0,90).map(r=>r.text.slice(0,80))}; }); }},
+    {name:"count_blocks",
+     description:"Counts blocks matching a keyword query (optional) and filters, by document — use it for 'how many' questions instead of reading everything.",
+     inputSchema:{type:"object",properties:{query:{type:"string"},category:{type:"string",enum:["requirement","information","heading"]},document:{type:"integer"}}},
+     execute(i){ step(`Counting${i.query?` “${i.query}”`:""}…`); const res=i.query?search(i.query,i).map(x=>x.r):filterRows(i);
+       const by={}; res.forEach(r=>{ by[CAP.docs[r.doc]]=(by[CAP.docs[r.doc]]||0)+1; }); return {total:res.length, by_document:by, example_ids:res.slice(0,8).map(r=>r.id)}; }},
+    {name:"requirement_record",
+     description:"What the bid team has recorded on one requirement: gap strategy and linked risks for each Not compliant system, any project-manager correction of what the client is told, and its recent activity (who changed what, when).",
+     inputSchema:{type:"object",properties:{id:{type:"string"}},required:["id"]},
+     execute(i){ const id=String(i.id||""); step(`Opening the record of ${id}…`);
+       const docs=Object.entries(shell("getGapDocs")||{}).filter(([k])=>k.startsWith(id+"#"));
+       const risks=shell("getRisks")||[];
+       return {id, compliance:docs.map(([k,d])=>({system:k.split("#")[1].toUpperCase(), gap_strategy:strategyName(d.strategy)||"none yet",
+           risks:(d.risks||[]).map(rid=>{ const x=risks.find(r=>r.id===rid); return x?{id:rid, justification:riskText(x)}:{id:rid}; }),
+           correction:d.override?{told:d.override.ext, reason:d.override.reason, by:d.override.by}:null})),
+         activity:(shell("getReqLog",id)||[]).slice(0,15).map(e=>({when:e.time, who:e.who, what:e.what, from:e.from, to:e.to}))}; }},
+    {name:"list_risks",
+     description:"The tender's risk register: every risk with its justification and the requirements linked to it.",
+     execute(){ step("Reading the risk register…"); const docs=Object.entries(shell("getGapDocs")||{});
+       return (shell("getRisks")||[]).map(x=>({id:x.id, justification:riskText(x), created_by:x.createdBy, requirements:docs.filter(([,d])=>(d.risks||[]).includes(x.id)).map(([k])=>k.split("#")[0])})); }},
+  ];
+
+  const RULES=`You are the bid team's assistant for a tender being answered in Smart Requirement Manager. The tender's documents were captured into blocks (requirements, information paragraphs, headings): ${CAP.docs.length} documents, ${ROWS.length} blocks. You read them ONLY through the tools — you have no other copy of the tender.
+How to work:
+- Search before answering, with English terms (the tender is in English) and synonyms; read the blocks you quote with get_blocks; use list_documents for broad questions and count_blocks for "how many".
+- For what the team decided (gap strategy, risks, corrections, who did what), use requirement_record and list_risks.
+- Cite every fact with its block id in square brackets, e.g. [SRM-00123]. Never invent an id.
+- If the tender does not say it, say so plainly, and say what you searched.
+Answer in the user's language, concisely (under 200 words unless asked for more), in plain Markdown: short paragraphs, bullet lists, bold. No tables, no headings.`;
+
+  /* fallback when this view cannot run page tools: retrieve here, send the excerpts */
+  function contextFor(q){
+    const res=search(q).slice(0,25).map(x=>x.r);
+    return `Excerpts found by keyword search for this question (${res.length}):\n`+res.map(r=>`[${r.id}] (${CAP.docs[r.doc]} — ${r.sec} — ${CAT_LABEL[r.cat]}) ${r.text.slice(0,600)}`).join("\n");
+  }
+
+  /* ---------- rendering ---------- */
+  function md(t){
+    const lines=esc(t).split(/\n/); let html="", list=null;
+    const inline=s=>s.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/\[((?:SRM|L4)-[0-9A-Z-]+)\]/g,(m,id)=>`<button class="tc-cite" type="button" data-cite="${id}" title="Open ${id} in Allocation">${id}</button>`);
+    lines.forEach(l=>{ const b=l.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)$/);
+      if(b){ if(!list){ list=/^\s*\d/.test(l)?"ol":"ul"; html+=`<${list}>`; } html+=`<li>${inline(b[1])}</li>`; return; }
+      if(list){ html+=`</${list}>`; list=null; }
+      if(l.trim()) html+=`<p>${inline(l)}</p>`; });
+    if(list) html+=`</${list}>`;
+    return html;
+  }
+  function scopeLine(){
+    const p=pid();
+    return `Captured tender: ${CAP.docs.length} documents · ${ROWS.length.toLocaleString("en")} blocks${p!=="stb2026"?" · reads the STB-2026 capture, not this project":""}. Answers use your own Claude account.`;
+  }
+  function render(){
+    $("tc-scope").textContent=scopeLine();
+    if(state.turns.length) return;
+    const off=state.sample===null;
+    log.innerHTML=`<div class="tc-empty">
+      ${off?`<div class="tc-off"><b>Available in the version published on claude.ai.</b> There, the chat asks Claude with the viewer's own account. In this copy of the prototype Claude can't be reached.</div>`:""}
+      <div>Ask about requirements, where a topic is covered, how many requirements touch it, or what the team decided on one. Every answer cites the blocks it comes from.</div>
+      <div class="tc-sugg">${["What availability does the tender require, and where?","How many requirements mention the depot, by document?","Summarise the safety requirements of the OCC specification."].map(q=>`<button type="button" data-q="${esc(q)}" ${off?"disabled":""}>${esc(q)}</button>`).join("")}</div>
+    </div>`;
+    log.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>{ input.value=b.dataset.q; ask(); }));
+    send.disabled=off;
+  }
+  function addMsg(role,html){ const d=document.createElement("div"); d.className="tc-msg "+role; d.innerHTML=html; log.appendChild(d); log.scrollTop=log.scrollHeight; return d; }
+  const ERR={not_granted:"Claude access was declined for this page. Reload the page to be asked again.", sampling_disabled:"Claude isn't available for this account.",
+    rate_limited:"Too many requests or usage limit reached — try again in a moment.", session_expired:"Your claude.ai session expired — sign in again.",
+    refused:"Claude declined this question. Try rephrasing it.", prompt_too_large:"The conversation got too long — start a new one.",
+    empty_completion:"No answer came back. Try a simpler question."};
+
+  async function ask(){
+    const q=input.value.trim(); if(!q||state.busy) return;
+    if(!state.sample){ render(); return; }
+    if(!state.turns.length) log.innerHTML="";
+    addMsg("user",esc(q)); input.value=""; autosize();
+    state.turns.push({role:"user",content:state.tools?q:`${q}\n\n${contextFor(q)}`});
+    const bubble=addMsg("bot",`<div class="tc-steps"></div><div class="tc-body"><span class="tc-thinking">Thinking…</span></div>`);
+    state.steps=bubble.querySelector(".tc-steps"); const body=bubble.querySelector(".tc-body");
+    state.busy=true; state.ctl=new AbortController(); send.textContent="Stop"; send.classList.add("stop");
+    const turns=[{role:"user",content:RULES}].concat(state.turns.slice(-9));
+    try{
+      const res=await state.sample(turns,{cache:false, signal:state.ctl.signal, tools:state.tools?TOOLS:undefined,
+        onText:({text})=>{ body.innerHTML=md(text); log.scrollTop=log.scrollHeight; }});
+      body.innerHTML=md(res.text); state.turns.push({role:"assistant",content:res.text});
+      if(res.truncated) bubble.insertAdjacentHTML("beforeend",`<div class="tc-note">Cut short — ask for less at a time.</div>`);
+    }catch(e){
+      const code=e&&e.code;
+      if(e&&e.text){ body.innerHTML=md(e.text); state.turns.push({role:"assistant",content:e.text}); } else if(code!=="refused") body.innerHTML=""; else body.innerHTML="";
+      if(code!=="cancelled") bubble.insertAdjacentHTML("beforeend",`<div class="tc-err">${esc(ERR[code]||"The answer was interrupted. Try again.")}</div>`);
+      else if(!e.text) body.innerHTML=`<span class="tc-thinking">Stopped.</span>`;
+      if(code==="tools_unavailable"){ state.tools=false; }
+    }finally{
+      state.busy=false; state.ctl=null; state.steps=null; send.textContent="Send"; send.classList.remove("stop"); log.scrollTop=log.scrollHeight;
+    }
+  }
+  function autosize(){ input.style.height="auto"; input.style.height=Math.min(120,input.scrollHeight)+"px"; }
+
+  /* a cited block opens in Allocation, on the STB-2026 tender the capture belongs to */
+  log.addEventListener("click",e=>{ const b=e.target.closest("[data-cite]"); if(!b) return; const id=b.dataset.cite;
+    try{ if(pid()!=="stb2026" && window.setCurrentProject) window.setCurrentProject("stb2026"); if(location.hash.slice(1)!=="review") window.route("review"); }catch(err){}
+    let n=0; const t=setInterval(()=>{ n++; try{ const cw=document.getElementById("frame").contentWindow;
+      if(cw && cw.selectBlock && cw.document.readyState==="complete" && n>2){ clearInterval(t); cw.selectBlock(id,{scroll:true}); } }catch(err){}
+      if(n>40) clearInterval(t); },200); });
+
+  function open(){ try{ root.dataset.theme=(window.getTheme&&window.getTheme()==="dark")?"dark":"light"; }catch(e){} panel.hidden=false; fab.hidden=true; render(); input.focus(); }
+  function close(){ panel.hidden=true; fab.hidden=false; if(state.ctl) state.ctl.abort(); }
+  fab.addEventListener("click",open);
+  $("tc-close").addEventListener("click",close);
+  $("tc-new").addEventListener("click",()=>{ if(state.ctl) state.ctl.abort(); state.turns=[]; render(); input.focus(); });
+  form.addEventListener("submit",e=>{ e.preventDefault(); if(state.busy){ if(state.ctl) state.ctl.abort(); } else ask(); });
+  input.addEventListener("input",autosize);
+  input.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); if(!state.busy) ask(); } if(e.key==="Escape") close(); });
+})();
+</script>

@@ -1926,7 +1926,15 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-30
 - **notes**: DEC-113 — the whole Risks page: one row per risk with its three answers in three columns (There is a risk that… / caused by… / impact…), linked requirements (each opens it in Compliance; "all →" opens Compliance filtered on the risk), created by. Search, simulated export. DEC-114: no system column or filter — a risk belongs to the tender. Was "Risk Register" earlier the same day, with weight, status, a selection bar and merge — all removed. Its own table, not the shared table engine. `--line-2`, `--panel-2` untracked.
 
-## Removed
+### Tender Chat
+- **level**: organism
+- **file**: tender-chat.html (inserted into the shell by build_merge.py)
+- **variants**: closed (floating "Ask the tender" button), empty (suggested questions), unavailable (any copy not served by claude.ai), answering (steps from the page tools, then the streamed answer, Stop), answered (Markdown with clickable block citations), error (by code)
+- **tokens**: its own `--tc-*` set, copied from the screens' light and dark values (the shell has no token scale of its own); 8/12/999px radii, 11–14px type
+- **built-from**: none
+- **added**: 2026-10-01
+- **changed**: 2026-10-01
+- **notes**: Asks Claude through the claude.ai artifact runtime's `sample` capability, on the viewer's own Claude account — works only in the published artifact (artifact/srm-prototype.html). Claude reads the captured blocks (`window.CHAT_CAPTURE`, generated from data.js at build time, STB-2026 only) and the shared records (strategies, risks, activity log) through six page tools: search_blocks, get_blocks, list_documents, count_blocks, requirement_record, list_risks. Where the view cannot run tools, the page searches itself and sends the top 25 excerpts. A cited [SRM-…] opens the block in Allocation. Colors are literals duplicated from the screens' tokens, not shared variables — flagged.
 
 ### Risk Weight Pill — removed 2026-09-30, no longer needed (DEC-113: risks carry no weight)
 
