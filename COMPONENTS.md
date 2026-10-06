@@ -1663,8 +1663,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-5, --space-6, --space-8
 - **built-from**: Tab Bar, Tender Card, Empty State Message
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Grid `minmax(330px,1fr)` hardcoded.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: headed by a Home Section Head ("My tenders · N tenders") between the Onboarding Line and the Glossary Grid; a card opens through `openTender()`, shared with the Continue Card and the Submissions Line. Grid `minmax(330px,1fr)` hardcoded.
 
 ### Tender Card
 - **level**: molecule
@@ -1675,6 +1675,66 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-10-06
 - **notes**: 2026-10-06: its gauge is the Tender Line in miniature (`gaugeHTML()`), replacing the Allocation / Compliance progress bar and the submitted card's text line; the processing label and "Response submitted" moved to its tooltip. `min-height:172px` and hover `translateY(-2px)` hardcoded. Listed at molecule level (assembles several atoms into one repeatable card) even though it sits inside the Tender Dashboard Grid organism above.
+
+### Home Hero
+- **level**: organism
+- **file**: accueil.html
+- **variants**: with / without a tender to pick up again; no tender yet (roles line says so)
+- **tokens**: --panel, --accent-soft, --accent, --brand-red, --line, --radius-lg, --space-2, --space-3, --space-5, --space-8, --text-xs, --text-sm, --text-lg, --text-2, --text-3, --font-heading
+- **built-from**: Page Title, Primary Button, Ghost Button, Continue Card
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: The home page's front door: a kicker, a time-of-day greeting with the user's first name (the Page Title, at a hardcoded 32px — above the type scale), what SRM is for in one sentence, the user's roles counted from their tenders, New tender / How SRM works, and the Continue Card. Background: a hardcoded 115° gradient from `--panel` to `--accent-soft`, and `.hero-map`, an inline SVG metro map in the brand's colours (navy and red lines, 45° bends, an interchange) — decorative only, the red never on anything clickable (DEC-063). Hardcoded line widths, opacities and positions in the SVG.
+
+### Continue Card
+- **level**: molecule
+- **file**: accueil.html
+- **variants**: Allocation next (requirements still to allocate), Compliance next (requirements still to answer)
+- **tokens**: --panel, --line, --accent, --radius-lg, --space-3, --space-4, --space-5, --text-xs, --text-sm, --text-lg, --font-heading, --font-mono
+- **built-from**: Tender Line (mini), Primary Button
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: "Pick up where you left off": the primary open tender (else the first built-out one) with its line and the next thing to do; the whole card opens the tender. Hardcoded shadow `0 10px 30px rgba(14,30,50,.10)`.
+
+### Submissions Line
+- **level**: molecule
+- **file**: accueil.html
+- **variants**: station due within 7 days (`--warn` ring and days), labels alternating above / below
+- **tokens**: --accent, --warn, --line-2, --panel, --text, --text-3, --text-xs, --text-sm, --space-6
+- **built-from**: Home Section Head
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: "Next submissions": every tender not yet submitted on one line, Today on the left, positioned by days left over a span rounded up to whole weeks; a label opens its tender (a demo-only one says so). Same rail vocabulary as the Tender Line. Hardcoded geometry (118px high, axis at 57px, 16px stations).
+
+### Onboarding Line
+- **level**: organism
+- **file**: accueil.html
+- **variants**: shown / dismissed ("Got it — hide"; "How SRM works" in the hero reopens it)
+- **tokens**: --panel, --line, --accent, --accent-soft, --radius-lg, --radius-pill, --space-1 to --space-6, --text-xs, --text-sm, --text-lg, --text-2, --text-3, --font-heading
+- **built-from**: Home Section Head
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: "How a tender travels through SRM": the four stations of the Tender Line, numbered, each with one sentence and who does it, then the always-open screens. Dismissal is kept in the shell (`getHomeIntroHidden` / `setHomeIntroHidden`) so it survives navigation and a demo reset brings it back. Hardcoded 30px stations and 5px line.
+
+### Glossary Grid
+- **level**: molecule
+- **file**: accueil.html
+- **variants**: term alone, term with its expansion (PBS, ABS, OBS)
+- **tokens**: --panel, --line, --radius-lg, --space-3, --space-4, --text-base, --text-sm, --text-2, --text-3, --font-heading
+- **built-from**: Home Section Head
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: "Words you'll meet": Turnkey, PBS, ABS, OBS, gap strategy, consolidation — one sentence each, from KEYS.md and the decisions log.
+
+### Home Section Head
+- **level**: atom
+- **file**: accueil.html
+- **variants**: with a hint; with an action on the right
+- **tokens**: --text-lg, --text-sm, --text-3, --space-3, --font-heading
+- **built-from**: none
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.home-sec` — one heading style for the home page's sections (Next submissions, How a tender travels, My tenders, Words you'll meet).
 
 ### Wizard Stepper Panel
 - **level**: organism
