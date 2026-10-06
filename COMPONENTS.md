@@ -254,13 +254,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Status Badge / Chip
 - **level**: atom
-- **file**: accueil.html, documents.html, creation-projet.html
-- **variants**: `.pc-badge` (processing/req/exp/qa/sub/neutral/info), `.pstate` (ready/running/queued), `.gap-chip` (a/m/r), `.tagrec` (recommended)
+- **file**: documents.html, creation-projet.html
+- **variants**: `.pstate` (ready/running/queued), `.gap-chip` (a/m/r), `.tagrec` (recommended)
 - **tokens**: --text-xs, --space-1, --space-2, --radius-pill, --radius-lg, --accent, --accent-soft, --ia, --ok, --warn, --human
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-24
-- **notes**: 2026-09-24: documents.html's `.pstate` lost its leading 5px dot, like the other status pills. Same "soft background + bold colored text" grammar reimplemented under four unrelated class names with inconsistent radius (`--radius-pill` vs `--radius-lg` for what reads as the same pill). Backgrounds rely on untracked `--ia-soft`/`--ok-soft`/`--warn-soft`/`--human-soft`. Sibling family: Status Pill (below), which reimplements the same idea again in three more screens.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: accueil.html's `.pc-badge` stage pill left the Tender Card (the tender's line carries the stage). 2026-09-24: documents.html's `.pstate` lost its leading 5px dot, like the other status pills. Same "soft background + bold colored text" grammar reimplemented under four unrelated class names with inconsistent radius (`--radius-pill` vs `--radius-lg` for what reads as the same pill). Backgrounds rely on untracked `--ia-soft`/`--ok-soft`/`--warn-soft`/`--human-soft`. Sibling family: Status Pill (below), which reimplements the same idea again in three more screens.
 
 ### Status Pill (Requirement Workflow State)
 - **level**: atom
@@ -1669,12 +1669,32 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Tender Card
 - **level**: molecule
 - **file**: accueil.html
-- **variants**: default, processing, submitted
+- **variants**: default, processing (pulsing "Processing — opens when it completes" in the footer), submitted (dimmed, last station ticked), demo-only
 - **tokens**: --panel, --line, --radius-lg, --space-3, --space-4, --accent
-- **built-from**: Status Badge / Chip, Tender Line (mini), Status Dot, Deadline Chip
+- **built-from**: Product Line Badge, Role Chip, Tender Line (mini)
 - **added**: 2026-09-01
 - **changed**: 2026-10-06
-- **notes**: 2026-10-06: its gauge is the Tender Line in miniature (`gaugeHTML()`), replacing the Allocation / Compliance progress bar and the submitted card's text line; the processing label and "Response submitted" moved to its tooltip. `min-height:172px` and hover `translateY(-2px)` hardcoded. Listed at molecule level (assembles several atoms into one repeatable card) even though it sits inside the Tender Dashboard Grid organism above.
+- **notes**: 2026-10-06 (later): rebuilt around what a tender asks of you — top row: the Product Line Badge, the reference, your Role Chip on the right; then the name in the heading face, the line, the footer. The stage pill (Allocation / Compliance / Processing / Submitted) and the two plain rows (product line with a bar, role with a dot) are gone: the line carries the stage, the badge and the chip carry the rest. 2026-10-06: its gauge is the Tender Line in miniature (`gaugeHTML()`), replacing the Allocation / Compliance progress bar and the submitted card's text line; the processing label and "Response submitted" moved to its tooltip. `min-height:172px` and hover `translateY(-2px)` hardcoded. Listed at molecule level (assembles several atoms into one repeatable card) even though it sits inside the Tender Dashboard Grid organism above.
+
+### Product Line Badge
+- **level**: atom
+- **file**: accueil.html
+- **variants**: none (the product line's name, uppercase: Turnkey, SIG, Services…)
+- **tokens**: --accent, --radius-sm, --space-2, --text-xs
+- **built-from**: none
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.pc-lineb` — the tender's product line as a metro-line badge, filled in the brand navy; one colour for every line on purpose (the palette's other colours already mean statuses). Hardcoded 22px height and white text.
+
+### Role Chip
+- **level**: atom
+- **file**: accueil.html
+- **variants**: project manager (flag icon, `--accent` on `--accent-soft`, outlined), contributor (people icon, neutral)
+- **tokens**: --accent, --accent-soft, --text-2, --radius-pill, --space-3, --text-sm
+- **built-from**: Icon
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.pc-role` — your role on the tender, on the right of the card's top row. Depends on untracked `--panel-3`; hardcoded 26px height and 1.5px outline.
 
 ### Home Hero
 - **level**: organism
