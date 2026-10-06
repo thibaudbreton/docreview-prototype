@@ -9,7 +9,29 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
+- Last run: 2026-10-06T22:00Z (covered `906bdb9..db723a1`, DEC-105 to
+  DEC-116; earlier ranges are in the still-open run PRs #27, #29, #30, #31
+  and are not re-derived here — expect a textual conflict in this file
+  when those land).
+  - DEC-105 to DEC-116 landed their `OPEN-QUESTIONS.md` entries (and
+    `ACCESS.md`, `COMPLIANCE.md` CONF-029, `QA.md`, `SPEC-risks.md`
+    reconciliation notes) in the same commits as the code. Consistent.
+  - Fixed directly: `QA.md` — DEC-116 replaced QA-002/QA-007 but QA-010
+    (merge duplicates, "avec le lot"), the vigilance section (merge/exclusion
+    links, export marking "Sent"), QA-T05 (arbitration) and the Sources line
+    (removed `buildDossier/decideArb/skipArb`) still described the old
+    flow. Reworded to match DEC-116.
+  - Flagged on #28 (not edited): `STORIES-extracted-from-prototype.md`
+    Q&A stories (export/exclusion, arbitration queue, status groups; DEC-116)
+    and product-line list (INFRA, Rolling Stock dropped from the new-tender
+    form, `2169056`).
+  - Code-only commits with no spec impact found: layout/typeface/icon work
+    (DEC-115 recorded), validate-button pinning, status-bar title,
+    activity log (`7a1d771`), hidden tender chat (`683763c`).
+  - #20, #15, #12 unchanged, still open.
+- Previous run: 2026-09-30T22:00Z
+  (listed below as the last run landed on `main`)
+- Earlier run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
   `ccf3bb4`). Most of that range is the previous run landing and a
   same-day reconciliation merge (`c07f072`, `db8fa39`, `ccf3bb4`) that
   touch only this file — already accounted for by the 2026-09-21 entry
