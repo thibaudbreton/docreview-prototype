@@ -1680,11 +1680,11 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **level**: atom
 - **file**: accueil.html
 - **variants**: none (the product line's name, uppercase: Turnkey, SIG, Services…)
-- **tokens**: --accent, --radius-sm, --space-2, --text-xs
+- **tokens**: --accent, --radius-xs, --text-xs
 - **built-from**: none
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: `.pc-lineb` — the tender's product line as a metro-line badge, filled in the brand navy; one colour for every line on purpose (the palette's other colours already mean statuses). Hardcoded 22px height and white text.
+- **notes**: `.pc-lineb` — the tender's product line as a metro-line badge, filled in the brand navy; one colour for every line on purpose (the palette's other colours already mean statuses). Lighter after review (2026-10-06): Medium weight, 0.9px tracking, 20px high, 7px side padding — bold uppercase read as coarse. Hardcoded height, padding, tracking and white text.
 
 ### Role Chip
 - **level**: atom
@@ -1704,7 +1704,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Page Title, Primary Button, Ghost Button, Continue Card
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: The home page's front door: a kicker, a time-of-day greeting with the user's first name (the Page Title, at a hardcoded 32px — above the type scale), what SRM is for in one sentence, the user's roles counted from their tenders, New tender / How SRM works, and the Continue Card. Background: a hardcoded 115° gradient from `--panel` to `--accent-soft`, and `.hero-map`, an inline SVG metro map in the brand's colours (navy and red lines, 45° bends, an interchange) — decorative only, the red never on anything clickable (DEC-063). Hardcoded line widths, opacities and positions in the SVG.
+- **notes**: The home page's front door: a kicker, a time-of-day greeting with the user's first name (the Page Title, at a hardcoded 32px — above the type scale), what SRM is for in one sentence, the user's roles counted from their tenders, New tender / How SRM works, and the Continue Card. Background: a hardcoded 115° gradient from `--panel` to `--accent-soft`, and `.hero-map`, an inline SVG metro map in the brand's colours (navy and red lines, 45° bends, an interchange) — decorative only, the red never on anything clickable (DEC-063). Hardcoded line widths, opacities and positions in the SVG; the map is hidden below a 1220px viewport, where the hero narrows and it would run under the greeting.
 
 ### Continue Card
 - **level**: molecule
@@ -1720,11 +1720,11 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **level**: organism
 - **file**: accueil.html
 - **variants**: shown / dismissed ("Got it — hide"; "How SRM works" in the hero reopens it)
-- **tokens**: --panel, --line, --accent, --accent-soft, --radius-lg, --radius-pill, --space-1 to --space-6, --text-xs, --text-sm, --text-lg, --text-2, --text-3, --font-heading
+- **tokens**: --bg, --accent, --accent-soft, --radius-lg, --radius-pill, --space-1 to --space-6, --text-xs, --text-sm, --text-lg, --text-2, --text-3, --font-heading
 - **built-from**: Home Section Head
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: "How a tender travels through SRM": the four stations of the Tender Line, numbered, each with one sentence and who does it, then the always-open screens. Dismissal is kept in the shell (`getHomeIntroHidden` / `setHomeIntroHidden`) so it survives navigation and a demo reset brings it back. Hardcoded 30px stations and 5px line.
+- **notes**: 2026-10-06 (later): no frame any more — the section sits on the page, the stations ringed in `--bg`; the who-tags take `--radius-md` and balance their wrap, so a two-line tag on a narrow window stays a block, not a pill. "How a tender travels through SRM": the four stations of the Tender Line, numbered, each with one sentence and who does it, then the always-open screens. Dismissal is kept in the shell (`getHomeIntroHidden` / `setHomeIntroHidden`) so it survives navigation and a demo reset brings it back. Hardcoded 30px stations and 5px line.
 
 ### Home Section Head
 - **level**: atom
