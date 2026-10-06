@@ -675,7 +675,9 @@ tr.branch-row:hover>td{background:var(--panel-3)}
 .dp-c.warn{background:var(--warn)}
 .dp-c:hover{filter:brightness(1.08)}
 .dp-picked{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2)}
-.dp-confirm{width:100%;padding:10px var(--space-3);border-radius:var(--radius-md);font-weight:700;font-size:var(--text-base);color:#fff}
+/* 2026-10-06 — pinned to the bottom of the panel while its place is below the fold (a Not compliant's
+   strategy and risk push it a screen down); the ring in the panel colour masks what scrolls behind it */
+.dp-confirm{width:100%;padding:10px var(--space-3);border-radius:var(--radius-md);font-weight:700;font-size:var(--text-base);color:#fff;position:sticky;bottom:var(--space-2);z-index:2;box-shadow:0 0 0 8px var(--panel)}
 .dp-confirm.ok{background:var(--ok)}
 .dp-confirm.warn{background:var(--warn)}
 .dp-confirm:hover{filter:brightness(1.08)}

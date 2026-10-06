@@ -1021,6 +1021,9 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .validate-sys-row{display:flex;align-items:center;gap:var(--space-2);padding:4px 0}
 .validate-sys-btn{margin-left:auto}
 .validate-done{margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--ok)}
+.validate-zone{position:sticky;bottom:-16px;z-index:3;margin:var(--space-3) -16px -4px;padding:10px 16px 14px;background:var(--panel);border-top:1px solid var(--line)}
+.validate-zone.is-done{position:static;margin:var(--space-3) 0 0;padding:0;border-top:none;background:none}
+.validate-zone>.validate-cta,.validate-zone>.validate-sys{margin-top:0}
 .validate-cta{
   width:100%;padding:var(--space-2);border-radius:var(--radius-md);background:var(--ok);color:#fff;
   font-weight:600;font-size:var(--text-base);margin-top:var(--space-1);transition:all .15s;
@@ -3296,7 +3299,26 @@ function isFullyAllocated(b){
    - several: characterisation, then one line per system with its own button;
    - a step that can't run yet shows its button disabled, with why, instead of
      a live button that fails on click. */
+/* 2026-10-06 — reachable on short screens (most users have little height):
+   the button sits right after the data it confirms, and while that place is
+   below the fold it stays pinned to the bottom of the panel (CSS sticky — one
+   button, never a copy). A step already done reads as a status line, unpinned. */
+function validateZone(inner, done){ return `<div class="validate-zone${done?" is-done":""}">${inner}</div>`; }
+/* "Source section" said what the header's § link already says; kept only
+   where the header has no link to the paragraph. */
+function sourceFieldHTML(b,s){
+  const p=paragraphOf(b.id);
+  return p&&(p.num||p.title) ? "" : `<div class="set-sep"></div>
+    <div class="field"><label>Source section</label>
+      <div class="fval">${s.num}. ${s.title} · <button class="peek-btn" id="goto-doc">View in document →</button></div></div>`;
+}
 function validateCtaHTML(b,hasBranches,es){
+  const brs=b.branches||[];
+  const done = runsPassOne() ? b.status==="allocated"
+    : brs.length>1 ? brs.every(br=>br.allocStatus==="allocated") : es.val==="allocated";
+  return validateZone(validateCtaInner(b,es), done);
+}
+function validateCtaInner(b,es){
   const brs=b.branches||[];
   const btn=(label,attrs,why)=> why
     ? `<button class="validate-cta" disabled title="${escHtml(why)}">${label}</button><div class="validate-why">${escHtml(why)}</div>`
@@ -5811,9 +5833,6 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     ${obsListHTML(myBranch, {reqId:b.id, branchIdx:(b.branches||[]).indexOf(myBranch), systemId:myBranch.typology})}
     <div class="set-sep"></div>
     ${systemAllocationsHTML(myBranch, myIdx)}
-    ${cfPanelHTML(b)}
-    <div class="set-sep"></div>
-    ${distributionBlockHTML(b, true)}
     ${myReassignBranch?`<div class="branch-proposal">
       <div class="branch-proposal-h">↩ Reassignment requested by <b>${myReassignBranch.reassignRequest.byName}</b> <span style="font-weight:400;color:var(--text-3)">(contributor)</span></div>
       <div class="branch-proposal-note">${REASON_LABEL[myReassignBranch.reassignRequest.reason]} — "${escHtml(myReassignBranch.reassignRequest.note)}"</div>
@@ -5827,16 +5846,16 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     </div>`:""}
     ${(function(){   // DEC-104 — the contributor validates their own system
       const i=(b.branches||[]).indexOf(myBranch), st=myBranch.allocStatus;
-      if(st==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`;
+      if(st==="allocated") return validateZone(`<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`, true);
       const why = (!st||st==="incomplete") ? "Allocation incomplete — assign someone and complete ABS / PBS / OBS first." : null;
-      return why ? `<button class="validate-cta" disabled title="${escHtml(why)}">✓ Validate &amp; send to Compliance</button><div class="validate-why">${escHtml(why)}</div>`
-                 : `<button class="validate-cta" data-validatebranch="${i}">✓ Validate &amp; send to Compliance</button>`;
+      return validateZone(why ? `<button class="validate-cta" disabled title="${escHtml(why)}">✓ Validate &amp; send to Compliance</button><div class="validate-why">${escHtml(why)}</div>`
+                 : `<button class="validate-cta" data-validatebranch="${i}">✓ Validate &amp; send to Compliance</button>`);
     })()}
-    ${proposeBlockHTML(b,true,myBranch)}
+    ${cfPanelHTML(b)}
     <div class="set-sep"></div>
-    <div class="field"><label>Source section</label>
-      <div class="fval">${s.num}. ${s.title} · <button class="peek-btn" id="goto-doc">View in document →</button></div>
-    </div>`;
+    ${distributionBlockHTML(b, true)}
+    ${proposeBlockHTML(b,true,myBranch)}
+    ${sourceFieldHTML(b,s)}`;
 }
 /* =====================================================
    DETAIL PANEL — two views, one panel
@@ -5989,9 +6008,9 @@ function activityDetailHTML(b,bidx){
     ${derivationChainHTML(b, branch, branch, false, {noDistrib:true})}
     <div class="set-sep"></div>
     ${systemAllocationsHTML(branch, bidx)}
-    ${done?`<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`
+    ${validateZone(done?`<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`
       :(why?`<button class="validate-cta" disabled title="${escHtml(why)}">✓ Validate &amp; send to Compliance</button><div class="validate-why">${escHtml(why)}</div>`
-           :`<button class="validate-cta" data-validatebranch="${bidx}">✓ Validate &amp; send to Compliance</button>`)}
+           :`<button class="validate-cta" data-validatebranch="${bidx}">✓ Validate &amp; send to Compliance</button>`), done)}
     ${proposeBlockHTML(b, true, branch)}`;
 }
 function renderSettings(){
@@ -6109,7 +6128,7 @@ function renderSettings(){
        the propose block below them belong to every view and stay shared. */
     html += pmTurnkey
       ? (actView ? activityDetailHTML(b,state.panelActivity)
-                 : pmClassificationHTML(b)+activityBlocksHTML(b)+(isReq?validateCtaHTML(b,hasBranches,es):""))
+                 : pmClassificationHTML(b)+(isReq?validateCtaHTML(b,hasBranches,es):"")+activityBlocksHTML(b))
       : (isReq && myBranch)
         ? contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassignIdx)
         : "";
@@ -6185,18 +6204,15 @@ function renderSettings(){
       </div>`;
       })():""}
 
-      ${isReq?cfPanelHTML(b):""}
-      <div class="set-sep"></div>
-
-      <div class="field"><label>Source section</label>
-        <div class="fval">${s.num}. ${s.title} · <button class="peek-btn" id="goto-doc">View in document →</button></div></div>
       ${isReq&&!rmView&&!actView?`<div class="set-sep"></div>
       <div class="mgr-block" id="mgr-block">
         <label class="mgr-lbl">Assigned to <span>· responsible for its compliance</span></label>
         ${personSearchHTML("req-manager",b.manager)}
       </div>`:""}
+      ${isReq ? validateCtaHTML(b,hasBranches,es) : ""}
+      ${isReq&&cfPanelHTML(b)?`<div class="set-sep"></div>${cfPanelHTML(b)}`:""}
       ${isReq && !isAdmin() ? proposeBlockHTML(b,hasBranches,myBranch) : ""}
-      ${isReq ? validateCtaHTML(b,hasBranches,es) : ""}`;
+      ${sourceFieldHTML(b,s)}`;
     body.innerHTML = html;
     if(isReq && actView && (b.branches||[])[state.panelActivity]) bindObsList(body,b.branches[state.panelActivity],b);
     else if(isReq && myBranch) bindObsList(body,myBranch,b);
