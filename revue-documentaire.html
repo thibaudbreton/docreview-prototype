@@ -455,9 +455,12 @@ body.mode-compare .ghost-block{display:block}
 .review-wrap{flex:1;overflow:hidden;display:none;padding:var(--space-5);flex-direction:column;min-height:0}
 body.mode-review .review-wrap{display:flex}
 body.mode-review .doc-scroll{display:none}
-.review-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);flex-shrink:0}
-.review-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
-.review-head .sub{font-size:var(--text-sm);color:var(--text-3)}
+/* 2026-10-06 — the page title opens the status bar instead of owning a row
+   (38px of table height on a short screen); the count it carried shows in
+   the toolbar only when a filter narrows the list. */
+.tri-title{font-size:var(--text-lg);font-weight:700;letter-spacing:-.2px;margin:0;white-space:nowrap;flex-shrink:0}
+.tri-sep{width:1px;height:20px;background:var(--line-2);flex-shrink:0}
+.shown-count{font-size:var(--text-sm);color:var(--text-3);white-space:nowrap;font-variant-numeric:tabular-nums}
 /* ---- virtualized grid ---- */
 :root{ --partner:#1b9aaa; --partner-soft:rgba(27,154,170,.14); }
 :root{ --rrow-h:44px; --rgrid-cols:32px 98px minmax(325px,1.82fr) 78px 136px 120px 100px 124px 140px 118px 92px 108px; }
@@ -1750,6 +1753,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
 
   <!-- ===================== TRIAGE BAR ===================== -->
   <div class="triage">
+    <h2 class="tri-title" title="Verify class, system, assignments and statuses">Allocation</h2><span class="tri-sep"></span>
     <span class="total-count" id="total-count">0 requirements</span>
     <span class="alloc-pct" id="alloc-pct" title="Share of requirements fully allocated — characterisation and every system validated"><span class="alloc-pct-bar"><span id="alloc-pct-fill"></span></span><b id="alloc-pct-n">0%</b> allocated</span>
     <div class="triage-pills">
@@ -1789,10 +1793,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
       <div class="compare-bar" id="compare-bar"></div>
       <div class="doc-scroll" id="doc-scroll"></div>
       <div class="review-wrap">
-        <div class="review-head">
-          <h2>Allocation</h2>
-          <span class="sub" id="review-sub"></span>
-        </div>
         <div class="filter-sel-banner" id="filter-sel-banner" style="display:none">
           <span>Showing <b id="fsb-n">0</b> of <b id="fsb-total">0</b> requirements — selected</span>
           <button class="btn-ghost" id="fsb-show-all" style="font-size:var(--text-sm)">Show all</button>
@@ -1811,6 +1811,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
             <input type="text" id="table-search" placeholder="Search requirement, ID…">
           </div>
+          <span class="shown-count" id="review-sub" hidden></span>
           <div class="active-filter" id="adv-filter-banner" style="display:none">
             <span class="active-filter-t" id="adv-filter-banner-text"></span>
             <button id="adv-filter-banner-clear" title="Clear every filter">✕</button>
@@ -5034,8 +5035,9 @@ function renderReview(){
     const t=document.getElementById("adv-filter-banner-text");
     t.textContent=sentence; t.title=sentence;   // truncated inline, full on hover
   }
-  document.getElementById("review-sub").innerHTML =
-    `<b>${rows.length.toLocaleString()}</b> shown${rows.length!==total?` of ${total.toLocaleString()}`:""} — verify class, system, assignments and statuses`;
+  const shownEl=document.getElementById("review-sub");
+  shownEl.hidden = rows.length===total;   // the status bar already says the total
+  shownEl.innerHTML = `<b>${rows.length.toLocaleString()}</b> of ${total.toLocaleString()} shown`;
   renderSortIndicators();
   renderColFilterIndicators();
 

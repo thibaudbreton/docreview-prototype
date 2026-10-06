@@ -254,9 +254,13 @@ html[data-theme="light"] .logo-mark-light{display:block}
    need or want to become flex columns. */
 #view-table.on{display:flex;flex-direction:column}
 .view-pad{padding:16px 20px}
-.view-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:10px;flex-wrap:wrap}
-.view-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px;flex-shrink:0}
-.view-head .sub{font-size:var(--text-sm);color:var(--text-3)}
+/* 2026-10-06 — the page title opens the status bar instead of owning a row
+   (38px of table height on a short screen); the count it carried shows in
+   the toolbar only when a filter narrows the list. */
+.tri-title{font-size:var(--text-lg);font-weight:700;letter-spacing:-.2px;margin:0;white-space:nowrap;flex-shrink:0}
+.tri-sep{width:1px;height:20px;background:var(--line-2);flex-shrink:0}
+.shown-count{font-size:var(--text-sm);color:var(--text-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tri-assign{font-size:var(--text-sm);color:var(--text-2);white-space:nowrap;font-variant-numeric:tabular-nums}
 /* ---------- B5: shared review-table grid (see revue-documentaire.html — same
    component, this screen's own column config + adapter, table-engine.js for
    the interaction behaviour). Copied CSS conventions, not a shared stylesheet
@@ -1106,10 +1110,12 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
   <!-- ============ SCREEN 2 ============ -->
   <div id="screen2" style="display:flex;flex-direction:column;flex:1;min-height:0">
     <div class="triage">
+      <h2 class="tri-title">Compliance</h2><span class="tri-sep"></span>
       <div class="progress-wrap">
         <span class="p2-ring" id="p2-fill"></span>
         <span class="progress-label"><b id="p2-num">0/0</b> consolidated</span>
       </div>
+      <span class="tri-assign" id="tri-assign"></span>
       <div class="triage-pills">
         <button class="tpill p-done" data-filter="answered"><span class="n" id="n-answered">0</span> answered</button>
         <button class="tpill p-wait" data-filter="await"><span class="n" id="n-await">0</span> awaiting answer</button>
@@ -1135,7 +1141,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
              owning a full row on its own. #export-ready now only renders in the
              completed state, where it carries a real CTA worth the space. -->
         <div class="view view-pad on" id="view-table">
-          <div class="view-head"><h2>Compliance</h2><span class="sub" id="table-sub"></span></div>
           <div class="export-ready" id="export-ready"></div>
           <div class="f10-tools" id="f10-tools">
             <!-- §3.5 treatment, applied here too (§4.2): the search bar is the
@@ -1146,6 +1151,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
               <input type="text" id="f10-search" placeholder="Search requirement, ID…" autocomplete="off">
             </div>
+            <span class="shown-count" id="table-sub" hidden></span>
             <div class="active-filter" id="adv-filter-banner" style="display:none">
               <span class="active-filter-t" id="adv-filter-banner-text"></span>
               <button id="adv-filter-banner-clear" title="Clear every filter">✕</button>
@@ -2926,10 +2932,14 @@ function renderTable2(){
   // Dropped the "— action items first (…)" tail: it explained the default sort,
   // which the sort dropdown right below already states. Carries the pending
   // consolidation count instead, which used to need its own banner.
-  const cs=consolidationStatus();
-  document.getElementById("table-sub").textContent=
-    `${rows.length} requirement${rows.length>1?"s":""} · ${shownBranches} assignment${shownBranches>1?"s":""}`
-    + (cs.complete?"":` · ${cs.remaining}/${cs.total} pending consolidation`);
+  // 2026-10-06 — the title moved to the status bar; "pending consolidation" was
+  // the status bar's own "N/M consolidated" said backwards. What's left: the
+  // assignment total there, and here the count only when a filter narrows it.
+  const allBranches=REQS.reduce((n,r)=>n+r.branches.length,0);
+  document.getElementById("tri-assign").textContent=`${allBranches} assignment${allBranches===1?"":"s"}`;
+  const shownEl=document.getElementById("table-sub");
+  shownEl.hidden = rows.length===REQS.length && shownBranches===allBranches;
+  shownEl.innerHTML=`<b>${rows.length}</b> of ${REQS.length} requirements · ${shownBranches} assignment${shownBranches===1?"":"s"} shown`;
   if(!fVROWS.length){
     win.innerHTML=`<div class="empty-rows">No assignment matches the current view.</div>`;
   } else {

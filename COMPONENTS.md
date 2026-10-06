@@ -415,12 +415,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Page Title
 - **level**: atom
 - **file**: every screen (`h1`, `h2`), plus `.cfg-h`, `.set-title`, `.view-panel-head`, `.fb-bh` as section titles
-- **variants**: page (h1/h2, carries the red mark), section (h3 and the class-based titles, no mark)
+- **variants**: page (h1/h2, carries the red mark), section (h3 and the class-based titles, no mark), in the status bar (`.tri-title`, Allocation and Compliance)
 - **tokens**: --font-heading, --brand-red (h1/h2 mark only), --text-lg / --text-xl where sized
 - **built-from**: none
 - **added**: 2026-09-22
-- **changed**: 2026-09-22
-- **notes**: The red mark is a `::before` inline-block so it survives flex and block title containers alike; its height is `.85em`, deliberately relative rather than on the space scale. Red is never applied to interactive or stateful elements — see `--warn`.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: on Allocation and Compliance the title no longer owns a row (`.review-head` / `.view-head` removed, 38px of table height at 1280×600 — 7 rows visible instead of 6): it opens the Triage Bar, followed by a 1px `.tri-sep` (hardcoded 20px high). Their subtitles went with it — Allocation's guidance is the title's tooltip; the shown count is `.shown-count` in the toolbar, only while a filter narrows the list; Compliance's "pending consolidation" repeated the bar's "consolidated", its assignment total is now in the bar. The other screens keep their title row. The red mark is a `::before` inline-block so it survives flex and block title containers alike; its height is `.85em`, deliberately relative rather than on the space scale. Red is never applied to interactive or stateful elements — see `--warn`.
 
 ### Custom Column Tag
 - **level**: atom
@@ -1449,12 +1449,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Triage Bar
 - **level**: organism
 - **file**: compliance.html, revue-documentaire.html
-- **variants**: with/without "pending reassignment" pill, % allocated (revue-documentaire.html)
+- **variants**: with/without "pending reassignment" pill, % allocated (revue-documentaire.html), assignment total (compliance.html); opens with the screen's title (Page Title, `.tri-title`)
 - **tokens**: --space-1, --space-3, --space-4, --radius-pill, --warn, --ia, --human, --ok, --accent, --font-mono, --text-sm, --text-2, --text
 - **built-from**: Progress Bar, Filter Pill / status-count pills, Tab Bar, Ghost Button, Kbd Key
 - **added**: 2026-09-01
-- **changed**: 2026-10-01
-- **notes**: 2026-10-01 (revue-documentaire.html): "N requirements" is followed by `.alloc-pct` — a 64px mini bar (`--ok` on the untracked `--panel-3`, 6px height and 6px gap hardcoded) and "<b>N%</b> allocated", allocated over the requirements the viewer can see, computed in `renderTriage`. 2026-09-24 (compliance.html): the 120px bar + "N/M consolidated · % · assignments answered" became a 16px ring (`.p2-ring`, conic-gradient, mask radial hardcoded 4/5px) + "N/M consolidated", the rest in its tooltip; the "By section / By contributor" switch and the shortcut hints are removed; a "⚑ set aside" pill (`.p-aside`, contributor only) filters to the viewer's set-aside assignments. `.triage`, fixed 42–44px height. Both screens independently implement their own `.tpill` rather than sharing one, despite driving the same five/six-state status vocabulary as Status Pill.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: starts with the screen's title and a separator (Allocation, Compliance) — they had their own row above the toolbar; compliance.html adds "N assignments" (`.tri-assign`) after "consolidated". 2026-10-01 (revue-documentaire.html): "N requirements" is followed by `.alloc-pct` — a 64px mini bar (`--ok` on the untracked `--panel-3`, 6px height and 6px gap hardcoded) and "<b>N%</b> allocated", allocated over the requirements the viewer can see, computed in `renderTriage`. 2026-09-24 (compliance.html): the 120px bar + "N/M consolidated · % · assignments answered" became a 16px ring (`.p2-ring`, conic-gradient, mask radial hardcoded 4/5px) + "N/M consolidated", the rest in its tooltip; the "By section / By contributor" switch and the shortcut hints are removed; a "⚑ set aside" pill (`.p-aside`, contributor only) filters to the viewer's set-aside assignments. `.triage`, fixed 42–44px height. Both screens independently implement their own `.tpill` rather than sharing one, despite driving the same five/six-state status vocabulary as Status Pill.
 
 ### Left Navigator Panel
 - **level**: organism
