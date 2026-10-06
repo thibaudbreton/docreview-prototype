@@ -174,42 +174,24 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .rail-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
 .rail-label span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3);opacity:.8}
 /* §2.2 — KPI row above navigation */
-/* The tender's line (2026-10-06, reworked the same day) — the process as four
-   station cards on a rail: Capture, Allocation, Compliance, Submission. Each
-   card is a block with its status, key figure and progress (its bottom edge),
-   and says plainly how to open its screen; the current one is framed and its
-   link is a button. The navy rail shows between the cards, filled where the
-   tender has passed. Replaces the two phase cards, then the open line drawing
-   (too tall, and not obviously clickable). */
-.tsteps{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4);margin:var(--space-1) 0 22px}
-.ts-rail{position:absolute;left:0;right:0;top:25px;height:4px;border-radius:2px;background:var(--line-2)}
-.ts-rail>i{display:block;height:100%;border-radius:2px;background:var(--accent)}
-.ts-card{position:relative;display:flex;flex-direction:column;gap:2px;padding:var(--space-3) var(--space-4) 14px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;color:inherit;font:inherit;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s}
-.ts-card:not(:disabled):hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 18px rgba(14,30,50,.08)}
-.ts-card:disabled{cursor:default;background:var(--panel-2)}
-.ts-card.current{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.ts-top{display:flex;align-items:center;gap:var(--space-2)}
-.ts-dot{width:18px;height:18px;flex-shrink:0;box-sizing:border-box;border-radius:50%;border:4px solid var(--line-2);background:var(--panel);display:grid;place-items:center;color:#fff;font-size:10px;font-weight:700}
-.ts-card.done .ts-dot{background:var(--accent);border-color:var(--accent)}
-.ts-card.current .ts-dot,.ts-card.active .ts-dot{border-color:var(--accent)}
-.ts-card.current .ts-dot{box-shadow:0 0 0 4px var(--accent-soft)}
-.ts-name{font-family:var(--font-heading);font-size:var(--text-lg);font-weight:700;color:var(--text)}
-.ts-tag{margin-left:auto;font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-pill);background:var(--panel-3);color:var(--text-2);white-space:nowrap}
-.ts-card.done .ts-tag{background:var(--ok-soft);color:var(--ok)}
-.ts-card.current .ts-tag{background:var(--accent);color:#fff}
-.ts-card.active .ts-tag{background:var(--accent-soft);color:var(--accent)}
-.ts-stat{margin-top:var(--space-1);font-size:var(--text-sm);color:var(--text-2)}
-.ts-stat b{font-size:var(--text-xl);font-weight:700;color:var(--text);margin-right:3px;font-variant-numeric:tabular-nums}
-.ts-foot{display:flex;align-items:center;gap:var(--space-2);min-height:22px;font-size:var(--text-xs);color:var(--text-3)}
-.ts-foot .late{color:var(--warn);font-weight:600}
-.ts-open{margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--accent);white-space:nowrap}
-.ts-card.current .ts-open{padding:3px var(--space-3);border-radius:var(--radius-pill);background:var(--accent);color:#fff}
-.ts-bar{position:absolute;left:0;bottom:0;height:3px;background:var(--accent)}
-.ts-card.done .ts-bar{background:var(--ok)}
+/* Dashboard redesign — the process is TWO steps, and the dashboard's job on
+   arrival is to make it obvious which one to click. So the rail carries only
+   Allocation and Compliance, full size; Versions & Q&A joined Team casting in
+   the support rail below (both are always-open, order-free companions to the
+   two steps, not steps themselves). */
+.phase-rail{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-5);margin-bottom:22px;position:relative}
 .phase{position:relative;display:flex;gap:var(--space-3);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-4);cursor:pointer;transition:all .15s;min-height:96px}
+/* the → sitting in the grid gap, so step 1 reads as leading into step 2 */
+.phase.step-1::after{content:"→";position:absolute;top:50%;right:calc(-1 * var(--space-5) / 2);transform:translate(50%,-50%);color:var(--text-3);font-size:var(--text-lg);line-height:1;pointer-events:none}
+/* "you are here, click this" — only ever on one card at a time (applyGating) */
+.phase.is-current{background:var(--accent-soft);border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent)}
+.phase.is-current .ph-open-btn{background:var(--accent);border-color:var(--accent);color:#fff}
+.phase.is-current:hover .ph-open-btn{background:var(--accent);border-color:var(--accent)}
 .phase:hover{border-color:var(--accent);transform:translateY(-2px)}
 .ph-num{width:30px;height:30px;border-radius:var(--radius-md);background:var(--panel-3);color:var(--text-3);display:grid;place-items:center;font-size:var(--text-base);font-weight:700;flex-shrink:0}
 .ph-num.transversal{font-size:var(--text-lg)}
+.phase.active-phase{border-color:var(--accent)}
+.phase.active-phase .ph-num{background:var(--accent);color:#fff}
 .phase.done-phase{border-color:rgba(63,178,127,.45)}
 .phase.done-phase .ph-num{background:var(--ok);color:#fff}
 .ph-info{flex:1;min-width:0}
@@ -222,6 +204,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .ph-bar>div{height:100%;border-radius:var(--radius-xs)}
 .ph-sub{font-size:var(--text-xs);color:var(--text-3);margin-top:var(--space-2);line-height:1.4}
 .ph-badge{position:absolute;top:13px;right:14px;font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-pill);letter-spacing:.3px}
+.ph-badge.current{background:var(--accent-soft);color:var(--accent)}
 .ph-badge.done{background:var(--ok-soft);color:var(--ok)}
 .ph-badge.wait{background:var(--panel-3);color:var(--text-3)}
 .ph-open-btn{position:absolute;bottom:13px;right:14px;font-size:var(--text-xs);font-weight:600;color:var(--accent);
@@ -833,10 +816,33 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
            The one figure with no other home, the tender's total volume, moved
            into the hero line above. -->
 
-      <!-- the tender's line — the process as a rail line, one station per step;
-           drawn by renderTenderLine() -->
-      <div class="rail-label">The tender's line <span>· four steps · open one to work on it</span></div>
-      <div class="tsteps" id="tender-line"></div>
+      <!-- phase rail — the two steps, and only the two steps -->
+      <div class="rail-label">Process <span>· two steps · click one to open it</span></div>
+      <div class="phase-rail">
+        <a class="phase active-phase step-1" id="ph-review" href="javascript:parent.route('review')">
+          <div class="ph-num">1</div>
+          <div class="ph-info">
+            <div class="ph-name">Allocation</div>
+            <!-- §2.1 — placeholder copy, flagged per the ticket's own instruction -->
+            <div class="ph-desc">Route each requirement to the system and team responsible for answering it.</div>
+            <div class="ph-stat" id="ph-review-stat"><span class="big" id="ph-review-n">5</span><span id="ph-review-txt">/ 14 requirements validated</span></div>
+            <div class="ph-bar"><div id="ph-review-bar" style="width:36%;background:var(--ia)"></div></div>
+          </div>
+          <span class="ph-badge current" id="ph-review-badge">Current</span>
+          <span class="ph-open-btn">Open →</span>
+        </a>
+        <div class="phase active-phase" id="ph-followup" style="cursor:pointer">
+          <div class="ph-num">2</div>
+          <div class="ph-info">
+            <div class="ph-name">Compliance</div>
+            <div class="ph-desc">Record whether each requirement is met, and declare the result to the client.</div>
+            <div class="ph-stat" id="ph-followup-body"><span class="big">0</span><span>/ 0 answered</span></div>
+            <div class="ph-bar"><div id="ph-followup-bar" style="width:0%;background:var(--ia)"></div></div>
+          </div>
+          <span class="ph-badge current" id="ph-followup-badge">Open</span>
+          <span class="ph-open-btn" id="ph-followup-open">Open →</span>
+        </div>
+      </div>
 
 
       <!-- Support rail. Neither of these is a step: both are open from day one,
@@ -1479,47 +1485,48 @@ function applyGating(){
   // Compliance-gating concept.
   document.querySelectorAll(".p1only").forEach(el=>el.classList.toggle("hidden",done));
   document.querySelectorAll(".v22only").forEach(el=>el.classList.toggle("hidden",!v22Done()));
-  renderTenderLine();
+  // allocation phase card
+  const rBadge=document.getElementById("ph-review-badge"),rCard=document.getElementById("ph-review");
+  if(done){
+    rBadge.textContent="Done"; rBadge.className="ph-badge done";
+    rCard.classList.remove("active-phase"); rCard.classList.add("done-phase");
+    document.getElementById("ph-review-n").textContent=ap.allocated;
+    document.getElementById("ph-review-txt").textContent=`/ ${ap.total} allocated · done`;
+    document.getElementById("ph-review-bar").style.width="100%";
+    document.getElementById("ph-review-bar").style.background="var(--ok)";
+  }
+  // compliance phase card — TE2/DEC-035: gate removed. The workflow no longer
+  // requires Allocation to be finalized before Compliance is reachable; the two
+  // run side by side now, so this always renders the live-progress state (used
+  // to be gated on `done`, see TE1 for the now-reverted version of this).
+  const f=document.getElementById("ph-followup"),fb=document.getElementById("ph-followup-badge"),fbody=document.getElementById("ph-followup-body");
+  f.className="phase active-phase"; f.style.cursor="pointer";
+  fb.textContent="Open"; fb.className="ph-badge current";
+  // TB1 — computed from the FOLLOWUP_REQS mirror instead of a fixed string.
+  const fTotal=FOLLOWUP_REQS.length;
+  const fAnswered=FOLLOWUP_REQS.filter(r=>r.compliance!==null).length;
+  const fOverdue=FOLLOWUP_REQS.reduce((s,r)=>s+(r.overdueBranches||0),0);
+  const fPct=Math.round(fAnswered/fTotal*1000)/10;
+  // innerHTML, not outerHTML: replacing the element wholesale used to inject a
+  // fresh .ph-bar every call while leaving the previous one in place, so bars
+  // stacked up on any re-render. Mirrors how the Allocation card updates.
+  fbody.innerHTML=`<span class="big">${fAnswered}</span><span>/ ${fTotal} answered${fOverdue?` · ${fOverdue} overdue`:""}</span>`;
+  document.getElementById("ph-followup-bar").style.width=fPct+"%";
+  f.onclick=()=>goRoute("compliance.html");
+  // Exactly one step carries the "click here" emphasis: Allocation until it is
+  // finalized, Compliance after. Set last — f.className above wipes classes.
+  rCard.classList.toggle("is-current", !done);
+  f.classList.toggle("is-current", done);
+  f.classList.remove("step-1"); rCard.classList.add("step-1");
   // attention count
   const visibleAtt=[...document.querySelectorAll(".att")].filter(a=>a.offsetParent!==null||!a.classList.contains("hidden"));
   document.getElementById("att-count").textContent=document.querySelectorAll(".att:not(.hidden)").length;
 }
 
-/* The tender's line (2026-10-06). Capture is done once the tender is here;
-   Allocation is current until every requirement is allocated (DEC-098), then
-   Compliance, then Submission. Compliance runs alongside Allocation (DEC-035),
-   so it reads as open, not future, before it becomes current. TB1 — Compliance
-   counts come from the FOLLOWUP_REQS mirror. */
-function renderTenderLine(){
-  const el=document.getElementById("tender-line"); if(!el) return;
-  const ap=allocProgress(), total=ap.total||0, alloc=Math.min(ap.allocated||0,total);
-  const fTotal=FOLLOWUP_REQS.length, fAnswered=FOLLOWUP_REQS.filter(r=>r.compliance!==null).length;
-  const fOverdue=FOLLOWUP_REQS.reduce((s,r)=>s+(r.overdueBranches||0),0);
-  const allocDone=total>0&&alloc===total, cmpDone=fTotal>0&&fAnswered===fTotal;
-  const st=["done", allocDone?"done":"current", allocDone?(cmpDone?"done":"current"):"active", allocDone&&cmpDone?"current":"future"];
-  const pct=(a,b)=>b?Math.round(a/b*100):0;
-  const nDocs=((document.querySelector("#ph-documents .big")||{}).textContent||"").trim();
-  const days=((document.querySelector(".deadline .d-num")||{}).textContent||"").trim();
-  const tag=(i,future)=>st[i]==="done"?"Done":st[i]==="current"?"Current":st[i]==="active"?"Open":future;
-  const card=(i,name,stat,foot,pctDone,go,openLbl,future)=>`<button type="button" class="ts-card ${st[i]}" ${go?`data-go="${go}"`:"disabled"}>
-      <span class="ts-top"><span class="ts-dot">${st[i]==="done"?"✓":""}</span><span class="ts-name">${name}</span><span class="ts-tag">${tag(i,future||"Upcoming")}</span></span>
-      <span class="ts-stat">${stat}</span>
-      <span class="ts-foot"><span>${foot}</span>${go?`<span class="ts-open">${openLbl} →</span>`:""}</span>
-      ${pctDone!=null?`<span class="ts-bar" style="width:${pctDone}%"></span>`:""}
-    </button>`;
-  // the rail runs behind the cards and shows in the gaps: navy as far as the tender has gone
-  const railPct=allocDone?(cmpDone?100:62.5):37.5;
-  el.innerHTML=`<span class="ts-rail"><i style="width:${railPct}%"></i></span>`
-    +card(0,"Capture",`<b>${total}</b>requirements`,nDocs?`captured from ${nDocs} documents`:"captured",100,"documents.html","Documents")
-    +card(1,"Allocation",`<b>${alloc}</b>/ ${total} allocated`,allocDone?"all allocated":`${total-alloc} to go`,pct(alloc,total),"revue-documentaire.html","Open Allocation")
-    +card(2,"Compliance",`<b>${fAnswered}</b>/ ${fTotal} answered`,fOverdue?`<span class="late">${fOverdue} overdue</span>`:"none overdue",pct(fAnswered,fTotal),"compliance.html","Open Compliance")
-    +card(3,"Submission",days?`<b>${days}</b>days left`:"",`due ${TENDER_DEADLINE_LABEL}`,null,null,"",days?`in ${days} days`:"Upcoming");
-  el.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>goRoute(b.dataset.go)));
-}
-
 /* Dashboard attention navigation (routes through shell when merged) */
 document.querySelectorAll(".att[data-go]").forEach(a=>a.addEventListener("click",()=>goRoute(a.dataset.go)));
 /* Phase cards routing through shell */
+document.getElementById("ph-review").addEventListener("click",e=>{e.preventDefault();goRoute("revue-documentaire.html");});
 document.getElementById("ph-documents").addEventListener("click",e=>{e.preventDefault();goRoute("documents.html");});
 document.getElementById("ph-qa").addEventListener("click",e=>{e.preventDefault();goRoute("qa.html");});
 document.getElementById("demo-contributor-link").addEventListener("click",()=>goRoute("compliance.html#contributor"));
@@ -2319,8 +2326,6 @@ const FOLLOWUP_REQS_BASE=[
   {id:"SRM-00014",compliance:null,            branchStatuses:["awaiting_qa"]},
 ];
 const FOLLOWUP_REQS = IS_SIG_TENDER ? SIG_FOLLOWUP_REQS : FOLLOWUP_REQS_BASE;
-// the submission date, shown on the tender's line and in the trajectory chart
-const TENDER_DEADLINE_LABEL="Aug 12";
 
 const branchesOf=r=>r.branchStatuses||[];
 const answeredOf=r=>branchesOf(r).filter(s=>s==="answered").length;
@@ -2344,7 +2349,10 @@ function renderReviewKPIs(){
   const ap=allocProgress();
   const total=ap.total;
   const validated=ap.allocated;
-  renderTenderLine();
+  const pct=Math.round(validated/total*100);
+  document.getElementById("ph-review-n").textContent=validated;
+  document.getElementById("ph-review-txt").textContent=`/ ${total} requirements allocated`;
+  document.getElementById("ph-review-bar").style.width=pct+"%";
   document.getElementById("att-review-sub").textContent=`${total-validated} requirements still to validate`;
 }
 /* TB2 — mirrors the system-level detail behind compliance.html's
@@ -2541,7 +2549,7 @@ const STATS_TRAJECTORY_BASE=[
 ];
 const STATS_TRAJECTORY = IS_SIG_TENDER ? SIG_TRAJECTORY : STATS_TRAJECTORY_BASE;
 
-const STATS_DEADLINE_LABEL=TENDER_DEADLINE_LABEL;
+const STATS_DEADLINE_LABEL="Aug 12";
 function renderStatsTrajectory(){
   const el=document.getElementById("stats-trajectory"); if(!el) return;
   const pts=STATS_TRAJECTORY;

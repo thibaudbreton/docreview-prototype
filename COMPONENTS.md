@@ -1237,12 +1237,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Phase Card
 - **level**: molecule
 - **file**: dashboard-et-config.html
-- **variants**: support (secondary rail); done-phase state
+- **variants**: step (primary rail), support (secondary rail); active-phase, done-phase, is-current states
 - **tokens**: --space-3, --panel, --line, --radius-lg, --space-4, --accent, --accent-soft, --radius-md, --text-3, --text-base, --text-lg, --text-sm, --text-2, --text-xl, --radius-xs, --ok, --text-xs, --radius-pill
 - **built-from**: Status Pill, Progress Bar
 - **added**: 2026-09-01
 - **changed**: 2026-10-06
-- **notes**: 2026-10-06: the step variant left with the Phase Rail (replaced by the Tender Line); only the support rail uses the card now, so `.active-phase`, `.is-current`, `.step-1` and `.ph-badge.current` are gone. `.phase`. A source comment explicitly calls this "the same molecule" reused for both rails — confirmed intentional componentization, one of the few in the codebase. `.is-current` uses `color-mix()` rather than a plain token. Absolute badge/button offsets and min-height (96px) hardcoded.
+- **notes**: 2026-10-06: the step variant was replaced by the Tender Line on the dashboard, then restored the same day on review — this area is for getting to the two working screens, minimal, with Allocation and Compliance standing out. `.phase`. A source comment explicitly calls this "the same molecule" reused for both rails — confirmed intentional componentization, one of the few in the codebase. `.is-current` uses `color-mix()` rather than a plain token. Absolute badge/button offsets and min-height (96px) hardcoded.
 
 ### Cast Coverage Card
 - **level**: molecule
@@ -1818,13 +1818,23 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Tender Line
 - **level**: organism
-- **file**: dashboard-et-config.html, accueil.html (mini)
-- **variants**: station cards (dashboard: four cards on a rail — name, status tag, key figure, foot line, "Open … →", progress along the bottom edge), mini (tender card: dots and the four names, the current one with its count); station states done (✓, "Done", green edge), current (framed, "Current", the link a button), active (Compliance, open alongside Allocation, "Open"), future (Submission: disabled, days left)
+- **file**: accueil.html
+- **variants**: mini (tender card and Continue Card: dots and the four station names, the current one with its count); station states done, current, future
 - **tokens**: --accent, --accent-soft, --line, --line-2, --panel, --panel-2, --ok, --ok-soft, --warn, --text, --text-2, --text-3, --font-heading, --text-xs, --text-sm, --text-lg, --text-xl, --radius-pill, --space-1, --space-2
 - **built-from**: none
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: 2026-10-06 (reworked after review): on the dashboard the open line drawing became four station cards on a rail — it was too tall for what it said and not obviously clickable. Each card is a button that says how to open its screen; the rail shows in the gaps, navy as far as the tender has gone. About 105px high instead of ~190. Hardcoded: 18px dots, 4px rail at 25px, 3px bottom progress edge, card shadow. The process as a rail line — the brand's own world, and the step navigation: Capture → Allocation → Compliance → Submission, each station a button that opens its screen (Submission none). Between two stations the line fills with the share of requirements already past the first. `renderTenderLine()` (allocation progress from the shell when Allocation has run, Compliance from the FOLLOWUP_REQS mirror, `TENDER_DEADLINE_LABEL`); `gaugeHTML()` for the mini. Replaces the two-card Phase Rail. Mini: hardcoded 12px dots, 4px segments, 25%-per-segment geometry.
+- **notes**: 2026-10-06 (final): the dashboard variant is gone (see Removed) — only the mini line on the home page remains. 2026-10-06 (reworked after review): on the dashboard the open line drawing became four station cards on a rail — it was too tall for what it said and not obviously clickable. Each card is a button that says how to open its screen; the rail shows in the gaps, navy as far as the tender has gone. About 105px high instead of ~190. Hardcoded: 18px dots, 4px rail at 25px, 3px bottom progress edge, card shadow. The process as a rail line — the brand's own world, and the step navigation: Capture → Allocation → Compliance → Submission, each station a button that opens its screen (Submission none). Between two stations the line fills with the share of requirements already past the first. `renderTenderLine()` (allocation progress from the shell when Allocation has run, Compliance from the FOLLOWUP_REQS mirror, `TENDER_DEADLINE_LABEL`); `gaugeHTML()` for the mini. Replaces the two-card Phase Rail. Mini: hardcoded 12px dots, 4px segments, 25%-per-segment geometry.
+
+### Phase Rail
+- **level**: organism
+- **file**: dashboard-et-config.html
+- **variants**: none
+- **tokens**: --space-5, --text-3, --text-lg
+- **built-from**: Phase Card (step variant)
+- **added**: 2026-09-01
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: removed for the Tender Line (a rail drawing, then four station cards) and restored on review: Capture is automatic and Submission is the project's end, so neither is a screen to open; the days left are already in the hero. `.phase-rail`, 2-column grid with a hardcoded `→` connector glyph.
 
 ### Support Rail
 - **level**: organism
@@ -2031,7 +2041,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Arbitration Queue Card — removed 2026-10-06, replaced by the answer to confirm on the Q&A Card (DEC-116)
 
-### Phase Rail — removed 2026-10-06, replaced by the Tender Line
+### Tender Line, dashboard variant — removed 2026-10-06, replaced by the Phase Rail again (navigation first; Capture and Submission aren't screens to open)
 
 ### Glossary Grid — removed 2026-10-06, no longer needed (the home page keeps no vocabulary block)
 
