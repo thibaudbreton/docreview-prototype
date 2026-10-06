@@ -1674,27 +1674,27 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Product Line Badge, Role Chip, Tender Line (mini)
 - **added**: 2026-09-01
 - **changed**: 2026-10-06
-- **notes**: 2026-10-06 (later): rebuilt around what a tender asks of you — top row: the Product Line Badge, the reference, your Role Chip on the right; then the name in the heading face, the line, the footer. The stage pill (Allocation / Compliance / Processing / Submitted) and the two plain rows (product line with a bar, role with a dot) are gone: the line carries the stage, the badge and the chip carry the rest. 2026-10-06: its gauge is the Tender Line in miniature (`gaugeHTML()`), replacing the Allocation / Compliance progress bar and the submitted card's text line; the processing label and "Response submitted" moved to its tooltip. `min-height:172px` and hover `translateY(-2px)` hardcoded. Listed at molecule level (assembles several atoms into one repeatable card) even though it sits inside the Tender Dashboard Grid organism above.
+- **notes**: 2026-10-06 (colour pass): "Processing" in the second blue. 2026-10-06 (later): rebuilt around what a tender asks of you — top row: the Product Line Badge, the reference, your Role Chip on the right; then the name in the heading face, the line, the footer. The stage pill (Allocation / Compliance / Processing / Submitted) and the two plain rows (product line with a bar, role with a dot) are gone: the line carries the stage, the badge and the chip carry the rest. 2026-10-06: its gauge is the Tender Line in miniature (`gaugeHTML()`), replacing the Allocation / Compliance progress bar and the submitted card's text line; the processing label and "Response submitted" moved to its tooltip. `min-height:172px` and hover `translateY(-2px)` hardcoded. Listed at molecule level (assembles several atoms into one repeatable card) even though it sits inside the Tender Dashboard Grid organism above.
 
 ### Product Line Badge
 - **level**: atom
 - **file**: accueil.html
-- **variants**: none (the product line's name, uppercase: Turnkey, SIG, Services…)
+- **variants**: Turnkey (navy), SIG (the second brand blue), every other line (slate)
 - **tokens**: --accent, --radius-xs, --text-xs
 - **built-from**: none
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: `.pc-lineb` — the tender's product line as a metro-line badge, filled in the brand navy; one colour for every line on purpose (the palette's other colours already mean statuses). Lighter after review (2026-10-06): Medium weight, 0.9px tracking, 20px high, 7px side padding — bold uppercase read as coarse. Hardcoded height, padding, tracking and white text.
+- **notes**: `.pc-lineb` — the tender's product line as a metro-line badge, filled in the brand navy; blues only, one per main product line, so they never read as a status colour. Lighter after review (2026-10-06): Medium weight, 0.9px tracking, 20px high, 7px side padding — bold uppercase read as coarse. Hardcoded height, padding, tracking and white text.
 
 ### Role Chip
 - **level**: atom
 - **file**: accueil.html
-- **variants**: project manager (flag icon, `--accent` on `--accent-soft`, outlined), contributor (people icon, neutral)
+- **variants**: project manager (flag icon, `--accent` on `--accent-soft`, outlined), contributor (people icon, the second brand blue on its pale tint)
 - **tokens**: --accent, --accent-soft, --text-2, --radius-pill, --space-3, --text-sm
 - **built-from**: Icon
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: `.pc-role` — your role on the tender, on the right of the card's top row. Depends on untracked `--panel-3`; hardcoded 26px height and 1.5px outline.
+- **notes**: 2026-10-06 (colour pass): role colours shared with the Onboarding Line — project manager navy, contributor blue. `.pc-role` — your role on the tender, on the right of the card's top row. Depends on untracked `--panel-3`; hardcoded 26px height and 1.5px outline.
 
 ### Home Hero
 - **level**: organism
@@ -1704,7 +1704,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Page Title, Primary Button, Ghost Button, Continue Card
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: The home page's front door: a kicker, a time-of-day greeting with the user's first name (the Page Title, at a hardcoded 32px — above the type scale), what SRM is for in one sentence, the user's roles counted from their tenders, New tender / How SRM works, and the Continue Card. Background: a hardcoded 115° gradient from `--panel` to `--accent-soft`, and `.hero-map`, an inline SVG metro map in the brand's colours (navy and red lines, 45° bends, an interchange) — decorative only, the red never on anything clickable (DEC-063). Hardcoded line widths, opacities and positions in the SVG; the map is hidden below a 1220px viewport, where the hero narrows and it would run under the greeting.
+- **notes**: 2026-10-06 (colour pass): the kicker and the first name in the second brand blue; the hero fades from `--panel` to the pale blue; the map's three lines in navy, the second blue and the brand red, more present. The page above the hero takes a pale-blue wash (`.scroll` background, `local`). Uses the untracked `--brand-blue`, `--brand-blue-soft`, `--brand-slate` (accueil.html only, both themes, not on the tracked scale). The home page's front door: a kicker, a time-of-day greeting with the user's first name (the Page Title, at a hardcoded 32px — above the type scale), what SRM is for in one sentence, the user's roles counted from their tenders, New tender / How SRM works, and the Continue Card. Background: a hardcoded 115° gradient from `--panel` to `--accent-soft`, and `.hero-map`, an inline SVG metro map in the brand's colours (navy and red lines, 45° bends, an interchange) — decorative only, the red never on anything clickable (DEC-063). Hardcoded line widths, opacities and positions in the SVG; the map is hidden below a 1220px viewport, where the hero narrows and it would run under the greeting.
 
 ### Continue Card
 - **level**: molecule
@@ -1714,7 +1714,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Tender Line (mini), Primary Button
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: "Pick up where you left off": the primary open tender (else the first built-out one) with its line and the next thing to do; the whole card opens the tender. Hardcoded shadow `0 10px 30px rgba(14,30,50,.10)`.
+- **notes**: 2026-10-06 (colour pass): a 4px navy-to-blue bar along its top edge. "Pick up where you left off": the primary open tender (else the first built-out one) with its line and the next thing to do; the whole card opens the tender. Hardcoded shadow `0 10px 30px rgba(14,30,50,.10)`.
 
 ### Onboarding Line
 - **level**: organism
@@ -1724,17 +1724,17 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Home Section Head
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: 2026-10-06 (later): no frame any more — the section sits on the page, the stations ringed in `--bg`; the who-tags take `--radius-md` and balance their wrap, so a two-line tag on a narrow window stays a block, not a pill. "How a tender travels through SRM": the four stations of the Tender Line, numbered, each with one sentence and who does it, then the always-open screens. Dismissal is kept in the shell (`getHomeIntroHidden` / `setHomeIntroHidden`) so it survives navigation and a demo reset brings it back. Hardcoded 30px stations and 5px line.
+- **notes**: 2026-10-06 (colour pass): the line runs from the second brand blue to navy, the station dots step along it (`color-mix`), the way a tender moves on; the who-tags take the role colours — project manager navy, contributors the second blue — the same code as the Role Chip. 2026-10-06 (later): no frame any more — the section sits on the page, the stations ringed in `--bg`; the who-tags take `--radius-md` and balance their wrap, so a two-line tag on a narrow window stays a block, not a pill. "How a tender travels through SRM": the four stations of the Tender Line, numbered, each with one sentence and who does it, then the always-open screens. Dismissal is kept in the shell (`getHomeIntroHidden` / `setHomeIntroHidden`) so it survives navigation and a demo reset brings it back. Hardcoded 30px stations and 5px line.
 
 ### Home Section Head
 - **level**: atom
 - **file**: accueil.html
 - **variants**: with a hint; with an action on the right
-- **tokens**: --text-lg, --text-sm, --text-3, --space-3, --font-heading
+- **tokens**: --text-lg, --text-sm, --text-3, --space-3, --font-heading, --brand-red
 - **built-from**: none
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: `.home-sec` — one heading style for the home page's sections (How a tender travels, My tenders).
+- **notes**: 2026-10-06: carries the brand's red mark, smaller than the page titles' (4px), decorative only. `.home-sec` — one heading style for the home page's sections (How a tender travels, My tenders).
 
 ### Wizard Stepper Panel
 - **level**: organism
