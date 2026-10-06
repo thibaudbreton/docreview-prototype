@@ -225,12 +225,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Count Badge
 - **level**: atom
 - **file**: qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html
-- **variants**: `.mcount`, `.tcount`, `.view-badge`, `.tab-count`, `.nh-c`, `.rex-count`, `.count` (dashboard "5" pill)
+- **variants**: `.mcount`, `.qa-views .n`, `.view-badge`, `.tab-count`, `.nh-c`, `.rex-count`, `.count` (dashboard "5" pill)
 - **tokens**: --text-xs, --radius-lg, --radius-md, --accent, --accent-soft, --warn, --warn-soft (untracked)
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Hardcoded vertical padding (1–3px) across every variant instead of a space token.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-116): qa.html's `.tcount` (on the Answers tab) is now the count inside each view of the Q&A View Switch. Hardcoded vertical padding (1–3px) across every variant instead of a space token.
 
 ### Block Badge
 - **level**: atom
@@ -374,13 +374,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Kbd Key
 - **level**: atom
-- **file**: qa.html, compliance.html, revue-documentaire.html
-- **variants**: real `<kbd>` element (compliance.html, revue-documentaire.html), `<span class="kb">` square (qa.html)
+- **file**: compliance.html, revue-documentaire.html
+- **variants**: real `<kbd>` element (compliance.html, revue-documentaire.html)
 - **tokens**: --font-mono, --text-xs, --radius-xs, --space-1
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-24
-- **notes**: 2026-09-24 (later): the shortcuts are listed again, on demand — see Shortcut Help. 2026-09-24: compliance.html no longer displays any shortcut hint (the triage bar's J/K · R · Q strip and the `<kbd>` in the Escalate and Reminder buttons are gone); the shortcuts themselves still work. Same "keyboard shortcut hint" concept, two different markup strategies. qa.html's version is a fixed 20×20px square. Borders/backgrounds rely on untracked `--line-2`/`--panel-2`/`--panel-3`.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-116): qa.html's `.kb` squares left with the arbitration queue. 2026-09-24 (later): the shortcuts are listed again, on demand — see Shortcut Help. 2026-09-24: compliance.html no longer displays any shortcut hint (the triage bar's J/K · R · Q strip and the `<kbd>` in the Escalate and Reminder buttons are gone); the shortcuts themselves still work. Same "keyboard shortcut hint" concept, two different markup strategies. qa.html's version is a fixed 20×20px square. Borders/backgrounds rely on untracked `--line-2`/`--panel-2`/`--panel-3`.
 
 ### Spinner
 - **level**: atom
@@ -389,8 +389,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --accent
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.qa-spin`, shown during the simulated dossier-extraction wait. Hardcoded 13px size, 0.7s duration; border relies on untracked `--line-2`.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-116): now inside the "Import the client's answers" button while the simulated import runs. `.qa-spin`, shown during the simulated dossier-extraction wait. Hardcoded 13px size, 0.7s duration; border relies on untracked `--line-2`.
 
 ### Match Ring
 - **level**: atom
@@ -497,12 +497,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Filter Toolbar
 - **level**: molecule
 - **file**: documents.html, qa.html, compliance.html
-- **variants**: search + one select (documents.html, qa.html), compliance.html `.f10-tools` (search box, sort reset, Wrap text, Filter, ＋ Column, View, shortcut help)
+- **variants**: search + one select (documents.html), qa.html `.qa-bar` (view switch, search, system select on our questions, Export to Excel, Import the client's answers), compliance.html `.f10-tools` (search box, sort reset, Wrap text, Filter, ＋ Column, View, shortcut help)
 - **tokens**: --space-2, --space-3
 - **built-from**: Text Input, Select Dropdown, Search Box, Toggle Switch, Ghost Button, Shortcut Help
 - **added**: 2026-09-01
-- **changed**: 2026-09-24
-- **notes**: 2026-09-24: compliance.html's toolbar now has the same right-hand group as Allocation's — Wrap text, Filter, ＋ Column, View, ⌨ side by side; ＋ Column and View used to sit in the title row. The two sort selects and the Needs my action toggle are gone (DEC-078, DEC-083). Same "filter row" pattern re-implemented per screen. documents.html's input hardcodes `8px` padding instead of `var(--space-2)`; qa.html's hardcodes `7px`.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-116): qa.html's toolbar carries the view switch and the screen's two actions; the system filter shows on our questions only. 2026-09-24: compliance.html's toolbar now has the same right-hand group as Allocation's — Wrap text, Filter, ＋ Column, View, ⌨ side by side; ＋ Column and View used to sit in the title row. The two sort selects and the Needs my action toggle are gone (DEC-078, DEC-083). Same "filter row" pattern re-implemented per screen. documents.html's input hardcodes `8px` padding instead of `var(--space-2)`; qa.html's hardcodes `7px`.
 
 ### Toast
 - **level**: molecule
@@ -516,13 +516,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Tab Bar
 - **level**: molecule
-- **file**: accueil.html, qa.html, compliance.html, dashboard-et-config.html
-- **variants**: underline-active (accueil.html tabs, qa/compliance `.hub-tabs`/`.set-tabs`), pill/background-active (`.mode-switch`, `.nav-toggle`, dashboard-et-config.html `.stats-tabs`)
+- **file**: accueil.html, compliance.html, dashboard-et-config.html
+- **variants**: underline-active (accueil.html tabs, compliance `.set-tabs`), pill/background-active (`.mode-switch`, `.nav-toggle`, dashboard-et-config.html `.stats-tabs`)
 - **tokens**: --space-1, --space-2, --space-4, --space-5, --line, --text-3, --text-2, --text, --accent, --text-base, --text-xs
 - **built-from**: none (buttons are plain, not reusing any button atom)
 - **added**: 2026-09-01
-- **changed**: 2026-09-24
-- **notes**: 2026-09-24: the detail panel's `.set-tabs` (revue-documentaire.html and compliance.html) scroll horizontally instead of wrapping or squeezing (`overflow-x:auto`, tabs `flex-shrink:0`/`nowrap`); the per-system tab is labelled "Activity" (was "System") on both screens; compliance.html's "Document" tab is removed. At least four independent implementations of "group of switchable tabs" across the app with two different visual languages and inconsistent hardcoded padding (5–10px). `.mode-switch` CSS exists in qa.html but is never instantiated there — dead code. Active-tab box-shadow hardcoded (`rgba(0,0,0,.15–.4)`) in several variants.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-116): qa.html's Questions / Answers `.hub-tabs` replaced by the Q&A View Switch. 2026-09-24: the detail panel's `.set-tabs` (revue-documentaire.html and compliance.html) scroll horizontally instead of wrapping or squeezing (`overflow-x:auto`, tabs `flex-shrink:0`/`nowrap`); the per-system tab is labelled "Activity" (was "System") on both screens; compliance.html's "Document" tab is removed. At least four independent implementations of "group of switchable tabs" across the app with two different visual languages and inconsistent hardcoded padding (5–10px). `.mode-switch` CSS exists in qa.html but is never instantiated there — dead code. Active-tab box-shadow hardcoded (`rgba(0,0,0,.15–.4)`) in several variants.
 
 ### Segmented Control
 - **level**: molecule
@@ -616,13 +616,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Dedup Alert Card
 - **level**: molecule
-- **file**: qa.html, compliance.html
+- **file**: compliance.html
 - **variants**: none
 - **tokens**: --radius-lg, --space-3, --space-4, --text-sm, --text, --ok
 - **built-from**: none (accept/reject are bespoke buttons, not Ghost/Primary Button)
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.dedup`. CSS is byte-for-byte identical between both screens. Border is a hand-picked `rgba(224,164,60,.55)`; background relies on untracked `--ia-soft`.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-116): qa.html's unused copy of the CSS deleted. `.dedup`. CSS is byte-for-byte identical between both screens. Border is a hand-picked `rgba(224,164,60,.55)`; background relies on untracked `--ia-soft`.
 
 ### Requirement Row (Review Table Row)
 - **level**: molecule
@@ -716,13 +716,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Export Readiness Summary
 - **level**: molecule
-- **file**: qa.html, compliance.html
-- **variants**: card with big number (`.export-card`, qa.html), inline banner (`.xr-ready`, compliance.html — renders empty unless complete)
+- **file**: compliance.html
+- **variants**: inline banner (`.xr-ready`, compliance.html — renders empty unless complete)
 - **tokens**: --accent, --accent-soft, --radius-lg, --radius-md, --space-3, --space-4, --space-5, --text-base, --text-xs
 - **built-from**: Primary Button (qa.html only; compliance.html's CTA is bespoke)
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Two screens independently implement "you're ready to export, N items" — same purpose, unrelated markup. compliance.html's relies on untracked `--ok-soft` plus a hardcoded rgba border.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-116): qa.html's export card is gone: "Export to Excel" is a plain button in the toolbar and sends nothing — the questions are marked as sent by hand. Two screens independently implement "you're ready to export, N items" — same purpose, unrelated markup. compliance.html's relies on untracked `--ok-soft` plus a hardcoded rgba border.
 
 ### Comment Composer
 - **level**: molecule
@@ -987,52 +987,42 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Deadline Banner
 - **level**: molecule
 - **file**: qa.html
-- **variants**: ok, soon, passed, overdue
+- **variants**: one line, both dates; passed / overdue in `--warn`
 - **tokens**: --space-3, --space-4, --radius-lg, --text-sm, --text
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.qa-deadline`, uses `color-mix()` for borders instead of a fixed token. Deliberately renders nothing when the underlying date is unset (explicit "degrade cleanly" code comment).
-
-### Duplicate Alert
-- **level**: molecule
-- **file**: qa.html
-- **variants**: none
-- **tokens**: --space-3, --space-4, --radius-lg, --ia, --text-lg
-- **built-from**: Ghost Button
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.dup-alert`. Icon is a plain "⚠" glyph, not an SVG.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-116): the two banners (one per tab) became one quiet line above the list, `.qa-dates`, both dates side by side; nothing renders for an unset date, as before. Was: `.qa-deadline`, uses `color-mix()` for borders instead of a fixed token. Deliberately renders nothing when the underlying date is unset (explicit "degrade cleanly" code comment).
 
 ### Q&A Card
 - **level**: molecule
 - **file**: qa.html
-- **variants**: draft, sent, answered, excluded (dimmed)
-- **tokens**: --panel, --line, --radius-lg, --space-2, --space-3, --space-4, --text-base
+- **variants**: to send (checkbox + "Mark as sent"), sent ("Not sent" to undo), answer to confirm (`.qa-suggest`, dashed `--human`, "✓ It's the answer" / "Not this one"), answered, selected (`.is-sel`), other bidder (`.is-other`: question, the client's answer, the requirement or "No requirement linked")
+- **tokens**: --panel, --line, --accent, --human, --ok, --radius-lg, --space-2, --space-3, --space-4, --text-base
 - **built-from**: Activity / Requirement Tag
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.qa-card`. Answer sub-block relies on untracked `--ok-soft`. `.is-excluded` uses hardcoded `opacity:.6`.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-116): one card for every row of the register — our questions with a status pill (`.qa-st`) and its action, and the other bidders' Q&A; the answer sits under the question it answers. Excluded is gone with Exclude. Depends on untracked `--accent-soft`/`--human-soft`/`--ok-soft`; the pinned 25px indent lines the answer up with the question text. `.qa-card`. Answer sub-block relies on untracked `--ok-soft`. `.is-excluded` uses hardcoded `opacity:.6`.
 
-### Context Row
+### Q&A View Switch
 - **level**: molecule
 - **file**: qa.html
-- **variants**: none
-- **tokens**: --panel, --line, --radius-lg, --space-2, --space-3, --space-4, --text-sm
-- **built-from**: Activity / Requirement Tag
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.ctx-row`, "Resolved & context" collapsed list only.
+- **variants**: our questions / other bidders (on), other bidders before any import ("—")
+- **tokens**: --panel, --panel-3, --radius-md, --radius-sm, --radius-pill, --space-2, --space-3, --text-base, --text-xs, --text, --text-2, --accent
+- **built-from**: Count Badge
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: DEC-116. `.qa-views` — replaces the Questions / Answers tabs, whose second tab nobody noticed: each view carries its count, so where the answers are is visible before clicking. Depends on untracked `--panel-3`, `--panel-2`, `--accent-soft`; hardcoded shadow on the active view.
 
-### Arbitration Guess Button
+### Q&A Status Filter
 - **level**: molecule
 - **file**: qa.html
-- **variants**: none
-- **tokens**: --space-3, --radius-md, --text-sm, --text-xs
-- **built-from**: Kbd Key, Activity / Requirement Tag
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.arb-guess`. List is keyboard-addressable via number keys 1–9.
+- **variants**: All / To send / Sent / Answer to confirm (only while one exists, outlined `--human`) / Answered, each with its count; selection bar ("N selected · Mark as sent · Clear") or "Select the N to send"
+- **tokens**: --line-2, --panel, --accent, --human, --radius-pill, --space-2, --space-3, --text-sm, --text-2, --text-3
+- **built-from**: Primary Button
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: DEC-116. `.qa-st-filter` + `.qa-bulk`: what has gone to the client is read at a glance and flagged in one gesture — the tool sends nothing itself. Depends on untracked `--accent-soft`.
 
 ### Expert Card
 - **level**: molecule
@@ -1736,26 +1726,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: Four Stat Tiles in a wrapping flex row; two conditionally apply the warn variant.
 
-### Q&A Dossier Import Box
-- **level**: organism
-- **file**: qa.html
-- **variants**: file-upload mode, paste mode, extracting state
-- **tokens**: --radius-lg, --space-3, --space-4
-- **built-from**: Spinner, Textarea, Primary Button, Tab Bar
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.qa-upload`. Simulates an LLM extraction step via a 900ms `setTimeout`, per its own code comment.
-
-### Arbitration Queue Card
-- **level**: organism
-- **file**: qa.html
-- **variants**: active item, empty/done state
-- **tokens**: --panel, --line, --radius-lg, --space-3, --space-4, --space-5, --accent, --text-lg
-- **built-from**: Progress Bar, Arbitration Guess Button, Kbd Key, Activity / Requirement Tag
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.arb-card`. A code comment calls this "the interaction that decides whether this screen works at volume" — one item, full context, decide, auto-advance, fully keyboard-operable.
-
 ### Reassignment Request Form
 - **level**: organism
 - **file**: compliance.html
@@ -1990,3 +1960,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Finalize / Export Modal — removed 2026-09-24, no longer needed (DEC-084): Allocation gates nothing, validation sends each requirement to its contributor, the register export is in the Export menu
 
 ### Export Option Card — removed 2026-09-24 with the Finalize / Export Modal, its only use
+
+### Duplicate Alert — removed 2026-10-06, no longer needed (DEC-116: duplicate detection dropped from the Q&A register)
+
+### Context Row — removed 2026-10-06, replaced by the Q&A Card's other-bidder variant
+
+### Arbitration Guess Button — removed 2026-10-06, no longer needed (DEC-116: no arbitration queue)
+
+### Q&A Dossier Import Box — removed 2026-10-06, replaced by one "Import the client's answers" button in the Q&A toolbar
+
+### Arbitration Queue Card — removed 2026-10-06, replaced by the answer to confirm on the Q&A Card (DEC-116)

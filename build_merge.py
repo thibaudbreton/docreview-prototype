@@ -280,7 +280,7 @@ window.resetDemo = function(){
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
   aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage=seedStrategyUsage(); risks=seedRisks(); gapDocs=seedGapDocs(); gapStats=seedGapStats(); reqLog=seedReqLog();
-  reassignRequests.length=0; sharedQuestions={};
+  reassignRequests.length=0; sharedQuestions={}; qaRegister={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
   window.route("home");
@@ -573,6 +573,11 @@ window.pushQuestion = function(projectId, q){
   list.push(q); return q;
 };
 window.getQuestions = (projectId)=>sharedQuestions[projectId||"_"]||[];
+// DEC-116 — the Q&A register's own state per tender: the "sent" flags, the
+// answers confirmed, the other bidders' Q&A once the client's dossier is
+// imported. Held here because every route reloads the screen.
+let qaRegister = {};
+window.getQaRegister = (projectId)=>{ const k=projectId||"_"; return qaRegister[k]=qaRegister[k]||{}; };
 window.withdrawQuestion = function(projectId, id){
   const l=sharedQuestions[projectId||"_"]; if(!l) return;
   const i=l.findIndex(x=>x.id===id); if(i>=0) l.splice(i,1);
