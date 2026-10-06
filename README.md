@@ -14,6 +14,10 @@ No backend, no database, no persistence: everything runs in memory and resets on
 Open the hosted version, or open `index.html` directly in a browser — no server, no build step,
 no dependencies.
 
+The hosted version uses Noto Sans. To see the prototype in the Alstom brand typeface, build its web
+copies once (`python3 build_fonts.py "/path/to/Alstom Font"`), run `python3 build_merge.py`, and open
+`local/index.html` — never committed, the font is licensed (DEC-115, see `fonts/README.md`).
+
 ## Try it
 
 The demo opens on **Energy Monitoring System** (`STB-2026`), the one fully navigable project.

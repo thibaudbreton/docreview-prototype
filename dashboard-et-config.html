@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Brand type (22 Sept 2026): Noto Sans for everything, Antarctica for titles.
-     Noto Sans comes from Google Fonts; Antarctica is a licensed brand face with
-     no public CDN — see fonts/README.md for where its files go. -->
+<!-- Brand type: Alstom, the brand's own typeface, for every interface text
+     (DEC-115, 6 Oct 2026); Antarctica first for titles once its files are
+     supplied (DEC-063). Both are licensed and not versioned — see fonts/README.md.
+     Noto Sans, from Google Fonts, is the fallback the Alstom face is matched to. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,10 +17,28 @@
 /* Antarctica — the brand title face. Not on any public CDN and not installed
    here, so it resolves in this order: an installed copy, then the files under
    fonts/ (drop Antarctica-Regular.woff2 and Antarctica-Bold.woff2 there — the
-   srcdoc screens resolve relative URLs against index.html), then Noto Sans.
-   Nothing breaks while the files are missing; titles simply stay in Noto. */
+   srcdoc screens resolve relative URLs against index.html), then Alstom.
+   Nothing breaks while the files are missing; titles simply stay in Alstom. */
 @font-face{font-family:"Antarctica";font-weight:400;font-display:swap;src:local("Antarctica"),local("Antarctica-Regular"),url("fonts/Antarctica-Regular.woff2") format("woff2")}
 @font-face{font-family:"Antarctica";font-weight:700;font-display:swap;src:local("Antarctica Bold"),local("Antarctica-Bold"),url("fonts/Antarctica-Bold.woff2") format("woff2")}
+/* Alstom — the brand's own typeface (DEC-115): all interface text, and the
+   titles until Antarctica is supplied. Licensed: build_fonts.py makes the web
+   copies under fonts/, never versioned; build_merge.py embeds them only in the
+   outputs allowed to carry them. Never local(): the desktop TTFs carry 1-bit
+   bitmaps that Chrome on Windows draws instead of the outlines at 9-18 px.
+   Matched to Noto Sans, the fallback: size-adjust brings its x-height to
+   Noto's (0.479 → 0.536 em) and the overrides set Noto's ascent and descent
+   (1.069 / 0.293 em, divided by the 1.12 they get scaled by) — same baseline,
+   same line boxes, so the fallback changes the letters, never the layout.
+   No SemiBold or ExtraBold in the family: 600 is drawn with the Medium, 800
+   with the Bold, each declared as its own face so Chrome doesn't fake-bolden
+   it. No italic either: italics are the Regular slanted, which is what this
+   kind of face does anyway. */
+@font-face{font-family:"Alstom UI";font-weight:400;font-display:swap;src:url("fonts/Alstom-Regular.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:500;font-display:swap;src:url("fonts/Alstom-Medium.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:600;font-display:swap;src:url("fonts/Alstom-Medium.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:700;font-display:swap;src:url("fonts/Alstom-Bold.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:800;font-display:swap;src:url("fonts/Alstom-Bold.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
 
 :root{
   --bg:#071A30; --panel:#0B294A; --panel-2:#143556; --panel-3:#1D4062;
@@ -34,10 +53,10 @@
   --text-xs:11px; --text-sm:12px; --text-base:13px; --text-lg:16px; --text-xl:21px;
   --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
   --radius-xs:4px; --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-pill:999px;
-  --font-ui:"Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  --font-heading:"Antarctica","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-ui:"Alstom UI","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-heading:"Antarctica","Alstom UI","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   --brand-red:#E4002B; /* placeholder — exact brand red to confirm */
-  --font-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+  --font-mono:"Alstom UI",ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace; /* IDs and codes: the brand face (its figures all share one width, so IDs still line up), the monospace stack wherever it is absent */
 }
 
 html[data-theme="light"]{
@@ -199,7 +218,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
    action list off it, and below the fold it stopped being reachable at all.
    Name and figure share one baseline; the description moves to the row's title
    and the progress bar goes — the figure beside the name already carries it. */
-.support-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3);margin-bottom:26px}
+.support-rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3);margin-bottom:26px}
 @media(max-width:1000px){.support-rail{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.support-rail{grid-template-columns:minmax(0,1fr)}}
 .phase.is-support{min-height:0;align-items:center;padding:var(--space-2) var(--space-3);background:var(--panel-2)}
@@ -331,6 +350,20 @@ html[data-theme="light"] .logo-mark-light{display:block}
 
 /* --- internal vs declared --- */
 .gap-side{margin-bottom:10px}
+/* SPEC-risks.md §9 — progress to the client, risk figures */
+.stat-empty{font-size:var(--text-sm);color:var(--text-3);line-height:1.5;padding:var(--space-2) 0}
+.prog-seq{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3)}
+@media(max-width:800px){.prog-seq{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.prog-step{position:relative;padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel);cursor:pointer}
+.prog-step:hover{border-color:var(--accent)}
+.prog-step:not(:last-child)::after{content:"→";position:absolute;right:calc(-1 * var(--space-3) + 1px);top:50%;transform:translate(50%,-50%);font-size:var(--text-xs);color:var(--text-3)}
+.prog-k{font-size:var(--text-xs);color:var(--text-3)}
+.prog-pct{font-size:var(--text-xl);font-weight:700;font-variant-numeric:tabular-nums;margin:2px 0 6px}
+.prog-step.warn .prog-pct{color:var(--warn)}
+.prog-bar{height:5px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
+.prog-bar span{display:block;height:100%;background:var(--accent)}
+.prog-step.warn .prog-bar span{background:var(--warn)}
+.prog-sub{margin-top:6px;font-size:var(--text-xs);color:var(--text-3);line-height:1.4}
 .gap-side-h{font-size:var(--text-xs);color:var(--text-3);margin-bottom:4px}
 .gap-note{margin-top:10px;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);line-height:1.45;background:var(--warn-soft);color:var(--text-2);cursor:pointer}
 .gap-note b{color:var(--warn)}
@@ -458,6 +491,20 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .pt-rm{margin-left:6px;color:inherit;opacity:.6;font-size:var(--text-xs);line-height:1}
 .pt-rm:hover{opacity:1}
 .pt-add .inp{flex:1}
+/* Gap strategies (SPEC-risks.md §2.1) */
+.gs-list{display:flex;flex-direction:column;gap:var(--space-2);margin-bottom:var(--space-3)}
+.gs-row{display:flex;align-items:center;gap:var(--space-2)}
+.gs-row .inp{flex:1;min-width:0}
+.gs-row .sel,.gs-add .sel{width:132px;flex-shrink:0}
+.gs-use{width:56px;flex-shrink:0;font-size:var(--text-xs);color:var(--text-3);text-align:right;white-space:nowrap}
+.gs-rm{flex-shrink:0;width:28px;height:28px;border-radius:var(--radius-sm);color:var(--text-3)}
+.gs-rm:hover:not([disabled]){background:var(--panel-2);color:var(--text)}
+.gs-rm[disabled]{opacity:.35;cursor:not-allowed}
+.gs-empty{font-size:var(--text-sm);color:var(--text-3);padding:var(--space-3);border:1px dashed var(--line-2);border-radius:var(--radius-md)}
+.gs-confirm{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2);margin:calc(-1 * var(--space-1)) 0 var(--space-1);padding:var(--space-2) var(--space-3);font-size:var(--text-sm);color:var(--text-2);background:var(--warn-soft);border-radius:var(--radius-md)}
+.gs-confirm span{flex:1;min-width:200px}
+.gs-add{display:flex;gap:var(--space-2);max-width:560px}
+.gs-add .inp{flex:1}
 .inp,.sel,textarea.inp{width:100%;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base);transition:border-color .15s}
 .inp:focus,.sel:focus,textarea.inp:focus{border-color:var(--accent)}
 textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
@@ -826,6 +873,15 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           </div>
           <span class="ph-open-btn">→</span>
         </a>
+        <a class="phase is-support" id="ph-risks" href="javascript:parent.route('risks')" title="Risks — the tender's risk register, fed from Compliance.">
+          <div class="ph-num transversal">!</div>
+          <div class="ph-info">
+            <div class="ph-name">Risks</div>
+            <div class="ph-desc">Every Not compliant traced to a risk, with its justification.</div>
+            <div class="ph-stat"><span class="big" id="ph-risks-n">0</span><span id="ph-risks-txt">in the list</span></div>
+          </div>
+          <span class="ph-open-btn">→</span>
+        </a>
         <a class="phase is-support" id="ph-qa" href="javascript:parent.route('qa')" title="Q&amp;A — ask the issuer questions and track their answers.">
           <div class="ph-num transversal">↻</div>
           <div class="ph-info">
@@ -994,10 +1050,22 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
               <div class="comp-legend" id="stats-comp-legend"></div>
             </div>
 
+            <div class="stat-block stat-wide">
+              <div class="stat-h">Progress to the client</div>
+              <div class="stat-sub">From assignment to what the client is told — each step as a share of the one it depends on</div>
+              <div id="stats-progress-client"></div>
+            </div>
+
             <div class="stat-block">
-              <div class="stat-h">Internal vs declared to the client</div>
-              <div class="stat-sub">What we found, against what the client is told — the gap is the risk</div>
-              <div id="stats-external-gap"></div>
+              <div class="stat-h">Risks</div>
+              <div class="stat-sub">The tender's list of risks, and how much each is reused</div>
+              <div id="stats-risks"></div>
+            </div>
+
+            <div class="stat-block">
+              <div class="stat-h">Not compliant by gap strategy</div>
+              <div class="stat-sub">What each responsible chose to do about their Not compliant</div>
+              <div id="stats-nc-strategy"></div>
             </div>
 
             <div class="stat-block stat-wide">
@@ -1054,6 +1122,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
       <div class="cfg-nav-item" data-sec="team"><span class="ci"><i class=ic-users></i></span> Team &amp; contributors</div>
       <div class="cfg-nav-item" data-sec="workflow"><span class="ci"><i class=ic-flow></i></span> Workflow &amp; milestones</div>
       <div class="cfg-nav-item" data-sec="model"><span class="ci"><i class=ic-refresh></i></span> Allocation model</div>
+      <div class="cfg-nav-item" data-sec="compliance"><span class="ci"><i class=ic-flag></i></span> Compliance</div>
       <div class="cfg-nav-item" data-sec="appearance"><span class="ci"><i class=ic-contrast></i></span> Appearance</div>
       <div class="cfg-nav-item" data-sec="ai"><span class="ci"><i class=ic-sparkle></i></span> Capture &amp; segmentation</div>
       <div class="cfg-nav-item" data-sec="feedback"><span class="ci"><i class=ic-undo></i></span> AI feedback</div>
@@ -1123,6 +1192,24 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
               <div class="dangerbox" id="cfg-model-danger">—</div>
               <button class="btn-danger" id="cfg-model-rerun" disabled title="Not wired in this build">↻ Change model and re-run everything</button>
               <div class="opt-desc">Unlike the per-requirement re-run, this one does <b>not</b> spare answered requirements (DEC-050): the model that produced them has changed, so what was built on it no longer holds. The two are deliberately not the same action, and one is never offered as a fallback for the other.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Compliance — SPEC-risks.md §2.1, DEC-110 / DEC-111 -->
+        <section class="cfg-sec" data-sec="compliance">
+          <div class="cfg-h">Compliance</div>
+          <div class="cfg-sub">How a Not compliant verdict is handled on this tender.</div>
+          <div class="frow" style="border-bottom:none">
+            <div class="fl"><div class="flt">Gap strategies</div><div class="fld">What the responsible of a requirement can do about a Not compliant — and what each choice declares to the client. Written for this tender.</div></div>
+            <div class="fc">
+              <div class="gs-list" id="gs-list"></div>
+              <div class="gs-add">
+                <input class="inp" id="gs-new-name" placeholder="Strategy name" autocomplete="off">
+                <select class="sel" id="gs-new-ext"><option value="compliant">Compliant</option><option value="not_compliant">Not compliant</option><option value="pending" selected>Pending</option></select>
+                <button class="btn-ghost" id="gs-add-btn">＋ Add</button>
+              </div>
+              <div class="opt-desc">The external compliance of a requirement is <b>derived</b>: Compliant when its responsible answers Compliant, otherwise the result of the strategy they pick. A strategy in use can be renamed but not deleted; changing its result recomputes every requirement that uses it, after you confirm.</div>
             </div>
           </div>
         </section>
@@ -2168,24 +2255,24 @@ const SIG_REVIEW_REQS=[
   {id:"L4-0018",status:"toreview", activity:"sig"},
 ];
 const SIG_FOLLOWUP_REQS=[
-  {id:"L4-0004",compliance:"compliant",    branchStatuses:["answered"],external:"compliant"},
+  {id:"L4-0004",compliance:"compliant",    branchStatuses:["answered"]},
   {id:"L4-0005",compliance:"compliant",    branchStatuses:["answered"]},
   {id:"L4-0006",compliance:null,           branchStatuses:["proposed"]},
   {id:"L4-0008",compliance:null,           branchStatuses:["awaiting_answer"]},
   {id:"L4-0009",compliance:null,           branchStatuses:["awaiting_answer"],overdueBranches:1},
-  {id:"L4-0010",compliance:"not_compliant",branchStatuses:["answered"],external:"compliant",risk:true},
+  {id:"L4-0010",compliance:"not_compliant",branchStatuses:["answered"]},
   {id:"L4-0011",compliance:null,           branchStatuses:["awaiting_qa"]},
   {id:"L4-0012",compliance:null,           branchStatuses:["awaiting_qa"]},
   {id:"L4-0014",compliance:"compliant",    branchStatuses:["answered"]},
   {id:"L4-0015",compliance:null,           branchStatuses:["reassignment_needed"]},
-  {id:"L4-0017",compliance:"compliant",    branchStatuses:["answered"],external:"compliant"},
+  {id:"L4-0017",compliance:"compliant",    branchStatuses:["answered"]},
   {id:"L4-0018",compliance:null,           branchStatuses:["awaiting_answer"]},
 ];
 const SIG_OVERDUE_BRANCHES=[
   {reqId:"L4-0009",expert:"Sophie Lang",days:9},
 ];
 const SIG_COMMENT_FEED=[
-  {kind:"warn",who:"Louis Renaud",what:"flagged a risk on <b>L4-0010</b> — external compliance declared despite internal Not compliant",when:"Jul 16, 3:40 PM",sortKey:"2026-07-16T15:40"},
+  {kind:"warn",who:"Louis Renaud",what:"linked <b>RSK-00001</b> to <b>L4-0010</b> — Not compliant, kept as a gap",when:"Jul 16, 3:40 PM",sortKey:"2026-07-16T15:40"},
   {kind:"ok",who:"Sophie Lang",what:"raised a question on <b>L4-0012</b> — depot approach tracks absent from the coverage drawings",when:"Jul 16, 10:05 AM",sortKey:"2026-07-16T10:05"},
   {kind:"ok",who:"Louis Renaud",what:"responded on <b>L4-0014</b> — platform screen door interface compliant as specified",when:"Jul 15, 2:20 PM",sortKey:"2026-07-15T14:20"},
 ];
@@ -2219,18 +2306,17 @@ const REVIEW_REQS = IS_SIG_TENDER ? SIG_REVIEW_REQS : REVIEW_REQS_BASE;
 /* `branchStatuses` replaces the old branchesAnswered/branchesTotal pair: same
    information, but per assignment, so the assignment funnel and the "what is
    consolidation actually waiting on" split can be derived rather than typed.
-   Values are compliance.html's own BST keys. `external`/`risk` mirror the
-   external declaration and its accepted-risk note (DEC-028) — the only place
-   the gap between what we found and what the client is told gets measured. */
+   Values are compliance.html's own BST keys. Risk figures are not mirrored here:
+   they come from Compliance's own totals and the shell's register (SPEC-risks.md). */
 const FOLLOWUP_REQS_BASE=[
   // TD3 — SRM-00001/SRM-00002 now exist in compliance.html's REQS; kept in sync here.
   {id:"SRM-00001",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
   {id:"SRM-00002",compliance:null,            branchStatuses:["proposed"]},
-  {id:"SRM-00003",compliance:"compliant",     branchStatuses:["answered"],external:"compliant"},
+  {id:"SRM-00003",compliance:"compliant",     branchStatuses:["answered"]},
   {id:"SRM-00004",compliance:"compliant",     branchStatuses:["answered"]},
-  {id:"SRM-00005",compliance:null,            branchStatuses:["answered","awaiting_answer","reassignment_needed"],external:"compliant",risk:true},
+  {id:"SRM-00005",compliance:null,            branchStatuses:["answered","awaiting_answer","reassignment_needed"]},
   {id:"SRM-00006",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
-  {id:"SRM-00007",compliance:"not_compliant", branchStatuses:["answered"],external:"compliant",risk:true},
+  {id:"SRM-00007",compliance:"not_compliant", branchStatuses:["answered"]},
   {id:"SRM-00008",compliance:null,            branchStatuses:["awaiting_answer"],overdueBranches:1},
   {id:"SRM-00009",compliance:"compliant",     branchStatuses:["answered"]},
   {id:"SRM-00010",compliance:null,            branchStatuses:["awaiting_qa"]},
@@ -2305,7 +2391,7 @@ function renderOverdueCard(){
    system" feed further down. All merged and shown most-recent-first. */
 const COMMENT_FEED_DEMO_BASE=[
   {kind:"ok",who:"Claire Moreau",what:"responded on <b>SRM-00013</b> — verdict Needs clarification",when:"Jul 15, 4:20 PM",sortKey:"2026-07-15T16:20"},
-  {kind:"warn",who:"Paolo Ferri",what:"flagged a risk on <b>SRM-00007</b> — external compliance declared despite internal Not compliant",when:"Jul 14, 11:05 AM",sortKey:"2026-07-14T11:05"},
+  {kind:"warn",who:"Louis Renaud",what:"linked <b>RSK-00001</b> to <b>SRM-00007</b> — Not compliant, kept as a gap",when:"Jul 14, 11:05 AM",sortKey:"2026-07-14T11:05"},
   {kind:"ok",who:"Sophie Lang",what:"commented on <b>SRM-00006</b> — evidence attached, awaiting review",when:"Jul 12, 9:15 AM",sortKey:"2026-07-12T09:15"},
 ];
 const COMMENT_FEED_DEMO = IS_SIG_TENDER ? SIG_COMMENT_FEED : COMMENT_FEED_DEMO_BASE;
@@ -2616,42 +2702,47 @@ function renderStatsAIQuality(){
 /* =====================================================
    Statistics — Compliance tab
 ===================================================== */
-/* DEC-028 — the external declaration is what actually reaches the client, and
-   until now nothing measured the distance between it and the internal verdict.
-   That distance IS the bid risk, so it gets its own figure rather than being
-   inferable only by opening requirements one at a time. */
-function renderStatsExternalGap(){
-  const el=document.getElementById("stats-external-gap"); if(!el) return;
-  const {total,compliant,non,pending}=complianceCounts();
-  const declared=FOLLOWUP_REQS.filter(r=>r.external);
-  const internal=[
-    {label:"Compliant",cls:"s-ok",n:compliant},
-    {label:"Not compliant",cls:"s-warn",n:non},
-    {label:"Pending",cls:"s-neutral",n:pending},
+/* SPEC-risks.md §9 (DEC-105 to DEC-112) — risk figures. Totals come from
+   Compliance (reportGapStats, refreshed each time it renders); risks, links
+   and strategies from the shell's register. Until Compliance has been opened
+   in this session there is nothing to count from, and the blocks say so. */
+const STRAT_CLS=["s-accent","s-human","s-ia","s-ok","s-warn"];
+const shellGet=(fn,...a)=>{ try{ return window.parent[fn](CURRENT_PROJECT.id,...a); }catch(e){ return null; } };
+const noGapStats=`<div class="stat-empty">Counted from Compliance — open it once and these figures fill in.</div>`;
+function renderStatsProgressClient(){
+  const el=document.getElementById("stats-progress-client"); if(!el) return;
+  const st=shellGet("getGapStats"); if(!st){ el.innerHTML=noGapStats; return; }
+  const pc=(n,d)=>d?Math.round(n/d*100):0;
+  const settled=st.ext.compliant+st.ext.not_compliant;
+  const steps=[
+    {k:"Assigned", n:st.assigned, d:st.assignments, sub:`${st.assigned} of ${st.assignments} assignments`, go:"revue-documentaire.html"},
+    {k:"Internal compliance", n:st.answered, d:st.assignments, sub:`${st.answered} answered · ${st.nc} Not compliant`, go:"compliance.html"},
+    {k:"Not compliant logged", n:st.ncLogged, d:st.nc, sub:st.nc?`${st.ncLogged} of ${st.nc} linked to a risk`:"no Not compliant yet", go:"compliance.html", warn:st.nc>st.ncLogged},
+    {k:"External compliance", n:settled, d:st.reqs, sub:`${settled} of ${st.reqs} requirements settled · ${st.ext.pending} pending`, go:"compliance.html"},
   ];
-  const external=[
-    {label:"Compliant",cls:"s-ok",n:declared.filter(r=>r.external==="compliant").length},
-    {label:"Not compliant",cls:"s-warn",n:declared.filter(r=>r.external==="not_compliant").length},
-    {label:"Not declared yet",cls:"s-neutral",n:total-declared.length},
-  ];
-  const barOnly=segs=>`<div class="sbar">${segs.filter(s=>s.n).map(s=>{
-    const p=total?Math.round(s.n/total*1000)/10:0;
-    return `<div class="sbar-seg ${s.cls}" style="width:${p}%" title="${s.label} · ${s.n}">${p>=9?s.n:""}</div>`;
-  }).join("")}</div>`;
-  const gap=declared.filter(r=>r.external==="compliant"&&r.compliance!=="compliant");
-  const risks=gap.filter(r=>r.risk).length;
-  const note=gap.length
-    ? `<div class="gap-note" data-go="compliance.html"><b>${gap.length} requirement${gap.length>1?"s":""}</b> declared Compliant to the client while the internal verdict is not — ${risks} of them carr${risks===1?"ies":"y"} an accepted risk.</div>`
-    : `<div class="gap-note clear"><b>✓ No gap</b> — nothing is declared Compliant against an internal verdict that says otherwise.</div>`;
-  el.innerHTML=`
-    <div class="gap-side"><div class="gap-side-h">Internal verdict</div>${barOnly(internal)}</div>
-    <div class="gap-side"><div class="gap-side-h">Declared to the client</div>${barOnly(external)}</div>
-    <div class="sbar-legend">
-      <span class="sbar-key"><span class="dot s-ok"></span><span class="lbl">Compliant</span></span>
-      <span class="sbar-key"><span class="dot s-warn"></span><span class="lbl">Not compliant</span></span>
-      <span class="sbar-key"><span class="dot s-neutral"></span><span class="lbl">Pending / not declared</span></span>
-    </div>${note}`;
+  el.innerHTML=`<div class="prog-seq">${steps.map(s=>`<div class="prog-step${s.warn?" warn":""}" data-go="${s.go}">
+      <div class="prog-k">${s.k}</div><div class="prog-pct">${s.d?pc(s.n,s.d)+"%":"—"}</div>
+      <div class="prog-bar"><span style="width:${pc(s.n,s.d)}%"></span></div><div class="prog-sub">${s.sub}</div></div>`).join("")}</div>`;
   bindGo(el);
+}
+function renderStatsRisks(){
+  const el=document.getElementById("stats-risks"); if(!el) return;
+  const rs=shellGet("getRisks")||[];
+  if(!rs.length){ el.innerHTML=`<div class="stat-empty">No risk on this tender yet — they are created in Compliance, on each Not compliant.</div>`; return; }
+  const n={}; Object.values(shellGet("getGapDocs")||{}).forEach(d=>(d.risks||[]).forEach(id=>{ n[id]=(n[id]||0)+1; }));
+  const links=Object.values(n).reduce((a,b)=>a+b,0), shared=rs.filter(x=>(n[x.id]||0)>1).length;
+  el.innerHTML=`<div class="cons-top" data-go="risks.html"><span class="big">${rs.length}</span><span>risk${rs.length===1?"":"s"} · ${links} link${links===1?"":"s"} to Not compliant assignments</span></div>
+    <div class="stat-empty">${shared} risk${shared===1?" is":"s are"} shared by several requirements — ${rs.length?Math.round(links/rs.length*10)/10:0} links per risk on average.</div>`;
+  bindGo(el);
+}
+function renderStatsNCStrategy(){
+  const el=document.getElementById("stats-nc-strategy"); if(!el) return;
+  const st=shellGet("getGapStats"); if(!st){ el.innerHTML=noGapStats; return; }
+  if(!st.nc){ el.innerHTML=`<div class="stat-empty">No Not compliant verdict yet.</div>`; return; }
+  const strs=shellGet("getStrategies")||[];
+  const segs=strs.map((s,i)=>({label:s.name, cls:STRAT_CLS[i%STRAT_CLS.length], n:st.byStrategy[s.id]||0}));
+  segs.push({label:"Strategy missing", cls:"s-neutral", n:st.noStrategy});
+  el.innerHTML=stackedBarHTML(st.nc, segs, "compliance.html"); bindGo(el);
 }
 /* A requirement consolidates only once EVERY assignment has answered, so the
    useful number is not "how many answers came back" but "what is each of the
@@ -2719,7 +2810,11 @@ function renderNarrativeCards(){
   const card=t&&t.closest(".att");
   if(card) card.classList.toggle("hidden", non.length===0);
   if(t) t.textContent=`${non.length} non-compliant requirement${non.length>1?"s":""}`;
-  if(sub&&non.length) sub.textContent=`${non[0].id} — internal verdict Not compliant${non[0].external?", declared Compliant to the client":""}`;
+  if(sub&&non.length) sub.textContent=`${non[0].id} — internal verdict Not compliant`;
+  /* SPEC-risks.md — once Compliance has counted, say how many still lack a risk */
+  const gs=shellGet("getGapStats");
+  if(gs && t){ card&&card.classList.toggle("hidden", gs.nc===0); t.textContent=`${gs.nc} Not compliant verdict${gs.nc===1?"":"s"}`;
+    if(sub) sub.textContent=gs.nc>gs.ncLogged?`${gs.nc-gs.ncLogged} not linked to a risk yet${gs.noStrategy?` · ${gs.noStrategy} without a gap strategy`:""}`:"All documented — strategy and risk on each"; }
   const feed=document.getElementById("feed-latest-answer");
   if(feed){
     const answered=FOLLOWUP_REQS.find(r=>r.compliance);
@@ -2764,7 +2859,84 @@ function renderPartnersSetting(){
   btn.addEventListener("click",add);
   inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); add(); } });
 })();
+/* SPEC-risks.md §2.1 — the tender's gap strategies, held in the shell like the
+   partners above. DEC-110: empty on a new tender. DEC-111: changing the result
+   of a strategy in use recomputes the requirements that use it — confirmed
+   inline with the count first; PM corrections are kept. */
+const GS_EXT_LABEL={compliant:"Compliant", not_compliant:"Not compliant", pending:"Pending"};
+let gsPending=null;   // {id, ext} — a result change awaiting confirmation
+function renderStrategiesSetting(){
+  const box=document.getElementById("gs-list"); if(!box||!CURRENT_PROJECT) return;
+  let list=[]; try{ list=window.parent.getStrategies(CURRENT_PROJECT.id)||[]; }catch(e){}
+  const use=id=>{ try{ return window.parent.getStrategyUsage(CURRENT_PROJECT.id,id); }catch(e){ return {used:0,corrected:0}; } };
+  const opts=v=>Object.entries(GS_EXT_LABEL).map(([k,l])=>`<option value="${k}" ${k===v?"selected":""}>${l}</option>`).join("");
+  box.innerHTML = list.length ? list.map(x=>{
+    const u=use(x.id);
+    const pend=gsPending&&gsPending.id===x.id?gsPending:null;
+    const moved=u.used-u.corrected;
+    return `<div class="gs-row">
+        <input class="inp" data-gsname="${x.id}" value="${x.name.replace(/"/g,"&quot;")}" title="Rename">
+        <select class="sel" data-gsext="${x.id}">${opts(pend?pend.ext:x.ext)}</select>
+        <span class="gs-use" title="Requirements whose Not compliant uses this strategy">${u.used?`used ${u.used}×`:"unused"}</span>
+        <button class="gs-rm" data-gsrm="${x.id}" ${u.used?"disabled":""} title="${u.used?"In use — rename it instead":"Delete"}"><i class=ic-trash></i></button>
+      </div>
+      ${pend?`<div class="gs-confirm"><span><b>${moved}</b> requirement${moved===1?"":"s"} will change external compliance from ${GS_EXT_LABEL[x.ext]} to <b>${GS_EXT_LABEL[pend.ext]}</b>${u.corrected?` · ${u.corrected} corrected by the PM ${u.corrected===1?"keeps its":"keep their"} value`:""}.</span>
+        <button class="btn-ghost" data-gscancel>Cancel</button><button class="btn-primary" data-gsconfirm>Change and recompute</button></div>`:""}`;
+  }).join("") : `<div class="gs-empty">No strategy yet. Until there is one, a Not compliant is flagged <b>Strategy missing</b> and its external compliance stays Pending.</div>`;
+  box.querySelectorAll("[data-gsname]").forEach(inp=>{
+    const commit=()=>{
+      const id=inp.dataset.gsname, cur=list.find(e=>e.id===id); if(!cur||inp.value.trim()===cur.name) return;
+      let res={error:"shell"}; try{ res=window.parent.renameStrategy(CURRENT_PROJECT.id,id,inp.value); }catch(e){}
+      if(res.error==="empty"){ toast("A strategy needs a name","warn"); inp.value=cur.name; return; }
+      if(res.error==="duplicate"){ toast("Another strategy already has that name","warn"); inp.value=cur.name; return; }
+      if(res.error){ inp.value=cur.name; return; }
+      toast(`Renamed to “${res.entry.name}”`,"ok");
+    };
+    inp.addEventListener("change",commit);
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); inp.blur(); } if(e.key==="Escape"){ inp.value=(list.find(x=>x.id===inp.dataset.gsname)||{}).name||""; inp.blur(); } });
+  });
+  box.querySelectorAll("[data-gsext]").forEach(sel=>sel.addEventListener("change",()=>{
+    const id=sel.dataset.gsext, cur=list.find(e=>e.id===id); if(!cur) return;
+    if(sel.value===cur.ext){ gsPending=null; renderStrategiesSetting(); return; }
+    if(use(id).used-use(id).corrected>0){ gsPending={id, ext:sel.value}; renderStrategiesSetting(); return; }
+    try{ window.parent.setStrategyResult(CURRENT_PROJECT.id,id,sel.value); }catch(e){}
+    gsPending=null; renderStrategiesSetting(); toast(`${cur.name} now declares ${GS_EXT_LABEL[sel.value]}`,"ok");
+  }));
+  box.querySelector("[data-gscancel]")?.addEventListener("click",()=>{ gsPending=null; renderStrategiesSetting(); });
+  box.querySelector("[data-gsconfirm]")?.addEventListener("click",()=>{
+    const cur=list.find(e=>e.id===gsPending.id), n=use(gsPending.id).used-use(gsPending.id).corrected;
+    try{ window.parent.setStrategyResult(CURRENT_PROJECT.id,gsPending.id,gsPending.ext); }catch(e){}
+    toast(`${cur.name} now declares ${GS_EXT_LABEL[gsPending.ext]} — ${n} requirement${n===1?"":"s"} recomputed`,"ok");
+    gsPending=null; renderStrategiesSetting();
+  });
+  box.querySelectorAll("[data-gsrm]").forEach(b=>b.addEventListener("click",()=>{
+    let res={error:"shell"}; try{ res=window.parent.removeStrategy(CURRENT_PROJECT.id,b.dataset.gsrm); }catch(e){}
+    if(res.error==="used"){ toast("In use — rename it instead","warn"); return; }
+    if(res.error) return;
+    toast(`${res.removed.name} deleted`,"ok"); renderStrategiesSetting();
+  }));
+}
+(function(){
+  const btn=document.getElementById("gs-add-btn"), inp=document.getElementById("gs-new-name"), ext=document.getElementById("gs-new-ext");
+  if(!btn||!inp) return;
+  const add=()=>{
+    let res={error:"shell"}; try{ res=window.parent.addStrategy(CURRENT_PROJECT.id, inp.value, ext.value); }catch(e){}
+    if(res.error==="empty"){ toast("Name the strategy","warn"); inp.focus(); return; }
+    if(res.error==="duplicate"){ toast("That strategy already exists","warn"); return; }
+    if(res.error){ toast("Could not add the strategy","warn"); return; }
+    inp.value=""; renderStrategiesSetting(); toast(`${res.entry.name} added — declares ${GS_EXT_LABEL[res.entry.ext]}`,"ok");
+  };
+  btn.addEventListener("click",add);
+  inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); add(); } });
+})();
+/* SPEC-risks.md §6 — the Risks card on the support rail reads the register */
+(function renderRisksCard(){
+  const n=document.getElementById("ph-risks-n"), t=document.getElementById("ph-risks-txt"); if(!n||!CURRENT_PROJECT) return;
+  let rs=[]; try{ rs=window.parent.getRisks(CURRENT_PROJECT.id)||[]; }catch(e){}
+  n.textContent=rs.length; t.textContent=`in the list`;
+})();
 function renderAllocationModelSection(){
+  renderStrategiesSetting();
   renderPartnersSetting();
   const gl=document.getElementById("cfg-general-line"); if(gl) gl.textContent=(CURRENT_PROJECT&&CURRENT_PROJECT.line)||"Turnkey";
   const sysEl=document.getElementById("cfg-model-system");
@@ -2806,7 +2978,7 @@ function renderStatsPanel(){
   renderStatsProgressDeadline();
   // Compliance tab
   renderStatsComplianceBar("stats-comp-bar","stats-comp-legend");
-  renderStatsExternalGap();
+  renderStatsProgressClient(); renderStatsRisks(); renderStatsNCStrategy();
   renderStatsConsolidation();
   renderStatsAssignFunnel();
   renderStatsLate();

@@ -20,7 +20,7 @@ Les anciens prompts et tickets sont des sources historiques, pas des instruction
 
 SRM organise la capture, la caractérisation, l'allocation et la revue de conformité des exigences d'un appel d'offres. Le travail est assisté par IA et comporte des validations humaines. La distinction fonctionnelle récente est Project Manager / Contributor ; les structures historiques manager/expert subsistent par endroits (OPEN-02).
 
-Sept sources actives sont assemblées dans `index.html` et `docreview-app.html` : `accueil.html`, `creation-projet.html`, `dashboard-et-config.html`, `revue-documentaire.html`, `compliance.html`, `documents.html`, `qa.html`. Dashboard, configuration et casting partagent un fichier. Il n'existe plus de route autonome Expert Space dans la liste d'assemblage.
+Sept sources actives sont assemblées dans `index.html` et `docreview-app.html` : `accueil.html`, `creation-projet.html`, `dashboard-et-config.html`, `revue-documentaire.html`, `compliance.html`, `documents.html`, `qa.html`. Dashboard, configuration et casting partagent un fichier. Il n'existe plus de route autonome Expert Space dans la liste d'assemblage. Le build écrit aussi `local/index.html`, non versionné : la même application avec la police de la marque Alstom embarquée (DEC-115, voir `fonts/README.md`).
 
 ## Carte de lecture
 

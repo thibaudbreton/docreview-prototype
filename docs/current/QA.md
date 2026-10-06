@@ -7,12 +7,12 @@ DEC-021 : même fonctionnement Q&A pour Turnkey et SIG. Fonction décrite pour l
 | ID | Règle | Statut |
 |---|---|---|
 | QA-001 | Une question est identifiée, attribuée à son auteur et liée aux exigences/affectations concernées. | DOC/OBS simulé |
-| QA-002 | Le PM prépare le lot, fusionne les doublons ou exclut une question de l'export sans la supprimer du registre. | DOC/OBS |
-| QA-003 | L'export prévu est Excel avec identifiant de l'exigence. L'envoi client est réalisé hors SRM. | DOC ; export simulé |
+| QA-002 | ~~Le PM prépare le lot, fusionne les doublons ou exclut une question de l'export sans la supprimer du registre.~~ **Remplacée par DEC-116** : plus de lot, de fusion ni d'exclusion ; chaque question a un statut À envoyer / Envoyée / Répondue, et le PM la **marque « envoyée » à la main**, une par une ou par sélection. | DOC/OBS |
+| QA-003 | L'export prévu est Excel avec identifiant de l'exigence. L'envoi client est réalisé hors SRM. Depuis DEC-116, l'export ne marque rien : c'est le PM qui marque « envoyée ». | DOC ; export simulé |
 | QA-004 | La cible actuelle décrit un seul cycle par tender ; les lots multiples ne sont pas implicitement acquis. | DOC |
 | QA-005 | Importer fichier ou contenu, extraire les paires Q/R et proposer des liens avec questions propres ou exigences pour les réponses à d'autres soumissionnaires. | DOC ; extraction/matching simulés |
 | QA-006 | Réponse validée à notre question : débloquer le travail associé sans inventer une conformité. Une réponse à un concurrent ajoute du contexte sans changement d'état. | DOC |
-| QA-007 | Les associations incertaines sont arbitrées par le PM dans une file ; passer et « aucune exigence correspondante » sont des issues valides. | DOC/OBS |
+| QA-007 | ~~Les associations incertaines sont arbitrées par le PM dans une file.~~ **Remplacée par DEC-116** : pas de file d'arbitrage. Une réponse incertaine à notre question s'affiche « à confirmer » sur la question (un clic pour l'accepter ou l'écarter) ; une question-réponse d'un autre soumissionnaire sans lien sûr reste dans la liste, « No requirement linked ». | DOC/OBS |
 | QA-008 | Dates de clôture des questions et de retour prévu optionnelles ; retard visible, sans blocage absolu des questions tardives. | DOC/OBS |
 | QA-009 | Chat de recherche et question officielle au client doivent rester distincts. | DOC |
 | QA-010 | **Une question posée depuis Compliance entre dans le registre Q&A du tender en brouillon** (DEC-088). Le chef de projet la relit, la fusionne si c'est un doublon et l'envoie avec le lot ; le contributeur ne l'envoie pas lui-même. **Elle ne bloque pas la conformité** (DEC-092) : l'affectation se consolide sur le verdict du contributeur, pas sur la réponse du client, et **plusieurs questions** peuvent être en cours sur une même affectation. Annuler la question (Undo) la retire du registre. | DEC-088 |
@@ -25,7 +25,7 @@ La fusion doit préserver tous les liens de travail bloqué (DOC). DEC-021 : auc
 
 ## Acceptation
 
-QA-T01 : fusionner deux questions conserve les liens aux deux affectations. QA-T02 : exclure laisse la question consultable et la retire du lot. QA-T03 : une réponse à notre question débloque uniquement les affectations liées. QA-T04 : une réponse concurrente ne change pas l'état de revue. QA-T05 : passer un arbitrage le garde disponible ; aucun lien forcé. QA-T06 : dates absentes n'empêchent pas de travailler. QA-T07 : export ne déclenche aucun envoi automatique.
+QA-T01 et QA-T02 (fusion, exclusion) : sans objet depuis DEC-116. QA-T03 : une réponse à notre question débloque uniquement les affectations liées. QA-T04 : une réponse concurrente ne change pas l'état de revue. QA-T05 : passer un arbitrage le garde disponible ; aucun lien forcé. QA-T06 : dates absentes n'empêchent pas de travailler. QA-T07 : export ne déclenche aucun envoi automatique.
 
 ## Sources
 

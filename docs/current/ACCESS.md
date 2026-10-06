@@ -14,7 +14,7 @@
 | ACC-008 | PM : casting du projet. Contributeurs : gestion des rattachements dans leur système. Aucun manager de système obligatoire. | DEC-003 |
 | ACC-009 | Tous les contributeurs du système peuvent répondre ; la personne responsable de l'exigence, si désignée, garde le suivi. | DEC-002/010 |
 | ACC-010 | Pas de hiérarchie de permissions entre contributeurs d'un système ; hiérarchie organisationnelle hors SRM. | DEC-012 |
-| ACC-011 | Le PM peut saisir et modifier directement des réponses, en plus de remplacer/verrouiller le verdict final. | DEC-013 |
+| ACC-011 | Le PM peut saisir et modifier directement des réponses. Il ne verrouille plus rien ; il peut **corriger la conformité externe dérivée**, motif obligatoire et visible (DEC-106). | DEC-013/106 |
 | ACC-012 | **La nature et la classe d'une exigence appartiennent au chef de projet.** Un contributeur (le responsable d'un système) les voit mais ne peut pas les modifier — ni dans le détail, ni dans la table, ni par l'action groupée « Classify », ni dans la vue Document. Elles déterminent ce que le modèle dérive pour chaque système. | DEC-086 |
 | ACC-013 | **Un contributeur ne modifie rien sur une exigence dont aucun système ne lui est assigné** : il la lit (nature, classe, allocation de chaque système), sans aucun contrôle actif, dans le panneau comme dans la table. | DEC-100 |
 | ACC-014 | **Une personne appartient à un seul système.** « Son » système est celui dont elle est membre (plus celui où elle est affectée) : c'est ce qui décide ACC-013. Elle n'est proposée comme personne d'un OBS que sur ce système. Un système est validé par son contributeur ou par le PM ; l'aiguillage Turnkey, par le PM seul. | DEC-102/104 |

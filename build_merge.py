@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""Merge the 7 Smart Requirement Manager (SRM) source screens into the single-file docreview-app.html deliverable.
+"""Merge the 8 Smart Requirement Manager (SRM) source screens into the single-file docreview-app.html deliverable.
 
 Usage: python3 build_merge.py
-Reads the 7 source files below, base64-encodes each (UTF-8), and writes docreview-app.html
+Reads the 8 source files below, base64-encodes each (UTF-8), and writes docreview-app.html
 plus an identical index.html (GitHub Pages serves index.html as the site entry point —
 writing both here keeps the hosted copy in sync with the deliverable automatically).
-Always edit the 7 sources — never the merged files directly — then re-run this script.
+It also writes local/index.html, never versioned: the same app with the Alstom
+brand font embedded, which the published outputs leave out while its licence
+is unsettled (DEC-115, PUBLISH_BRAND_FONT below).
+Always edit the 8 sources — never the merged files directly — then re-run this script.
 
 Cross-screen navigation is expressed in the sources as parent.route(...) /
 parent.routeUrl(...) / goRoute(...) JS calls (see dashboard-et-config.html's
@@ -35,6 +38,8 @@ with an empty string and revue-documentaire.html's buildDataFromCapture()
 falls back to its synthetic buildBigData(n) seed.
 """
 import base64
+import json
+import re
 from pathlib import Path
 
 SOURCES = [
@@ -48,6 +53,8 @@ SOURCES = [
     # already lives as its own screen in dashboard-et-config.html.
     ("documents", "documents.html"),
     ("qa", "qa.html"),
+    # SPEC-risks.md §6 — the tender's risk register, a support screen like Q&A.
+    ("risks", "risks.html"),
 ]
 
 INCLUDE_MARKER = "/* @include table-engine.js */"
@@ -64,8 +71,34 @@ DATA_FILE = "data.js"
 KEYS_INCLUDE_MARKER = "/* @include keys.js */"
 KEYS_FILE = "keys.js"
 
+# The tender chat (tender-chat.html) is inserted into the shell after the
+# iframe, with the captured blocks it searches (from data.js) as a compact
+# JSON array. It asks Claude through the claude.ai artifact runtime, so it
+# only answers in the published artifact; ARTIFACT_OUTPUT is that version:
+# the same page without its own <html>/<head> (the publish wraps it).
+CHAT_FILE = "tender-chat.html"
+# Hidden for now (2026-10-01): the chat is not part of what gets built next.
+# Set to True to put it back in both outputs.
+CHAT_ENABLED = False
+ARTIFACT_OUTPUT = "artifact/srm-prototype.html"
+
 OUTPUT = "docreview-app.html"
 PAGES_OUTPUT = "index.html"  # GitHub Pages entry point — same bytes as OUTPUT
+
+# Alstom, the brand typeface (DEC-115), as built into fonts/ by build_fonts.py.
+# It is licensed (© Alstom, all rights reserved) and this repository is public,
+# with index.html served on GitHub Pages: a page that embeds the font hands the
+# font file to anyone who opens it. So the published outputs — OUTPUT,
+# PAGES_OUTPUT, ARTIFACT_OUTPUT — carry it only once PUBLISH_BRAND_FONT says
+# the licence allows it; until then they show Noto Sans, the face the Alstom
+# one is metric-matched to (same layout, other letters). LOCAL_OUTPUT, never
+# versioned, always carries it: demos on this machine, the deck screenshots.
+# The font travels once per page, as window.BRAND_FONTS; the shell swaps each
+# screen's fonts/… url() for it as the screen loads (withBrandFonts below).
+BRAND_FONT_FILES = [f"fonts/Alstom-{w}.woff" for w in ("Regular", "Medium", "Bold")]
+BRAND_FONT_RULE = re.compile(r'@font-face\{font-family:"Alstom UI";[^}]*\}\n?')
+PUBLISH_BRAND_FONT = False
+LOCAL_OUTPUT = "local/index.html"
 
 HEADER = """<!DOCTYPE html>
 <html lang="en">
@@ -88,8 +121,15 @@ const BLOBS = {
 
 FOOTER = """
 };
-const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "compliance": ["compliance", "compliance"], "compliance-contributor": ["compliance", "compliance-contributor"], "documents": ["documents", null], "qa": ["qa", null], "new": ["create", null]};
+const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "compliance": ["compliance", "compliance"], "compliance-contributor": ["compliance", "compliance-contributor"], "documents": ["documents", null], "qa": ["qa", null], "risks": ["risks", null], "new": ["create", null]};
 function b64utf8(s){return decodeURIComponent(Array.prototype.map.call(atob(s),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));}
+// DEC-115 — the Alstom face, embedded once (window.BRAND_FONTS) in the outputs
+// allowed to carry it: each screen's @font-face points at fonts/…, swapped
+// here for the embedded copy, so the font works from file:// too.
+const BRAND_FONTS = window.BRAND_FONTS || {};
+function withBrandFonts(html){
+  return html.replace(/url[(]"(fonts[/]Alstom-[A-Za-z]+[.]woff)"[)]/g, (m, p) => BRAND_FONTS[p] ? 'url("data:font/woff;base64,' + BRAND_FONTS[p] + '")' : m);
+}
 const frame = document.getElementById('frame');
 
 /* ============ WORKSPACE — project list + background processing ============ */
@@ -239,8 +279,8 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={};
-  reassignRequests.length=0; sharedQuestions={};
+  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage=seedStrategyUsage(); risks=seedRisks(); gapDocs=seedGapDocs(); gapStats=seedGapStats(); reqLog=seedReqLog();
+  reassignRequests.length=0; sharedQuestions={}; qaRegister={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
   window.route("home");
@@ -302,6 +342,201 @@ window.addPartner = (projectId, name)=>{
   const entry={id:"p_"+code.toLowerCase(), code, label};
   list.push(entry); return {entry};
 };
+// SPEC-risks.md §2.1 / DEC-110 — the gap strategies of a tender: what a
+// responsible can do about a Not compliant, and the external compliance each
+// one produces. Written per tender by the PM; a new tender starts with none.
+// The demo tenders carry the usual four so the flow can be shown.
+function seedStrategies(){
+  const four=()=>[
+    {id:"gs_1", name:"Declare NC in offer", ext:"not_compliant"},
+    {id:"gs_2", name:"Request adjustment", ext:"pending"},
+    {id:"gs_3", name:"Change to reach compliance", ext:"compliant"},
+    {id:"gs_4", name:"Keep as a gap", ext:"compliant"},
+  ];
+  const out={}; ["stb2026","rfp114","ao088","stb133","stb2025"].forEach(k=>{ out[k]=four(); });
+  return out;
+}
+let strategies = seedStrategies();
+// Compliance reports, per strategy, how many assignments use it and how many of
+// those carry a PM correction of the external compliance (DEC-106). "used" is
+// what forbids deleting; used minus corrected is what a change of result moves.
+// Seeded with what Compliance reports for the demo data, so Settings knows
+// before Compliance has been opened; Compliance overwrites it on each render.
+function seedStrategyUsage(){ return {
+  stb2026:{gs_1:{used:2,corrected:0}, gs_2:{used:2,corrected:1}, gs_3:{used:2,corrected:0}, gs_4:{used:2,corrected:0}},
+  rfp114:{gs_4:{used:1,corrected:0}},
+}; }
+let strategyUsage = seedStrategyUsage();
+window.getStrategies = (projectId)=>{ const k=projectId||"_"; if(!strategies[k]) strategies[k]=[]; return strategies[k]; };
+window.reportStrategyUsage = (projectId, counts)=>{ strategyUsage[projectId||"_"]=counts||{}; };
+window.getStrategyUsage = (projectId, id)=>{ const u=((strategyUsage[projectId||"_"]||{})[id])||{}; return {used:u.used||0, corrected:u.corrected||0}; };
+window.addStrategy = (projectId, name, ext)=>{
+  const list=window.getStrategies(projectId), label=String(name||"").trim();
+  if(!label) return {error:"empty"};
+  if(list.some(x=>x.name.toLowerCase()===label.toLowerCase())) return {error:"duplicate"};
+  let n=list.length+1; while(list.some(x=>x.id==="gs_"+n)) n++;
+  const entry={id:"gs_"+n, name:label, ext:ext||"pending"};
+  list.push(entry); return {entry};
+};
+window.renameStrategy = (projectId, id, name)=>{
+  const list=window.getStrategies(projectId), label=String(name||"").trim(), x=list.find(e=>e.id===id);
+  if(!x) return {error:"missing"};
+  if(!label) return {error:"empty"};
+  if(list.some(e=>e.id!==id && e.name.toLowerCase()===label.toLowerCase())) return {error:"duplicate"};
+  x.name=label; return {entry:x};
+};
+window.setStrategyResult = (projectId, id, ext)=>{
+  const x=window.getStrategies(projectId).find(e=>e.id===id); if(!x) return {error:"missing"};
+  x.ext=ext; return {entry:x};
+};
+// SPEC-risks.md §2.1 — a strategy in use cannot be deleted, only renamed.
+window.removeStrategy = (projectId, id)=>{
+  if(window.getStrategyUsage(projectId, id).used>0) return {error:"used"};
+  const list=window.getStrategies(projectId), i=list.findIndex(e=>e.id===id);
+  if(i<0) return {error:"missing"};
+  const [gone]=list.splice(i,1); return {removed:gone};
+};
+// SPEC-risks.md §4-§5 — the tender's risk register, and for each Not compliant
+// assignment its gap documentation: the strategy picked, the risks linked, and a
+// PM correction of the derived external compliance (DEC-106). Keyed
+// "<requirement id>#<system>", held here so the Risks page and Compliance read
+// the same links. Risks are created from Compliance and reused across requirements.
+// DEC-112 — demo register. The three "Risk accepted" texts of the old
+// declaration model (SRM-00005, SRM-00007, L4-0010) became risks answering the
+// template's three questions; the other Not compliant of the Turnkey demo share
+// risks to show reuse (SRM-00026/-00056, SRM-00038/-00068), with different
+// strategies on the same risk, two risks on one requirement (SRM-00005), one PM
+// correction, and a few gaps left undocumented so the flags show (SRM-00086,
+// SRM-00098).
+function seedRisks(){
+  const R=(id,createdBy,createdAt,that,cause,impact)=>({id,that,cause,impact,createdBy,createdAt});
+  return {
+    stb2026:[
+      R("RSK-00001","Louis Renaud","Jul 14","third-party tools load the telemetry API beyond its rate limits.","the current gateway, sized for our own dashboards only.","a gateway rework, priced as a contract option."),
+      R("RSK-00002","Louis Renaud","Jul 13","the issuer's escalation matrix cannot be wired into our alerting as delivered.","the matrix being provided by the issuer only at contract award.","a late integration of escalation rules during delivery."),
+      R("RSK-00003","Paolo Ferri","Jul 16","the secondary depot cluster stays below 99.7% business-hours availability.","older hardware on that cluster (99.4% measured last quarter).","availability penalties on the depot scope."),
+      R("RSK-00004","Amina Cherif","Jul 17","regional aggregation reports are logged later than 2 seconds after the event.","the batch interval of the aggregation service.","a latency deviation on every regional report."),
+      R("RSK-00005","Karim Benali","Jul 18","the gateway firmware cannot encrypt dashboard layouts within 2 seconds.","the encryption library of the current firmware release.","a firmware release outside the bid scope."),
+      R("RSK-00006","Sophie Lang","Jul 10","the escalation matrix contradicts the alert thresholds.","two sources for the same thresholds.","rework of the alert configuration."),
+    ],
+    rfp114:[
+      R("RSK-00001","Louis Renaud","Jul 16","a route is released too late when the last track section's detection is lost.","the standard product releasing routes on the nominal configuration only.","a product change for the degraded mode, priced as a contract option."),
+    ],
+  };
+}
+function seedGapDocs(){
+  const D=(reqId,typology,sec,text,managerName,strategy,risks,override)=>[reqId+"#"+typology,{strategy,risks,override:override||null,meta:{reqId,typology,sec,text,managerName}}];
+  return {
+    stb2026:Object.fromEntries([
+      D("SRM-00005","sig","2. Functional requirements","The system SHALL generate an alert when a site's consumption exceeds the configured threshold for more than 5 consecutive minutes, and notify the operator according to the escalation matrix.","Louis Renaud","gs_2",["RSK-00002","RSK-00006"]),
+      D("SRM-00007","sig","2. Functional requirements","The system SHALL expose site telemetry to third-party tools through a documented REST API.","Louis Renaud","gs_4",["RSK-00001"]),
+      D("SRM-00011","sen","3. Performance requirements","The system SHALL ensure 99.7% availability during business hours, measured monthly, excluding planned maintenance windows.","Paolo Ferri","gs_1",["RSK-00003"]),
+      D("SRM-00026","trk","4. Security requirements","The platform SHALL log regional aggregation reports within 2 seconds of the triggering event.","Amina Cherif","gs_3",["RSK-00004"]),
+      D("SRM-00056","trk","4. Security requirements","The platform SHALL log regional aggregation reports within 2 seconds of the triggering event.","Amina Cherif","gs_4",["RSK-00004"]),
+      D("SRM-00086","trk","4. Security requirements","The platform SHALL log regional aggregation reports within 2 seconds of the triggering event.","Amina Cherif","gs_3",[]),
+      D("SRM-00038","sen","4. Security requirements","The gateway firmware SHALL encrypt dashboard widget layouts within 2 seconds of the triggering event.","Paolo Ferri","gs_1",["RSK-00005"]),
+      D("SRM-00068","sen","4. Security requirements","The gateway firmware SHALL encrypt dashboard widget layouts within 2 seconds of the triggering event.","Paolo Ferri","gs_2",["RSK-00005"],
+        {ext:"not_compliant", reason:"The client refused any adjustment on the encryption scope in the Jul 20 clarification meeting.", by:"Thibaud Breton", date:"Jul 20"}),
+    ]),
+    rfp114:Object.fromEntries([
+      D("L4-0010","sig","3. Wayside and interlocking","Each interlocking SHALL guarantee that no conflicting route can be set simultaneously, and SHALL release a route only once the train has been confirmed clear of the last track section.","Louis Renaud","gs_4",["RSK-00001"]),
+    ]),
+  };
+}
+let risks = seedRisks();
+let gapDocs = seedGapDocs();
+window.getRisks = (projectId)=>{ const k=projectId||"_"; if(!risks[k]) risks[k]=[]; return risks[k]; };
+// DEC-113 — a risk is its justification, the three answers of the template
+// (that / cause / impact), and the requirements it is linked to. No weight,
+// status, comments or merge: the risk work itself is done outside the tool.
+window.addRisk = (projectId, r)=>{
+  const list=window.getRisks(projectId), t=k=>String((r&&r[k])||"").trim();
+  if(!t("that")||!t("cause")||!t("impact")) return {error:"empty"};
+  const n=list.reduce((m,x)=>Math.max(m, parseInt(String(x.id).slice(4),10)||0),0)+1;
+  // DEC-114 — a risk belongs to the tender, not to a system
+  const entry={id:"RSK-"+String(n).padStart(5,"0"), that:t("that"), cause:t("cause"), impact:t("impact"),
+    createdBy:r.createdBy||null, createdAt:r.createdAt||"Today"};
+  list.push(entry); return {entry};
+};
+window.getGapDocs = (projectId)=>{ const k=projectId||"_"; if(!gapDocs[k]) gapDocs[k]={}; return gapDocs[k]; };
+window.getGapDoc = (projectId, key)=>window.getGapDocs(projectId)[key]||null;
+window.setGapDoc = (projectId, key, patch)=>{
+  const all=window.getGapDocs(projectId);
+  return all[key]=Object.assign(all[key]||{strategy:null, risks:[], override:null}, patch||{});
+};
+window.clearGapDoc = (projectId, key)=>{ delete window.getGapDocs(projectId)[key]; };
+// SPEC-risks.md §9 — Compliance reports its totals (assignments, verdicts, Not
+// compliant documented, external) each time it renders; the dashboard reads them.
+// Same reason: the dashboard's risk figures on first load, as Compliance
+// computes them for the demo data (it overwrites them on each render).
+function seedGapStats(){ return {
+  stb2026:{reqs:104, assignments:124, assigned:100, answered:58, compliant:49, nc:9, ncLogged:7, byStrategy:{gs_1:2,gs_2:2,gs_3:2,gs_4:2}, noStrategy:1, ext:{compliant:43,not_compliant:2,pending:1,none:58}},
+  rfp114:{reqs:12, assignments:12, assigned:10, answered:5, compliant:4, nc:1, ncLogged:1, byStrategy:{gs_4:1}, noStrategy:0, ext:{compliant:5,not_compliant:0,pending:0,none:7}},
+}; }
+let gapStats = seedGapStats();
+window.reportGapStats = (projectId, st)=>{ gapStats[projectId||"_"]=st; };
+window.getGapStats = (projectId)=>gapStats[projectId||"_"]||null;
+// Activity log, one per requirement, shared by Allocation and Compliance: who
+// did what and when, before -> after, with the four milestones of a
+// requirement's life (captured, allocated, answered, declared to the client).
+// Each screen writes its own events here; both Activity tabs read the merge.
+// Seeded with a credible history on a few demo requirements.
+function seedReqLog(){
+  const E=(iso,who,cat,what,extra)=>Object.assign({ts:Date.parse(iso), time:new Date(Date.parse(iso)).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}), who, cat, what}, extra||{});
+  return {
+    stb2026:{
+      "SRM-00007":[
+        E("2026-07-11T10:05","Thibaud Breton","status","Characterisation validated",{from:"To validate",to:"Requirement · Technical",k:"ok"}),
+        E("2026-07-11T10:06","Thibaud Breton","alloc","SIG — assigned to Louis Renaud",{k:"human"}),
+        E("2026-07-11T10:07","Thibaud Breton","status","Allocated — sent to Compliance",{milestone:"allocated",k:"ok"}),
+        E("2026-07-14T16:30","Louis Renaud","compliance","SIG — verdict",{from:"Awaiting answer",to:"Not compliant",k:"warn"}),
+        E("2026-07-14T16:31","Louis Renaud","status","Every system has answered — consolidated Not compliant",{milestone:"answered",k:"warn"}),
+        E("2026-07-14T16:40","Louis Renaud","compliance","SIG — gap strategy: Keep as a gap (the client is told Compliant)",{k:"human"}),
+        E("2026-07-14T16:42","Louis Renaud","compliance","SIG — linked RSK-00001",{k:"human"}),
+        E("2026-07-14T16:42:30","Louis Renaud","status","Declared to the client: Compliant",{milestone:"declared",k:"ok"}),
+        E("2026-07-15T09:20","Thibaud Breton","comment","Agreed to keep it as a gap — the gateway rework is in the price schedule as an option.",{k:"comment"}),
+      ],
+      "SRM-00068":[
+        E("2026-07-12T11:00","Thibaud Breton","status","Allocated — sent to Compliance",{milestone:"allocated",k:"ok"}),
+        E("2026-07-18T14:10","Paolo Ferri","compliance","SEN — verdict",{from:"Awaiting answer",to:"Not compliant",k:"warn"}),
+        E("2026-07-18T14:12","Paolo Ferri","compliance","SEN — gap strategy: Request adjustment (the client is told Pending)",{k:"human"}),
+        E("2026-07-18T14:13","Paolo Ferri","compliance","SEN — linked RSK-00005",{k:"human"}),
+        E("2026-07-20T17:05","Thibaud Breton","compliance","SEN — external compliance corrected: “The client refused any adjustment on the encryption scope in the Jul 20 clarification meeting.”",{from:"Pending",to:"Not compliant",k:"warn"}),
+        E("2026-07-20T17:05:30","Thibaud Breton","status","Declared to the client: Not compliant",{milestone:"declared",k:"warn"}),
+      ],
+      "SRM-00017":[
+        E("2026-07-16T17:40","Thibaud Breton","alloc","Criterion text clarified",{from:"under 2 seconds",to:"under 2 seconds … at the 95th percentile",k:"human"}),
+        E("2026-07-17T09:35","Karim Benali","comment","The 2 s threshold seems optimistic over a one-year depth. Are we targeting P95 or P99? @Thibaud",{k:"comment"}),
+      ],
+      "SRM-00021":[
+        E("2026-07-14T16:20","Claire Moreau","comment","Is the 3-year retention period aligned with group policy (5 years)?",{k:"comment"}),
+      ],
+    },
+    rfp114:{
+      "L4-0010":[
+        E("2026-07-09T10:20","Thibaud Breton","status","Allocated — sent to Compliance",{milestone:"allocated",k:"ok"}),
+        E("2026-07-16T15:30","Louis Renaud","compliance","SIG — verdict",{from:"Awaiting answer",to:"Not compliant",k:"warn"}),
+        E("2026-07-16T15:31","Louis Renaud","status","Every system has answered — consolidated Not compliant",{milestone:"answered",k:"warn"}),
+        E("2026-07-16T15:38","Louis Renaud","compliance","SIG — gap strategy: Keep as a gap (the client is told Compliant)",{k:"human"}),
+        E("2026-07-16T15:40","Louis Renaud","compliance","SIG — linked RSK-00001",{k:"human"}),
+        E("2026-07-16T15:40:30","Louis Renaud","status","Declared to the client: Compliant",{milestone:"declared",k:"ok"}),
+      ],
+    },
+  };
+}
+let reqLog = seedReqLog();
+window.logReqEvent = (projectId, reqId, ev)=>{
+  const k=projectId||"_", m=reqLog[k]=reqLog[k]||{}, l=m[reqId]=m[reqId]||[];
+  const d=new Date();
+  const e=Object.assign({ts:Date.now()+l.length/1000, time:"Today, "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}, ev);
+  l.push(e); return e;
+};
+window.getReqLog = (projectId, reqId)=>(((reqLog[projectId||"_"]||{})[reqId])||[]).slice().sort((a,b)=>b.ts-a.ts);
+// One-shot hand-off between screens: "open this risk", "filter Compliance on it".
+// The target screen takes it on load; the iframe reloads on every route.
+let screenFocus = {};
+window.setScreenFocus = (screen, payload)=>{ screenFocus[screen]=payload; };
+window.takeScreenFocus = (screen)=>{ const f=screenFocus[screen]||null; delete screenFocus[screen]; return f; };
 window.isV22Uploaded = ()=>v22Uploaded;
 window.setV22Uploaded = (v)=>{ v22Uploaded = !!v; };
 let projectMode = 'ai';
@@ -338,6 +573,11 @@ window.pushQuestion = function(projectId, q){
   list.push(q); return q;
 };
 window.getQuestions = (projectId)=>sharedQuestions[projectId||"_"]||[];
+// DEC-116 — the Q&A register's own state per tender: the "sent" flags, the
+// answers confirmed, the other bidders' Q&A once the client's dossier is
+// imported. Held here because every route reloads the screen.
+let qaRegister = {};
+window.getQaRegister = (projectId)=>{ const k=projectId||"_"; return qaRegister[k]=qaRegister[k]||{}; };
 window.withdrawQuestion = function(projectId, id){
   const l=sharedQuestions[projectId||"_"]; if(!l) return;
   const i=l.findIndex(x=>x.id===id); if(i>=0) l.splice(i,1);
@@ -369,7 +609,7 @@ function load(routeKey){
       else if(_sub === 'compliance-contributor' && cw.setScreen){ cw.setScreen(2); if(cw.setDemoContributorView) cw.setDemoContributorView(); }
     }catch(e){}
   };
-  frame.srcdoc = b64utf8(BLOBS[r[0]]);
+  frame.srcdoc = withBrandFonts(b64utf8(BLOBS[r[0]]));
 }
 // called from inside the iframe (same-origin srcdoc)
 window.route = function(key){
@@ -383,6 +623,7 @@ const URLMAP = {
   'compliance.html#contributor':'compliance-contributor',
   'documents.html':'documents',
   'qa.html':'qa',
+  'risks.html':'risks',
   'dashboard-et-config.html':'dashboard',
   'dashboard-et-config.html#config':'config',
   'creation-projet.html':'new'
@@ -425,9 +666,15 @@ def main():
     # Same treatment as data.js: keep the reference only when the files exist.
     antarctica_present = all(Path(f"fonts/Antarctica-{w}.woff2").is_file() for w in ("Regular", "Bold"))
     if not antarctica_present:
-        print("Note: fonts/Antarctica-*.woff2 not found — titles fall back to Noto Sans (see fonts/README.md).")
+        print("Note: fonts/Antarctica-*.woff2 not found — titles use the next face, Alstom or Noto Sans (see fonts/README.md).")
 
-    blob_lines = []
+    brand_fonts = {p: base64.b64encode(Path(p).read_bytes()).decode("ascii")
+                   for p in BRAND_FONT_FILES if Path(p).is_file()}
+    if len(brand_fonts) < len(BRAND_FONT_FILES):
+        brand_fonts = {}
+        print("Note: fonts/Alstom-*.woff not found — every output shows Noto Sans (run build_fonts.py, see fonts/README.md).")
+
+    screens = []
     for key, filename in SOURCES:
         with open(filename, encoding="utf-8") as f:
             html = f.read()
@@ -441,14 +688,56 @@ def main():
             html = html.replace(',url("fonts/Antarctica-Bold.woff2") format("woff2")', "")
         if CSS_INCLUDE_MARKER in html:
             html = html.replace(CSS_INCLUDE_MARKER, shared_css)
-        b64 = base64.b64encode(html.encode("utf-8")).decode("ascii")
-        blob_lines.append(f'{key}:"{b64}",')
+        screens.append((key, html))
 
-    body = HEADER + "\n".join(blob_lines) + FOOTER
+    chat = ""
+    if CHAT_ENABLED and Path(CHAT_FILE).is_file():
+        cap = {"docs": [], "rows": []}
+        if capture_js:
+            data = json.loads(capture_js[capture_js.index("{"):capture_js.rstrip().rstrip(";").rindex("}") + 1])
+            docs = sorted(data["documents"], key=lambda d: d.get("order", 0))
+            idx = {d["id"]: i for i, d in enumerate(docs)}
+            cap["docs"] = [d["name"] for d in docs]
+            cap["rows"] = [[r["id"], idx.get(r["docId"], 0), r.get("section") or "", r.get("category") or "", (r.get("text") or "").strip()]
+                           for r in data["rows"] if (r.get("text") or "").strip()]
+        payload = json.dumps(cap, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+        with open(CHAT_FILE, encoding="utf-8") as f:
+            chat = "<script>window.CHAT_CAPTURE=" + payload + ";</script>\n" + f.read()
+
+    def page(with_font):
+        """The single-file app; with_font: the Alstom face embedded, else its @font-face rules dropped."""
+        lines = []
+        for key, html in screens:
+            if not with_font:
+                html = BRAND_FONT_RULE.sub("", html)
+            lines.append(f'{key}:"{base64.b64encode(html.encode("utf-8")).decode("ascii")}",')
+        out = HEADER + "\n".join(lines) + FOOTER
+        if with_font:
+            fonts = ",\n".join(f'"{p}":"{d}"' for p, d in brand_fonts.items())
+            out = out.replace("<script>\nconst BLOBS = {", "<script>\nwindow.BRAND_FONTS = {\n" + fonts + "\n};\n</script>\n<script>\nconst BLOBS = {", 1)
+        if chat:
+            out = out.replace("\n</body>", "\n" + chat + "\n</body>", 1)
+        return out
+
+    body = page(bool(brand_fonts) and PUBLISH_BRAND_FONT)
     for target in (OUTPUT, PAGES_OUTPUT):
         with open(target, "w", encoding="utf-8") as f:
             f.write(body)
-    print(f"Wrote {OUTPUT} and {PAGES_OUTPUT} ({len(body)} bytes) from {len(SOURCES)} sources.")
+    print(f"Wrote {OUTPUT} and {PAGES_OUTPUT} ({len(body)} bytes) from {len(SOURCES)} sources"
+          + (", with the Alstom font." if brand_fonts and PUBLISH_BRAND_FONT else " — Alstom font left out (PUBLISH_BRAND_FONT)."))
+    local = page(bool(brand_fonts))
+    Path(LOCAL_OUTPUT).parent.mkdir(exist_ok=True)
+    with open(LOCAL_OUTPUT, "w", encoding="utf-8") as f:
+        f.write(local)
+    print(f"Wrote {LOCAL_OUTPUT} ({len(local)} bytes){', with the Alstom font' if brand_fonts else ''} — local only, never versioned.")
+
+    # claude.ai artifact: title + the shell's style + everything inside <body>
+    style = body[body.index("<style>"):body.index("</style>") + len("</style>")]
+    inner = body.split("<body>", 1)[1].rsplit("</body>", 1)[0]
+    Path(ARTIFACT_OUTPUT).parent.mkdir(exist_ok=True)
+    with open(ARTIFACT_OUTPUT, "w", encoding="utf-8") as f:
+        f.write("<title>SRM Prototype</title>\n" + style + inner)
+    print(f"Wrote {ARTIFACT_OUTPUT} for publishing on claude.ai.")
 
 if __name__ == "__main__":
     main()

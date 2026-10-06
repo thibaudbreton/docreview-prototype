@@ -14,3 +14,9 @@ fonts/*.woff2
 fonts/*.woff
 fonts/*.otf
 fonts/*.ttf
+# The local build: same app, with the licensed Alstom font embedded (DEC-115)
+local/
+artifact/
+
+# Deck screenshot tooling: holds the client-name substitution list and derived tender content
+deck/
