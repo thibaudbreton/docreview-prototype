@@ -1664,7 +1664,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Tab Bar, Tender Card, Empty State Message
 - **added**: 2026-09-01
 - **changed**: 2026-10-06
-- **notes**: 2026-10-06: headed by a Home Section Head ("My tenders · N tenders") under the Onboarding Line; a card opens through `openTender()`, shared with the Continue Card and the Submissions Line. Grid `minmax(330px,1fr)` hardcoded.
+- **notes**: 2026-10-06: headed by a Home Section Head ("My tenders · N tenders") under the Onboarding Line; a card opens through `openTender()`, shared with the Continue Card. Grid `minmax(330px,1fr)` hardcoded.
 
 ### Tender Card
 - **level**: molecule
@@ -1696,16 +1696,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-10-06
 - **notes**: "Pick up where you left off": the primary open tender (else the first built-out one) with its line and the next thing to do; the whole card opens the tender. Hardcoded shadow `0 10px 30px rgba(14,30,50,.10)`.
 
-### Submissions Line
-- **level**: molecule
-- **file**: accueil.html
-- **variants**: station due within 7 days (`--warn` ring and days), labels alternating above / below
-- **tokens**: --accent, --warn, --line-2, --panel, --text, --text-3, --text-xs, --text-sm, --space-6
-- **built-from**: Home Section Head
-- **added**: 2026-10-06
-- **changed**: 2026-10-06
-- **notes**: "Next submissions": every tender not yet submitted on one line, Today on the left, positioned by days left over a span rounded up to whole weeks; a label opens its tender (a demo-only one says so). Same rail vocabulary as the Tender Line. Hardcoded geometry (118px high, axis at 57px, 16px stations).
-
 ### Onboarding Line
 - **level**: organism
 - **file**: accueil.html
@@ -1724,7 +1714,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: `.home-sec` — one heading style for the home page's sections (Next submissions, How a tender travels, My tenders).
+- **notes**: `.home-sec` — one heading style for the home page's sections (How a tender travels, My tenders).
 
 ### Wizard Stepper Panel
 - **level**: organism
@@ -2024,3 +2014,5 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Phase Rail — removed 2026-10-06, replaced by the Tender Line
 
 ### Glossary Grid — removed 2026-10-06, no longer needed (the home page keeps no vocabulary block)
+
+### Submissions Line — removed 2026-10-06, no longer needed (hard to read, and tenders' deadlines aren't comparable on one line)
