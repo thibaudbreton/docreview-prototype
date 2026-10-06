@@ -129,14 +129,18 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .pc-stack-row{display:flex;align-items:center;gap:7px;font-size:var(--text-sm);color:var(--text-2)}
 .pc-sysbar{width:3px;height:12px;border-radius:2px;background:var(--text-2);flex-shrink:0;display:inline-block}
 .pc-stack-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--text-3)}
-.pc-prog{display:flex;flex-direction:column;gap:7px;margin-top:2px}
-.pc-prog-top{display:flex;justify-content:space-between;font-size:var(--text-xs);color:var(--text-2)}
-.pc-prog-top .pct{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600}
-.pc-bar{height:6px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
-.pc-bar>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-hover));border-radius:var(--radius-xs);transition:width .5s ease}
-.pc-stat{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2)}
-.pc-stat .mini-bar{flex:1;height:5px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
-.pc-stat .mini-bar>div{height:100%;border-radius:var(--radius-xs);background:var(--ok)}
+.pc-line{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+/* the tender's line in miniature (2026-10-06) — the dashboard's line, four
+   stations, the current one ringed and named with its count */
+.ml{position:relative;height:12px;display:grid;grid-template-columns:repeat(4,1fr)}
+.ml-seg{position:absolute;top:4px;width:25%;height:4px;border-radius:2px;background:var(--line-2);overflow:hidden}
+.ml-seg>i{display:block;height:100%;background:var(--accent);transition:width .5s ease}
+.ml-dot{justify-self:center;position:relative;z-index:1;width:12px;height:12px;box-sizing:border-box;border-radius:50%;border:3px solid var(--line-2);background:var(--panel)}
+.ml-dot.done{background:var(--accent);border-color:var(--accent)}
+.ml-dot.current{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.ml-lbl{display:grid;grid-template-columns:repeat(4,1fr);font-size:var(--text-xs);color:var(--text-3);text-align:center}
+.ml-lbl .on{color:var(--text);font-weight:700}
+.ml-lbl .on em{font-style:normal;color:var(--accent);margin-left:3px;font-variant-numeric:tabular-nums}
 .pc-foot{display:flex;align-items:center;font-size:var(--text-xs);color:var(--text-3);margin-top:auto;padding-top:var(--space-3);border-top:1px solid var(--line)}
 .pc-foot .open{margin-left:auto;color:var(--accent);opacity:0;transition:opacity .15s}
 .pcard:hover .pc-foot .open{opacity:1}
@@ -304,31 +308,25 @@ function statusPill(p){
   const allocated=Math.min(p.allocated||0,total);
   return (total>0 && allocated>=total) ? {cls:"b-exp", label:"Compliance"} : {cls:"b-req", label:"Allocation"};
 }
-/* §1.2 — exactly two gauges: Allocation (requirements still to allocate) and Compliance
-   (requirements with internal compliance filled in). Switches automatically once allocation
-   hits 100%, no manual toggle. "At risk"/health is gone — this gauge is the health signal now. */
+/* 2026-10-06 — the card's gauge is the tender's line in miniature: Capture,
+   Allocation, Compliance, Submission, the current station named with its count
+   (§1.2's two gauges, Allocation then Compliance, now read along the line; the
+   switch at 100% allocated still applies). */
+const LINE_STATIONS=["Capture","Allocation","Compliance","Submission"];
 function gaugeHTML(p){
-  if(p.status==="processing"){
-    return `<div class="pc-prog">
-      <div class="pc-prog-top"><span>${p.procLabel||"AI capturing & characterising…"}</span><span class="pct">${Math.round(p.progress||0)}%</span></div>
-      <div class="pc-bar"><div style="width:${p.progress||0}%"></div></div></div>`;
+  let cur, fills, count="";
+  if(p.status==="processing"){ cur=0; fills=[p.progress||0,0,0]; count=Math.round(p.progress||0)+"%"; }
+  else if(p.status==="submitted"){ cur=4; fills=[100,100,100]; }
+  else {
+    const total=p.total||0, allocated=Math.min(p.allocated||0,total), filled=Math.min(p.complianceFilled||0,total);
+    if(total>0 && allocated>=total){ cur=2; fills=[100,100,filled/total*100]; count=`${filled}/${total}`; }
+    else { cur=1; fills=[100,total?allocated/total*100:0,0]; count=`${allocated}/${total}`; }
   }
-  if(p.status==="submitted"){
-    return `<div class="pc-stat">Response submitted · ${p.reqs||0} requirements</div>`;
-  }
-  const total=p.total||0;
-  const allocated=Math.min(p.allocated||0,total);
-  if(total>0 && allocated>=total){
-    const filled=Math.min(p.complianceFilled||0,total);
-    const pct=total?Math.round((filled/total)*100):0;
-    return `<div class="pc-prog">
-      <div class="pc-prog-top"><span>Compliance</span><span class="pct">${filled}/${total}</span></div>
-      <div class="pc-bar"><div style="width:${pct}%"></div></div></div>`;
-  }
-  const pct=total?Math.round((allocated/total)*100):0;
-  return `<div class="pc-prog">
-    <div class="pc-prog-top"><span>Allocation</span><span class="pct">${allocated}/${total}</span></div>
-    <div class="pc-bar"><div style="width:${pct}%"></div></div></div>`;
+  const dots=LINE_STATIONS.map((n,i)=>`<span class="ml-dot${i<cur?" done":i===cur?" current":""}"></span>`).join("");
+  const lbls=LINE_STATIONS.map((n,i)=>`<span class="${i===cur||(cur===4&&i===3)?"on":""}">${n}${i===cur&&count?`<em>${count}</em>`:""}${cur===4&&i===3?`<em>${p.reqs||0} req.</em>`:""}</span>`).join("");
+  const segs=[0,1,2].map(i=>`<span class="ml-seg" style="left:${12.5+25*i}%"><i style="width:${Math.round(fills[i])}%"></i></span>`).join("");
+  const title=p.status==="processing"?(p.procLabel||"AI capturing & characterising…"):p.status==="submitted"?`Response submitted · ${p.reqs||0} requirements`:"";
+  return `<div class="pc-line"${title?` title="${title}"`:""}><div class="ml">${segs}${dots}</div><div class="ml-lbl">${lbls}</div></div>`;
 }
 /* §1.4 — System / Role, one consistent style — Status now sits as a badge in the
    card's top-right corner instead, alongside the other two rows it used to share a style with. */

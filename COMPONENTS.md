@@ -209,8 +209,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --radius-xs, --accent, --ok, --ia
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: The single most-duplicated primitive in the app — at least a dozen independent class implementations across the seven screens (`.pc-bar`, `.pbar`, `.mini-bar`, `.doc-wbar`, `.doc-prog`, `.ph-bar`, `.exp-lbar`, `.ai-rel-bar`, `.fbar`, `.progress-track/.progress-fill`, `.exp-bar`, `.arb-progress .bar`), all sharing "colored track + fill" but each with its own hardcoded height and no shared height scale. Track background is consistently the untracked `--panel-3`. A strong candidate for the first real consolidation pass.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: accueil.html's `.pc-bar` and `.mini-bar` left with the Tender Card's old gauge. The single most-duplicated primitive in the app — at least a dozen independent class implementations across the seven screens (`.pbar`, `.doc-wbar`, `.doc-prog`, `.ph-bar`, `.exp-lbar`, `.ai-rel-bar`, `.fbar`, `.progress-track/.progress-fill`, `.exp-bar`, `.arb-progress .bar`), all sharing "colored track + fill" but each with its own hardcoded height and no shared height scale. Track background is consistently the untracked `--panel-3`. A strong candidate for the first real consolidation pass.
 
 ### Status Dot
 - **level**: atom
@@ -697,12 +697,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Activity Timeline Entry
 - **level**: molecule
 - **file**: compliance.html, revue-documentaire.html
-- **variants**: ok, send/ia, comment, human, warn (colored connector dot per actor/event type); milestone (filled dot + "◆ Captured / Allocated / Answered / Declared to the client" pill, `.tl-ms`); with before → after (`.before-after`, struck old value, green new value)
+- **variants**: ok, send/ia, comment, human, warn (colored connector dot per actor/event type); milestone (a station: 16px ring in `--accent` + the moment's name in the heading face, `.tl-ms`); with before → after (`.before-after`, struck old value, green new value)
 - **tokens**: --space-1, --space-2, --radius-pill, --text-sm, --text-xs, --ia, --ok, --accent, --accent-soft, --human, --warn
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-10-01
-- **notes**: 2026-10-01: rendered by `activityItemHTML()` in both screens from the shared requirement log — who, what, before → after, time and category. `.tl-item`. Connector line/dot geometry (offsets, 6–9px dot) hardcoded and coupled between the two rules, not tokenized.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: the tender's line, vertical — the connector is a 4px `--accent` rail, the key moments are stations (Captured, Allocated, Answered, Declared to the client — no ◆ pill any more), every other event a 10px stop that keeps its colour by kind. Same CSS in both screens. 2026-10-01: rendered by `activityItemHTML()` in both screens from the shared requirement log — who, what, before → after, time and category. `.tl-item`. Connector line/dot geometry (offsets, 6–9px dot) hardcoded and coupled between the two rules, not tokenized.
 
 ### Peek Paper Excerpt
 - **level**: molecule
@@ -1041,8 +1041,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text, --text-2, --text-3, --text-sm, --ok, --accent, --warn
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: See Activity Timeline Entry (revue-documentaire.html) — near-identical connector-dot pattern, independently coded per screen.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: same rail-line restyle as the Activity Timeline Entry. See Activity Timeline Entry (revue-documentaire.html) — near-identical connector-dot pattern, independently coded per screen.
 
 ### Filter Pill
 - **level**: molecule
@@ -1237,12 +1237,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Phase Card
 - **level**: molecule
 - **file**: dashboard-et-config.html
-- **variants**: step (primary rail), support (secondary rail); active-phase, done-phase, is-current states
+- **variants**: support (secondary rail); done-phase state
 - **tokens**: --space-3, --panel, --line, --radius-lg, --space-4, --accent, --accent-soft, --radius-md, --text-3, --text-base, --text-lg, --text-sm, --text-2, --text-xl, --radius-xs, --ok, --text-xs, --radius-pill
 - **built-from**: Status Pill, Progress Bar
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.phase`. A source comment explicitly calls this "the same molecule" reused for both rails — confirmed intentional componentization, one of the few in the codebase. `.is-current` uses `color-mix()` rather than a plain token. Absolute badge/button offsets and min-height (96px) hardcoded.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: the step variant left with the Phase Rail (replaced by the Tender Line); only the support rail uses the card now, so `.active-phase`, `.is-current`, `.step-1` and `.ph-badge.current` are gone. `.phase`. A source comment explicitly calls this "the same molecule" reused for both rails — confirmed intentional componentization, one of the few in the codebase. `.is-current` uses `color-mix()` rather than a plain token. Absolute badge/button offsets and min-height (96px) hardcoded.
 
 ### Cast Coverage Card
 - **level**: molecule
@@ -1671,10 +1671,10 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **file**: accueil.html
 - **variants**: default, processing, submitted
 - **tokens**: --panel, --line, --radius-lg, --space-3, --space-4, --accent
-- **built-from**: Status Badge / Chip, Progress Bar, Status Dot, Deadline Chip
+- **built-from**: Status Badge / Chip, Tender Line (mini), Status Dot, Deadline Chip
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `min-height:172px` and hover `translateY(-2px)` hardcoded. Listed at molecule level (assembles several atoms into one repeatable card) even though it sits inside the Tender Dashboard Grid organism above.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: its gauge is the Tender Line in miniature (`gaugeHTML()`), replacing the Allocation / Compliance progress bar and the submitted card's text line; the processing label and "Response submitted" moved to its tooltip. `min-height:172px` and hover `translateY(-2px)` hardcoded. Listed at molecule level (assembles several atoms into one repeatable card) even though it sits inside the Tender Dashboard Grid organism above.
 
 ### Wizard Stepper Panel
 - **level**: organism
@@ -1743,8 +1743,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text-3
 - **built-from**: Timeline Item
 - **added**: 2026-09-01
-- **changed**: 2026-10-01
-- **notes**: 2026-10-01: one log per requirement, shared by Allocation and Compliance through the shell (`logReqEvent` / `getReqLog`) — explicit events where they happen, every field change caught by diffing a snapshot at each refresh, plus what each screen derives (capture, document versions, an answer on record). A category filter on top (All · Status · Allocation · Compliance · Comments, with counts) and a comment field that writes to the log — Compliance gained both, and its Activity tab now shows on SIG tenders too. The four milestones of a requirement's life are marked in the feed rather than as a separate timeline. Replaces the fabricated lines (fixed date, fixed author) and the per-screen `branchLog`. `.log-filter`, `.log-comment`. `.timeline`, shown only in the Detail Panel's Activity tab.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06: drawn as a vertical rail line — see Activity Timeline Entry. 2026-10-01: one log per requirement, shared by Allocation and Compliance through the shell (`logReqEvent` / `getReqLog`) — explicit events where they happen, every field change caught by diffing a snapshot at each refresh, plus what each screen derives (capture, document versions, an answer on record). A category filter on top (All · Status · Allocation · Compliance · Comments, with counts) and a comment field that writes to the log — Compliance gained both, and its Activity tab now shows on SIG tenders too. The four milestones of a requirement's life are marked in the feed rather than as a separate timeline. Replaces the fabricated lines (fixed date, fixed author) and the per-screen `branchLog`. `.log-filter`, `.log-comment`. `.timeline`, shown only in the Detail Panel's Activity tab.
 
 ### Global Header Bar
 - **level**: organism
@@ -1756,15 +1756,15 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: Same App Header pattern as every other screen — kept as a separate entry here only because the dashboard scan named it distinctly; see App Header (above) for the merged cross-screen record.
 
-### Phase Rail
+### Tender Line
 - **level**: organism
-- **file**: dashboard-et-config.html
-- **variants**: none
-- **tokens**: --space-5, --text-3, --text-lg
-- **built-from**: Phase Card (step variant)
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.phase-rail`, 2-column grid with a hardcoded `→` connector glyph.
+- **file**: dashboard-et-config.html, accueil.html (mini)
+- **variants**: full (dashboard: four stations with name, key figure, sub-line, "Current" tag, "Open →"), mini (tender card: dots and the four names, the current one with its count); station states done (filled, ✓), current (ringed, halo), active (Compliance, open alongside Allocation), future
+- **tokens**: --accent, --accent-soft, --line-2, --panel, --warn, --text, --text-2, --text-3, --font-heading, --text-xs, --text-sm, --text-lg, --text-xl, --radius-pill, --space-1, --space-2
+- **built-from**: none
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: The process as a rail line — the brand's own world, and the step navigation: Capture → Allocation → Compliance → Submission, each station a button that opens its screen (Submission none). Between two stations the line fills with the share of requirements already past the first. `renderTenderLine()` (allocation progress from the shell when Allocation has run, Compliance from the FOLLOWUP_REQS mirror, `TENDER_DEADLINE_LABEL`); `gaugeHTML()` for the mini. Replaces the two-card Phase Rail. Hardcoded: station sizes (24 / 32px dots, 5–6px rings, 12px mini), segment height and position (6px at 39px; 4px), the 25%-per-segment geometry.
 
 ### Support Rail
 - **level**: organism
@@ -1970,3 +1970,5 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Q&A Dossier Import Box — removed 2026-10-06, replaced by one "Import the client's answers" button in the Q&A toolbar
 
 ### Arbitration Queue Card — removed 2026-10-06, replaced by the answer to confirm on the Q&A Card (DEC-116)
+
+### Phase Rail — removed 2026-10-06, replaced by the Tender Line
