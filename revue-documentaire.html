@@ -1191,14 +1191,6 @@ tr.gh td{background:var(--panel-2);padding:0;border-bottom:1px solid var(--line)
 .rerun-opt:hover{background:var(--panel-3);color:var(--text)}
 .deriv-pass-h{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-3)}
 .deriv-dim{font-size:var(--text-xs);color:var(--text-3);line-height:1.5;margin-bottom:var(--space-2)}
-/* The compact distribution card a contributor sees under their own
-   system — visible (they can want to know where this came from) but
-   secondary: a small chip row, not the full per-system list. */
-.distrib-compact{padding:var(--space-2) var(--space-3)}
-.distrib-compact .deriv-pass-h{margin-bottom:6px}
-.distrib-chips{display:flex;flex-wrap:wrap;gap:6px}
-.distrib-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border:1px solid var(--line-2);border-radius:var(--radius-sm);background:var(--panel);font-size:var(--text-xs)}
-.distrib-chip.manual{opacity:.7}
 .deriv-dim b{color:var(--text-2)}
 .deriv-act{display:flex;align-items:center;gap:var(--space-2);padding:6px 0;border-top:1px solid var(--line);flex-wrap:wrap}
 .deriv-act:first-of-type{border-top:none}
@@ -5618,9 +5610,9 @@ function derivStepHTML(label,control,conf,hint,info){
 }
 /* The full "who else is on this requirement, and where" card — every
    system this requirement touches, not just one. Used for the PM/no-
-   system-yet path here, and reused as the contributor's own (lower,
-   de-emphasized but real) "Distribution across systems" block. */
-function distributionBlockHTML(b, compact){
+   system-yet path here. The contributor's compact copy was removed on
+   2026-10-06: their panel is about their own system. */
+function distributionBlockHTML(b){
   if(!runsPassOne()) return "";
   const dim=passOneDimension(b);
   const acts = (b.branches&&b.branches.length)
@@ -5631,20 +5623,6 @@ function distributionBlockHTML(b, compact){
   // own model" block in derivationChainHTML below keeps its own .deriv-pass —
   // this only strips the wrapper distributionBlockHTML used to draw around
   // itself.
-  if(compact){
-    return `<div class="distrib-compact">
-      <div class="deriv-pass-h">Distribution across systems</div>
-      <div class="distrib-chips">
-        ${acts.length?acts.map(a=>{
-          const hasModel=activityHasModel(a.typology);
-          const label=escHtml(a.label||TY(a.typology).label);
-          return `<span class="distrib-chip${hasModel?"":" manual"}" title="${label}${hasModel?" — has a model":" — allocated manually"}">
-            <span class="ptag${ptagCls(a.typology)}">${TY(a.typology).code}</span>${confBadgeHTML(a.tkObs)}
-          </span>`;
-        }).join(""):`<span class="deriv-hint">No system yet.</span>`}
-      </div>
-    </div>`;
-  }
   return `<div class="deriv-pass-h">Distribution across systems</div>
     ${dim?`<div class="deriv-dim">${b.tech==="nontech"?"Non-technical":"Technical"} — a single dimension is read, the <b>${dim.dim}</b>. The other one takes no part in this step.</div>`
           :`<div class="deriv-dim">Not classified yet — routing needs the technical / non-technical call before it can read a dimension.</div>`}
@@ -5768,8 +5746,7 @@ function derivationChainHTML(b,myBranch,derivSrc,rmView,opts){
 }
 /* A contributor's own view of one system — fixed order, explicitly
    specified: ABS, PBS, OBS (the organisation, not a person), who's assigned
-   (manager and expert together), a separator, the verdict, a separator, the
-   distribution block (visible, just not first, and compact here), any
+   (manager and expert together), a separator, the verdict, a separator, any
    pending reassignment request, propose-a-change, and finally source
    section. Everything else that used to show here is gone — this replaces
    the scattered Classification/System-field/derivationChainHTML/mgr-block
@@ -5854,8 +5831,6 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
                  : `<button class="validate-cta" data-validatebranch="${i}">✓ Validate &amp; send to Compliance</button>`);
     })()}
     ${cfPanelHTML(b)}
-    <div class="set-sep"></div>
-    ${distributionBlockHTML(b, true)}
     ${proposeBlockHTML(b,true,myBranch)}
     ${sourceFieldHTML(b,s)}`;
 }
