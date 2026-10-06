@@ -1440,11 +1440,11 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **level**: organism
 - **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html
 - **variants**: home (logo + reset + primary CTA + avatar), wizard (logo + static crumb + cancel), workspace (logo-link + crumb + nav/icon buttons + avatar), review (adds mode-switch, version pill), compliance (adds Demo Role Switcher, Icon Cluster, Export)
-- **tokens**: --space-4, --space-5, --panel, --line (scoped: the header redefines --panel/-2/-3, --line/-2, --text/-2/-3, --accent, --accent-soft, --accent-hover)
+- **tokens**: --space-4, --space-5, --panel, --line
 - **built-from**: Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
-- **changed**: 2026-10-06
-- **notes**: 2026-10-06 (branding): navy in both themes. The `header` rule sets the dark theme's token values on itself (hardcoded hex, copied from the dark block), so every control inside — mode switch, icon buttons, Export (accent becomes the dark theme's blue), DEMO switch, crumb — renders as in the dark theme without per-control styles; the logo shows its white version (`.logo-mark-dark`). Same block in all eight screens. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
+- **changed**: 2026-09-22
+- **notes**: Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
 - **level**: organism
