@@ -95,7 +95,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
 /* 2026-10-06 — the home page as the tool's front door: a greeting and what
    SRM is for, the way back into the last tender, what is due next, how a
    tender travels through SRM (the tender's line, explained — dismissible),
-   the tenders, and the words a newcomer meets. The rail-line motif carries
+   then the tenders. The rail-line motif carries
    the brand: the hero's map, the deadline line, the four stations. */
 .home-hero{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:var(--space-8);align-items:center;padding:var(--space-8);margin-bottom:var(--space-6);border:1px solid var(--line);border-radius:var(--radius-lg);background:linear-gradient(115deg,var(--panel) 42%,var(--accent-soft))}
 .hero-map{position:absolute;right:-20px;bottom:-10px;width:640px;height:auto;pointer-events:none}
@@ -147,13 +147,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .ht-who{margin-top:var(--space-2);font-size:var(--text-xs);font-weight:600;padding:2px var(--space-2);border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent)}
 .ht-always{margin-top:var(--space-5);padding-top:var(--space-3);border-top:1px solid var(--line);font-size:var(--text-sm);color:var(--text-3);text-align:center}
 .ht-always b{color:var(--text-2)}
-/* the words a newcomer meets */
-.glossary{margin-top:var(--space-8)}
-.gl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)}
-.gl-item{padding:var(--space-3) var(--space-4);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg)}
-.gl-term{font-family:var(--font-heading);font-size:var(--text-base);font-weight:700}
-.gl-term span{font-family:var(--font-ui);font-weight:400;color:var(--text-3);font-size:var(--text-sm);margin-left:6px}
-.gl-def{margin-top:4px;font-size:var(--text-sm);line-height:1.5;color:var(--text-2)}
 .home-nav-intro{margin-bottom:var(--space-4)}
 .home-nav-intro .nav-title{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
 .home-nav-intro .sub{font-size:var(--text-base);color:var(--text-3);margin-top:3px}
@@ -292,7 +285,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
   <div class="scroll">
     <div class="wrap">
       <!-- 2026-10-06 — the front door: hero, what is due next, how SRM works,
-           then the tenders and the words you'll meet (rendered by renderHome) -->
+           then the tenders -->
       <section class="home-hero">
         <svg class="hero-map" viewBox="0 0 640 320" fill="none" aria-hidden="true">
           <!-- a metro map in the brand's colours: three lines, 45° bends, one interchange -->
@@ -330,7 +323,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
       <div class="tabs" id="tabs"></div>
       <div class="grid" id="grid"></div>
 
-      <section class="glossary" id="glossary"></section>
     </div>
   </div>
 </div>
@@ -498,18 +490,6 @@ function renderHowto(){
     <div class="ht-always">Always open alongside: <b>Documents &amp; versions</b> · <b>Q&amp;A with the client</b> · <b>Risks</b> · <b>Team casting</b></div>`;
   el.querySelector("#howto-hide").addEventListener("click",()=>{ try{ window.parent.setHomeIntroHidden(true); }catch(e){} renderHowto(); });
 }
-const GLOSSARY=[
-  ["Turnkey","","The whole system is ours: each requirement is first routed to its systems (pass 1), then each system allocates it (pass 2)."],
-  ["PBS","Product Breakdown Structure","Which element of the product the requirement bears on."],
-  ["ABS","Activity Breakdown Structure","Which kind of activity answers it."],
-  ["OBS","Organisation Breakdown Structure","The position that answers it — a role, not a person."],
-  ["Gap strategy","","For a Not compliant: how the gap is handled, and what the client is told."],
-  ["Consolidation","","A requirement's verdict once every system has answered — the most restrictive wins."],
-];
-function renderGlossary(){
-  document.getElementById("glossary").innerHTML=`<div class="home-sec"><h3>Words you'll meet</h3><span class="hint">the vocabulary of the tool, in one line each</span></div>
-    <div class="gl-grid">${GLOSSARY.map(([t,full,d])=>`<div class="gl-item"><div class="gl-term">${t}${full?`<span>${full}</span>`:""}</div><div class="gl-def">${d}</div></div>`).join("")}</div>`;
-}
 function openTender(p){
   if(!p) return;
   if(p.status==="processing"){ toast("Still processing — it will open when the models finish","warn"); return; }
@@ -552,7 +532,7 @@ document.getElementById("howto-btn").addEventListener("click",()=>{
   renderHowto(); document.getElementById("howto").scrollIntoView({behavior:"smooth",block:"center"});
 });
 // poll so background processing bars animate live
-renderHowto(); renderGlossary();
+renderHowto();
 render();
 setInterval(()=>{ if(getProjects().some(p=>p.status==="processing")) render(); }, 700);
 // apply theme

@@ -1664,7 +1664,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Tab Bar, Tender Card, Empty State Message
 - **added**: 2026-09-01
 - **changed**: 2026-10-06
-- **notes**: 2026-10-06: headed by a Home Section Head ("My tenders · N tenders") between the Onboarding Line and the Glossary Grid; a card opens through `openTender()`, shared with the Continue Card and the Submissions Line. Grid `minmax(330px,1fr)` hardcoded.
+- **notes**: 2026-10-06: headed by a Home Section Head ("My tenders · N tenders") under the Onboarding Line; a card opens through `openTender()`, shared with the Continue Card and the Submissions Line. Grid `minmax(330px,1fr)` hardcoded.
 
 ### Tender Card
 - **level**: molecule
@@ -1716,16 +1716,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-10-06
 - **notes**: "How a tender travels through SRM": the four stations of the Tender Line, numbered, each with one sentence and who does it, then the always-open screens. Dismissal is kept in the shell (`getHomeIntroHidden` / `setHomeIntroHidden`) so it survives navigation and a demo reset brings it back. Hardcoded 30px stations and 5px line.
 
-### Glossary Grid
-- **level**: molecule
-- **file**: accueil.html
-- **variants**: term alone, term with its expansion (PBS, ABS, OBS)
-- **tokens**: --panel, --line, --radius-lg, --space-3, --space-4, --text-base, --text-sm, --text-2, --text-3, --font-heading
-- **built-from**: Home Section Head
-- **added**: 2026-10-06
-- **changed**: 2026-10-06
-- **notes**: "Words you'll meet": Turnkey, PBS, ABS, OBS, gap strategy, consolidation — one sentence each, from KEYS.md and the decisions log.
-
 ### Home Section Head
 - **level**: atom
 - **file**: accueil.html
@@ -1734,7 +1724,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: `.home-sec` — one heading style for the home page's sections (Next submissions, How a tender travels, My tenders, Words you'll meet).
+- **notes**: `.home-sec` — one heading style for the home page's sections (Next submissions, How a tender travels, My tenders).
 
 ### Wizard Stepper Panel
 - **level**: organism
@@ -2032,3 +2022,5 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Arbitration Queue Card — removed 2026-10-06, replaced by the answer to confirm on the Q&A Card (DEC-116)
 
 ### Phase Rail — removed 2026-10-06, replaced by the Tender Line
+
+### Glossary Grid — removed 2026-10-06, no longer needed (the home page keeps no vocabulary block)
