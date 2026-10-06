@@ -97,6 +97,19 @@ a{color:inherit;text-decoration:none}
 #app{display:flex;flex-direction:column;height:100vh}
 
 /* ---------- Header ---------- */
+/* 2026-10-06 — brand: the top bar is the brand navy in both themes. It takes
+   the dark theme's token values for itself, so every control inside it (mode
+   switch, icon buttons, Export, DEMO switch, crumb) reads on navy without
+   being restyled one by one; the logo uses its white version. */
+header{
+  --panel:#0B294A; --panel-2:#143556; --panel-3:#1D4062;
+  --line:#1F3E5F; --line-2:#2E4E70;
+  --text:#EEF1F8; --text-2:#AAB6C6; --text-3:#8B9AAD;
+  --accent:#4C82FF; --accent-soft:#1B3F6B; --accent-hover:color-mix(in srgb, var(--accent) 75%, white);
+  color:var(--text);
+}
+header .logo-mark-dark,html[data-theme] header .logo-mark-dark{display:block}
+header .logo-mark-light,html[data-theme] header .logo-mark-light{display:none}
 header{display:flex;align-items:center;gap:var(--space-4);height:52px;padding:0 var(--space-4);background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
 .logo{display:flex;align-items:center;gap:var(--space-2);font-weight:700;font-size:var(--text-base);letter-spacing:-.2px;cursor:pointer}
 .logo-mark{height:22px;width:auto;flex-shrink:0;display:block}
