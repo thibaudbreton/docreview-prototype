@@ -4,7 +4,7 @@ _Maintained alongside the code. Updated in the same commit as any component chan
 
 This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CSS/JS in full (`accueil.html`, `creation-projet.html`, `documents.html`, `qa.html`, `compliance.html`, `dashboard-et-config.html`, `revue-documentaire.html`) — the merged files (`index.html`, `docreview-app.html`) were not read; per `README.md`, sources are always edited, never the merged output. See `CLAUDE.md` for the rules that keep this file current from here on.
 
-**Design tokens actually defined** (both theme blocks, same names, different values): `--bg`, `--panel`, `--line`, `--text`, `--text-2`, `--text-3`, `--accent`, `--accent-soft`, `--ia`, `--ok`, `--human`, `--warn`, `--paper`, `--paper-ink`, `--text-xs/sm/base/lg/xl`, `--space-1` through `--space-8` (4/8/12/16/20/24/32px), `--radius-xs/sm/md/lg/pill`, `--font-ui/doc/mono`, and since 2026-09-22 `--font-heading` (Antarctica → Noto Sans fallback) and `--brand-red` (decorative only, exact value to confirm).
+**Design tokens actually defined** (both theme blocks, same names, different values): `--bg`, `--panel`, `--line`, `--text`, `--text-2`, `--text-3`, `--accent`, `--accent-soft`, `--ia`, `--ok`, `--human`, `--warn`, `--paper`, `--paper-ink`, `--text-xs/sm/base/lg/xl`, `--space-1` through `--space-8` (4/8/12/16/20/24/32px), `--radius-xs/sm/md/lg/pill`, `--font-ui/doc/mono`, and since 2026-09-22 `--font-heading` and `--brand-red` (decorative only, exact value to confirm). Since 2026-10-06 (DEC-115) the font tokens resolve to the brand's Alstom face, declared once per screen as the `"Alstom UI"` family and metric-matched to Noto Sans, its fallback: `--font-ui` Alstom → Noto Sans; `--font-heading` Antarctica → Alstom → Noto Sans; `--font-mono` Alstom (identifiers and codes — its figures are all one width) → the monospace stack; `--font-doc` stays Georgia, the source document's face. Alstom is embedded only in the local build; the published one shows the fallbacks.
 
 **Untracked custom properties in near-constant use** — not part of the token scale above, so not swappable by theme the way real tokens are, and a likely first fix before any Figma pass: `--panel-2`, `--panel-3`, `--line-2`, `--accent-hover`, `--ok-soft`, `--warn-soft`, `--ia-soft`, `--human-soft`. They're flagged per-entry below wherever a component depends on one.
 
@@ -231,6 +231,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: Hardcoded vertical padding (1–3px) across every variant instead of a space token.
+
+### Block Badge
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: default (comment count), branch count, blocking, container count ("N requirements captured", on an image block)
+- **tokens**: --font-ui, --text-xs, --text-2, --space-1, --space-2, --radius-lg, --accent, --accent-soft, --warn, --human
+- **built-from**: Icon
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.cbadge` — missed by the 2026-09-01 inventory, entered when next changed. The small pills beside a requirement in the review table and on document blocks. 2026-10-06: sets `--font-ui` itself — on an image block it sits on the document's paper and was inheriting Georgia, the source document's face, unlike the type chip beside it. Vertical padding hardcoded at 2px; default background is the untracked `--panel-3`, and the variants use the untracked `--warn-soft` / `--human-soft`.
 
 ### Activity / Requirement Tag
 - **level**: atom

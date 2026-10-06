@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Brand type (22 Sept 2026): Noto Sans for everything, Antarctica for titles.
-     Noto Sans comes from Google Fonts; Antarctica is a licensed brand face with
-     no public CDN — see fonts/README.md for where its files go. -->
+<!-- Brand type: Alstom, the brand's own typeface, for every interface text
+     (DEC-115, 6 Oct 2026); Antarctica first for titles once its files are
+     supplied (DEC-063). Both are licensed and not versioned — see fonts/README.md.
+     Noto Sans, from Google Fonts, is the fallback the Alstom face is matched to. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,10 +17,28 @@
 /* Antarctica — the brand title face. Not on any public CDN and not installed
    here, so it resolves in this order: an installed copy, then the files under
    fonts/ (drop Antarctica-Regular.woff2 and Antarctica-Bold.woff2 there — the
-   srcdoc screens resolve relative URLs against index.html), then Noto Sans.
-   Nothing breaks while the files are missing; titles simply stay in Noto. */
+   srcdoc screens resolve relative URLs against index.html), then Alstom.
+   Nothing breaks while the files are missing; titles simply stay in Alstom. */
 @font-face{font-family:"Antarctica";font-weight:400;font-display:swap;src:local("Antarctica"),local("Antarctica-Regular"),url("fonts/Antarctica-Regular.woff2") format("woff2")}
 @font-face{font-family:"Antarctica";font-weight:700;font-display:swap;src:local("Antarctica Bold"),local("Antarctica-Bold"),url("fonts/Antarctica-Bold.woff2") format("woff2")}
+/* Alstom — the brand's own typeface (DEC-115): all interface text, and the
+   titles until Antarctica is supplied. Licensed: build_fonts.py makes the web
+   copies under fonts/, never versioned; build_merge.py embeds them only in the
+   outputs allowed to carry them. Never local(): the desktop TTFs carry 1-bit
+   bitmaps that Chrome on Windows draws instead of the outlines at 9-18 px.
+   Matched to Noto Sans, the fallback: size-adjust brings its x-height to
+   Noto's (0.479 → 0.536 em) and the overrides set Noto's ascent and descent
+   (1.069 / 0.293 em, divided by the 1.12 they get scaled by) — same baseline,
+   same line boxes, so the fallback changes the letters, never the layout.
+   No SemiBold or ExtraBold in the family: 600 is drawn with the Medium, 800
+   with the Bold, each declared as its own face so Chrome doesn't fake-bolden
+   it. No italic either: italics are the Regular slanted, which is what this
+   kind of face does anyway. */
+@font-face{font-family:"Alstom UI";font-weight:400;font-display:swap;src:url("fonts/Alstom-Regular.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:500;font-display:swap;src:url("fonts/Alstom-Medium.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:600;font-display:swap;src:url("fonts/Alstom-Medium.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:700;font-display:swap;src:url("fonts/Alstom-Bold.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:800;font-display:swap;src:url("fonts/Alstom-Bold.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
 
 :root{
   --bg:#071A30;
@@ -48,11 +67,11 @@
   --text-xs:11px; --text-sm:12px; --text-base:13px; --text-lg:16px; --text-xl:21px;
   --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
   --radius-xs:4px; --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-pill:999px;
-  --font-ui:"Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  --font-heading:"Antarctica","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-ui:"Alstom UI","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-heading:"Antarctica","Alstom UI","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   --brand-red:#E4002B; /* placeholder — exact brand red to confirm */
   --font-doc:Georgia,"Times New Roman",serif;
-  --font-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+  --font-mono:"Alstom UI",ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace; /* IDs and codes: the brand face (its figures all share one width, so IDs still line up), the monospace stack wherever it is absent */
 }
 
 html[data-theme="light"]{
@@ -796,8 +815,8 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .status-pill.branch-status-awaiting_qa{background:var(--accent-soft);color:var(--accent);cursor:default}
 .status-pill.branch-status-reassignment_needed{background:var(--warn-soft);color:var(--warn);cursor:default}
 .collab-badges{display:flex;gap:6px}
-.cbadge{
-  display:inline-flex;align-items:center;gap:var(--space-1);font-size:var(--text-xs);color:var(--text-2);
+.cbadge{   /* the app's own label, also when it sits on the document's paper: UI face, never the document's */
+  display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-ui);font-size:var(--text-xs);color:var(--text-2);
   padding:2px var(--space-2);border-radius:var(--radius-lg);background:var(--panel-3);
 }
 .cbadge.blocking-badge{color:var(--warn);background:var(--warn-soft)}

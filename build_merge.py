@@ -5,6 +5,9 @@ Usage: python3 build_merge.py
 Reads the 8 source files below, base64-encodes each (UTF-8), and writes docreview-app.html
 plus an identical index.html (GitHub Pages serves index.html as the site entry point —
 writing both here keeps the hosted copy in sync with the deliverable automatically).
+It also writes local/index.html, never versioned: the same app with the Alstom
+brand font embedded, which the published outputs leave out while its licence
+is unsettled (DEC-115, PUBLISH_BRAND_FONT below).
 Always edit the 8 sources — never the merged files directly — then re-run this script.
 
 Cross-screen navigation is expressed in the sources as parent.route(...) /
@@ -36,6 +39,7 @@ falls back to its synthetic buildBigData(n) seed.
 """
 import base64
 import json
+import re
 from pathlib import Path
 
 SOURCES = [
@@ -81,6 +85,21 @@ ARTIFACT_OUTPUT = "artifact/srm-prototype.html"
 OUTPUT = "docreview-app.html"
 PAGES_OUTPUT = "index.html"  # GitHub Pages entry point — same bytes as OUTPUT
 
+# Alstom, the brand typeface (DEC-115), as built into fonts/ by build_fonts.py.
+# It is licensed (© Alstom, all rights reserved) and this repository is public,
+# with index.html served on GitHub Pages: a page that embeds the font hands the
+# font file to anyone who opens it. So the published outputs — OUTPUT,
+# PAGES_OUTPUT, ARTIFACT_OUTPUT — carry it only once PUBLISH_BRAND_FONT says
+# the licence allows it; until then they show Noto Sans, the face the Alstom
+# one is metric-matched to (same layout, other letters). LOCAL_OUTPUT, never
+# versioned, always carries it: demos on this machine, the deck screenshots.
+# The font travels once per page, as window.BRAND_FONTS; the shell swaps each
+# screen's fonts/… url() for it as the screen loads (withBrandFonts below).
+BRAND_FONT_FILES = [f"fonts/Alstom-{w}.woff" for w in ("Regular", "Medium", "Bold")]
+BRAND_FONT_RULE = re.compile(r'@font-face\{font-family:"Alstom UI";[^}]*\}\n?')
+PUBLISH_BRAND_FONT = False
+LOCAL_OUTPUT = "local/index.html"
+
 HEADER = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,6 +123,13 @@ FOOTER = """
 };
 const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "compliance": ["compliance", "compliance"], "compliance-contributor": ["compliance", "compliance-contributor"], "documents": ["documents", null], "qa": ["qa", null], "risks": ["risks", null], "new": ["create", null]};
 function b64utf8(s){return decodeURIComponent(Array.prototype.map.call(atob(s),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));}
+// DEC-115 — the Alstom face, embedded once (window.BRAND_FONTS) in the outputs
+// allowed to carry it: each screen's @font-face points at fonts/…, swapped
+// here for the embedded copy, so the font works from file:// too.
+const BRAND_FONTS = window.BRAND_FONTS || {};
+function withBrandFonts(html){
+  return html.replace(/url[(]"(fonts[/]Alstom-[A-Za-z]+[.]woff)"[)]/g, (m, p) => BRAND_FONTS[p] ? 'url("data:font/woff;base64,' + BRAND_FONTS[p] + '")' : m);
+}
 const frame = document.getElementById('frame');
 
 /* ============ WORKSPACE — project list + background processing ============ */
@@ -578,7 +604,7 @@ function load(routeKey){
       else if(_sub === 'compliance-contributor' && cw.setScreen){ cw.setScreen(2); if(cw.setDemoContributorView) cw.setDemoContributorView(); }
     }catch(e){}
   };
-  frame.srcdoc = b64utf8(BLOBS[r[0]]);
+  frame.srcdoc = withBrandFonts(b64utf8(BLOBS[r[0]]));
 }
 // called from inside the iframe (same-origin srcdoc)
 window.route = function(key){
@@ -635,9 +661,15 @@ def main():
     # Same treatment as data.js: keep the reference only when the files exist.
     antarctica_present = all(Path(f"fonts/Antarctica-{w}.woff2").is_file() for w in ("Regular", "Bold"))
     if not antarctica_present:
-        print("Note: fonts/Antarctica-*.woff2 not found — titles fall back to Noto Sans (see fonts/README.md).")
+        print("Note: fonts/Antarctica-*.woff2 not found — titles use the next face, Alstom or Noto Sans (see fonts/README.md).")
 
-    blob_lines = []
+    brand_fonts = {p: base64.b64encode(Path(p).read_bytes()).decode("ascii")
+                   for p in BRAND_FONT_FILES if Path(p).is_file()}
+    if len(brand_fonts) < len(BRAND_FONT_FILES):
+        brand_fonts = {}
+        print("Note: fonts/Alstom-*.woff not found — every output shows Noto Sans (run build_fonts.py, see fonts/README.md).")
+
+    screens = []
     for key, filename in SOURCES:
         with open(filename, encoding="utf-8") as f:
             html = f.read()
@@ -651,10 +683,7 @@ def main():
             html = html.replace(',url("fonts/Antarctica-Bold.woff2") format("woff2")', "")
         if CSS_INCLUDE_MARKER in html:
             html = html.replace(CSS_INCLUDE_MARKER, shared_css)
-        b64 = base64.b64encode(html.encode("utf-8")).decode("ascii")
-        blob_lines.append(f'{key}:"{b64}",')
-
-    body = HEADER + "\n".join(blob_lines) + FOOTER
+        screens.append((key, html))
 
     chat = ""
     if CHAT_ENABLED and Path(CHAT_FILE).is_file():
@@ -669,12 +698,33 @@ def main():
         payload = json.dumps(cap, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
         with open(CHAT_FILE, encoding="utf-8") as f:
             chat = "<script>window.CHAT_CAPTURE=" + payload + ";</script>\n" + f.read()
-        body = body.replace("\n</body>", "\n" + chat + "\n</body>", 1)
 
+    def page(with_font):
+        """The single-file app; with_font: the Alstom face embedded, else its @font-face rules dropped."""
+        lines = []
+        for key, html in screens:
+            if not with_font:
+                html = BRAND_FONT_RULE.sub("", html)
+            lines.append(f'{key}:"{base64.b64encode(html.encode("utf-8")).decode("ascii")}",')
+        out = HEADER + "\n".join(lines) + FOOTER
+        if with_font:
+            fonts = ",\n".join(f'"{p}":"{d}"' for p, d in brand_fonts.items())
+            out = out.replace("<script>\nconst BLOBS = {", "<script>\nwindow.BRAND_FONTS = {\n" + fonts + "\n};\n</script>\n<script>\nconst BLOBS = {", 1)
+        if chat:
+            out = out.replace("\n</body>", "\n" + chat + "\n</body>", 1)
+        return out
+
+    body = page(bool(brand_fonts) and PUBLISH_BRAND_FONT)
     for target in (OUTPUT, PAGES_OUTPUT):
         with open(target, "w", encoding="utf-8") as f:
             f.write(body)
-    print(f"Wrote {OUTPUT} and {PAGES_OUTPUT} ({len(body)} bytes) from {len(SOURCES)} sources.")
+    print(f"Wrote {OUTPUT} and {PAGES_OUTPUT} ({len(body)} bytes) from {len(SOURCES)} sources"
+          + (", with the Alstom font." if brand_fonts and PUBLISH_BRAND_FONT else " — Alstom font left out (PUBLISH_BRAND_FONT)."))
+    local = page(bool(brand_fonts))
+    Path(LOCAL_OUTPUT).parent.mkdir(exist_ok=True)
+    with open(LOCAL_OUTPUT, "w", encoding="utf-8") as f:
+        f.write(local)
+    print(f"Wrote {LOCAL_OUTPUT} ({len(local)} bytes){', with the Alstom font' if brand_fonts else ''} — local only, never versioned.")
 
     # claude.ai artifact: title + the shell's style + everything inside <body>
     style = body[body.index("<style>"):body.index("</style>") + len("</style>")]

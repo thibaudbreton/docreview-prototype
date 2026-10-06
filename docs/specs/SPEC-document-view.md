@@ -96,12 +96,12 @@ Each page is two layers: the **page image** (pdf.js canvas, never modified), and
 | **Information** | No border, no tint; a 3px bar in the page's left margin, level with the block, `#4a5162` at 35% | "INFORMATION" on `rgba(0,0,0,.06)`, text `#4a5162` |
 | **Heading** | No border, no tint; a 3px bar in the left margin, `#1d2129` at 70%, with the level beside it ("H2", 10px) | "HEADING" on `rgba(0,0,0,.06)`, text `#1d2129` |
 
-- **Type chip**: top-right of the frame (`top:-9px; right:10px`), 11px Noto Sans bold, uppercase, letter-spacing 0.4px, padding `2px 8px`, radius 12px, hidden until hover or selection.
+- **Type chip**: top-right of the frame (`top:-9px; right:10px`), 11px UI face (Alstom, DEC-115) bold, uppercase, letter-spacing 0.4px, padding `2px 8px`, radius 12px, hidden until hover or selection.
 - **Id** (requirements only): in the page's left margin, level with the frame's top, 10px monospace `#4a5162` on a white pill (so it reads over any margin content). When the margin is too narrow (< 60px at the current zoom), the id moves inside the chip instead ("SRM-00012 · REQUIREMENT").
 
 ### 7.4 Page marks
 
-- Above each page, left-aligned, 11px Noto Sans `#4a5162`: "Page 12 / 84 — 9 blocks · 4 requirements".
+- Above each page, left-aligned, 11px UI face `#4a5162`: "Page 12 / 84 — 9 blocks · 4 requirements".
 - Pages without text carry the OCR banner of §3.
 
 ### 7.5 Ignored areas
@@ -126,7 +126,7 @@ This is the trust check: the reader compares, at a glance, the frame on the orig
 
 ### 8.3 Reclassify
 
-- On hover and on selection, a **nature pill** shows beside the chip: "Requirement ▾" / "Information ▾" / "Heading ▾" — 11px Noto Sans semibold, `#4a5162`, background `rgba(0,0,0,.05)`, radius 6px, padding `2px 8px`. It is also in the read-out.
+- On hover and on selection, a **nature pill** shows beside the chip: "Requirement ▾" / "Information ▾" / "Heading ▾" — 11px UI face semibold, `#4a5162`, background `rgba(0,0,0,.05)`, radius 6px, padding `2px 8px`. It is also in the read-out.
 - Clicking it opens a menu with the three natures, the current one marked; choosing one changes the frame at once and marks the block `edited`. A block turned into a heading gets level 2.
 
 ### 8.4 Undo and confirmation
@@ -150,7 +150,7 @@ A single bar above the pages — not part of what this spec describes, only what
 ## 10. Build constraints
 
 - One self-contained HTML file, no build step. pdf.js (script and worker) from cdnjs is the only external dependency. The worker does not load from `file://` in every browser: serve the file over `http://localhost` (any static server) and say so in the page if the worker fails.
-- Light theme only. Noto Sans from Google Fonts for labels; Georgia for the read-out text.
+- Light theme only. The UI face for labels — Alstom (DEC-115), Noto Sans from Google Fonts where it isn't embedded; Georgia for the read-out text.
 - Capturing a **200-page** PDF finishes in under 20 seconds on a laptop, the progress line moving throughout. Rendering is lazy (§8.5).
 - Hover and selection update the overlay only — never re-render a page canvas.
 
