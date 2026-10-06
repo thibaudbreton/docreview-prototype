@@ -532,10 +532,13 @@ let reqLog = seedReqLog();
 window.logReqEvent = (projectId, reqId, ev)=>{
   const k=projectId||"_", m=reqLog[k]=reqLog[k]||{}, l=m[reqId]=m[reqId]||[];
   const d=new Date();
-  const e=Object.assign({ts:Date.now()+l.length/1000, time:"Today, "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}, ev);
+  const e=Object.assign({ts:Date.now()+l.length/1000, time:"Today, "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"), live:true}, ev);
   l.push(e); return e;
 };
 window.getReqLog = (projectId, reqId)=>(((reqLog[projectId||"_"]||{})[reqId])||[]).slice().sort((a,b)=>b.ts-a.ts);
+// DEC-117 — the whole tender's log at once, each event with its requirement:
+// the dashboard's weekly ranking counts what was done in this session (live).
+window.getActivityLog = (projectId)=>Object.entries(reqLog[projectId||"_"]||{}).flatMap(([reqId,l])=>l.map(e=>Object.assign({reqId},e)));
 // One-shot hand-off between screens: "open this risk", "filter Compliance on it".
 // The target screen takes it on load; the iframe reloads on every route.
 let screenFocus = {};

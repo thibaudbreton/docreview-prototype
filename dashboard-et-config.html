@@ -56,6 +56,7 @@
   --font-ui:"Alstom UI","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   --font-heading:"Antarctica","Alstom UI","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   --brand-red:#E4002B; /* placeholder — exact brand red to confirm */
+  --brand-blue:#5B8CF5; --brand-blue-soft:#1A3560; --brand-slate:#5F7A99; /* the home page's blues (accueil.html), for Statistics */
   --font-mono:"Alstom UI",ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace; /* IDs and codes: the brand face (its figures all share one width, so IDs still line up), the monospace stack wherever it is absent */
 }
 
@@ -82,6 +83,9 @@ html[data-theme="light"]{
   --paper:#ffffff;
   --paper-ink:#1d2129;
   --paper-ink-2:#4a5162;
+  --brand-blue:#2F6BD8;
+  --brand-blue-soft:#E3ECFA;
+  --brand-slate:#4F6A88;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -242,116 +246,173 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .p2only.hidden,.p1only.hidden,.v22only.hidden{display:none}
 .hidden{display:none}
 
-/* SPEC-dashboard-statistics.md — statistics panel */
+/* Statistics (DEC-117) — business only, people first. Three tabs: the tender
+   as a whole (its dates, its pace, its people), then one per step, matching
+   the two phase cards above. Every block opens on one sentence (.stat-take),
+   the thing a manager would say out loud, then the figure behind it. */
 .stats-panel{margin-bottom:var(--space-4)}
-.stats-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.stats-head h3{font-size:var(--text-base)}
+.stats-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-4)}
+.stats-head h3{font-size:var(--text-base);margin-bottom:0}
 .stats-tabs{display:flex;gap:2px;padding:2px;border:1px solid var(--line-2);border-radius:var(--radius-md);background:var(--panel-2)}
 .stats-tab{padding:5px var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-sm);font-weight:500;color:var(--text-2);transition:all .13s}
 .stats-tab:hover{color:var(--text)}
 .stats-tab.on{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .stats-sec{display:none}
 .stats-sec.on{display:block}
-/* align-items:start — a short card (Casting gaps, Compliance profile) must size
-   to its content instead of being stretched to its row-mate's height, which
-   left 100-140px of empty box under it. */
-.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-4);align-items:start}
-@media (max-width:700px){.stats-grid{grid-template-columns:1fr}}
-.stat-block{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4)}
-.stat-block.stat-wide,.stat-block.stat-bottlenecks{grid-column:1/-1}
-.stat-h{font-size:var(--text-sm);font-weight:600;margin-bottom:4px}
-.stat-sub{font-size:var(--text-xs);color:var(--text-3);margin-bottom:12px}
+/* align-items:start — a short block sizes to its content instead of being
+   stretched to its row-mate's height. minmax(0,1fr), not 1fr: a long name in
+   one block must ellipsis, not widen its column. */
+.stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4);align-items:start}
+@media (max-width:760px){.stats-grid{grid-template-columns:minmax(0,1fr)}}
+.stat-block{min-width:0;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4)}
+.stat-block.stat-wide{grid-column:1/-1}
+.stat-top{display:flex;align-items:baseline;gap:var(--space-2);margin-bottom:var(--space-1)}
+.stat-h{font-size:var(--text-sm);font-weight:600}
+.stat-when{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums}
+.stat-link{margin-left:auto;font-size:var(--text-xs);font-weight:600;color:var(--brand-blue);white-space:nowrap}
+.stat-link:hover{text-decoration:underline}
+.stat-take{font-size:var(--text-sm);color:var(--text-2);line-height:1.5;margin-bottom:var(--space-3);text-wrap:pretty}
+.stat-take b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+.stat-take .is-late{color:var(--warn)}
+.stat-take .is-good{color:var(--ok)}
+.stat-take .is-tight{color:var(--ia)}
+.stat-empty{font-size:var(--text-sm);color:var(--text-3);line-height:1.5;padding:var(--space-2) 0}
+.stat-foot{margin-top:var(--space-2);padding:0 var(--space-2);font-size:var(--text-xs);color:var(--text-3);line-height:1.45}
+.stat-foot b{color:var(--text-2);font-weight:600}
+.stat-h2{margin:var(--space-3) 0 var(--space-1);font-size:var(--text-xs);font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px}
+/* a row that opens the screen behind it */
+.st-go{cursor:pointer;border-radius:var(--radius-md);transition:background .12s}
+.st-go:hover{background:var(--panel-3)}
 
-.bn-list{display:flex;flex-direction:column;gap:1px}
-.bn-row{display:grid;grid-template-columns:44px 1fr auto auto;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-2);border-radius:var(--radius-sm);cursor:pointer;transition:background .12s}
-.bn-row:hover{background:var(--panel-3)}
-.bn-code{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-3)}
-.bn-label{font-size:var(--text-sm);color:var(--text-2)}
-.bn-count{font-size:var(--text-xs);color:var(--text-3);white-space:nowrap}
-.bn-age{font-size:var(--text-xs);font-weight:600;color:var(--text-2);white-space:nowrap;padding:2px var(--space-2);border-radius:var(--radius-pill);background:var(--panel-3)}
-.bn-age.warn{color:var(--warn);background:var(--warn-soft)}
+/* Person avatar, small — initials on the person's own colour */
+.st-av{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:var(--text-xs);font-weight:700;color:#fff;flex-shrink:0}
+.st-av.is-empty{background:transparent;border:1.5px dashed var(--line-2);color:var(--text-3)}
+.st-stack{display:flex;align-items:center}
+.st-stack .st-av{box-shadow:0 0 0 2px var(--panel)}
+.st-stack .st-av+.st-av{margin-left:-3px}
+.st-more{margin-left:var(--space-1);font-size:var(--text-xs);color:var(--text-3)}
+.st-you{margin-left:var(--space-1);padding:0 5px;border-radius:var(--radius-pill);background:var(--brand-blue);color:#fff;font-size:var(--text-xs);font-weight:600}
 
-.qa-blocked-count{font-size:var(--text-xs);color:var(--text-3);margin-bottom:8px}
-.qa-blocked-row{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2);border-radius:var(--radius-sm);cursor:pointer;font-size:var(--text-sm);transition:background .12s}
-.qa-blocked-row:hover{background:var(--panel-3)}
-.qa-blocked-row b{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3);flex-shrink:0}
-.qa-blocked-row span:nth-child(2){flex:1;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.qa-blocked-days{font-size:var(--text-xs);color:var(--accent);flex-shrink:0}
-.qa-blocked-empty{font-size:var(--text-sm);color:var(--text-3)}
+/* --- Project › Timeline: the tender's dates, and the pace toward submission --- */
+.tl-wrap{display:grid;grid-template-columns:190px minmax(0,1fr);gap:var(--space-6);align-items:start}
+@media (max-width:900px){.tl-wrap{grid-template-columns:minmax(0,1fr);gap:var(--space-4)}}
+.kd{list-style:none;position:relative;display:flex;flex-direction:column;gap:var(--space-3);padding:2px 0 0 20px}
+.kd::before{content:"";position:absolute;left:4px;top:8px;bottom:8px;width:2px;border-radius:1px;background:var(--line-2)}
+.kd-i{position:relative;display:flex;flex-direction:column}
+.kd-i::before{content:"";position:absolute;left:-20px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--panel-2);border:2px solid var(--line-2);box-sizing:border-box}
+.kd-i.done::before{background:var(--accent);border-color:var(--accent)}
+.kd-i.now::before{background:var(--brand-blue);border-color:var(--brand-blue);box-shadow:0 0 0 3px var(--brand-blue-soft)}
+.kd-i.end::before{border-color:var(--accent);border-width:3px}
+.kd-l{font-size:var(--text-sm);font-weight:600;color:var(--text);line-height:1.3}
+.kd-i.done .kd-l{font-weight:500;color:var(--text-2)}
+.kd-i.now .kd-l{color:var(--brand-blue)}
+.kd-d{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums}
+.kd-d .is-late{color:var(--warn);font-weight:600}
+.trend-key{display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);font-size:var(--text-xs);color:var(--text-2);margin-bottom:var(--space-1)}
+.trend-key span{display:inline-flex;align-items:center;gap:6px}
+.trend-key i{display:inline-block;width:14px;height:3px;border-radius:2px}
+.trend-key i.dash{height:0;border-top:2px dashed var(--text-3);border-radius:0}
+.trend svg{display:block;width:100%;height:auto}
 
-.casting-ok{font-size:var(--text-sm);color:var(--ok)}
-.casting-warn{font-size:var(--text-sm);color:var(--warn);cursor:pointer}
-.casting-warn:hover{text-decoration:underline}
+/* --- Project › Most active this week --- */
+.lb-key{display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-3);font-size:var(--text-xs);color:var(--text-3);margin-bottom:var(--space-2)}
+.lb-key span{display:inline-flex;align-items:center;gap:5px}
+.lb-key i{display:inline-block;width:8px;height:8px;border-radius:2px}
+.lb-list{display:flex;flex-direction:column;gap:2px}
+.lb-row{display:grid;grid-template-columns:14px 24px minmax(0,1fr) minmax(56px,30%) 24px;align-items:center;gap:var(--space-2);padding:5px var(--space-2);border-radius:var(--radius-md)}
+.lb-row.is-top{background:var(--brand-blue-soft)}
+.lb-rank{font-size:var(--text-xs);font-weight:700;color:var(--text-3);text-align:center;font-variant-numeric:tabular-nums}
+.lb-row.is-top .lb-rank{color:var(--brand-blue)}
+.lb-who{min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.lb-who b{display:flex;align-items:center;min-width:0;font-size:var(--text-sm);font-weight:600;color:var(--text)}
+.lb-who b span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-who small{font-size:var(--text-xs);color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-bar{display:flex;height:8px;border-radius:var(--radius-pill);overflow:hidden;background:var(--panel-3)}
+.lb-bar span{display:block;height:100%}
+.lb-n{font-size:var(--text-sm);font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.k-alloc{background:var(--accent)}
+.k-ans{background:var(--ok)}
+.k-com{background:var(--brand-slate)}
 
-.invalidated-row{font-size:var(--text-sm);color:var(--ia);cursor:pointer}
-.invalidated-row:hover{text-decoration:underline}
+/* --- Project › The team --- */
+.team-rows{display:flex;flex-direction:column;gap:var(--space-2)}
+.team-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--panel)}
+.team-row .tr-k{font-size:var(--text-sm);font-weight:600;color:var(--text)}
+.team-row .tr-sub{margin-top:1px;font-size:var(--text-xs);color:var(--text-3)}
+.team-row .tr-sub .is-late{color:var(--warn);font-weight:600}
+.team-row.st-go:hover{background:var(--panel-3)}
+.team-active{margin-top:var(--space-3);padding:0 var(--space-1)}
+.team-active .ta-k{display:flex;justify-content:space-between;font-size:var(--text-xs);color:var(--text-3);margin-bottom:5px}
+.team-active .ta-k b{color:var(--text);font-variant-numeric:tabular-nums}
+.ta-bar{height:6px;border-radius:var(--radius-pill);background:var(--panel-3);overflow:hidden}
+.ta-bar span{display:block;height:100%;background:var(--brand-blue)}
 
-.progress-deadline-stat{font-size:var(--text-sm);color:var(--text-2);line-height:1.5}
-.progress-deadline-stat .big{font-size:var(--text-xl);font-weight:700;color:var(--text)}
-
-.ai-rel-row{display:grid;grid-template-columns:80px 1fr 34px;align-items:center;gap:var(--space-3);margin-bottom:var(--space-2)}
-.ai-rel-field{font-size:var(--text-sm);color:var(--text-2)}
-.ai-rel-bar{height:8px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
-.ai-rel-bar span{display:block;height:100%;background:var(--accent);border-radius:var(--radius-xs)}
-.ai-rel-pct{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
-
-/* --- shared stacked bar (allocation funnel, assignment funnel) --- */
-.sbar{display:flex;height:26px;border-radius:var(--radius-md);overflow:hidden;background:var(--panel);margin-bottom:12px;cursor:pointer}
+/* --- shared stacked bar (allocation status, waiting-on, gap strategies) --- */
+.sbar{display:flex;height:26px;border-radius:var(--radius-md);overflow:hidden;background:var(--panel);margin-bottom:12px}
+.sbar[data-go]{cursor:pointer}
+.sbar.thin{height:10px;border-radius:var(--radius-pill);margin-bottom:0}
 .sbar-seg{display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:700;color:#fff;transition:width .5s,filter .12s}
-.sbar:hover .sbar-seg{filter:brightness(1.12)}
+.sbar[data-go]:hover .sbar-seg{filter:brightness(1.12)}
 .sbar-seg.s-neutral{background:var(--line-2);color:var(--text-2)}
 .sbar-seg.s-ia{background:var(--ia)}
 .sbar-seg.s-accent{background:var(--accent)}
 .sbar-seg.s-ok{background:var(--ok)}
 .sbar-seg.s-warn{background:var(--warn)}
 .sbar-seg.s-human{background:var(--human)}
+.sbar-seg.s-blue{background:var(--brand-blue)}
+.sbar-seg.s-slate{background:var(--brand-slate)}
 /* Each key is a 4-column grid, not a flex row: the count used to be pushed to
    the far right with margin-left:auto, which detached it from its own label and
    sat it against the NEXT key's dot — six keys read as one run-on sentence. */
-.sbar-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(186px,1fr));gap:var(--space-2) var(--space-4)}
+.sbar-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--space-2) var(--space-4)}
 .sbar-key{display:flex;align-items:center;gap:7px;min-width:0;font-size:var(--text-sm);color:var(--text-2)}
 .sbar-key .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sbar-key .dot{width:9px;height:9px;border-radius:var(--radius-xs);flex-shrink:0}
 .dot.s-neutral{background:var(--line-2)}.dot.s-ia{background:var(--ia)}
 .dot.s-accent{background:var(--accent)}.dot.s-ok{background:var(--ok)}.dot.s-warn{background:var(--warn)}
-.dot.s-human{background:var(--human)}
+.dot.s-human{background:var(--human)}.dot.s-blue{background:var(--brand-blue)}.dot.s-slate{background:var(--brand-slate)}
 .sbar-key b{font-variant-numeric:tabular-nums;color:var(--text)}
 .sbar-key .pct{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums;white-space:nowrap}
 
-/* --- pass 1 -> pass 2 funnel --- */
-.pf-stage{margin-bottom:var(--space-2)}
-.pf-head{display:flex;align-items:baseline;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2);margin-bottom:3px}
-.pf-head b{font-size:var(--text-base);color:var(--text);font-variant-numeric:tabular-nums}
-.pf-head .pct{margin-left:auto;font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums}
-.pf-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden}
-.pf-bar span{display:block;height:100%;border-radius:var(--radius-xs);transition:width .5s}
-.pf-drop{font-size:var(--text-xs);color:var(--warn);margin:0 0 var(--space-2) 2px}
+/* --- Allocation › By system, with its manager --- */
+.sys-list{display:flex;flex-direction:column;gap:2px}
+.sys-row{display:grid;grid-template-columns:40px 24px minmax(0,1fr) minmax(56px,30%) 34px;align-items:center;gap:var(--space-2);padding:5px var(--space-2)}
+.sys-code{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-2)}
+.sys-who{min-width:0;font-size:var(--text-sm);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sys-who small{margin-left:4px;font-size:var(--text-xs);color:var(--text-3)}
+.sys-bar{display:flex;height:8px;border-radius:var(--radius-pill);overflow:hidden;background:var(--panel-3)}
+.sys-bar .done{background:var(--ok)}
+.sys-bar .val{background:var(--accent)}
+.sys-n{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
+.sys-n b{color:var(--text)}
+.sys-row.is-gap .sys-who{color:var(--warn);font-weight:600}
+.sys-cast{grid-column:4/6;justify-self:end;font-size:var(--text-xs);font-weight:600;color:var(--brand-blue)}
 
-/* --- load by system --- */
-.load-row{display:grid;grid-template-columns:52px 1fr 66px;align-items:center;gap:var(--space-3);padding:3px 0;cursor:pointer}
-.load-row:hover .load-code{color:var(--text)}
-.load-code{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-3);transition:color .12s}
-.load-code.none{font-family:var(--font-ui);font-style:italic;font-weight:500}
-.load-bar{display:flex;height:14px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden}
-.load-seg{transition:width .5s}
-.load-seg.done{background:var(--ok)}
-.load-seg.wip{background:var(--line-2)}
-.load-n{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
-.load-n b{color:var(--text)}
-.noact{margin-top:10px;padding:var(--space-2) var(--space-3);border:1px dashed var(--line-2);border-radius:var(--radius-md);font-size:var(--text-sm);color:var(--text-2);cursor:pointer}
-.noact b{color:var(--ia)}
-.noact.clear{color:var(--text-3);border-style:solid;cursor:default}
+/* --- Allocation › Reallocations --- */
+.ra-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2)}
+.ra-fig{padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--panel)}
+.ra-fig .n{font-size:var(--text-lg);font-weight:700;line-height:1.25;font-variant-numeric:tabular-nums}
+.ra-fig .k{font-size:var(--text-xs);color:var(--text-3)}
+.ra-fig.moved .n{color:var(--accent)}
+.ra-fig.todo .n{color:var(--ia)}
+.ra-fig.todo.st-go{box-shadow:inset 0 0 0 1px var(--ia)}
+.ra-why{display:grid;grid-template-columns:minmax(0,1fr) 64px 16px;align-items:center;gap:var(--space-2);padding:3px var(--space-1);font-size:var(--text-sm);color:var(--text-2)}
+.ra-why .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ra-why .bar{height:6px;border-radius:var(--radius-pill);background:var(--panel-3);overflow:hidden}
+.ra-why .bar span{display:block;height:100%;background:var(--brand-blue)}
+.ra-why b{text-align:right;color:var(--text);font-variant-numeric:tabular-nums}
+.ra-row{display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:var(--space-2);padding:4px var(--space-1)}
+.ra-row .t{min-width:0;font-size:var(--text-sm);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ra-row .t small{font-size:var(--text-xs);color:var(--text-3)}
+.ra-st{padding:1px var(--space-2);border-radius:var(--radius-pill);font-size:var(--text-xs);font-weight:600;white-space:nowrap}
+.ra-st.approved{background:var(--accent-soft);color:var(--accent)}
+.ra-st.rejected{background:var(--panel-3);color:var(--text-2)}
+.ra-st.pending{background:var(--ia-soft);color:var(--ia)}
 
-/* --- derivation-quality ring gauges --- */
-.gq-wrap{display:flex;gap:var(--space-4);justify-content:space-around}
-.gq{text-align:center;flex:1}
-.gq svg{display:block;margin:0 auto}
-.gq-lbl{font-size:var(--text-xs);color:var(--text-3);line-height:1.35;margin-top:var(--space-2)}
+.invalidated-row{font-size:var(--text-sm);color:var(--ia);cursor:pointer}
+.invalidated-row:hover{text-decoration:underline}
 
-/* --- internal vs declared --- */
-.gap-side{margin-bottom:10px}
-/* SPEC-risks.md §9 — progress to the client, risk figures */
-.stat-empty{font-size:var(--text-sm);color:var(--text-3);line-height:1.5;padding:var(--space-2) 0}
+/* --- Compliance › Progress to the client (SPEC-risks.md §9) --- */
 .prog-seq{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3)}
 @media(max-width:800px){.prog-seq{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .prog-step{position:relative;padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel);cursor:pointer}
@@ -364,36 +425,34 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .prog-bar span{display:block;height:100%;background:var(--accent)}
 .prog-step.warn .prog-bar span{background:var(--warn)}
 .prog-sub{margin-top:6px;font-size:var(--text-xs);color:var(--text-3);line-height:1.4}
-.gap-side-h{font-size:var(--text-xs);color:var(--text-3);margin-bottom:4px}
-.gap-note{margin-top:10px;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);line-height:1.45;background:var(--warn-soft);color:var(--text-2);cursor:pointer}
-.gap-note b{color:var(--warn)}
-.gap-note.clear{background:var(--ok-soft);cursor:default}
-.gap-note.clear b{color:var(--ok)}
 
-/* --- consolidation --- */
-.cons-top{display:flex;align-items:baseline;gap:var(--space-2);margin-bottom:var(--space-2)}
-.cons-top .big{font-size:var(--text-xl);font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
-.cons-top span{font-size:var(--text-sm);color:var(--text-2)}
-.cons-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden;margin-bottom:12px}
-.cons-bar span{display:block;height:100%;background:var(--ok);border-radius:var(--radius-xs);transition:width .5s}
-.cons-split{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--space-2)}
-.cons-item{padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);background:var(--panel-3);cursor:pointer;transition:filter .12s}
-.cons-item:hover{filter:brightness(1.1)}
-.cons-item .n{font-size:var(--text-lg);font-weight:700;font-variant-numeric:tabular-nums}
-.cons-item .k{font-size:var(--text-xs);color:var(--text-3);line-height:1.35}
-.cons-item.wait .n{color:var(--ia)}
-.cons-item.qa .n{color:var(--accent)}
-.cons-item.rea .n{color:var(--warn)}
+/* --- Compliance › Answers by person --- */
+.ppl-list{display:flex;flex-direction:column;gap:2px}
+.ppl-row{display:grid;grid-template-columns:24px minmax(0,1fr) minmax(48px,26%) 40px 62px;align-items:center;gap:var(--space-2);padding:5px var(--space-2)}
+.ppl-who{min-width:0;font-size:var(--text-sm);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ppl-who small{margin-left:4px;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3)}
+.ppl-bar{height:8px;border-radius:var(--radius-pill);background:var(--panel-3);overflow:hidden}
+.ppl-bar span{display:block;height:100%;background:var(--ok)}
+.ppl-n{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
+.ppl-n b{color:var(--text)}
+.ppl-flag{justify-self:end;font-size:var(--text-xs);font-weight:600;white-space:nowrap;color:var(--text-3)}
+.ppl-flag.late{color:var(--warn)}
+.ppl-flag.done{color:var(--ok)}
 
-/* --- late by contributor --- */
-.late-row{display:grid;grid-template-columns:1fr 84px 52px;align-items:center;gap:var(--space-3);padding:4px 0}
-.late-name{font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.late-name small{color:var(--text-3)}
-.late-bar{height:10px;border-radius:var(--radius-xs);background:var(--panel);overflow:hidden}
-.late-bar span{display:block;height:100%;border-radius:var(--radius-xs);background:var(--ia);transition:width .5s}
-.late-bar span.over{background:var(--warn)}
-.late-days{font-size:var(--text-xs);font-weight:600;color:var(--text-2);text-align:right;font-variant-numeric:tabular-nums}
-.late-empty{font-size:var(--text-sm);color:var(--ok)}
+/* --- Compliance › What the open requirements are waiting on --- */
+.wo-list{display:flex;flex-direction:column;gap:2px;margin-top:var(--space-3)}
+.wo-row{display:grid;grid-template-columns:10px minmax(0,1fr) 26px;align-items:start;gap:var(--space-3);padding:var(--space-2)}
+.wo-row .dot{width:10px;height:10px;border-radius:3px;margin-top:3px}
+.wo-k{font-size:var(--text-sm);font-weight:600;color:var(--text)}
+.wo-sub{margin-top:1px;font-size:var(--text-xs);color:var(--text-3);line-height:1.45}
+.wo-sub .is-late{color:var(--warn);font-weight:600}
+.wo-n{font-size:var(--text-lg);font-weight:700;line-height:1.1;text-align:right;font-variant-numeric:tabular-nums}
+
+/* --- Compliance › Risks --- */
+.rk-row{display:grid;grid-template-columns:76px minmax(0,1fr) 24px 36px;align-items:center;gap:var(--space-2);padding:5px var(--space-2)}
+.rk-id{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-2)}
+.rk-t{min-width:0;font-size:var(--text-sm);color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk-n{font-size:var(--text-xs);font-weight:600;color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
 
 /* main columns */
 .dash-main{display:grid;grid-template-columns:1.55fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);align-items:start}
@@ -424,17 +483,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .att .att-sub{font-size:var(--text-xs);color:var(--text-3);margin-top:var(--space-1);line-height:1.4}
 .att .att-go{margin-left:auto;font-size:var(--text-xs);color:var(--accent);white-space:nowrap;align-self:center;opacity:0;transition:opacity .12s}
 .att:hover .att-go{opacity:1}
-
-/* compliance */
-.comp-bar{display:flex;height:24px;border-radius:var(--radius-md);overflow:hidden;background:var(--panel-3);margin-bottom:12px}
-.comp-seg{display:flex;align-items:center;justify-content:center;font-size:var(--text-xs);font-weight:700;color:#fff;transition:width .5s}
-.comp-seg.compliant{background:var(--ok)}
-.comp-seg.non{background:var(--warn)}
-.comp-seg.pending{background:var(--line-2);color:var(--text-2)}
-.comp-legend{display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2)}
-.comp-legend span{display:inline-flex;align-items:center;gap:7px}
-.comp-legend .dot{width:9px;height:9px;border-radius:var(--radius-xs);flex-shrink:0}
-.dot.compliant{background:var(--ok)}.dot.non{background:var(--warn)}.dot.pending{background:var(--line-2)}
 
 /* experts compact list */
 .exp-list{display:flex;flex-direction:column;gap:11px}
@@ -966,136 +1014,89 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
 
           <div class="card">
             <h3>Contributors</h3>
-            <div class="exp-list">
-              <div class="exp-line"><div class="exp-av" style="background:#6e7bf2">SL</div><div class="exp-ln">Sophie L.<span>Monitoring</span></div><div class="exp-lbar"><div style="width:75%"></div></div><div class="exp-lm">3/4</div></div>
-              <div class="exp-line"><div class="exp-av" style="background:#3fb27f">KB</div><div class="exp-ln">Karim B.<span>Infra</span></div><div class="exp-lbar"><div style="width:60%;background:var(--ia)"></div></div><div class="exp-lm over">2 late</div></div>
-              <div class="exp-line"><div class="exp-av" style="background:#e0a43c">CM</div><div class="exp-ln">Claire M.<span>Cybersec</span></div><div class="exp-lbar"><div style="width:100%"></div></div><div class="exp-lm">3/3</div></div>
-            </div>
+            <!-- the three people carrying the most answers — renderContributorsCard(),
+                 from the same figures as Statistics › Compliance › Answers by person -->
+            <div class="exp-list" id="exp-summary"></div>
           </div>
         </aside>
       </div>
 
-      <!-- SPEC-dashboard-statistics.md — statistics panel. Split by STEP, not by
-           audience: one tab per canonical step (DEC-029), matching the PROCESS cards
-           above and the two screens a reader would open next. The spec's original
-           PM/stakeholder split collapsed both steps into each tab, which meant the
-           same compliance bar was drawn twice and no tab ever answered "where is
-           allocation stuck". Always visible regardless of allocation state, per the
-           spec's "always show the unknown" principle — pending is the honest majority
-           early in a tender, not a state to hide. -->
+      <!-- DEC-117 — Statistics, rebuilt around the tender's business and the
+           people doing the work. Nothing here measures the AI (derivation
+           quality, correction rates — Configuration › AI feedback keeps those).
+           Three tabs: the project as a whole — its dates, its pace, its people —
+           then one per step, matching the two phase cards above. Each block
+           opens on the sentence a manager would say out loud, then the figure
+           behind it. -->
       <div class="card stats-panel">
         <div class="stats-head">
           <h3>Statistics</h3>
           <div class="stats-tabs">
-            <button class="stats-tab on" data-stab="alloc">Allocation</button>
+            <button class="stats-tab on" data-stab="proj">Project</button>
+            <button class="stats-tab" data-stab="alloc">Allocation</button>
             <button class="stats-tab" data-stab="compl">Compliance</button>
           </div>
         </div>
 
-        <div class="stats-sec on" data-stab="alloc">
+        <div class="stats-sec on" data-stab="proj">
           <div class="stats-grid">
             <div class="stat-block stat-wide">
-              <div class="stat-h">Allocation funnel</div>
-              <div class="stat-sub">Where the requirements are sitting — not just how many are done</div>
-              <div id="stats-alloc-funnel"></div>
+              <div class="stat-top"><div class="stat-h">Timeline</div></div>
+              <div id="stats-timeline"></div>
             </div>
-
             <div class="stat-block">
-              <div class="stat-h">Pass 1 → pass 2</div>
-              <div class="stat-sub">Where the drop-off happens between the two confirmations</div>
-              <div id="stats-pass-funnel"></div>
+              <div class="stat-top"><div class="stat-h">Most active this week</div><span class="stat-when" id="stats-week-label"></span></div>
+              <div id="stats-leaderboard"></div>
             </div>
-
             <div class="stat-block">
-              <div class="stat-h">Derivation quality</div>
-              <div class="stat-sub">What the AI proposed and nobody has confirmed yet</div>
-              <div id="stats-ai-quality"></div>
+              <div class="stat-top"><div class="stat-h">The team</div><button class="stat-link" id="stats-team-open">Team casting →</button></div>
+              <div id="stats-team"></div>
             </div>
+          </div>
+        </div>
 
+        <div class="stats-sec" data-stab="alloc">
+          <div class="stats-grid">
             <div class="stat-block stat-wide">
-              <div class="stat-h">Load by system</div>
-              <div class="stat-sub">How the requirements spread across systems, and how much of each is allocated</div>
-              <div id="stats-activity-load"></div>
+              <div class="stat-top"><div class="stat-h">Where the requirements are</div></div>
+              <div id="stats-alloc-status"></div>
             </div>
-
-            <div class="stat-block">
-              <div class="stat-h">Casting gaps</div>
-              <div id="stats-casting"></div>
+            <div class="stat-block" id="stats-by-system-block">
+              <div class="stat-top"><div class="stat-h">By system, with its manager</div></div>
+              <div id="stats-by-system"></div>
             </div>
-
-            <div class="stat-block stat-invalidated hidden" id="stats-invalidated-block">
-              <div class="stat-h">Work invalidated by a new version</div>
+            <div class="stat-block" id="stats-realloc-block">
+              <div class="stat-top"><div class="stat-h">Sent back for reallocation</div></div>
+              <div id="stats-realloc"></div>
+            </div>
+            <div class="stat-block stat-wide hidden" id="stats-invalidated-block">
+              <div class="stat-top"><div class="stat-h">Work invalidated by a new version</div></div>
               <div id="stats-invalidated"></div>
-            </div>
-
-            <div class="stat-block stat-ai-reliability">
-              <div class="stat-h">AI reliability — correction rate by field</div>
-              <div class="stat-sub">Share of AI-proposed values a human subsequently changed</div>
-              <div id="stats-ai-reliability"></div>
-            </div>
-
-            <div class="stat-block stat-wide">
-              <div class="stat-h">Trajectory to deadline</div>
-              <div id="stats-trajectory"></div>
-              <div id="stats-progress-deadline"></div>
             </div>
           </div>
         </div>
 
         <div class="stats-sec" data-stab="compl">
           <div class="stats-grid">
-            <div class="stat-block">
-              <div class="stat-h">Compliance profile</div>
-              <div class="comp-bar" id="stats-comp-bar"></div>
-              <div class="comp-legend" id="stats-comp-legend"></div>
-            </div>
-
             <div class="stat-block stat-wide">
-              <div class="stat-h">Progress to the client</div>
-              <div class="stat-sub">From assignment to what the client is told — each step as a share of the one it depends on</div>
+              <div class="stat-top"><div class="stat-h">Progress to the client</div></div>
               <div id="stats-progress-client"></div>
             </div>
-
             <div class="stat-block">
-              <div class="stat-h">Risks</div>
-              <div class="stat-sub">The tender's list of risks, and how much each is reused</div>
-              <div id="stats-risks"></div>
+              <div class="stat-top"><div class="stat-h">Answers by person</div></div>
+              <div id="stats-people"></div>
             </div>
-
             <div class="stat-block">
-              <div class="stat-h">Not compliant by gap strategy</div>
-              <div class="stat-sub">What each responsible chose to do about their Not compliant</div>
+              <div class="stat-top"><div class="stat-h">What the open requirements are waiting on</div></div>
+              <div id="stats-waiting"></div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-top"><div class="stat-h">Not compliant by gap strategy</div></div>
               <div id="stats-nc-strategy"></div>
             </div>
-
-            <div class="stat-block stat-wide">
-              <div class="stat-h">Consolidation</div>
-              <div class="stat-sub">A requirement consolidates only once every one of its assignments has answered</div>
-              <div id="stats-consolidation"></div>
-            </div>
-
-            <div class="stat-block stat-wide">
-              <div class="stat-h">Assignment funnel</div>
-              <div class="stat-sub">Every assignment across the tender, by where it stands</div>
-              <div id="stats-assign-funnel"></div>
-            </div>
-
             <div class="stat-block">
-              <div class="stat-h">Late by contributor</div>
-              <div class="stat-sub">Who to chase, and how long they have been sitting on it</div>
-              <div id="stats-late"></div>
-            </div>
-
-            <div class="stat-block">
-              <div class="stat-h">Blocked on the client</div>
-              <div class="stat-sub">Awaiting Q&amp;A — not people to chase, a client to wait for</div>
-              <div id="stats-qa-blocked" class="qa-blocked-list"></div>
-            </div>
-
-            <div class="stat-block stat-bottlenecks">
-              <div class="stat-h">Bottlenecks by system</div>
-              <div class="stat-sub">Awaiting a contributor answer — ranked by age of the oldest, not by count</div>
-              <div id="stats-bottlenecks" class="bn-list"></div>
+              <div class="stat-top"><div class="stat-h">Risks</div></div>
+              <div id="stats-risks"></div>
             </div>
           </div>
         </div>
@@ -1426,6 +1427,7 @@ function showScreen(name){
   document.getElementById("team-btn").classList.toggle("on",name==="team");
   document.getElementById("back-to-dash").style.display=name==="dash"?"none":"inline-flex";
   if(name==="team") renderTeamScreen();
+  if(name==="dash"){ try{ renderStatsTimeline(); }catch(e){} }   // the chart is drawn at the width it gets (try: not before its data exists)
 }
 function showConfig(on){ showScreen(on?"cfg":"dash"); }
 document.getElementById("back-to-dash").addEventListener("click",()=>showScreen("dash"));
@@ -1461,6 +1463,7 @@ const SIG_CAST_ACTIVITIES=[
   const ref=document.getElementById("dash-ref"); if(ref) ref.textContent=p.ref;
   const line=document.getElementById("dash-line"); if(line) line.textContent=p.line||"—";
   const lineSub=document.getElementById("dash-line-sub"); if(lineSub) lineSub.textContent=p.system||p.line||"—";
+  const days=document.querySelector(".dash-hero .d-num"); if(days&&p.days!=null) days.textContent=p.days;
   if(p.builtOut===true) return;
   const banner=document.getElementById("dash-scope-banner"); if(banner) banner.style.display="block";
 })();
@@ -2280,10 +2283,6 @@ const SIG_QA_BLOCKED=[
   {reqId:"L4-0011",note:"Does the 3 s route setting budget include point machine confirmation?",days:5},
   {reqId:"L4-0012",note:"Are the depot approach tracks within the radio coverage obligation?",days:4},
 ];
-const SIG_TRAJECTORY=[
-  {label:"Jul 2",remaining:12},{label:"Jul 7",remaining:11},{label:"Jul 11",remaining:10},
-  {label:"Jul 15",remaining:9},{label:"Jul 17",remaining:8},
-];
 
 const REVIEW_REQS_BASE=[
   {id:"SRM-00001",status:"toreview", activity:"sig"},
@@ -2436,96 +2435,378 @@ renderCommentsFeed();
 renderReassignRollup();
 
 /* =====================================================
-   SPEC-dashboard-statistics.md — statistics panel
-   Metrics 1.2/2.2 (compliance), 1.4 (casting gaps) and 1.5 (invalidated by a new
-   version) are derived from data this screen already has (FOLLOWUP_REQS, CAST_ACTIVITIES,
-   the real v2.2 upload flow). The spec itself flags 1.1's per-perimeter age, 1.6/2.3's
-   trajectory history and 2.4's AI correction rate as needing tracking the backend doesn't
-   do yet ("Data gaps" section) — those are hand-authored here, in the same spirit as the
-   rest of this file's seed content (FOLLOWUP_REQS, CAST_ACTIVITIES, OVERDUE_BRANCHES):
-   illustrative, not computed, not persisted.
+   STATISTICS — DEC-117 (6 Oct 2026)
+   Business only, people first. What a project manager follows here is the
+   tender and the humans working on it: its dates and pace, who did what this
+   week, who answers for each system, what was sent back, who has answered and
+   what the rest is waiting on. Nothing measures the AI — its accuracy belongs
+   to Configuration › AI feedback, not to a manager's dashboard.
+   Sources, as everywhere on this screen: the shell wherever a screen has
+   reported (allocation progress, Compliance's totals, the risk list, the
+   reassignment mailbox, the activity log), this screen's own mirror
+   otherwise. What the backend keeps no history of yet — progress over time,
+   each person's week, the reallocations already decided — is hand-authored,
+   and says so where it is declared.
 ===================================================== */
 document.querySelectorAll(".stats-tab").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".stats-tab").forEach(x=>x.classList.remove("on"));
   document.querySelectorAll(".stats-sec").forEach(x=>x.classList.remove("on"));
   b.classList.add("on");
   document.querySelector(`.stats-sec[data-stab="${b.dataset.stab}"]`).classList.add("on");
+  if(b.dataset.stab==="proj") renderStatsTimeline();   // drawn at its width, which a hidden tab doesn't have
 }));
+document.getElementById("stats-team-open")?.addEventListener("click",()=>showScreen("team"));
+const shellGet=(fn,...a)=>{ try{ return window.parent[fn](CURRENT_PROJECT.id,...a); }catch(e){ return null; } };
+/* rows open the screen behind them: data-go a route, data-screen this hub's Team screen */
+function bindGo(el){
+  el.querySelectorAll("[data-go]").forEach(n=>n.addEventListener("click",()=>goRoute(n.dataset.go)));
+  el.querySelectorAll("[data-screen]").forEach(n=>n.addEventListener("click",()=>showScreen(n.dataset.screen)));
+}
+const escH=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+const DAY=864e5;
+const isoDate=s=>new Date(s+"T12:00:00");   // noon, so no time zone tips it into another day
+const fmtDay=d=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+const pctOf=(n,d)=>d?Math.round(n/d*100):0;
+const nOf=(n,one,many)=>`${n} ${n===1?one:(many||one+"s")}`;
 
-// 1.1 — bottlenecks by perimeter (data gap: real age-in-status needs a status-transition
-// history the backend doesn't track yet)
-const STATS_BOTTLENECKS=[
-  {code:"TRK",label:"TRK",count:3,oldestDays:14},
-  {code:"SIG",label:"SIG",count:2,oldestDays:9},
-  {code:"OCS",label:"OCS",count:2,oldestDays:6},
-  {code:"COM",label:"COM",count:1,oldestDays:2},
+/* One person, whichever list holds them — the project management team, the
+   system managers, the company directory casting picks from. */
+function personOf(name){
+  const pm=PM_TEAM.find(p=>p.name===name); if(pm) return {name, init:pm.init, color:pm.color, role:pm.title};
+  const m=MANAGERS.find(x=>x.name===name); if(m) return {name, init:m.init, color:m.color, role:m.role};
+  const d=personByName(name);
+  if(d){ const r=ROSTER.find(x=>x.personId===d.id), a=r&&CAST_ACT(r.activityId);
+    return {name, init:d.init, color:d.color, role:a?`${a.code} contributor`:"Contributor"}; }
+  return {name, init:String(name).split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(), color:"var(--brand-slate)", role:""};
+}
+const avHTML=p=>`<span class="st-av" style="background:${p.color}" title="${escH(p.name)}">${p.init}</span>`;
+const YOU=(PM_TEAM[0]||{}).name;   // this dashboard is the project manager's
+
+/* ---------- Project › Timeline ---------- */
+/* The tender's dates. Received and submission are the project's own; the two
+   Q&A dates are the client's — the same ones the Q&A screen shows. Today is
+   the demo's "now": submission minus the days left the project carries (the
+   hero's figure), so the two cannot disagree. A project made in the wizard
+   reuses the reference tender's content, and its calendar with it. */
+const TENDER_DATES_BASE={received:"2026-07-01", qaCutoff:"2026-07-17", qaAnswers:"2026-07-24", submission:"2026-08-12", days:23};
+const SIG_TENDER_DATES={received:"2026-06-29", qaCutoff:"2026-07-10", qaAnswers:"2026-07-21", submission:"2026-07-26", days:9};
+const TENDER_DATES=IS_SIG_TENDER?SIG_TENDER_DATES:TENDER_DATES_BASE;
+const DAYS_LEFT=(CURRENT_PROJECT&&CURRENT_PROJECT.builtOut&&CURRENT_PROJECT.days!=null)?CURRENT_PROJECT.days:TENDER_DATES.days;
+const TODAY=new Date(isoDate(TENDER_DATES.submission).getTime()-DAYS_LEFT*DAY);
+/* Progress over time, in % of requirements. Nothing stores snapshots yet, so
+   the history is hand-authored, and today's point comes from the same mirror
+   as every other figure in Statistics (5 of 14 allocated, 4 answered) — not
+   from Allocation's own report: once Allocation is opened that reports the
+   capture's real requirements (DEC-098), a population this history doesn't
+   describe, and the line would fall to their figure. */
+const STATS_HISTORY_BASE=[
+  {d:"2026-07-01",alloc:0, answered:0},
+  {d:"2026-07-06",alloc:0, answered:0},
+  {d:"2026-07-08",alloc:7, answered:0},
+  {d:"2026-07-13",alloc:14,answered:7},
+  {d:"2026-07-17",alloc:29,answered:21},
 ];
-function renderStatsBottlenecks(){
-  const el=document.getElementById("stats-bottlenecks"); if(!el) return;
-  // TYPE-T08 — ranking systems against each other needs more than one system.
-  if(IS_SIG_TENDER){ const b=el.closest(".stat-block"); if(b) b.classList.add("hidden"); return; }
-  const rows=[...STATS_BOTTLENECKS].sort((a,b)=>b.oldestDays-a.oldestDays);
-  el.innerHTML = rows.map(r=>`
-    <div class="bn-row" data-go="revue-documentaire.html">
-      <span class="bn-code">${r.code}</span>
-      <span class="bn-label">${r.label===r.code?"":r.label}</span>
-      <span class="bn-count">${r.count} awaiting</span>
-      <span class="bn-age ${r.oldestDays>=10?"warn":""}">${r.oldestDays}d oldest</span>
-    </div>`).join("");
-  el.querySelectorAll("[data-go]").forEach(row=>row.addEventListener("click",()=>goRoute(row.dataset.go)));
-}
-
-// 1.2/2.2 — compliance profile: real data (same source as the Project-health sidebar
-// card above), just always visible per the spec's "always show the unknown" principle
-// instead of gated behind allocation finalization like that card is.
-function complianceCounts(){
-  const total=FOLLOWUP_REQS.length;
-  const compliant=FOLLOWUP_REQS.filter(r=>r.compliance==="compliant").length;
-  const non=FOLLOWUP_REQS.filter(r=>r.compliance==="not_compliant").length;
-  const pending=total-compliant-non;
-  return {total,compliant,non,pending};
-}
-function renderStatsComplianceBar(barId,legendId){
-  const bar=document.getElementById(barId), legend=document.getElementById(legendId);
-  if(!bar||!legend) return;
-  const {total,compliant,non,pending}=complianceCounts();
-  const pct=n=>total?(Math.round(n/total*1000)/10)+"%":"0%";
-  const segs=[["compliant",compliant,"Compliant"],["non",non,"Not compliant"],["pending",pending,"Pending"]];
-  bar.innerHTML=segs.map(([k,n])=>`<div class="comp-seg ${k}" style="width:${pct(n)}" title="${n} · ${pct(n)}">${n||""}</div>`).join("");
-  legend.innerHTML=segs.map(([k,n,l])=>`<span><span class="dot ${k}"></span>${l} · ${n}</span>`).join("");
-}
-
-// 1.3 — blocked on the client (data gap: qa-raised dates aren't tracked at branch level
-// in this screen's own mirror; hand-authored, req ids match compliance.html's
-// real awaiting_qa branches for narrative consistency across screens)
-const STATS_QA_BLOCKED_BASE=[
-  {reqId:"SRM-00010",note:"One-year depth: rolling or calendar year?",days:6},
-  {reqId:"SRM-00012",note:"Is TLS 1.3 mandatory on already-deployed gateways?",days:5},
-  {reqId:"SRM-00013",note:"3-year vs 5-year retention conflict",days:5},
-  {reqId:"SRM-00014",note:"Which TLS version applies to legacy gateways?",days:4},
+const SIG_STATS_HISTORY=[
+  {d:"2026-06-29",alloc:0, answered:0},
+  {d:"2026-07-03",alloc:0, answered:0},
+  {d:"2026-07-08",alloc:8, answered:8},
+  {d:"2026-07-10",alloc:8, answered:17},
+  {d:"2026-07-14",alloc:25,answered:33},
 ];
-const STATS_QA_BLOCKED = IS_SIG_TENDER ? SIG_QA_BLOCKED : STATS_QA_BLOCKED_BASE;
-
-function renderStatsQABlocked(){
-  const el=document.getElementById("stats-qa-blocked"); if(!el) return;
-  if(!STATS_QA_BLOCKED.length){ el.innerHTML=`<div class="qa-blocked-empty">Nothing blocked on the client right now.</div>`; return; }
-  el.innerHTML=`<div class="qa-blocked-count">${STATS_QA_BLOCKED.length} question${STATS_QA_BLOCKED.length>1?"s":""} raised, oldest ${Math.max(...STATS_QA_BLOCKED.map(q=>q.days))} days ago</div>`
-    + STATS_QA_BLOCKED.map(q=>`<div class="qa-blocked-row" data-go="compliance.html" title="${q.reqId} — ${q.note.replace(/"/g,"&quot;")} · raised ${q.days} days ago"><b>${q.reqId}</b><span>${q.note}</span><span class="qa-blocked-days">${q.days}d</span></div>`).join("");
-  el.querySelectorAll("[data-go]").forEach(row=>row.addEventListener("click",()=>goRoute(row.dataset.go)));
+const STATS_HISTORY=IS_SIG_TENDER?SIG_STATS_HISTORY:STATS_HISTORY_BASE;
+function progressSeries(){
+  const now=TODAY.getTime();
+  const allocated=REVIEW_REQS.filter(r=>r.status==="allocated").length;
+  const answered=FOLLOWUP_REQS.filter(r=>r.compliance!==null).length;
+  return STATS_HISTORY.map(p=>({t:isoDate(p.d).getTime(), alloc:p.alloc, answered:p.answered})).filter(p=>p.t<now)
+    .concat([{t:now, alloc:pctOf(allocated,REVIEW_REQS.length), answered:pctOf(answered,FOLLOWUP_REQS.length)}]);
+}
+function valueAt(series,k,t){
+  if(t<=series[0].t) return series[0][k];
+  for(let i=1;i<series.length;i++){ const a=series[i-1], b=series[i];
+    if(t<=b.t) return a[k]+(b[k]-a[k])*(t-a.t)/((b.t-a.t)||1); }
+  return series[series.length-1][k];
+}
+/* Where this week's pace lands: the last seven days' progress carried forward
+   in a straight line. A forecast, not a plan — the sentence says so. */
+function finishAt(series,k){
+  const last=series[series.length-1];
+  if(last[k]>=100) return {done:true};
+  const perDay=(last[k]-valueAt(series,k,last.t-7*DAY))/7;
+  if(perDay<=0.05) return {stalled:true};
+  return {t:last.t+(100-last[k])/perDay*DAY};
+}
+function renderStatsTimeline(){
+  const el=document.getElementById("stats-timeline"); if(!el) return;
+  const T=TENDER_DATES, now=TODAY.getTime();
+  const t0=isoDate(T.received).getTime(), t1=isoDate(T.submission).getTime();
+  // the key dates, today among them
+  const keys=[
+    {t:t0, l:"Tender received", past:"requirements captured"},
+    {t:isoDate(T.qaCutoff).getTime(), l:"Q&amp;A cut-off", past:"passed", next:"last day to ask the client"},
+    {t:isoDate(T.qaAnswers).getTime(), l:"Client answers expected", past:"passed"},
+    {t:t1, l:"Submission", end:true},
+  ].map(k=>Object.assign(k,{cls:k.t<now?"done":(k.end?"end":"")}));
+  keys.push({t:now, l:"Today", cls:"now"});
+  keys.sort((a,b)=>a.t-b.t);
+  const note=k=>{
+    if(k.cls==="now"||k.end) return "";
+    if(k.cls==="done") return k.past;
+    const d=Math.round((k.t-now)/DAY);
+    return `in ${nOf(d,"day")}`+(k.next?` · ${k.next}`:"");
+  };
+  const kd=`<ol class="kd">${keys.map(k=>`<li class="kd-i ${k.cls}"><span class="kd-l">${k.l}</span>`
+    +`<span class="kd-d">${fmtDay(new Date(k.t))}${note(k)?` · ${note(k)}`:""}</span></li>`).join("")}</ol>`;
+  // the chart: % of requirements allocated and answered, received → submission
+  const series=progressSeries(), last=series[series.length-1];
+  /* drawn at the width it gets, so its 10px labels stay 10px: a fixed viewBox
+     scaled to a wide block made the chart twice as tall as it has to be. The
+     tab is hidden on a re-render from another tab; 520 then, until shown. */
+  const box=el.clientWidth, twoCol=!window.matchMedia("(max-width:900px)").matches;   // .tl-wrap's own breakpoint
+  const W=box>240?Math.round(twoCol?box-190-24:box):520, H=170, L=34, R=12, TP=16, B=22;
+  const X=t=>L+(Math.min(Math.max(t,t0),t1)-t0)/(t1-t0)*(W-L-R);
+  const Y=v=>TP+(1-Math.min(Math.max(v,0),100)/100)*(H-TP-B);
+  const f1=v=>v.toFixed(1);
+  const grid=[0,50,100].map(v=>`<line x1="${L}" x2="${W-R}" y1="${f1(Y(v))}" y2="${f1(Y(v))}" stroke="var(--line)" stroke-width="1"/>`
+    +`<text x="${L-6}" y="${f1(Y(v)+3.5)}" font-size="10" fill="var(--text-3)" text-anchor="end">${v}%</text>`).join("");
+  let ticks=""; for(let t=t0;t<t1-3*DAY;t+=7*DAY) ticks+=`<text x="${f1(X(t))}" y="${H-5}" font-size="10" fill="var(--text-3)" text-anchor="middle">${fmtDay(new Date(t))}</text>`;
+  const LINES=[{k:"alloc",c:"var(--accent)"},{k:"answered",c:"var(--ok)"}];
+  const fin={alloc:finishAt(series,"alloc"), answered:finishAt(series,"answered")};
+  const lines=LINES.map(({k,c})=>{
+    const path=series.map((p,i)=>`${i?"L":"M"}${f1(X(p.t))},${f1(Y(p[k]))}`).join(" ");
+    const f=fin[k]; let proj="";
+    if(f.t){ const tEnd=Math.min(f.t,t1), vEnd=last[k]+(100-last[k])*(tEnd-last.t)/(f.t-last.t);
+      proj=`<path d="M${f1(X(last.t))},${f1(Y(last[k]))} L${f1(X(tEnd))},${f1(Y(vEnd))}" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="4 4" opacity=".65"/>`; }
+    return `<path d="${path}" fill="none" stroke="${c}" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round"/>${proj}`
+      +`<circle cx="${f1(X(last.t))}" cy="${f1(Y(last[k]))}" r="3.5" fill="${c}" stroke="var(--panel-2)" stroke-width="1.5"><title>Today · ${last[k]}% ${k==="alloc"?"allocated":"answered"}</title></circle>`;
+  }).join("");
+  const xn=f1(X(now)), xs=f1(X(t1));
+  const svg=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Requirements allocated and answered over time, toward submission">
+    ${grid}${ticks}
+    <line x1="${xn}" x2="${xn}" y1="${TP-6}" y2="${H-B}" stroke="var(--brand-blue)" stroke-width="1" stroke-dasharray="2 3"/>
+    <text x="${xn}" y="${TP-8}" font-size="10" font-weight="600" fill="var(--brand-blue)" text-anchor="middle">Today</text>
+    <line x1="${xs}" x2="${xs}" y1="${TP-6}" y2="${H-B}" stroke="var(--text-2)" stroke-width="1.25"/>
+    <text x="${xs}" y="${TP-8}" font-size="10" font-weight="600" fill="var(--text-2)" text-anchor="end">Submission ${fmtDay(new Date(t1))}</text>
+    ${lines}
+  </svg>`;
+  // the sentence: where this week's pace lands each step
+  const phrase=(what,f,verb)=>{
+    if(f.done) return `${what} ${verb[2]} <b class="is-good">complete</b>`;
+    if(f.stalled) return `${what} ${verb[3]} <b class="is-late">not moved this week</b>`;
+    const gap=Math.round((f.t-t1)/DAY);
+    const cls=gap>0?"is-late":gap>=-2?"is-tight":"is-good";
+    return `${what} ${gap>0?verb[1]:verb[0]} <b class="${cls}">${fmtDay(new Date(f.t))}</b>`
+      +(gap>0?`, ${nOf(gap,"day")} after submission`:gap===0?", the day of submission":`, ${nOf(-gap,"day")} to spare`);
+  };
+  const answers=phrase("the answers",fin.answered,["are all in by","would only be all in by","are","have"]);
+  const take=`At this week's pace, ${phrase("allocation",fin.alloc,["is done by","would only be done by","is","has"])}. ${answers.charAt(0).toUpperCase()+answers.slice(1)}.`;
+  el.innerHTML=`<div class="tl-wrap">${kd}<div class="trend">
+      <div class="stat-take">${take}</div>
+      <div class="trend-key"><span><i style="background:var(--accent)"></i>Allocated</span><span><i style="background:var(--ok)"></i>Answered</span><span><i class="dash"></i>at this week's pace</span></div>
+      ${svg}</div></div>`;
 }
 
-// 1.4 — casting gaps: real data (CAST_ACTIVITIES with no manager cast at all — a
-// stricter condition than the Team casting phase card's own "not fully staffed" count)
-function renderStatsCasting(){
-  const el=document.getElementById("stats-casting"); if(!el) return;
-  const gaps=CAST_ACTIVITIES.filter(a=>!a.managerId);
-  if(!gaps.length){ el.innerHTML=`<div class="casting-ok">✓ Every system has a manager cast</div>`; return; }
-  el.innerHTML=`<div class="casting-warn" id="stats-casting-link">⚠ ${gaps.length} system${gaps.length>1?"s":""} with no manager cast — ${gaps.map(g=>g.label).join(", ")}</div>`;
-  document.getElementById("stats-casting-link")?.addEventListener("click",()=>showScreen("team"));
+/* ---------- Project › Most active this week ---------- */
+/* Each person's last seven days — hand-authored, the backend keeps no such
+   history yet. Everything done in this session counts on top, live, read
+   from the shell's activity log: a requirement validated in Allocation (its
+   characterisation or a system's allocation — once per requirement), a
+   verdict given (once per assignment), a comment posted. Field-by-field edits
+   don't count — a ranking of clicks would reward fiddling, not work.
+   a: requirements validated in Allocation, r: answers given, c: comments and
+   questions. Answers stay within each person's totals in Answers by person. */
+const WEEK_ACTIVITY_BASE={lastWeek:64, people:[
+  {name:"Louis Renaud",   a:6, r:8, c:4},
+  {name:"Thibaud Breton", a:11,r:0, c:4},
+  {name:"Claire Moreau",  a:0, r:9, c:2},
+  {name:"Paolo Ferri",    a:4, r:4, c:1},
+  {name:"Amina Cherif",   a:3, r:3, c:1},
+  {name:"Sophie Lang",    a:0, r:3, c:3},
+  {name:"Elena Popescu",  a:2, r:2, c:1},
+  {name:"Marc Dubois",    a:0, r:2, c:1},
+  {name:"Karim Benali",   a:0, r:1, c:1},
+  {name:"Nadia Haddad",   a:2, r:0, c:0},
+]};
+const SIG_WEEK_ACTIVITY={lastWeek:21, people:[
+  {name:"Louis Renaud",   a:4, r:3, c:2},
+  {name:"Thibaud Breton", a:5, r:0, c:1},
+  {name:"Sophie Lang",    a:0, r:1, c:3},
+  {name:"Karim Benali",   a:0, r:1, c:1},
+  {name:"Claire Moreau",  a:0, r:0, c:1},
+]};
+const WEEK_ACTIVITY=IS_SIG_TENDER?SIG_WEEK_ACTIVITY:WEEK_ACTIVITY_BASE;
+function weekActivity(){
+  const by=new Map(WEEK_ACTIVITY.people.map(p=>[p.name,Object.assign({},p)])), seen=new Set();
+  (shellGet("getActivityLog")||[]).filter(e=>e.live&&e.who&&e.who!=="—").forEach(e=>{
+    let k=null, once=null;
+    if(e.milestone==="allocated"||(e.cat==="status"&&e.to==="Allocated")){ k="a"; once=`${e.who}|a|${e.reqId}`; }
+    else if(e.cat==="compliance"&&/— verdict$/.test(e.what||"")&&e.to&&e.to!=="—"){ k="r"; once=`${e.who}|r|${e.reqId}|${e.what}`; }
+    else if(e.cat==="comment") k="c";
+    if(!k||(once&&seen.has(once))) return;
+    if(once) seen.add(once);
+    if(!by.has(e.who)) by.set(e.who,{name:e.who,a:0,r:0,c:0});
+    by.get(e.who)[k]++;
+  });
+  return [...by.values()].map(p=>Object.assign(p,{n:p.a+p.r+p.c})).filter(p=>p.n>0)
+    .sort((x,y)=>y.n-x.n||x.name.localeCompare(y.name));
+}
+function renderStatsLeaderboard(){
+  const el=document.getElementById("stats-leaderboard"); if(!el) return;
+  const from=new Date(TODAY.getTime()-6*DAY), wk=document.getElementById("stats-week-label");
+  if(wk) wk.textContent=`last 7 days · ${fmtDay(from)} – ${from.getMonth()===TODAY.getMonth()?TODAY.getDate():fmtDay(TODAY)}`;
+  const rows=weekActivity();
+  if(!rows.length){ el.innerHTML=`<div class="stat-empty">Nobody has worked on the tender this week yet.</div>`; return; }
+  const total=rows.reduce((s,p)=>s+p.n,0), max=rows[0].n, prev=WEEK_ACTIVITY.lastWeek;
+  const delta=prev?Math.round((total-prev)/prev*100):null;
+  const shown=rows.slice(0,6), more=rows.length-shown.length;
+  el.innerHTML=`<div class="stat-take"><b>${nOf(total,"action")}</b> by ${nOf(rows.length,"person","people")} this week`
+    +(delta!=null?` — <b class="${delta>=0?"is-good":"is-late"}">${delta>=0?"+":"−"}${Math.abs(delta)}%</b> on the week before`:"")+`.</div>
+    <div class="lb-key"><span><i class="k-alloc"></i>Allocation</span><span><i class="k-ans"></i>Answers</span><span><i class="k-com"></i>Comments &amp; questions</span></div>
+    <div class="lb-list">${shown.map((p,i)=>{ const who=personOf(p.name);
+      const seg=(k,c)=>p[k]?`<span class="${c}" style="width:${p[k]/max*100}%"></span>`:"";
+      return `<div class="lb-row${i===0?" is-top":""}" title="${escH(p.name)} — ${nOf(p.a,"requirement")} validated in Allocation, ${nOf(p.r,"answer")}, ${nOf(p.c,"comment")}">
+        <span class="lb-rank">${i+1}</span>${avHTML(who)}
+        <span class="lb-who"><b><span>${escH(p.name)}</span>${p.name===YOU?`<span class="st-you">you</span>`:""}</b><small>${escH(who.role)}</small></span>
+        <span class="lb-bar">${seg("a","k-alloc")}${seg("r","k-ans")}${seg("c","k-com")}</span>
+        <span class="lb-n">${p.n}</span></div>`; }).join("")}</div>`
+    +(more?`<div class="stat-foot">+ ${nOf(more,"other person","other people")} active this week.</div>`:"");
 }
 
-// 1.5 — invalidated by a new version: real data, reusing the v2.2 simulate-upload flow's
-// own outdated-answer flag. Appears only when non-zero, per the spec.
+/* ---------- Project › The team ---------- */
+function renderStatsTeam(){
+  const el=document.getElementById("stats-team"); if(!el) return;
+  const mgrs=[...new Map(CAST_ACTIVITIES.filter(a=>a.managerId&&MGR(a.managerId)).map(a=>[a.managerId,MGR(a.managerId)])).values()];
+  const noMgr=CAST_ACTIVITIES.filter(a=>!a.managerId);
+  const contribs=[...new Set(ROSTER.map(r=>r.personId))].map(personById).filter(Boolean);
+  const contribSys=new Set(ROSTER.map(r=>r.activityId)).size;
+  const people=PM_TEAM.length+mgrs.length+contribs.length;
+  const active=Math.min(weekActivity().length,people);
+  const stack=list=>`<span class="st-stack">${list.slice(0,6).map(avHTML).join("")}${list.length>6?`<span class="st-more">+${list.length-6}</span>`:""}</span>`;
+  el.innerHTML=`<div class="stat-take"><b>${nOf(people,"person","people")}</b> on this tender — <b>${active}</b> of them active this week.</div>
+    <div class="team-rows">
+      <div class="team-row"><div><div class="tr-k">Project management</div><div class="tr-sub">${PM_TEAM.map(p=>escH(p.name)).join(", ")}</div></div>${stack(PM_TEAM)}</div>
+      <div class="team-row${noMgr.length?" st-go":""}"${noMgr.length?` data-screen="team" title="Cast a manager on ${noMgr.map(a=>a.code).join(", ")}"`:""}>
+        <div><div class="tr-k">${nOf(mgrs.length,"system manager")}</div><div class="tr-sub">${noMgr.length
+          ?`${mgrs.length} of ${nOf(CAST_ACTIVITIES.length,"system")} covered · <span class="is-late">${noMgr.map(a=>a.code).join(", ")} ${noMgr.length>1?"have":"has"} none yet</span>`
+          :`one on every system`}</div></div>${stack(mgrs)}</div>
+      <div class="team-row"><div><div class="tr-k">${nOf(contribs.length,"contributor")}</div><div class="tr-sub">across ${nOf(contribSys,"system")}</div></div>${stack(contribs)}</div>
+    </div>
+    <div class="team-active"><div class="ta-k"><span>Active this week</span><b>${active} / ${people}</b></div><div class="ta-bar"><span style="width:${pctOf(active,people)}%"></span></div></div>`;
+  bindGo(el);
+}
+
+/* ---------- Allocation › Where the requirements are ---------- */
+/* The Allocation screen's own statuses (STATUS_LABEL there) in pipeline order.
+   REVIEW_REQS mirrors them under its own keys, so the mapping lives here once. */
+const ALLOC_STAGES=[
+  {k:"suggested",label:"Incomplete",  cls:"s-neutral"},
+  {k:"toreview", label:"To review",   cls:"s-ia"},
+  {k:"edited",   label:"To validate", cls:"s-accent"},
+  {k:"allocated",label:"Allocated",   cls:"s-ok"},
+];
+/* One stacked bar + legend, shared by every "how is this split" figure; thin
+   draws the bar alone, when the rows below it already carry the numbers. */
+function stackedBarHTML(total,segs,route,thin){
+  const pct=n=>total?Math.round(n/total*1000)/10:0;
+  const bar=segs.filter(s=>s.n).map(s=>
+    `<div class="sbar-seg ${s.cls}" style="width:${pct(s.n)}%" title="${s.label} · ${s.n} (${pct(s.n)}%)">${!thin&&pct(s.n)>=7?s.n:""}</div>`).join("");
+  if(thin) return `<div class="sbar thin">${bar}</div>`;
+  const legend=segs.map(s=>
+    `<span class="sbar-key" title="${s.label} · ${s.n}"><span class="dot ${s.cls}"></span><span class="lbl">${s.label}</span><b>${s.n}</b><span class="pct">${pct(s.n)}%</span></span>`).join("");
+  return `<div class="sbar"${route?` data-go="${route}"`:""}>${bar}</div><div class="sbar-legend">${legend}</div>`;
+}
+function renderStatsAllocStatus(){
+  const el=document.getElementById("stats-alloc-status"); if(!el) return;
+  const segs=ALLOC_STAGES.map(s=>Object.assign({},s,{n:REVIEW_REQS.filter(r=>r.status===s.k).length}));
+  const n=k=>segs.find(s=>s.k===k).n, total=REVIEW_REQS.length;
+  el.innerHTML=`<div class="stat-take"><b>${n("allocated")} of ${total}</b> requirements allocated. Of the rest, <b>${n("edited")}</b> ${n("edited")===1?"is":"are"} ready to validate, <b>${n("toreview")}</b> to review and <b>${n("suggested")}</b> still incomplete.</div>`
+    +stackedBarHTML(total,segs,"revue-documentaire.html");
+  bindGo(el);
+}
+
+/* ---------- Allocation › By system, with its manager ---------- */
+/* Who answers for each system, and how far its requirements have come — the
+   former load-by-system and casting-gaps blocks in one, with the person in
+   it. A SIG tender has a single system: nothing to compare, so the block
+   steps aside and the reallocations take the row (TYPE-T08). */
+function renderStatsBySystem(){
+  const block=document.getElementById("stats-by-system-block"), el=document.getElementById("stats-by-system");
+  if(!block||!el) return;
+  if(CAST_ACTIVITIES.length<2){ block.classList.add("hidden"); document.getElementById("stats-realloc-block")?.classList.add("stat-wide"); return; }
+  const rows=CAST_ACTIVITIES.map(a=>{ const reqs=REVIEW_REQS.filter(r=>r.activity===a.id);
+    return {a, m:a.managerId?MGR(a.managerId):null, total:reqs.length,
+      done:reqs.filter(r=>r.status==="allocated").length, val:reqs.filter(r=>r.status==="edited").length}; })
+    .sort((x,y)=>(!!y.m-!!x.m)||((y.total-y.done)-(x.total-x.done))||x.a.code.localeCompare(y.a.code));
+  const lead=rows.find(r=>r.m&&r.total>r.done), gaps=rows.filter(r=>!r.m);
+  const none=REVIEW_REQS.filter(r=>!r.activity).length;
+  const take=(lead?`<b>${lead.a.code}</b> has the most left to allocate — ${lead.total-lead.done} of ${lead.total}, with ${escH(lead.m.name)}.`:`Every system's requirements are allocated.`)
+    +(gaps.length?` <b class="is-late">${gaps.map(g=>g.a.code).join(", ")}</b> ${gaps.length>1?"have":"has"} no manager yet.`:"");
+  el.innerHTML=`<div class="stat-take">${take}</div><div class="sys-list">${rows.map(r=>r.m
+    ?`<div class="sys-row st-go" data-go="revue-documentaire.html" title="${r.a.code} — ${escH(r.m.name)} · ${r.done} of ${r.total} allocated${r.val?`, ${r.val} to validate`:""}">
+        <span class="sys-code">${r.a.code}</span>${avHTML(r.m)}<span class="sys-who">${escH(r.m.name)}</span>
+        <span class="sys-bar">${r.total?`<span class="done" style="width:${pctOf(r.done,r.total)}%"></span><span class="val" style="width:${pctOf(r.val,r.total)}%"></span>`:""}</span>
+        <span class="sys-n">${r.total?`<b>${r.done}</b>/${r.total}`:"—"}</span></div>`
+    :`<div class="sys-row is-gap st-go" data-screen="team" title="${r.a.code} — no manager cast yet">
+        <span class="sys-code">${r.a.code}</span><span class="st-av is-empty">?</span><span class="sys-who">No manager yet</span><span class="sys-cast">Cast one →</span></div>`).join("")}</div>`
+    +(none?`<div class="stat-foot"><b>${nOf(none,"requirement")}</b> not routed to a system yet.</div>`:"");
+  bindGo(el);
+}
+
+/* ---------- Allocation › Sent back for reallocation ---------- */
+/* A requirement a system sends back ("not mine") is the clearest sign an
+   allocation needs a second look. The shell only holds this session's
+   requests, so the ones already decided are hand-authored here; the one
+   still waiting is the branch Compliance shows as returned (SRM-00005 · RAMS,
+   L4-0015 on the SIG tender), and every request raised in this session is
+   added live, newest first. `sys` is the system that sent it back. */
+const REASON_LABEL={wrong_person:"Right system, wrong person", wrong_typology:"Wrong system", not_applicable:"This system doesn't apply here"};
+const REALLOC_BASE=[
+  {reqId:"SRM-00005",sys:"RAMS",by:"Elena Popescu",reason:"wrong_person",  status:"pending", at:"Jul 17"},
+  {reqId:"SRM-00010",sys:"SEN", by:"Paolo Ferri",  reason:"wrong_typology",status:"approved",at:"Jul 16"},
+  {reqId:"SRM-00014",sys:"POS", by:"Nadia Haddad", reason:"not_applicable",status:"rejected",at:"Jul 15"},
+  {reqId:"SRM-00012",sys:"SIG", by:"Sophie Lang",  reason:"wrong_person",  status:"approved",at:"Jul 14"},
+  {reqId:"SRM-00004",sys:"SEN", by:"Karim Benali", reason:"wrong_person",  status:"approved",at:"Jul 10"},
+  {reqId:"SRM-00009",sys:"SIG", by:"Louis Renaud", reason:"wrong_typology",status:"approved",at:"Jul 9"},
+];
+const SIG_REALLOC=[
+  {reqId:"L4-0015",sys:"SIG",by:"Sophie Lang",  reason:"wrong_person",status:"pending", at:"Jul 15"},
+  {reqId:"L4-0004",sys:"SIG",by:"Claire Moreau",reason:"wrong_person",status:"approved",at:"Jul 13"},
+  {reqId:"L4-0011",sys:"SIG",by:"Karim Benali", reason:"wrong_person",status:"approved",at:"Jul 10"},
+];
+const REALLOC=IS_SIG_TENDER?SIG_REALLOC:REALLOC_BASE;
+function reallocations(){
+  const prefix=IS_SIG_TENDER?"L4-":"SRM-";   // the shell's mailbox isn't per tender
+  let live=[]; try{ live=(window.parent.getReassignRequests()||[]).filter(r=>r.requestStatus!=="withdrawn"&&String(r.reqId).startsWith(prefix)); }catch(e){}
+  live=live.slice().reverse().map(r=>({reqId:r.reqId, sys:String(r.typology||"").toUpperCase(), by:r.byName||"Someone", reason:r.reason, status:r.requestStatus, at:r.at||"Today"}));
+  return live.concat(REALLOC.filter(s=>!live.some(l=>l.reqId===s.reqId&&l.sys===s.sys)));
+}
+function renderStatsRealloc(){
+  const el=document.getElementById("stats-realloc"); if(!el) return;
+  const all=reallocations();
+  if(!all.length){ el.innerHTML=`<div class="stat-empty">Nothing sent back so far — every system kept what it was given.</div>`; return; }
+  const c=st=>all.filter(x=>x.status===st).length, moved=c("approved"), kept=c("rejected"), todo=c("pending");
+  const why=Object.keys(REASON_LABEL).map(k=>({k, n:all.filter(x=>x.reason===k).length})).filter(x=>x.n);
+  const maxWhy=Math.max(...why.map(x=>x.n),1);
+  const ST={approved:"Reallocated", rejected:"Kept", pending:"To decide"};
+  const outcome=[moved?`${moved} reallocated`:"", kept?`${kept} kept where ${kept===1?"it was":"they were"}`:"",
+    todo?`<b class="is-tight">${todo} waiting for your decision</b>`:""].filter(Boolean).join(", ");
+  el.innerHTML=`<div class="stat-take"><b>${nOf(all.length,"requirement")}</b> sent back by a system so far — ${outcome}.</div>
+    <div class="ra-figs">
+      <div class="ra-fig moved"><div class="n">${moved}</div><div class="k">reallocated</div></div>
+      <div class="ra-fig"><div class="n">${kept}</div><div class="k">kept as allocated</div></div>
+      <div class="ra-fig todo${todo?" st-go":""}"${todo?` data-go="revue-documentaire.html" title="Open Allocation to decide"`:""}><div class="n">${todo}</div><div class="k">to decide</div></div>
+    </div>
+    <div class="stat-h2">Why</div>
+    ${why.map(x=>`<div class="ra-why"><span class="lbl">${REASON_LABEL[x.k]}</span><span class="bar"><span style="width:${x.n/maxWhy*100}%"></span></span><b>${x.n}</b></div>`).join("")}
+    <div class="stat-h2">Latest</div>
+    ${all.slice(0,3).map(x=>`<div class="ra-row st-go" data-go="revue-documentaire.html" title="${x.reqId} · ${x.sys} — sent back by ${escH(x.by)}: ${REASON_LABEL[x.reason]||x.reason}">
+      ${avHTML(personOf(x.by))}<span class="t">${x.reqId} <small>· ${x.sys} · ${escH(x.by)} · ${x.at}</small></span><span class="ra-st ${x.status}">${ST[x.status]||x.status}</span></div>`).join("")}`;
+  bindGo(el);
+}
+
+/* ---------- Allocation › Work invalidated by a new version ---------- */
+/* Reuses the v2.2 simulate-upload flow's own outdated-answer flag. Shown only
+   when non-zero. */
 function renderStatsInvalidated(){
   const block=document.getElementById("stats-invalidated-block");
   const el=document.getElementById("stats-invalidated");
@@ -2533,181 +2814,15 @@ function renderStatsInvalidated(){
   const stale=FOLLOWUP_REQS.filter(r=>r.id==="SRM-00009"&&v22Done());
   if(!stale.length){ block.classList.add("hidden"); return; }
   block.classList.remove("hidden");
-  el.innerHTML=`<div class="invalidated-row" id="stats-invalidated-link">⇄ ${stale.length} contributor answer${stale.length>1?"s":""} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
-  document.getElementById("stats-invalidated-link")?.addEventListener("click",()=>goRoute("documents.html"));
-}
-
-// 1.6/2.3 — trajectory to deadline (data gap: needs periodic snapshots of remaining
-// work, which nothing currently stores; hand-authored weekly history ending at today's
-// real "5/14 validated" state)
-const STATS_TRAJECTORY_BASE=[
-  {label:"Jul 1",remaining:14},
-  {label:"Jul 5",remaining:13},
-  {label:"Jul 8",remaining:12},
-  {label:"Jul 12",remaining:10},
-  {label:"Jul 15",remaining:9},
-];
-const STATS_TRAJECTORY = IS_SIG_TENDER ? SIG_TRAJECTORY : STATS_TRAJECTORY_BASE;
-
-const STATS_DEADLINE_LABEL="Aug 12";
-function renderStatsTrajectory(){
-  const el=document.getElementById("stats-trajectory"); if(!el) return;
-  const pts=STATS_TRAJECTORY;
-  const w=460,h=120,pad=28;
-  const maxY=Math.max(...pts.map(p=>p.remaining),1);
-  const stepX=(w-pad*2)/pts.length;
-  const x=i=>pad+i*stepX;
-  const y=v=>h-pad-(v/maxY)*(h-pad*2-16);
-  const path=pts.map((p,i)=>`${i===0?"M":"L"}${x(i)},${y(p.remaining)}`).join(" ");
-  const deadlineX=x(pts.length);
-  const dots=pts.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.remaining)}" r="3" fill="var(--accent)"><title>${p.label} · ${p.remaining} remaining</title></circle>`).join("");
-  const labels=pts.map((p,i)=>`<text x="${x(i)}" y="${h-8}" font-size="9" fill="var(--text-3)" text-anchor="middle">${p.label}</text>`).join("");
-  el.innerHTML=`<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}">
-    <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="var(--line-2)" stroke-width="1"/>
-    <line x1="${deadlineX}" y1="8" x2="${deadlineX}" y2="${h-pad}" stroke="var(--warn)" stroke-width="1" stroke-dasharray="3,3"/>
-    <text x="${deadlineX}" y="14" font-size="9" fill="var(--warn)" text-anchor="middle">Deadline ${STATS_DEADLINE_LABEL}</text>
-    <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2"/>
-    ${dots}
-    ${labels}
-  </svg>`;
-}
-function renderStatsProgressDeadline(){
-  const el=document.getElementById("stats-progress-deadline"); if(!el) return;
-  const first=STATS_TRAJECTORY[0], last=STATS_TRAJECTORY[STATS_TRAJECTORY.length-1];
-  el.innerHTML=`<div class="progress-deadline-stat"><span class="big">${last.remaining}</span> requirements remaining, down from ${first.remaining} at the start — <b>on pace</b> for the ${STATS_DEADLINE_LABEL} deadline.</div>`;
-}
-
-// 2.4 — AI reliability by field (data gap: the AI feedback loop is specified but has no
-// queryable consumer yet; hand-authored illustrative rates)
-const STATS_AI_RELIABILITY=[
-  {field:"Type",rate:8},
-  {field:"Class",rate:5},
-  {field:"System",rate:14},
-  {field:"Allocation",rate:22},
-];
-function renderStatsAIReliability(){
-  const el=document.getElementById("stats-ai-reliability"); if(!el) return;
-  el.innerHTML = STATS_AI_RELIABILITY.map(f=>`
-    <div class="ai-rel-row">
-      <span class="ai-rel-field">${f.field}</span>
-      <span class="ai-rel-bar"><span style="width:${f.rate}%"></span></span>
-      <span class="ai-rel-pct">${f.rate}%</span>
-    </div>`).join("");
-}
-
-/* =====================================================
-   Statistics — Allocation tab
-   The panel is split by STEP (Allocation / Compliance), matching the two
-   canonical steps DEC-029 named and the PROCESS cards above, rather than by
-   audience: the same person reads both, but never at the same moment.
-===================================================== */
-/* The Allocation screen's own statuses (STATUS_LABEL there) in pipeline order.
-   REVIEW_REQS mirrors them under its own keys, so the mapping lives here once
-   instead of being re-guessed by each stat that needs it. */
-const ALLOC_STAGES=[
-  {k:"suggested",label:"Incomplete",  cls:"s-neutral"},
-  {k:"toreview", label:"To review",   cls:"s-ia"},
-  {k:"edited",   label:"To validate", cls:"s-accent"},
-  {k:"allocated",label:"Allocated",   cls:"s-ok"},
-];
-/* One stacked bar + legend, shared by the allocation and assignment funnels —
-   they answer the same shape of question at two different steps. */
-function stackedBarHTML(total,segs,route){
-  const pct=n=>total?Math.round(n/total*1000)/10:0;
-  const bar=segs.filter(s=>s.n).map(s=>
-    `<div class="sbar-seg ${s.cls}" style="width:${pct(s.n)}%" title="${s.label} · ${s.n} (${pct(s.n)}%)">${pct(s.n)>=7?s.n:""}</div>`).join("");
-  const legend=segs.map(s=>
-    `<span class="sbar-key" title="${s.label} · ${s.n}"><span class="dot ${s.cls}"></span><span class="lbl">${s.label}</span><b>${s.n}</b><span class="pct">${pct(s.n)}%</span></span>`).join("");
-  return `<div class="sbar"${route?` data-go="${route}"`:""}>${bar}</div><div class="sbar-legend">${legend}</div>`;
-}
-function bindGo(el){ el.querySelectorAll("[data-go]").forEach(n=>n.addEventListener("click",()=>goRoute(n.dataset.go))); }
-
-function renderStatsAllocFunnel(){
-  const el=document.getElementById("stats-alloc-funnel"); if(!el) return;
-  const segs=ALLOC_STAGES.map(s=>Object.assign({},s,{n:REVIEW_REQS.filter(r=>r.status===s.k).length}));
-  el.innerHTML=stackedBarHTML(REVIEW_REQS.length,segs,"revue-documentaire.html");
+  el.innerHTML=`<div class="invalidated-row" data-go="documents.html">⇄ ${nOf(stale.length,"contributor answer")} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
   bindGo(el);
 }
-/* Pass 1 -> pass 2 as a descending funnel: the two KPI tiles at the top of the
-   page already carry these numbers, but side by side they never showed the
-   drop-off, which is the only part that tells you where to push. */
-function renderStatsPassFunnel(){
-  const el=document.getElementById("stats-pass-funnel"); if(!el) return;
-  const total=REVIEW_REQS.length;
-  const pass1=REVIEW_REQS.filter(r=>r.status!=="suggested").length;
-  const pass2=REVIEW_REQS.filter(r=>r.status==="allocated").length;
-  const stages=IS_TURNKEY_TENDER
-    ? [{l:"Captured",n:total,c:"var(--line-2)"},{l:"Confirmed by Turnkey",n:pass1,c:"var(--ia)"},{l:"Confirmed by the systems",n:pass2,c:"var(--ok)"}]
-    : [{l:"Captured",n:total,c:"var(--line-2)"},{l:"Allocated",n:pass2,c:"var(--ok)"}];
-  const pct=n=>total?Math.round(n/total*100):0;
-  el.innerHTML=stages.map((s,i)=>{
-    const prev=i?stages[i-1].n:null;
-    const drop=(prev!=null&&prev-s.n>0)?`<div class="pf-drop">↓ ${prev-s.n} still to come through</div>`:"";
-    return drop+`<div class="pf-stage">
-      <div class="pf-head">${s.l} <b>${s.n}</b><span class="pct">${pct(s.n)}%</span></div>
-      <div class="pf-bar"><span style="width:${pct(s.n)}%;background:${s.c}"></span></div>
-    </div>`;
-  }).join("");
-}
-function renderStatsActivityLoad(){
-  const el=document.getElementById("stats-activity-load"); if(!el) return;
-  const rows=CAST_ACTIVITIES.map(a=>{
-    const reqs=REVIEW_REQS.filter(r=>r.activity===a.id);
-    return {code:a.code,total:reqs.length,done:reqs.filter(r=>r.status==="allocated").length};
-  }).filter(r=>r.total).sort((x,y)=>y.total-x.total||x.code.localeCompare(y.code));
-  const max=Math.max(...rows.map(r=>r.total),1);
-  const none=REVIEW_REQS.filter(r=>!r.activity).length;
-  el.innerHTML=rows.map(r=>`
-    <div class="load-row" data-go="revue-documentaire.html" title="${r.code} — ${r.done} of ${r.total} allocated">
-      <span class="load-code">${r.code}</span>
-      <span class="load-bar" style="width:${Math.round(r.total/max*100)}%">
-        <span class="load-seg done" style="width:${Math.round(r.done/r.total*100)}%"></span>
-        <span class="load-seg wip" style="width:${Math.round((r.total-r.done)/r.total*100)}%"></span>
-      </span>
-      <span class="load-n"><b>${r.done}</b>/${r.total} done</span>
-    </div>`).join("")
-    + (none
-      ? `<div class="noact" data-go="revue-documentaire.html"><b>${none} requirement${none>1?"s":""}</b> with no system set — pass 2 hasn't named one yet.</div>`
-      : `<div class="noact clear">Every requirement has a system.</div>`);
-  bindGo(el);
-}
-function ringHTML(pct,color,label){
-  const r=26,c=2*Math.PI*r;
-  return `<svg viewBox="0 0 64 64" width="64" height="64">
-    <circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--panel-3)" stroke-width="7"/>
-    <circle cx="32" cy="32" r="${r}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round"
-      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-pct/100)).toFixed(1)}" transform="rotate(-90 32 32)"/>
-    <text x="32" y="37" text-anchor="middle" font-size="15" font-weight="700" fill="var(--text)">${label}</text>
-  </svg>`;
-}
-/* Two honest "how much of this is still a guess" figures. Neither is a failure
-   state — an unconfirmed AI system is normal early on; the point is that it
-   stops being normal as the deadline approaches. */
-function renderStatsAIQuality(){
-  const el=document.getElementById("stats-ai-quality"); if(!el) return;
-  const total=REVIEW_REQS.length;
-  const proposed=REVIEW_REQS.filter(r=>r.aiActivity);
-  const unconfirmed=proposed.filter(r=>r.status!=="allocated").length;
-  const aiPct=proposed.length?Math.round(unconfirmed/proposed.length*100):0;
-  const weak=REVIEW_REQS.filter(r=>r.obsWeak).length;
-  const weakPct=total?Math.round(weak/total*100):0;
-  el.innerHTML=`<div class="gq-wrap">
-    <div class="gq">${ringHTML(aiPct,"var(--ia)",aiPct+"%")}
-      <div class="gq-lbl">${unconfirmed} of ${proposed.length} AI-proposed<br>systems unconfirmed</div></div>
-    <div class="gq">${ringHTML(weakPct,"var(--warn)",weakPct+"%")}
-      <div class="gq-lbl">${weak} of ${total} OBS derived<br>below the confidence threshold</div></div>
-  </div>`;
-}
 
-/* =====================================================
-   Statistics — Compliance tab
-===================================================== */
-/* SPEC-risks.md §9 (DEC-105 to DEC-112) — risk figures. Totals come from
-   Compliance (reportGapStats, refreshed each time it renders); risks, links
-   and strategies from the shell's register. Until Compliance has been opened
-   in this session there is nothing to count from, and the blocks say so. */
+/* ---------- Compliance › Progress to the client ---------- */
+/* SPEC-risks.md §9 (DEC-105 to DEC-112). Totals come from Compliance
+   (reportGapStats, refreshed each time it renders); risks, links and
+   strategies from the shell's register. */
 const STRAT_CLS=["s-accent","s-human","s-ia","s-ok","s-warn"];
-const shellGet=(fn,...a)=>{ try{ return window.parent[fn](CURRENT_PROJECT.id,...a); }catch(e){ return null; } };
 const noGapStats=`<div class="stat-empty">Counted from Compliance — open it once and these figures fill in.</div>`;
 function renderStatsProgressClient(){
   const el=document.getElementById("stats-progress-client"); if(!el) return;
@@ -2720,21 +2835,125 @@ function renderStatsProgressClient(){
     {k:"Not compliant logged", n:st.ncLogged, d:st.nc, sub:st.nc?`${st.ncLogged} of ${st.nc} linked to a risk`:"no Not compliant yet", go:"compliance.html", warn:st.nc>st.ncLogged},
     {k:"External compliance", n:settled, d:st.reqs, sub:`${settled} of ${st.reqs} requirements settled · ${st.ext.pending} pending`, go:"compliance.html"},
   ];
-  el.innerHTML=`<div class="prog-seq">${steps.map(s=>`<div class="prog-step${s.warn?" warn":""}" data-go="${s.go}">
+  el.innerHTML=`<div class="stat-take">So far the client will be told <b>Compliant</b> on ${nOf(st.ext.compliant,"requirement")}${st.ext.not_compliant?` and <b>Not compliant</b> on ${st.ext.not_compliant}`:""} — <b>${st.reqs-settled}</b> of ${st.reqs} are not settled yet.</div>
+    <div class="prog-seq">${steps.map(s=>`<div class="prog-step${s.warn?" warn":""}" data-go="${s.go}">
       <div class="prog-k">${s.k}</div><div class="prog-pct">${s.d?pc(s.n,s.d)+"%":"—"}</div>
       <div class="prog-bar"><span style="width:${pc(s.n,s.d)}%"></span></div><div class="prog-sub">${s.sub}</div></div>`).join("")}</div>`;
   bindGo(el);
 }
-function renderStatsRisks(){
-  const el=document.getElementById("stats-risks"); if(!el) return;
-  const rs=shellGet("getRisks")||[];
-  if(!rs.length){ el.innerHTML=`<div class="stat-empty">No risk on this tender yet — they are created in Compliance, on each Not compliant.</div>`; return; }
-  const n={}; Object.values(shellGet("getGapDocs")||{}).forEach(d=>(d.risks||[]).forEach(id=>{ n[id]=(n[id]||0)+1; }));
-  const links=Object.values(n).reduce((a,b)=>a+b,0), shared=rs.filter(x=>(n[x.id]||0)>1).length;
-  el.innerHTML=`<div class="cons-top" data-go="risks.html"><span class="big">${rs.length}</span><span>risk${rs.length===1?"":"s"} · ${links} link${links===1?"":"s"} to Not compliant assignments</span></div>
-    <div class="stat-empty">${shared} risk${shared===1?" is":"s are"} shared by several requirements — ${rs.length?Math.round(links/rs.length*10)/10:0} links per risk on average.</div>`;
+
+/* ---------- Compliance › Answers by person ---------- */
+/* Who has answered what they were given, and who to chase. Totals per person
+   are hand-authored at Compliance's scale — they add up to its 100 assigned
+   and 58 answered, the Progress to the client figures; overdue answers are
+   this screen's OVERDUE_BRANCHES, the ones the "contributor response overdue"
+   card above names. Late first, then by how much is in. */
+const ANSWERS_BY_PERSON_BASE=[
+  {name:"Louis Renaud",  sys:"SIG", given:22, answered:14},
+  {name:"Sophie Lang",   sys:"SIG", given:12, answered:7},
+  {name:"Amina Cherif",  sys:"TRK", given:14, answered:7},
+  {name:"Marc Dubois",   sys:"TRK", given:8,  answered:4},
+  {name:"Paolo Ferri",   sys:"SEN", given:12, answered:9},
+  {name:"Karim Benali",  sys:"SEN", given:10, answered:3},
+  {name:"Thomas Weber",  sys:"SEN", given:4,  answered:2},
+  {name:"Claire Moreau", sys:"RAMS",given:11, answered:9},
+  {name:"Elena Popescu", sys:"RAMS",given:7,  answered:3},
+];
+const SIG_ANSWERS_BY_PERSON=[
+  {name:"Louis Renaud",  sys:"SIG", given:4, answered:3},
+  {name:"Sophie Lang",   sys:"SIG", given:3, answered:1},
+  {name:"Karim Benali",  sys:"SIG", given:2, answered:1},
+  {name:"Claire Moreau", sys:"SIG", given:1, answered:0},
+];
+const ANSWERS_BY_PERSON=IS_SIG_TENDER?SIG_ANSWERS_BY_PERSON:ANSWERS_BY_PERSON_BASE;
+function lateByPerson(){
+  const m=new Map();
+  OVERDUE_BRANCHES.forEach(o=>{ const x=m.get(o.expert)||{n:0,days:0}; x.n++; x.days=Math.max(x.days,o.days); m.set(o.expert,x); });
+  return m;
+}
+function renderStatsPeople(){
+  const el=document.getElementById("stats-people"); if(!el) return;
+  const late=lateByPerson();
+  const rows=ANSWERS_BY_PERSON.map(p=>Object.assign({},p,{late:late.get(p.name)||null}))
+    .sort((a,b)=>((b.late?b.late.days:0)-(a.late?a.late.days:0))||(b.answered/b.given-a.answered/a.given));
+  const given=rows.reduce((s,p)=>s+p.given,0), answered=rows.reduce((s,p)=>s+p.answered,0);
+  el.innerHTML=`<div class="stat-take"><b>${answered} of ${given}</b> answers in`
+    +(OVERDUE_BRANCHES.length?` — <b class="is-late">${nOf(OVERDUE_BRANCHES.length,"answer")} overdue</b>, with ${nOf(late.size,"person","people")}`:" — none overdue")+`.</div>
+    <div class="ppl-list">${rows.map(p=>{
+      const flag=p.late?`<span class="ppl-flag late">${p.late.n} late · ${p.late.days}d</span>`
+        :p.answered>=p.given?`<span class="ppl-flag done">✓ all in</span>`:`<span class="ppl-flag">${p.given-p.answered} open</span>`;
+      return `<div class="ppl-row st-go" data-go="compliance.html" title="${escH(p.name)} (${p.sys}) — ${p.answered} of ${p.given} answered${p.late?`, ${p.late.n} overdue, the oldest for ${p.late.days} days`:""}">
+        ${avHTML(personOf(p.name))}<span class="ppl-who">${escH(p.name)}<small>${p.sys}</small></span>
+        <span class="ppl-bar"><span style="width:${pctOf(p.answered,p.given)}%"></span></span>
+        <span class="ppl-n"><b>${p.answered}</b>/${p.given}</span>${flag}</div>`; }).join("")}</div>`;
   bindGo(el);
 }
+/* The sidebar's Contributors card: the three people carrying the most
+   answers, from the same figures. */
+function renderContributorsCard(){
+  const el=document.getElementById("exp-summary"); if(!el) return;
+  const late=lateByPerson();
+  el.innerHTML=[...ANSWERS_BY_PERSON].sort((a,b)=>b.given-a.given).slice(0,3).map(p=>{
+    const who=personOf(p.name), l=late.get(p.name), [first,last]=p.name.split(" ");
+    return `<div class="exp-line"><div class="exp-av" style="background:${who.color}">${who.init}</div>
+      <div class="exp-ln">${escH(first)} ${last?last[0]+".":""}<span>${p.sys}</span></div>
+      <div class="exp-lbar"><div style="width:${pctOf(p.answered,p.given)}%${l?";background:var(--ia)":""}"></div></div>
+      <div class="exp-lm${l?" over":""}">${l?`${l.n} late`:`${p.answered}/${p.given}`}</div></div>`; }).join("");
+}
+
+/* ---------- Compliance › What the open requirements are waiting on ---------- */
+/* A requirement settles only once every assignment has answered, so what
+   matters about the rest is what each is actually waiting on — four very
+   different queues: a person to chase, the client, a decision of yours, an
+   assignment not made yet. One requirement, one queue: a branch sent back
+   comes first, then the client, then the contributors. */
+/* Questions to the client the open requirements are blocked on (data gap:
+   asked-on dates aren't tracked in this screen's mirror; ids match
+   compliance.html's awaiting_qa branches). */
+const STATS_QA_BLOCKED_BASE=[
+  {reqId:"SRM-00010",note:"One-year depth: rolling or calendar year?",days:6},
+  {reqId:"SRM-00012",note:"Is TLS 1.3 mandatory on already-deployed gateways?",days:5},
+  {reqId:"SRM-00013",note:"3-year vs 5-year retention conflict",days:5},
+  {reqId:"SRM-00014",note:"Which TLS version applies to legacy gateways?",days:4},
+];
+const STATS_QA_BLOCKED = IS_SIG_TENDER ? SIG_QA_BLOCKED : STATS_QA_BLOCKED_BASE;
+function renderStatsWaiting(){
+  const el=document.getElementById("stats-waiting"); if(!el) return;
+  const open=FOLLOWUP_REQS.filter(r=>r.compliance===null);
+  if(!open.length){ el.innerHTML=`<div class="stat-empty">Every requirement has its answer.</div>`; return; }
+  const has=(r,s)=>branchesOf(r).includes(s);
+  const rea=open.filter(r=>has(r,"reassignment_needed"));
+  const qa=open.filter(r=>!rea.includes(r)&&has(r,"awaiting_qa"));
+  const person=open.filter(r=>!rea.includes(r)&&!qa.includes(r)&&(has(r,"awaiting_answer")||has(r,"assigned")));
+  const unassigned=open.filter(r=>!rea.includes(r)&&!qa.includes(r)&&!person.includes(r));
+  const late=OVERDUE_BRANCHES.filter(o=>person.some(r=>r.id===o.reqId));
+  const oldest=late.reduce((m,o)=>(!m||o.days>m.days)?o:m,null);
+  const qaOld=STATS_QA_BLOCKED.length?Math.max(...STATS_QA_BLOCKED.map(q=>q.days)):0;
+  const ra=REALLOC.filter(x=>x.status==="pending");
+  const Q=[
+    {k:"On a contributor", n:person.length, cls:"s-blue", go:"compliance.html",
+      sub:late.length?`<span class="is-late">${late.length===person.length?"all":late.length} overdue</span> · the oldest for ${oldest.days} days, with ${escH(oldest.expert)}`:"none overdue"},
+    {k:"On the client", n:qa.length, cls:"s-slate", go:"qa.html",
+      sub:`questions asked${qaOld?`, the oldest ${qaOld} days ago`:""} · answers expected ${fmtDay(isoDate(TENDER_DATES.qaAnswers))}`},
+    {k:"On your decision", n:rea.length, cls:"s-ia", go:"revue-documentaire.html",
+      sub:rea.map(r=>{ const p=ra.find(x=>x.reqId===r.id); return p?`${r.id} · ${p.sys}, sent back by ${escH(p.by)}`:`${r.id}, sent back`; }).join("; ")},
+    {k:"Not assigned yet", n:unassigned.length, cls:"s-neutral", go:"compliance.html",
+      sub:`${unassigned.map(r=>r.id).join(", ")} — no one to answer yet`},
+  ].filter(q=>q.n);
+  let lead="";
+  if(person.length){
+    if(!late.length) lead=person.length===1?"The one with a contributor is on time":`The ${person.length} with contributors are on time`;
+    else if(late.length===person.length) lead=person.length===1?`The one with a contributor is <b class="is-late">overdue</b>`:`<b class="is-late">All ${person.length}</b> with contributors are overdue`;
+    else lead=`<b class="is-late">${late.length} of the ${person.length}</b> with contributors ${late.length===1?"is":"are"} overdue`;
+  }
+  const take=`<b>${nOf(open.length,"requirement")}</b> still open. `+[lead, qa.length?`${qa.length} more ${qa.length===1?"waits":"wait"} on the client`:""].filter(Boolean).join("; ")+".";
+  el.innerHTML=`<div class="stat-take">${take}</div>${stackedBarHTML(open.length,Q.map(q=>({label:q.k,n:q.n,cls:q.cls})),null,true)}
+    <div class="wo-list">${Q.map(q=>`<div class="wo-row st-go" data-go="${q.go}"><span class="dot ${q.cls}"></span>
+      <div><div class="wo-k">${q.k}</div><div class="wo-sub">${q.sub}</div></div><span class="wo-n">${q.n}</span></div>`).join("")}</div>`;
+  bindGo(el);
+}
+
+/* ---------- Compliance › Not compliant by gap strategy ---------- */
 function renderStatsNCStrategy(){
   const el=document.getElementById("stats-nc-strategy"); if(!el) return;
   const st=shellGet("getGapStats"); if(!st){ el.innerHTML=noGapStats; return; }
@@ -2742,63 +2961,28 @@ function renderStatsNCStrategy(){
   const strs=shellGet("getStrategies")||[];
   const segs=strs.map((s,i)=>({label:s.name, cls:STRAT_CLS[i%STRAT_CLS.length], n:st.byStrategy[s.id]||0}));
   segs.push({label:"Strategy missing", cls:"s-neutral", n:st.noStrategy});
-  el.innerHTML=stackedBarHTML(st.nc, segs, "compliance.html"); bindGo(el);
-}
-/* A requirement consolidates only once EVERY assignment has answered, so the
-   useful number is not "how many answers came back" but "what is each of the
-   remaining ones actually waiting on" — three very different queues. */
-function renderStatsConsolidation(){
-  const el=document.getElementById("stats-consolidation"); if(!el) return;
-  const total=FOLLOWUP_REQS.length;
-  const isDone=r=>branchesOf(r).length>0 && branchesOf(r).every(s=>s==="answered");
-  const done=FOLLOWUP_REQS.filter(isDone).length;
-  const open=FOLLOWUP_REQS.filter(r=>!isDone(r));
-  // priority order — a requirement bounced back to the PM is a different
-  // problem from one waiting on the client, even if it is also waiting on both.
-  const rea=open.filter(r=>branchesOf(r).includes("reassignment_needed"));
-  const qa=open.filter(r=>!rea.includes(r)&&branchesOf(r).includes("awaiting_qa"));
-  const wait=open.filter(r=>!rea.includes(r)&&!qa.includes(r));
-  const pct=total?Math.round(done/total*100):0;
-  el.innerHTML=`
-    <div class="cons-top"><span class="big">${done}/${total}</span><span>requirements fully consolidated · ${pct}%</span></div>
-    <div class="cons-bar"><span style="width:${pct}%"></span></div>
-    <div class="cons-split">
-      <div class="cons-item wait" data-go="compliance.html"><div class="n">${wait.length}</div><div class="k">waiting on a contributor</div></div>
-      <div class="cons-item qa" data-go="qa.html"><div class="n">${qa.length}</div><div class="k">waiting on the client (Q&amp;A)</div></div>
-      <div class="cons-item rea" data-go="revue-documentaire.html"><div class="n">${rea.length}</div><div class="k">bounced back — needs reallocation</div></div>
-    </div>`;
+  el.innerHTML=`<div class="stat-take"><b>${nOf(st.nc,"Not compliant answer")}</b> — ${st.noStrategy?`<b class="is-late">${st.noStrategy}</b> still without a strategy`:st.nc===1?"with its strategy":"each with its strategy"}.</div>`
+    +stackedBarHTML(st.nc, segs, "compliance.html");
   bindGo(el);
 }
-const BST_STAGES=[
-  {k:"proposed",           label:"Proposed",            cls:"s-neutral"},
-  {k:"assigned",           label:"Assigned",            cls:"s-human"},
-  {k:"awaiting_answer",    label:"Awaiting answer",     cls:"s-ia"},
-  {k:"awaiting_qa",        label:"Awaiting Q&A",        cls:"s-accent"},
-  {k:"reassignment_needed",label:"Reassignment needed", cls:"s-warn"},
-  {k:"answered",           label:"Answered",            cls:"s-ok"},
-];
-function renderStatsAssignFunnel(){
-  const el=document.getElementById("stats-assign-funnel"); if(!el) return;
-  const all=FOLLOWUP_REQS.flatMap(branchesOf);
-  const segs=BST_STAGES.map(s=>Object.assign({},s,{n:all.filter(x=>x===s.k).length}));
-  el.innerHTML=stackedBarHTML(all.length,segs,"compliance.html");
+
+/* ---------- Compliance › Risks ---------- */
+/* The tender's risk list (DEC-113: a risk is its justification and its
+   links): how many, how often reused, and the most-linked ones with whoever
+   raised them. */
+function renderStatsRisks(){
+  const el=document.getElementById("stats-risks"); if(!el) return;
+  const rs=shellGet("getRisks")||[];
+  if(!rs.length){ el.innerHTML=`<div class="stat-empty">No risk on this tender yet — they are created in Compliance, on each Not compliant.</div>`; return; }
+  const n={}; Object.values(shellGet("getGapDocs")||{}).forEach(d=>(d.risks||[]).forEach(id=>{ n[id]=(n[id]||0)+1; }));
+  const links=Object.values(n).reduce((a,b)=>a+b,0), shared=rs.filter(x=>(n[x.id]||0)>1).length;
+  const top=[...rs].sort((a,b)=>(n[b.id]||0)-(n[a.id]||0)||a.id.localeCompare(b.id)).slice(0,4);
+  const cap=s=>{ s=String(s||"").trim(); return s.charAt(0).toUpperCase()+s.slice(1); };
+  el.innerHTML=`<div class="stat-take"><b>${nOf(rs.length,"risk")}</b> in the list, linked ${links===1?"once to a Not compliant answer":`${links} times to Not compliant answers`} — ${shared?`<b>${shared}</b> shared by several requirements`:"none shared yet"}.</div>
+    <div class="ppl-list">${top.map(r=>`<div class="rk-row st-go" data-go="risks.html" title="${r.id}${r.createdBy?` — raised by ${escH(r.createdBy)}`:""}: there is a risk that ${escH(r.that)}">
+      <span class="rk-id">${r.id}</span><span class="rk-t">${escH(cap(r.that))}</span>${r.createdBy?avHTML(personOf(r.createdBy)):"<span></span>"}<span class="rk-n">×${n[r.id]||0}</span></div>`).join("")}</div>`
+    +(rs.length>top.length?`<div class="stat-foot">+ ${rs.length-top.length} more in the list.</div>`:"");
   bindGo(el);
-}
-const LATE_WARN_DAYS=7;
-function renderStatsLate(){
-  const el=document.getElementById("stats-late"); if(!el) return;
-  if(!OVERDUE_BRANCHES.length){ el.innerHTML=`<div class="late-empty">✓ Nobody is late right now.</div>`; return; }
-  const by=new Map();
-  OVERDUE_BRANCHES.forEach(o=>{ by.set(o.expert,(by.get(o.expert)||[]).concat(o)); });
-  const rows=[...by.entries()].map(([name,items])=>({name,n:items.length,days:Math.max(...items.map(i=>i.days))}))
-    .sort((a,b)=>b.days-a.days);
-  const max=Math.max(...rows.map(r=>r.days),1);
-  el.innerHTML=rows.map(r=>`
-    <div class="late-row" title="${r.name} — ${r.n} assignment${r.n>1?"s":""} overdue, oldest ${r.days} days">
-      <span class="late-name">${r.name}${r.n>1?` <small>· ${r.n}</small>`:""}</span>
-      <span class="late-bar"><span class="${r.days>=LATE_WARN_DAYS?"over":""}" style="width:${Math.round(r.days/max*100)}%"></span></span>
-      <span class="late-days">${r.days}d</span>
-    </div>`).join("");
 }
 
 /* Both of these named a requirement in their own markup, so they kept pointing at
@@ -2966,26 +3150,15 @@ function renderAllocationModelSection(){
     + `, including those already declared to the client.`;
 }
 function renderStatsPanel(){
-  // Allocation tab
-  renderStatsAllocFunnel();
-  renderStatsPassFunnel();
-  renderStatsActivityLoad();
-  renderStatsAIQuality();
-  renderStatsCasting();
-  renderStatsInvalidated();
-  renderStatsAIReliability();
-  renderStatsTrajectory();
-  renderStatsProgressDeadline();
-  // Compliance tab
-  renderStatsComplianceBar("stats-comp-bar","stats-comp-legend");
-  renderStatsProgressClient(); renderStatsRisks(); renderStatsNCStrategy();
-  renderStatsConsolidation();
-  renderStatsAssignFunnel();
-  renderStatsLate();
-  renderStatsQABlocked();
-  renderStatsBottlenecks();
+  // Project
+  renderStatsTimeline(); renderStatsLeaderboard(); renderStatsTeam();
+  // Allocation
+  renderStatsAllocStatus(); renderStatsBySystem(); renderStatsRealloc(); renderStatsInvalidated();
+  // Compliance
+  renderStatsProgressClient(); renderStatsPeople(); renderStatsWaiting(); renderStatsNCStrategy(); renderStatsRisks();
 }
 renderStatsPanel();
+renderContributorsCard();
 renderNarrativeCards();
 renderAllocationModelSection();
 

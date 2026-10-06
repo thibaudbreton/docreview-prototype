@@ -115,12 +115,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Person Avatar
 - **level**: atom
 - **file**: creation-projet.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html
-- **variants**: sizes 22px/26px/28px/30px/32px/34px depending on context (inline style overrides, not a size scale)
+- **variants**: sizes 22px/24px/26px/28px/30px/32px/34px depending on context (inline style overrides, not a size scale); empty (dashed circle with "?", nobody cast)
 - **tokens**: --text-xs
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.exp-avatar` / `.exp-av` / creation-projet's unnamed person-initials style — same idea (circle, per-person hex background passed inline from JS data, initials text), independently sized per screen with no shared scale. Background color always a literal hex from JS data (`MANAGERS[]`, `EXPERTS`, `PM_COLORS`), never a token.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-117): Statistics adds `.st-av` (24px, white initials hardcoded `#fff`) and its `.is-empty` variant (dashed untracked `--line-2` ring, "?") for a system with no manager; the background is the person's own colour from `PM_TEAM`/`MANAGERS`/the casting directory, `--brand-slate` (untracked) for anyone not in them. `.exp-avatar` / `.exp-av` / creation-projet's unnamed person-initials style — same idea (circle, per-person hex background passed inline from JS data, initials text), independently sized per screen with no shared scale. Background color always a literal hex from JS data (`MANAGERS[]`, `EXPERTS`, `PM_COLORS`), never a token.
 
 ### Toggle Switch
 - **level**: atom
@@ -210,7 +210,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-09-01
 - **changed**: 2026-10-06
-- **notes**: 2026-10-06: accueil.html's `.pc-bar` and `.mini-bar` left with the Tender Card's old gauge. The single most-duplicated primitive in the app — at least a dozen independent class implementations across the seven screens (`.pbar`, `.doc-wbar`, `.doc-prog`, `.ph-bar`, `.exp-lbar`, `.ai-rel-bar`, `.fbar`, `.progress-track/.progress-fill`, `.exp-bar`, `.arb-progress .bar`), all sharing "colored track + fill" but each with its own hardcoded height and no shared height scale. Track background is consistently the untracked `--panel-3`. A strong candidate for the first real consolidation pass.
+- **notes**: 2026-10-06 (DEC-117): Statistics drops `.ai-rel-bar`, `.pf-bar`, `.load-bar`, `.late-bar` and `.cons-bar` and adds five pill-ended ones of its own — `.lb-bar` (segmented: allocation / answers / comments), `.sys-bar` (two segments: allocated / to validate), `.ppl-bar`, `.ta-bar` and `.ra-why .bar`, 6–8px — again each its own class. 2026-10-06: accueil.html's `.pc-bar` and `.mini-bar` left with the Tender Card's old gauge. The single most-duplicated primitive in the app — at least a dozen independent class implementations across the seven screens (`.pbar`, `.doc-wbar`, `.doc-prog`, `.ph-bar`, `.exp-lbar`, `.fbar`, `.progress-track/.progress-fill`, `.exp-bar`, `.arb-progress .bar`), all sharing "colored track + fill" but each with its own hardcoded height and no shared height scale. Track background is consistently the untracked `--panel-3`. A strong candidate for the first real consolidation pass.
 
 ### Status Dot
 - **level**: atom
@@ -1141,8 +1141,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text-sm, --text-xs, --text-3, --radius-xs, --ok, --ia, --warn
 - **built-from**: Person Avatar, Progress Bar
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.exp-line`, dashboard sidebar "Experts" card (3 instances).
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-117): rendered by `renderContributorsCard()` from `ANSWERS_BY_PERSON`, the figures of Statistics › Answers by person — the three people carrying the most answers, their system code under the name, "N late" from `OVERDUE_BRANCHES` — instead of three hardcoded rows (Sophie L. "Monitoring" 3/4…) that contradicted Statistics on the same page. `.exp-line`, dashboard sidebar "Contributors" card (3 instances).
 
 ### Expert Editor Row
 - **level**: molecule
@@ -1164,45 +1164,15 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.add-exp`, single instance.
 
-### Bottleneck Row
-- **level**: molecule
-- **file**: dashboard-et-config.html
-- **variants**: normal, aged/warn
-- **tokens**: --space-3, --radius-sm, --font-mono, --text-xs, --text-3, --text-sm, --text-2, --radius-pill, --warn
-- **built-from**: none
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.bn-row`, grid columns hardcoded.
-
-### Q&A Blocked Row
-- **level**: molecule
-- **file**: dashboard-et-config.html
-- **variants**: none
-- **tokens**: --space-2, --radius-sm, --font-mono, --text-xs, --text-3, --text-sm, --accent
-- **built-from**: none
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.qa-blocked-row`, Statistics panel.
-
-### AI Reliability Row
-- **level**: molecule
-- **file**: dashboard-et-config.html
-- **variants**: none
-- **tokens**: --space-3, --space-2, --text-sm, --text-2, --radius-xs, --accent, --text-xs, --text-3
-- **built-from**: Progress Bar
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.ai-rel-row`, grid columns hardcoded.
-
 ### Stat Block
 - **level**: molecule
 - **file**: dashboard-et-config.html
-- **variants**: default, full-width
-- **tokens**: --radius-lg, --space-4, --text-sm, --text-xs, --text-3
+- **variants**: default, full-width (`.stat-wide`), shown only when non-zero (Work invalidated); head with a period (`.stat-when`) or a link (`.stat-link`)
+- **tokens**: --radius-lg, --space-1, --space-2, --space-3, --space-4, --text-sm, --text-xs, --text, --text-2, --text-3, --ok, --warn, --ia
 - **built-from**: none (hosts whichever content it wraps)
 - **added**: 2026-09-01
-- **changed**: 2026-09-30
-- **notes**: `.stat-block`, generic heading+subtitle+content card, 12 instances in the Statistics panel since 2026-09-30. `.stat-empty` is its "nothing to count yet" line.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-117): the grey subtitle is gone. Each block opens on `.stat-top` (title, then a period or a link) and `.stat-take` — one computed sentence, what a manager would say out loud, its figures in bold, coloured `.is-late` (--warn) / `.is-tight` (--ia) / `.is-good` (--ok) — then the figure behind it. `.stat-h2` is a small-caps sub-heading inside a block, `.stat-foot` a footnote, `.st-go` a row that opens its screen (hover on the untracked `--panel-3`). `.stat-link` and the period use the untracked `--brand-blue`. Background the untracked `--panel-2`. 12 instances across the three tabs. `.stat-empty` is its "nothing to count yet" line.
 
 ### AI Pattern Row
 - **level**: molecule
@@ -1223,16 +1193,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.fb-live-row`, populated dynamically from `window.parent.getAIFeedback()`.
-
-### Compliance Bar
-- **level**: molecule
-- **file**: dashboard-et-config.html
-- **variants**: static (dashboard sidebar), dynamic (Statistics panel, ×2)
-- **tokens**: --radius-md, --space-2, --text-sm, --text-2, --radius-xs
-- **built-from**: Status Dot (legend variant)
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.comp-bar`/`.comp-legend`. Bar height hardcoded 24px.
 
 ### Phase Card
 - **level**: molecule
@@ -1423,6 +1383,116 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-30
 - **changed**: 2026-09-30
 - **notes**: SPEC-risks.md §9 "% NC logged" in a progress sequence — the dashboard had no such sequence, so it was created: Assigned → Internal compliance → Not compliant logged → External compliance, each step a percentage of what it depends on, clickable to its screen. `.prog-seq` / `.prog-step`. Bar track uses the untracked `--panel-3`.
+
+### Key Dates List
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: done (filled `--accent` dot), today (`--brand-blue` dot with a soft halo, name in blue), upcoming (hollow dot, "in N days"), end (ringed dot — submission)
+- **tokens**: --space-3, --text-sm, --text-xs, --text, --text-2, --text-3, --accent, --warn
+- **built-from**: none
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.kd` / `.kd-i`, Statistics › Project › Timeline (DEC-117): received, Q&A cut-off, today, client answers expected, submission. The two Q&A dates are kept identical by hand to qa.html's `TENDER_QA_DATES`; today is submission minus the project's days left (the hero's figure, now read from the project too). Rail and dots hardcoded (2px, 10px); rail and hollow dot on the untracked `--line-2`/`--panel-2`, today on the untracked `--brand-blue`/`--brand-blue-soft`.
+
+### Progress Trend Chart
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: on pace (the dashed projection reaches 100% before submission), late (it meets submission below 100%), complete or stalled (no projection)
+- **tokens**: --accent, --ok, --line, --text-2, --text-3
+- **built-from**: none
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: Inline SVG, Statistics › Project › Timeline (DEC-117): % of requirements allocated (`--accent`) and answered (`--ok`) from the tender's reception to its submission, a dashed line at this week's pace (the last seven days carried forward, `finishAt()`), today on the untracked `--brand-blue`, the sentence above saying where each lands. Drawn at the width it gets so its 10px labels stay 10px (re-drawn when its tab or the dashboard is shown), 170px tall; margins hardcoded. Replaces the old trajectory-to-deadline chart, also a hand-rolled one-off.
+
+### Leaderboard Row
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: default, top (#1, `.is-top` on the untracked `--brand-blue-soft`), you (`.st-you` pill on the viewer's own row)
+- **tokens**: --space-2, --radius-md, --radius-pill, --text-sm, --text-xs, --text, --text-3, --accent, --ok
+- **built-from**: Person Avatar, Progress Bar
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.lb-row`, Statistics › Project › Most active this week (DEC-117): rank, avatar, name and role, a bar split allocation (`--accent`) / answers (`--ok`) / comments and questions (untracked `--brand-slate`), the total. Top six, "+ N others". Counts requirements validated in Allocation (once per requirement), verdicts (once per assignment) and comments — never field edits. Grid columns hardcoded (14px/24px/1fr/30%/24px); bar track the untracked `--panel-3`.
+
+### Avatar Stack
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: up to six avatars, then "+N"
+- **tokens**: --space-1, --text-xs, --text-3, --panel
+- **built-from**: Person Avatar
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.st-stack`, Statistics › Project › The team. Overlap (−3px) and the 2px `--panel` ring that separates each avatar are hardcoded.
+
+### Team Role Row
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: default, gap (a system with no manager: red "has none yet", the row opens Team casting)
+- **tokens**: --space-2, --space-3, --radius-md, --panel, --text-sm, --text-xs, --text, --text-3, --warn
+- **built-from**: Avatar Stack
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.team-row`, Statistics › Project › The team (DEC-117): project management, system managers, contributors — then "Active this week" with its bar (`.ta-bar`, untracked `--brand-blue` on `--panel-3`).
+
+### Stacked Bar
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: with figures and legend (26px), clickable to its screen (`data-go`), thin (10px, no legend, when rows below carry the figures)
+- **tokens**: --radius-md, --radius-pill, --radius-xs, --space-2, --space-4, --text-xs, --text-sm, --text, --text-2, --text-3, --accent, --ok, --ia, --warn, --human
+- **built-from**: Status Dot (legend)
+- **added**: 2026-09-30
+- **changed**: 2026-10-06
+- **notes**: `.sbar` + `.sbar-legend`, `stackedBarHTML(total, segs, route, thin)`. In use since 2026-09-30 without an entry (recorded 2026-10-06). 2026-10-06 (DEC-117): the thin variant, and `s-blue`/`s-slate` segments on the untracked `--brand-blue`/`--brand-slate`; `s-neutral` is the untracked `--line-2`; segment text hardcoded `#fff`. Used by Where the requirements are, What the open requirements are waiting on (thin) and Not compliant by gap strategy.
+
+### System Manager Row
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: managed (avatar, name, bar allocated `--ok` + to validate `--accent`, done/total), gap (dashed empty avatar, "No manager yet" in `--warn`, "Cast one →" opens Team casting)
+- **tokens**: --space-2, --font-mono, --text-sm, --text-xs, --text, --text-2, --text-3, --ok, --accent, --warn, --radius-pill
+- **built-from**: Person Avatar, Progress Bar
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.sys-row`, Statistics › Allocation › By system, with its manager (DEC-117) — Load by system and Casting gaps in one, with the person in it. The block steps aside on a single-system (SIG) tender. Grid columns hardcoded; "Cast one →" on the untracked `--brand-blue`.
+
+### Reallocation Breakdown
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: three figures (reallocated, kept as allocated, to decide — outlined and clickable while non-zero), reason rows, latest rows with a status pill (Reallocated / Kept / To decide)
+- **tokens**: --space-1, --space-2, --space-3, --radius-md, --radius-pill, --panel, --text-lg, --text-sm, --text-xs, --text, --text-2, --text-3, --accent, --accent-soft, --ia
+- **built-from**: Person Avatar, Progress Bar
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.ra-figs` / `.ra-why` / `.ra-row`, Statistics › Allocation › Sent back for reallocation (DEC-117). Reasons are `REASON_LABEL`, the same three as revue-documentaire.html and compliance.html. The status pill is yet another "small coloured status label" (see Status Pill); To decide on the untracked `--ia-soft`, Kept on `--panel-3`, reason bars on `--brand-blue`.
+
+### Person Answers Row
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: late (red "N late · Nd"), all in (green "✓ all in"), open (grey "N open")
+- **tokens**: --space-2, --font-mono, --radius-pill, --text-sm, --text-xs, --text, --text-3, --ok, --warn
+- **built-from**: Person Avatar, Progress Bar
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.ppl-row`, Statistics › Compliance › Answers by person (DEC-117): late first, then by share answered. Late is `OVERDUE_BRANCHES`, the same as the "contributor response overdue" attention card. Grid columns hardcoded. `.ppl-list` also wraps the Risk Summary Rows.
+
+### Waiting Queue Row
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: on a contributor (`--brand-blue`), on the client (`--brand-slate`), on your decision (`--ia`), not assigned yet (`--line-2`)
+- **tokens**: --space-2, --space-3, --text-lg, --text-sm, --text-xs, --text, --text-3, --warn, --ia
+- **built-from**: Status Dot
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.wo-row`, Statistics › Compliance › What the open requirements are waiting on, under a thin Stacked Bar (DEC-117) — replaces Consolidation, Bottleneck Row and Q&A Blocked Row. One requirement, one queue (a branch sent back first, then the client, then a contributor). Queue colours on the untracked `--brand-blue`/`--brand-slate`/`--line-2`; dot 10px hardcoded.
+
+### Risk Summary Row
+- **level**: molecule
+- **file**: dashboard-et-config.html
+- **variants**: none
+- **tokens**: --space-2, --font-mono, --text-sm, --text-xs, --text, --text-2
+- **built-from**: Person Avatar
+- **added**: 2026-10-06
+- **changed**: 2026-10-06
+- **notes**: `.rk-row`, Statistics › Compliance › Risks (DEC-117): the four most-linked risks — ID, "There is a risk that…", who raised it, ×links; opens the Risks page.
 
 ## Organisms
 
@@ -1866,16 +1936,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.health-stats` grid, gap hardcoded 14px.
 
-### Compliance Summary Panel
-- **level**: organism
-- **file**: dashboard-et-config.html
-- **variants**: none
-- **tokens**: none beyond its parts
-- **built-from**: Compliance Bar
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Gated to phase 2, dashboard sidebar.
-
 ### Experts Summary Panel
 - **level**: organism
 - **file**: dashboard-et-config.html
@@ -1883,8 +1943,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: none beyond its parts
 - **built-from**: Compact Expert Line
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Gated to phase 2, dashboard sidebar.
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-117): the "Contributors" card; its rows come from the same figures as Statistics › Answers by person (see Compact Expert Line). Dashboard sidebar.
 
 ### Activity Feed Panel
 - **level**: organism
@@ -1899,13 +1959,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Statistics Panel
 - **level**: organism
 - **file**: dashboard-et-config.html
-- **variants**: "For you" tab, "For stakeholders" tab
+- **variants**: Project tab (default), Allocation tab, Compliance tab
 - **tokens**: --space-4
-- **built-from**: Tab Bar, Stat Block, Bottleneck Row, Q&A Blocked Row, AI Reliability Row, Compliance Bar, Progress Sequence
+- **built-from**: Tab Bar, Stat Block, Key Dates List, Progress Trend Chart, Leaderboard Row, Team Role Row, Avatar Stack, Stacked Bar, System Manager Row, Reallocation Breakdown, Progress Sequence, Person Answers Row, Waiting Queue Row, Risk Summary Row
 - **added**: 2026-09-01
-- **changed**: 2026-09-30
-- **notes**: 2026-09-30 (SPEC-risks.md §9): the Compliance tab loses "Internal vs declared to the client" (DEC-106 — nothing is declared any more) and gains Progress to the client, Risks (count, links, how many are shared) and Not compliant by gap strategy (stacked bar) — the weight blocks added the same day went with DEC-113. Those four read Compliance's own totals (`getGapStats`, reported each time Compliance renders) and the shell's risk register — they say "open Compliance once" until it has been opened in the session. The older blocks (Consolidation, Assignment funnel…) still read this screen's 14-requirement mirror, so the two sets of figures do not describe the same population — known inconsistency. `.stats-panel`. Also embeds a hand-rolled inline SVG trajectory-to-deadline line chart, drawn with hardcoded pixel geometry — a one-off visualization, not a reusable chart component.
-
+- **changed**: 2026-10-06
+- **notes**: 2026-10-06 (DEC-117): rebuilt — business only, people first; nothing measures the AI any more. **Project**: Timeline (Key Dates List + Progress Trend Chart), Most active this week (Leaderboard Rows), The team (Team Role Rows). **Allocation**: Where the requirements are (Stacked Bar), By system with its manager (System Manager Rows), Sent back for reallocation (Reallocation Breakdown), Work invalidated by a new version (only when non-zero). **Compliance**: Progress to the client (Progress Sequence, now opening on what the client will be told), Answers by person, What the open requirements are waiting on, Not compliant by gap strategy, Risks. Gone: Pass 1 → pass 2, Derivation quality (ring gauges), AI reliability, Load by system and Casting gaps (merged into By system), Consolidation, Assignment funnel, Late by contributor, Blocked on the client and Bottlenecks (merged into Waiting on), Compliance profile (a sentence of Progress to the client now). Sources: Allocation and the timeline read this screen's 14-requirement mirror — not Allocation's own report, which counts the capture's real requirements once Allocation is opened (DEC-098), so the phase card and Statistics can still disagree after that; the Compliance tab reads Compliance's totals (`getGapStats`) and the shell's risk list; history the backend doesn't keep (progress over time, each person's week, decided reallocations, answers per person at Compliance's 100 assigned / 58 answered) is hand-authored; the ranking adds this session's actions live from the shell's activity log (`getActivityLog`). 2026-09-30 (SPEC-risks.md §9): Progress to the client, Risks and Not compliant by gap strategy added to the Compliance tab — kept as they were by DEC-117, each now opening on its sentence. `.stats-panel`.
 ### Config Sidebar Nav
 - **level**: organism
 - **file**: dashboard-et-config.html
@@ -2046,3 +2105,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Glossary Grid — removed 2026-10-06, no longer needed (the home page keeps no vocabulary block)
 
 ### Submissions Line — removed 2026-10-06, no longer needed (hard to read, and tenders' deadlines aren't comparable on one line)
+
+### Bottleneck Row — removed 2026-10-06, replaced by the Waiting Queue Row (DEC-117)
+
+### Q&A Blocked Row — removed 2026-10-06, replaced by the Waiting Queue Row's "On the client" queue (DEC-117)
+
+### AI Reliability Row — removed 2026-10-06, no longer needed (DEC-117: Statistics follows the people, not the AI)
+
+### Compliance Bar — removed 2026-10-06, replaced by the sentence opening Progress to the client (what the client will be told); its sidebar variant went on 2026-09-16
+
+### Compliance Summary Panel — removed 2026-09-16 (recorded 2026-10-06), no longer needed: Statistics drew the same bar
