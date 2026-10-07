@@ -9,7 +9,18 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
+- Last run: 2026-10-07T22:00Z (covered `db723a1..14a287e`, DEC-117 to
+  DEC-119 plus home/dashboard layout work; earlier ranges are in the run
+  of 2026-10-06 on `doc-health-2026-10-06` and the still-open run PRs —
+  expect a textual conflict in this file when those land).
+  - DEC-117/118 (Statistics) and DEC-119 (Changes column / tab) landed in
+    `PLATFORM.md`, `LIFECYCLE.md` and `OPEN-QUESTIONS.md` in the same
+    commits as the code. Consistent, no edit.
+  - Flagged on #28 (not edited): stale Statistics and Compare-mode
+    stories in `STORIES-extracted-from-prototype.md`.
+  - Code-only, no spec impact: home page, tender line, dashboard cards.
+  - #20, #15, #12 unchanged, still open.
+- Previous run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
   `ccf3bb4`). Most of that range is the previous run landing and a
   same-day reconciliation merge (`c07f072`, `db8fa39`, `ccf3bb4`) that
   touch only this file — already accounted for by the 2026-09-21 entry
