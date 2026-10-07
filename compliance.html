@@ -4034,6 +4034,18 @@ function needsMyTurn(r){
   if(state.role==="contributor") return r.branches.some(b=>(isDeciding(b) && !isAside(r,b)) || (canAnswer(b) && gapMissing(r,b)));
   return r.branches.some(b=>needsReassign(b) || (isPartner(b.typology) && (!isAnswered(b) || gapMissing(r,b))));
 }
+/* A contributor comes here to answer: open the first assignment waiting on
+   them (table order, set-aside ones skipped) instead of an empty panel saying
+   "No assignment selected" — the queue counter and Next take it from there.
+   Only when nothing is open yet, so it never takes a selection away. */
+function openFirstInQueue(){
+  if(state.role!=="contributor"||state.sel) return;
+  const id=(currentVisIds||[]).find(x=>{ const r=findR(x); return r&&needsMyTurn(r); });
+  if(!id) return;
+  select(id);
+  state.activeCell={id,bidx:null,col:"id"};
+  TE.paintActiveCell(state,fNavAdapter); TE.scrollActiveCellIntoView(state,fNavAdapter);
+}
 function nextNeedingAction(){
   const ids=currentVisIds||[]; if(!ids.length) return;
   const cur=state.activeCell.id||state.sel, start=Math.max(-1,ids.indexOf(cur));
@@ -4111,17 +4123,18 @@ document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.clos
       : ((MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).name.split(" ")[0]+" — contributor");
   };
   syncUI();
+  // becoming a contributor — or another one — starts on that person's queue
   roleSel.addEventListener("change",e=>{
     state.role=e.target.value;
-    if(state.role==="contributor"){ state.contribTypo=(MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).typology; }
+    if(state.role==="contributor"){ state.contribTypo=(MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).typology; state.sel=null; }
     else{ state.ownTeamOnly=true; }
-    syncUI(); refreshAll();
+    syncUI(); refreshAll(); openFirstInQueue();
   });
   sel.addEventListener("change",e=>{
     VIEWER=e.target.value;
-    if(state.role==="contributor"){ state.contribTypo=(MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).typology; }
+    if(state.role==="contributor"){ state.contribTypo=(MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).typology; state.sel=null; }
     else{ state.ownTeamOnly=true; }
-    syncUI(); refreshAll();
+    syncUI(); refreshAll(); openFirstInQueue();
   });
   document.getElementById("team-chip-x").addEventListener("click",e=>{
     e.stopPropagation(); state.ownTeamOnly=false; syncUI(); refreshAll();

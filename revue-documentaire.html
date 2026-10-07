@@ -5873,10 +5873,12 @@ function pmClassificationHTML(b){
         <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
       </select>`, null)}
 
+    ${/* a confidence only beside a value: "87%" over an empty field read as
+         the AI being sure of nothing (2026-10-07) */""}
     ${useAbs
-      ? derivStepHTML("ABS", `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim?{c:dim.conf}:null, null,
+      ? derivStepHTML("ABS", `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim&&dim.value?{c:dim.conf}:null, null,
           `Non-technical — pass 1 reads the ABS and nothing else.`)
-      : derivStepHTML("PBS", pbsControlHTML(b,b), dim?{c:dim.conf}:null, null,
+      : derivStepHTML("PBS", pbsControlHTML(b,b), dim&&dim.value?{c:dim.conf}:null, null,
           `Technical — pass 1 reads the PBS and nothing else.`)}
 
     <div class="deriv-step">

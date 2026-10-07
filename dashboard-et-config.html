@@ -217,11 +217,12 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .phase:hover .ph-open-btn{border-color:var(--accent);background:var(--accent-soft)}
 /* support rail — same molecule, deliberately quieter: no big CTA competing with
    the two steps, badge and arrow inline instead of pinned to the corners. */
-/* One line per card, not four. These three are entry points, not progress
+/* Two short lines per card, not four. These are entry points, not progress
    reports: at 115px tall the rail could only sit above the fold by pushing the
    action list off it, and below the fold it stopped being reachable at all.
-   Name and figure share one baseline; the description moves to the row's title
-   and the progress bar goes — the figure beside the name already carries it. */
+   The description moves to the row's title and the progress bar goes — the
+   figure under the name already carries it. Name and figure used to share one
+   line, which at four cards a row cut both: "Team ca… 5 / …" (2026-10-07). */
 .support-rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3);margin-bottom:26px}
 @media(max-width:1000px){.support-rail{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.support-rail{grid-template-columns:minmax(0,1fr)}}
@@ -229,15 +230,13 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .phase.is-support:hover{transform:none;background:var(--panel-3)}
 .phase.is-support .ph-num{width:24px;height:24px;font-size:var(--text-sm)}
 .phase.is-support .ph-num.transversal{font-size:var(--text-base)}
-/* Everything on the line must be able to shrink, or it pushes the card past
-   its grid track and the whole rail overflows sideways. The figure gives way
-   first (shrink 3), the name only if that wasn't enough (shrink 1) — and both
-   ellipsis rather than overflow. Badge and arrow never shrink: they are the
-   two things worth keeping whole. */
-.phase.is-support .ph-info{display:flex;align-items:baseline;gap:var(--space-2);min-width:0}
-.phase.is-support .ph-name{font-size:var(--text-base);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:4ch}
+/* Both lines can still ellipsis on a very narrow card, so nothing pushes the
+   card past its grid track. Badge and arrow never shrink: they are the two
+   things worth keeping whole. */
+.phase.is-support .ph-info{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0}
+.phase.is-support .ph-name{max-width:100%;font-size:var(--text-base);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .phase.is-support .ph-desc,.phase.is-support .ph-bar{display:none}
-.phase.is-support .ph-stat{margin-top:0;font-size:var(--text-xs);gap:4px;min-width:0;flex:1 3 auto}
+.phase.is-support .ph-stat{max-width:100%;margin-top:0;font-size:var(--text-xs);gap:4px;min-width:0}
 .phase.is-support .ph-stat span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .phase.is-support .ph-stat .big{font-size:var(--text-sm);flex-shrink:0}
 .phase.is-support .ph-badge{position:static;align-self:center;flex-shrink:0}
@@ -844,7 +843,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         <div>
           <div class="hero-kicker">Tender project</div>
           <h1 id="dash-title">Energy Monitoring System</h1>
-          <div class="meta"><span>BO-ID <b id="dash-ref">STB-2026</b></span><span id="dash-line-sub">Multi-site EMS</span><span><b id="dash-line">SIG</b></span><span><b id="dash-total-reqs">14</b> requirements</span><span>Bid Director: <b>Thibaud Breton</b></span></div>
+          <div class="meta"><span>BO-ID <b id="dash-ref">STB-2026</b></span><span><b id="dash-line">Turnkey</b></span><span id="dash-line-sub" hidden></span><span><b id="dash-total-reqs">14</b> requirements</span><span>Bid Director: <b>Thibaud Breton</b></span></div>
         </div>
         <div class="deadline warn"><div class="d-num">23</div><div class="d-lbl">days to submission</div></div>
       </div>
@@ -1466,7 +1465,11 @@ const SIG_CAST_ACTIVITIES=[
   const title=document.getElementById("dash-title"); if(title) title.textContent=p.name;
   const ref=document.getElementById("dash-ref"); if(ref) ref.textContent=p.ref;
   const line=document.getElementById("dash-line"); if(line) line.textContent=p.line||"—";
-  const lineSub=document.getElementById("dash-line-sub"); if(lineSub) lineSub.textContent=p.system||p.line||"—";
+  // the product line once, then the product when it has one (SIG: Mainline
+  // Wayside). It used to print p.system||p.line here as well, so a Turnkey
+  // tender read "Turnkey Turnkey".
+  const lineSub=document.getElementById("dash-line-sub"), prod=p.product||p.system;
+  if(lineSub){ lineSub.textContent=prod||""; lineSub.hidden=!prod||prod===p.line; }
   const days=document.querySelector(".dash-hero .d-num"); if(days&&p.days!=null) days.textContent=p.days;
   if(p.builtOut===true) return;
   const banner=document.getElementById("dash-scope-banner"); if(banner) banner.style.display="block";
