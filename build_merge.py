@@ -197,6 +197,10 @@ window.getCurrentProject = ()=>PROJECTS.find(p=>p.id===currentProjectId)||null;
 // screens and the user model now assume an identity handed to them, not typed.
 const CURRENT_USER = {id:"admin", name:"Thibaud Breton", title:"Bid Director", email:"thibaud.breton@company.com", init:"TB"};
 window.getCurrentUser = ()=>CURRENT_USER;
+// the home page's "How a tender travels through SRM" — dismissed once read; a demo reset brings it back
+let homeIntroHidden = false;
+window.getHomeIntroHidden = ()=>homeIntroHidden;
+window.setHomeIntroHidden = (v)=>{ homeIntroHidden = !!v; };
 // manual-mode project creation routes straight to "review", skipping the
 // workspace click that would normally call openProject() — this is the
 // direct way to make a just-created project "current" without also
@@ -280,7 +284,7 @@ window.resetDemo = function(){
   currentProjectId="stb2026";
   reviewValidated=false; projectMode='ai'; projectMeta=null;
   aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage=seedStrategyUsage(); risks=seedRisks(); gapDocs=seedGapDocs(); gapStats=seedGapStats(); reqLog=seedReqLog();
-  reassignRequests.length=0; sharedQuestions={}; qaRegister={};
+  reassignRequests.length=0; sharedQuestions={}; qaRegister={}; homeIntroHidden=false;
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
   window.route("home");
@@ -528,10 +532,13 @@ let reqLog = seedReqLog();
 window.logReqEvent = (projectId, reqId, ev)=>{
   const k=projectId||"_", m=reqLog[k]=reqLog[k]||{}, l=m[reqId]=m[reqId]||[];
   const d=new Date();
-  const e=Object.assign({ts:Date.now()+l.length/1000, time:"Today, "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}, ev);
+  const e=Object.assign({ts:Date.now()+l.length/1000, time:"Today, "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"), live:true}, ev);
   l.push(e); return e;
 };
 window.getReqLog = (projectId, reqId)=>(((reqLog[projectId||"_"]||{})[reqId])||[]).slice().sort((a,b)=>b.ts-a.ts);
+// DEC-117 — the whole tender's log at once, each event with its requirement:
+// the dashboard's weekly ranking counts what was done in this session (live).
+window.getActivityLog = (projectId)=>Object.entries(reqLog[projectId||"_"]||{}).flatMap(([reqId,l])=>l.map(e=>Object.assign({reqId},e)));
 // One-shot hand-off between screens: "open this risk", "filter Compliance on it".
 // The target screen takes it on load; the iframe reloads on every route.
 let screenFocus = {};

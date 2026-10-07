@@ -16,13 +16,16 @@ La stack communiquée par l'utilisateur est React côté front et Azure côté b
 
 | Mesure | Unité et règle |
 |---|---|
-| Profil de conformité | Exigences : verdict final ou en attente ; ne pas omettre les inconnus ; échelle interne DEC-001 et conversion client DEC-024 |
-| Attente interne | Affectations en attente de réponse, âge de la plus ancienne par périmètre ; distinguer Q&A client |
-| Blocage client | Affectations `awaiting_qa`, ancienneté de la question liée |
+| Profil de conformité | Exigences : ce que le client recevra (Compliant / Not compliant), le reste « pas encore réglé » ; ne pas omettre les inconnus. Depuis DEC-117, une phrase de la progression vers le client plutôt qu'une barre à part |
+| Attente des exigences ouvertes | Exigences sans réponse consolidée, chacune dans **une seule** file : renvoyée pour réallocation (décision du chef de projet), puis en attente du client (Q&A), puis chez un contributeur (en retard au-delà de 5 jours, la plus ancienne et chez qui), sinon non affectée (DEC-117) |
+| Blocage client | Affectations `awaiting_qa`, ancienneté de la question liée ; date de réponse attendue du client |
 | Casting incomplet | Périmètres/systèmes utiles au dossier sans personne ; une personne par OBS, responsable de sa conformité (DEC-087) ; absence non bloquante (DEC-025) |
 | Travail à revoir | Réponses affectées par une nouvelle version, selon OPEN-07 |
-| Trajectoire | Historique du travail restant et échéance ; nécessite snapshots ou historique exploitable |
-| Corrections IA | Propositions modifiées par champ ; définir dénominateur, revue effective et corrections répétées |
+| Trajectoire | % d'exigences allouées et répondues dans le temps, de la réception à la soumission ; projection au rythme des 7 derniers jours, dite comme telle (« à ce rythme »), jamais comme un plan. Nécessite snapshots ou historique exploitable |
+| Activité de la semaine | **Par système et sous-système, jamais par personne** (DEC-118), sur 7 jours glissants : exigences validées en Allocation (une fois par exigence), réponses données (une fois par affectation), commentaires et questions, chacune comptée pour le système sur lequel elle porte, quel qu'en soit l'auteur. Les modifications de champ ne comptent pas — un classement de clics récompenserait l'agitation, pas le travail |
+| Réponses par système | Affectations confiées / répondues par système (par sous-système sur un tender à un seul système), retards (âge ≥ 5 jours) et le plus ancien. Le nom de la personne n'apparaît que sur l'affectation en retard à relancer (DEC-118) |
+| Réallocations | Exigences renvoyées par un système : réallouées, maintenues, à décider ; par motif (bon système mais mauvaise personne, mauvais système, système non concerné) et par demandeur |
+| Corrections IA | Propositions modifiées par champ ; définir dénominateur, revue effective et corrections répétées. **Hors tableau de bord du projet** (DEC-117) : reste dans Configuration › AI feedback |
 
 **Une cloche de notification qui ne fait rien est un mensonge d'interface.** Un contrôle inerte sur quatre écrans sur cinq apprend au lecteur qu'il est inerte partout. Ce qu'une notification affiche se calcule depuis l'état réel de l'écran, résume **par nature avec son compte** plutôt que d'énumérer (une ligne par affectation donne cinquante lignes sur un vrai jeu de données — un tableau, pas une notification), et dit explicitement quand rien n'attend le lecteur. Un élément unique nomme son exigence : un compte de un qui cache laquelle ne sert à rien.
 

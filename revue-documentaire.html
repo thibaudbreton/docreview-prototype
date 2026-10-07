@@ -301,22 +301,7 @@ body.mode-compare .nbadge.b-change{display:block}
 /* ---------- Center ---------- */
 .center{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg)}
 
-/* Compare bar */
-.compare-bar{
-  display:none;align-items:center;gap:var(--space-4);
-  padding:var(--space-3) var(--space-5);background:var(--panel-2);border-bottom:1px solid var(--line);flex-shrink:0;
-  animation:slideDown .25s ease;
-}
-body.mode-compare .compare-bar{display:flex}
-@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-.ver-select{
-  display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-2);
-}
-.ver-select select{
-  background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-sm);
-  padding:var(--space-1) var(--space-2);color:var(--text);outline:none;font-size:var(--text-sm);
-}
-.compare-summary{display:flex;gap:8px}
+/* Change counts — the navigator's Changes tab (DEC-119) */
 .csum{
   display:inline-flex;align-items:center;gap:6px;padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);
   font-size:var(--text-sm);font-weight:600;font-variant-numeric:tabular-nums;cursor:default;
@@ -324,12 +309,6 @@ body.mode-compare .compare-bar{display:flex}
 .csum.add{background:var(--ok-soft);color:var(--ok)}
 .csum.mod{background:var(--ia-soft);color:var(--ia)}
 .csum.rem{background:var(--warn-soft);color:var(--warn)}
-.compare-nav{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:var(--text-sm);color:var(--text-2)}
-.compare-nav button{
-  width:26px;height:26px;border-radius:var(--radius-sm);border:1px solid var(--line-2);
-  display:grid;place-items:center;color:var(--text-2);transition:all .15s;
-}
-.compare-nav button:hover{border-color:var(--accent);color:var(--text)}
 
 /* Document view */
 .doc-scroll{flex:1;overflow-y:auto;padding:var(--space-8) 0 80px;scroll-behavior:smooth}
@@ -432,8 +411,6 @@ body.mode-compare .blk .diff-del{display:inline}
 body.mode-compare .ghost-block{display:block}
 .ghost-block b{font-family:var(--font-mono);font-size:var(--text-xs)}
 .ghost-block.active{outline:2px solid var(--accent);outline-offset:2px}
-.compare-bar .ver-to{font-weight:600;color:var(--text)}
-.compare-empty{font-size:var(--text-sm);color:var(--text-3)}
 /* Versions tab */
 .ver-head{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;margin-bottom:6px}
 .ver-type{font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-pill)}
@@ -689,6 +666,92 @@ body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:no
 .rcell.c-mgr{order:var(--ord-mgr,9)}
 .rcell.c-status{order:var(--ord-status,9)}
 .rcell.c-compliance{order:var(--ord-compliance,10)}
+/* Changes column (DEC-119) — the requirement again, with what changed since an
+   earlier version of its document: removed words struck, added ones
+   highlighted, the way DOORS shows it. The Requirement column keeps the live
+   text; this one only shows the difference, and comes and goes from View.
+   Single-line, it starts a few words before the first change; Wrap text shows
+   the whole requirement, under a line with the version it changed in and the
+   version picker. */
+.rgrid[data-cc~="chg"] .c-chg{display:none}
+.rcell.c-chg{order:var(--ord-chg,3);gap:var(--space-2);min-width:0}
+.chg-text{flex:1;min-width:0;font-size:var(--text-sm);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rgrid-full.wrap-text .c-chg{flex-wrap:wrap;row-gap:var(--space-1)}
+.rgrid-full.wrap-text .chg-text{order:3;flex-basis:100%;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.5;font-size:var(--text-base)}
+.rgrid-full.wrap-text .chg-ver{margin-left:auto}
+.chg-text .cd-del{background:var(--warn-soft);color:var(--warn);text-decoration:line-through;border-radius:var(--radius-xs);padding:0 2px}
+.chg-text .cd-ins{background:var(--ok-soft);color:var(--ok);border-radius:var(--radius-xs);padding:0 2px}
+.chg-tag{flex-shrink:0;padding:0 6px;border-radius:var(--radius-pill);background:var(--ia-soft);color:var(--ia);font-size:var(--text-xs);font-weight:700;white-space:nowrap}
+.chg-tag.add{background:var(--ok-soft);color:var(--ok)}
+/* on one line, "changed in the version in force" goes without saying when the
+   column compares with the previous version — the room goes to the text */
+.chg-tag.same{display:none}
+.rgrid-full.wrap-text .chg-tag.same{display:inline-block}
+.chg-none{flex:1;min-width:0;font-size:var(--text-xs);color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rrow:not(:hover):not(.active) .chg-none~.chg-ver:not(.own){opacity:.5}
+/* the requirement's own "Δ v2.1" badge stands in for the column while it is hidden */
+.cbadge.chg-delta{color:var(--ia)}
+.rgrid:not([data-cc~="chg"]) .cbadge.chg-delta{display:none}
+.chg-ver{flex-shrink:0;padding:1px var(--space-2);border:1px solid var(--line-2);border-radius:var(--radius-pill);background:var(--panel);font-size:var(--text-xs);font-weight:600;color:var(--text-2);white-space:nowrap}
+.chg-ver:hover{border-color:var(--accent);color:var(--accent)}
+.chg-ver.own{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.rgrid-head .chg-all{margin-left:var(--space-2);padding:1px var(--space-2);border:1px solid var(--line-2);border-radius:var(--radius-pill);font-size:var(--text-xs);font-weight:600;color:var(--text-2);text-transform:none;letter-spacing:0;white-space:nowrap}
+.rgrid-head .chg-all:hover{border-color:var(--accent);color:var(--accent)}
+.chg-pop{position:fixed;z-index:80;display:none;min-width:250px;max-width:340px;padding:var(--space-1);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);box-shadow:0 12px 36px rgba(0,0,0,.35)}
+.chg-pop.on{display:block}
+.chg-pop-h{padding:6px var(--space-2) var(--space-1);font-size:var(--text-xs);color:var(--text-3);line-height:1.4}
+.chg-pop button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;padding:6px var(--space-2);border-radius:var(--radius-sm);text-align:left;font-size:var(--text-sm);color:var(--text-2)}
+.chg-pop button:hover{background:var(--panel-3);color:var(--text)}
+.chg-pop button.on{color:var(--text);font-weight:600}
+.chg-pop button.on b::after{content:" ✓";color:var(--accent)}
+.chg-pop button small{font-size:var(--text-xs);font-weight:400;color:var(--text-3)}
+.chg-pop .sep{height:1px;margin:var(--space-1) 0;background:var(--line)}
+/* Changes in the Document view (DEC-119) — the navigator's second tab; the
+   details panel stays the selected requirement's */
+.nav-tabs{display:none;gap:2px;margin:var(--space-3) 34px 0 var(--space-3);padding:3px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel-2);flex-shrink:0}
+.nav-tabs.on{display:flex}
+.nav-tabs button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:var(--space-1);padding:5px var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-sm);font-weight:500;color:var(--text-2)}
+.nav-tabs button.on{background:var(--panel);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.nav-tabs button b{padding:0 6px;border-radius:var(--radius-pill);background:var(--ia-soft);color:var(--ia);font-size:var(--text-xs)}
+.nav-changes{display:none}
+body.mode-compare .nav-changes{display:flex;flex-direction:column;flex:1;min-height:0}
+body.mode-compare .nav-search,body.mode-compare .nav-list,body.mode-compare .nav-add-doc,body.mode-compare .nav-count{display:none}
+.nc-head{display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-3) var(--space-3) var(--space-2)}
+.nc-select{width:100%;min-width:0;padding:4px var(--space-2);border:1px solid var(--line-2);border-radius:var(--radius-sm);background:var(--panel-2);color:var(--text);font-size:var(--text-xs)}
+.nc-range{display:flex;align-items:center;gap:6px;font-size:var(--text-xs);color:var(--text-3)}
+.nc-range .nc-select{flex:1}
+.nc-range b{color:var(--text);font-weight:600;white-space:nowrap}
+.nc-sum{display:flex;flex-wrap:wrap;gap:var(--space-1)}
+.nc-sum .csum{padding:1px 6px;font-size:var(--text-xs);white-space:nowrap;border:1px solid transparent;cursor:pointer}
+.nc-sum .csum:hover,.nc-sum .csum.on{border-color:currentColor}
+.nc-alert{padding:6px var(--space-2);border-radius:var(--radius-sm);background:var(--warn-soft);color:var(--warn);font-size:var(--text-xs);font-weight:600;border:1px solid transparent;text-align:left}
+.nc-alert:hover,.nc-alert.on{border-color:var(--warn)}
+.nc-nav .nc-all{width:auto;height:auto;margin:0;border:none;border-radius:0;color:var(--accent);text-decoration:underline}
+.nc-nav{display:flex;align-items:center;justify-content:space-between;font-size:var(--text-xs);color:var(--text-3)}
+.nc-nav b{color:var(--text)}
+.nc-nav button{width:24px;height:24px;margin-left:var(--space-1);border:1px solid var(--line-2);border-radius:50%;color:var(--text)}
+.nc-nav button:hover{border-color:var(--accent);color:var(--accent)}
+.nc-list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:0 var(--space-3) var(--space-4)}
+.nc-card{display:flex;flex-direction:column;gap:3px;width:100%;padding:var(--space-2) 10px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel);text-align:left}
+.nc-card:hover{border-color:var(--line-2)}
+.nc-card.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 16%,transparent)}
+.nc-h{display:flex;align-items:center;gap:6px}
+.nc-t{padding:1px 6px;border-radius:var(--radius-pill);font-size:var(--text-xs);font-weight:700}
+.nc-t.added{background:var(--ok-soft);color:var(--ok)}
+.nc-t.modified{background:var(--ia-soft);color:var(--ia)}
+.nc-t.removed{background:var(--warn-soft);color:var(--warn)}
+.nc-h b{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text)}
+.nc-s{margin-left:auto;font-size:var(--text-xs);color:var(--text-3)}
+.nc-x{font-size:var(--text-xs);line-height:1.4;color:var(--text-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nc-i{font-size:var(--text-xs);font-weight:600;color:var(--text-3)}
+.nc-i.warn{color:var(--warn)}
+.nc-empty{padding:var(--space-2) var(--space-3);font-size:var(--text-sm);color:var(--text-3);line-height:1.5}
+/* the navigator folded away (it folds for the table) still says there are changes to read */
+.nav-rail-chg{display:none}
+.nav.collapsed>.nav-rail-chg.on{display:flex;order:-1;flex-direction:column;align-items:center;gap:6px;padding:var(--space-3) 0;border-bottom:1px solid var(--line);color:var(--ia);font-size:var(--text-xs);font-weight:700}
+.nav-rail-chg b{min-width:16px;padding:1px 3px;border-radius:var(--radius-pill);background:var(--ia-soft);text-align:center}
+.nav-rail-chg span{writing-mode:vertical-rl;letter-spacing:.5px}
+.nav-rail-chg:hover{background:var(--panel-2)}
 /* column menu — drag-to-reorder rows */
 .colf-row{display:flex;align-items:center;gap:4px}
 .colf-row .colf-opt{flex:1}
@@ -1034,11 +1097,14 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 }
 .validate-cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
 .validate-cta:disabled{background:var(--panel-3);color:var(--text-3);cursor:default;transform:none}
-.timeline{position:relative;padding-left:20px}
-.timeline::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:1.5px;background:var(--line-2)}
+/* 2026-10-06 — a requirement's activity reads as a vertical rail line: the key
+   moments (captured, allocated, answered, declared) are stations, every other
+   event a small stop that keeps its colour by kind. */
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:4px;border-radius:2px;background:var(--accent)}
 .tl-item{position:relative;margin-bottom:var(--space-4);animation:fadeIn .25s ease}
 .tl-item::before{
-  content:"";position:absolute;left:-18px;top:4px;width:9px;height:9px;border-radius:50%;
+  content:"";position:absolute;left:-24px;top:5px;width:10px;height:10px;box-sizing:border-box;border-radius:50%;
   background:var(--panel);border:2px solid var(--text-3);
 }
 .tl-item.tl-ia::before{border-color:var(--ia)}
@@ -1061,8 +1127,9 @@ tr.peek-row td{background:var(--bg);padding:var(--space-4) 16px}
 .log-filter button span{color:var(--text-3);font-weight:500}
 .log-filter button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .log-filter button.on span{color:#fff;opacity:.8}
-.tl-item.tl-milestone::before{background:currentColor;border-color:var(--text);width:11px;height:11px;left:-19px}
-.tl-ms{display:inline-block;margin-bottom:3px;padding:1px var(--space-2);border-radius:var(--radius-pill);background:var(--accent-soft);color:var(--accent);font-size:var(--text-xs);font-weight:700;letter-spacing:.3px}
+.tl-item.tl-milestone{margin-top:var(--space-5)}
+.tl-item.tl-milestone::before{left:-27px;top:0;width:16px;height:16px;background:var(--panel);border:4px solid var(--accent)}
+.tl-ms{display:block;margin-bottom:2px;font-family:var(--font-heading);font-size:var(--text-base);font-weight:700;color:var(--text)}
 .log-empty{font-size:var(--text-sm);color:var(--text-3);padding:var(--space-2) 0}
 .comment-input{display:flex;gap:var(--space-2);margin-top:8px}
 .comment-input input{
@@ -1685,7 +1752,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
     <div class="mode-switch" role="tablist" aria-label="Display mode">
       <button data-mode="review" class="active">Review</button>
       <button data-mode="document">Document</button>
-      <button data-mode="compare">Compare</button>
     </div>
 
     <div class="hdr-actions">
@@ -1768,6 +1834,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
     <!-- ===================== LEFT NAV ===================== -->
     <aside class="nav">
       <button class="panel-toggle nav-toggle" id="nav-toggle" title="Collapse navigation">‹</button>
+      <div class="nav-tabs" id="nav-tabs" role="tablist" aria-label="Navigator"></div>
       <div class="nav-search">
         <div class="search-box">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -1777,12 +1844,13 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
       <div class="nav-list" id="nav-list"></div>
       <a class="btn-ghost nav-add-doc" id="add-doc-btn" href="javascript:parent.route('documents')" title="Opens Documents &amp; versions, where documents are added and reordered"><i class=ic-upload></i> Add a document</a>
       <div class="nav-count" id="nav-count"></div>
+      <div class="nav-changes" id="nav-changes"></div>
+      <button class="nav-rail-chg" id="nav-rail-chg" title="What changed between two versions of a document"></button>
     </aside>
 
     <!-- ===================== CENTER ZONE ===================== -->
     <section class="center">
       <div class="seg-bar">✂ <b>Segmentation mode</b> — split, merge or change table granularity. Reading clicks are suspended; changes flag affected metadata for review.<button class="btn-ghost" id="seg-exit">Done — save changes</button></div>
-      <div class="compare-bar" id="compare-bar"></div>
       <div class="doc-scroll" id="doc-scroll"></div>
       <div class="review-wrap">
         <div class="filter-sel-banner" id="filter-sel-banner" style="display:none">
@@ -1838,6 +1906,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
                 <div class="kbd-help-h">Act</div>
                 <div class="kbd-help-row"><span class="k"><kbd>V</kbd></span><span>Validate — the selection if there is one, else the active requirement</span></div>
                 <div class="kbd-help-row"><span class="k"><kbd>N</kbd></span><span>Next requirement to review or validate</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>C</kbd></span><span>Show / hide the Changes column</span></div>
                 <div class="kbd-help-row"><span class="k"><kbd>⌘/Ctrl</kbd><kbd>Z</kbd></span><span>Undo the last action</span></div>
               </div>
             </div>
@@ -1848,6 +1917,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
             <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" id="sel-all" title="Select all in view"></label></div>
             <div class="rcell c-id" data-sortcol="id"><span class="cl">ID<span class="sort-arrow"></span></span></div>
             <div class="rcell c-req"><span class="cl">Requirement</span></div>
+            <div class="rcell c-chg" data-col="chg" title="The requirement with what changed since an earlier version of its document — removed words struck, added ones highlighted"><span class="cl">Changes</span><button class="chg-all" id="chg-all" title="Compare every requirement with…">vs previous ▾</button><button class="colf-btn" data-colf="chg" title="Filter this column"><i class=ic-filter></i></button></div>
             <div class="rcell c-class" data-col="class" data-sortcol="class"><span class="cl">Class<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="class" title="Filter this column"><i class=ic-filter></i></button></div>
             <div class="rcell c-typo" data-col="typo" data-sortcol="typo" title="The system(s) the requirement is routed to — on Turnkey, with the routing model's confidence."><span class="cl">System<span class="sort-arrow"></span></span><button class="colf-btn" data-colf="typo" title="Filter this column"><i class=ic-filter></i></button></div>
             <div class="rcell c-abs" data-col="abs" data-sortcol="abs"><span class="cl">ABS<span class="sort-arrow"></span></span></div>
@@ -3380,6 +3450,7 @@ const state = {
   search:"",
   tab:"details",
   changeIndex:0,
+  ncFilter:null,   // DEC-119 — the Changes tab shows one kind only: "added" | "modified" | "removed" | "reopen"
   seg:false,
   groupBy:"none",
   typoOpen:false,
@@ -3390,13 +3461,16 @@ const state = {
   // TYPE-T08 — collapsing is what actually hides a column (applyCols writes
   // data-cc, the CSS above keys off it); dropping a key from colOrder alone only
   // removes it from the ordering, leaving the markup on screen.
-  colCollapsed:new Set(IS_SIG_TENDER?["typo"]:[]),
-  colOrder:["class","typo","abs","pbs","obs","mgr","status","compliance"],
+  // DEC-119 — Changes shows by default only where something changed in a version in force
+  colCollapsed:new Set([...(IS_SIG_TENDER?["typo"]:[]), ...(DOCS.some(d=>d.versions.length>1)?[]:["chg"])]),
+  colOrder:["chg","class","typo","abs","pbs","obs","mgr","status","compliance"],
+  chgBase:{},      // DEC-119 — a version chosen for one requirement in the Changes column, by id
+  chgAll:"prev",   // …and for all the others: "prev" (its document's previous version) or "first"
   navPanelCollapsed:false,
   detailPanelCollapsed:false,
   sortCol:null,
   sortDir:"asc",
-  colFilters:{class:new Set(),typo:new Set(),type:new Set(),mgr:new Set(),obs:new Set(),status:new Set(),doubtfield:new Set()},
+  colFilters:{class:new Set(),typo:new Set(),type:new Set(),mgr:new Set(),obs:new Set(),status:new Set(),doubtfield:new Set(),chg:new Set()},
   /* SPEC-advanced-filters.md §5 — nothing applies until confirmed: advFilter is
      what's live on the table, advFilterDraft is what the builder is editing.
      Applying copies draft into advFilter; closing without applying discards
@@ -3425,8 +3499,18 @@ SECTIONS.forEach(s=>{ state.navCollapsed.add(s.id); state.docNavCollapsed.add(s.
 /* change navigation reads cmpChangeIds(): the selected document, the selected range */
 const allBlocks = () => SECTIONS.flatMap(s=>s.blocks.flatMap(b=>b.kind==="table"?b.rows.map(r=>({...r,section:s})):[{...b,section:s}]));
 const reqs = () => allBlocks().filter(b=>b.kind==="requirement");
+/* findBlock walked every section on every call, and the Document view calls
+   it tens of thousands of times per click through docOfBlock — 0.3 s of a
+   0.47 s paper render at 4,000 requirements (DEC-119 scale check). Lookups
+   are now remembered by id, and a remembered one is checked against SECTIONS
+   before it is trusted: a block moved, replaced or removed is looked up again
+   the slow way. */
+const _blockAt=new Map();
 const findBlock = id => {
-  for(const s of SECTIONS){ for(const b of s.blocks){ if(b.id===id) return {b,s}; if(b.kind==="table"){ const r=b.rows.find(x=>x.id===id); if(r) return {b:r,s}; } } } return null;
+  const c=_blockAt.get(id);
+  if(c && c.b.id===id && SECTIONS.includes(c.s) && (c.t ? c.s.blocks.includes(c.t) && c.t.rows.includes(c.b) : c.s.blocks.includes(c.b))) return {b:c.b,s:c.s};
+  for(const s of SECTIONS){ for(const b of s.blocks){ if(b.id===id){ _blockAt.set(id,{b,s}); return {b,s}; } if(b.kind==="table"){ const r=b.rows.find(x=>x.id===id); if(r){ _blockAt.set(id,{b:r,s,t:b}); return {b:r,s}; } } } }
+  _blockAt.delete(id); return null;
 };
 /* The System cell holds one line. A requirement can reach up to nine
    systems on the capture, and the tags used to wrap inside a fixed 44px row —
@@ -3483,8 +3567,8 @@ function rangeChange(b, fromV){
   const type = hs.some(h=>h.type==="removed") ? "removed" : hs.some(h=>h.type==="added") ? "added" : "modified";
   return {type, to:hs[hs.length-1].to, prevText:hs[0].prevText, desc:hs.map(h=>h.desc).filter(Boolean).join(" ")};
 }
-/* word-level diff, previous → current, as .diff-del / .diff-ins spans */
-function wordDiffHTML(prev, cur){
+/* word-level diff, previous → current: the runs kept (=), removed (-) and added (+) */
+function wordDiffOps(prev, cur){
   const A=String(prev||"").replace(/<[^>]+>/g,"").split(/(\s+)/), B=String(cur||"").replace(/<[^>]+>/g,"").split(/(\s+)/);
   const n=A.length, m=B.length, L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
   for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]= A[i]===B[j] ? L[i+1][j+1]+1 : Math.max(L[i+1][j],L[i][j+1]);
@@ -3492,7 +3576,108 @@ function wordDiffHTML(prev, cur){
   const push=(t,x)=>{ const last=out[out.length-1]; if(last&&last.t===t) last.x+=x; else out.push({t,x}); };
   while(i<n&&j<m){ if(A[i]===B[j]){ push("=",A[i]); i++; j++; } else if(L[i+1][j]>=L[i][j+1]) push("-",A[i++]); else push("+",B[j++]); }
   while(i<n) push("-",A[i++]); while(j<m) push("+",B[j++]);
-  return out.map(o=>o.t==="="?escHtml(o.x):`<span class="${o.t==="-"?"diff-del":"diff-ins"}">${escHtml(o.x)}</span>`).join("");
+  return out;
+}
+/* …as .diff-del / .diff-ins spans */
+function wordDiffHTML(prev, cur){
+  return wordDiffOps(prev,cur).map(o=>o.t==="="?escHtml(o.x):`<span class="${o.t==="-"?"diff-del":"diff-ins"}">${escHtml(o.x)}</span>`).join("");
+}
+/* ---- Changes column (DEC-119) ----------------------------------------------
+   Each requirement compares the text in force with an earlier version of its
+   own document (versions belong to a document, DEC-069): the one picked in its
+   cell, else the column's choice — the previous version, or the first. */
+function chgBaseOf(b){
+  const doc=docOfBlock(b.id); if(!doc||doc.versions.length<2) return null;
+  const own=state.chgBase[b.id], i=own?verIdx(doc,own):-1;
+  if(i>=0 && i<doc.versions.length-1) return own;
+  return state.chgAll==="first" ? doc.versions[0].v : doc.versions[doc.versions.length-2].v;
+}
+function chgOf(b){ const base=chgBaseOf(b); return base ? rangeChange(b,base) : null; }
+/* the versions, within the range, in which the requirement changed */
+function chgVersionsOf(b, base){
+  const doc=docOfBlock(b.id), from=verIdx(doc,base);
+  return (b.history||[]).filter(h=>verIdx(doc,h.to)>from).map(h=>h.to);
+}
+/* on one line, a few words around each change and the rest folded into … —
+   what changed has to be visible without opening anything */
+function chgDiffHTML(prev, cur, compact){
+  const ops=wordDiffOps(prev,cur), last=ops.length-1;
+  const words=x=>x.trim()?x.trim().split(/\s+/):[];
+  return ops.map((o,i)=>{
+    if(o.t!=="=") return `<span class="${o.t==="-"?"cd-del":"cd-ins"}">${escHtml(o.x)}</span>`;
+    if(!compact) return escHtml(o.x);
+    const w=words(o.x), lead=/^\s/.test(o.x)?" ":"", trail=/\s$/.test(o.x)?" ":"";
+    if(i===0 && i!==last && w.length>3) return `… ${escHtml(w.slice(-3).join(" "))}${trail}`;           // lead-in
+    if(i!==0 && i!==last && w.length>8) return `${lead}${escHtml(w.slice(0,4).join(" "))} … ${escHtml(w.slice(-4).join(" "))}${trail}`;
+    return escHtml(o.x);   // the tail is cut by the cell's own ellipsis
+  }).join("");
+}
+function chgCellHTML(b){
+  const doc=docOfBlock(b.id), base=chgBaseOf(b);
+  if(!base) return `<span class="chg-none" title="${escHtml((doc&&doc.name)||"This document")} has a single version">Single version</span>`;
+  const own=!!state.chgBase[b.id], bv=doc.versions[verIdx(doc,base)];
+  const pick=`<button class="chg-ver${own?" own":""}" data-chgver="${b.id}" title="Compared with ${escHtml([bv.v,bv.date,bv.note].filter(Boolean).join(" · "))}${own?" — chosen for this requirement":""}. Click to compare with another version.">vs ${escHtml(base)} ▾</button>`;
+  const ch=rangeChange(b, base);
+  if(!ch) return `<span class="chg-none">No change</span>${pick}`;
+  // the version right before the one in force: the change is in force's, no need to say it on one line
+  const same=verIdx(doc,base)===doc.versions.length-2;
+  const cur=(b.text||"").replace(/<[^>]+>/g,""), vers=chgVersionsOf(b,base);
+  const tag = ch.type==="added"
+    ? `<span class="chg-tag add" title="Added in ${escHtml(ch.to)}">New${same?"":` in ${escHtml(ch.to)}`}</span>`
+    : `<span class="chg-tag${same?" same":""}" title="Changed in ${escHtml(vers.join(" and "))}">${escHtml(vers.join(" · "))}</span>`;
+  const text = ch.type==="added" ? `<span class="cd-ins">${escHtml(cur)}</span>` : chgDiffHTML(ch.prevText,cur,!state.wrapText);
+  return `${tag}<div class="chg-text" title="${escHtml(ch.desc||"")}">${text}</div>${pick}`;
+}
+/* the version one row compares with (▾ in its cell), and all of them at once
+   (▾ in the header) — choosing for all resets the rows chosen one by one */
+function chgPopEl(){ let p=document.getElementById("chg-pop"); if(!p){ p=document.createElement("div"); p.className="chg-pop"; p.id="chg-pop"; document.body.appendChild(p); } return p; }
+function closeChgPop(){ const p=document.getElementById("chg-pop"); if(p){ p.classList.remove("on"); p.innerHTML=""; p.dataset.for=""; } }
+function placeChgPop(p, anchor, key){
+  p.dataset.for=key; p.classList.add("on");
+  const r=anchor.getBoundingClientRect();
+  p.style.top=(r.bottom+4)+"px";
+  p.style.left=Math.max(8,Math.min(r.right-p.offsetWidth, window.innerWidth-p.offsetWidth-8))+"px";
+}
+function openChgRowPop(id, anchor){
+  const f=findBlock(id); if(!f) return;
+  const b=f.b, doc=docOfBlock(id), base=chgBaseOf(b), p=chgPopEl();
+  if(p.dataset.for===id){ closeChgPop(); return; }
+  const changedIn=new Set((b.history||[]).map(h=>h.to));
+  p.innerHTML=`<div class="chg-pop-h">${escHtml(id)} — compare ${escHtml(activeVersion(doc).v)}, in force, with</div>`
+    + doc.versions.slice(0,-1).map((v,i)=>{ const later=doc.versions.slice(i+1).some(x=>changedIn.has(x.v));
+        return `<button data-chgpick="${escHtml(v.v)}" class="${v.v===base?"on":""}"><b>${escHtml(v.v)}</b><small>${escHtml([v.date,v.note].filter(Boolean).join(" · "))}${later?"":" — no change since"}</small></button>`; }).join("")
+    + (state.chgBase[id]?`<div class="sep"></div><button data-chgpick=""><b>Same as the column</b><small>${state.chgAll==="first"?"The first version of its document":"The previous version of its document"}</small></button>`:"");
+  placeChgPop(p, anchor, id);
+  p.querySelectorAll("[data-chgpick]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation(); const v=btn.dataset.chgpick;
+    if(v) state.chgBase[id]=v; else delete state.chgBase[id];
+    closeChgPop(); renderReview();
+  }));
+}
+function openChgAllPop(anchor){
+  const p=chgPopEl(); if(p.dataset.for==="__all"){ closeChgPop(); return; }
+  const n=Object.keys(state.chgBase).length;
+  const opt=(k,l,sub)=>`<button data-chgall="${k}" class="${state.chgAll===k?"on":""}"><b>${l}</b><small>${sub}</small></button>`;
+  p.innerHTML=`<div class="chg-pop-h">Compare every requirement with</div>`
+    + opt("prev","The previous version","of its document — what the version in force changed")
+    + opt("first","The first version","of its document — everything since the tender was issued")
+    + (n?`<div class="sep"></div><div class="chg-pop-h">${n} requirement${n>1?"s have":" has"} a version of ${n>1?"their":"its"} own — choosing here resets ${n>1?"them":"it"}.</div>`:"");
+  placeChgPop(p, anchor, "__all");
+  p.querySelectorAll("[data-chgall]").forEach(btn=>btn.addEventListener("click",e=>{
+    e.stopPropagation(); state.chgAll=btn.dataset.chgall; state.chgBase={};
+    closeChgPop(); renderReview();
+  }));
+}
+/* C, in the table — the column is meant to come and go in a keystroke */
+function toggleChgColumn(){
+  if(!cmpDocs().length){ toast("Every document has a single version — no change to show"); return; }
+  const show=state.colCollapsed.has("chg");
+  if(show) state.colCollapsed.delete("chg"); else state.colCollapsed.add("chg");
+  closeChgPop(); applyCols(); if(colsPanelState.open) renderColumnsPanel();
+  toast(show?"Changes column shown — C to hide it":"Changes column hidden — C to show it");
+}
+function renderChgHead(){
+  const b=document.getElementById("chg-all"); if(b) b.textContent=state.chgAll==="first"?"vs first ▾":"vs previous ▾";
 }
 /* DEC-072 — no separate "treated" state for a change: a requirement added or
    modified in the version in force goes back to To review, and validating it
@@ -3558,31 +3743,86 @@ function cmpChangeIds(){
   return cmpBlocksOf(state.cmpDoc).filter(b=>rangeChange(b,state.cmpFrom)).map(b=>b.id);
 }
 function cmpChangeOf(b){ return state.mode==="compare" && state.cmpFrom && docOfBlock(b.id)?.id===state.cmpDoc ? rangeChange(b,state.cmpFrom) : null; }
-function renderCompareBar(){
-  const bar=document.getElementById("compare-bar"); if(!bar) return;
+/* ---- Changes in the Document view (DEC-119) ----------------------------------
+   Compare used to be a third mode: the Document view again, with the diff on
+   top and a bar to pick the document and the version. It is now the Document
+   view's second lens. The navigator's Changes tab picks the document and the
+   version to compare with, and lists each change — what it was, what it
+   reopens — while the paper shows every change in place (removed words struck,
+   added ones highlighted, removed requirements where they were) and the
+   details panel stays the selected requirement's, on its Versions tab.
+   Internally the lens is still state.mode "compare", so the paper's rendering
+   is unchanged. */
+function renderNavTabs(){
+  const tabs=document.getElementById("nav-tabs"), rail=document.getElementById("nav-rail-chg"); if(!tabs) return;
+  const on=(state.mode==="document"||state.mode==="compare") && cmpDocs().length>0;
+  const n=on?cmpChangeIds().length:0;
+  tabs.classList.toggle("on",on);
+  if(rail){ rail.classList.toggle("on",n>0); rail.innerHTML=n?`<b>${n}</b><span>Changes</span>`:""; }
+  if(!on){ tabs.innerHTML=""; return; }
+  tabs.innerHTML=`<button data-navtab="document" class="${state.mode==="document"?"on":""}" role="tab">Outline</button>`
+    + `<button data-navtab="compare" class="${state.mode==="compare"?"on":""}" role="tab" title="What changed between two versions of a document">Changes${n?`<b>${n}</b>`:""}</button>`;
+  tabs.querySelectorAll("[data-navtab]").forEach(btn=>btn.addEventListener("click",()=>{ if(state.mode!==btn.dataset.navtab) setMode(btn.dataset.navtab); }));
+  if(state.mode==="compare") renderNavChanges();
+}
+/* what a change does to the work already done on the requirement */
+function changeImpact(b, type){
+  if(type==="removed") return {t:`Removed — its work stays archived with ${state.cmpFrom}`};
+  if(type==="added") return {t:isFullyAllocated(b)?"New — allocated since":"New — needs allocation"};
+  const brs=b.branches||[];
+  const answered=b.branchStatus==="answered"||brs.some(br=>br.branchStatus==="answered"||(br.teams||[]).some(t=>t.branchStatus==="answered"));
+  if(answered) return {t:"↺ Was answered — back to To review", warn:true};
+  const waiting=b.branchStatus==="awaiting_answer"||brs.some(br=>br.branchStatus==="awaiting_answer");
+  return {t:waiting?"Awaiting its answer — the contributor answers the new text":"Back to To review"};
+}
+/* The changes of the compared document and range, with what each does to the
+   work already done — and the ones the navigator keeps. A re-issue can bring
+   hundreds (DEC-119 scale check: 427 on a 1,000-requirement document), so the
+   type pills and the "reopens an answer" line narrow both the list and what
+   ] / [ walk through. */
+const NC_FILTERS={added:x=>x.ch.type==="added", modified:x=>x.ch.type==="modified", removed:x=>x.ch.type==="removed", reopen:x=>!!x.imp.warn};
+function ncItems(){
   cmpEnsure();
-  const doc=DOC(state.cmpDoc); if(!doc){ bar.innerHTML=""; return; }
+  const doc=DOC(state.cmpDoc), ids=doc&&doc.versions.length>1?cmpChangeIds():[];
+  const all=ids.map(id=>{ const b=findBlock(id).b, ch=rangeChange(b,state.cmpFrom); return {id,b,ch,imp:changeImpact(b,ch.type)}; });
+  if(state.ncFilter && !all.some(NC_FILTERS[state.ncFilter])) state.ncFilter=null;   // nothing left to keep: the filter goes
+  return {all, shown:state.ncFilter?all.filter(NC_FILTERS[state.ncFilter]):all};
+}
+function renderNavChanges(){
+  const box=document.getElementById("nav-changes"); if(!box) return;
+  const keep=box.querySelector(".nc-list")?.scrollTop||0;
+  cmpEnsure();
+  const doc=DOC(state.cmpDoc); if(!doc){ box.innerHTML=""; return; }
   const act=activeVersion(doc);
-  const docOpts=DOCS.map((d,i)=>{ const n=d.versions.length>1?`${d.versions.length} versions`:"one version";
-    return `<option value="${d.id}" ${d.id===doc.id?"selected":""}>Doc ${i+1} — ${escHtml(d.name)} · ${n}</option>`; }).join("");
-  if(doc.versions.length<2){
-    bar.innerHTML=`<div class="ver-select">Compare <select id="cmp-doc">${docOpts}</select></div>
-      <div class="compare-empty">Only one version of this document (${escHtml(act.v)}${act.note?` — ${escHtml(act.note)}`:""}) — nothing to compare yet.</div>`;
-  }else{
-    const ids=cmpChangeIds(), blocks=ids.map(id=>findBlock(id).b), rc=b=>rangeChange(b,state.cmpFrom).type;
-    const a=blocks.filter(b=>rc(b)==="added").length, m=blocks.filter(b=>rc(b)==="modified").length, r=blocks.filter(b=>rc(b)==="removed").length;
-    const fromOpts=doc.versions.slice(0,-1).map(v=>`<option value="${v.v}" ${v.v===state.cmpFrom?"selected":""}>${escHtml(v.v)}${v.date?` — ${escHtml(v.date)}`:""}</option>`).join("");
-    if(state.changeIndex==null || state.changeIndex>=ids.length) state.changeIndex=0;
-    bar.innerHTML=`<div class="ver-select">Compare <select id="cmp-doc">${docOpts}</select>
-        <select id="cmp-from">${fromOpts}</select> → <b class="ver-to" title="${escHtml(act.note||"")}">${escHtml(act.v)} (in force)</b></div>
-      <div class="compare-summary">${a?`<span class="csum add">+${a} added</span>`:""}${m?`<span class="csum mod">~${m} modified</span>`:""}${r?`<span class="csum rem">−${r} removed</span>`:""}${!ids.length?`<span class="csum">No change</span>`:""}</div>
-      ${ids.length?`<div class="compare-nav"><span id="change-pos">Change ${state.changeIndex+1}/${ids.length}</span>
-        <button id="prev-change" title="Previous change">‹</button><button id="next-change" title="Next change">›</button></div>`:""}`;
-  }
-  bar.querySelector("#cmp-doc").addEventListener("change",e=>{ state.cmpDoc=e.target.value; state.cmpFrom=null; state.changeIndex=0; refresh(); });
-  bar.querySelector("#cmp-from")?.addEventListener("change",e=>{ state.cmpFrom=e.target.value; state.changeIndex=0; refresh(); });
-  bar.querySelector("#prev-change")?.addEventListener("click",()=>gotoChange(-1));
-  bar.querySelector("#next-change")?.addEventListener("click",()=>gotoChange(1));
+  const docOpts=DOCS.map((d,i)=>`<option value="${d.id}" ${d.id===doc.id?"selected":""} ${d.versions.length<2?"disabled":""}>Doc ${i+1} — ${escHtml(d.name)}${d.versions.length<2?" · one version":""}</option>`).join("");
+  const {all, shown:items}=ncItems(), ids=items.map(x=>x.id);
+  const cnt=k=>all.filter(NC_FILTERS[k]).length, reopen=cnt("reopen");
+  const si=ids.indexOf(state.selected); if(si>=0) state.changeIndex=si;   // a change picked on the paper becomes the current one
+  if(state.changeIndex==null||state.changeIndex>=ids.length) state.changeIndex=0;
+  const pill=(k,cls,label)=>cnt(k)?`<button class="csum ${cls}${state.ncFilter===k?" on":""}" data-ncf="${k}" title="${state.ncFilter===k?"Show every change":"Show only these"}">${label}</button>`:"";
+  const fromOpts=doc.versions.slice(0,-1).map(v=>`<option value="${v.v}" ${v.v===state.cmpFrom?"selected":""}>${escHtml(v.v)}${v.date?` — ${escHtml(v.date)}`:""}</option>`).join("");
+  const TL={added:"Added",modified:"Modified",removed:"Removed"};
+  box.innerHTML=`<div class="nc-head">
+      <select class="nc-select" id="cmp-doc" title="Versions belong to a document — pick which one">${docOpts}</select>
+      ${doc.versions.length<2?"":`<div class="nc-range"><select class="nc-select" id="cmp-from" title="Compare the version in force with…">${fromOpts}</select><span>→</span><b title="${escHtml(act.note||"")}">${escHtml(act.v)} · in force</b></div>`}
+      ${all.length?`<div class="nc-sum">${pill("added","add",`+${cnt("added")} added`)}${pill("modified","mod",`~${cnt("modified")} modified`)}${pill("removed","rem",`−${cnt("removed")} removed`)}</div>`:""}
+      ${reopen?`<button class="nc-alert${state.ncFilter==="reopen"?" on":""}" data-ncf="reopen" title="${state.ncFilter==="reopen"?"Show every change":"Show only these"}">↺ ${reopen} change${reopen>1?"s reopen answers":" reopens an answer"} already given</button>`:""}
+      ${ids.length?`<div class="nc-nav"><span id="change-pos">Change <b>${state.changeIndex+1}</b> of <b>${ids.length}</b>${state.ncFilter?` · <button class="nc-all" data-ncf="${state.ncFilter}">show all ${all.length}</button>`:""}</span><span><button id="prev-change" title="Previous change — [">‹</button><button id="next-change" title="Next change — ]">›</button></span></div>`:""}
+    </div>
+    <div class="nc-list">${doc.versions.length<2?`<div class="nc-empty">Only one version of this document — nothing to compare yet.</div>`
+      :ids.length?items.map((x,i)=>{ const par=paragraphOf(x.id); return `<button class="nc-card${(state.selected?state.selected===x.id:i===state.changeIndex)?" on":""}" data-ncgo="${i}">
+        <span class="nc-h"><span class="nc-t ${x.ch.type}">${TL[x.ch.type]}</span><b>${escHtml(x.id)}</b>${par&&par.num?`<span class="nc-s">§ ${escHtml(par.num)}</span>`:""}</span>
+        ${x.ch.desc?`<span class="nc-x">${escHtml(x.ch.desc)}</span>`:""}
+        <span class="nc-i${x.imp.warn?" warn":""}">${escHtml(x.imp.t)}</span></button>`; }).join("")
+      :`<div class="nc-empty">No change between ${escHtml(state.cmpFrom)} and ${escHtml(act.v)} in this document.</div>`}</div>`;
+  box.querySelector("#cmp-doc").addEventListener("change",e=>{ state.cmpDoc=e.target.value; state.cmpFrom=null; state.changeIndex=0; refresh(); });
+  box.querySelector("#cmp-from")?.addEventListener("change",e=>{ state.cmpFrom=e.target.value; state.changeIndex=0; refresh(); });
+  box.querySelector("#prev-change")?.addEventListener("click",()=>gotoChange(-1));
+  box.querySelector("#next-change")?.addEventListener("click",()=>gotoChange(1));
+  box.querySelectorAll("[data-ncf]").forEach(btn=>btn.addEventListener("click",()=>{ const k=btn.dataset.ncf; state.ncFilter=state.ncFilter===k?null:k; state.changeIndex=0; box.querySelector(".nc-list").scrollTop=0; renderNavChanges(); }));
+  box.querySelectorAll("[data-ncgo]").forEach(c=>c.addEventListener("click",()=>{ state.changeIndex=+c.dataset.ncgo; selectBlock(ids[state.changeIndex],{scroll:true}); }));
+  const list=box.querySelector(".nc-list"); list.scrollTop=keep;
+  list.querySelector(".nc-card.on")?.scrollIntoView({block:"nearest"});
 }
 /* The paragraph a block sits in: the deepest heading above it inside its
    section, else the section itself. On the capture the section IS the nearest
@@ -4200,7 +4440,7 @@ const MILESTONE_LABEL={captured:"Captured", allocated:"Allocated", answered:"Ans
 function activityItemHTML(e){
   const ba=(e.from!==undefined||e.to!==undefined)?`<span class="before-after"><span class="ba-del">${escHtml(e.from??"—")}</span> → <span class="ba-ins">${escHtml(e.to??"—")}</span></span>`:"";
   return `<div class="tl-item tl-${e.k||"human"}${e.milestone?" tl-milestone":""}">
-      ${e.milestone?`<div class="tl-ms">◆ ${MILESTONE_LABEL[e.milestone]||e.milestone}</div>`:""}
+      ${e.milestone?`<div class="tl-ms">${MILESTONE_LABEL[e.milestone]||e.milestone}</div>`:""}
       <div class="tl-who">${escHtml(e.who||"—")}</div>
       <div class="tl-what">${e.cat==="comment"?`“${escHtml(e.what)}”`:escHtml(e.what)}${ba}</div>
       <div class="tl-time">${escHtml(e.time||"")}${e.cat?` · ${LOG_CAT_LABEL[e.cat]||e.cat}`:""}</div>
@@ -4233,6 +4473,8 @@ function matchesSearch(b){
   return (b.id||"").toLowerCase().includes(q) || (b.text||"").toLowerCase().includes(q) || (b.type||"").toLowerCase().includes(q);
 }
 function renderNav(){
+  renderNavTabs();
+  if(state.mode==="compare") return;   // the outline is hidden behind the Changes tab — drawn again when it comes back
   const list = document.getElementById("nav-list");
   list.innerHTML = "";
   let visible = 0, total = 0;
@@ -4372,7 +4614,6 @@ function attachReclassify(el,b){
 function renderDoc(){
   const scroll = document.getElementById("doc-scroll");
   scroll.innerHTML = "";
-  if(state.mode==="compare") renderCompareBar();
   // Compare shows ONE document, against its own earlier issue (DEC-070)
   const shownDocs = state.mode==="compare" ? DOCS.filter(d=>d.id===state.cmpDoc)
     : DOCS.filter(d=>state.docFilter==="all"||d.id===state.docFilter);
@@ -4673,7 +4914,7 @@ function rowInnerHTML(b){
   // (see below), plus Duplicate / Delete-duplicate actions instead of an excerpt.
   const imgSrcBtn = b.sourceImage?`<button type="button" class="img-src-btn" data-gotoimg="${b.sourceImage}" title="Captured from ${b.sourceImage} — click to view in the document"><i class=ic-camera></i> ${b.sourceImage}${b.duplicatedFrom?` <span class="img-dup-tag">duplicate</span>`:""}</button>`:"";
   const imgRowActions = b.sourceImage?`<button class="mini-btn row-dup" data-dup="${b.id}" title="Duplicate — attach another requirement to ${b.sourceImage}"><i class=ic-copy></i> Duplicate</button>${b.duplicatedFrom?`<button class="mini-btn row-deldup" data-deldup="${b.id}" title="Delete this duplicate"><i class=ic-trash></i> Delete</button>`:""}`:"";
-  const badges = `${branchBadge}${blockingBadge}${b.comments?`<span class="cbadge"><i class=ic-chat></i> ${b.comments}</span>`:""}${b.change&&latestChange(b)?`<span class="cbadge" style="color:var(--ia)" title="${b.change==="added"?"Added":"Modified"} in ${latestChange(b).to} of its document">Δ ${latestChange(b).to}</span>`:""}`;
+  const badges = `${branchBadge}${blockingBadge}${b.comments?`<span class="cbadge"><i class=ic-chat></i> ${b.comments}</span>`:""}${b.change&&latestChange(b)?`<span class="cbadge chg-delta" title="${b.change==="added"?"Added":"Modified"} in ${latestChange(b).to} of its document">Δ ${latestChange(b).to}</span>`:""}`;
   const proposedTypos = new Set((b.branches||[]).filter(br=>br.proposal).map(br=>br.typology));
   const typoTags = typoTagsHTML(b.perim||[], proposedTypos);
   const caretHTML = hasBranches
@@ -4729,6 +4970,7 @@ function rowInnerHTML(b){
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
     <div class="rcell c-id">${b.id}</div>
     <div class="rcell c-req">${caretHTML}${b.sourceImage?imgSrcBtn:`<div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div>`}<div class="req-badges">${imgRowActions}${badges}</div></div>
+    <div class="rcell c-chg">${chgCellHTML(b)}</div>
     <div class="rcell c-class"><button class="cls-flip ${b.techAI?"ia":""}" data-clsflip="${b.id}" ${canCharacterise()?"":"disabled"} title="${b.techAI?"AI-detected, unconfirmed — ":""}${canCharacterise()?"Click to switch classification":"Set by the project manager"}">${b.tech==="tech"?"Tech":"Non-tech"}</button></div>
     <div class="rcell c-typo"><button class="typo-cell" data-typocell="${b.id}" title="${escHtml((b.perim||[]).map(p=>TY(p).label).join(", ")||"No system yet")} — click to edit">${typoTags}${typoConf}</button></div>
     <div class="rcell c-abs">${TENDER_KEYS
@@ -4758,6 +5000,7 @@ function infoRowHTML(b){
     <div class="rcell c-sel"><label class="sel-hit"><input type="checkbox" class="rowsel" data-sel="${b.id}" ${state.selection.has(b.id)?"checked":""}></label></div>
     <div class="rcell c-id">${b.id}</div>
     <div class="rcell c-req"><span class="info-row-pill" title="Information">ⓘ</span><div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div></div>
+    <div class="rcell c-chg"></div>
     <div class="rcell c-class"><span class="ph">—</span></div>
     <div class="rcell c-typo"><span class="ph">—</span></div>
     <div class="rcell c-abs"><span class="ph">—</span></div>
@@ -4802,6 +5045,7 @@ function branchRowHTML(parent, branch, idx){
     <div class="rcell c-sel"></div>
     <div class="rcell c-id"></div>
     <div class="rcell c-req">${teamCaret}<span class="branch-connector">↳</span><span class="branch-label">${branch.label}</span>${manualFlag}${multiTeam?`<span class="team-count" title="${teams.length} teams allocated within this system">${teams.length} teams</span>`:""}</div>
+    <div class="rcell c-chg"></div>
     <div class="rcell c-class"></div>
     <div class="rcell c-typo"><span class="ptag${ptagCls(branch.typology)}${branch.proposal?" proposed":""}" title="${branch.proposal?"Proposed change — pending project-manager review":""}">${TY(branch.typology).code}</span>${branchConf}</div>
     <div class="rcell c-abs">${branch.abs&&branch.abs.v?`<span class="fval" title="${escHtml(branch.abs.v)}">${escHtml(branch.abs.v)}</span>`:""}</div>
@@ -4827,6 +5071,7 @@ function teamRowHTML(parent, branch, bidx, team, tidx){
     <div class="rcell c-sel"></div>
     <div class="rcell c-id"></div>
     <div class="rcell c-req"><span class="branch-connector team-connector">↳</span><span class="branch-label">${escHtml(team.team?TEAM(team.team).label:`${OBS_NOUN_CAP} ${tidx+1}`)}</span></div>
+    <div class="rcell c-chg"></div>
     <div class="rcell c-class"></div>
     <div class="rcell c-typo"></div>
     <div class="rcell c-abs"></div>
@@ -4870,6 +5115,8 @@ const COL_FILTER_DEFS={
   typo:{label:"System",options:[...TYPO.map(t=>({v:t.id,l:t.label})),{v:"",l:"— none set —"}],get:b=>(b.perim&&b.perim.length)?b.perim:[""]},
   mgr:{label:"Assigned to",options:[...MANAGERS.filter(m=>!m.admin).map(m=>({v:m.id,l:m.name})),{v:"",l:"Unassigned"}],get:b=>[b.manager||""]},
   status:{label:"Status",options:Object.keys(STATUS_LABEL).map(k=>({v:k,l:STATUS_LABEL[k]})),get:b=>[effectiveStatus(b).val]},
+  // DEC-119 — against the version each row compares with, so the filter follows the column
+  chg:{label:"Changes",options:[{v:"modified",l:"Modified"},{v:"added",l:"Added"},{v:"none",l:"No change"}],get:b=>{ const ch=chgOf(b); return [ch?ch.type:"none"]; }},
   doubtfield:{label:"Review field",options:[...Object.keys(DOUBT_FIELD_LABEL).map(k=>({v:k,l:DOUBT_FIELD_LABEL[k]})),{v:"",l:"— nothing to review —"}],get:b=>{const es=effectiveStatus(b); return [es.val==="doubt"?(es.doubtField||""):""];}},
 };
 function passesColFilters(b){
@@ -4997,6 +5244,10 @@ function buildVRows(){
   return rows;
 }
 function renderReview(){
+  // Outside Review the table is hidden, and rebuilding every row on each click
+  // cost ~0.4 s in the Document view at 1,000 requirements (DEC-119 scale
+  // check). setMode("review") goes through refresh(), which draws it on the way in.
+  if(state.mode!=="review"){ renderSelBar(); return; }
   const rows = buildVRows();
   const total = reqs().length;
   document.getElementById("rtoolbar").style.display = state.filterToSelection?"none":"flex";
@@ -5033,6 +5284,7 @@ function renderReview(){
   renderSortIndicators();
   renderColFilterIndicators();
 
+  renderChgHead();
   const spacer=document.getElementById("rgrid-spacer");
   const win=document.getElementById("rgrid-window");
   const scroller=document.getElementById("rgrid-body");
@@ -5150,6 +5402,7 @@ function editActiveCell(){
 }
 function bindCellEditKeys(el){ TE.bindCellEditKeys(el,state,navAdapter); }
 function bindVRows(win){
+  win.querySelectorAll("[data-chgver]").forEach(btn=>btn.addEventListener("click",e=>{ e.stopPropagation(); openChgRowPop(btn.dataset.chgver, btn); }));
   win.querySelectorAll(".rrow:not(.branch-row)").forEach(tr=>{
     tr.addEventListener("click",e=>{ if(e.target.closest("select,button,input,.typo-cell,.sel-hit")) return; selectBlock(tr.dataset.id); });
   });
@@ -5869,10 +6122,12 @@ function pmClassificationHTML(b){
         <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
       </select>`, null)}
 
+    ${/* a confidence only beside a value: "87%" over an empty field read as
+         the AI being sure of nothing (2026-10-07) */""}
     ${useAbs
-      ? derivStepHTML("ABS", `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim?{c:dim.conf}:null, null,
+      ? derivStepHTML("ABS", `<input class="ui-input" type="text" id="f-domain" value="${escHtml(b.domain||"")}">`, dim&&dim.value?{c:dim.conf}:null, null,
           `Non-technical — pass 1 reads the ABS and nothing else.`)
-      : derivStepHTML("PBS", pbsControlHTML(b,b), dim?{c:dim.conf}:null, null,
+      : derivStepHTML("PBS", pbsControlHTML(b,b), dim&&dim.value?{c:dim.conf}:null, null,
           `Technical — pass 1 reads the PBS and nothing else.`)}
 
     <div class="deriv-step">
@@ -6549,9 +6804,9 @@ function versionsTabHTML(b){
     <div class="next-step${pending?"":" is-idle"}">${pending
       ? `Set back to <b>To review</b> by this change. Validate the requirement once the change has been checked.${shown!=="doubt"?` Its status shows <b>${STATUS_LABEL[shown]||shown}</b> first — that is more restrictive and wins.`:""}`
       : `Checked since the change — the requirement has moved on from To review.`}</div>
-    <button class="mini-btn" id="ver-compare">Open in Compare →</button>`;
+    ${state.mode==="compare"?"":`<button class="mini-btn" id="ver-compare" title="Opens the Document view on its Changes, at this requirement">Show in the document →</button>`}`;
 }
-/* A removed requirement only exists in the Compare view (LIFE-006): its panel
+/* A removed requirement only exists under Changes, in the Document view (LIFE-006, DEC-119): its panel
    says what it was and when it went, nothing to edit. */
 function renderRemovedPanel(b,s,panel){
   const h=(b.history||[]).slice(-1)[0]||{}, doc=DOC(s.docId)||{name:""};
@@ -6564,7 +6819,7 @@ function renderRemovedPanel(b,s,panel){
       <div class="ver-doc">${escHtml(doc.name)} — present in ${escHtml(h.from||"")}, gone from ${escHtml(h.to||"")}</div>
       ${h.desc?`<div class="ver-desc">${escHtml(h.desc)}</div>`:""}
       <div class="field"><label>Text in ${escHtml(h.from||"")}</label><div class="ver-text">${escHtml(h.prevText||"")}</div></div>
-      <div class="deriv-hint">No longer part of the tender. It shows in Compare only, never in the table or the document view.</div>
+      <div class="deriv-hint">No longer part of the tender. It shows only under Changes, in the Document view — never in the table or the outline.</div>
     </div>`;
 }
 
@@ -6730,10 +6985,12 @@ function setMode(mode){
   document.body.className = "mode-"+mode;
   if(mode!=="document") state.seg=false;
   if(state.seg) document.body.classList.add("seg-on");
-  document.querySelectorAll(".mode-switch button").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));
+  // the Changes lens is the Document view's — its switch stays on Document
+  document.querySelectorAll(".mode-switch button").forEach(b=>b.classList.toggle("active",b.dataset.mode===(mode==="compare"?"document":mode)));
   if(enteringReview){ state.navPanelCollapsed=true; applyPanels(); }
+  if(mode==="compare" && state.navPanelCollapsed){ state.navPanelCollapsed=false; applyPanels(); }   // its list lives in the navigator
   refresh();
-  // same requirement stays not just selected but in view across Review/Document/Compare
+  // same requirement stays not just selected but in view across Review/Document/Changes
   if(switchingMode && state.selected) scrollToSelected();
 }
 function scrollToSelected(){
@@ -6839,7 +7096,10 @@ function refresh(){
 /* =====================================================
    GLOBAL EVENTS
 ===================================================== */
-document.querySelectorAll(".mode-switch button").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+document.querySelectorAll(".mode-switch button").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.mode==="document"&&state.mode==="compare") return; setMode(b.dataset.mode); }));
+document.getElementById("chg-all")?.addEventListener("click",e=>{ e.stopPropagation(); openChgAllPop(e.currentTarget); });
+document.getElementById("nav-rail-chg")?.addEventListener("click",()=>{ if(state.mode!=="compare") setMode("compare"); else { state.navPanelCollapsed=false; applyPanels(); } });
+document.addEventListener("click",e=>{ if(!e.target.closest("#chg-pop")) closeChgPop(); });
 document.querySelectorAll(".tpill").forEach(p=>p.addEventListener("click",()=>setFilter(p.dataset.filter)));
 document.getElementById("clear-filter").addEventListener("click",()=>setFilter(state.filter));
 document.getElementById("nav-search").addEventListener("input",e=>{state.search=e.target.value;document.getElementById("table-search").value=e.target.value;refresh()});
@@ -6998,7 +7258,7 @@ function renderSortIndicators(){
    included, via the --ord-* custom properties inherited from .rgrid) repaints in the
    right visual position without the row-render code needing to know about ordering. */
 const RCOLS=[
-  {k:"sel",w:"32px"},{k:"id",w:"98px"},{k:"req",w:"minmax(325px,1.82fr)"},
+  {k:"sel",w:"32px"},{k:"id",w:"98px"},{k:"req",w:"minmax(325px,1.82fr)"},{k:"chg",w:"minmax(280px,1.5fr)"},
   {k:"class",w:"78px"},{k:"typo",w:"136px"},{k:"abs",w:"120px"},{k:"pbs",w:"150px"},
 {k:"obs",w:"140px"},{k:"mgr",w:"118px"},{k:"status",w:"92px"},{k:"compliance",w:"108px"},
 ];
@@ -7478,7 +7738,7 @@ const colsPanelState={open:false};
    grouping that can only ever hold one value would be noise. TK OBS goes with
    it — it belongs to the distribution pass that does not run here. */
 const COLUMN_TOGGLE_DEFS=[
-  {k:"class",label:"Class"},{k:"typo",label:"System"},{k:"abs",label:"ABS"},{k:"pbs",label:"PBS"},
+  {k:"chg",label:"Changes"},{k:"class",label:"Class"},{k:"typo",label:"System"},{k:"abs",label:"ABS"},{k:"pbs",label:"PBS"},
 {k:"obs",label:TENDER_KEYS?"OBS (role)":"OBS (team)"},{k:"mgr",label:"Assigned to"},{k:"status",label:"Status"},{k:"compliance",label:"Compliance"},
 ].filter(c=>!IS_SIG_TENDER || c.k!=="typo");
 function renderColumnsPanel(){
@@ -7938,9 +8198,9 @@ document.getElementById("seg-exit").addEventListener("click",()=>{
 
 /* Compare navigation */
 function gotoChange(delta){
-  const ids=cmpChangeIds(); if(!ids.length) return;
+  const ids=ncItems().shown.map(x=>x.id); if(!ids.length) return;
   state.changeIndex = ((state.changeIndex||0) + delta + ids.length) % ids.length;
-  const pos=document.getElementById("change-pos"); if(pos) pos.textContent = `Change ${state.changeIndex+1}/${ids.length}`;
+  const pos=document.getElementById("change-pos"); if(pos) pos.innerHTML = `Change <b>${state.changeIndex+1}</b> of <b>${ids.length}</b>`;
   selectBlock(ids[state.changeIndex],{scroll:true});
 }
 
@@ -7968,6 +8228,8 @@ document.addEventListener("keydown",e=>{
   if(cfPop && cfPop.classList.contains("on") && !cfPop.contains(e.target)){ if(e.key==="Escape"){ e.preventDefault(); cfCloseMulti(); } return; }
   if(e.target.matches("input,select,textarea")) return;   // native undo / select-all inside fields
   const mod=e.metaKey||e.ctrlKey;
+  if(e.key==="Escape" && document.getElementById("chg-pop")?.classList.contains("on")){ e.preventDefault(); closeChgPop(); return; }
+  if(state.mode==="compare" && !mod && (e.key==="]"||e.key==="[")){ e.preventDefault(); gotoChange(e.key==="]"?1:-1); return; }
   if(mod && (e.key==="z"||e.key==="Z") && !e.shiftKey){ e.preventDefault(); undoLast(); return; }
   if(state.mode!=="review") return;
   if(document.querySelector(".overlay.open")) return;
@@ -7991,6 +8253,7 @@ document.addEventListener("keydown",e=>{
     TE.toggleSelect(state.selection,id); lastSel=id; renderReview(); return;
   }
   if(e.key==="n"||e.key==="N"){ e.preventDefault(); nextNeedingAction(); return; }
+  if(e.key==="c"||e.key==="C"){ e.preventDefault(); toggleChgColumn(); return; }
   const navKey=(e.key==="j"||e.key==="J")?"ArrowDown":(e.key==="k"||e.key==="K")?"ArrowUp":e.key;
   if(TE.handleNavKeydown({key:navKey},state,navAdapter)){ e.preventDefault(); return; }
   if((e.key==="Enter"||e.key==="F2") && !e.target.closest("button,a,.overlay.open,#cf-pop") && editActiveCell()){ e.preventDefault(); return; }

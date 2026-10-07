@@ -359,13 +359,14 @@ let QA=[
    date math (no other screen in this prototype computes a real countdown
    either — the dashboard's "23 days to submission" is the same convention).
    Set either to null to see the "degrades cleanly" behaviour: no framing, no
-   placeholder, nothing shown at all. The cut-off is modelled as already
-   passed and the answer date as overdue — the more instructive states to
-   demonstrate (don't-hard-block, and the branches-still-blocked consequence)
-   given this tender's timeline (dashboard: 23 days to submission). */
+   placeholder, nothing shown at all. They sit on the tender's own calendar
+   (DEC-117 — the dashboard's Statistics › Project timeline shows the same two
+   dates): today is Jul 20, submission Aug 12, so the cut-off has passed — the
+   don't-hard-block state — and the client's answers are due in four days.
+   They used to read Aug 22 / Aug 24, after the submission itself. */
 const TENDER_QA_DATES={
-  questionCutoff:{date:"Aug 22, 2026", passed:true},
-  expectedAnswerBy:{date:"Aug 24, 2026", overdue:true},
+  questionCutoff:{date:"Jul 17, 2026", passed:true},
+  expectedAnswerBy:{date:"Jul 24, 2026", overdue:false},
 };
 const state={view:"ours",status:"all",qSearch:"",qActivity:"",sel:new Set(),importing:false};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
