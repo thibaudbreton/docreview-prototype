@@ -291,7 +291,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .st-stack .st-av{box-shadow:0 0 0 2px var(--panel)}
 .st-stack .st-av+.st-av{margin-left:-3px}
 .st-more{margin-left:var(--space-1);font-size:var(--text-xs);color:var(--text-3)}
-.st-you{margin-left:var(--space-1);padding:0 5px;border-radius:var(--radius-pill);background:var(--brand-blue);color:#fff;font-size:var(--text-xs);font-weight:600}
 
 /* --- Project › Timeline: the tender's dates, and the pace toward submission --- */
 .tl-wrap{display:grid;grid-template-columns:190px minmax(0,1fr);gap:var(--space-6);align-items:start}
@@ -319,13 +318,14 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .lb-key span{display:inline-flex;align-items:center;gap:5px}
 .lb-key i{display:inline-block;width:8px;height:8px;border-radius:2px}
 .lb-list{display:flex;flex-direction:column;gap:2px}
-.lb-row{display:grid;grid-template-columns:14px 24px minmax(0,1fr) minmax(56px,30%) 24px;align-items:center;gap:var(--space-2);padding:5px var(--space-2);border-radius:var(--radius-md)}
+.lb-row{display:grid;grid-template-columns:14px minmax(0,1fr) minmax(56px,34%) 24px;align-items:center;gap:var(--space-2);padding:5px var(--space-2);border-radius:var(--radius-md)}
 .lb-row.is-top{background:var(--brand-blue-soft)}
 .lb-rank{font-size:var(--text-xs);font-weight:700;color:var(--text-3);text-align:center;font-variant-numeric:tabular-nums}
 .lb-row.is-top .lb-rank{color:var(--brand-blue)}
 .lb-who{min-width:0;display:flex;flex-direction:column;line-height:1.3}
 .lb-who b{display:flex;align-items:center;min-width:0;font-size:var(--text-sm);font-weight:600;color:var(--text)}
 .lb-who b span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-who b .lb-code{font-family:var(--font-mono)}
 .lb-who small{font-size:var(--text-xs);color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-bar{display:flex;height:8px;border-radius:var(--radius-pill);overflow:hidden;background:var(--panel-3)}
 .lb-bar span{display:block;height:100%}
@@ -426,18 +426,18 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .prog-step.warn .prog-bar span{background:var(--warn)}
 .prog-sub{margin-top:6px;font-size:var(--text-xs);color:var(--text-3);line-height:1.4}
 
-/* --- Compliance › Answers by person --- */
-.ppl-list{display:flex;flex-direction:column;gap:2px}
-.ppl-row{display:grid;grid-template-columns:24px minmax(0,1fr) minmax(48px,26%) 40px 62px;align-items:center;gap:var(--space-2);padding:5px var(--space-2)}
-.ppl-who{min-width:0;font-size:var(--text-sm);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ppl-who small{margin-left:4px;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3)}
-.ppl-bar{height:8px;border-radius:var(--radius-pill);background:var(--panel-3);overflow:hidden}
-.ppl-bar span{display:block;height:100%;background:var(--ok)}
-.ppl-n{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
-.ppl-n b{color:var(--text)}
-.ppl-flag{justify-self:end;font-size:var(--text-xs);font-weight:600;white-space:nowrap;color:var(--text-3)}
-.ppl-flag.late{color:var(--warn)}
-.ppl-flag.done{color:var(--ok)}
+/* --- Compliance › Answers by system (DEC-118: never by person) --- */
+.st-list{display:flex;flex-direction:column;gap:2px}
+.ans-row{display:grid;grid-template-columns:64px minmax(0,1fr) 44px 70px;align-items:center;gap:var(--space-2);padding:5px var(--space-2)}
+.ans-unit{min-width:0;font-size:var(--text-sm);font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ans-unit.mono{font-family:var(--font-mono);font-size:var(--text-xs);font-weight:700;color:var(--text-2)}
+.ans-bar{height:8px;border-radius:var(--radius-pill);background:var(--panel-3);overflow:hidden}
+.ans-bar span{display:block;height:100%;background:var(--ok)}
+.ans-n{font-size:var(--text-xs);color:var(--text-3);text-align:right;font-variant-numeric:tabular-nums}
+.ans-n b{color:var(--text)}
+.ans-flag{justify-self:end;font-size:var(--text-xs);font-weight:600;white-space:nowrap;color:var(--text-3)}
+.ans-flag.late{color:var(--warn)}
+.ans-flag.done{color:var(--ok)}
 
 /* --- Compliance › What the open requirements are waiting on --- */
 .wo-list{display:flex;flex-direction:column;gap:2px;margin-top:var(--space-3)}
@@ -494,6 +494,9 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .exp-lbar>div{height:100%;background:var(--ok);border-radius:var(--radius-xs)}
 .exp-lm{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:34px;text-align:right}
 .exp-lm.over{color:var(--warn);font-weight:600}
+/* DEC-118 — the card names systems, not people: a code chip where the avatar was */
+.exp-code{min-width:44px;padding:3px var(--space-2);border-radius:var(--radius-sm);background:var(--panel-2);font-size:var(--text-xs);font-weight:700;color:var(--text-2);text-align:center;flex-shrink:0}
+.exp-code.mono{font-family:var(--font-mono)}
 
 /* system feed */
 .feed{position:relative;padding-left:20px}
@@ -1013,9 +1016,10 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
                compliance progress is already on the Compliance phase card. -->
 
           <div class="card">
-            <h3>Contributors</h3>
-            <!-- the three people carrying the most answers — renderContributorsCard(),
-                 from the same figures as Statistics › Compliance › Answers by person -->
+            <h3 id="exp-summary-title">Answers by system</h3>
+            <!-- the three systems carrying the most answers — renderAnswersCard(), from
+                 the same figures as Statistics › Compliance › Answers by system (DEC-118:
+                 no per-person figures; this card listed three people until then) -->
             <div class="exp-list" id="exp-summary"></div>
           </div>
         </aside>
@@ -1083,8 +1087,8 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
               <div id="stats-progress-client"></div>
             </div>
             <div class="stat-block">
-              <div class="stat-top"><div class="stat-h">Answers by person</div></div>
-              <div id="stats-people"></div>
+              <div class="stat-top"><div class="stat-h" id="stats-answers-title">Answers by system</div></div>
+              <div id="stats-answers"></div>
             </div>
             <div class="stat-block">
               <div class="stat-top"><div class="stat-h">What the open requirements are waiting on</div></div>
@@ -2272,7 +2276,7 @@ const SIG_FOLLOWUP_REQS=[
   {id:"L4-0018",compliance:null,           branchStatuses:["awaiting_answer"]},
 ];
 const SIG_OVERDUE_BRANCHES=[
-  {reqId:"L4-0009",expert:"Sophie Lang",days:9},
+  {reqId:"L4-0009",expert:"Sophie Lang",days:9,unit:"Design"},
 ];
 const SIG_COMMENT_FEED=[
   {kind:"warn",who:"Louis Renaud",what:"linked <b>RSK-00001</b> to <b>L4-0010</b> — Not compliant, kept as a gap",when:"Jul 16, 3:40 PM",sortKey:"2026-07-16T15:40"},
@@ -2360,12 +2364,13 @@ function renderReviewKPIs(){
    for reassignment. Drives the "contributor response overdue" attention card instead
    of a hand-typed name/id/day-count that can silently point at the wrong person. */
 const OVERDUE_BRANCHES_BASE=[
-  // oldest first — renderOverdueCard leads with [0], and the Compliance tab's
-  // "late by contributor" chart groups these by person.
-  {reqId:"SRM-00001",expert:"Karim Benali",days:9},
-  {reqId:"SRM-00008",expert:"Karim Benali",days:7},
-  {reqId:"SRM-00006",expert:"Sophie Lang",days:6},
-  {reqId:"SRM-00011",expert:"Marc Dubois",days:5},
+  // oldest first — renderOverdueCard leads with [0]. `unit` is what Statistics ›
+  // Answers by system counts them under (DEC-118): the system, or the sub-system
+  // on a single-system tender — never the person.
+  {reqId:"SRM-00001",expert:"Karim Benali",days:9,unit:"SEN"},
+  {reqId:"SRM-00008",expert:"Karim Benali",days:7,unit:"SEN"},
+  {reqId:"SRM-00006",expert:"Sophie Lang",days:6,unit:"SIG"},
+  {reqId:"SRM-00011",expert:"Marc Dubois",days:5,unit:"TRK"},
 ];
 const OVERDUE_BRANCHES = IS_SIG_TENDER ? SIG_OVERDUE_BRANCHES : OVERDUE_BRANCHES_BASE;
 
@@ -2480,7 +2485,6 @@ function personOf(name){
   return {name, init:String(name).split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(), color:"var(--brand-slate)", role:""};
 }
 const avHTML=p=>`<span class="st-av" style="background:${p.color}" title="${escH(p.name)}">${p.init}</span>`;
-const YOU=(PM_TEAM[0]||{}).name;   // this dashboard is the project manager's
 
 /* ---------- Project › Timeline ---------- */
 /* The tender's dates. Received and submission are the project's own; the two
@@ -2607,69 +2611,79 @@ function renderStatsTimeline(){
 }
 
 /* ---------- Project › Most active this week ---------- */
-/* Each person's last seven days — hand-authored, the backend keeps no such
-   history yet. Everything done in this session counts on top, live, read
-   from the shell's activity log: a requirement validated in Allocation (its
-   characterisation or a system's allocation — once per requirement), a
-   verdict given (once per assignment), a comment posted. Field-by-field edits
-   don't count — a ranking of clicks would reward fiddling, not work.
-   a: requirements validated in Allocation, r: answers given, c: comments and
-   questions. Answers stay within each person's totals in Answers by person. */
-const WEEK_ACTIVITY_BASE={lastWeek:64, people:[
-  {name:"Louis Renaud",   a:6, r:8, c:4},
-  {name:"Thibaud Breton", a:11,r:0, c:4},
-  {name:"Claire Moreau",  a:0, r:9, c:2},
-  {name:"Paolo Ferri",    a:4, r:4, c:1},
-  {name:"Amina Cherif",   a:3, r:3, c:1},
-  {name:"Sophie Lang",    a:0, r:3, c:3},
-  {name:"Elena Popescu",  a:2, r:2, c:1},
-  {name:"Marc Dubois",    a:0, r:2, c:1},
-  {name:"Karim Benali",   a:0, r:1, c:1},
-  {name:"Nadia Haddad",   a:2, r:0, c:0},
+/* DEC-118 — counted per system and sub-system, never per person: a ranking of
+   named employees is workplace monitoring (works council, GDPR). Each action
+   counts for the system it was done on, whoever did it — a requirement
+   validated in Allocation, an answer given, a comment or a question — so no
+   row is anyone's own activity. Sub-systems are the perimeters staffed in
+   Team casting (OBS · team); a system staffed without perimeters isn't split.
+   The week is hand-authored, the backend keeps no such history yet. What this
+   session does is added live from the shell's activity log, for the events
+   that name their system (a system's allocation validated, a verdict) — once
+   per requirement, and not split by sub-system. Field-by-field edits never
+   count: a ranking of clicks would reward fiddling, not work.
+   a: validated in Allocation, r: answers, c: comments and questions. */
+const WEEK_BY_SYSTEM_BASE={lastWeek:54, systems:[
+  {code:"SIG", subs:[{k:"Wayside",a:3,r:4,c:2},{k:"Design",a:4,r:3,c:2},{k:"V&V",a:2,r:1,c:1}]},
+  {code:"RAMS",subs:[{k:"V&V",a:1,r:5,c:1},{k:"Risk",a:1,r:4,c:2}]},
+  {code:"SEN", a:5,r:5,c:2},
+  {code:"TRK", subs:[{k:"BTM",a:2,r:3,c:1},{k:"DBM",a:2,r:2,c:1}]},
+  {code:"POS", subs:[{k:"Wayside",a:2,r:0,c:1}]},
+  {code:"COM", a:1,r:0,c:1},
 ]};
-const SIG_WEEK_ACTIVITY={lastWeek:21, people:[
-  {name:"Louis Renaud",   a:4, r:3, c:2},
-  {name:"Thibaud Breton", a:5, r:0, c:1},
-  {name:"Sophie Lang",    a:0, r:1, c:3},
-  {name:"Karim Benali",   a:0, r:1, c:1},
-  {name:"Claire Moreau",  a:0, r:0, c:1},
+const SIG_WEEK_BY_SYSTEM={lastWeek:16, systems:[
+  {code:"SIG", subs:[{k:"Design",a:3,r:2,c:2},{k:"Wayside",a:3,r:1,c:1},{k:"V&V",a:2,r:1,c:1},{k:"Risk",a:1,r:0,c:1}]},
 ]};
-const WEEK_ACTIVITY=IS_SIG_TENDER?SIG_WEEK_ACTIVITY:WEEK_ACTIVITY_BASE;
+const WEEK_BY_SYSTEM=IS_SIG_TENDER?SIG_WEEK_BY_SYSTEM:WEEK_BY_SYSTEM_BASE;
+const sumOf=(list,k)=>list.reduce((s,x)=>s+(x[k]||0),0);
+const andList=l=>l.length<2?l.join(""):`${l.slice(0,-1).join(", ")} and ${l[l.length-1]}`;
 function weekActivity(){
-  const by=new Map(WEEK_ACTIVITY.people.map(p=>[p.name,Object.assign({},p)])), seen=new Set();
-  (shellGet("getActivityLog")||[]).filter(e=>e.live&&e.who&&e.who!=="—").forEach(e=>{
-    let k=null, once=null;
-    if(e.milestone==="allocated"||(e.cat==="status"&&e.to==="Allocated")){ k="a"; once=`${e.who}|a|${e.reqId}`; }
-    else if(e.cat==="compliance"&&/— verdict$/.test(e.what||"")&&e.to&&e.to!=="—"){ k="r"; once=`${e.who}|r|${e.reqId}|${e.what}`; }
-    else if(e.cat==="comment") k="c";
-    if(!k||(once&&seen.has(once))) return;
-    if(once) seen.add(once);
-    if(!by.has(e.who)) by.set(e.who,{name:e.who,a:0,r:0,c:0});
-    by.get(e.who)[k]++;
+  const by=new Map(WEEK_BY_SYSTEM.systems.map(s=>{
+    const subs=(s.subs||[]).map(x=>Object.assign({},x,{n:x.a+x.r+x.c}));
+    const t=subs.length?{a:sumOf(subs,"a"),r:sumOf(subs,"r"),c:sumOf(subs,"c")}:{a:s.a||0,r:s.r||0,c:s.c||0};
+    return [s.code,Object.assign({code:s.code,subs,live:0},t)];
+  })), seen=new Set();
+  (shellGet("getActivityLog")||[]).filter(e=>e.live).forEach(e=>{
+    const m=/^([A-Z][A-Z0-9]*) — (allocation|verdict)$/.exec(e.what||""); if(!m) return;
+    const k=m[2]==="allocation"?(e.to==="Allocated"?"a":null):(e.to&&e.to!=="—"?"r":null);
+    const once=`${m[1]}|${k}|${e.reqId}`; if(!k||seen.has(once)) return; seen.add(once);
+    if(!by.has(m[1])) by.set(m[1],{code:m[1],subs:[],live:0,a:0,r:0,c:0});
+    const x=by.get(m[1]); x[k]++; x.live++;
   });
-  return [...by.values()].map(p=>Object.assign(p,{n:p.a+p.r+p.c})).filter(p=>p.n>0)
-    .sort((x,y)=>y.n-x.n||x.name.localeCompare(y.name));
+  return [...by.values()].map(x=>Object.assign(x,{n:x.a+x.r+x.c})).filter(x=>x.n>0)
+    .sort((x,y)=>y.n-x.n||x.code.localeCompare(y.code));
 }
 function renderStatsLeaderboard(){
   const el=document.getElementById("stats-leaderboard"); if(!el) return;
   const from=new Date(TODAY.getTime()-6*DAY), wk=document.getElementById("stats-week-label");
   if(wk) wk.textContent=`last 7 days · ${fmtDay(from)} – ${from.getMonth()===TODAY.getMonth()?TODAY.getDate():fmtDay(TODAY)}`;
-  const rows=weekActivity();
-  if(!rows.length){ el.innerHTML=`<div class="stat-empty">Nobody has worked on the tender this week yet.</div>`; return; }
-  const total=rows.reduce((s,p)=>s+p.n,0), max=rows[0].n, prev=WEEK_ACTIVITY.lastWeek;
+  const systems=weekActivity();
+  if(!systems.length){ el.innerHTML=`<div class="stat-empty">No work recorded on the tender this week yet.</div>`; return; }
+  const total=sumOf(systems,"n"), prev=WEEK_BY_SYSTEM.lastWeek;
   const delta=prev?Math.round((total-prev)/prev*100):null;
-  const shown=rows.slice(0,6), more=rows.length-shown.length;
-  el.innerHTML=`<div class="stat-take"><b>${nOf(total,"action")}</b> by ${nOf(rows.length,"person","people")} this week`
-    +(delta!=null?` — <b class="${delta>=0?"is-good":"is-late"}">${delta>=0?"+":"−"}${Math.abs(delta)}%</b> on the week before`:"")+`.</div>
+  const bySize=list=>list.slice().sort((x,y)=>y.n-x.n||x.k.localeCompare(y.k));
+  // a single system (SIG tender): nothing to rank between systems — its sub-systems are ranked instead
+  const one=systems.length===1&&systems[0].subs.length>1, sys=systems[0];
+  const rows=one
+    ? bySize(sys.subs).map(x=>({label:x.k, a:x.a, r:x.r, c:x.c, n:x.n, sub:`${x.a} validated · ${nOf(x.r,"answer")} · ${nOf(x.c,"comment")}`}))
+    : systems.map(x=>({label:x.code, code:true, a:x.a, r:x.r, c:x.c, n:x.n,
+        sub:x.subs.length?bySize(x.subs).map(y=>`${escH(y.k)} ${y.n}`).join(" · ")+(x.live?` · not split ${x.live}`:"")
+          :"not split into sub-systems"}));
+  const max=Math.max(...rows.map(r=>r.n),1), lead=rows[0];
+  const leadSubs=!one&&sys.subs.length?bySize(sys.subs).slice(0,2).map(y=>y.k):[];
+  el.innerHTML=`<div class="stat-take"><b>${nOf(total,"action")}</b> on the tender this week`
+    +(delta!=null?` — <b class="${delta>=0?"is-good":"is-late"}">${delta>=0?"+":"−"}${Math.abs(delta)}%</b> on the week before`:"")+`. `
+    +(one?`<b>${escH(lead.label)}</b> leads ${sys.code}'s sub-systems.`
+      :`<b>${lead.label}</b> leads${leadSubs.length?`, with ${andList(leadSubs.map(escH))}`:""}.`)+`</div>
     <div class="lb-key"><span><i class="k-alloc"></i>Allocation</span><span><i class="k-ans"></i>Answers</span><span><i class="k-com"></i>Comments &amp; questions</span></div>
-    <div class="lb-list">${shown.map((p,i)=>{ const who=personOf(p.name);
-      const seg=(k,c)=>p[k]?`<span class="${c}" style="width:${p[k]/max*100}%"></span>`:"";
-      return `<div class="lb-row${i===0?" is-top":""}" title="${escH(p.name)} — ${nOf(p.a,"requirement")} validated in Allocation, ${nOf(p.r,"answer")}, ${nOf(p.c,"comment")}">
-        <span class="lb-rank">${i+1}</span>${avHTML(who)}
-        <span class="lb-who"><b><span>${escH(p.name)}</span>${p.name===YOU?`<span class="st-you">you</span>`:""}</b><small>${escH(who.role)}</small></span>
+    <div class="lb-list">${rows.slice(0,7).map((r,i)=>{
+      const seg=(k,c)=>r[k]?`<span class="${c}" style="width:${r[k]/max*100}%"></span>`:"";
+      return `<div class="lb-row${i===0?" is-top":""}" title="${escH(r.label)} — ${nOf(r.a,"requirement")} validated in Allocation, ${nOf(r.r,"answer")}, ${nOf(r.c,"comment or question","comments or questions")}">
+        <span class="lb-rank">${i+1}</span>
+        <span class="lb-who"><b><span${r.code?` class="lb-code"`:""}>${escH(r.label)}</span></b><small>${r.sub}</small></span>
         <span class="lb-bar">${seg("a","k-alloc")}${seg("r","k-ans")}${seg("c","k-com")}</span>
-        <span class="lb-n">${p.n}</span></div>`; }).join("")}</div>`
-    +(more?`<div class="stat-foot">+ ${nOf(more,"other person","other people")} active this week.</div>`:"");
+        <span class="lb-n">${r.n}</span></div>`; }).join("")}</div>
+    <div class="stat-foot">Counted for the ${one?"sub-system":"system"} the work was done on, whoever did it — nobody's own activity is shown.</div>`;
 }
 
 /* ---------- Project › The team ---------- */
@@ -2680,9 +2694,13 @@ function renderStatsTeam(){
   const contribs=[...new Set(ROSTER.map(r=>r.personId))].map(personById).filter(Boolean);
   const contribSys=new Set(ROSTER.map(r=>r.activityId)).size;
   const people=PM_TEAM.length+mgrs.length+contribs.length;
-  const active=Math.min(weekActivity().length,people);
+  // DEC-118 — "active" is said of systems (or a single system's sub-systems), never of people
+  const wk=weekActivity(), one=CAST_ACTIVITIES.length===1;
+  const units=one?[...new Set(ROSTER.map(r=>perimeterLabel(r.activityId,r.perimeterId)).filter(Boolean))]:CAST_ACTIVITIES.map(a=>a.code);
+  const busy=new Set(one?(wk[0]?wk[0].subs.filter(x=>x.n>0).map(x=>x.k):[]):wk.map(x=>x.code));
+  const active=units.filter(u=>busy.has(u)).length, unitWord=one?"sub-system":"system";
   const stack=list=>`<span class="st-stack">${list.slice(0,6).map(avHTML).join("")}${list.length>6?`<span class="st-more">+${list.length-6}</span>`:""}</span>`;
-  el.innerHTML=`<div class="stat-take"><b>${nOf(people,"person","people")}</b> on this tender — <b>${active}</b> of them active this week.</div>
+  el.innerHTML=`<div class="stat-take"><b>${nOf(people,"person","people")}</b> on this tender${one?` and its ${nOf(units.length,unitWord)}`:`, across ${nOf(units.length,unitWord)}`} — work moved on <b>${active}</b> of them this week.</div>
     <div class="team-rows">
       <div class="team-row"><div><div class="tr-k">Project management</div><div class="tr-sub">${PM_TEAM.map(p=>escH(p.name)).join(", ")}</div></div>${stack(PM_TEAM)}</div>
       <div class="team-row${noMgr.length?" st-go":""}"${noMgr.length?` data-screen="team" title="Cast a manager on ${noMgr.map(a=>a.code).join(", ")}"`:""}>
@@ -2691,7 +2709,7 @@ function renderStatsTeam(){
           :`one on every system`}</div></div>${stack(mgrs)}</div>
       <div class="team-row"><div><div class="tr-k">${nOf(contribs.length,"contributor")}</div><div class="tr-sub">across ${nOf(contribSys,"system")}</div></div>${stack(contribs)}</div>
     </div>
-    <div class="team-active"><div class="ta-k"><span>Active this week</span><b>${active} / ${people}</b></div><div class="ta-bar"><span style="width:${pctOf(active,people)}%"></span></div></div>`;
+    <div class="team-active"><div class="ta-k"><span>${one?"Sub-systems":"Systems"} active this week</span><b>${active} / ${units.length}</b></div><div class="ta-bar"><span style="width:${pctOf(active,units.length)}%"></span></div></div>`;
   bindGo(el);
 }
 
@@ -2842,63 +2860,62 @@ function renderStatsProgressClient(){
   bindGo(el);
 }
 
-/* ---------- Compliance › Answers by person ---------- */
-/* Who has answered what they were given, and who to chase. Totals per person
-   are hand-authored at Compliance's scale — they add up to its 100 assigned
-   and 58 answered, the Progress to the client figures; overdue answers are
-   this screen's OVERDUE_BRANCHES, the ones the "contributor response overdue"
-   card above names. Late first, then by how much is in. */
-const ANSWERS_BY_PERSON_BASE=[
-  {name:"Louis Renaud",  sys:"SIG", given:22, answered:14},
-  {name:"Sophie Lang",   sys:"SIG", given:12, answered:7},
-  {name:"Amina Cherif",  sys:"TRK", given:14, answered:7},
-  {name:"Marc Dubois",   sys:"TRK", given:8,  answered:4},
-  {name:"Paolo Ferri",   sys:"SEN", given:12, answered:9},
-  {name:"Karim Benali",  sys:"SEN", given:10, answered:3},
-  {name:"Thomas Weber",  sys:"SEN", given:4,  answered:2},
-  {name:"Claire Moreau", sys:"RAMS",given:11, answered:9},
-  {name:"Elena Popescu", sys:"RAMS",given:7,  answered:3},
+/* ---------- Compliance › Answers by system ---------- */
+/* DEC-118 — per system, never per person: what each system was given and has
+   answered, and how many of its answers are overdue. Hand-authored at
+   Compliance's scale — they add up to its 100 assigned and 58 answered, the
+   Progress to the client figures. Overdue answers are this screen's
+   OVERDUE_BRANCHES, the ones the "contributor response overdue" card names:
+   there a person is named because someone has to be reminded, here they are
+   only counted. A single-system tender (SIG) is split by sub-system. Late
+   first, then by how much is in. */
+const ANSWERS_BY_SYSTEM_BASE=[
+  {unit:"SIG", given:34, answered:21},
+  {unit:"SEN", given:26, answered:14},
+  {unit:"TRK", given:22, answered:11},
+  {unit:"RAMS",given:18, answered:12},
 ];
-const SIG_ANSWERS_BY_PERSON=[
-  {name:"Louis Renaud",  sys:"SIG", given:4, answered:3},
-  {name:"Sophie Lang",   sys:"SIG", given:3, answered:1},
-  {name:"Karim Benali",  sys:"SIG", given:2, answered:1},
-  {name:"Claire Moreau", sys:"SIG", given:1, answered:0},
+const SIG_ANSWERS_BY_SYSTEM=[   // one system — its sub-systems
+  {unit:"Design", given:4, answered:2},
+  {unit:"Wayside",given:3, answered:2},
+  {unit:"V&V",    given:2, answered:1},
+  {unit:"Risk",   given:1, answered:0},
 ];
-const ANSWERS_BY_PERSON=IS_SIG_TENDER?SIG_ANSWERS_BY_PERSON:ANSWERS_BY_PERSON_BASE;
-function lateByPerson(){
+const ANSWERS_BY_SYSTEM=IS_SIG_TENDER?SIG_ANSWERS_BY_SYSTEM:ANSWERS_BY_SYSTEM_BASE;
+const ANSWERS_UNIT=IS_SIG_TENDER?"sub-system":"system";
+function lateByUnit(){
   const m=new Map();
-  OVERDUE_BRANCHES.forEach(o=>{ const x=m.get(o.expert)||{n:0,days:0}; x.n++; x.days=Math.max(x.days,o.days); m.set(o.expert,x); });
+  OVERDUE_BRANCHES.forEach(o=>{ const x=m.get(o.unit)||{n:0,days:0}; x.n++; x.days=Math.max(x.days,o.days); m.set(o.unit,x); });
   return m;
 }
-function renderStatsPeople(){
-  const el=document.getElementById("stats-people"); if(!el) return;
-  const late=lateByPerson();
-  const rows=ANSWERS_BY_PERSON.map(p=>Object.assign({},p,{late:late.get(p.name)||null}))
+function renderStatsAnswers(){
+  const el=document.getElementById("stats-answers"); if(!el) return;
+  const title=document.getElementById("stats-answers-title"); if(title) title.textContent=`Answers by ${ANSWERS_UNIT}`;
+  const late=lateByUnit();
+  const rows=ANSWERS_BY_SYSTEM.map(u=>Object.assign({},u,{late:late.get(u.unit)||null}))
     .sort((a,b)=>((b.late?b.late.days:0)-(a.late?a.late.days:0))||(b.answered/b.given-a.answered/a.given));
-  const given=rows.reduce((s,p)=>s+p.given,0), answered=rows.reduce((s,p)=>s+p.answered,0);
-  el.innerHTML=`<div class="stat-take"><b>${answered} of ${given}</b> answers in`
-    +(OVERDUE_BRANCHES.length?` — <b class="is-late">${nOf(OVERDUE_BRANCHES.length,"answer")} overdue</b>, with ${nOf(late.size,"person","people")}`:" — none overdue")+`.</div>
-    <div class="ppl-list">${rows.map(p=>{
-      const flag=p.late?`<span class="ppl-flag late">${p.late.n} late · ${p.late.days}d</span>`
-        :p.answered>=p.given?`<span class="ppl-flag done">✓ all in</span>`:`<span class="ppl-flag">${p.given-p.answered} open</span>`;
-      return `<div class="ppl-row st-go" data-go="compliance.html" title="${escH(p.name)} (${p.sys}) — ${p.answered} of ${p.given} answered${p.late?`, ${p.late.n} overdue, the oldest for ${p.late.days} days`:""}">
-        ${avHTML(personOf(p.name))}<span class="ppl-who">${escH(p.name)}<small>${p.sys}</small></span>
-        <span class="ppl-bar"><span style="width:${pctOf(p.answered,p.given)}%"></span></span>
-        <span class="ppl-n"><b>${p.answered}</b>/${p.given}</span>${flag}</div>`; }).join("")}</div>`;
+  const lateUnits=rows.filter(r=>r.late).map(r=>escH(r.unit));
+  el.innerHTML=`<div class="stat-take"><b>${sumOf(rows,"answered")} of ${sumOf(rows,"given")}</b> answers in`
+    +(OVERDUE_BRANCHES.length?` — <b class="is-late">${nOf(OVERDUE_BRANCHES.length,"answer")} overdue</b>, in ${andList(lateUnits)}`:" — none overdue")+`.</div>
+    <div class="st-list">${rows.map(u=>{
+      const flag=u.late?`<span class="ans-flag late">${u.late.n} late · ${u.late.days}d</span>`
+        :u.answered>=u.given?`<span class="ans-flag done">✓ all in</span>`:`<span class="ans-flag">${u.given-u.answered} open</span>`;
+      return `<div class="ans-row st-go" data-go="compliance.html" title="${escH(u.unit)} — ${u.answered} of ${u.given} answered${u.late?`, ${u.late.n} overdue, the oldest for ${u.late.days} days`:""}">
+        <span class="ans-unit${IS_SIG_TENDER?"":" mono"}">${escH(u.unit)}</span>
+        <span class="ans-bar"><span style="width:${pctOf(u.answered,u.given)}%"></span></span>
+        <span class="ans-n"><b>${u.answered}</b>/${u.given}</span>${flag}</div>`; }).join("")}</div>`;
   bindGo(el);
 }
-/* The sidebar's Contributors card: the three people carrying the most
-   answers, from the same figures. */
-function renderContributorsCard(){
+/* The sidebar card: the three systems (sub-systems on a SIG tender) carrying
+   the most answers, from the same figures. */
+function renderAnswersCard(){
   const el=document.getElementById("exp-summary"); if(!el) return;
-  const late=lateByPerson();
-  el.innerHTML=[...ANSWERS_BY_PERSON].sort((a,b)=>b.given-a.given).slice(0,3).map(p=>{
-    const who=personOf(p.name), l=late.get(p.name), [first,last]=p.name.split(" ");
-    return `<div class="exp-line"><div class="exp-av" style="background:${who.color}">${who.init}</div>
-      <div class="exp-ln">${escH(first)} ${last?last[0]+".":""}<span>${p.sys}</span></div>
-      <div class="exp-lbar"><div style="width:${pctOf(p.answered,p.given)}%${l?";background:var(--ia)":""}"></div></div>
-      <div class="exp-lm${l?" over":""}">${l?`${l.n} late`:`${p.answered}/${p.given}`}</div></div>`; }).join("");
+  const title=document.getElementById("exp-summary-title"); if(title) title.textContent=`Answers by ${ANSWERS_UNIT}`;
+  const late=lateByUnit();
+  el.innerHTML=[...ANSWERS_BY_SYSTEM].sort((a,b)=>b.given-a.given).slice(0,3).map(u=>{ const l=late.get(u.unit);
+    return `<div class="exp-line"><div class="exp-code${IS_SIG_TENDER?"":" mono"}">${escH(u.unit)}</div>
+      <div class="exp-lbar"><div style="width:${pctOf(u.answered,u.given)}%${l?";background:var(--ia)":""}"></div></div>
+      <div class="exp-lm${l?" over":""}">${l?`${l.n} late`:`${u.answered}/${u.given}`}</div></div>`; }).join("");
 }
 
 /* ---------- Compliance › What the open requirements are waiting on ---------- */
@@ -2979,7 +2996,7 @@ function renderStatsRisks(){
   const top=[...rs].sort((a,b)=>(n[b.id]||0)-(n[a.id]||0)||a.id.localeCompare(b.id)).slice(0,4);
   const cap=s=>{ s=String(s||"").trim(); return s.charAt(0).toUpperCase()+s.slice(1); };
   el.innerHTML=`<div class="stat-take"><b>${nOf(rs.length,"risk")}</b> in the list, linked ${links===1?"once to a Not compliant answer":`${links} times to Not compliant answers`} — ${shared?`<b>${shared}</b> shared by several requirements`:"none shared yet"}.</div>
-    <div class="ppl-list">${top.map(r=>`<div class="rk-row st-go" data-go="risks.html" title="${r.id}${r.createdBy?` — raised by ${escH(r.createdBy)}`:""}: there is a risk that ${escH(r.that)}">
+    <div class="st-list">${top.map(r=>`<div class="rk-row st-go" data-go="risks.html" title="${r.id}${r.createdBy?` — raised by ${escH(r.createdBy)}`:""}: there is a risk that ${escH(r.that)}">
       <span class="rk-id">${r.id}</span><span class="rk-t">${escH(cap(r.that))}</span>${r.createdBy?avHTML(personOf(r.createdBy)):"<span></span>"}<span class="rk-n">×${n[r.id]||0}</span></div>`).join("")}</div>`
     +(rs.length>top.length?`<div class="stat-foot">+ ${rs.length-top.length} more in the list.</div>`:"");
   bindGo(el);
@@ -3155,10 +3172,10 @@ function renderStatsPanel(){
   // Allocation
   renderStatsAllocStatus(); renderStatsBySystem(); renderStatsRealloc(); renderStatsInvalidated();
   // Compliance
-  renderStatsProgressClient(); renderStatsPeople(); renderStatsWaiting(); renderStatsNCStrategy(); renderStatsRisks();
+  renderStatsProgressClient(); renderStatsAnswers(); renderStatsWaiting(); renderStatsNCStrategy(); renderStatsRisks();
 }
 renderStatsPanel();
-renderContributorsCard();
+renderAnswersCard();
 renderNarrativeCards();
 renderAllocationModelSection();
 

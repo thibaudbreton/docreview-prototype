@@ -22,8 +22,8 @@ La stack communiquée par l'utilisateur est React côté front et Azure côté b
 | Casting incomplet | Périmètres/systèmes utiles au dossier sans personne ; une personne par OBS, responsable de sa conformité (DEC-087) ; absence non bloquante (DEC-025) |
 | Travail à revoir | Réponses affectées par une nouvelle version, selon OPEN-07 |
 | Trajectoire | % d'exigences allouées et répondues dans le temps, de la réception à la soumission ; projection au rythme des 7 derniers jours, dite comme telle (« à ce rythme »), jamais comme un plan. Nécessite snapshots ou historique exploitable |
-| Activité de la semaine | Par personne, sur 7 jours glissants : exigences validées en Allocation (une fois par exigence), réponses données (une fois par affectation), commentaires et questions. Les modifications de champ ne comptent pas — un classement de clics récompenserait l'agitation, pas le travail. Classement visible du chef de projet (DEC-117) |
-| Réponses par personne | Affectations confiées / répondues par personne, retards (âge ≥ 5 jours) et la plus ancienne |
+| Activité de la semaine | **Par système et sous-système, jamais par personne** (DEC-118), sur 7 jours glissants : exigences validées en Allocation (une fois par exigence), réponses données (une fois par affectation), commentaires et questions, chacune comptée pour le système sur lequel elle porte, quel qu'en soit l'auteur. Les modifications de champ ne comptent pas — un classement de clics récompenserait l'agitation, pas le travail |
+| Réponses par système | Affectations confiées / répondues par système (par sous-système sur un tender à un seul système), retards (âge ≥ 5 jours) et le plus ancien. Le nom de la personne n'apparaît que sur l'affectation en retard à relancer (DEC-118) |
 | Réallocations | Exigences renvoyées par un système : réallouées, maintenues, à décider ; par motif (bon système mais mauvaise personne, mauvais système, système non concerné) et par demandeur |
 | Corrections IA | Propositions modifiées par champ ; définir dénominateur, revue effective et corrections répétées. **Hors tableau de bord du projet** (DEC-117) : reste dans Configuration › AI feedback |
 

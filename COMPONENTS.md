@@ -1137,13 +1137,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Compact Expert Line
 - **level**: molecule
 - **file**: dashboard-et-config.html
-- **variants**: normal, over-capacity
-- **tokens**: --text-sm, --text-xs, --text-3, --radius-xs, --ok, --ia, --warn
-- **built-from**: Person Avatar, Progress Bar
+- **variants**: normal, over-capacity (late, `--ia` bar and red count)
+- **tokens**: --text-sm, --text-xs, --text-2, --text-3, --radius-xs, --radius-sm, --space-2, --ok, --ia, --warn
+- **built-from**: Progress Bar
 - **added**: 2026-09-01
-- **changed**: 2026-10-06
-- **notes**: 2026-10-06 (DEC-117): rendered by `renderContributorsCard()` from `ANSWERS_BY_PERSON`, the figures of Statistics › Answers by person — the three people carrying the most answers, their system code under the name, "N late" from `OVERDUE_BRANCHES` — instead of three hardcoded rows (Sophie L. "Monitoring" 3/4…) that contradicted Statistics on the same page. `.exp-line`, dashboard sidebar "Contributors" card (3 instances).
-
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-118): a system code chip (`.exp-code`, mono, on the untracked `--panel-2`) where the person's avatar and name were — the card lists the three systems (sub-systems on a SIG tender) carrying the most answers, from `ANSWERS_BY_SYSTEM`, by `renderAnswersCard()`. `.exp-av`/`.exp-ln` stay in the CSS for the Expert Editor Row. 2026-10-06 (DEC-117): rendered from Statistics' figures instead of three hardcoded rows that contradicted them. `.exp-line`, dashboard sidebar card (3 instances).
 ### Expert Editor Row
 - **level**: molecule
 - **file**: dashboard-et-config.html
@@ -1407,12 +1406,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Leaderboard Row
 - **level**: molecule
 - **file**: dashboard-et-config.html
-- **variants**: default, top (#1, `.is-top` on the untracked `--brand-blue-soft`), you (`.st-you` pill on the viewer's own row)
-- **tokens**: --space-2, --radius-md, --radius-pill, --text-sm, --text-xs, --text, --text-3, --accent, --ok
-- **built-from**: Person Avatar, Progress Bar
+- **variants**: system row (code in the mono face, its sub-systems and their counts underneath, or "not split into sub-systems"), sub-system row (a single-system tender: name, then validated · answers · comments), top (#1, `.is-top` on the untracked `--brand-blue-soft`)
+- **tokens**: --space-2, --radius-md, --radius-pill, --font-mono, --text-sm, --text-xs, --text, --text-3, --accent, --ok
+- **built-from**: Progress Bar
 - **added**: 2026-10-06
-- **changed**: 2026-10-06
-- **notes**: `.lb-row`, Statistics › Project › Most active this week (DEC-117): rank, avatar, name and role, a bar split allocation (`--accent`) / answers (`--ok`) / comments and questions (untracked `--brand-slate`), the total. Top six, "+ N others". Counts requirements validated in Allocation (once per requirement), verdicts (once per assignment) and comments — never field edits. Grid columns hardcoded (14px/24px/1fr/30%/24px); bar track the untracked `--panel-3`.
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-118): ranks systems and their sub-systems, never people — the avatar, the name and role and the "you" pill (`.st-you`) are gone; a single-system (SIG) tender ranks its sub-systems. Each action counts for the system it was done on, whoever did it; live events from the session count for the system they name and show as "not split N". `.lb-row`, Statistics › Project › Most active this week: rank, label, a bar split allocation (`--accent`) / answers (`--ok`) / comments and questions (untracked `--brand-slate`), the total, then a footnote saying nobody's own activity is shown. Never field edits. Grid columns hardcoded (14px/1fr/34%/24px); bar track the untracked `--panel-3`.
 
 ### Avatar Stack
 - **level**: molecule
@@ -1431,8 +1430,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-2, --space-3, --radius-md, --panel, --text-sm, --text-xs, --text, --text-3, --warn
 - **built-from**: Avatar Stack
 - **added**: 2026-10-06
-- **changed**: 2026-10-06
-- **notes**: `.team-row`, Statistics › Project › The team (DEC-117): project management, system managers, contributors — then "Active this week" with its bar (`.ta-bar`, untracked `--brand-blue` on `--panel-3`).
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-118): the bar counts the systems work moved on this week (a single-system tender: its sub-systems), no longer the people active — it was the last per-person activity figure. `.team-row`, Statistics › Project › The team (DEC-117): project management, system managers, contributors — then the activity bar (`.ta-bar`, untracked `--brand-blue` on `--panel-3`).
 
 ### Stacked Bar
 - **level**: molecule
@@ -1464,15 +1463,15 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-10-06
 - **notes**: `.ra-figs` / `.ra-why` / `.ra-row`, Statistics › Allocation › Sent back for reallocation (DEC-117). Reasons are `REASON_LABEL`, the same three as revue-documentaire.html and compliance.html. The status pill is yet another "small coloured status label" (see Status Pill); To decide on the untracked `--ia-soft`, Kept on `--panel-3`, reason bars on `--brand-blue`.
 
-### Person Answers Row
+### System Answers Row
 - **level**: molecule
 - **file**: dashboard-et-config.html
-- **variants**: late (red "N late · Nd"), all in (green "✓ all in"), open (grey "N open")
-- **tokens**: --space-2, --font-mono, --radius-pill, --text-sm, --text-xs, --text, --text-3, --ok, --warn
-- **built-from**: Person Avatar, Progress Bar
+- **variants**: late (red "N late · Nd"), all in (green "✓ all in"), open (grey "N open"); system (code in the mono face) or sub-system (a single-system tender)
+- **tokens**: --space-2, --font-mono, --radius-pill, --text-sm, --text-xs, --text, --text-2, --text-3, --ok, --warn
+- **built-from**: Progress Bar
 - **added**: 2026-10-06
-- **changed**: 2026-10-06
-- **notes**: `.ppl-row`, Statistics › Compliance › Answers by person (DEC-117): late first, then by share answered. Late is `OVERDUE_BRANCHES`, the same as the "contributor response overdue" attention card. Grid columns hardcoded. `.ppl-list` also wraps the Risk Summary Rows.
+- **changed**: 2026-10-07
+- **notes**: Renamed 2026-10-07 from Person Answers Row (DEC-118): one row per system, or per sub-system on a single-system tender — never per person; no avatar. `.ans-row`, Statistics › Compliance › Answers by system: late first, then by share answered. Late is `OVERDUE_BRANCHES` counted under its `unit` — the same entries the "contributor response overdue" card names, because there someone has to be reminded. Grid columns hardcoded (64px/1fr/44px/70px). The list wrapper is now `.st-list`, shared with the Risk Summary Rows.
 
 ### Waiting Queue Row
 - **level**: molecule
@@ -1492,7 +1491,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Person Avatar
 - **added**: 2026-10-06
 - **changed**: 2026-10-06
-- **notes**: `.rk-row`, Statistics › Compliance › Risks (DEC-117): the four most-linked risks — ID, "There is a risk that…", who raised it, ×links; opens the Risks page.
+- **notes**: `.rk-row` in a `.st-list`, Statistics › Compliance › Risks (DEC-117): the four most-linked risks — ID, "There is a risk that…", who raised it, ×links; opens the Risks page.
 
 ## Organisms
 
@@ -1943,8 +1942,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: none beyond its parts
 - **built-from**: Compact Expert Line
 - **added**: 2026-09-01
-- **changed**: 2026-10-06
-- **notes**: 2026-10-06 (DEC-117): the "Contributors" card; its rows come from the same figures as Statistics › Answers by person (see Compact Expert Line). Dashboard sidebar.
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-118): titled "Answers by system" (by sub-system on a SIG tender) — it listed three people until then. 2026-10-06 (DEC-117): its rows come from the same figures as Statistics (see Compact Expert Line). Dashboard sidebar.
 
 ### Activity Feed Panel
 - **level**: organism
@@ -1961,10 +1960,10 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **file**: dashboard-et-config.html
 - **variants**: Project tab (default), Allocation tab, Compliance tab
 - **tokens**: --space-4
-- **built-from**: Tab Bar, Stat Block, Key Dates List, Progress Trend Chart, Leaderboard Row, Team Role Row, Avatar Stack, Stacked Bar, System Manager Row, Reallocation Breakdown, Progress Sequence, Person Answers Row, Waiting Queue Row, Risk Summary Row
+- **built-from**: Tab Bar, Stat Block, Key Dates List, Progress Trend Chart, Leaderboard Row, Team Role Row, Avatar Stack, Stacked Bar, System Manager Row, Reallocation Breakdown, Progress Sequence, System Answers Row, Waiting Queue Row, Risk Summary Row
 - **added**: 2026-09-01
-- **changed**: 2026-10-06
-- **notes**: 2026-10-06 (DEC-117): rebuilt — business only, people first; nothing measures the AI any more. **Project**: Timeline (Key Dates List + Progress Trend Chart), Most active this week (Leaderboard Rows), The team (Team Role Rows). **Allocation**: Where the requirements are (Stacked Bar), By system with its manager (System Manager Rows), Sent back for reallocation (Reallocation Breakdown), Work invalidated by a new version (only when non-zero). **Compliance**: Progress to the client (Progress Sequence, now opening on what the client will be told), Answers by person, What the open requirements are waiting on, Not compliant by gap strategy, Risks. Gone: Pass 1 → pass 2, Derivation quality (ring gauges), AI reliability, Load by system and Casting gaps (merged into By system), Consolidation, Assignment funnel, Late by contributor, Blocked on the client and Bottlenecks (merged into Waiting on), Compliance profile (a sentence of Progress to the client now). Sources: Allocation and the timeline read this screen's 14-requirement mirror — not Allocation's own report, which counts the capture's real requirements once Allocation is opened (DEC-098), so the phase card and Statistics can still disagree after that; the Compliance tab reads Compliance's totals (`getGapStats`) and the shell's risk list; history the backend doesn't keep (progress over time, each person's week, decided reallocations, answers per person at Compliance's 100 assigned / 58 answered) is hand-authored; the ranking adds this session's actions live from the shell's activity log (`getActivityLog`). 2026-09-30 (SPEC-risks.md §9): Progress to the client, Risks and Not compliant by gap strategy added to the Compliance tab — kept as they were by DEC-117, each now opening on its sentence. `.stats-panel`.
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-118): no figure measures a person any more — the weekly ranking and the answers are by system and sub-system (sub-systems = the perimeters staffed in Team casting), "active this week" counts systems. People stay named only where the work needs it: who to remind for an overdue answer, who sent a requirement back, who raised a risk, who is staffed. 2026-10-06 (DEC-117): rebuilt — business only, people first; nothing measures the AI any more. **Project**: Timeline (Key Dates List + Progress Trend Chart), Most active this week (Leaderboard Rows), The team (Team Role Rows). **Allocation**: Where the requirements are (Stacked Bar), By system with its manager (System Manager Rows), Sent back for reallocation (Reallocation Breakdown), Work invalidated by a new version (only when non-zero). **Compliance**: Progress to the client (Progress Sequence, now opening on what the client will be told), Answers by person, What the open requirements are waiting on, Not compliant by gap strategy, Risks. Gone: Pass 1 → pass 2, Derivation quality (ring gauges), AI reliability, Load by system and Casting gaps (merged into By system), Consolidation, Assignment funnel, Late by contributor, Blocked on the client and Bottlenecks (merged into Waiting on), Compliance profile (a sentence of Progress to the client now). Sources: Allocation and the timeline read this screen's 14-requirement mirror — not Allocation's own report, which counts the capture's real requirements once Allocation is opened (DEC-098), so the phase card and Statistics can still disagree after that; the Compliance tab reads Compliance's totals (`getGapStats`) and the shell's risk list; history the backend doesn't keep (progress over time, each person's week, decided reallocations, answers per person at Compliance's 100 assigned / 58 answered) is hand-authored; the ranking adds this session's actions live from the shell's activity log (`getActivityLog`). 2026-09-30 (SPEC-risks.md §9): Progress to the client, Risks and Not compliant by gap strategy added to the Compliance tab — kept as they were by DEC-117, each now opening on its sentence. `.stats-panel`.
 ### Config Sidebar Nav
 - **level**: organism
 - **file**: dashboard-et-config.html
