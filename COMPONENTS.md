@@ -459,9 +459,29 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --radius-xs
 - **built-from**: none
 - **added**: 2026-09-23
-- **changed**: 2026-09-23
-- **notes**: `wordDiffHTML(prev, cur)`, a word-level LCS diff computed at render time — the current text no longer carries diff markup inside it. Used in Compare (document blocks) and in the Versions tab. Colours hardcoded (`#f6d5d2`/`#8c2f28`, `#cfe9db`/`#155c3c`), not tokens — same values as the older Compare-mode rules.
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-119): split in two — `wordDiffOps(prev, cur)` returns the kept / removed / added runs and `wordDiffHTML` renders them as before; the Changes Cell renders the same runs its own way (token colours, compact excerpt). `wordDiffHTML(prev, cur)`, a word-level LCS diff computed at render time — the current text no longer carries diff markup inside it. Used in the Document view's Changes (document blocks — Compare until 2026-10-07) and in the Versions tab. Colours hardcoded (`#f6d5d2`/`#8c2f28`, `#cfe9db`/`#155c3c`), not tokens — same values as the older Compare-mode rules.
 
+
+### Version Picker Button
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: one requirement (`.chg-ver`, "vs v2.0 ▾" in a Changes Cell), chosen for this requirement (`.own`, accent), quiet (a row with no change, half opacity until hovered or active), all requirements (`.chg-all` in the Changes column header, "vs previous ▾" / "vs first ▾")
+- **tokens**: --space-2, --radius-pill, --panel, --text-xs, --text-2, --accent, --accent-soft
+- **built-from**: none
+- **added**: 2026-10-07
+- **changed**: 2026-10-07
+- **notes**: DEC-119. Opens the Version Picker Popover. Depends on untracked `--line-2` (border); vertical padding 1px and the quiet opacity (.5) hardcoded. Its title says what the row is compared with (version, date, note).
+
+### Change Type Tag
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: modified (`.chg-tag`, the version(s) the requirement changed in, e.g. "v2.0 · v2.1"), added ("New", "New in v2.0"), same (`.chg-tag.same` — hidden on one line when the column compares with the previous version, the change being in the version in force by definition; shown in Wrap text); in the Changes Navigator `.nc-t` added / modified / removed
+- **tokens**: --ia, --ok, --warn, --radius-pill, --text-xs
+- **built-from**: none
+- **added**: 2026-10-07
+- **changed**: 2026-10-07
+- **notes**: DEC-119. Depends on untracked `--ia-soft`, `--ok-soft`, `--warn-soft`; padding hardcoded (`0 6px`, `1px 6px`). Known duplication: the same "what kind of change" label exists four times — `.chg-tag` (Changes Cell), `.nc-t` (Change List Card), the paper's `data-chlabel` chip ("Modified in v2.1") and the Versions Tab's `.ver-type` — with the same colour logic written each time.
 ### Nature Picker
 - **level**: atom
 - **file**: revue-documentaire.html
@@ -477,12 +497,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Shortcut Help
 - **level**: molecule
 - **file**: revue-documentaire.html, compliance.html
-- **variants**: Allocation list (move, select, edit, validate, next, undo), Compliance list (move, select, remind, ask the client, set aside, next, undo, custom columns)
+- **variants**: Allocation list (move, select, edit, validate, next, Changes column, undo), Compliance list (move, select, remind, ask the client, set aside, next, undo, custom columns)
 - **tokens**: --line-2, --radius-md, --radius-xs, --panel, --panel-2, --text, --text-2, --text-3, --text-sm, --text-xs, --font-mono, --accent, --space-2, --space-3
 - **built-from**: Kbd Key
 - **added**: 2026-09-24
-- **changed**: 2026-09-24
-- **notes**: 2026-09-24 (DEC-085): lists the new selection keys (X, Shift+↑/↓, ⌘/Ctrl+A, Esc), N and ⌘/Ctrl+Z. `.kbd-help`, a 30px "⌨" at the right end of the filter toolbar; the list (`.kbd-help-pop`, 320px, right-aligned under the icon) opens on hover and on keyboard focus (`:focus-within`, tabindex 0), pure CSS. The rows are written by hand from each screen's keydown handlers — a new shortcut has to be added here too. CSS duplicated in both files. Hardcoded: 30px square, 320px width, 96px key column, shadow `rgba(0,0,0,.25)`. Depends on untracked `--line-2`, `--panel-2`.
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-119): Allocation's list adds C — show / hide the Changes column. 2026-09-24 (DEC-085): lists the new selection keys (X, Shift+↑/↓, ⌘/Ctrl+A, Esc), N and ⌘/Ctrl+Z. `.kbd-help`, a 30px "⌨" at the right end of the filter toolbar; the list (`.kbd-help-pop`, 320px, right-aligned under the icon) opens on hover and on keyboard focus (`:focus-within`, tabindex 0), pure CSS. The rows are written by hand from each screen's keydown handlers — a new shortcut has to be added here too. CSS duplicated in both files. Hardcoded: 30px square, 320px width, 96px key column, shadow `rgba(0,0,0,.25)`. Depends on untracked `--line-2`, `--panel-2`.
 
 ### Search Box
 - **level**: molecule
@@ -516,13 +536,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Tab Bar
 - **level**: molecule
-- **file**: accueil.html, compliance.html, dashboard-et-config.html
-- **variants**: underline-active (accueil.html tabs, compliance `.set-tabs`), pill/background-active (`.mode-switch`, `.nav-toggle`, dashboard-et-config.html `.stats-tabs`)
+- **file**: accueil.html, compliance.html, dashboard-et-config.html, revue-documentaire.html
+- **variants**: underline-active (accueil.html tabs, compliance `.set-tabs`), pill/background-active (`.mode-switch`, `.nav-toggle`, dashboard-et-config.html `.stats-tabs`, revue-documentaire.html `.nav-tabs`)
 - **tokens**: --space-1, --space-2, --space-4, --space-5, --line, --text-3, --text-2, --text, --accent, --text-base, --text-xs
 - **built-from**: none (buttons are plain, not reusing any button atom)
 - **added**: 2026-09-01
-- **changed**: 2026-10-06
-- **notes**: 2026-10-06 (DEC-116): qa.html's Questions / Answers `.hub-tabs` replaced by the Q&A View Switch. 2026-09-24: the detail panel's `.set-tabs` (revue-documentaire.html and compliance.html) scroll horizontally instead of wrapping or squeezing (`overflow-x:auto`, tabs `flex-shrink:0`/`nowrap`); the per-system tab is labelled "Activity" (was "System") on both screens; compliance.html's "Document" tab is removed. At least four independent implementations of "group of switchable tabs" across the app with two different visual languages and inconsistent hardcoded padding (5–10px). `.mode-switch` CSS exists in qa.html but is never instantiated there — dead code. Active-tab box-shadow hardcoded (`rgba(0,0,0,.15–.4)`) in several variants.
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-119): revue-documentaire.html's `.mode-switch` is Review / Document only — Compare became the navigator's Changes tab, and the switch stays on Document while it is open; the navigator's Outline / Changes tabs (`.nav-tabs`, count pill on Changes) are one more pill implementation, active shadow hardcoded `rgba(0,0,0,.12)`, right margin 34px hardcoded to clear the panel toggle. 2026-10-06 (DEC-116): qa.html's Questions / Answers `.hub-tabs` replaced by the Q&A View Switch. 2026-09-24: the detail panel's `.set-tabs` (revue-documentaire.html and compliance.html) scroll horizontally instead of wrapping or squeezing (`overflow-x:auto`, tabs `flex-shrink:0`/`nowrap`); the per-system tab is labelled "Activity" (was "System") on both screens; compliance.html's "Document" tab is removed. At least four independent implementations of "group of switchable tabs" across the app with two different visual languages and inconsistent hardcoded padding (5–10px). `.mode-switch` CSS exists in qa.html but is never instantiated there — dead code. Active-tab box-shadow hardcoded (`rgba(0,0,0,.15–.4)`) in several variants.
 
 ### Segmented Control
 - **level**: molecule
@@ -631,8 +651,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3, --text-xs, --text-sm, --line, --accent, --accent-soft
 - **built-from**: Checkbox, Status/Compliance/Verdict Pill, Activity / Requirement Tag, Disclosure Chevron, Select Dropdown, Text Input, Count Badge
 - **added**: 2026-09-01
-- **changed**: 2026-10-01
-- **notes**: 2026-10-01: free-text cells (`.cell-text`, e.g. ABS) end with an ellipsis instead of being cut mid-letter. `.rrow`. Explicitly documented in both screens' source comments as the same review-table engine, shared via `table-engine.js`. Row height (`--rrow-h:44px`) and column-width grid (`--rgrid-cols`/`--frgrid-cols`) are locally-scoped custom properties with fully hardcoded pixel values, none aligned to the space scale — column config differs per screen, everything else is shared.
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-119, revue-documentaire.html): a Changes Cell after the Requirement cell, empty on information, system and team rows; the requirement's "Δ vX" badge (`.cbadge.chg-delta`, an inline-styled `.cbadge` before) only shows while the Changes column is hidden. 2026-10-01: free-text cells (`.cell-text`, e.g. ABS) end with an ellipsis instead of being cut mid-letter. `.rrow`. Explicitly documented in both screens' source comments as the same review-table engine, shared via `table-engine.js`. Row height (`--rrow-h:44px`) and column-width grid (`--rgrid-cols`/`--frgrid-cols`) are locally-scoped custom properties with fully hardcoded pixel values, none aligned to the space scale — column config differs per screen, everything else is shared.
 
 ### Branch / Allocated-Activity Sub-row
 - **level**: molecule
@@ -811,8 +831,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-3, --radius-pill, --text-sm, --ok, --ia, --warn
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-23
-- **notes**: `.csum`, Compare Bar ("+1 added / ~2 modified / −1 removed"). Counts are computed for the compared document and range since 2026-09-23 — they were hardcoded.
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-119): lives in the Changes Navigator now (`.nc-sum .csum`, padding tightened to a hardcoded `1px var(--space-2)`), the Compare Bar is gone. `.csum` ("+1 added / ~2 modified / −1 removed"). Counts are computed for the compared document and range since 2026-09-23 — they were hardcoded.
 
 ### Advanced Filter Condition Row
 - **level**: molecule
@@ -1290,8 +1310,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --ia, --ia-soft, --ok, --ok-soft, --paper, --paper-ink, --font-doc, --text-sm, --text-xs, --radius-pill, --radius-sm
 - **built-from**: Word Diff, Next-Step line (`.next-step`), Ghost Button (`.mini-btn`)
 - **added**: 2026-09-23
-- **changed**: 2026-09-23
-- **notes**: `versionsTabHTML()`. Only shown when the requirement changed in the version of its document in force (DEC-071) — no tab otherwise. No "reviewed / action" state of its own: the change sets the requirement back to To review and validating it is the treatment (DEC-072); the tab says when a more restrictive status (e.g. Incomplete) is what the pill shows. "Open in Compare" jumps to the document and range. Replaces the Change Card. Depends on untracked `--ia-soft`, `--ok-soft`, `--panel-2`.
+- **changed**: 2026-10-07
+- **notes**: `versionsTabHTML()`. Only shown when the requirement changed in the version of its document in force (DEC-071) — no tab otherwise. No "reviewed / action" state of its own: the change sets the requirement back to To review and validating it is the treatment (DEC-072); the tab says when a more restrictive status (e.g. Incomplete) is what the pill shows. "Show in the document →" ("Open in Compare" until 2026-10-07, DEC-119) opens the Document view on its Changes, at the document and range of the change; not shown when already there. Replaces the Change Card. Depends on untracked `--ia-soft`, `--ok-soft`, `--panel-2`.
 
 ### Removed Requirement Panel
 - **level**: molecule
@@ -1300,9 +1320,39 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --paper, --paper-ink, --font-doc, --text-xs, --text-3
 - **built-from**: Status Pill (Requirement Workflow State), detail field
 - **added**: 2026-09-23
-- **changed**: 2026-09-23
-- **notes**: `renderRemovedPanel()`, what a removed requirement (a ghost block, Compare only — LIFE-006) was and when it went. Read-only. Replaces the Change Card for removals.
+- **changed**: 2026-10-07
+- **notes**: `renderRemovedPanel()`, what a removed requirement (a ghost block, shown only under Changes in the Document view — LIFE-006; "Compare only" until 2026-10-07, DEC-119) was and when it went. Read-only. Replaces the Change Card for removals.
 
+
+### Changes Cell
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: changed (on one line, an excerpt that starts a few words before the first change; in Wrap text, the whole requirement under a line with the Change Type Tag and the Version Picker Button), new (the whole text highlighted as added), no change (quiet picker), single version (no picker — the document has one version), compared with a version of its own (picker in accent)
+- **tokens**: --space-1, --space-2, --text-sm, --text-base, --text-xs, --text, --text-3, --warn, --ok, --radius-xs
+- **built-from**: Change Type Tag, Word Diff (its runs, `wordDiffOps()`), Version Picker Button
+- **added**: 2026-10-07
+- **changed**: 2026-10-07
+- **notes**: DEC-119. `.rcell.c-chg`, `chgCellHTML()` / `chgDiffHTML()`: the requirement in force with what changed since an earlier version of its own document — removed words struck (`.cd-del`), added ones highlighted (`.cd-ins`), as DOORS shows it. The version compared with is the row's own choice (`state.chgBase[id]`) or the column's (`state.chgAll`: the document's previous version, or its first). Excerpt rule hardcoded in `chgDiffHTML()`: 3 words before the first change, runs of more than 8 unchanged words between changes cut to 4 … 4, the tail left to the cell's ellipsis. Depends on untracked `--warn-soft`, `--ok-soft` for the highlights — the Word Diff atom colours the same runs with hardcoded hex on the paper, so one diff has two colourings. Column width `minmax(280px,1.5fr)` hardcoded in `RCOLS`. A removed requirement has no row, so it never shows here (LIFE-006).
+
+### Version Picker Popover
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: one requirement (the earlier versions of its document with date · note, "— no change since" under a version after which the requirement did not change, "Same as the column" once it has its own), all requirements (the previous version / the first version, and a line saying that choosing resets the requirements set one by one)
+- **tokens**: --space-1, --space-2, --radius-md, --radius-sm, --line, --text-xs, --text-sm, --text, --text-2, --text-3, --accent
+- **built-from**: Version Picker Button (its anchor)
+- **added**: 2026-10-07
+- **changed**: 2026-10-07
+- **notes**: DEC-119. One `#chg-pop` element appended to the body, fixed-positioned under its button (`openChgRowPop()`, `openChgAllPop()`); closes on an outside click and on Esc. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`. Hardcoded: min/max width 250/340px, z-index 80, shadow `rgba(0,0,0,.35)`, item padding 6px. One more popover implementation next to the column filter's (`#colf-pop`) and the custom column picker's (`#cf-pop`).
+
+### Change List Card
+- **level**: molecule
+- **file**: revue-documentaire.html
+- **variants**: added, modified, removed; current (`.on`, accent ring); reopens an answer (warn impact line)
+- **tokens**: --space-2, --radius-md, --line, --panel, --accent, --text, --text-2, --text-3, --text-xs, --font-mono, --warn
+- **built-from**: Change Type Tag
+- **added**: 2026-10-07
+- **changed**: 2026-10-07
+- **notes**: DEC-119. `.nc-card` in the Changes Navigator: type, ID, § of the paragraph, what changed (clamped to two lines), and what the change does to the work already done (`changeImpact()`: removed → its work stays archived with the earlier version; added → needs allocation / allocated since; was answered → back to To review, in warn; awaiting its answer → the contributor answers the new text; otherwise back to To review). Click selects the requirement and scrolls the paper to it. Hardcoded: horizontal padding 10px, gaps 3px/6px, ring `color-mix(var(--accent) 16%)`. Depends on untracked `--line-2` (hover).
 ### Nature and Class Fields
 - **level**: molecule
 - **file**: revue-documentaire.html
@@ -1518,32 +1568,42 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Left Navigator Panel
 - **level**: organism
 - **file**: compliance.html, revue-documentaire.html
-- **variants**: "By section" (Nav Tree Item groups), "By expert" (Expert Card list, compliance.html only), expanded/collapsed (hardcoded 22px rail)
+- **variants**: "By section" (Nav Tree Item groups), "By expert" (Expert Card list, compliance.html only), expanded/collapsed (hardcoded 22px rail), Outline / Changes tabs (revue-documentaire.html, Document view, when a document has an earlier version), collapsed rail with a Changes marker
 - **tokens**: --space-1, --space-2, --space-3, --line, --panel
-- **built-from**: Search Box, Nav Tree Section Header, Nav Tree Item, Expert Card, Panel Toggle Chevron
+- **built-from**: Search Box, Nav Tree Section Header, Nav Tree Item, Expert Card, Panel Toggle Chevron, Tab Bar, Changes Navigator
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.nav`. Fixed width (264px) hardcoded. revue-documentaire.html starts fully collapsed by design — a code comment notes real capture data "runs to dozens of sections" and a wide-open tree was unusable at that scale.
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-119): in the Document view the navigator has two tabs — Outline (the tree, its search, Add document, the count) and Changes (the Changes Navigator). Folded to its rail (it folds for the table), it still shows the number of changes and a vertical "Changes" (`.nav-rail-chg`), which opens it on that tab; marker padding and the count's 16px min-width hardcoded. `.nav`. Fixed width (264px) hardcoded. revue-documentaire.html starts fully collapsed by design — a code comment notes real capture data "runs to dozens of sections" and a wide-open tree was unusable at that scale.
 
+
+### Changes Navigator
+- **level**: organism
+- **file**: revue-documentaire.html
+- **variants**: changes listed, no change in the range, document with one version only (says so)
+- **tokens**: --space-2, --space-3, --space-4, --radius-sm, --text-xs, --text-sm, --text, --text-3, --warn, --accent
+- **built-from**: Compare Summary Chip, Change List Card, native selects (`.nc-select`)
+- **added**: 2026-10-07
+- **changed**: 2026-10-07
+- **notes**: DEC-119, replaces the Compare Bar. `#nav-changes`, `renderNavChanges()`: the Document view's Changes tab in the Left Navigator Panel — the document (versions belong to documents, DEC-069; one at a time, DEC-070), the earlier version compared with "→ vX · in force", the counts, how many changes reopen an answer already given, "Change k of n" with ‹ › (and ] / [ on the keyboard), then a Change List Card per change. The paper shows each change in place and removed requirements where they were; the details panel stays the selected requirement's and opens on its Versions tab. Internally the lens is still `state.mode === "compare"`, so the paper's rendering did not change. The list keeps its scroll when re-rendered and brings the current card into view. `.nc-select` is its own select styling, not the Select Dropdown atom's. Depends on untracked `--panel-2`, `--line-2`, `--warn-soft`.
 ### Requirement Table (Review Grid)
 - **level**: organism
 - **file**: compliance.html, revue-documentaire.html
 - **variants**: document-order, sorted, grouped-by-activity, filtered-to-selection, wrap-text, scale-test (revue-documentaire.html — 12,000-row virtualized mode)
 - **tokens**: --space-3, --space-5, --radius-lg, --line, --panel, --accent-soft
-- **built-from**: Requirement Row, Branch / Allocated-Activity Sub-row, Grid Section / Group Header, Filter Toolbar, Bulk Selection Action Bar, Checkbox, Custom Column Cell, Custom Column Header Cell
+- **built-from**: Requirement Row, Branch / Allocated-Activity Sub-row, Grid Section / Group Header, Filter Toolbar, Bulk Selection Action Bar, Checkbox, Custom Column Cell, Custom Column Header Cell, Changes Cell, Version Picker Button, Version Picker Popover
 - **added**: 2026-09-01
-- **changed**: 2026-09-24
-- **notes**: compliance.html (2026-09-24): the "Sort: …" dropdown is gone — every column header sorts, custom columns included (`F_SORT_KEYS`, `setSortCol()`, `bindSortHeaders()`): ▲ then ▼ then back to document order, with "↺ Document order" in the toolbar while a sort is on, same behaviour and CSS as Allocation; with no sort the document titles and section headings show. The "action needed first" order has no header equivalent and went with the dropdown. `.rgrid`. Explicitly documented in both screens as the same interaction engine (`table-engine.js`) — per-column sort/filter, drag-select across the selection gutter, keyboard active-cell navigation — with only column config differing per screen. Keyboard (revue-documentaire.html, 2026-09-23): ←/→ follow the DRAWN column order (pinned three + `state.colOrder`, so View-menu reordering and custom columns are honoured — it used to be a fixed list); Enter or F2 on the active cell starts editing it; focusing a control inside a cell makes that cell the active one. compliance.html (2026-09-23): a click on a header cell no longer toggles its column hidden — a leftover from when a collapsed column stayed as a clickable sliver; since columns are fully removed (`display:none`), one click made a column vanish with nothing to click it back. Hiding goes through the View menu only, as on Allocation. Both screens (2026-09-23): columns are resizable from a handle on each header's right edge (Column Resize Handle); a dragged width is a fixed px value, so the Requirement column stops being the flexible one until its handle is double-clicked. `--rgrid-cols`/`--frgrid-cols` widths are hardcoded px/fr values. Allocation's table has no Nature column (DEC-074): a block's nature (Information / Heading / Requirement) is read and changed in its details.
+- **changed**: 2026-10-07
+- **notes**: revue-documentaire.html (2026-10-07, DEC-119): a Changes column (key `chg`, right after Requirement) — see Changes Cell. Its header carries the all-rows Version Picker Button and a column filter (Modified / Added / No change, against each row's own compared version); shown by default when a document has an earlier version, hidden otherwise; C shows or hides it, as does the View menu. compliance.html (2026-09-24): the "Sort: …" dropdown is gone — every column header sorts, custom columns included (`F_SORT_KEYS`, `setSortCol()`, `bindSortHeaders()`): ▲ then ▼ then back to document order, with "↺ Document order" in the toolbar while a sort is on, same behaviour and CSS as Allocation; with no sort the document titles and section headings show. The "action needed first" order has no header equivalent and went with the dropdown. `.rgrid`. Explicitly documented in both screens as the same interaction engine (`table-engine.js`) — per-column sort/filter, drag-select across the selection gutter, keyboard active-cell navigation — with only column config differing per screen. Keyboard (revue-documentaire.html, 2026-09-23): ←/→ follow the DRAWN column order (pinned three + `state.colOrder`, so View-menu reordering and custom columns are honoured — it used to be a fixed list); Enter or F2 on the active cell starts editing it; focusing a control inside a cell makes that cell the active one. compliance.html (2026-09-23): a click on a header cell no longer toggles its column hidden — a leftover from when a collapsed column stayed as a clickable sliver; since columns are fully removed (`display:none`), one click made a column vanish with nothing to click it back. Hiding goes through the View menu only, as on Allocation. Both screens (2026-09-23): columns are resizable from a handle on each header's right edge (Column Resize Handle); a dragged width is a fixed px value, so the Requirement column stops being the flexible one until its handle is double-clicked. `--rgrid-cols`/`--frgrid-cols` widths are hardcoded px/fr values. Allocation's table has no Nature column (DEC-074): a block's nature (Information / Heading / Requirement) is read and changed in its details.
 
 ### Document Reading View
 - **level**: organism
 - **file**: compliance.html, revue-documentaire.html
-- **variants**: single document, filtered by document, redacted (restricted view), change-annotated (Compare mode, revue-documentaire.html only)
+- **variants**: single document, filtered by document, redacted (restricted view), change-annotated (the navigator's Changes tab — Compare mode until 2026-10-07 — revue-documentaire.html only)
 - **tokens**: --space-6, --space-8, --paper, --paper-ink, --font-doc, --text-base, --text-xl
 - **built-from**: Document Block, Status Dot
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.doc-scroll`/`.paper`. Deliberately a fixed light "page" regardless of app theme (`--paper`/`--paper-ink` are identical in both theme blocks). Width, padding, and box-shadow all hardcoded.
+- **changed**: 2026-10-07
+- **notes**: 2026-10-07 (DEC-119): no Compare mode any more — the change-annotated paper is the Document view with the navigator on Changes (Changes Navigator). `.doc-scroll`/`.paper`. Deliberately a fixed light "page" regardless of app theme (`--paper`/`--paper-ink` are identical in both theme blocks). Width, padding, and box-shadow all hardcoded.
 
 ### Partner Verdict Entry
 - **level**: molecule
@@ -1684,16 +1744,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.notif-drop`, positioned with hardcoded absolute offsets tied to the current header layout rather than anchored to its trigger button.
-
-### Compare Bar
-- **level**: organism
-- **file**: revue-documentaire.html
-- **variants**: none
-- **tokens**: --space-3, --space-4
-- **built-from**: Select Dropdown, Compare Summary Chip
-- **added**: 2026-09-01
-- **changed**: 2026-09-23
-- **notes**: `.compare-bar`, Compare mode only. Rendered by `renderCompareBar()` since 2026-09-23 (it was static markup whose version selects did nothing): document select first, then that document's earlier versions, "→ vX (in force)", counts and change navigation computed for the selected document and range (`cmpChangeIds()`). A document with one version says so instead of showing an empty comparison. Versions are per document (DEC-069).
 
 ### AI Feedback Panel (Why Box)
 - **level**: organism
@@ -2114,3 +2164,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Compliance Bar — removed 2026-10-06, replaced by the sentence opening Progress to the client (what the client will be told); its sidebar variant went on 2026-09-16
 
 ### Compliance Summary Panel — removed 2026-09-16 (recorded 2026-10-06), no longer needed: Statistics drew the same bar
+
+### Compare Bar — removed 2026-10-07, replaced by the Changes Navigator (DEC-119: Compare is no longer a mode, the Document view's navigator has a Changes tab)
+- **level**: organism
+- **file**: revue-documentaire.html
+- **variants**: none
+- **tokens**: --space-3, --space-4
+- **built-from**: Select Dropdown, Compare Summary Chip
+- **added**: 2026-09-01
+- **changed**: 2026-09-23
+- **notes**: `.compare-bar`, Compare mode only. Rendered by `renderCompareBar()` since 2026-09-23 (it was static markup whose version selects did nothing): document select first, then that document's earlier versions, "→ vX (in force)", counts and change navigation computed for the selected document and range (`cmpChangeIds()`). A document with one version says so instead of showing an empty comparison. Versions are per document (DEC-069).
