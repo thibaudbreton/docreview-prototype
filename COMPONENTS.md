@@ -489,11 +489,21 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text-xs, --radius-sm, --ia, --paper-ink-2
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-28
-- **notes**: 2026-09-28 (DEC-086): disabled for a contributor, in the Document view too (`attachReclassify` leaves it inert with a "Set by the project manager" title). Document view only since 2026-09-23 — the table row's compact "▾" variant (`.row-natpick`, on requirement and information rows) was removed; in the table, nature is corrected in the detail panel's Nature field. `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
+- **changed**: 2026-10-08
+- **notes**: 2026-10-08 (DEC-120): the AI-typed title gives the characterisation model's level ("…with low confidence") instead of "detected by the AI". 2026-09-28 (DEC-086): disabled for a contributor, in the Document view too (`attachReclassify` leaves it inert with a "Set by the project manager" title). Document view only since 2026-09-23 — the table row's compact "▾" variant (`.row-natpick`, on requirement and information rows) was removed; in the table, nature is corrected in the detail panel's Nature field. `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
 
 ## Molecules
 
+
+### Confidence Level Badge
+- **level**: atom
+- **file**: revue-documentaire.html
+- **variants**: high, medium, low (`.weak` — the unconfirmed call that sends a requirement to To review)
+- **tokens**: --text-xs, --text-3, --ia, --radius-pill
+- **built-from**: none
+- **added**: 2026-10-08
+- **changed**: 2026-10-08
+- **notes**: DEC-120. `.deriv-conf.char-conf`, `charConfBadgeHTML()`: the characterisation model (Nature, Class) gives Low / Medium / High, not a percentage, so its badge is the percentage badge (`.deriv-conf`, `confBadgeHTML()` takes `{level}` as well as `{c}`) with a word in it. Shown only while the value is still the AI's — a person's pick (`dropCharConf()`) carries none. Beside a field label it drops the label's uppercase (`.field>label .char-conf`). Depends on untracked `--panel-3`, `--ia-soft`; padding `1px 6px` hardcoded.
 ### Shortcut Help
 - **level**: molecule
 - **file**: revue-documentaire.html, compliance.html
@@ -1356,12 +1366,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Nature and Class Fields
 - **level**: molecule
 - **file**: revue-documentaire.html
-- **variants**: nature only (heading, information), nature + class (requirement); AI-detected (hint + Confirm button), read-only (contributor)
+- **variants**: nature only (heading, information), nature + class (requirement); with the characterisation model's level beside the label (Confidence Level Badge; Low highlighted), read-only (contributor)
 - **tokens**: --ia, --text-xs
-- **built-from**: Select Dropdown (`.ui-select`), Ghost Button (`.mini-btn`)
+- **built-from**: Select Dropdown (`.ui-select`), Ghost Button (`.mini-btn`), Confidence Level Badge
 - **added**: 2026-09-23
-- **changed**: 2026-09-29
-- **notes**: 2026-09-29 (DEC-099): the "Detected by the AI, not confirmed yet" line and its Confirm button are gone for everyone — validating the requirement confirms them. 2026-09-28 (DEC-086): read-only for a contributor — the value as text, "· AI, unconfirmed" when it applies, and "Set by the project manager" (`.char-ro`) underneath; no select, no Confirm. `natureFieldHTML()` / `classFieldHTML()`, at the top of every block's details (SIG and other single-pass tenders, the contributor view; the Turnkey PM view has the same two fields in its own layout, now labelled "Class" too, not "Type"). Nature offers only Information / Heading / Requirement (DEC-074) — it briefly held Functional / Performance / Security / Interface / Regulatory, which are gone from Allocation. Confirm buttons exist because re-picking the current value in a select fires no change event.
+- **changed**: 2026-10-08
+- **notes**: 2026-10-08 (DEC-120): the label carries the model's level (High / Medium / Low) while the value is the AI's; the read-only "· AI, unconfirmed" (`.char-ro-ai`) is replaced by it. 2026-09-29 (DEC-099): the "Detected by the AI, not confirmed yet" line and its Confirm button are gone for everyone — validating the requirement confirms them. 2026-09-28 (DEC-086): read-only for a contributor — the value as text, "· AI, unconfirmed" when it applies, and "Set by the project manager" (`.char-ro`) underneath; no select, no Confirm. `natureFieldHTML()` / `classFieldHTML()`, at the top of every block's details (SIG and other single-pass tenders, the contributor view; the Turnkey PM view has the same two fields in its own layout, now labelled "Class" too, not "Type"). Nature offers only Information / Heading / Requirement (DEC-074) — it briefly held Functional / Performance / Security / Interface / Regulatory, which are gone from Allocation. Confirm buttons exist because re-picking the current value in a select fires no change event.
 
 ### Re-run Prompt
 - **level**: molecule
@@ -1378,10 +1388,10 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **file**: revue-documentaire.html
 - **variants**: single-system model block ("SIG's model" — ABS, PBS, OBS), Turnkey pass 1 (Nature, Class, PBS/ABS, System), contributor view
 - **tokens**: --panel-2, --line, --radius-md, --space-3, --text-xs, --text-3
-- **built-from**: Derivation Step (`derivStepHTML()` — label, confidence badge, control, hint), OBS List, Re-run Control, Re-run Prompt
+- **built-from**: Derivation Step (`derivStepHTML()` — label, confidence badge, control, hint), Confidence Level Badge, OBS List, Re-run Control, Re-run Prompt
 - **added**: 2026-09-23
-- **changed**: 2026-10-07
-- **notes**: 2026-10-07: in the Turnkey pass 1, the PBS / ABS step shows its confidence badge only beside a value — "87%" over an empty field read as the AI being sure of nothing. 2026-10-06: the contributor's view no longer shows "Distribution across systems" (the compact chip row, `.distrib-compact` / `.distrib-chip`, deleted) — the information was scattered and not theirs to act on; the project manager's distribution block is unchanged. 2026-09-29: optional `opts.noDistrib` drops the distribution block; the Turnkey system detail (DEC-101) renders the chain for the system opened, edits going to that branch. Turnkey pass 1's System list has a ✕ per system since 2026-09-23 (DEC-076, `removeSystem()`), down to none — empty state "No system yet". Each system row carries its provenance, one or the other (2026-09-23): the AI's confidence badge when the Turnkey model proposed it, a "manual" note when a person added it — "manual" used to mean "no allocation model" and sat beside the percentage; "has a model" (accent) stays as a separate note. Its "+ Add system" (`openAddSystem()`, 2026-09-23) adds directly through the OBS List's search picker (`.obs-pick`, reused as-is); it used to open the contributor's proposal form, absent from the PM view, and did nothing. Since 2026-09-23 the model block can carry a Re-run Prompt between its header and ABS (DEC-075). `.deriv-pass` / `.deriv-step`. Not recorded before; entered when the small "↓" between PBS and OBS was removed (2026-09-23) — the steps already read top to bottom and the arrow only took height, so the three steps now sit 16px apart. The only arrow left is Turnkey's "routes into" between the distribution and the system's model, which carries information. Depends on untracked `--panel-2`.
+- **changed**: 2026-10-08
+- **notes**: 2026-10-08 (DEC-120): in the Turnkey pass 1, Nature and Class show the characterisation model's level (Low / Medium / High) where PBS / ABS and System keep the allocation model's percentage; Class lost its "· AI, unconfirmed" suffix to the badge. 2026-10-07: in the Turnkey pass 1, the PBS / ABS step shows its confidence badge only beside a value — "87%" over an empty field read as the AI being sure of nothing. 2026-10-06: the contributor's view no longer shows "Distribution across systems" (the compact chip row, `.distrib-compact` / `.distrib-chip`, deleted) — the information was scattered and not theirs to act on; the project manager's distribution block is unchanged. 2026-09-29: optional `opts.noDistrib` drops the distribution block; the Turnkey system detail (DEC-101) renders the chain for the system opened, edits going to that branch. Turnkey pass 1's System list has a ✕ per system since 2026-09-23 (DEC-076, `removeSystem()`), down to none — empty state "No system yet". Each system row carries its provenance, one or the other (2026-09-23): the AI's confidence badge when the Turnkey model proposed it, a "manual" note when a person added it — "manual" used to mean "no allocation model" and sat beside the percentage; "has a model" (accent) stays as a separate note. Its "+ Add system" (`openAddSystem()`, 2026-09-23) adds directly through the OBS List's search picker (`.obs-pick`, reused as-is); it used to open the contributor's proposal form, absent from the PM view, and did nothing. Since 2026-09-23 the model block can carry a Re-run Prompt between its header and ABS (DEC-075). `.deriv-pass` / `.deriv-step`. Not recorded before; entered when the small "↓" between PBS and OBS was removed (2026-09-23) — the steps already read top to bottom and the arrow only took height, so the three steps now sit 16px apart. The only arrow left is Turnkey's "routes into" between the distribution and the system's model, which carries information. Depends on untracked `--panel-2`.
 
 ### Turnkey System Card
 - **level**: molecule

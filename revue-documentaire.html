@@ -1556,6 +1556,8 @@ body.restricted .cf-edit, body.restricted #cf-add-btn{display:none}
 body.restricted #sel-class-btn{display:none}   /* DEC-086 — no bulk Classify for a contributor */
 .char-ro{font-size:var(--text-xs);color:var(--text-3);margin-top:4px}
 .char-ro-ai{font-size:var(--text-xs);color:var(--ia);font-weight:600}
+/* DEC-120 — the characterisation model's level beside a field label */
+.field>label .char-conf{margin-left:var(--space-2);letter-spacing:0;text-transform:none;font-weight:600}
 .cls-flip:disabled{cursor:default;opacity:.75}
 .nat-pick:disabled{cursor:default}
 .cf-tag{margin-left:6px;font-size:10px;font-weight:600;color:var(--text-3);border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:0 6px}
@@ -3038,6 +3040,44 @@ function weakestLink(b){
 /* OBS is the decision-bearing link: below the threshold the proposed organisation
    cannot be trusted. Threshold mirrors the project configuration setting. */
 const OBS_THRESHOLD=75;
+/* DEC-120 — the characterisation model (nature, class) does not return a
+   percentage but a level: Low, Medium or High. Low is the uncertain call that
+   sends the requirement to To review — the old "below the threshold". The
+   allocation models (Turnkey routing to a system, ABS / PBS / OBS) keep their
+   percentages. A capture that still carries numbers is read with the same
+   cut-offs: under OBS_THRESHOLD low, under CHAR_HIGH_FROM medium. */
+const CHAR_HIGH_FROM=85;
+const CHAR_LEVEL_LABEL={low:"Low",medium:"Medium",high:"High"};
+function charLevel(v){
+  if(v==null||v==="") return null;
+  if(typeof v==="string"){ const k=v.trim().toLowerCase(); return CHAR_LEVEL_LABEL[k]?k:null; }
+  return v<OBS_THRESHOLD?"low":v<CHAR_HIGH_FROM?"medium":"high";
+}
+/* the AI's level for one axis ("type" = nature, "class"), while the value on
+   screen is still the one it proposed — a person's pick carries no confidence */
+function charConfOf(b, axis){
+  const c=b&&b.charConf&&b.charConf[axis]; if(!c) return null;
+  if(c.v!==(axis==="type"?blockNature(b):b.tech)) return null;
+  return {level:c.level, weak:axis==="type"?!!b.typeAI:!!b.techAI};
+}
+function charConfBadgeHTML(f){
+  if(!f||!f.level) return "";
+  const L=CHAR_LEVEL_LABEL[f.level];
+  return `<span class="deriv-conf char-conf${f.weak?" weak":""}" title="Proposed by the characterisation model — ${L.toLowerCase()} confidence${f.weak?", not confirmed yet: to review":""}. This model gives a level, not a percentage.">${L}</span>`;
+}
+function dropCharConf(b, axis){ if(b.charConf&&b.charConf[axis]) b.charConf=Object.assign({},b.charConf,{[axis]:null}); }
+/* once every seed has run: each characterised block gets the level of each of
+   its calls — the capture's when it has one, Low when the call is the
+   unconfirmed one, otherwise Medium or High (demo spread, from the id) */
+function seedCharConfidence(){
+  SECTIONS.forEach(sec=>sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x]).forEach(b=>{
+    const nat=blockNature(b); if(b.charConf || !["requirement","heading","info"].includes(nat)) return;
+    const lv=b.charLevel||{};
+    const pick=(axis,unsure)=>unsure?"low":(lv[axis]&&lv[axis]!=="low")?lv[axis]:(hashId(b.id+"~"+axis)%4===0?"medium":"high");
+    b.charConf={type:{v:nat, level:pick("type",b.typeAI)}};
+    if(nat==="requirement" && b.tech) b.charConf.class={v:b.tech, level:pick("class",b.techAI)};
+  }));
+}
 function derivWeak(b){ return !!(b.obs && b.obs.c < OBS_THRESHOLD); }
 /* B7 — characterisation/allocation progression: Incomplete → To review → To
    validate → Allocated. Derived once at init from the AI's own confidence/
@@ -3064,9 +3104,9 @@ function computeCharStatus(x){
      that set status:"allocated" on a text block does not survive either. */
   if(x.kind!=="requirement"){ x.status=null; x.doubtField=null; x.reviewReason=null; return; }
   if(x.status==="allocated") return;
-  if(x.typeAI){ x.status="doubt"; x.doubtField="type"; x.reviewReason="Type is AI-detected, unconfirmed"; return; }
+  if(x.typeAI){ x.status="doubt"; x.doubtField="type"; x.reviewReason="Type proposed by the AI with low confidence"; return; }
   if(x.tech==null || !(x.perim&&x.perim.length)){ x.status="incomplete"; x.doubtField=null; x.reviewReason=null; return; }
-  if(x.techAI){ x.status="doubt"; x.doubtField="class"; x.reviewReason="Class is AI-detected, unconfirmed"; return; }
+  if(x.techAI){ x.status="doubt"; x.doubtField="class"; x.reviewReason="Class proposed by the AI with low confidence"; return; }
   if(x.perimAI){ x.status="doubt"; x.doubtField="typo"; x.reviewReason="System is AI-detected, unconfirmed"; return; }
   x.status="tovalidate"; x.doubtField=null; x.reviewReason=null;
 }
@@ -3111,12 +3151,13 @@ function applyCaptureDemoStatuses(){
   const mgrList = MANAGERS.filter(m=>!m.admin);
   items.forEach(x=>{
     const conf = x.confidence || {};
-    x.typeAI = conf.type!=null && conf.type<OBS_THRESHOLD;
+    x.charLevel = {type:charLevel(conf.type), class:charLevel(conf.class)};   // DEC-120 — levels, not percentages
+    x.typeAI = x.charLevel.type==="low";
     if(x.kind!=="requirement") return; // information/heading: Type is their only axis
     const h = hashId(x.id);
     const bucket = h % 100;
     x.tech = (h%3===0) ? "nontech" : "tech";
-    x.techAI = conf.class!=null && conf.class<OBS_THRESHOLD;
+    x.techAI = x.charLevel.class==="low";
     x.perimAI = false;
     // Real capture data (import_capture_doors.py) already seeds x.perim from
     // the source's own "Responsible Entity" column — never overwrite that
@@ -3267,7 +3308,7 @@ function applyFreshProjectStatuses(){
   const singleBranch = items.filter(x=>!(x.branches&&x.branches.length>1));
   const unassignedIds = singleBranch.filter((x,i)=>i===2||i===7).map(x=>x.id);
   const reviewFields = [
-    ["class","Class is AI-detected, unconfirmed"],
+    ["class","Class proposed by the AI with low confidence"],
     ["obs","Weak OBS derivation (61%) — the proposed organisation may be wrong"],
   ];
   const reviewCandidates = singleBranch.filter(x=>!unassignedIds.includes(x.id));
@@ -3884,12 +3925,12 @@ function reclassify(id, nature){
   const f=findBlock(id); if(!f) return;
   const b=f.b, before=blockNature(b);
   // picking the type it already has is how an AI-detected type gets confirmed
-  if(before===nature){ if(b.typeAI){ b.typeAI=false; computeCharStatus(b); refresh(); toast(`${b.id} — type confirmed: ${NATURE_LABEL[nature]}`,"ok"); } return; }
+  if(before===nature){ if(b.typeAI){ b.typeAI=false; dropCharConf(b,"type"); computeCharStatus(b); refresh(); toast(`${b.id} — type confirmed: ${NATURE_LABEL[nature]}`,"ok"); } return; }
   // TICKET-ai-uncertainty-display.md — an explicit reclassification IS the
   // human resolving whatever Type uncertainty existed, whichever direction
   // it goes. Cleared unconditionally; computeCharStatus() below derives the
   // rest fresh instead of this function hand-setting b.status itself.
-  b.typeAI = false;
+  b.typeAI = false; dropCharConf(b,"type");
   if(b.kind==="image"){
     // B9 — one-way door: a mis-detected figure can be demoted to plain Information.
     // There's no way back (and no "Container" nature anymore — an image just
@@ -4587,7 +4628,7 @@ function natureLabelChip(b){ const n=blockNature(b); return n==="requirement"?(N
 function natureTag(b){
   const n=blockNature(b);
   const ai = b.typeAI && b.kind!=="image";
-  return `<button class="nat-pick${ai?" is-ai":""}" data-natpick="${b.id}" title="${ai?"Type detected by the AI, not confirmed yet — pick it to confirm, or change it":"Reclassify this block"}">${NATURE_LABEL[n]} ▾</button>`;
+  return `<button class="nat-pick${ai?" is-ai":""}" data-natpick="${b.id}" title="${ai?`Type proposed by the AI with ${((charConfOf(b,"type")||{}).level||"low")} confidence, not confirmed yet — pick it to confirm, or change it`:"Reclassify this block"}">${NATURE_LABEL[n]} ▾</button>`;
 }
 function natureOptions(b){
   // B9 — an image can only be demoted to Information (mis-detected figure);
@@ -4831,7 +4872,7 @@ function bulkSetTypology(pid){
 function bulkSetClass(cls){
   if(!canCharacterise()){ charDenied(); return; }
   let c=0;
-  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.tech=cls; f.b.techAI=false; markCharEdited(f.b); c++; } });
+  state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.tech=cls; f.b.techAI=false; dropCharConf(f.b,"class"); markCharEdited(f.b); c++; } });
   toast(`Classification set to ${cls==="tech"?"Technical":"Non-technical"} for ${c} requirement${c>1?"s":""}`,"ok");
   state.selection.clear(); lastSel=null; refresh();
 }
@@ -4971,7 +5012,7 @@ function rowInnerHTML(b){
     <div class="rcell c-id">${b.id}</div>
     <div class="rcell c-req">${caretHTML}${b.sourceImage?imgSrcBtn:`<div class="excerpt" title="${plain.replace(/"/g,'&quot;')}">${plain}</div>`}<div class="req-badges">${imgRowActions}${badges}</div></div>
     <div class="rcell c-chg">${chgCellHTML(b)}</div>
-    <div class="rcell c-class"><button class="cls-flip ${b.techAI?"ia":""}" data-clsflip="${b.id}" ${canCharacterise()?"":"disabled"} title="${b.techAI?"AI-detected, unconfirmed — ":""}${canCharacterise()?"Click to switch classification":"Set by the project manager"}">${b.tech==="tech"?"Tech":"Non-tech"}</button></div>
+    <div class="rcell c-class"><button class="cls-flip ${b.techAI?"ia":""}" data-clsflip="${b.id}" ${canCharacterise()?"":"disabled"} title="${(cc=>cc?`Characterisation model: ${CHAR_LEVEL_LABEL[cc.level].toLowerCase()} confidence${cc.weak?", not confirmed yet":""} — `:"")(charConfOf(b,"class"))}${canCharacterise()?"Click to switch classification":"Set by the project manager"}">${b.tech==="tech"?"Tech":"Non-tech"}</button></div>
     <div class="rcell c-typo"><button class="typo-cell" data-typocell="${b.id}" title="${escHtml((b.perim||[]).map(p=>TY(p).label).join(", ")||"No system yet")} — click to edit">${typoTags}${typoConf}</button></div>
     <div class="rcell c-abs">${TENDER_KEYS
       ? `<select class="cell-select" data-abs="${b.id}"><option value="">—</option>${TENDER_KEYS.absList.map(a=>`<option value="${a.id}" ${a.label===b.domain?"selected":""}>${escHtml(a.label)}</option>`).join("")}</select>`
@@ -5504,7 +5545,7 @@ function bindVRows(win){
     if(!canCharacterise()){ charDenied(); return; }
     const id=btn.dataset.clsflip, f=findBlock(id); if(!f)return;
     const before=f.b.tech, was=f.b.techAI;
-    f.b.tech = before==="tech" ? "nontech" : "tech"; f.b.techAI=false; markCharEdited(f.b);
+    f.b.tech = before==="tech" ? "nontech" : "tech"; f.b.techAI=false; dropCharConf(f.b,"class"); markCharEdited(f.b);
     if(was) logFeedback("char", id, before==="tech"?"Technical":"Non-technical", f.b.tech==="tech"?"Technical":"Non-technical", null);
     refresh();
   }));
@@ -5792,6 +5833,7 @@ function roleRecapHTML(b){
    route into or needs allocating by hand.
 ===================================================== */
 function confBadgeHTML(f){
+  if(f && f.level) return charConfBadgeHTML(f);   // DEC-120 — the characterisation model's level
   if(!f || f.c==null) return "";
   const weak=f.c<OBS_THRESHOLD;
   return `<span class="deriv-conf${weak?" weak":""}" title="${f.c}% confidence${weak?` — below the ${OBS_THRESHOLD}% threshold, this step needs checking`:""}">${f.c}%</span>`;
@@ -5836,8 +5878,8 @@ function pbsControlHTML(b, derivSrc){
    An AI-detected nature says so and can be confirmed in place. */
 function natureFieldHTML(b){
   const ai=b.typeAI && b.kind!=="image";
-  if(!canCharacterise()) return `<div class="field"><label>Nature</label><div class="fval">${NATURE_LABEL[blockNature(b)]||"—"}${ai?` <span class="char-ro-ai">· AI, unconfirmed</span>`:""}</div><div class="char-ro">Set by the project manager</div></div>`;
-  return `<div class="field"><label>Nature</label>
+  if(!canCharacterise()) return `<div class="field"><label>Nature${charConfBadgeHTML(charConfOf(b,"type"))}</label><div class="fval">${NATURE_LABEL[blockNature(b)]||"—"}</div><div class="char-ro">Set by the project manager</div></div>`;
+  return `<div class="field"><label>Nature${charConfBadgeHTML(charConfOf(b,"type"))}</label>
     <select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>
 </div>`;   // DEC-099 — no "detected by the AI" line nor Confirm: validating the requirement confirms it
 }
@@ -5845,8 +5887,8 @@ function natureFieldHTML(b){
    requirement's details (it was only in the Turnkey project-manager view,
    so a SIG tender never showed it). */
 function classFieldHTML(b){
-  if(!canCharacterise()) return `<div class="field"><label>Class</label><div class="fval">${b.tech==="tech"?"Technical":b.tech==="nontech"?"Non-technical":"— Not set —"}${b.techAI?` <span class="char-ro-ai">· AI, unconfirmed</span>`:""}</div><div class="char-ro">Set by the project manager</div></div>`;
-  return `<div class="field"><label>Class</label>
+  if(!canCharacterise()) return `<div class="field"><label>Class${charConfBadgeHTML(charConfOf(b,"class"))}</label><div class="fval">${b.tech==="tech"?"Technical":b.tech==="nontech"?"Non-technical":"— Not set —"}</div><div class="char-ro">Set by the project manager</div></div>`;
+  return `<div class="field"><label>Class${charConfBadgeHTML(charConfOf(b,"class"))}</label>
     <select class="ui-select" id="f-tech">
       <option value="" ${b.tech==null?"selected":""} disabled>— Not set —</option>
       <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
@@ -6114,13 +6156,13 @@ function pmClassificationHTML(b){
      sequence, which is the part that matters. */
   return `${derivStepHTML("Nature",
       `<select class="ui-select" id="f-nature">${natureOptions(b).map(n=>`<option value="${n}" ${blockNature(b)===n?"selected":""}>${NATURE_LABEL[n]}</option>`).join("")}</select>`,
-      null)}
+      charConfOf(b,"type"))}
 
-    ${derivStepHTML(`Class${b.techAI?` <span class="deriv-scope" style="color:var(--ia)">· AI, unconfirmed</span>`:""}`,
+    ${derivStepHTML("Class",
       `<select class="ui-select" id="f-tech">
         <option value="tech" ${b.tech==="tech"?"selected":""}>Technical</option>
         <option value="nontech" ${b.tech==="nontech"?"selected":""}>Non-technical</option>
-      </select>`, null)}
+      </select>`, charConfOf(b,"class"))}
 
     ${/* a confidence only beside a value: "87%" over an empty field read as
          the AI being sure of nothing (2026-10-07) */""}
@@ -6456,10 +6498,10 @@ function renderSettings(){
       markAllocEdited(target); if(target!==b && (b.branches||[]).length===1){ b.manager=target.manager; markAllocEdited(b); }
       refresh(); toast(id?`Assigned to ${personLabel(id)}`:"Unassigned","ok");
     });
-    body.querySelector("#f-tech-confirm")?.addEventListener("click",()=>{ b.techAI=false; markCharEdited(b); logFeedback("char",b.id,b.tech,b.tech,null); refresh(); toast(`${b.id} — class confirmed: ${b.tech==="tech"?"Technical":"Non-technical"}`,"ok"); });
+    body.querySelector("#f-tech-confirm")?.addEventListener("click",()=>{ b.techAI=false; dropCharConf(b,"class"); markCharEdited(b); logFeedback("char",b.id,b.tech,b.tech,null); refresh(); toast(`${b.id} — class confirmed: ${b.tech==="tech"?"Technical":"Non-technical"}`,"ok"); });
     body.querySelector("#f-tech")?.addEventListener("change",e=>{
       const before=b.tech, was=b.techAI;
-      b.tech=e.target.value; b.techAI=false; markCharEdited(b);
+      b.tech=e.target.value; b.techAI=false; dropCharConf(b,"class"); markCharEdited(b);
       if(was) logFeedback("char", b.id, before==="tech"?"Technical":"Non-technical", b.tech==="tech"?"Technical":"Non-technical", null);
       refresh();
     });
@@ -8306,11 +8348,11 @@ applyVersionChanges();
   const isDoubt=b=>effectiveStatus(b).val==="doubt";
   const NATURE_KEEP=4;   // "Type is AI-detected" stays rare
   const REASONS=[
-    b=>{ b.techAI=true; return ["class","Class is AI-detected, unconfirmed"]; },
+    b=>{ b.techAI=true; return ["class","Class proposed by the AI with low confidence"]; },
     b=>{ b.perimAI=true;   // the routing confidence behind it sits under the threshold
          (b.branches||[]).forEach(br=>{ br.tkObs=Object.assign({},br.tkObs||{v:TY(br.typology).label},{c:58+hashId(b.id+br.typology)%15}); });
          return ["typo","System is AI-detected, unconfirmed"]; },
-    b=>{ b.techAI=true; return ["class","Class is AI-detected, unconfirmed"]; },
+    b=>{ b.techAI=true; return ["class","Class proposed by the AI with low confidence"]; },
     b=>{ b.perimAI=true;
          (b.branches||[]).forEach(br=>{ br.tkObs=Object.assign({},br.tkObs||{v:TY(br.typology).label},{c:58+hashId(b.id+br.typology)%15}); });
          return ["typo","System is AI-detected, unconfirmed"]; },
@@ -8325,6 +8367,7 @@ applyVersionChanges();
   let n=reqs.filter(isDoubt).length, k=0;
   while(n<target && k<pool.length){ const b=pool[k++]; give(b); if(isDoubt(b)) n++; }
 })();
+seedCharConfidence();
 snapshotCharacterisation();
 // Review is the default working view — setMode also collapses the nav panel and shows the kbd hints
 setMode("review");

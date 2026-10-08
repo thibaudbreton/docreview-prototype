@@ -163,6 +163,15 @@ def _field_hash(row_id: str, field: str) -> int:
     return int(digest, 16)
 
 
+CHAR_FIELDS = {"type", "class"}
+
+
+def _char_level(score):
+    """Low / medium / high, with the screen's own cut-offs (OBS_THRESHOLD 75,
+    CHAR_HIGH_FROM 85 in revue-documentaire.html)."""
+    return "low" if score < 75 else "medium" if score < 85 else "high"
+
+
 def seed_demo_confidence(rows):
     """Deterministically generate a per-field AI confidence (0-99) for every
     row, mutating each in place as row["confidence"].
@@ -190,9 +199,12 @@ def seed_demo_confidence(rows):
         for field in fields:
             h = _field_hash(row["id"], field)
             if field == weak_field:
-                confidence[field] = 30 + (h % 45)  # 30-74, below the bar
+                score = 30 + (h % 45)  # 30-74, below the bar
             else:
-                confidence[field] = 76 + (h % 24)  # 76-99, confident
+                score = 76 + (h % 24)  # 76-99, confident
+            # DEC-120 — the characterisation model (type, class) returns a level,
+            # not a percentage; the allocation fields (abs, pbs, obs) keep theirs
+            confidence[field] = _char_level(score) if field in CHAR_FIELDS else score
         row["confidence"] = confidence
 
 
