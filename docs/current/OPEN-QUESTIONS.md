@@ -161,7 +161,7 @@ DEC-028 à DEC-039 viennent d'une relecture indépendante du prototype (14 septe
 
 **Légende des codes d'activité (DEC-032).** La liste de référence devient celle de la capture, où le libellé est aujourd'hui égal au code parce que la source ne les développe jamais. Il faut la légende métier (que valent CJV, DEQ, POS, SEN, SPM…) pour que les écrans restent lisibles.
 
-**Ordre de dérivation non conforme (ALLOC-003).** DEC-008 et ALLOC-003 fixent **ABS → PBS → OBS**, et ALLOC-T02 interdit explicitement l'ancien ordre pour SIG. Le prototype dérive pourtant encore **PBS → ABS → OBS** dans `derivationChainHTML`. Confirmé le 17 septembre 2026 : la décision prime, le code est à corriger — ce n'est pas un arbitrage à reprendre.
+**Ordre de dérivation non conforme (ALLOC-003).** DEC-008 et ALLOC-003 fixent **ABS → PBS → OBS**, et ALLOC-T02 interdit explicitement l'ancien ordre pour SIG. Confirmé le 17 septembre 2026 : la décision prime. **Corrigé** : le prototype dérive ABS → PBS → OBS (`DERIV_CHAIN`, et le panneau affiche ABS puis PBS) ; seuls des commentaires disaient encore l'inverse, alignés le 9 octobre 2026.
 
 **Points laissés ouverts par DEC-040 à DEC-043.** `awaiting_qa` ne bloque plus la relance (DEC-089, 29 septembre 2026). La relance en masse sur une sélection existe dans le prototype (une feuille par exigence à un système, les autres ignorées). Une relance au résultat identique est silencieuse — seul le journal la note (DEC-091). Plus rien d'ouvert ici.
 

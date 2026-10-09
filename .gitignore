@@ -6,7 +6,7 @@
 
 # Real RFP capture data — actual client tender content (requirement text,
 # source files). Never publish to the public repo. Regenerate data.js locally
-# via import_capture.py; see its own docstring.
+# with import_capture_doors.py; see its own docstring.
 data.js
 Turnkey RFP Example/
 

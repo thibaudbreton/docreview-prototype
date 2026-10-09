@@ -97,8 +97,7 @@ html[data-theme="light"] .logo-mark-light{display:block}
    of this page made home and project read as two different apps, and the
    colour already lives in the hero, the line map and the accents. */
 .scroll{flex:1;overflow-y:auto}
-.wrap{max-width:1120px;margin:0 auto;padding:var(--space-8) var(--space-6) 80px}
-.wrap{max-width:1180px}
+.wrap{max-width:1180px;margin:0 auto;padding:var(--space-8) var(--space-6) 80px}
 /* 2026-10-06 — the home page as the tool's front door: a greeting and what
    SRM is for, the way back into the last tender, how a
    tender travels through SRM (the tender's line, explained — dismissible),
@@ -153,8 +152,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .ht-always{margin-top:var(--space-5);font-size:var(--text-sm);color:var(--text-3);text-align:center}
 .ht-always b{color:var(--text-2)}
 .home-nav-intro{margin-bottom:var(--space-4)}
-.home-nav-intro .nav-title{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
-.home-nav-intro .sub{font-size:var(--text-base);color:var(--text-3);margin-top:3px}
 .tabs{display:flex;gap:6px;margin-bottom:var(--space-5);border-bottom:1px solid var(--line)}
 .tab{padding:var(--space-2) var(--space-4);font-size:var(--text-base);color:var(--text-3);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
 .tab:hover{color:var(--text-2)}
@@ -442,7 +439,7 @@ function renderHero(projects){
    so a demo reset brings it back); "How SRM works" in the hero reopens it */
 const HOWTO=[
   ["Capture","The AI reads the tender's documents and captures every requirement, table row and figure. You check what it found.","Project manager","pm"],
-  ["Allocation","Each requirement gets its nature, class and systems, then the position and the person who will answer it.","Project manager, then each system","pm"],
+  ["Allocation","Each requirement gets its nature, class and systems, then the organisation (OBS) and the person who will answer it.","Project manager, then each system","pm"],
   ["Compliance","Each contributor gives a verdict. A Not compliant gets a gap strategy and a risk; the verdicts consolidate per requirement.","Contributors","contrib"],
   ["Submission","Export to DOORS or Excel, and hand the client the compliance matrix.","Project manager","pm"],
 ];
@@ -459,10 +456,11 @@ function renderHowto(){
 function openTender(p){
   if(!p) return;
   if(p.status==="processing"){ toast("Still processing — it will open when the models finish","warn"); return; }
-  // TA1 — only "stb2026" has real, built-out screens (see build_merge.py's seedProjects
-  // comment). The other seeds exist to illustrate the list/status/processing only —
-  // say so explicitly instead of silently opening into stb2026's content.
-  if(p.builtOut===false){ toast("This is a demo-only project in this prototype — open Energy Monitoring System (STB-2026) for the full, navigable build","warn"); return; }
+  // TA1 — only "stb2026" and "rfp114" have real, built-out screens (builtOut:true in
+  // build_merge.py's seedProjects). The other seeds exist to illustrate the
+  // list/status/processing only — say so explicitly instead of silently opening
+  // into another tender's content.
+  if(p.builtOut===false){ toast("This is a demo-only project in this prototype — open Energy Monitoring System (STB-2026) or Line 4 Resignalling (RFP-2026-114) for a full, navigable build","warn"); return; }
   try{ if(window.parent!==window && window.parent.openProject) window.parent.openProject(p.id); }catch(e){}
 }
 

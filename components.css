@@ -1,8 +1,9 @@
 /* =====================================================
-   SHARED UI COMPONENTS — spliced into every screen by build_merge.py via the
-   "/* @include components.css *\/" marker, the same mechanism table-engine.js
-   already uses for shared behaviour. Edit this ONE file to change how a
-   component looks everywhere.
+   SHARED UI COMPONENTS — spliced by build_merge.py into the screens that
+   carry the "/* @include components.css *\/" marker, the same mechanism
+   table-engine.js already uses for shared behaviour. Only two do: Allocation
+   (revue-documentaire.html) and Compliance (compliance.html). Edit this ONE
+   file to change how a component looks on both.
 
    Why this exists: COMPONENTS.md's inventory found ~50 distinct list/row
    classes across the seven screens — .exprow, .cast-person-row, .qa-card,
@@ -31,7 +32,7 @@
        <span class="ui-list-meta">73%</span>
        <span class="ui-list-note">has a model</span>
      </div>
-     <button class="ui-list-add">+ Add activity</button>
+     <button class="ui-list-add">+ Add system</button>
    </div>
 */
 .ui-list{

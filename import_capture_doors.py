@@ -2,12 +2,12 @@
 """
 import_capture_doors.py — Convert DOORS "ViewText" .numbers capture exports into data.js.
 
-This is a SEPARATE importer from import_capture.py, which handles a different,
-older capture schema (.xlsx, columns ID / Type / Text / Heading 1..4). That
-script is untouched and still works for captures in that format — use
-whichever importer matches the files you have. Both write the same data.js
-shape (window.SRM_DATA), so revue-documentaire.html's buildDataFromCapture()
-doesn't need to know which one produced it.
+This is the script that produces the current data.js. import_capture.py is the
+older importer (legacy), for a different capture schema (.xlsx, columns ID /
+Type / Text / Heading 1..4): it writes the same window.SRM_DATA envelope but
+different row fields — no Num Heading level, no Responsible Entity systems
+(perim), no confidence — which revue-documentaire.html's buildDataFromCapture()
+then simply finds absent.
 
 This schema is a Numbers export of a DOORS module's "ViewText" view, one
 sheet per file:
@@ -22,7 +22,7 @@ sheet per file:
       Text                  the content
       Type                  Heading / Requirement / Information / (others —
                             see UNMAPPED handling below)
-      Responsible Entity    the activity/ies this row belongs to, one per line
+      Responsible Entity    the system(s) this row belongs to, one per line
                             when a row has more than one
 
 Requires the numbers-parser package (pip3 install numbers-parser) — it reads
@@ -150,7 +150,7 @@ CONFIDENCE_THRESHOLD = 75
 # Every row carries a Type confidence (is this really a heading/information/
 # requirement?) — the only field information and heading rows ever get, since
 # they never enter the characterisation/allocation pipeline. Requirement rows
-# additionally carry Class, ABS, PBS and the activity (OBS) derived from them.
+# additionally carry Class, ABS, PBS and the OBS derived from them.
 CONFIDENCE_FIELDS = {
     "heading": ["type"],
     "information": ["type"],
@@ -261,7 +261,7 @@ def main():
 
     if unknown_types:
         print(f"\n!! unmapped Type value(s), imported as 'information': {sorted(unknown_types.items())}")
-    print(f"\nActivity codes found in Responsible Entity ({len(entity_counts)} distinct):")
+    print(f"\nSystem codes found in Responsible Entity ({len(entity_counts)} distinct):")
     for tok, cnt in sorted(entity_counts.items()):
         print(f"    {tok.upper():8s} {cnt}")
     print(f"\nMax hierarchy depth (Num Heading segments): {max_depth}")

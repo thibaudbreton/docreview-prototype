@@ -14,16 +14,16 @@
    a data-model rewrite, which is what makes reusing this safe on a
    second, structurally different screen.
 
-   Covers exactly the behaviours the ticket named as shared: row
-   checkboxes / multi-select (incl. drag-select), the Bulk Action Bar
-   shell (show/hide on selection, "Show only selected"), Filter to
-   Selection (suspend/restore column filters), keyboard row×column
-   navigation, and the Column Visibility Menu checklist. Per-column
-   Excel-style filter POPOVERS, sorting, and row/grouping rendering
-   stay host-specific — the ticket does not ask for those to be shared,
-   and they differ enough between screens (document structure vs.
-   branch tracking) that forcing them into one shape would cost more
-   than it's worth in a prototype.
+   What it holds: row selection (checkboxes / multi-select, incl.
+   drag-select), Filter to Selection (suspend/restore column filters),
+   keyboard row×column navigation, column resize, the Column Visibility
+   + Reorder Menu checklist, and the Advanced Filter
+   (SPEC-advanced-filters.md) with its saved filters. The Bulk Action
+   Bar stays in each screen, as do the per-column Excel-style filter
+   POPOVERS, sorting, and row/grouping rendering — they differ enough
+   between screens (document structure vs. branch tracking) that
+   forcing them into one shape would cost more than it's worth in a
+   prototype.
 ===================================================== */
 const TE = {
 
@@ -256,7 +256,7 @@ bindReorderableColumnList(panelEl, colOrder, colCollapsed, onChange){
    {field,op,value}. A group is {op:"AND"|"OR", items:[condition,...]} — ONE
    level only, per §4: a group never contains another group. fieldDefs is
    {key:{label,type:"text"|"enum"|"date"|"boolean",options,get(row)}} — get()
-   returns an ARRAY of values so one field (e.g. Activity) can carry several. */
+   returns an ARRAY of values so one field (e.g. System) can carry several. */
 OPS_BY_TYPE:{
   text:["contains","not_contains","is","is_not","starts_with","is_empty","is_not_empty"],
   enum:["is","is_not","is_any_of","is_none_of","is_empty"],

@@ -112,16 +112,12 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .crumb .crumb-home{color:var(--text-3);font-weight:500;transition:color .15s}
 .crumb .crumb-home:hover{color:var(--accent)}
 .crumb .project{color:var(--text);font-weight:600;white-space:nowrap}
-.screen-nav{display:flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-1);margin-left:6px}
-.screen-nav .sn{padding:5px var(--space-3);border-radius:var(--radius-sm);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;cursor:pointer;white-space:nowrap}
-.screen-nav .sn:hover{color:var(--text)}
-.screen-nav .sn.on{background:var(--panel-3);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.4)}
 .hdr-actions{display:flex;align-items:center;gap:var(--space-2);margin-left:auto}
 /* TH1 — demo-only entry point, same muted "moderator control" formula as
-   accueil.html's .reset-btn: visibly not a real product affordance. An
-   expert reaches their own space via an email/notification link in real
-   life, never through the manager's dashboard — this exists only so a
-   moderated walkthrough can still jump there on cue. */
+   accueil.html's .reset-btn: visibly not a real product affordance. A
+   contributor reaches their Compliance queue from an email/notification link
+   in real life, never through the manager's dashboard — this exists only so
+   a moderated walkthrough can still jump there on cue. */
 .demo-link{font-size:var(--text-xs);color:var(--text-3);padding:var(--space-1) var(--space-3);border-radius:var(--radius-md);border:1px dashed var(--line-2);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 .demo-link:hover{border-color:var(--human);color:var(--human)}
 .demo-link b{font-weight:700;letter-spacing:.3px}
@@ -177,12 +173,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
 /* phase rail */
 .rail-label{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
 .rail-label span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-3);opacity:.8}
-/* §2.2 — KPI row above navigation */
 /* Dashboard redesign — the process is TWO steps, and the dashboard's job on
    arrival is to make it obvious which one to click. So the rail carries only
-   Allocation and Compliance, full size; Versions & Q&A joined Team casting in
-   the support rail below (both are always-open, order-free companions to the
-   two steps, not steps themselves). */
+   Allocation and Compliance, full size; the support rail below holds four
+   separate cards — Team casting, Documents & versions, Risks and Q&A — all
+   always-open, order-free companions to the two steps, not steps themselves. */
 .phase-rail{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-5);margin-bottom:22px;position:relative}
 .phase{position:relative;display:flex;gap:var(--space-3);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-4);cursor:pointer;transition:all .15s;min-height:96px}
 /* the → sitting in the grid gap, so step 1 reads as leading into step 2 */
@@ -206,7 +201,6 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .ph-stat .big{font-size:var(--text-xl);font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
 .ph-bar{height:5px;border-radius:var(--radius-xs);background:var(--panel-3);margin-top:var(--space-2);overflow:hidden}
 .ph-bar>div{height:100%;border-radius:var(--radius-xs)}
-.ph-sub{font-size:var(--text-xs);color:var(--text-3);margin-top:var(--space-2);line-height:1.4}
 .ph-badge{position:absolute;top:13px;right:14px;font-size:var(--text-xs);font-weight:700;padding:2px var(--space-2);border-radius:var(--radius-pill);letter-spacing:.3px}
 .ph-badge.current{background:var(--accent-soft);color:var(--accent)}
 .ph-badge.done{background:var(--ok-soft);color:var(--ok)}
@@ -235,20 +229,20 @@ html[data-theme="light"] .logo-mark-light{display:block}
    things worth keeping whole. */
 .phase.is-support .ph-info{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0}
 .phase.is-support .ph-name{max-width:100%;font-size:var(--text-base);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.phase.is-support .ph-desc,.phase.is-support .ph-bar{display:none}
 .phase.is-support .ph-stat{max-width:100%;margin-top:0;font-size:var(--text-xs);gap:4px;min-width:0}
 .phase.is-support .ph-stat span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .phase.is-support .ph-stat .big{font-size:var(--text-sm);flex-shrink:0}
 .phase.is-support .ph-badge{position:static;align-self:center;flex-shrink:0}
 .phase.is-support .ph-open-btn{position:static;align-self:center;flex-shrink:0;border:none;background:none;padding:0;color:var(--text-3)}
 .phase.is-support:hover .ph-open-btn{border:none;background:none;color:var(--accent)}
-.p2only.hidden,.p1only.hidden,.v22only.hidden{display:none}
+.p1only.hidden,.v22only.hidden{display:none}
 .hidden{display:none}
 
-/* Statistics (DEC-117) — business only, people first. Three tabs: the tender
-   as a whole (its dates, its pace, its people), then one per step, matching
-   the two phase cards above. Every block opens on one sentence (.stat-take),
-   the thing a manager would say out loud, then the figure behind it. */
+/* Statistics (DEC-117) — business only. Three tabs: the tender as a whole
+   (its dates, its pace, its team), then one per step, matching the two phase
+   cards above. Work and answers are counted by system and sub-system, never
+   by person (DEC-118). Every block opens on one sentence (.stat-take), the
+   thing a manager would say out loud, then the figure behind it. */
 .stats-panel{margin-bottom:var(--space-4)}
 .stats-head{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-4)}
 .stats-head h3{font-size:var(--text-base);margin-bottom:0}
@@ -458,10 +452,8 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:16px}
 .card h3{font-size:var(--text-base);font-weight:600;margin-bottom:var(--space-4);display:flex;align-items:center;gap:8px}
 .card h3 .count{font-size:var(--text-xs);font-weight:700;padding:1px var(--space-2);border-radius:var(--radius-lg);background:var(--warn-soft);color:var(--warn)}
-.card h3 a{margin-left:auto;font-size:var(--text-sm);color:var(--accent);font-weight:500}
 .att-card h3{font-size:var(--text-base)}
 .health{display:flex;flex-direction:column;gap:16px}
-.locked-hint{font-size:var(--text-sm);color:var(--text-3);line-height:1.55;background:var(--panel);border:1px dashed var(--line-2)}
 .dangerbox{border:1px solid var(--warn);background:var(--warn-soft);border-radius:var(--radius-md);padding:var(--space-3);font-size:var(--text-sm);color:var(--text-2);line-height:1.5;margin-bottom:10px}
 .dangerbox b{color:var(--warn)}
 .btn-danger{font-size:var(--text-sm);font-weight:600;padding:7px var(--space-4);border-radius:var(--radius-md);border:1px solid var(--warn);color:var(--warn);background:transparent}
@@ -483,12 +475,11 @@ html[data-theme="light"] .logo-mark-light{display:block}
 .att .att-go{margin-left:auto;font-size:var(--text-xs);color:var(--accent);white-space:nowrap;align-self:center;opacity:0;transition:opacity .12s}
 .att:hover .att-go{opacity:1}
 
-/* experts compact list */
+/* compact list — the sidebar's Answers by system card (renderAnswersCard);
+   .exp-av is the round avatar the casting rows and Configuration reuse */
 .exp-list{display:flex;flex-direction:column;gap:11px}
 .exp-line{display:flex;align-items:center;gap:10px}
 .exp-av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:var(--text-xs);font-weight:700;color:#fff;flex-shrink:0}
-.exp-ln{font-size:var(--text-sm);font-weight:600;display:flex;flex-direction:column;min-width:64px}
-.exp-ln span{font-size:var(--text-xs);color:var(--text-3);font-weight:400}
 .exp-lbar{flex:1;height:5px;border-radius:var(--radius-xs);background:var(--panel-3);overflow:hidden}
 .exp-lbar>div{height:100%;background:var(--ok);border-radius:var(--radius-xs)}
 .exp-lm{font-size:var(--text-xs);color:var(--text-3);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:34px;text-align:right}
@@ -573,7 +564,7 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .segc button:hover:not(.on){color:var(--text)}
 .opt-desc{font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-2);line-height:1.5;padding:var(--space-3) var(--space-3);background:var(--panel-2);border-radius:var(--radius-md);border:1px solid var(--line)}
 .opt-desc b{color:var(--text-2)}
-/* experts editor */
+/* contributors editor — Configuration › Team & contributors */
 .exp-edit-row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);margin-bottom:8px}
 .exp-edit-row .exp-av{width:32px;height:32px;font-size:var(--text-xs)}
 .exp-edit-row .een{font-size:var(--text-base);font-weight:600}
@@ -583,21 +574,8 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .exp-edit-row .del:hover{background:var(--warn-soft);color:var(--warn)}
 .add-exp{display:flex;gap:var(--space-2);margin-top:10px}
 .add-exp .inp{flex:1}
-/* B4 — Team management: reuses .exp-av / .exp-edit-row / .add-exp above,
-   this only adds the per-manager grouping shell around them */
 .team-scope{display:flex;align-items:center;gap:var(--space-2);margin-bottom:18px}
 .team-scope select{font-size:var(--text-sm);padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2)}
-.team-mgr-group{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);margin-bottom:var(--space-4);overflow:hidden}
-.team-mgr-head{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--panel-2);border-bottom:1px solid var(--line)}
-.team-mgr-head .exp-av{width:34px;height:34px;font-size:var(--text-sm)}
-.team-mgr-name{font-weight:600;font-size:var(--text-base)}
-.team-mgr-role{font-size:var(--text-xs);color:var(--text-3)}
-.team-mgr-status{margin-left:auto;font-size:var(--text-xs);font-weight:700;padding:3px 10px;border-radius:var(--radius-pill);white-space:nowrap}
-.team-mgr-status.done{background:var(--ok-soft);color:var(--ok)}
-.team-mgr-status.pending{background:var(--warn-soft);color:var(--warn)}
-.team-roster{padding:var(--space-3) var(--space-4)}
-.team-roster .exp-edit-row:last-child{margin-bottom:0}
-.team-roster-empty{font-size:var(--text-sm);color:var(--text-3);font-style:italic;padding:var(--space-2) 0}
 /* ===== Casting redesign (TICKET-casting-screen-redesign) ===== */
 .cast-head-row{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap}
 .cast-search-wrap{position:relative;flex:1;min-width:240px}
@@ -608,7 +586,8 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .cast-unstaffed-toggle.on{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
 /* batch-6 ticket "Add systems from the team screen" — adding a PERSON was
    already covered (castAddFlowHTML); this is the system level itself.
-   PM-only (see cast-add-act-wrap's visibility toggle in renderTeamScreen). */
+   PM-only, and never on a SIG tender, which cannot gain a second system (see
+   cast-add-act-wrap's visibility toggle in renderTeamScreen). */
 .cast-add-act-wrap{position:relative}
 .cast-add-act-btn{display:flex;align-items:center;gap:8px;font-size:var(--text-sm);font-weight:600;color:var(--accent);cursor:pointer;padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--accent);white-space:nowrap;background:var(--accent-soft)}
 .cast-add-act-btn:hover{background:var(--accent);color:#fff}
@@ -685,7 +664,6 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .cast-add-confirm{padding:7px 14px;border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-sm);white-space:nowrap;flex-shrink:0}
 .cast-add-confirm:hover{background:var(--accent-hover)}
 .cast-add-hint{font-size:var(--text-xs);color:var(--text-3);margin-top:6px;line-height:1.4}
-.cast-add-row{margin-top:var(--space-2);position:relative}
 .cast-add-input{width:100%;background:var(--panel-2);border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:7px var(--space-3);color:var(--text);outline:none;font-size:var(--text-sm)}
 .cast-add-input:focus{border-style:solid;border-color:var(--accent)}
 .cast-add-results{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:30;max-height:220px;overflow-y:auto;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);box-shadow:0 12px 34px rgba(0,0,0,.5);display:none}
@@ -712,8 +690,8 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 /* Literal previews, not tokens on purpose — this swatch shows both themes'
    accents at once regardless of which theme is currently active, so it can't
    read from var(--accent). Keep these in sync with the current --accent values. */
-.theme-opt .sw-dark{background:linear-gradient(135deg,#171b24 50%,#4C82FF 50%)}
-.theme-opt .sw-light{background:linear-gradient(135deg,#ffffff 50%,#0050E3 50%)}
+.theme-opt .sw-dark{background:linear-gradient(135deg,#071A30 50%,#4C82FF 50%)}
+.theme-opt .sw-light{background:linear-gradient(135deg,#ffffff 50%,#0B294A 50%)}
 /* AI feedback panel */
 .fb-accept{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3);margin-bottom:24px}
 .fb-card{border:1px solid var(--line);border-radius:var(--radius-lg);padding:14px}
@@ -744,7 +722,6 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.34,1.3,.64,1)}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .toast .t-ok{color:var(--ok)}
-@media(max-width:960px){.grid2{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}.pipeline{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* ---- brand touches (22 Sept 2026) ---------------------------------------
    Titles take the heading face. The red is DECORATIVE ONLY: a small mark
@@ -829,7 +806,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>Dashboard</a>
       <a class="demo-link" id="demo-contributor-link" href="javascript:void(0)" title="A contributor normally arrives here from their own email/notification link, never through this dashboard — this exists only for a moderated walkthrough."><b>DEMO</b> Compliance (contributor) →</a>
       <a class="btn-ghost" id="new-proj" href="javascript:parent.route('new')">＋ New project</a>
-      <span class="notif-wrap"><button class="icon-btn" id="notif-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span><span class="badge-dot"></span></button><div class="notif-drop" id="notif-drop"></div></span>
+      <span class="notif-wrap"><button class="icon-btn" id="notif-btn" title="Notifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge-dot"></span></button><div class="notif-drop" id="notif-drop"></div></span>
       <button class="icon-btn" id="team-btn" title="Team management"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></button>
       <button class="icon-btn" id="cfg-btn" title="Project configuration"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       <div class="avatar" id="header-avatar" title="Thibaud Breton">TB</div>
@@ -847,24 +824,21 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         </div>
         <div class="deadline warn"><div class="d-num">23</div><div class="d-lbl">days to submission</div></div>
       </div>
-      <!-- TA1 — shown only for a project that isn't the one fully-built reference project
-           (i.e. one just created via the wizard): says plainly that the numbers/content
-           below are the EMS reference data reused for this prototype phase, instead of
-           silently presenting them as if they were this project's own. -->
+      <!-- TA1 — shown only for a project that isn't built out (i.e. one just created
+           via the wizard): says plainly that the numbers/content below are a reference
+           tender's data reused for this prototype phase, instead of silently
+           presenting them as if they were this project's own. -->
       <div class="warnbox" id="dash-scope-banner" style="display:none;margin-bottom:18px">
-        <b>Prototype scope.</b> This project was just created — its Allocation and Compliance
-        screens below reuse the <b>Energy Monitoring System (STB-2026)</b> reference content for this test
-        phase, rather than data of its own. Team casting above <i>is</i> this project's own, from the creation wizard.
+        <b>Prototype scope.</b> This project was just created — Allocation, Compliance, Statistics
+        and Team casting reuse a reference tender's content for this test phase.
       </div>
 
       <!-- §2.2's KPI row is gone. Its four tiles (total / confirmed by Turnkey /
            confirmed by the systems / compliance filled in) restated numbers the
            two phase cards below already carry as their own progress stat, 80px
-           further down — the same figure twice within one glance. The pass-1 vs
-           pass-2 split the row existed to expose now has a place that actually
-           explains it: the Pass 1 → pass 2 funnel in Statistics › Allocation.
-           The one figure with no other home, the tender's total volume, moved
-           into the hero line above. -->
+           further down — the same figure twice within one glance. The one figure
+           with no other home, the tender's total volume, moved into the hero
+           line above. -->
 
       <!-- phase rail — the two steps, and only the two steps -->
       <div class="rail-label">Process <span>· two steps · click one to open it</span></div>
@@ -895,21 +869,20 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
       </div>
 
 
-      <!-- Support rail. Neither of these is a step: both are open from day one,
-           run alongside the two steps and have no position in the sequence.
-           Versions & Q&A used to sit in the phase rail as a third card, which
-           made the process read as three ordered stages — it moved here with
-           Team casting so the rail above carries the sequence and nothing else.
-           Same .phase molecule, .is-support strips it back visually. -->
+      <!-- Support rail — four separate cards: Team casting, Documents & versions,
+           Risks and Q&A. None of them is a step: all are open from day one, run
+           alongside the two steps and have no position in the sequence. Versions
+           & Q&A used to sit in the phase rail as a third card, which made the
+           process read as three ordered stages; the rail above now carries the
+           sequence and nothing else. Same .phase molecule, .is-support strips it
+           back visually — each card's description is its title attribute. -->
       <div class="rail-label">Always open <span>· runs alongside, in no particular order</span></div>
       <div class="support-rail">
         <div class="phase is-support" id="ph-team" style="cursor:pointer" title="Team casting — assign a manager and staff to each system.">
           <div class="ph-num transversal">◉</div>
           <div class="ph-info">
             <div class="ph-name">Team casting</div>
-            <div class="ph-desc">Assign a manager and staff to each system.</div>
             <div class="ph-stat"><span class="big" id="ph-team-n">2</span><span id="ph-team-txt">/ 3 managers have completed their team</span></div>
-            <div class="ph-bar"><div id="ph-team-bar" style="width:67%;background:var(--ok)"></div></div>
           </div>
           <span class="ph-badge wait" id="ph-team-badge">1 pending</span>
           <span class="ph-open-btn">→</span>
@@ -918,7 +891,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           <div class="ph-num transversal"><i class=ic-columns></i></div>
           <div class="ph-info">
             <div class="ph-name">Documents &amp; versions</div>
-            <div class="ph-desc">Upload tender documents and track what changed between versions.</div>
             <div class="ph-stat"><span class="big">3</span><span>docs · 1 processing</span></div>
           </div>
           <span class="ph-open-btn">→</span>
@@ -927,7 +899,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           <div class="ph-num transversal">!</div>
           <div class="ph-info">
             <div class="ph-name">Risks</div>
-            <div class="ph-desc">Every Not compliant traced to a risk, with its justification.</div>
             <div class="ph-stat"><span class="big" id="ph-risks-n">0</span><span id="ph-risks-txt">in the list</span></div>
           </div>
           <span class="ph-open-btn">→</span>
@@ -936,7 +907,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           <div class="ph-num transversal">↻</div>
           <div class="ph-info">
             <div class="ph-name">Q&amp;A</div>
-            <div class="ph-desc">Ask the issuer questions and track their answers.</div>
             <div class="ph-stat"><span class="big">5</span><span>questions · 1 answered</span></div>
           </div>
           <span class="ph-open-btn">→</span>
@@ -967,22 +937,22 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           </div>
           <div class="att v22only hidden" data-go="documents.html">
             <div class="att-ic ia">⇄</div>
-            <div><div class="att-t"><b>New version v2.2 ready for review</b></div><div class="att-sub">Arrived during allocation · +2 ~1 −0 · SRM-00009 response now on an outdated version</div></div>
+            <div><div class="att-t"><b>New version v2.2 ready for review</b></div><div class="att-sub">Arrived during allocation · +2 ~1 −0 · SRM-00009 answer reopened by the new version</div></div>
             <span class="att-go">Review changes →</span>
           </div>
           <div class="att" data-go="revue-documentaire.html">
             <div class="att-ic ia">✂</div>
             <div><div class="att-t"><b>2 uncertain segmentations</b></div><div class="att-sub">Table rows in section 2 flagged by the AI — confirm boundaries before validating</div></div>
-            <span class="att-go">Fix in review →</span>
+            <span class="att-go">Fix in Allocation →</span>
           </div>
           <div class="att" id="att-overdue" data-go="compliance.html">
             <div class="att-ic warn"><i class=ic-bell></i></div>
             <div><div class="att-t"><b id="att-overdue-t">1 contributor response overdue</b></div><div class="att-sub" id="att-overdue-sub">Sophie Lang — SRM-00006 unopened for 6 days</div></div>
             <span class="att-go">Remind →</span>
           </div>
-          <div class="att" data-go="compliance.html">
+          <div class="att" data-go="qa.html">
             <div class="att-ic accent"><i class=ic-ask></i></div>
-            <div><div class="att-t"><b>2 questions awaiting internal review</b></div><div class="att-sub">A possible duplicate was detected (TLS on legacy gateways) — merge before sending</div></div>
+            <div><div class="att-t"><b>2 questions to send</b></div><div class="att-sub">Mark them as sent once they're out</div></div>
             <span class="att-go">Open Q&amp;A →</span>
           </div>
           <div class="att" data-go="compliance.html">
@@ -998,20 +968,19 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
                cross-project view, a different screen/audience). A tender-wide
                comments feed takes its place: reassignment items are live
                (window.parent.getReassignRequests(), the same B10 mailbox §2.4
-               below reads), compliance/risk items are hand-authored — no
-               shared store for those exists yet, same "independently
-               hand-authored per screen" convention this file's own "Recent
-               system" feed further down already uses. -->
+               below reads), compliance/risk items are hand-authored. The shell
+               does keep a per-requirement log (getReqLog / getActivityLog, which
+               Statistics' "Most active this week" reads), but this feed doesn't
+               read it yet — nor does the "Recent activity" card further down. -->
           <div class="card">
             <h3>Recent comments</h3>
             <div class="feed" id="comments-feed"></div>
           </div>
 
-          <!-- The sidebar's own Compliance bar lived here and drew exactly the
-               same segments and legend as Statistics › Compliance › Compliance
-               profile, ~400px below it — the identical chart twice on one page.
-               Statistics keeps it, where it sits next to internal-vs-declared
-               and gains the context that makes it worth reading; at-a-glance
+          <!-- The sidebar's own Compliance bar used to sit here, drawing the
+               same chart as a Statistics block ~400px below it — the identical
+               chart twice on one page. It went: Statistics › Compliance ›
+               Progress to the client now carries that progress, and at-a-glance
                compliance progress is already on the Compliance phase card. -->
 
           <div class="card">
@@ -1024,13 +993,14 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         </aside>
       </div>
 
-      <!-- DEC-117 — Statistics, rebuilt around the tender's business and the
-           people doing the work. Nothing here measures the AI (derivation
-           quality, correction rates — Configuration › AI feedback keeps those).
-           Three tabs: the project as a whole — its dates, its pace, its people —
-           then one per step, matching the two phase cards above. Each block
-           opens on the sentence a manager would say out loud, then the figure
-           behind it. -->
+      <!-- DEC-117 — Statistics, rebuilt around the tender's business. Nothing
+           here measures the AI (derivation quality, correction rates —
+           Configuration › AI feedback keeps those), and nothing ranks people:
+           work and answers are counted by system and sub-system, never by
+           person (DEC-118). Three tabs: the project as a whole — its dates, its
+           pace, its team — then one per step, matching the two phase cards
+           above. Each block opens on the sentence a manager would say out loud,
+           then the figure behind it. -->
       <div class="card stats-panel">
         <div class="stats-head">
           <h3>Statistics</h3>
@@ -1105,15 +1075,14 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         </div>
       </div>
 
-      <!-- system -->
+      <!-- Recent activity -->
       <div class="card">
-        <h3>Recent activity <a href="#">View all</a></h3>
+        <h3>Recent activity</h3>
         <div class="feed">
           <div class="feed-item ia v22only hidden"><div class="feed-w"><b>Version v2.2</b> uploaded and processed — gap analysis ready (+2 ~1 −0)</div><div class="feed-t">Today, 10:46 AM</div></div>
-          <div class="feed-item warn v22only hidden"><div class="feed-w"><b>SRM-00009</b> flagged as answered on outdated version after v2.2</div><div class="feed-t">Today, 10:46 AM</div></div>
-          <div class="feed-item ok" id="feed-latest-answer"><div class="feed-w"><b>Claire Moreau</b> responded on SRM-00013 — verdict Needs clarification</div><div class="feed-t">Jul 15, 4:20 PM</div></div>
-          <div class="feed-item send"><div class="feed-w"><b>Q&amp;A batch</b> — 1 question sent to the issuer (retention period)</div><div class="feed-t">Jul 15, 2:10 PM</div></div>
-          <div class="feed-item ok"><div class="feed-w"><b>Allocation</b> milestone reached — register exported, 3 contributors notified</div><div class="feed-t">Jul 12, 9:30 AM</div></div>
+          <div class="feed-item warn v22only hidden"><div class="feed-w"><b>SRM-00009</b> — answer reopened by the new version (v2.2)</div><div class="feed-t">Today, 10:46 AM</div></div>
+          <div class="feed-item ok" id="feed-latest-answer"><div class="feed-w"><b>Claire Moreau</b> asked the client a question on SRM-00013</div><div class="feed-t">Jul 15, 4:20 PM</div></div>
+          <div class="feed-item send"><div class="feed-w"><b>QA-01</b> marked as sent</div><div class="feed-t">Jul 15, 2:10 PM</div></div>
         </div>
       </div>
     </div>
@@ -1124,7 +1093,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
     <aside class="cfg-nav" id="cfg-nav">
       <div class="cfg-nav-item on" data-sec="general"><span class="ci"><i class=ic-sliders></i></span> General</div>
       <div class="cfg-nav-item" data-sec="team"><span class="ci"><i class=ic-users></i></span> Team &amp; contributors</div>
-      <div class="cfg-nav-item" data-sec="workflow"><span class="ci"><i class=ic-flow></i></span> Workflow &amp; milestones</div>
+      <div class="cfg-nav-item" data-sec="workflow"><span class="ci"><i class=ic-flow></i></span> Reminders</div>
       <div class="cfg-nav-item" data-sec="model"><span class="ci"><i class=ic-refresh></i></span> Allocation model</div>
       <div class="cfg-nav-item" data-sec="compliance"><span class="ci"><i class=ic-flag></i></span> Compliance</div>
       <div class="cfg-nav-item" data-sec="appearance"><span class="ci"><i class=ic-contrast></i></span> Appearance</div>
@@ -1140,35 +1109,32 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         <!-- General -->
         <section class="cfg-sec on" data-sec="general">
           <div class="cfg-h">General</div>
-          <div class="cfg-sub">Project identity and key dates. The submission deadline drives the countdown and the overdue calculations.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: these fields aren't wired to the rest of the app in this build. The Dashboard/Allocation/Compliance screens keep their own hand-authored project identity, and the deadline shown here doesn't drive any real countdown or overdue calculation.</div>
+          <div class="cfg-sub">Project identity and key dates. The submission deadline drives the countdown to submission.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: these fields aren't wired to the rest of the app in this build. Editing here changes nothing; every screen shows the identity set at creation.</div>
           <div class="frow"><div class="fl"><div class="flt">Project name</div><div class="fld">Displayed across all screens.</div></div><div class="fc"><input class="inp" value="Energy Monitoring System"></div></div>
           <div class="frow"><div class="fl"><div class="flt">BO-ID</div></div><div class="fc"><input class="inp" value="STB-2026"></div></div>
-          <!-- USER-TEST-session-3.md §1.3 — Turnkey/RSC/SIG/INFRA confirmed (spelling aligned to DEC-004/059 — the user test's own note read "RCS"); Rolling Stock/
-               Services are placeholders, not confirmed. -->
           <div class="frow"><div class="fl"><div class="flt">Product line</div><div class="fld">Chosen at creation and fixed afterwards (DEC-095) — it sets how allocation works. Correcting it means recreating the tender.</div></div><div class="fc"><div class="fval" id="cfg-general-line">—</div><div class="opt-desc">Not editable, by decision — not a missing control.</div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Submission deadline</div><div class="fld">Sets the countdown and overdue thresholds baseline.</div></div><div class="fc"><input class="inp" type="date" value="2026-08-12"></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Source document</div><div class="fld">Active version used for review.</div></div><div class="fc"><div class="tog-row"><span class="tl" style="font-family:var(--font-mono)">STB-2026_v2.1.pdf</span><span style="font-size:var(--text-xs);color:var(--text-3)">· 24 pages · managed in Versions</span></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Submission deadline</div><div class="fld">Drives the countdown to submission.</div></div><div class="fc"><input class="inp" type="date" value="2026-08-12"></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Documents</div><div class="fld">The tender's documents and every version of each.</div></div><div class="fc"><div class="fval">Managed in Documents &amp; versions, not here.</div></div></div>
         </section>
 
         <!-- Team -->
         <section class="cfg-sec" data-sec="team">
           <div class="cfg-h">Team &amp; contributors</div>
-          <div class="cfg-sub">Contributors available for requirement assignment during allocation. Each can be assigned requirements and receives a qualification link.</div>
+          <div class="cfg-sub">Contributors available for requirement assignment during allocation. Each can be assigned requirements and receives a link to their Compliance queue.</div>
           <div id="exp-editor"></div>
           <div class="add-exp"><input class="inp" id="new-exp-name" placeholder="Full name"><input class="inp" id="new-exp-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="add-exp-btn">Add contributor</button></div>
-          <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria <span style="font-weight:400;color:var(--text-3);font-size:var(--text-xs)">(TE2 — demo only, doesn't change what the review table actually offers)</span></div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (system)</span><span class="chip-tog on">OBS (organization)</span><span class="chip-tog">Discipline</span></div></div></div>
+          <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria <span style="font-weight:400;color:var(--text-3);font-size:var(--text-xs)">(TE2 — demo only, doesn't change what the Allocation table actually offers)</span></div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (activity)</span><span class="chip-tog on">OBS (organization)</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Restricted view</div><div class="fld">What a manager sees for requirements outside their assignments (the admin/project lead always sees everything).</div></div><div class="fc"><div class="segc" data-seg="redact"><button class="on" data-redact="redact">Redacted</button><button data-redact="hide">Hidden</button></div><div class="opt-desc"><b>Redacted:</b> the manager sees blacked-out passages — they perceive the volume and context but not the content. <b>Hidden:</b> out-of-scope passages disappear entirely.</div></div></div>
         </section>
 
-        <!-- Workflow -->
+        <!-- Reminders -->
         <section class="cfg-sec" data-sec="workflow">
-          <div class="cfg-h">Workflow &amp; milestones</div>
-          <div class="cfg-sub">Rules that govern phase transitions, reminders and the review gate.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls change real behavior in this build. Allocation and Compliance run side by side, and nothing gates one on the other; the overdue threshold Compliance's own overdue logic uses is a fixed constant, not this slider.</div>
+          <div class="cfg-h">Reminders</div>
+          <div class="cfg-sub">How late answers are flagged and how often contributors are reminded.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls change real behavior in this build. Compliance shows each assignment's age; only this dashboard counts late answers, with a fixed rule.</div>
           <div class="frow"><div class="fl"><div class="flt">Overdue threshold</div><div class="fld">Days without a contributor response before a request is flagged overdue.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="1" max="14" value="5" id="over-range"><span class="range-val" id="over-val">5 days</span></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Maximum reminder cadence</div><div class="fld">Prevents reminder spam to contributors.</div></div><div class="fc"><select class="sel"><option>Once every 2 days</option><option>Daily</option><option>Once every 3 days</option><option>Manual only</option></select></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Outdated-response re-flag</div><div class="fld">When a new version changes a requirement that already had a response.</div></div><div class="fc"><div class="segc" data-seg="reflag"><button class="on">Substantive changes only</button><button>Any change</button></div><div class="opt-desc"><b>Substantive changes only:</b> typo-level edits don't invalidate an existing contributor response — a human arbitrates borderline cases.</div></div></div>
         </section>
 
         <!-- Allocation model — ALLOC-015 / DEC-049, DEC-050 -->
@@ -1222,19 +1188,19 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         <section class="cfg-sec" data-sec="ai">
           <div class="cfg-h">Capture &amp; segmentation</div>
           <div class="cfg-sub">How the source document is converted, how it is cut into blocks, and how the AI surfaces its uncertainty.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how the document is actually segmented or characterised in this build — the review screen's blocks are hand-authored seed data.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how the document is actually segmented or characterised in this build — Allocation's blocks are hand-authored seed data.</div>
           <!-- The advanced capture settings of the real product, supplied 22 September
                2026. They govern CONVERSION — what comes out of the source file — which
                happens before segmentation, hence their place at the top of this section.
                Four are known; the reference screenshot is cut off below them, so the
                list may not be complete (see docs/current/CAPTURE.md). -->
-          <div class="frow"><div class="fl"><div class="flt">Conversion range</div><div class="fld">Which pages of the source document are captured at all.</div></div><div class="fc"><div class="segc" data-seg="convrange"><button class="on" data-range="all">All pages</button><button data-range="some">Specific pages</button></div><div id="convrange-pages" hidden style="margin-top:10px"><input type="text" class="inp" id="convrange-input" placeholder="e.g. 1-12, 40, 55-58" style="max-width:260px"><div class="opt-desc">Anything outside these pages is not captured, so it produces no requirements at all — this is not a filter on the review table.</div></div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Conversion range</div><div class="fld">Which pages of the source document are captured at all.</div></div><div class="fc"><div class="segc" data-seg="convrange"><button class="on" data-range="all">All pages</button><button data-range="some">Specific pages</button></div><div id="convrange-pages" hidden style="margin-top:10px"><input type="text" class="inp" id="convrange-input" placeholder="e.g. 1-12, 40, 55-58" style="max-width:260px"><div class="opt-desc">Anything outside these pages is not captured, so it produces no requirements at all — this is not a filter on the Allocation table.</div></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Default table conversion format</div><div class="fld">Whether a table is captured as a picture of itself or as structured data.</div></div><div class="fc"><div class="segc" data-seg="tableformat"><button class="on">Image</button><button>Dataframe</button></div><div class="opt-desc"><b>Image:</b> faithful to the layout, nothing inside is searchable or extractable. <b>Dataframe:</b> rows and columns become data — which is what lets a table row become a requirement, below.</div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Default table granularity</div><div class="fld">How table rows map to requirements on first pass. Only reachable once a table is converted as a dataframe — an image has no rows to map.</div></div><div class="fc"><div class="segc" data-seg="gran"><button class="on">One requirement per row</button><button>Whole table</button></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Sentences in paragraphs</div><div class="fld">Whether a paragraph stays one block or is cut into one block per sentence.</div></div><div class="fc"><div class="segc" data-seg="sentences"><button class="on">As source file</button><button>Split</button></div><div class="opt-desc">Splitting raises the requirement count and can separate a sentence from the one that qualifies it. Kept as the source file has it by default.</div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Format of equations</div><div class="fld">Whether an equation is captured as a picture or as a formula.</div></div><div class="fc"><div class="segc" data-seg="equations"><button class="on">As images</button><button>As formulas</button></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Document rendering</div><div class="fld">The core technical trade-off — affects fidelity, overlays and performance on large documents.</div></div><div class="fc"><div class="segc" data-seg="render"><button class="on">Faithful PDF</button><button>Reconstructed HTML</button></div><div class="opt-desc"><b>Faithful PDF:</b> pixel-perfect to the source, block overlays sit on top. <b>Reconstructed HTML:</b> easier overlays and reflow, approximate fidelity. Decision pending — test on a real tender.</div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Uncertainty threshold</div><div class="fld">Below this confidence, a block is flagged "uncertain segmentation" for manual review. Tables are almost always flagged.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="50" max="95" value="80" id="conf-range"><span class="range-val" id="conf-val">80%</span></div><div class="hintbox">⚠ Confidence is used internally to prioritize, never shown to users as a score.</div></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Uncertainty threshold</div><div class="fld">Below this confidence, a block is flagged "uncertain segmentation" for manual review. Tables are almost always flagged.</div></div><div class="fc"><div class="range-wrap"><input type="range" min="50" max="95" value="80" id="conf-range"><span class="range-val" id="conf-val">80%</span></div><div class="hintbox">⚠ Segmentation confidence is used internally to prioritise; it is not shown as a score.</div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Re-segmentation on new version</div><div class="fld">Full re-processing is cleaner; incremental diff is faster on large documents.</div></div><div class="fc"><div class="segc" data-seg="reseg"><button>Full re-segmentation</button><button class="on">Incremental diff</button></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Never overwrite manual edits</div><div class="fld">AI re-processing preserves human segmentation corrections.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="preserve"></span><span class="tl">Protect manual corrections on re-run</span></div></div></div>
         </section>
@@ -1242,21 +1208,18 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         <!-- Q&A -->
         <section class="cfg-sec" data-sec="qa">
           <div class="cfg-h">Q&amp;A &amp; submission</div>
-          <div class="cfg-sub">How clarification questions are consolidated and transmitted to the tender issuer.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect Q&amp;A behavior in the Compliance screen in this build.</div>
-          <div class="frow"><div class="fl"><div class="flt">Issuer channel</div><div class="fld">Determines whether the batch is a simple export or a formatted submission.</div></div><div class="fc"><div class="segc" data-seg="channel"><button class="on">Buyer portal</button><button>Standard form</button><button>Free document</button></div><div class="opt-desc"><b>Buyer portal:</b> the batch is exported to the issuer's imposed format/template. <b>Free document:</b> a plain export you attach yourself.</div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">AI duplicate detection</div><div class="fld">Proposes merging near-identical questions raised by different contributors, keeping all requirement links.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="dedup"></span><span class="tl">Suggest merges before submission</span></div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Internal review before sending</div><div class="fld">Questions pass through an internal-review stage before leaving the team.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="review"></span><span class="tl">Require internal review stage</span></div></div></div>
+          <div class="cfg-sub">How questions to the client are exported.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect Q&amp;A behavior in the Q&amp;A screen in this build.</div>
+          <div class="frow"><div class="fl"><div class="flt">Issuer channel</div><div class="fld">Determines whether the questions go out as a plain export or a formatted submission.</div></div><div class="fc"><div class="segc" data-seg="channel"><button class="on">Buyer portal</button><button>Standard form</button><button>Free document</button></div><div class="opt-desc"><b>Buyer portal:</b> the questions are exported to the issuer's imposed format/template. <b>Free document:</b> a plain export you attach yourself.</div></div></div>
         </section>
 
         <!-- Versions -->
         <section class="cfg-sec" data-sec="versions">
           <div class="cfg-h">Versions</div>
           <div class="cfg-sub">How incoming AO document versions are numbered and handled.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how version handling actually works in the Compliance screen in this build — that's driven by the "Simulate upload — v2.2" button there.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: none of these controls affect how version handling actually works in this build. Versions are per document, in Documents &amp; versions; uploading a new version of the main document there is what the dashboard reacts to.</div>
           <div class="frow"><div class="fl"><div class="flt">Numbering</div><div class="fld">Auto-increment with an optional free alias is recommended.</div></div><div class="fc"><div class="segc" data-seg="numbering"><button class="on">Auto-increment + alias</button><button>Free entry</button></div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Detect addendum-as-answer</div><div class="fld">When an issuer response actually amends the document, propose treating it as a new version.</div></div><div class="fc"><div class="tog-row"><span class="tog on" data-tog="addendum"></span><span class="tl">AI suggests requalifying as a version</span></div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Contributor notification on version switch</div><div class="fld">When the active review switches to a newer version.</div></div><div class="fc"><div class="segc" data-seg="notif"><button>Immediate</button><button class="on">Grouped at change-review validation</button></div></div></div>
         </section>
 
         <!-- Language -->
@@ -1265,7 +1228,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           <div class="cfg-sub">Interface and translation defaults. Source text always remains authoritative.</div>
           <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: the UI stays English throughout regardless of these selects (a hard rule for this build — see <code>HANDOVER.md</code>). Not wired.</div>
           <div class="frow"><div class="fl"><div class="flt">Source document language</div></div><div class="fc"><select class="sel"><option>English</option><option>French</option><option>German</option></select></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Default translation target</div><div class="fld">Used by the Translate tab in the review panel.</div></div><div class="fc"><select class="sel"><option>French (FR)</option><option>German (DE)</option><option>Spanish (ES)</option></select></div></div>
+          <div class="frow"><div class="fl"><div class="flt">Working language</div><div class="fld">What a source in another language is translated into.</div></div><div class="fc"><div class="fval">English</div><div class="opt-desc">Not editable — translation always goes into English.</div></div></div>
           <div class="frow"><div class="fl"><div class="flt">Interface language</div></div><div class="fc"><select class="sel"><option>English</option><option>French</option></select></div></div>
         </section>
 
@@ -1293,7 +1256,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           </div>
 
           <div class="fb-block">
-            <div class="fb-bh">This session <span class="fb-hint">live signal from the review screen</span></div>
+            <div class="fb-bh">This session <span class="fb-hint">live signal from Allocation</span></div>
             <div id="fb-live"></div>
           </div>
 
@@ -1327,7 +1290,8 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         <button class="cast-unstaffed-toggle" id="cast-unstaffed-toggle">⚠ Unstaffed only</button>
         <!-- PM-only: shown/hidden in renderTeamScreen alongside the coverage
              strip, since adding a system is a project-wide structural
-             change, not something scoped to one manager's own system. -->
+             change, not something scoped to one manager's own system. Never
+             on a SIG tender: it cannot gain a second system. -->
         <div class="cast-add-act-wrap" id="cast-add-act-wrap" style="display:none">
           <button class="cast-add-act-btn" id="cast-add-act-btn">+ Add system</button>
           <div class="cast-add-act-pop" id="cast-add-act-pop"></div>
@@ -1438,9 +1402,10 @@ document.getElementById("cfg-btn").addEventListener("click",()=>showScreen(docum
 document.getElementById("team-btn").addEventListener("click",()=>showScreen(document.getElementById("team-screen").style.display==="none"?"team":"dash"));
 document.getElementById("logo").addEventListener("click",()=>goRoute("accueil.html"));
 /* reflect the project opened from the tender list — TA1/TA2: also fetched once here
-   and reused below (renderTeamScreen's EXPERTS source, dash-scope-banner) instead of
-   only touching the breadcrumb, so the rest of this hub screen stops silently
-   pretending every project is the built-out reference one. */
+   and reused below (IS_SIG_TENDER, which picks the casting and the ROSTER
+   renderTeamScreen reads, and the dash-scope-banner) instead of only touching the
+   breadcrumb, so the rest of this hub screen stops silently pretending every
+   project is the built-out reference one. */
 const CURRENT_PROJECT = (function(){ try{ return (window.parent!==window && window.parent.getCurrentProject) ? window.parent.getCurrentProject() : null; }catch(e){ return null; } })();
 /* DEC-044 — read here, before the casting and mirror data that branch on it:
    a const is not hoisted, and this screen used to narrate STB-2026 over
@@ -1477,7 +1442,8 @@ const SIG_CAST_ACTIVITIES=[
 
 /* Phase gating — reads shared state from the shell (merged app) */
 // TB5 — v2.2's gap analysis is narrated as fact; gate it on the real trigger
-// (Compliance's "Simulate upload — v2.2" button) instead of asserting it on load.
+// (uploading a new version of the main document in Documents & versions, which
+// sets the shell's v22Uploaded) instead of asserting it on load.
 function v22Done(){ try{ return !!(window.parent!==window && window.parent.isV22Uploaded && window.parent.isV22Uploaded()); }catch(e){ return false; } }
 function goRoute(url){
   try{ if(window.parent!==window && window.parent.routeUrl){ window.parent.routeUrl(url); return; } }catch(e){}
@@ -1488,11 +1454,9 @@ function applyGating(){
   const ap=allocProgress();
   const done=ap.total>0 && ap.allocated===ap.total;
   document.body.classList.toggle("review-done",done);
-  // DEC-035 — Allocation and Compliance run side by side; finalizing Allocation
-  // no longer hides or reveals anything Compliance-related (that used to be
-  // what ".p2only" did here). ".p1only" still means what it always did — hide
-  // this once its own condition (allocation not yet finalized) resolves, not a
-  // Compliance-gating concept.
+  // DEC-035 — Allocation and Compliance run side by side; Allocation being done
+  // hides or reveals nothing Compliance-related. ".p1only" hides an item once
+  // every requirement is allocated (DEC-098) — not a Compliance-gating concept.
   document.querySelectorAll(".p1only").forEach(el=>el.classList.toggle("hidden",done));
   document.querySelectorAll(".v22only").forEach(el=>el.classList.toggle("hidden",!v22Done()));
   // allocation phase card
@@ -1523,13 +1487,13 @@ function applyGating(){
   fbody.innerHTML=`<span class="big">${fAnswered}</span><span>/ ${fTotal} answered${fOverdue?` · ${fOverdue} overdue`:""}</span>`;
   document.getElementById("ph-followup-bar").style.width=fPct+"%";
   f.onclick=()=>goRoute("compliance.html");
-  // Exactly one step carries the "click here" emphasis: Allocation until it is
-  // finalized, Compliance after. Set last — f.className above wipes classes.
+  // Exactly one step carries the "click here" emphasis: Allocation until every
+  // requirement is allocated, Compliance after. Set last — f.className above
+  // wipes classes.
   rCard.classList.toggle("is-current", !done);
   f.classList.toggle("is-current", done);
   f.classList.remove("step-1"); rCard.classList.add("step-1");
   // attention count
-  const visibleAtt=[...document.querySelectorAll(".att")].filter(a=>a.offsetParent!==null||!a.classList.contains("hidden"));
   document.getElementById("att-count").textContent=document.querySelectorAll(".att:not(.hidden)").length;
 }
 
@@ -1538,6 +1502,7 @@ document.querySelectorAll(".att[data-go]").forEach(a=>a.addEventListener("click"
 /* Phase cards routing through shell */
 document.getElementById("ph-review").addEventListener("click",e=>{e.preventDefault();goRoute("revue-documentaire.html");});
 document.getElementById("ph-documents").addEventListener("click",e=>{e.preventDefault();goRoute("documents.html");});
+document.getElementById("ph-risks").addEventListener("click",e=>{e.preventDefault();goRoute("risks.html");});
 document.getElementById("ph-qa").addEventListener("click",e=>{e.preventDefault();goRoute("qa.html");});
 document.getElementById("demo-contributor-link").addEventListener("click",()=>goRoute("compliance.html#contributor"));
 document.getElementById("new-proj").addEventListener("click",e=>{e.preventDefault();goRoute("creation-projet.html");});
@@ -1569,19 +1534,18 @@ oR.addEventListener("input",()=>oV.textContent=oR.value+(oR.value==="1"?" day":"
 const cR=document.getElementById("conf-range"),cV=document.getElementById("conf-val");
 cR.addEventListener("input",()=>cV.textContent=cR.value+"%");
 
-/* B2/B4 — system managers (mirrors MANAGERS in revue-documentaire.html /
-   compliance.html — same names/ids/roles across screens for a
-   coherent demo, though each file's data stays independently hand-authored,
-   per this project's convention). Casting is now asynchronous (B2): the
-   project manager casts one system manager per system at creation, but
-   only fills in experts directly for systems attached to themselves —
-   everyone else's experts are filled in later by that system manager on the
-   Team screen (B4), at their own pace.
+/* B2/B4 — system managers. Same names and ids as MANAGERS in
+   revue-documentaire.html / compliance.html for a coherent demo, but not the
+   same role labels (those screens call them "SIG contributor" and so on) —
+   each file's data stays independently hand-authored, per this project's
+   convention. Casting is asynchronous and no longer part of creation: it
+   happens on the Team casting screen once the tender exists, each system
+   manager staffing their own system at their own pace (B4).
    TICKET-casting-screen-redesign — a "perimeter manager" is not a new,
    separate role: it's the existing system manager, acting within the
-   perimeters nested under their one system. Extended from 3 to 6 cast
-   systems (plus one, cvl, deliberately left with no manager yet) for a
-   richer coverage demo — see CAST_ACTIVITIES below. */
+   perimeters nested under their one system. Six cast systems, plus one, RST,
+   deliberately left with no manager yet for a richer coverage demo — see
+   CAST_ACTIVITIES below. */
 const MANAGERS=[
   {id:"m_sig",name:"Louis Renaud",role:"SIG manager",init:"LR",color:"#3fb27f"},
   {id:"m_mln",name:"Amina Cherif",role:"TRK manager",init:"AC",color:"#e0a43c"},
@@ -1614,13 +1578,8 @@ function viewerInfo(id){
   const m=MGR(id);
   return {id:m.id,name:m.name,isPM:false};
 }
-/* Experts editor — TA2: for a project created via the wizard, this is the real roster
-   the PM cast in step 4 (creation-projet.html -> build_merge.py's addProject stores it
-   on the project). The reference project (stb2026) carries no `.experts` on its seed,
-   so it keeps using the hand-authored demo roster below, unchanged. */
-const EXPERTS = (CURRENT_PROJECT && Array.isArray(CURRENT_PROJECT.experts) && CURRENT_PROJECT.experts.length)
-  ? CURRENT_PROJECT.experts.map(e=>Object.assign({count:0},e))
-  : [
+/* Configuration › Team & contributors — this screen's own hand-authored list */
+const EXPERTS = [
   {name:"Sophie Lang",team:"Monitoring Team",init:"SL",color:"#6e7bf2",count:4,manager:"m_sig"},
   {name:"Karim Benali",team:"Infrastructure Team",init:"KB",color:"#3fb27f",count:3,manager:"m_mln"},
   {name:"Claire Moreau",team:"Cybersecurity",init:"CM",color:"#e0a43c",count:3,manager:"m_sig"},
@@ -1646,7 +1605,7 @@ document.getElementById("add-exp-btn").addEventListener("click",()=>{
   if(!n.value.trim()){toast("Enter a name","warn");return;}
   const init=n.value.trim().split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
   EXPERTS.push({name:n.value.trim(),team:t.value.trim()||"—",init,color:COLORS[EXPERTS.length%COLORS.length],count:0});
-  n.value="";t.value="";renderExperts();toast("Expert added","ok");
+  n.value="";t.value="";renderExperts();toast("Contributor added","ok");
 });
 renderExperts();
 
@@ -1659,10 +1618,10 @@ renderExperts();
    renderExperts (a separate, simpler global list), per this project's
    no-shared-data-layer convention.
 
-   No real perimeter reference list was available for this build (see the
-   ticket's own "Open" section) — the values below are illustrative, not
-   invented-as-fact; INF and TLC are modelled with no perimeter breakdown
-   at all, which is itself a real, intended case, not a gap.
+   The perimeters are one shared list for every system — the OBS · team
+   list of DEC-036, PERIMETERS below — not a list per system; staffing
+   someone directly on a system, with no perimeter, stays an ordinary
+   per-person choice.
 ===================================================== */
 /* TICKET-two-pass-allocation.md §3 — `hasModel` marks the systems that have
    an allocation model of their own: SIG and RST, matching revue-documentaire.html's
@@ -1959,7 +1918,7 @@ function castGroupHTML(a,viewerIsAdmin){
   if(!perims.length || directRows.length) groups.push(castPerimeterHTML(a,null,"Staffed directly (no perimeter)"));
   let bodyInner;
   if(!a.managerId){
-    bodyInner=`<div class="cast-noperm">This system hasn't been cast to a manager yet — nobody can staff it until it is.<br><b>Assign a system manager in the project wizard or from here once that flow is wired.</b></div>`;
+    bodyInner=`<div class="cast-noperm"><b>No manager yet</b> — this system can't be staffed in the prototype until it has one.</div>`;
   } else if(!editable && !viewerIsAdmin){
     bodyInner=`<div class="cast-readonly-note"><i class=ic-lock></i> Read-only — ${mgr.name} manages this system, not you.</div>` + groups.join("");
   } else {
@@ -2048,7 +2007,8 @@ function renderTeamScreen(){
     : "Your own system, expanded and ready to staff. Everything else stays visible for context, read-only.";
   const lastAddedChip=CAST_LAST_ADDED?`<div class="cast-readonly-note" style="margin-bottom:12px">↻ Just added <b>${CAST_LAST_ADDED.label}</b> — staffing them on another perimeter too? Search their name again in the right spot below. <button class="btn-ghost" style="font-size:var(--text-xs);padding:2px 8px;margin-left:8px" id="cast-clear-last">Dismiss</button></div>`:"";
   body.innerHTML=(viewer.isPM?castPMTeamHTML():"") + lastAddedChip + CAST_ACTIVITIES.map(a=>castGroupHTML(a,viewer.isPM)).join("");
-  document.getElementById("cast-add-act-wrap").style.display=viewer.isPM?"block":"none";
+  // a SIG tender has one system and cannot gain a second: no "+ Add system" there
+  document.getElementById("cast-add-act-wrap").style.display=(viewer.isPM&&!IS_SIG_TENDER)?"block":"none";
   document.getElementById("cast-clear-last")?.addEventListener("click",()=>{ CAST_LAST_ADDED=null; renderTeamScreen(); });
   body.querySelectorAll("[data-toggle-act]").forEach(h=>h.addEventListener("click",()=>{
     const id=h.dataset.toggleAct;
@@ -2110,7 +2070,7 @@ function renderAddActivityPop(){
     CAST_ACTIVITIES.push({id:ref.id,code:ref.code,label:ref.label,managerId:null});
     castExpanded.add(ref.id);
     closeAddActivityPop();
-    toast(`${ref.label} added — cast a manager to it to start staffing`,"ok");
+    toast(`${ref.code} added — no manager yet`,"ok");
     renderTeamScreen();
   });
 }
@@ -2126,9 +2086,9 @@ document.addEventListener("click",e=>{
   if(!e.target.closest("#cast-add-act-wrap")) closeAddActivityPop();
 });
 /* DoD #5 generator — random but reproducible-in-shape: spreads synthetic
-   people across every castable system/perimeter (never the uncast cvl —
-   that's a real block, not something scale should paper over), respecting
-   the same duplicate rule a real add goes through. New names are added to
+   people across every castable system/perimeter (never a system with no
+   manager — that's a real block, not something scale should paper over),
+   respecting the same duplicate rule a real add goes through. New names are added to
    DIRECTORY too, so the roster search and add-flow keep working normally
    against the larger pool afterwards. */
 const SIM_FIRST=["Elise","Karim","Nadia","Bruno","Sana","Victor","Layla","Hugo","Priya","Malik","Chiara","Tarek","Ines","Yann","Farah","Cedric","Amel","Louis","Nour","Damien","Salma","Theo","Widad","Romain"];
@@ -2173,10 +2133,8 @@ document.getElementById("cast-simulate-scale").addEventListener("click",function
 function renderCastingProgress(){
   const total=CAST_ACTIVITIES.length;
   const done=CAST_ACTIVITIES.filter(a=>a.managerId&&rosterOfActivity(a.id).length>0).length;
-  const pct=total?Math.round(done/total*100):100;
   document.getElementById("ph-team-n").textContent=done;
   document.getElementById("ph-team-txt").textContent=`/ ${total} staffed`;
-  document.getElementById("ph-team-bar").style.width=pct+"%";
   const badge=document.getElementById("ph-team-badge");
   const pending=total-done;
   if(pending){ badge.textContent=`${pending} pending`; badge.className="ph-badge wait"; }
@@ -2186,10 +2144,11 @@ document.getElementById("ph-team").addEventListener("click",()=>showScreen("team
 renderCastingProgress();
 
 /* Save */
-// TE2 — theme and restricted-view mode are the only settings with real effect, and both
-// already apply immediately on click (setTheme/setRedactMode) — nothing here actually
-// waits on Save. Toast wording matches that instead of implying a persisted save.
-document.getElementById("cfg-save").addEventListener("click",()=>toast("Theme and restricted-view mode apply immediately — other settings on this page aren't wired in this build","ok"));
+// TE2 — theme, restricted-view mode, the Turnkey partners and the gap strategies are the
+// settings with real effect, and all of them already apply immediately (setTheme,
+// setRedactMode, add/removePartner, the strategy calls) — nothing here actually waits on
+// Save. Toast wording matches that instead of implying a persisted save.
+document.getElementById("cfg-save").addEventListener("click",()=>toast("Theme, restricted view, partners and gap strategies apply immediately — other settings on this page aren't wired in this build","ok"));
 document.getElementById("cfg-reset").addEventListener("click",()=>toast("Nothing to discard — most fields on this page aren't wired in this build","ok"));
 
 /* deep link #config */
@@ -2230,16 +2189,16 @@ document.querySelectorAll('[data-redact]').forEach(b=>b.addEventListener("click"
    allocation phase) and compliance.html's REQS/consolidate() (follow-up
    phase's compliance verdicts + branch answer counts). Independently hand-authored per
    this project's convention (see the MANAGERS mirror above) — used to compute the
-   Allocation phase card, the "Requirements validated" health stat, the Compliance
-   breakdown and the Response rate instead of typing the resulting numbers into the
-   markup, so they can't silently drift from the screens that own that data. */
-/* `system` mirrors the primary system each requirement is routed to (the
+   hero's volume, the two phase cards (Allocation's until that screen reports its own
+   progress, DEC-098), the attention items, the bell and Statistics instead of typing
+   the resulting numbers into the markup, so they can't silently drift from the
+   screens that own that data. */
+/* `activity` mirrors the primary system each requirement is routed to (the
    16-code list shared with revue-documentaire.html's TYPO since DEC-032) —
-   null means pass 2 hasn't named one yet, which the Allocation tab shows as
-   its own figure rather than hiding. `aiActivity` marks a system the AI
-   proposed, `obsWeak` an OBS derived below the confidence threshold: both
-   feed the derivation-quality gauges, and both are properties the Allocation
-   screen really carries (perimAI / OBS_THRESHOLD). */
+   null means it isn't routed to a system yet, which Statistics › Allocation
+   shows as its own figure rather than hiding. `obsWeak` marks an OBS derived
+   below the confidence threshold — a property the Allocation screen really
+   carries (OBS_THRESHOLD); the bell counts them. */
 /* =====================================================
    SIG TENDER MIRROR — RFP-2026-114 (DEC-044)
    This screen keeps its own hand-authored mirror of the other two, per the
@@ -2253,12 +2212,12 @@ document.querySelectorAll('[data-redact]').forEach(b=>b.addEventListener("click"
 const SIG_REVIEW_REQS=[
   {id:"L4-0004",status:"allocated",activity:"sig"},
   {id:"L4-0005",status:"allocated",activity:"sig"},
-  {id:"L4-0006",status:"suggested",activity:"sig",aiActivity:true,obsWeak:true},
+  {id:"L4-0006",status:"suggested",activity:"sig",obsWeak:true},
   {id:"L4-0008",status:"toreview", activity:"sig"},
-  {id:"L4-0009",status:"suggested",activity:"sig",aiActivity:true,obsWeak:true},
+  {id:"L4-0009",status:"suggested",activity:"sig",obsWeak:true},
   {id:"L4-0010",status:"allocated",activity:"sig"},
   {id:"L4-0011",status:"edited",   activity:"sig"},
-  {id:"L4-0012",status:"suggested",activity:"sig",aiActivity:true,obsWeak:true},
+  {id:"L4-0012",status:"suggested",activity:"sig",obsWeak:true},
   {id:"L4-0014",status:"toreview", activity:"sig"},
   {id:"L4-0015",status:"toreview", activity:"sig"},
   {id:"L4-0017",status:"allocated",activity:"sig"},
@@ -2295,23 +2254,24 @@ const REVIEW_REQS_BASE=[
   {id:"SRM-00001",status:"toreview", activity:"sig"},
   {id:"SRM-00002",status:"toreview", activity:"sig"},
   {id:"SRM-00003",status:"allocated",activity:"sig"},
-  {id:"SRM-00004",status:"allocated",activity:"sen", aiActivity:true},
+  {id:"SRM-00004",status:"allocated",activity:"sen"},
   {id:"SRM-00005",status:"toreview", activity:"sig", obsWeak:true},
-  {id:"SRM-00006",status:"suggested",activity:"trk", aiActivity:true},
-  {id:"SRM-00007",status:"suggested",activity:"sig", aiActivity:true},
-  {id:"SRM-00008",status:"suggested",activity:"com", aiActivity:true},
-  {id:"SRM-00009",status:"allocated",activity:"trk", aiActivity:true,obsWeak:true},
-  {id:"SRM-00010",status:"edited",   activity:"trk", aiActivity:true},
-  {id:"SRM-00011",status:"suggested",activity:null,  aiActivity:true,obsWeak:true},
+  {id:"SRM-00006",status:"suggested",activity:"trk"},
+  {id:"SRM-00007",status:"suggested",activity:"sig"},
+  {id:"SRM-00008",status:"suggested",activity:"com"},
+  {id:"SRM-00009",status:"allocated",activity:"trk", obsWeak:true},
+  {id:"SRM-00010",status:"edited",   activity:"trk"},
+  {id:"SRM-00011",status:"suggested",activity:null,  obsWeak:true},
   {id:"SRM-00012",status:"allocated",activity:"sig"},
-  {id:"SRM-00013",status:"toreview", activity:"rams",aiActivity:true,obsWeak:true},
+  {id:"SRM-00013",status:"toreview", activity:"rams",obsWeak:true},
   {id:"SRM-00014",status:"allocated",activity:"pos"},
 ];
 const REVIEW_REQS = IS_SIG_TENDER ? SIG_REVIEW_REQS : REVIEW_REQS_BASE;
 
 /* `branchStatuses` replaces the old branchesAnswered/branchesTotal pair: same
-   information, but per assignment, so the assignment funnel and the "what is
-   consolidation actually waiting on" split can be derived rather than typed.
+   information, but per assignment, so Statistics' "what the open requirements
+   are waiting on" split and the model warning's count of recorded answers can
+   be derived rather than typed.
    Values are compliance.html's own BST keys. Risk figures are not mirrored here:
    they come from Compliance's own totals and the shell's register (SPEC-risks.md). */
 const FOLLOWUP_REQS_BASE=[
@@ -2334,13 +2294,6 @@ const FOLLOWUP_REQS_BASE=[
 const FOLLOWUP_REQS = IS_SIG_TENDER ? SIG_FOLLOWUP_REQS : FOLLOWUP_REQS_BASE;
 
 const branchesOf=r=>r.branchStatuses||[];
-const answeredOf=r=>branchesOf(r).filter(s=>s==="answered").length;
-/* Turnkey-ness read from the same project object accueil.html seeds
-   (CURRENT_PROJECT.line) rather than a second, disconnected flag — a real
-   project field. No project (this screen opened standalone) defaults to
-   Turnkey, matching STB-2026's own demo. Now consumed by the Pass 1 → pass 2
-   funnel in Statistics, which is where that distinction is actually explained. */
-const IS_TURNKEY_TENDER = !CURRENT_PROJECT || CURRENT_PROJECT.line==="Turnkey";
 function renderHeroVolume(){
   const el=document.getElementById("dash-total-reqs"); if(!el) return;
   el.textContent=REVIEW_REQS.length;
@@ -2361,11 +2314,12 @@ function renderReviewKPIs(){
   document.getElementById("ph-review-bar").style.width=pct+"%";
   document.getElementById("att-review-sub").textContent=`${total-validated} requirements still to validate`;
 }
-/* TB2 — mirrors the system-level detail behind compliance.html's
-   isOverB() (awaiting_answer && age >= OVERDUE_DAYS): only a branch actually waiting
-   on its contributor can be overdue, not one blocked on the issuer or bounced back
-   for reassignment. Drives the "contributor response overdue" attention card instead
-   of a hand-typed name/id/day-count that can silently point at the wrong person. */
+/* TB2 — the late answers. Compliance shows each assignment's age and flags
+   nothing as overdue any more; only this dashboard counts late answers, with
+   a fixed rule: only a branch actually waiting on its contributor can be
+   overdue, not one blocked on the client or bounced back for reassignment.
+   Drives the "contributor response overdue" attention card instead of a
+   hand-typed name/id/day-count that can silently point at the wrong person. */
 const OVERDUE_BRANCHES_BASE=[
   // oldest first — renderOverdueCard leads with [0]. `unit` is what Statistics ›
   // Answers by system counts them under (DEC-118): the system, or the sub-system
@@ -2391,13 +2345,13 @@ function renderOverdueCard(){
 /* §2.3 — tender-wide feed of the most recently added comments, replacing
    Project Health's slot. Reassignment items are live off the same B10
    shared mailbox §2.4 below reads (window.parent.getReassignRequests) —
-   compliance verdict and risk-field comments have no equivalent shared
-   store yet (compliance.html's REQS stays local to that screen, per this
-   project's own "independently hand-authored per screen" convention), so
-   those are hand-authored here, same as this screen's existing "Recent
-   system" feed further down. All merged and shown most-recent-first. */
+   compliance verdict and risk-field comments are hand-authored here: the
+   shell does keep a per-requirement log (getReqLog / getActivityLog, which
+   "Most active this week" reads), but this feed doesn't read it yet — nor
+   does the "Recent activity" card further down. All merged and shown
+   most-recent-first. */
 const COMMENT_FEED_DEMO_BASE=[
-  {kind:"ok",who:"Claire Moreau",what:"responded on <b>SRM-00013</b> — verdict Needs clarification",when:"Jul 15, 4:20 PM",sortKey:"2026-07-15T16:20"},
+  {kind:"ok",who:"Claire Moreau",what:"asked the client a question on <b>SRM-00013</b>",when:"Jul 15, 4:20 PM",sortKey:"2026-07-15T16:20"},
   {kind:"warn",who:"Louis Renaud",what:"linked <b>RSK-00001</b> to <b>SRM-00007</b> — Not compliant, kept as a gap",when:"Jul 14, 11:05 AM",sortKey:"2026-07-14T11:05"},
   {kind:"ok",who:"Sophie Lang",what:"commented on <b>SRM-00006</b> — evidence attached, awaiting review",when:"Jul 12, 9:15 AM",sortKey:"2026-07-12T09:15"},
 ];
@@ -2444,16 +2398,17 @@ renderReassignRollup();
 
 /* =====================================================
    STATISTICS — DEC-117 (6 Oct 2026)
-   Business only, people first. What a project manager follows here is the
-   tender and the humans working on it: its dates and pace, who did what this
-   week, who answers for each system, what was sent back, who has answered and
-   what the rest is waiting on. Nothing measures the AI — its accuracy belongs
+   Business only. What a project manager follows here is the tender: its
+   dates and pace, what each system did this week, who manages each system,
+   what was sent back, how far each system's answers have come and what the
+   rest is waiting on. Work and answers are counted by system and sub-system,
+   never by person (DEC-118). Nothing measures the AI — its accuracy belongs
    to Configuration › AI feedback, not to a manager's dashboard.
    Sources, as everywhere on this screen: the shell wherever a screen has
    reported (allocation progress, Compliance's totals, the risk list, the
    reassignment mailbox, the activity log), this screen's own mirror
    otherwise. What the backend keeps no history of yet — progress over time,
-   each person's week, the reallocations already decided — is hand-authored,
+   each system's week, the reallocations already decided — is hand-authored,
    and says so where it is declared.
 ===================================================== */
 document.querySelectorAll(".stats-tab").forEach(b=>b.addEventListener("click",()=>{
@@ -2491,10 +2446,12 @@ const avHTML=p=>`<span class="st-av" style="background:${p.color}" title="${escH
 
 /* ---------- Project › Timeline ---------- */
 /* The tender's dates. Received and submission are the project's own; the two
-   Q&A dates are the client's — the same ones the Q&A screen shows. Today is
-   the demo's "now": submission minus the days left the project carries (the
-   hero's figure), so the two cannot disagree. A project made in the wizard
-   reuses the reference tender's content, and its calendar with it. */
+   Q&A dates are the client's — STB-2026's are the ones the Q&A screen shows
+   (that screen has a single pair, so on the SIG tender the two differ). Today
+   is the demo's "now": submission minus the days left a built-out project
+   carries (the hero's figure), so on those the timeline and the hero cannot
+   disagree. A project made in the wizard reuses the reference tender's
+   content and calendar, while its hero counts down from its own deadline. */
 const TENDER_DATES_BASE={received:"2026-07-01", qaCutoff:"2026-07-17", qaAnswers:"2026-07-24", submission:"2026-08-12", days:23};
 const SIG_TENDER_DATES={received:"2026-06-29", qaCutoff:"2026-07-10", qaAnswers:"2026-07-21", submission:"2026-07-26", days:9};
 const TENDER_DATES=IS_SIG_TENDER?SIG_TENDER_DATES:TENDER_DATES_BASE;
@@ -2826,8 +2783,9 @@ function renderStatsRealloc(){
 }
 
 /* ---------- Allocation › Work invalidated by a new version ---------- */
-/* Reuses the v2.2 simulate-upload flow's own outdated-answer flag. Shown only
-   when non-zero. */
+/* The answers a new version reopened. Triggered by uploading a new version of
+   the main document in Documents & versions (the shell's v22Uploaded); which
+   answer it reopens is this screen's mirror. Shown only when non-zero. */
 function renderStatsInvalidated(){
   const block=document.getElementById("stats-invalidated-block");
   const el=document.getElementById("stats-invalidated");
@@ -2835,7 +2793,7 @@ function renderStatsInvalidated(){
   const stale=FOLLOWUP_REQS.filter(r=>r.id==="SRM-00009"&&v22Done());
   if(!stale.length){ block.classList.add("hidden"); return; }
   block.classList.remove("hidden");
-  el.innerHTML=`<div class="invalidated-row" data-go="documents.html">⇄ ${nOf(stale.length,"contributor answer")} now on an outdated version — ${stale.map(r=>r.id).join(", ")}</div>`;
+  el.innerHTML=`<div class="invalidated-row" data-go="documents.html">⇄ ${nOf(stale.length,"contributor answer")} reopened by the new version — ${stale.map(r=>r.id).join(", ")}</div>`;
   bindGo(el);
 }
 
@@ -3193,12 +3151,11 @@ const FB_RATES=[
   {k:"Assignment (OBS)",v:71,c:"var(--warn)"},
 ];
 const FB_PATTERNS=[
-  {code:"→",t:"<b>SIG → MLN</b> corrected on alerting requirements",n:14},
-  {code:"OBS",t:"Assignment moved from <b>Monitoring</b> to <b>Infrastructure</b> on real-time perf",n:9},
+  {code:"→",t:"<b>SIG → COM</b> corrected on alerting requirements",n:14},
+  {code:"OBS",t:"Assignment moved from <b>Wayside</b> to <b>Design</b> on real-time perf",n:9},
   {code:"⚑",t:"High-confidence OBS overridden — <b>reporting</b> requirements mis-routed",n:6},
-  {code:"TKY",t:"<b>Turnkey</b> added where the AI saw a single perimeter",n:5},
 ];
-const SURF_LABEL={alloc:"OBS",typo:"TYPO",char:"CHAR",deriv:"DERIV"};
+const SURF_LABEL={alloc:"OBS",typo:"SYS",char:"CHAR",deriv:"DERIV"};
 function renderFeedback(){
   const a=document.getElementById("fb-accept");
   if(a) a.innerHTML=FB_RATES.map(r=>`<div class="fb-card"><div class="fn">${r.v}%</div><div class="fl">${r.k} accepted</div><div class="fbar"><div style="width:${r.v}%;background:${r.c}"></div></div></div>`).join("");
@@ -3208,7 +3165,7 @@ function renderFeedback(){
   let items=[]; try{ if(window.parent!==window&&window.parent.getAIFeedback) items=window.parent.getAIFeedback(); }catch(e){}
   if(live){
     if(!items.length){
-      live.innerHTML=`<div class="fb-empty">No correction captured yet in this session. Reassign a requirement or change a system in the review screen — it will appear here instantly, silently logged.</div>`;
+      live.innerHTML=`<div class="fb-empty">No correction captured yet in this session. Reassign a requirement or change a system in Allocation — it will appear here instantly, silently logged.</div>`;
     }else{
       live.innerHTML=items.slice(-8).reverse().map(f=>`<div class="fb-live-row">
         <span class="fs">${SURF_LABEL[f.surface]||f.surface}</span>

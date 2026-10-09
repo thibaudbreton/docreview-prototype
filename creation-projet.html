@@ -152,12 +152,6 @@ header .btn-ghost{margin-left:auto}
 .upz .ic{width:46px;height:46px;border-radius:var(--radius-lg);background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:var(--text-xl);margin:0 auto 12px}
 .upz .t{font-size:var(--text-base);font-weight:600}
 .upz .d{font-size:var(--text-sm);color:var(--text-3);margin-top:5px}
-.filecard{display:flex;align-items:center;gap:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-4);background:var(--panel);animation:fade .25s ease}
-.filecard .fic{width:38px;height:38px;border-radius:var(--radius-md);background:var(--warn-soft);color:var(--warn);display:grid;place-items:center;font-size:var(--text-xs);font-weight:800;flex-shrink:0}
-.filecard .fn{font-size:var(--text-base);font-weight:600;font-family:var(--font-mono)}
-.filecard .fm{font-size:var(--text-sm);color:var(--text-3);margin-top:3px}
-.filecard .rm{margin-left:auto;width:28px;height:28px;border-radius:var(--radius-md);color:var(--text-3);display:grid;place-items:center}
-.filecard .rm:hover{background:var(--warn-soft);color:var(--warn)}
 .doclist{display:flex;flex-direction:column;gap:var(--space-2);margin-top:4px}
 .doccard{display:flex;align-items:center;gap:var(--space-3);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-3);background:var(--panel);animation:fade .25s ease}
 .doccard .doc-order{display:flex;flex-direction:column;align-items:center;gap:1px}
@@ -230,8 +224,8 @@ header .btn-ghost{margin-left:auto}
 /* search + list combobox to add a PM team member — same shape as the
    casting screen's own SSO-search add flow */
 .pm-add-wrap{position:relative;margin-top:var(--space-3)}
-.cast-add-list{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;max-height:260px;overflow-y:auto;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 12px 34px rgba(0,0,0,.55);padding:4px}
-.cast-add-list.open{display:block}
+.pm-add-list{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;max-height:260px;overflow-y:auto;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 12px 34px rgba(0,0,0,.55);padding:4px}
+.pm-add-list.open{display:block}
 .cast-add-opt{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm);cursor:pointer;font-size:var(--text-base);color:var(--text-2)}
 .cast-add-opt:hover{background:var(--panel-3);color:var(--text)}
 .cast-add-empty{padding:var(--space-3);font-size:var(--text-sm);color:var(--text-3);font-style:italic}
@@ -365,21 +359,21 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         <!-- STEP 1 -->
         <section class="step-pane on" data-pane="1">
           <div class="h1">Project identity</div>
-          <div class="sub">Basic identity of the tender. The deadline drives the countdown and the overdue thresholds later on.</div>
+          <div class="sub">Basic identity of the tender. The deadline drives the countdown to submission.</div>
           <div class="frow"><div class="fl"><div class="flt">Project name <span class="req-star">*</span></div><div class="fld">Displayed across all screens.</div></div><div class="fc"><input class="inp" id="f-name" placeholder="e.g. Energy Monitoring System"></div></div>
           <div class="frow"><div class="fl"><div class="flt">BO-ID <span class="req-star">*</span></div></div><div class="fc"><input class="inp" id="f-ref" placeholder="e.g. STB-2026"></div></div>
 
           <!-- TICKET-tender-creation-rework.md — "the system choice is more
                consequential than it looks... worth treating as a deliberate
                choice in the interface rather than one field among five."
-               Turnkey resolves allocation to a system (further split by
-               technical/non-technical); every other product line resolves it
-               to a person. That's a setting, not a label, so it gets the same
-               card treatment as the processing-mode choice in step 3 instead
-               of sitting in the plain field list below. Whether this can
-               still change after allocation has run is explicitly open in
-               the ticket — left freely editable for now, like everything else
-               collected here. -->
+               Turnkey routes each requirement to its systems; SIG derives
+               ABS, PBS and OBS, then the person for each OBS; the other lines
+               have no model supplied yet and are allocated by hand. That's a
+               setting, not a label, so it gets the same card treatment as the
+               processing-mode choice in step 3 instead of sitting in the
+               plain field list below. Settled by DEC-095: fixed at creation,
+               read-only in the project's settings afterwards — correcting it
+               means recreating the tender. -->
           <div class="frow" style="border-top:none;padding-top:0">
             <div class="fl"><div class="flt">Product line <span class="req-star">*</span></div><div class="fld">Drives how allocation resolves downstream.</div></div>
             <div class="fc">
@@ -416,7 +410,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         <!-- STEP 2 -->
         <section class="step-pane" data-pane="2">
           <div class="h1">Source documents</div>
-          <div class="sub">A tender is often issued as several documents. Add them all and order them logically — they are concatenated in that order to form the full tender. Later versions are added from the Versions screen.</div>
+          <div class="sub">A tender is often issued as several documents. Add them all and order them logically — they are concatenated in that order to form the full tender. Later versions of each document are added in Documents &amp; versions.</div>
           <div id="upzone">
             <div class="upz" id="upz">
               <div class="ic"><i class=ic-upload></i></div>
@@ -430,13 +424,13 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
             <div class="t">Drop another document here</div>
             <div class="d">PDF, up to 200 MB · or <button type="button" class="upz-browse">select a file</button></div>
           </div>
-          <div class="warnbox" style="margin-top:18px">You can create the project without documents and add them later, but the review screen stays empty until at least one source document is attached.</div>
+          <div class="warnbox" style="margin-top:18px">You can create the project without documents and add them later, but Allocation stays empty until at least one source document is attached.</div>
         </section>
 
         <!-- STEP 3 -->
         <section class="step-pane" data-pane="3">
           <div class="h1">Processing mode</div>
-          <div class="sub">How much of the initial work the AI does. Nothing here is irreversible: the AI never overwrites a manual correction, and you can re-run any step later.</div>
+          <div class="sub">How much of the initial work the AI does. This mode is fixed once the tender is created. The AI never overwrites a manual correction.</div>
 
           <div class="presets">
             <div class="preset on" data-preset="ai">
@@ -455,10 +449,11 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
                matrix option... it isn't something an AI produces as a
                pipeline step" (it's built continuously from verdicts as
                contributors answer). Down from 4 toggles to 3: Capture,
-               Characterisation, Allocation. "Allocation" here means the
-               system a requirement needs — casting a person to it is the
-               separate, ongoing screen this whole rework points to; there's
-               no roster to propose against at creation time any more.
+               Characterisation, Allocation. "Allocation" here means routing
+               a requirement to its systems (Turnkey) or deriving its ABS, PBS
+               and OBS (single system) — casting people is the separate,
+               ongoing screen this whole rework points to; there's no roster
+               to propose against at creation time any more.
                Open question in the ticket: whether the mode above should
                replace these individual toggles rather than sit beside them.
                Left as two views of the same setting, like today — the mode
@@ -467,12 +462,12 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           <div class="aisteps" id="aisteps">
             <div class="ash">Individual steps <span class="custom">Custom</span></div>
             <div class="astep"><div><div class="at">Capture</div><div class="ad" data-on="Splits the document into text blocks, detects tables and flags uncertain boundaries." data-off="<span class='off'>Off — you create requirements by selecting passages in the document.</span>">Splits the document into text blocks, detects tables and flags uncertain boundaries.</div></div><span class="tog on" data-ai="seg"></span></div>
-            <div class="astep"><div><div class="at">Characterisation</div><div class="ad" data-on="Proposes a type and domain for each block, and whether it is a requirement." data-off="<span class='off'>Off — every requirement starts unclassified.</span>">Proposes a type and domain for each block, and whether it is a requirement.</div></div><span class="tog on" data-ai="char"></span></div>
-            <div class="astep"><div><div class="at">Allocation</div><div class="ad" data-on="Proposes which system each requirement needs, based on its characterization." data-off="<span class='off'>Off — you assign the system yourself, for every requirement.</span>">Proposes which system each requirement needs, based on its characterization.</div></div><span class="tog on" data-ai="alloc"></span></div>
+            <div class="astep"><div><div class="at">Characterisation</div><div class="ad" data-on="Proposes each block's nature and a requirement's class (technical / non-technical), with a Low / Medium / High confidence." data-off="<span class='off'>Off — every requirement starts unclassified.</span>">Proposes each block's nature and a requirement's class (technical / non-technical), with a Low / Medium / High confidence.</div></div><span class="tog on" data-ai="char"></span></div>
+            <div class="astep"><div><div class="at">Allocation</div><div class="ad" data-on="On a Turnkey tender, routes each requirement to its system(s); on a single-system tender, derives its ABS, PBS and OBS." data-off="<span class='off'>Off — you assign the system yourself, for every requirement.</span>">On a Turnkey tender, routes each requirement to its system(s); on a single-system tender, derives its ABS, PBS and OBS.</div></div><span class="tog on" data-ai="alloc"></span></div>
           </div>
 
           <div class="estimate" id="estimate"><span class="eic"><i class=ic-clock></i></span><span id="est-txt"></span></div>
-          <div class="warnbox" id="manual-note" style="display:none"><b>Manual mode.</b> The review screen opens with the document but no blocks. Use <b>Edit segmentation</b> to draw requirement boundaries, then characterize and assign them from the right panel.</div>
+          <div class="warnbox" id="manual-note" style="display:none"><b>Manual mode.</b> Allocation opens with the document but no blocks. Use <b>Edit segmentation</b> to draw requirement boundaries, then characterize and assign them from the right panel.</div>
         </section>
 
         <!-- STEP 4 — replaces the old per-system casting step. That's ongoing
@@ -483,7 +478,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
              never blocks submitting. -->
         <section class="step-pane" data-pane="4">
           <div class="h1">Project management team</div>
-          <div class="sub">You're the first member automatically — whole-project scope, no system restriction. Add others now if you already know who they are, or leave it and do it later from the Casting screen.</div>
+          <div class="sub">You're the first member automatically — whole-project scope, no system restriction. Add others now if you already know who they are, or leave it and do it later from Team casting.</div>
           <div id="pm-team"></div>
           <div class="pm-add-wrap">
             <input type="text" class="inp" id="pm-search" placeholder="Search a person via SSO to add another project manager…" autocomplete="off">
@@ -534,12 +529,19 @@ const PM_DIRECTORY=PM_DIRECTORY_NAMES.map((name,i)=>({
   init:name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(),
   color:PM_COLORS[i%PM_COLORS.length],
 }));
+/* The creator is whoever is signed in — the shell's getCurrentUser(), the same
+   identity every screen's avatar reads. The typed default is only for this file
+   opened on its own, with no shell around it. */
+const CREATOR=(function(){
+  try{ if(window.parent!==window && window.parent.getCurrentUser){ const u=window.parent.getCurrentUser(); if(u&&u.name) return u; } }catch(e){}
+  return {id:"admin",name:"Thibaud Breton",title:"Bid Director",init:"TB"};
+})();
 const P={step:1,name:"",ref:"",line:"Turnkey",product:"",region:"EUR — Europe",issuer:"",deadline:"2026-08-12",
-  file:null,preset:"ai",ai:{seg:true,char:true,alloc:true},
+  preset:"ai",ai:{seg:true,char:true,alloc:true},
   /* The creator is always pmTeam[0] — never removable from this form (the
      casting screen's own "never zero PM members" rule applies from the
      start, not just once you're there to trigger it). */
-  pmTeam:[{id:"admin",name:"Thibaud Breton",title:"Bid Director — you",init:"TB",color:"#a06ef2"}]};
+  pmTeam:[{id:CREATOR.id||"admin",name:CREATOR.name,title:`${CREATOR.title?CREATOR.title+" — ":""}you`,init:CREATOR.init||CREATOR.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(),color:"#a06ef2"}]};
 
 function toast(msg,kind="ok"){
   const z=document.getElementById("toast-zone"),t=document.createElement("div");
@@ -562,6 +564,7 @@ function goStep(n){
   document.getElementById("prog").textContent=`Step ${n} of 4`;
   document.getElementById("back").style.display=n>1?"inline-flex":"none";
   document.getElementById("next").textContent=n===4?"✓ Create project":"Continue →";
+  if(n===2) renderDocs();   // the source language may have changed in step 1
   if(n===4){renderPMTeam();renderSummary();}
   document.querySelector(".content").scrollTop=0;
 }
@@ -591,9 +594,10 @@ document.getElementById("next").addEventListener("click",()=>{
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 /* ---------- product line — the allocation-relevant choice (§1) ---------- */
 const LINE_NOTE={
-  "Turnkey":"Allocation resolves to a <b>system</b>, split further by technical/non-technical classification.",
+  "Turnkey":"Routes to <b>systems</b>; each derives its ABS / PBS / OBS and person.",
+  "SIG":"Derives <b>ABS, PBS and OBS</b>, then the person for each OBS.",
 };
-const LINE_NOTE_DEFAULT="Allocation resolves to a <b>person</b>.";
+const LINE_NOTE_DEFAULT="No model supplied yet — allocated <b>by hand</b>.";
 function renderLineNote(){
   document.getElementById("line-note").innerHTML=LINE_NOTE[P.line]||LINE_NOTE_DEFAULT;
   renderProductField();
@@ -649,10 +653,15 @@ const SAMPLE_DOCS=[
   {pages:6,size:"0.9 MB"},{pages:17,size:"3.3 MB"},
 ];
 P.docs=[];
+/* One source language per tender (SPEC-translation.md §2, DEC-096): every
+   document is in the language chosen in step 1, so each card shows that one,
+   read when the list is drawn — goStep(2) redraws it after step 1 changes. */
+const LANG_LABEL={en:"English",fr:"French",de:"German",es:"Spanish"};
+const docLang=()=>LANG_LABEL[P.language]||"English";
 function docName(i){ return (P.ref||"TENDER")+"_part"+(i+1)+".pdf"; }
 function addDoc(){
   const meta=SAMPLE_DOCS[P.docs.length%SAMPLE_DOCS.length];
-  P.docs.push({name:docName(P.docs.length),pages:meta.pages,size:meta.size,lang:"English"});
+  P.docs.push({name:docName(P.docs.length),pages:meta.pages,size:meta.size});
   renderDocs(); toast("Document added","ok");
 }
 function moveDoc(i,dir){
@@ -664,8 +673,6 @@ function renderDocs(){
   const list=document.getElementById("doclist");
   const addBtn=document.getElementById("add-doc");
   const upzone=document.getElementById("upzone");
-  // keep P.file in sync for existing validation/logic (first doc = primary)
-  P.file = P.docs.length?P.docs[0]:null;
   if(!P.docs.length){ list.innerHTML=""; addBtn.style.display="none"; upzone.style.display="block"; return; }
   upzone.style.display="none"; addBtn.style.display="block";
   list.innerHTML=P.docs.map((d,i)=>`
@@ -676,7 +683,7 @@ function renderDocs(){
         <button class="ord-btn" data-down="${i}" ${i===P.docs.length-1?"disabled":""} title="Move down">▼</button>
       </div>
       <div class="fic">PDF</div>
-      <div class="doc-info"><div class="fn">${d.name}</div><div class="fm">${d.pages} pages · ${d.size} · ${d.lang}</div></div>
+      <div class="doc-info"><div class="fn">${d.name}</div><div class="fm">${d.pages} pages · ${d.size} · ${docLang()}</div></div>
       <button class="rm" data-rm="${i}" title="Remove">✕</button>
     </div>`).join("");
   list.querySelectorAll("[data-up]").forEach(b=>b.addEventListener("click",()=>moveDoc(+b.dataset.up,-1)));
@@ -788,7 +795,8 @@ function modeLabel(){
   if(!P.ai.seg&&!P.ai.char&&!P.ai.alloc)return "Fully manual — no AI";
   if(P.preset==="ai")return "AI-assisted (all steps)";
   if(P.preset==="seg")return "AI segmentation only";
-  return "Custom — "+Object.keys(P.ai).filter(k=>P.ai[k]).join(", ");
+  const STEP_LABEL={seg:"Capture",char:"Characterisation",alloc:"Allocation"};
+  return "Custom — "+Object.keys(P.ai).filter(k=>P.ai[k]).map(k=>STEP_LABEL[k]||k).join(", ");
 }
 function renderSummary(){
   const b=document.getElementById("sum-body");
@@ -798,7 +806,7 @@ function renderSummary(){
     ["Product line",P.line],
 [P.line==="Turnkey"?"Combination":"Product", P.product||"<span class='miss'>Not set</span>"],
     ["Region",P.region],
-    ["Source language",{en:"English",fr:"French",de:"German",es:"Spanish"}[P.language]||P.language],
+    ["Source language",LANG_LABEL[P.language]||P.language],
     ["Issuer",P.issuer||"—"],
     ["Deadline",P.deadline||"—"],
     ["Documents",P.docs&&P.docs.length?`${P.docs.length} document${P.docs.length>1?"s":""}`:"<span class='miss'>None attached</span>"],
@@ -830,8 +838,6 @@ function createProject(){
   try{
     if(window.parent!==window){
       if(window.parent.setProjectMode)window.parent.setProjectMode(mode);
-      if(window.parent.setReviewValidated)window.parent.setReviewValidated(false);
-      if(window.parent.setProjectMeta)window.parent.setProjectMeta({name:P.name,ref:P.ref,line:P.line,deadline:P.deadline});
       let days=30; try{ days=Math.max(0,Math.round((new Date(P.deadline)-new Date())/86400000)); }catch(e){}
       newId = window.parent.addProject ? window.parent.addProject({name:P.name,ref:P.ref,line:P.line,product:P.product,region:P.region,language:P.language,mode,days,
         pmTeam:P.pmTeam}) : null;

@@ -15,7 +15,7 @@ Dossier SRM-PROTO, HEAD `3ef09ba0f491ef9fe6dad248e2febc523cf0dddf`, fichiers de 
 | Casting encore lié à managerId | `dashboard-et-config.html:CAST_ACTIVITIES/castGroupHTML/PM_TEAM` |
 | Création en quatre étapes et limites | `creation-projet.html`, spec création récente |
 | Versions et gap simulés | `documents.html:uploadVersion` |
-| Q&A synthétique | `qa.html:syntheticAnswer/buildDossier/runImport` |
+| Q&A synthétique | `qa.html:runImport` (import simulé du dossier du client) |
 | Confiance générée | `import_capture_doors.py:seed_demo_confidence` |
 | Traduction et KPI souhaités | specs traduction et statistiques conservées en archive |
 | Rôles et responsable unique | compte rendu USER-TEST-session-3 et ticket fusion |
