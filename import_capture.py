@@ -2,6 +2,10 @@
 """
 import_capture.py — Convert RFP capture .xlsx files into data.js for the SRM prototype.
 
+LEGACY: superseded by import_capture_doors.py, which produces the current data.js
+from the DOORS .numbers captures. Kept for the older .xlsx captures only — its
+rows carry no Num Heading level, no systems (perim) and no confidence.
+
 Merges every capture file into ONE continuous tender, preserving each row's source
 document and its position, per the domain model.
 
@@ -196,9 +200,6 @@ def main():
 
     size_kb = out.stat().st_size / 1024
     print(f"\nWrote {out}  —  {len(all_rows)} rows from {len(documents)} document(s), {size_kb:.0f} KB")
-    if len(all_rows) > 3000:
-        print("!! Over 3,000 rows: the prototype renders every row into the DOM, so expect "
-              "the table to feel slow. Use --only to load fewer documents for a user test.")
 
 
 if __name__ == "__main__":

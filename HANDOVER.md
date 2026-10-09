@@ -1,4 +1,4 @@
-> **Référence documentaire mise à jour le 8 septembre 2026 : [docs/current/README.md](docs/current/README.md).** Le texte historique ci-dessous reste conservé ; ses mentions de six écrans, Expert Space et Follow-up séparés ne décrivent plus l’assemblage actuel à sept sources. Les divergences métier sont recensées dans le registre d’arbitrages.
+> **Référence documentaire mise à jour le 8 septembre 2026 : [docs/current/README.md](docs/current/README.md).** Le texte historique ci-dessous reste conservé ; ses mentions de six écrans, Expert Space et Follow-up séparés ne décrivent plus l’assemblage actuel à huit sources (et `data.js` vient désormais d’`import_capture_doors.py`). Les divergences métier sont recensées dans le registre d’arbitrages.
 
 # Smart Requirement Manager / SRM (iSenS) — Prototype Handover
 

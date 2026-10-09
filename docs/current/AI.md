@@ -21,5 +21,6 @@ Ces specs définissent seulement le comportement du produit lorsqu'il reçoit ou
 - AI-011 — Relance : les exigences modifiées par une version reçoivent de nouvelles propositions, à revoir/valider ; les anciennes décisions ne sont pas automatiquement réappliquées. Conserver leur historique. Remise à zéro explicite pour fusion/scission ; exigences inchangées préservées.
 - AI-012 — PROP d'intégration : échec/traitement en cours/résultat disponible distincts ; pouvoir reprendre après incident sans doublons.
 - AI-013 — Conformité consolidée et permissions calculées par les règles métier, pas déterminées par un LLM.
+- AI-014 — DEC-120 : **la caractérisation (nature, classe) renvoie un niveau Low / Medium / High**, affiché comme tel ; Low envoie l'exigence en To review. Les modèles d'allocation (routage Turnkey, ABS / PBS / OBS) renvoient des pourcentages.
 
 Les scores générés par `seed_demo_confidence` restent une illustration d'affichage. Leur calibration relève du chantier IA ; ils ne constituent pas une mesure du système réel.

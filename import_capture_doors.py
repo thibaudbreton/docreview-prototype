@@ -2,12 +2,12 @@
 """
 import_capture_doors.py — Convert DOORS "ViewText" .numbers capture exports into data.js.
 
-This is a SEPARATE importer from import_capture.py, which handles a different,
-older capture schema (.xlsx, columns ID / Type / Text / Heading 1..4). That
-script is untouched and still works for captures in that format — use
-whichever importer matches the files you have. Both write the same data.js
-shape (window.SRM_DATA), so revue-documentaire.html's buildDataFromCapture()
-doesn't need to know which one produced it.
+This is the script that produces the current data.js. import_capture.py is the
+older importer (legacy), for a different capture schema (.xlsx, columns ID /
+Type / Text / Heading 1..4): it writes the same window.SRM_DATA envelope but
+different row fields — no Num Heading level, no Responsible Entity systems
+(perim), no confidence — which revue-documentaire.html's buildDataFromCapture()
+then simply finds absent.
 
 This schema is a Numbers export of a DOORS module's "ViewText" view, one
 sheet per file:
@@ -22,7 +22,7 @@ sheet per file:
       Text                  the content
       Type                  Heading / Requirement / Information / (others —
                             see UNMAPPED handling below)
-      Responsible Entity    the activity/ies this row belongs to, one per line
+      Responsible Entity    the system(s) this row belongs to, one per line
                             when a row has more than one
 
 Requires the numbers-parser package (pip3 install numbers-parser) — it reads
@@ -150,7 +150,7 @@ CONFIDENCE_THRESHOLD = 75
 # Every row carries a Type confidence (is this really a heading/information/
 # requirement?) — the only field information and heading rows ever get, since
 # they never enter the characterisation/allocation pipeline. Requirement rows
-# additionally carry Class, ABS, PBS and the activity (OBS) derived from them.
+# additionally carry Class, ABS, PBS and the OBS derived from them.
 CONFIDENCE_FIELDS = {
     "heading": ["type"],
     "information": ["type"],
@@ -161,6 +161,15 @@ CONFIDENCE_FIELDS = {
 def _field_hash(row_id: str, field: str) -> int:
     digest = hashlib.md5(f"{row_id}:{field}".encode("utf-8")).hexdigest()
     return int(digest, 16)
+
+
+CHAR_FIELDS = {"type", "class"}
+
+
+def _char_level(score):
+    """Low / medium / high, with the screen's own cut-offs (OBS_THRESHOLD 75,
+    CHAR_HIGH_FROM 85 in revue-documentaire.html)."""
+    return "low" if score < 75 else "medium" if score < 85 else "high"
 
 
 def seed_demo_confidence(rows):
@@ -190,9 +199,12 @@ def seed_demo_confidence(rows):
         for field in fields:
             h = _field_hash(row["id"], field)
             if field == weak_field:
-                confidence[field] = 30 + (h % 45)  # 30-74, below the bar
+                score = 30 + (h % 45)  # 30-74, below the bar
             else:
-                confidence[field] = 76 + (h % 24)  # 76-99, confident
+                score = 76 + (h % 24)  # 76-99, confident
+            # DEC-120 — the characterisation model (type, class) returns a level,
+            # not a percentage; the allocation fields (abs, pbs, obs) keep theirs
+            confidence[field] = _char_level(score) if field in CHAR_FIELDS else score
         row["confidence"] = confidence
 
 
@@ -249,7 +261,7 @@ def main():
 
     if unknown_types:
         print(f"\n!! unmapped Type value(s), imported as 'information': {sorted(unknown_types.items())}")
-    print(f"\nActivity codes found in Responsible Entity ({len(entity_counts)} distinct):")
+    print(f"\nSystem codes found in Responsible Entity ({len(entity_counts)} distinct):")
     for tok, cnt in sorted(entity_counts.items()):
         print(f"    {tok.upper():8s} {cnt}")
     print(f"\nMax hierarchy depth (Num Heading segments): {max_depth}")

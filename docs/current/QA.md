@@ -19,7 +19,7 @@ DEC-021 : même fonctionnement Q&A pour Turnkey et SIG. Fonction décrite pour l
 
 ## Points de vigilance fonctionnels
 
-OBS : `qa.html` possède ses données et une génération de réponses fictives (`syntheticAnswer/buildDossier`). La continuité complète avec les branches bloquées de Compliance n'est pas une intégration backend démontrée. « Sent » dans le prototype après export ne prouve pas l'envoi effectif hors outil : OPEN-06.
+OBS : `qa.html` possède ses données et simule l'import du dossier du client (`runImport`). La continuité complète avec Compliance n'est pas une intégration backend démontrée. « Sent » dans le prototype après export ne prouve pas l'envoi effectif hors outil : OPEN-06.
 
 La fusion doit préserver tous les liens de travail bloqué (DOC). DEC-021 : aucune action supplémentaire lors de l’exclusion (« rien ») : conserver l’exclusion, sans notification ni déblocage ajouté. DEC-012 permet la consultation des autres systèmes du même projet. Les détails non répondus (plusieurs questions bloquantes, lots successifs) conservent le comportement de maquette sans élargissement implicite ; OPEN-06 résiduel.
 
@@ -29,4 +29,4 @@ QA-T01 et QA-T02 (fusion, exclusion) : sans objet depuis DEC-116. QA-T03 : une r
 
 ## Sources
 
-`qa.html:renderQuestions/buildDossier/decideArb/skipArb/runImport`, ancienne SPEC-qa-screen, ticket des trois écrans support.
+`qa.html:render/oursHTML/othersHTML/runImport/markSent`, ancienne SPEC-qa-screen, ticket des trois écrans support.
