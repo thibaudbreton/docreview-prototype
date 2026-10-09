@@ -21,7 +21,7 @@ Applicabilité : [variantes de tender](TENDER-PROFILES.md). Le prototype est la 
 
 ## Absence de responsable — décision
 
-DEC-025 : absence autorisée, y compris après validation d’allocation. Afficher « Non désigné » et permettre d’isoler ces exigences avec le filtre de champ vide existant ; ne pas ajouter de validation bloquante. Les contributeurs gardent leurs droits dans leur système. Un responsable peut être désigné ensuite ; il devient l’unique responsable du suivi. La proposition de blocage formulée précédemment a été refusée.
+DEC-025 : absence autorisée, y compris après validation d’allocation. Afficher « Non désigné » et permettre d’isoler ces exigences avec le filtre de champ vide existant ; ne pas ajouter de validation bloquante. Les contributeurs gardent leurs droits dans leur système. Une personne peut être désignée ensuite sur l'entrée OBS ; elle devient responsable de sa conformité (DEC-087). La proposition de blocage formulée précédemment a été refusée. La maquette suit cette règle depuis le 9 octobre 2026 : une entrée OBS sans personne ne rend pas l'exigence Incomplete et ne désactive pas la validation ; le panneau le signale (« No one assigned yet — you can still validate »).
 
 ## Réallocation — référence vérifiée dans la maquette
 
@@ -93,7 +93,7 @@ ALLOC-023 — DEC-091 : une relance au résultat identique ne dit rien ; le jour
 
 ALLOC-024 — DEC-099 à DEC-101 : une validation par exigence (V compris), sans étape « confirmer l'IA » ; lecture seule complète pour un contributeur sur une exigence qui n'est pas à lui ; détail d'un système Turnkey identique à la vue SIG, plus la réassignation. Critère : ALLOC-T31 — sur L4-0011, V passe l'exigence à Allocated en une fois ; un contributeur sur une exigence d'un autre système n'a aucun contrôle actif ; le PBS modifié dans le détail d'un système Turnkey ne change que ce système.
 
-ALLOC-025 — DEC-102 à DEC-104 : une personne n'est affectable que sur son système ; un système sans modèle démarre vide, donc Incomplete (aucun statut « Awaiting manual allocation ») ; sur Turnkey, le PM valide l'aiguillage (statut propre au niveau Turnkey, « Reassignment requested » tant qu'une réassignation attend) et chaque système est validé par son contributeur ou le PM. Critère : ALLOC-T32 — en vue Paolo Ferri (SEN), une exigence est Incomplete avec ABS/PBS/OBS vides ; remplir ABS, PBS, un OBS et sa personne la passe à To validate, sa validation à Allocated ; le sélecteur de personne SEN ne propose aucun membre SIG ; en vue PM Turnkey, « Validate & send to the systems » passe l'exigence à Allocated sans afficher le statut des systèmes.
+ALLOC-025 — DEC-102 à DEC-104 : une personne n'est affectable que sur son système ; un système sans modèle démarre vide, donc Incomplete (aucun statut « Awaiting manual allocation ») ; sur Turnkey, le PM valide l'aiguillage (statut propre au niveau Turnkey, « Reassignment requested » tant qu'une réassignation attend) et chaque système est validé par son contributeur ou le PM. Critère : ALLOC-T32 — en vue Paolo Ferri (SEN), une exigence est Incomplete avec ABS/PBS/OBS vides ; remplir ABS, PBS et un OBS la passe à To validate, même sans personne (DEC-025), sa validation à Allocated ; le sélecteur de personne SEN ne propose aucun membre SIG ; en vue PM Turnkey, « Validate & send to the systems » passe l'exigence à Allocated sans afficher le statut des systèmes.
 
 ## Une allocation par organisation
 

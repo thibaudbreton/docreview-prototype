@@ -41,6 +41,6 @@ ACC-T01 : suppression du dernier PM refusée. ACC-T02 : rattachement en double r
 
 ## Écart avec la maquette
 
-`canAnswer/passesB` restreint actuellement certaines lectures ; Casting conserve managerId. La cible DEC ci-dessus prime ; le code reste inchangé dans cette tâche.
+Depuis le 9 octobre 2026, la maquette suit ACC-007 : un contributeur voit toutes les exigences et affectations du tender (table, vue Document, Compliance, compteurs, export), en lecture seule hors de son système (ACC-013) ; « View as » ne masque ni ne caviarde plus rien et le réglage « Restricted view » est retiré. Un filtre « My system », désactivé par défaut, ramène Compliance à son système. Reste : Casting conserve managerId (ACC-T06 non simulé).
 
 ACC-T10 : le droit de valider l’allocation n’est pas conditionné à la présence d’un responsable (DEC-025). Le droit de modifier hors système reste interdit au contributeur malgré la lecture globale.

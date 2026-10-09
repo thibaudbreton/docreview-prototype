@@ -165,6 +165,7 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 .tpill.p-done .n{color:var(--ok)}
 .tpill.p-reassign .n{color:var(--warn)}
 .tpill.p-aside .n{color:var(--human)}
+.tpill.p-mine .n{color:var(--accent)}
 .tpill:hover{border-color:var(--line-2);background:var(--panel-2)}
 .tpill.active{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
 .clear-filter{font-size:var(--text-sm);color:var(--accent);display:none;align-items:center;gap:6px}
@@ -561,6 +562,8 @@ body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:no
 .cf-cell:hover{border-color:var(--line-2)}
 .cf-cell:focus{outline:none;border-color:var(--accent);background:var(--panel)}
 .cf-cell.empty{color:var(--text-3)}
+/* read-only value: a requirement where a contributor has no assignment (ACC-013) */
+.cf-ro{display:block;padding:3px 6px;font-size:var(--text-sm);color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cf-pop{position:fixed;z-index:90;min-width:190px;max-height:280px;overflow:auto;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-md);box-shadow:0 12px 36px rgba(0,0,0,.25);padding:6px 0;display:none}
 .cf-pop.on{display:block}
 .cf-pop label{display:flex;align-items:center;gap:var(--space-2);padding:5px 12px;font-size:var(--text-sm);cursor:pointer}
@@ -1001,6 +1004,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         <button class="tpill p-clar" data-filter="qa"><span class="n" id="n-qa">0</span> awaiting Q&amp;A</button>
         <button class="tpill p-reassign" data-filter="reassign"><span class="n" id="n-reassign">0</span> reassignment needed</button>
         <button class="tpill p-aside" data-filter="aside" id="tp-aside" style="display:none" title="Your set-aside assignments — only you see them"><span class="n" id="n-aside">0</span> <i class=ic-flagfill></i> set aside</button>
+        <button class="tpill p-mine" id="tp-mine" style="display:none" title="Only your system's assignments — the rest of the project stays readable without it"><span class="n" id="n-mine">0</span> my system</button>
       </div>
       <button class="clear-filter" id="clear2">✕ Clear filter</button>
     </div>
@@ -1578,10 +1582,10 @@ function pullQaRegister(){
 /* a question's status in the register's words: To send / Sent / Answer to confirm / Answered */
 const qaStLabel=q=>q.st==="answered"?"Answered":q.suggest?"Answer to confirm":({draft:"To send",sent:"Sent"}[q.st]||q.st||"—");
 const state={screen:2,view:"table",sel:null,selBranch:0,filter:null,tab:"response",
-  /* TICKET-merge-expert-space-into-compliance.md — role default scope: the project
-     manager lands on everything, a contributor lands on their own system only.
-     contribTypo is which system a contributor is currently viewing as. */
-  role:"pm",contribTypo:"sig",openForm:null,riskQ:"",newRisk:null,extFixPick:null,riskFocus:null,
+  /* DEC-012 — everyone reads the whole project; a contributor changes only their
+     own system (contribTypo), the rest is read-only for them. mineOnly is the
+     contributor's "My system" pill, off by default. */
+  role:"pm",contribTypo:"sig",mineOnly:false,openForm:null,riskQ:"",newRisk:null,extFixPick:null,riskFocus:null,
   search:"",sortCol:null,sortDir:"asc",wrapText:false,
   advFilter:{op:"AND",items:[]}, advFilterDraft:null, advFilterOpen:false,
   /* B5 — shared table engine state (see table-engine.js / TE). colFilters holds
@@ -1943,6 +1947,10 @@ const riskFocusPasses=r=>!state.riskFocus || r.branches.some(b=>(gapOf(r,b).risk
    escalation is exactly the wrong move. */
 function nextStepFor(r, br){
   const c=consolidate(r);
+  if(br && state.role==="contributor" && !canAnswer(br)){
+    const sys=esc(TY(br.typology).label);
+    return {t:`<b>Read only — ${sys}'s assignment.</b> Only ${sys}'s contributors or the project team change it.`, act:null};
+  }
   if(br && br.status==="awaiting_qa") return {t:`<b>A question is with the client.</b> It doesn't hold the assignment up — its contributor can give the verdict at any time.`, act:null};
   if(br && br.status==="reassignment_needed") return {t:`<b>Returned to you.</b> Reallocate it and send it back out.`, act:"reassign"};
   if(br && !isAnswered(br) && isPartner(br.typology))
@@ -1968,11 +1976,11 @@ function nextStepFor(r, br){
 const ASK_DONE_TIP="The verdict is given — nothing left to ask on this assignment";
 /* CONF-021, DEC-092 — one reminder, whether from the panel, R or the selection bar:
    only on an assignment its contributor still owes (awaiting answer, or awaiting
-   Q&A — a question holds nothing up), never sent by a contributor (everything of
-   their system they see is theirs to answer, CONF-010). Returns why not, or null. */
+   Q&A — a question holds nothing up), never sent by a contributor (their own
+   system's are theirs to answer, CONF-010; the others are read-only). Returns why not, or null. */
 function remindBlock(br){
   if(!br) return "Select an assignment first";
-  if(state.role==="contributor") return "It's waiting on your system — answer it rather than remind yourself";
+  if(state.role==="contributor") return canAnswer(br)?"It's waiting on your system — answer it rather than remind yourself":`Read only — ${TY(br.typology).label}'s assignment`;
   if(br.status!=="awaiting_answer" && br.status!=="awaiting_qa")
     return {answered:"Already answered — nobody owes anything on it", proposed:"Not dispatched yet — nobody owes an answer", reassignment_needed:"Returned to the project team — reallocate it instead"}[br.status]||"Nothing is owed on this assignment yet";
   if(!br.manager) return isPartner(br.typology)?`${TY(br.typology).label} works outside the tool — follow up with them directly`:"Nobody assigned yet on this assignment";
@@ -1999,12 +2007,13 @@ function notifItems(){
      already has a table that does it better. Clicking filters to that kind; a
      lone item still names its requirement, since a count of one that hides
      which one is worse than no notification at all. */
-  const brs=allBranches();
+  // a contributor is notified about their own system only — the rest is read-only for them
+  const brs=allBranches().filter(b=>state.role!=="contributor"||canAnswer(b));
   const mk=(list,c,one,many,time,filter)=>{
     if(!list.length) return null;
     return {c, time, t:list.length===1?one(list[0]):many(list.length),
-      go:()=>{ if(list.length===1){ state.sel=list[0].req.id; renderPanel2(); }
-               else { state.filter=filter; state.sel=null; refreshAll(); } }};
+      go:()=>{ if(list.length===1){ state.sel=list[0].req.id; state.selBranch=list[0].req.branches.findIndex(x=>x.typology===list[0].typology); renderPanel2(); }
+               else { state.filter=filter; if(state.role==="contributor") state.mineOnly=true; state.sel=null; refreshAll(); } }};
   };
   return [
     mk(brs.filter(needsReassign), "var(--ia)",
@@ -2086,10 +2095,12 @@ function toast(msg,kind="ok",undo){
    FILTERS
 ===================================================== */
 /* an allocated system passes the active filter… */
-/* whole-system scope (USER-TEST-session-3.md §1.1 — no permission boundary within
-   a system), not "my own team": a contributor sees every allocated system that
-   matches theirs, regardless of who it's assigned to. */
+/* DEC-012/DEC-100 — a contributor reads every system but acts only on their own,
+   whoever in it the assignment names (no boundary within a system). */
 function canAnswer(b){ return state.role==="contributor"&&b.typology===state.contribTypo; }
+/* requirement-level edits (custom column values): the PM, or a contributor with
+   an assignment on it (ACC-013) */
+const canEditReq=r=>state.role==="pm"||(r.branches||[]).some(canAnswer);
 /* §4.2 — per-column Excel-style filters, ported from revue-documentaire.html:
    state.colFilters[col] holds EXCLUDED values (empty Set = show all), edited
    from a popover opened on the column's own header rather than a toolbar
@@ -2107,7 +2118,7 @@ function passesColFilters(b){
   return true;
 }
 function passesB(b){
-  if(state.role==="contributor"&&b.typology!==state.contribTypo)return false;
+  if(state.role==="contributor"&&state.mineOnly&&b.typology!==state.contribTypo)return false;
   if(state.role==="pm"&&state.ownTeamOnly&&b.manager!==VIEWER)return false;
   if(state.filter==="answered")return isAnswered(b);
   if(state.filter==="await")return isAwaitingAnswer(b);
@@ -2124,7 +2135,7 @@ function matchesSearch(r){
   return (r.branches||[]).some(b=>TY(b.typology).label.toLowerCase().includes(q)||(b.manager&&mgrOf(b.manager).name.toLowerCase().includes(q)));
 }
 /* …and a requirement passes when it matches the search (and the Risks page's focus,
-   if any) AND at least one of its assignments passes passesB() — role and team scope,
+   if any) AND at least one of its assignments passes passesB() — "My system" / team scope,
    the triage pill, the column filters — AND the advanced filter, which is
    requirement-level. "Set aside" is the contributor's own list, requirement-level too. */
 function passes(r){
@@ -2678,7 +2689,7 @@ function buildFVRows(){
     fVROWS.push({type:"row",r});
     if(r.branches.length<2) return; // one system concerned — stays on a single line, no sub-row
     if(!state.expandedBranches.has(r.id)) return; // collapsed — caret not opened yet
-    const branchFilterActive=!!state.filter||colFilterActiveCount()||state.ownTeamOnly;
+    const branchFilterActive=!!state.filter||colFilterActiveCount()||state.ownTeamOnly||(state.role==="contributor"&&state.mineOnly);
     r.branches.forEach((b,i)=>{
       if(!passesB(b) && branchFilterActive) return;
       fVROWS.push({type:"branch",parent:r,branch:b,idx:i});
@@ -2909,8 +2920,6 @@ function renderPanel2(){
   }
   const r=findR(state.sel);
   const c=consolidate(r);
-  // a contributor lands on THEIR system's assignment, not whichever one blocks consolidation
-  if(state.role==="contributor"){ const mine=r.branches.findIndex(x=>x.typology===state.contribTypo); if(mine>=0) state.selBranch=mine; }
   const idx=Math.min(state.selBranch||0, r.branches.length-1);
   const br=r.branches[idx];
   const e=br.manager?mgrOf(br.manager):null;
@@ -2972,11 +2981,11 @@ function renderPanel2(){
         <div class="qa-block"><div class="qa-block-h"><i class=ic-ask></i> Question to the client</div>
           <div class="qa-block-t">${esc(br.qaNote||"The contributor asked the client for a precision — the verdict doesn't wait for it.")}</div>
           ${qs.map(q=>`<div class="qa-block-ref"><b>${esc(q.id)}</b> — ${esc(qaStLabel(q))} in the Q&amp;A register</div>${q.st==="answered"&&q.ans?`<div class="qa-block-t">Client's answer: ${esc(q.ans)}</div>`:""}`).join("")}</div>
-        <div class="next-step is-idle">It doesn't hold anything up: ${r.id} consolidates on its contributor's verdict, not on the client's reply. <b>Nothing is due from you but a reminder.</b></div>
+        <div class="next-step is-idle">${state.role==="contributor"&&!canAnswer(br)?nextStepFor(r,br).t:`It doesn't hold anything up: ${r.id} consolidates on its contributor's verdict, not on the client's reply. <b>Nothing is due from you but a reminder.</b>`}</div>
         ${remindBlock(br)?"":`<button class="cta blue" id="a-remind"><i class=ic-bell></i> Send a reminder</button>`}
         <a class="cta line" id="a-goqa" href="javascript:parent.route('qa')">→ Open the Q&amp;A register</a>`;
       b.querySelector("#a-remind")?.addEventListener("click",()=>{ const n=sendReminder(r,br); toast(`Reminder sent to ${n} for ${r.id} · ${TY(br.typology).label}`,"ok"); refreshAll(); });
-    }else if(br.status==="reassignment_needed"){
+    }else if(br.status==="reassignment_needed" && (state.role==="pm"||canAnswer(br))){
       // T5 — internal loop: the manager reallocates, the allocated system goes back out to a contributor.
       // Nothing leaves the company here (contrast with the Q&A loop above).
       b.innerHTML=whoBlock+`
@@ -3371,6 +3380,7 @@ function renderTriage2(){
   ring.parentElement.title=`${pct}% of requirements consolidated · ${brs.filter(isAnswered).length}/${brs.length} assignments answered`;
   const asideN=state.role==="contributor"?allBranches().filter(b=>isDeciding(b)&&isAside(b.req,b)).length:0;
   const ap=document.getElementById("tp-aside"); if(ap){ ap.style.display=state.role==="contributor"?"":"none"; document.getElementById("n-aside").textContent=asideN; }
+  const mp=document.getElementById("tp-mine"); if(mp){ mp.style.display=state.role==="contributor"?"":"none"; mp.classList.toggle("active",state.role==="contributor"&&state.mineOnly); document.getElementById("n-mine").textContent=brs.filter(canAnswer).length; }
   document.getElementById("n-answered").textContent=brs.filter(isAnswered).length;
   document.getElementById("n-await").textContent=brs.filter(isAwaitingAnswer).length;
   document.getElementById("n-qa").textContent=brs.filter(isAwaitingQA).length;
@@ -3385,7 +3395,9 @@ function select(id,branchIdx){
   // default to the assignment a pending requirement names first (BLOCK_PRIORITY) — that is what the manager needs
   if(branchIdx==null){
     const r=findR(id), c=r?consolidate(r):null;
-    state.selBranch = (c&&c.blocking) ? r.branches.indexOf(c.blocking) : 0;
+    // a contributor lands on THEIR system's assignment when the requirement has one
+    const mine=(r&&state.role==="contributor")?r.branches.findIndex(canAnswer):-1;
+    state.selBranch = mine>=0 ? mine : (c&&c.blocking) ? r.branches.indexOf(c.blocking) : 0;
   } else state.selBranch=branchIdx;
   refreshAll();
   const el=document.querySelector(`.dblk[data-id="${id}"]`);
@@ -3552,16 +3564,20 @@ document.querySelectorAll("[data-colf]").forEach(btn=>btn.addEventListener("clic
   renderColFilterIndicators();
 })();
 
-document.querySelectorAll(".tpill").forEach(p=>p.addEventListener("click",()=>{
+const syncClear2=()=>document.getElementById("clear2").classList.toggle("visible",!!state.filter||(state.role==="contributor"&&state.mineOnly));
+document.querySelectorAll(".tpill[data-filter]").forEach(p=>p.addEventListener("click",()=>{
   state.filter=state.filter===p.dataset.filter?null:p.dataset.filter;
-  document.querySelectorAll(".tpill").forEach(x=>x.classList.toggle("active",x.dataset.filter===state.filter));
-  document.getElementById("clear2").classList.toggle("visible",!!state.filter);
+  document.querySelectorAll(".tpill[data-filter]").forEach(x=>x.classList.toggle("active",x.dataset.filter===state.filter));
+  syncClear2();
   refreshAll();
 }));
+/* "My system" — narrows a contributor's table to their own system's assignments;
+   combines with the status pills instead of replacing them */
+document.getElementById("tp-mine").addEventListener("click",()=>{ state.mineOnly=!state.mineOnly; syncClear2(); refreshAll(); });
 document.getElementById("clear2").addEventListener("click",()=>{
-  state.filter=null;
+  state.filter=null; state.mineOnly=false;
   document.querySelectorAll(".tpill").forEach(x=>x.classList.remove("active"));
-  document.getElementById("clear2").classList.remove("visible");
+  syncClear2();
   refreshAll();
 });
 /* Export with options (2026-09-24): format, which rows, which columns. It used
@@ -3588,7 +3604,8 @@ function renderExport(){
   const cols=XP_COLS(), nView=currentVisIds.length, nSel=state.selection.size;
   const viewWords=(function(){
     const parts=[];
-    const pill=document.querySelector(".tpill.active"); if(pill) parts.push(pill.textContent.replace(/^\s*\d+\s*/,"").trim());
+    const pill=document.querySelector(".tpill[data-filter].active"); if(pill) parts.push(pill.textContent.replace(/^\s*\d+\s*/,"").trim());
+    if(state.role==="contributor"&&state.mineOnly) parts.push(`${TY(state.contribTypo).label} only`);
     if(state.search) parts.push(`search “${state.search}”`);
     Object.entries(state.colFilters||{}).forEach(([k,ex])=>{ const d=COL_FILTER_DEFS[k]; if(!d||!ex||!ex.size) return;
       const kept=d.options.filter(o=>!ex.has(o.v)).map(o=>o.l); parts.push(`${d.label}: ${kept.length<=3?kept.join(", "):kept.length+" values"}`); });
@@ -3727,6 +3744,7 @@ function cfCellsHTML(r){
     const k=cfKey(d.id);
     if(!r) return `<div class="rcell c-${k}"></div>`;
     const v=cfGet(r.id,d.id), ref=`${r.id}::${d.id}`;
+    if(!canEditReq(r)) return `<div class="rcell c-${k}"><span class="cf-ro" title="${esc(cfDisplay(v))}">${cfHas(v)?esc(cfDisplay(v)):"—"}</span></div>`;
     if(d.type==="text") return `<div class="rcell c-${k}"><input type="text" class="cf-cell" data-cfcell="${ref}" value="${esc(v||"")}" placeholder="—" title="${esc(v||"")}"></div>`;
     if(!d.multi) return `<div class="rcell c-${k}"><select class="cf-cell${cfHas(v)?"":" empty"}" data-cfcell="${ref}"><option value="">—</option>${d.options.map(o=>`<option ${o===v?"selected":""}>${esc(o)}</option>`).join("")}</select></div>`;
     return `<div class="rcell c-${k}"><button class="cf-multi${cfHas(v)?"":" empty"}" data-cfmulti="${ref}" title="${esc(cfDisplay(v))}">${cfHas(v)?esc(cfDisplay(v)):"—"}</button></div>`;
@@ -3753,12 +3771,14 @@ function cfOpenMulti(anchor){
   }));
 }
 document.addEventListener("click",e=>{ const pop=document.getElementById("cf-pop"); if(pop&&pop.classList.contains("on")&&!e.target.closest("#cf-pop")){ pop.classList.remove("on"); renderTable2(); } });
-/* detail panel (PM): the values, editable, under the Requirement tab */
+/* detail panel: the values under the Requirement tab — editable when canEditReq() */
 function cfPanelHTML(r){
   const defs=cfDefs(); if(!defs.length) return "";
+  const ro=!canEditReq(r);
   return `<div class="field" style="margin-top:14px"><label>Custom columns <span>· entered by people, never by the AI</span></label></div>`+defs.map(d=>{
     const v=cfGet(r.id,d.id), ref=`${r.id}::${d.id}`;
-    const ctl = d.type==="text" ? `<input type="text" class="ui-input" data-cfpanel="${ref}" value="${esc(v||"")}" placeholder="—">`
+    const ctl = ro ? `<div class="fval">${cfHas(v)?esc(cfDisplay(v)):"—"}</div>`
+      : d.type==="text" ? `<input type="text" class="ui-input" data-cfpanel="${ref}" value="${esc(v||"")}" placeholder="—">`
       : !d.multi ? `<select class="ui-select" data-cfpanel="${ref}"><option value="">—</option>${d.options.map(o=>`<option ${o===v?"selected":""}>${esc(o)}</option>`).join("")}</select>`
       : `<div class="xp-cols">${d.options.map(o=>`<label><input type="checkbox" data-cfpchk="${ref}" value="${esc(o)}" ${(v||[]).includes(o)?"checked":""}> ${esc(o)}</label>`).join("")}</div>`;
     return `<div class="field"><label>${esc(d.name)}</label>${ctl}</div>`;
@@ -3887,6 +3907,7 @@ document.addEventListener("keydown",e=>{
     // a contributor writes their own question — Q opens the form instead of drafting a canned one
     if(isDeciding(br)){ e.preventDefault(); state.openForm="ask"; renderPanel2(); document.getElementById("ask-text")?.focus(); return; }
     if(br && isAnswered(br)){ toast(ASK_DONE_TIP,"warn"); return; }
+    if(br && state.role==="contributor" && !canAnswer(br)){ toast(`Read only — ${TY(br.typology).label}'s assignment`,"warn"); return; }
     escalate(r,br);
   }
 });
@@ -3967,9 +3988,9 @@ function renderFColumnsPanel(){
 document.getElementById("f-cols-btn").addEventListener("click",e=>{ e.stopPropagation(); fColsPanelState.open=!fColsPanelState.open; renderFColumnsPanel(); });
 document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.closest("#f-cols-panel") && !e.target.closest("#f-cols-btn")){ fColsPanelState.open=false; renderFColumnsPanel(); } });
 /* TICKET-merge-expert-space-into-compliance.md §4 — default scope differs by role,
-   same screen. PM sees everything (optionally narrowed to "my team only", unchanged
-   from before). A contributor sees one system, whichever MANAGERS entry they pick
-   — reusing the same picker rather than building a second one. */
+   same screen. Both see the whole project (DEC-012). The PM can narrow it to "my
+   team only" (demo); a contributor acts on one system — whichever MANAGERS entry
+   they pick, the same picker — and can narrow to it with "My system". */
 (function initViewer(){
   const roleSel=document.getElementById("f-role");
   const sel=document.getElementById("f-viewer");
@@ -3992,12 +4013,14 @@ document.addEventListener("click",e=>{ if(fColsPanelState.open && !e.target.clos
     state.role=e.target.value;
     if(state.role==="contributor"){ state.contribTypo=(MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).typology; state.sel=null; }
     else{ state.ownTeamOnly=true; }
+    state.mineOnly=false; syncClear2();
     syncUI(); refreshAll(); openFirstInQueue();
   });
   sel.addEventListener("change",e=>{
     VIEWER=e.target.value;
     if(state.role==="contributor"){ state.contribTypo=(MANAGERS.find(m=>m.id===VIEWER)||MANAGERS[0]).typology; state.sel=null; }
     else{ state.ownTeamOnly=true; }
+    state.mineOnly=false; syncClear2();
     syncUI(); refreshAll(); openFirstInQueue();
   });
   document.getElementById("team-chip-x").addEventListener("click",e=>{

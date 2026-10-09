@@ -1109,7 +1109,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           <div id="exp-editor"></div>
           <div class="add-exp"><input class="inp" id="new-exp-name" placeholder="Full name"><input class="inp" id="new-exp-team" placeholder="Team / domain" style="max-width:180px"><button class="btn-primary" id="add-exp-btn">Add contributor</button></div>
           <div class="frow" style="margin-top:20px"><div class="fl"><div class="flt">Assignment criteria <span style="font-weight:400;color:var(--text-3);font-size:var(--text-xs)">(TE2 — demo only, doesn't change what the Allocation table actually offers)</span></div><div class="fld">Dimensions offered when allocating a requirement.</div></div><div class="fc"><div class="chips"><span class="chip-tog on">PBS (product)</span><span class="chip-tog on">ABS (activity)</span><span class="chip-tog on">OBS (organization)</span></div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Restricted view</div><div class="fld">What a manager sees for requirements outside their assignments (the admin/project lead always sees everything).</div></div><div class="fc"><div class="segc" data-seg="redact"><button class="on" data-redact="redact">Redacted</button><button data-redact="hide">Hidden</button></div><div class="opt-desc"><b>Redacted:</b> the manager sees blacked-out passages — they perceive the volume and context but not the content. <b>Hidden:</b> out-of-scope passages disappear entirely.</div></div></div>
         </section>
 
         <!-- Reminders -->
@@ -2155,11 +2154,11 @@ document.getElementById("ph-team").addEventListener("click",()=>showScreen("team
 renderCastingProgress();
 
 /* Save */
-// TE2 — theme, restricted-view mode, the Turnkey partners and the gap strategies are the
-// settings with real effect, and all of them already apply immediately (setTheme,
-// setRedactMode, add/removePartner, the strategy calls) — nothing here actually waits on
-// Save. Toast wording matches that instead of implying a persisted save.
-document.getElementById("cfg-save").addEventListener("click",()=>toast("Theme, restricted view, partners and gap strategies apply immediately — other settings on this page aren't wired in this build","ok"));
+// TE2 — theme, the Turnkey partners and the gap strategies are the settings with real
+// effect, and all of them already apply immediately (setTheme, add/removePartner, the
+// strategy calls) — nothing here actually waits on Save. Toast wording matches that
+// instead of implying a persisted save.
+document.getElementById("cfg-save").addEventListener("click",()=>toast("Theme, partners and gap strategies apply immediately — other settings on this page aren't wired in this build","ok"));
 document.getElementById("cfg-reset").addEventListener("click",()=>toast("Nothing to discard — most fields on this page aren't wired in this build","ok"));
 
 /* deep link #config */
@@ -2179,21 +2178,6 @@ document.querySelectorAll(".theme-opt").forEach(b=>b.addEventListener("click",()
   applyThemeUI(t);
   try{ if(window.parent!==window&&window.parent.setTheme) window.parent.setTheme(t); }catch(e){}
   toast(`${t.charAt(0).toUpperCase()+t.slice(1)} theme applied`,"ok");
-}));
-
-/* redact mode <-> shell shared state (TE3 — was write-only: it set setRedactMode() on click
-   but never read getRedactMode() on load, so the toggle always showed "Redacted" regardless
-   of the real current mode). */
-function applyRedactUI(mode){
-  document.querySelectorAll('[data-redact]').forEach(b=>b.classList.toggle("on", b.dataset.redact===mode));
-}
-(function(){
-  let m="redact"; try{ if(window.parent!==window && window.parent.getRedactMode) m=window.parent.getRedactMode(); }catch(e){}
-  applyRedactUI(m);
-})();
-document.querySelectorAll('[data-redact]').forEach(b=>b.addEventListener("click",()=>{
-  applyRedactUI(b.dataset.redact);
-  try{ if(window.parent!==window && window.parent.setRedactMode) window.parent.setRedactMode(b.dataset.redact); }catch(e){}
 }));
 
 /* TB1 — mirrors revue-documentaire.html's SECTIONS requirement statuses (review/
