@@ -6,6 +6,8 @@ Chaque point porte une marque : **(R)** règle métier, à appliquer dans le pro
 
 **Autorité.** La décision la plus récente prime : sur une spec du 8 septembre, sur un constat du prototype, et sur les lignes de `docs/current/` restées en retard (elles sont signalées dans les rubriques « Toujours ouvert »).
 
+**Mise à jour du 9 octobre.** Après cette analyse, la maquette a été alignée sur DEC-025 (validation sans personne) et DEC-012 (le contributeur lit tout le tender) — commit `3d779af` ; les rubriques concernées le disent.
+
 ## Sommaire
 
 - [Partie 1 — Où sont les specs aujourd'hui](#partie-1--où-sont-les-specs-aujourdhui)
@@ -412,7 +414,7 @@ Où lire aujourd'hui : `ALLOCATION.md` (ALLOC-001 à 013, 016, 020, 021, 024, 02
 - (X) **Hiérarchie d'activités pour les droits** (§9 du domain model) — sans objet (DEC-012 : pas de hiérarchie interne).
 
 ### Toujours ouvert
-- **Validation sans personne ?** — DEC-025 / ALLOC-010 / ALLOC-T06 autorisent la validation sans responsable ; mais ALLOC-T32 (DEC-103) et le prototype exigent une personne sur **chaque** entrée OBS pour sortir d'Incomplete (donc pour valider). Contradiction à faire arbitrer ; le paragraphe « Absence de responsable — décision » d'`ALLOCATION.md` parle encore de « l'unique responsable du suivi » (DEC-010, remplacé).
+- **Validation sans personne** (DEC-025 / ALLOC-010 / ALLOC-T06) — **Réglé le 9 oct. (`3d779af`)** : la maquette suit DEC-025 — une entrée OBS sans personne ne rend plus l'exigence Incomplete ni ne bloque la validation ; le manque reste affiché (« Unassigned », « n/m assigned », « No one assigned yet — you can still validate »). ALLOCATION.md (§ Absence de responsable, ALLOC-T32) est réaligné.
 - **Validation par l'équipe projet ou par le contributeur ?** — ALLOC-012 (DEC-009) n'a pas été réaligné sur ACC-014 / DEC-104 (le contributeur valide son système). La règle la plus récente (DEC-104) prime.
 - **Matrice des combinaisons Turnkey** (DEC-048) — à fournir ; placeholder explicite d'ici là.
 - **RSC / RST** (DEC-059) — orthographe tranchée (RSC) ; le rapport RSC ↔ RST reste à confirmer ; le prototype marque RST « avec modèle » par hypothèse. DEC-058/059 sont des **déductions** à confirmer.
@@ -453,7 +455,7 @@ Où lire aujourd'hui : `ALLOCATION.md` (ALLOC-007 à 010, 018, 022, 024, 025 ; �
 - (X) **États propres à un changement de version** (New / Reviewed, no impact / Action required) — supprimés (DEC-072).
 
 ### Toujours ouvert
-- **Textes non réalignés** — ALLOC-T30 parle encore de « valider la caractérisation fait apparaître Validate allocation & send » (deux gestes, antérieur à DEC-099) ; DEC-025 vs exigence d'une personne (voir domaine Modèle).
+- **Textes non réalignés** — ALLOC-T30 parle encore de « valider la caractérisation fait apparaître Validate allocation & send » (deux gestes, antérieur à DEC-099) .
 - **Libellés exacts des états et composition des filtres** — OPEN-13.
 
 ### Synthèse
@@ -592,7 +594,7 @@ Où lire aujourd'hui : `ACCESS.md` (ACC-007, 010, 012, 013, 014 ; matrice métie
 - (X) **Restriction de lecture entre activités et hiérarchie manager/expert** — dépassées (ACCESS, DEC-012).
 
 ### Toujours ouvert
-- **Écart maquette / règle de lecture** — la vue « View as » du prototype masque les exigences hors système dans la table et les caviarde (ou les masque, selon le réglage de caviardage) dans la vue Document, alors qu'ACC-007 dit « tout consulter » (en lecture seule, DEC-100). À ne pas reproduire tel quel ; à confirmer.
+- **Lecture de tout le projet** (ACC-007) — **Réglé le 9 oct. (`3d779af`)** : la maquette suit DEC-012 / ACC-007 — un contributeur voit tout le tender (table, vue Document, Compliance, compteurs, export), en lecture seule hors de son système (DEC-100) ; plus de masquage ni de caviardage, réglage « Restricted view » et mode de caviardage du shell supprimés ; filtre « My system » facultatif dans Compliance. ACCESS.md est réaligné.
 - **ACC-009 non réaligné** — cite encore « la personne responsable de l'exigence garde le suivi » (DEC-010) au lieu de DEC-087.
 
 ### Synthèse
@@ -788,7 +790,7 @@ Où lire aujourd'hui : `docs/current/OPEN-QUESTIONS.md` (DEC-028, DEC-031, DEC-0
 ### Toujours ouvert
 - **Saisie et modification d'une réponse par le PM** — DEC-013, ACC-011 et ACC-T08 le permettent, et OPEN-14 rappelle que « les interfaces de réédition doivent refléter cette décision ». Le prototype ne l'offre pas : le PM ne saisit que le verdict d'un partenaire. Personne ne peut non plus réviser un verdict déjà donné, hors annulation (⌘/Ctrl+Z) et réouverture par une nouvelle version.
 - **Verdict par organisation (OBS) ou par système** — CONF-004 et DEC-055/060/087 donnent un verdict par organisation, et le système est calculé. Le prototype Compliance saisit le verdict au niveau de l'affectation système ; les équipes n'y sont qu'affichées, avec des valeurs écrites à la main. Le contrat de données reste à aligner sur Allocation, qui porte plusieurs entrées OBS avec personne par système.
-- **Périmètre de lecture du contributeur dans Compliance** — DEC-012/ACC-007 donnent la lecture de tout le projet. Le prototype limite la table du contributeur aux exigences qui ont une affectation de son système (écart déjà noté dans ACCESS « Écart avec la maquette »).
+- **Périmètre de lecture du contributeur dans Compliance** — **Réglé le 9 oct. (`3d779af`)** : la maquette suit DEC-012 / ACC-007 — un contributeur voit tout le tender (table, vue Document, Compliance, compteurs, export), en lecture seule hors de son système (DEC-100) ; plus de masquage ni de caviardage, réglage « Restricted view » et mode de caviardage du shell supprimés ; filtre « My system » facultatif dans Compliance. ACCESS.md est réaligné.
 - **Liste Category** — le vocabulaire réel n'est toujours pas fourni ; le placeholder reste explicite (DEC-038, OPEN-04). Elle ne sert plus que sur Turnkey (DEC-107).
 - **Règles périmées encore écrites — ne pas implémenter** :
   - `COMPLIANCE.md` : le tableau d'en-tête « trois verdicts / DEC-001 / DEC-024 », CONF-003, CONF-005, CONF-006, CONF-007, CONF-014, CONF-015, CONF-016, CONF-017 et CONF-020, les lignes « verrou » du tableau Transitions, CONF-T05, T06, T09, T11, T13, la seconde CONF-T15, et CONF-T17. La mention « Risk accepted » de CONF-022 et « Compliant en un geste » de CONF-023 sont aussi dépassées.
@@ -1458,7 +1460,7 @@ Où lire aujourd'hui : `docs/current/JOURNEYS.md` (JRN-007), `docs/current/ALLOC
 - **Mode d'assistance IA** — DEC-095 veut qu'il soit affiché en lecture seule dans les paramètres ; il n'y figure pas.
 - **Capture** — liste probablement incomplète ; réglages modifiables après capture ? ; granularité désactivée quand le format est « Image » ? (CAPTURE.md).
 - **Modèle d'un Turnkey** — dépend de la matrice des combinaisons (DEC-048).
-- **Vue restreinte (Redacted / Hidden)** — toujours présente et agissante, alors qu'ACC-007 (DEC-012) donne à un contributeur la lecture de tout le projet ; ACCESS note l'écart (« restreint certaines lectures ») et dit que la cible DEC prime (déduit : réglage appelé à disparaître, aucune DEC ne le dit explicitement).
+- **Vue restreinte (Redacted / Hidden)** — **Réglé le 9 oct. (`3d779af`)** : la maquette suit DEC-012 / ACC-007 — un contributeur voit tout le tender (table, vue Document, Compliance, compteurs, export), en lecture seule hors de son système (DEC-100) ; plus de masquage ni de caviardage, réglage « Restricted view » et mode de caviardage du shell supprimés ; filtre « My system » facultatif dans Compliance. ACCESS.md est réaligné.
 - **Réglages restants sans câblage** — seuil de retard, cadence, critères d'affectation, rendu PDF / HTML, seuil d'incertitude de segmentation, re-segmentation, protection des corrections manuelles, canal Q&A, numérotation des versions, addendum : intention réelle, comportement cible non spécifié.
 
 ### Synthèse

@@ -8,6 +8,7 @@ Chaque point porte une marque : **(R)** règle métier, à appliquer dans le pro
 
 ## Sommaire
 
+- [Mise à jour du 9 octobre — DEC-025 et DEC-012 (3d779af)](#mise-à-jour-du-9-octobre--dec-025-et-dec-012-3d779af)
 - [Partie 1 — Vue d'ensemble](#partie-1--vue-densemble)
   - [Vue d'ensemble](#vue-densemble)
 - [Partie 2 — Socle : shell, build, code partagé, charte, inventaire des composants](#partie-2--socle--shell-build-code-partagé-charte-inventaire-des-composants)
@@ -46,6 +47,14 @@ Chaque point porte une marque : **(R)** règle métier, à appliquer dans le pro
   - [Configuration — dashboard-et-config.html (#cfg-screen)](#configuration--dashboard-et-confightml-cfg-screen)
   - [Team casting — dashboard-et-config.html (#team-screen)](#team-casting--dashboard-et-confightml-team-screen)
   - [Shell — partie projets et identité — build_merge.py](#shell--partie-projets-et-identité--build_mergepy)
+
+## Mise à jour du 9 octobre — DEC-025 et DEC-012 (`3d779af`)
+
+Fait après la rédaction de ce document ; les parties qui suivent décrivent l'état d'avant pour ces deux points.
+- **DEC-025** (`revue-documentaire.html`) — `computeAllocStatus()` / `markAllocEdited()` : Incomplete seulement si ABS, PBS et OBS sont tous vides ; une entrée OBS sans personne ne bloque plus rien. `targetAssigned()` est supprimé, remplacé par `unassignedNoteHTML()` (note sous le bouton de validation, jamais désactivant). Les raisons de blocage ne parlent plus d'assigner quelqu'un.
+- **DEC-012** (`revue-documentaire.html`) — `visibleTo()` devient `isMine()` (« puis-je modifier ») et ne filtre plus la table, les compteurs, le filtre avancé ni l'export ; caviardage supprimé de `renderDoc()` (variante `.blk.redacted`, `state.redactMode`) ; `body.restricted` → `body.as-contributor`, bannière `.viewas-banner` neutre ; `keepOwnSelection()` écarte des actions groupées les lignes hors système ; N reste sur le travail du contributeur.
+- **DEC-012** (`compliance.html`) — `passesB()` ne retire plus les autres systèmes ; `canEditReq()` ; panneau en lecture seule sur l'affectation d'un autre système (pas de relance, réaffectation, question ni mise de côté) ; pastille « My system » (`#tp-mine`, désactivée par défaut) ; colonnes personnalisées en lecture seule hors de son système.
+- **DEC-012** (`dashboard-et-config.html`, `build_merge.py`) — réglage « Restricted view (Redacted / Hidden) » et `applyRedactUI` supprimés ; `redactMode`, `getRedactMode`, `setRedactMode` retirés du shell.
 
 # Partie 1 — Vue d'ensemble
 
@@ -218,7 +227,7 @@ Volume : +491 / −75 lignes depuis 5e7ae6b (fichier entier, build compris) ; 30
 - `reassignRequests[] = [{id:"RR-<n>", at, requestStatus, …}]`.
 - `screenFocus[écran] = payload` (consommé une seule fois).
 - `homeIntroHidden`.
-- Inchangés : `CURRENT_USER`, `projectMode`, `aiFeedback[]`, `redactMode`, `theme`, `v22Uploaded`.
+- Inchangés : `CURRENT_USER`, `projectMode`, `aiFeedback[]`, `theme`, `v22Uploaded`. `redactMode` (`getRedactMode` / `setRedactMode`) est supprimé le 9 oct. (`3d779af`, DEC-012).
 
 ### Fonctions / points d'entrée clés
 
@@ -1635,7 +1644,7 @@ Volume : voir le bloc Tableau de bord (même fichier).
 ### Modèle de données et état (champs, statuts, clés partagées entre écrans, API du shell utilisée)
 - Shell — partenaires : `getPartners(pid)` → `[{id:"p_<code>", code, label}]` ; `addPartner(pid, name)` → `{entry}` | `{error:"empty"|"duplicate"}` (code = premier mot en majuscules, 8 caractères max, dédoublonné) ; `removePartner(pid, id)` → `{removed}` | `{error:"used"|"missing"}` ; `getPartnerUsage(pid, id)` = max des usages rapportés par Allocation et Compliance (`reportPartnerUsage`).
 - Shell — stratégies : `getStrategies(pid)` → `[{id:"gs_n", name, ext: compliant|not_compliant|pending}]` ; `addStrategy`, `renameStrategy` (`empty` / `duplicate`), `setStrategyResult`, `removeStrategy` (`used`) ; `getStrategyUsage(pid, id)` → `{used, corrected}` (rapporté par Compliance, `reportStrategyUsage`). Liste vide pour un tender neuf ; les cinq tenders de démo ont les quatre stratégies usuelles.
-- Inchangé : `getTheme` / `setTheme`, `getRedactMode` / `setRedactMode` (`redact` | `hide`), `getAIFeedback` (`[{at, surface, id, before, after, conf, reason}]`).
+- Inchangé : `getTheme` / `setTheme`, `getAIFeedback` (`[{at, surface, id, before, after, conf, reason}]`).
 - Lit `CURRENT_PROJECT.line` et `.product` ; le miroir `REVIEW_REQS` / `FOLLOWUP_REQS` pour les chiffres de la relance globale.
 
 ### Fonctions / points d'entrée clés (nouveaux, renommés, supprimés)

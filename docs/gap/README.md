@@ -4,7 +4,7 @@
 
 **Départ.** `5e7ae6b`, l'état de `main` à 14 h 14 ce jour-là. La consolidation des specs dans `docs/current/` est arrivée le même jour, plus tard, à 16 h 43 (`7f50eda`) : elle ne fait pas partie de cette version.
 
-**Arrivée.** `main` au 9 octobre 2026 (`b675936`).
+**Arrivée.** `main` au 9 octobre 2026 (`b675936`), plus l'alignement de la maquette sur DEC-025 et DEC-012 fait le même jour, après l'analyse (`3d779af`).
 
 **Ampleur.**
 - 163 commits, dont 148 hors fusions.
@@ -155,7 +155,7 @@ Ces lignes de `docs/current/` décrivent encore l'état antérieur. La décision
   - `DOMAIN.md` (axe « trois valeurs », DOM-009) ;
   - `ACCESS.md` (ligne « verrouiller » de la matrice) ;
   - `PLATFORM.md` (FR 5–6).
-- **Ancien responsable de suivi (DEC-010) :** `ALLOCATION.md` (§ « Absence de responsable ») et ACC-009.
+- **Ancien responsable de suivi (DEC-010) :** ACC-009 (le § « Absence de responsable » d'`ALLOCATION.md` a été réaligné le 9 oct.).
 - **Lot, fusion et arbitrage du Q&A :** QA-010 et JRN-006.
 - **Mode Compare, onglet Document et suppression manuelle :** `JOURNEYS.md`.
 - **Colonnes personnalisées « créées deux fois » :** CUST-T01 et CUST-T11, contre DEC-097.
@@ -166,8 +166,8 @@ Ces lignes de `docs/current/` décrivent encore l'état antérieur. La décision
 
 ### Le prototype ne suit pas encore toutes les décisions
 
-- **Validation sans personne (DEC-025) :** décidée, mais le prototype exige une personne sur chaque entrée OBS, et ALLOC-T32 aussi. → à arbitrer.
-- **Lecture de tout le projet (DEC-012, ACC-007) :** le prototype masque encore à un contributeur les exigences des autres systèmes (« View as »), et la vue Document les caviarde. → à arbitrer.
+Deux écarts ont été corrigés après l'analyse, le 9 octobre (`3d779af`) : la validation sans personne (DEC-025) et la lecture de tout le tender par un contributeur, en lecture seule hors de son système (DEC-012). Restent :
+
 - **Saisie d'un verdict par le PM (DEC-013, OPEN-14) :** le prototype ne le permet que pour un partenaire.
 - **Verdict par organisation OBS (CONF-004, DEC-055/060) :** Compliance saisit encore le verdict au niveau du système.
 - **Casting par les contributeurs (DEC-003, ACC-T06) :** seuls le PM et les managers sont simulés.
@@ -191,7 +191,7 @@ Ces lignes de `docs/current/` décrivent encore l'état antérieur. La décision
 
 ### Points à faire arbitrer (ne pas trancher seul)
 
-Les écarts DEC-025 et DEC-012 ci-dessus, plus :
+Restent à arbitrer :
 - la borne du premier pilote (DEC-022 : jusqu'à la validation de l'allocation), alors que l'essentiel des décisions récentes porte sur Compliance, Q&A et Risks ;
 - la ligne produit « Services », toujours proposée alors que DEC-004 fixe quatre types ;
 - ce que deviennent la stratégie d'écart, les risques et la correction du PM quand une version rouvre un verdict ;
