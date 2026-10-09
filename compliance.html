@@ -761,6 +761,7 @@ body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:no
 .propose-btn:hover{background:var(--accent);color:#fff}
 .propose-btn:disabled{opacity:.4;cursor:default;background:var(--panel-2);border-color:var(--line-2);color:var(--text-3)}
 .cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.cta:disabled,.cta:disabled:hover{opacity:.45;cursor:default;filter:none;transform:none}
 /* 2026-10-06 — a requirement's activity reads as a vertical rail line: the key
    moments (captured, allocated, answered, declared) are stations, every other
    event a small stop that keeps its colour by kind. */
@@ -1256,8 +1257,10 @@ const REX_BASE={
 };
 /* most restrictive first — drives requirement-level consolidation */
 const CMP_ORDER=["not_compliant","compliant"];
-/* which unfinished allocated system to surface as "what is holding this requirement up" */
-const BLOCK_PRIORITY=["reassignment_needed","awaiting_qa","awaiting_answer","assigned","proposed"];
+/* which unfinished assignment a pending requirement names first (status label, sort,
+   the PM's default assignment): a return to reallocate, then a verdict still owed,
+   then one with a question out — which itself holds nothing up (DEC-092) */
+const BLOCK_PRIORITY=["reassignment_needed","awaiting_answer","awaiting_qa","assigned","proposed"];
 /* Same source documents as revue-documentaire.html, so the nav tells the same story
    on both screens — section 2 comes from the main volume, sections 3/4 from annex A. */
 const DOCS=[
@@ -1564,6 +1567,33 @@ let QA = IS_SIG_TENDER ? SIG_QA : [
    reqs:["SRM-00005"],from:"Sophie Lang",date:"Jul 10",
    ans:"The escalation matrix will be provided by the issuer at contract award (Annex F).",ansDate:"Jul 13"},
 ];
+/* DEC-116 — the register's own state lives in the shell, per tender (qa.html
+   writes it). Pulled on load, before the first render — every route reloads
+   this screen: the questions filed through pushQuestion() (asked here earlier,
+   or anywhere) join the seed, then each question takes the status, dates and
+   answer flagged on it in Q&A (REG.flags) — the same fields, the same words. */
+function pullQaRegister(){
+  let shared=[], reg={};
+  try{ if(window.parent!==window){ shared=window.parent.getQuestions(PROJECT_ID)||[]; reg=window.parent.getQaRegister(PROJECT_ID)||{}; } }catch(e){}
+  shared.forEach(s=>{
+    let q=QA.find(x=>x.id===s.id);
+    if(!q){ q={id:s.id, st:s.st||"draft", q:s.q, reqs:(s.refs||[]).map(x=>x.req), from:s.from, date:s.date}; QA.unshift(q); }
+    if(s.st) q.st=s.st; if(s.ans) q.ans=s.ans;
+    // and its assignment points at it again, as escalate() left it
+    (s.refs||[]).forEach(x=>{ const r=REQS.find(y=>y.id===x.req), br=r&&r.branches.find(b=>b.typology===x.typology); if(!br) return;
+      const refs=br.qaRefs||(br.qaRef?[br.qaRef]:[]); if(refs.includes(s.id)) return;
+      br.qaRefs=[...refs, s.id]; br.qaRef=s.id; if(br.status==="awaiting_answer") br.status="awaiting_qa";
+      br.qaNote=br.qaNote||"Asked from Compliance — it doesn't hold the assignment up."; });
+  });
+  const flags=reg.flags||{};
+  QA.forEach(q=>{ const f=flags[q.id]; if(!f) return;
+    ["st","sentDate","ans","ansDate"].forEach(k=>{ if(k in f) q[k]=f[k]; });
+    q.suggest=f.suggest||null; });
+  // the other bidders' Q&A, once the client's dossier is imported there — only those linked to a requirement
+  (reg.others||[]).forEach(o=>{ if(o.req && !PUBLISHED_QA.some(x=>x.id===o.id)) PUBLISHED_QA.push({id:o.id, reqs:[o.req], q:o.q, ans:o.a, date:"Imported"}); });
+}
+/* a question's status in the register's words: To send / Sent / Answer to confirm / Answered */
+const qaStLabel=q=>q.st==="answered"?"Answered":q.suggest?"Answer to confirm":({draft:"To send",sent:"Sent"}[q.st]||q.st||"—");
 const state={screen:2,view:"table",sel:null,selBranch:0,filter:null,tab:"response",
   /* TICKET-merge-expert-space-into-compliance.md — role default scope: the project
      manager lands on everything, a contributor lands on their own system only.
@@ -1937,7 +1967,7 @@ function nextStepFor(r, br){
   if(br && !isAnswered(br)){
     if(canAnswer(br)) return {t:`<b>Your answer is what this is waiting for.</b> Render a verdict, or return it if the allocation is wrong.`, act:"answer"};
     if(br.status==="proposed") return {t:`<b>Not dispatched yet.</b> It leaves Allocation before anyone can answer it.`, act:null};
-    return {t:`<b>Waiting on ${br.manager?esc(mgrOf(br.manager).name):"a contributor"}</b> — sent ${br.age} days ago. Nothing is due from you but a reminder.`, act:"remind"};
+    return {t:`<b>Waiting on ${br.manager?esc(mgrOf(br.manager).name):"a contributor"}</b> — ${br.reopenedBy?`reopened by ${esc(br.reopenedBy)}, the requirement changed`:`sent ${br.age} days ago`}. Nothing is due from you but a reminder.`, act:"remind"};
   }
   const gm=br&&gapMissing(r,br);
   if(gm){
@@ -1949,13 +1979,36 @@ function nextStepFor(r, br){
   if(c.pending) return {t:`This assignment is answered; <b>${c.remaining} other${c.remaining>1?"s":""}</b> still ${c.remaining>1?"are":"is"} not, so the requirement cannot consolidate yet.`, act:null};
   return {t:`Answered and consolidated. Nothing is waiting on you.`, act:null};
 }
+/* DEC-092 — once its verdict is given, an assignment has nothing left to ask the
+   client: the panel's button is greyed with this reason, Q says it, and escalate()
+   refuses — asking used to reopen the assignment. */
+const ASK_DONE_TIP="The verdict is given — nothing left to ask on this assignment";
+/* CONF-021, DEC-092 — one reminder, whether from the panel, R or the selection bar:
+   only on an assignment its contributor still owes (awaiting answer, or awaiting
+   Q&A — a question holds nothing up), never sent by a contributor (everything of
+   their system they see is theirs to answer, CONF-010). Returns why not, or null. */
+function remindBlock(br){
+  if(!br) return "Select an assignment first";
+  if(state.role==="contributor") return "It's waiting on your system — answer it rather than remind yourself";
+  if(br.status!=="awaiting_answer" && br.status!=="awaiting_qa")
+    return {answered:"Already answered — nobody owes anything on it", proposed:"Not dispatched yet — nobody owes an answer", reassignment_needed:"Returned to the project team — reallocate it instead"}[br.status]||"Nothing is owed on this assignment yet";
+  if(!br.manager) return isPartner(br.typology)?`${TY(br.typology).label} works outside the tool — follow up with them directly`:"Nobody assigned yet on this assignment";
+  return null;
+}
+/* updates Last follow-up and logs it — the single path for every entry point */
+function sendReminder(r,br){
+  const name=mgrOf(br.manager).name;
+  br.lastFollowup="Today";
+  logReq(r.id,{cat:"compliance", what:`${TY(br.typology).code} — reminder sent to ${name}`, k:"human"});
+  return name;
+}
 
 /* =====================================================
    TOASTS
 ===================================================== */
-/* What Compliance knows is waiting: returned assignments to reallocate, and
+/* What Compliance knows is waiting: returned assignments to reallocate,
    assignments with a question to the client — listed for information, since a
-   question holds nothing up (DEC-092). */
+   question holds nothing up (DEC-092) — and answers a new version reopened. */
 function notifItems(){
   /* One line per kind, with its count — not one per assignment. On the capture
      dataset the per-assignment version produced fifty-one rows, which is a
@@ -1979,6 +2032,12 @@ function notifItems(){
        b=>`<b>${b.req.id}</b> has a question with the client${b.qaRef?` — ${b.qaRef}`:""}`,
        n=>`<b>${n} assignments</b> have a question with the client`,
        "nothing due from you", "qa"),
+    // LIFE-007 — answers a new document version reopened, still to give again
+    (function(){ const l=brs.filter(b=>b.reopenedBy && !isAnswered(b)); if(!l.length) return null;
+      return {c:"var(--warn)", time:"waiting on their contributors",
+        t:l.length===1?`<b>${l[0].req.id}</b> reopened by ${esc(l[0].reopenedBy)} — the requirement changed`:`<b>${l.length} answers</b> reopened by a new document version — the requirements changed`,
+        go:()=>{ if(l.length===1){ state.sel=l[0].req.id; state.selBranch=l[0].req.branches.findIndex(x=>x.typology===l[0].typology); refreshAll(); }
+                 else { state.selection=new Set(l.map(b=>b.req.id)); state.filterToSelection=true; state.sel=null; refreshAll(); } }}; })(),
   ].filter(Boolean);
 }
 
@@ -2801,19 +2860,20 @@ function renderFSelBar(){
   const n=state.selection.size;
   bar.classList.toggle("on",n>0);
   document.getElementById("f-sel-count").textContent=n;
+  const rb=document.getElementById("f-sel-remind"); if(rb) rb.style.display=state.role==="contributor"?"none":"";   // CONF-021
 }
-/* B5 — new for this screen: sending a reminder updates "Last follow-up" on every
-   awaiting-answer assignment of each selected requirement (the ones a reminder
-   actually makes sense for). Unlike the panel's own reminder button, it writes
-   nothing to the activity log. */
+/* B5 — the selection bar's reminder: the same sendReminder() as the panel and R
+   (Last follow-up + the activity log), on each assignment of the selected
+   requirements that remindBlock() allows; the others are counted as skipped. */
 function sendReminderToSelection(){
   const ids=[...state.selection]; if(!ids.length) return;
-  let touched=0;
+  let sent=0, skipped=0; const reqs=new Set();
   ids.forEach(id=>{
     const r=findR(id); if(!r) return;
-    r.branches.forEach(b=>{ if(isAwaitingAnswer(b)){ b.lastFollowup="Today"; touched++; } });
+    r.branches.forEach(b=>{ if(remindBlock(b)){ skipped++; return; } sendReminder(r,b); sent++; reqs.add(r.id); });
   });
-  toast(touched?`Reminder sent — ${touched} pending assignment${touched>1?"s":""} across ${ids.length} requirement${ids.length>1?"s":""}`:"No pending assignment to remind in this selection","ok");
+  const sk=skipped?` · ${skipped} skipped — answered, not dispatched, returned or unassigned`:"";
+  toast(sent?`Reminder sent — ${sent} assignment${sent>1?"s":""} across ${reqs.size} requirement${reqs.size>1?"s":""}${sk}`:`No assignment in this selection still owes an answer${sk}`, sent?"ok":"warn");
   refreshAll();
 }
 
@@ -2920,16 +2980,19 @@ function renderPanel2(){
         <div class="next-step${next.act?"":" is-idle"}">${next.t}</div>
         ${br.internal==="not_compliant"?gapEditorHTML(r,br,canAnswer(br)||(isPartner(br.typology)&&state.role==="pm")):""}
         ${externalFieldHTML(r,br)}
-        <button class="cta line" id="a-escalate"><i class=ic-ask></i> Ask the client</button>`;
-      b.querySelector("#a-escalate")?.addEventListener("click",()=>escalate(r,br));
+        <button class="cta line" id="a-escalate" disabled title="${ASK_DONE_TIP}"><i class=ic-ask></i> Ask the client</button>`;
       bindGapEditor(b,r,br); bindExternalField(b,r,br);
     }else if(br.status==="awaiting_qa"){
+      // each question as the register has it (pullQaRegister): To send / Sent / Answered, and the client's answer
+      const qs=(br.qaRefs||(br.qaRef?[br.qaRef]:[])).map(id=>QA.find(q=>q.id===id)||{id});
       b.innerHTML=whoBlock+`
-        <div class="qa-block"><div class="qa-block-h"><i class=ic-ask></i> Question with the client</div>
+        <div class="qa-block"><div class="qa-block-h"><i class=ic-ask></i> Question to the client</div>
           <div class="qa-block-t">${esc(br.qaNote||"The contributor asked the client for a precision — the verdict doesn't wait for it.")}</div>
-          ${(br.qaRefs||(br.qaRef?[br.qaRef]:[])).length?`<div class="qa-block-ref">Question${(br.qaRefs||[br.qaRef]).length>1?"s":""} <b>${(br.qaRefs||[br.qaRef]).join(", ")}</b> — see the Q&amp;A register</div>`:""}</div>
-        <div class="next-step is-idle">It doesn't hold anything up: ${r.id} consolidates on its contributor's verdict, not on the client's reply. <b>Nothing is due from you.</b></div>
+          ${qs.map(q=>`<div class="qa-block-ref"><b>${esc(q.id)}</b> — ${esc(qaStLabel(q))} in the Q&amp;A register</div>${q.st==="answered"&&q.ans?`<div class="qa-block-t">Client's answer: ${esc(q.ans)}</div>`:""}`).join("")}</div>
+        <div class="next-step is-idle">It doesn't hold anything up: ${r.id} consolidates on its contributor's verdict, not on the client's reply. <b>Nothing is due from you but a reminder.</b></div>
+        ${remindBlock(br)?"":`<button class="cta blue" id="a-remind"><i class=ic-bell></i> Send a reminder</button>`}
         <a class="cta line" id="a-goqa" href="javascript:parent.route('qa')">→ Open the Q&amp;A register</a>`;
+      b.querySelector("#a-remind")?.addEventListener("click",()=>{ const n=sendReminder(r,br); toast(`Reminder sent to ${n} for ${r.id} · ${TY(br.typology).label}`,"ok"); refreshAll(); });
     }else if(br.status==="reassignment_needed"){
       // T5 — internal loop: the manager reallocates, the allocated system goes back out to a contributor.
       // Nothing leaves the company here (contrast with the Q&A loop above).
@@ -2987,8 +3050,8 @@ function renderPanel2(){
     }else{
       b.innerHTML=whoBlock+`
         <div class="next-step${nextStepFor(r,br).act?"":" is-idle"}">${nextStepFor(r,br).t}</div>
-        ${e?`<button class="cta blue" id="a-remind"><i class=ic-bell></i> Send a reminder</button>`:""}`;
-      b.querySelector("#a-remind")?.addEventListener("click",()=>{ logReq(r.id,{cat:"compliance", what:`${TY(br.typology).code} — reminder sent to ${e.name}`, k:"human"}); toast(`Reminder sent to ${e.name} for ${r.id} · ${TY(br.typology).label}`,"ok"); });
+        ${remindBlock(br)?"":`<button class="cta blue" id="a-remind"><i class=ic-bell></i> Send a reminder</button>`}`;
+      b.querySelector("#a-remind")?.addEventListener("click",()=>{ const n=sendReminder(r,br); toast(`Reminder sent to ${n} for ${r.id} · ${TY(br.typology).label}`,"ok"); refreshAll(); });
     }
   }else if(state.tab==="activity"){
     const all=activityForReq(r), cat=state.logCat||"all", items=cat==="all"?all:all.filter(x=>x.cat===cat);
@@ -3004,7 +3067,7 @@ function renderPanel2(){
     b.innerHTML=`
       <div class="lock-note"><i class=ic-lock></i> The requirement text changes only through a new document version (Documents &amp; versions).</div>
       <div class="frozen"><div class="fk">Assignments</div><div class="fv">${r.branches.map(x=>TY(x.typology).label).join(", ")}</div></div>
-      <div class="frozen"><div class="fk">Consolidated</div><div class="fv">${c.pending?`Pending — waiting on ${TY(c.blocking.typology).label} (${BST[c.blocking.status]})`:CMP[c.internal]}</div></div>
+      <div class="frozen"><div class="fk">Consolidated</div><div class="fv">${c.pending?`Pending — ${TY(c.blocking.typology).label} not answered yet (${BST[c.blocking.status]})`:CMP[c.internal]}</div></div>
       <div class="frozen"><div class="fk">Source section</div><div class="fv">${r.sec}</div></div>
       <div class="field" style="margin-top:14px"><label>Source passage (read-only)</label>
         <div class="fval" style="font-family:var(--font-doc);background:var(--paper);color:var(--paper-ink);padding:var(--space-3) var(--space-3);border-radius:var(--radius-sm);line-height:1.55">${esc(r.text)}</div></div>${cfPanelHTML(r)}`;
@@ -3088,7 +3151,6 @@ function renderDecisionPanel(p,r,br){
   const ourQA=QA.filter(q=>(q.reqs||[]).includes(r.id));
   const theirQA=PUBLISHED_QA.filter(q=>q.reqs.includes(r.id));
   const qaN=ourQA.length+theirQA.length;
-  const QA_ST={draft:"To send",sent:"Sent",answered:"Answered"};   // the Q&A screen's own words (DEC-116)
   // DEC-092 — several questions can be open on one assignment; none holds it up
   const myQs = (br.qaRefs||(br.qaRef?[br.qaRef]:[])).map(id=>QA.find(q=>q.id===id)).filter(Boolean);
   const askForm=state.openForm!=="ask"?"":`
@@ -3114,9 +3176,9 @@ function renderDecisionPanel(p,r,br){
       <div class="form-actions"><button class="btn-cancel" id="reassign-cancel">Cancel</button><button class="btn-submit warn" id="reassign-submit">Return it</button></div>
     </div>`;
   const qaItem=(q,theirs)=>`<div class="dp-qa${theirs?" theirs":""}">
-      <div class="dp-qa-head"><b>${esc(q.id)}</b><span class="dp-qa-st${q.ans?" ok":""}">${theirs?"Published":esc(q.ans?"Answered":(QA_ST[q.st]||q.st))}</span></div>
+      <div class="dp-qa-head"><b>${esc(q.id)}</b><span class="dp-qa-st${theirs||q.st==="answered"?" ok":""}">${theirs?"Published":esc(qaStLabel(q))}</span></div>
       <div class="dp-qa-q">${esc(q.q)}</div>
-      ${q.ans?`<div class="dp-qa-a"><span>Client's answer</span>${esc(q.ans)}</div>`:`<div class="dp-qa-a none">No answer yet</div>`}
+      ${q.ans&&(theirs||q.st==="answered")?`<div class="dp-qa-a"><span>Client's answer</span>${esc(q.ans)}</div>`:`<div class="dp-qa-a none">${q.suggest?"An imported answer waits to be confirmed in Q&amp;A":"No answer yet"}</div>`}
       <div class="dp-qa-meta">${theirs?"Asked by another bidder":`Asked by ${esc(q.from||"—")}`} · ${esc(q.date||"")}</div>
     </div>`;
   const resBody = !res ? "" : res==="qa" ? (qaN
@@ -3146,7 +3208,8 @@ function renderDecisionPanel(p,r,br){
         <span class="set-id">${r.id}</span>
         <button class="dp-para" id="dp-para" title="Open the clause in its document">§ ${esc(r.sec)}</button>
       </div>
-      ${myQs.length?`<div class="dp-asked"><i class=ic-ask></i> ${myQs.length>1?`${myQs.length} questions`:"Question"} in the Q&amp;A register: ${myQs.map(q=>`<b>${esc(q.id)}</b> ${esc(q.ans?"answered":(QA_ST[q.st]||q.st).toLowerCase())}`).join(" · ")}. They don't hold your verdict up.</div>`:""}
+      ${br.reopenedBy?`<div class="dp-asked"><i class=ic-file></i> Reopened by <b>${esc(br.reopenedBy)}</b> — the requirement changed, so the verdict went back to pending. Give it again.</div>`:""}
+      ${myQs.length?`<div class="dp-asked"><i class=ic-ask></i> ${myQs.length>1?`${myQs.length} questions`:"Question"} in the Q&amp;A register: ${myQs.map(q=>`<b>${esc(q.id)}</b> ${esc(qaStLabel(q).toLowerCase())}`).join(" · ")}. They don't hold your verdict up.</div>`:""}
       <div class="dp-label">Requirement${showOrig?` <span class="dp-label-l">· original, ${esc(origLang)}</span>`:""}</div>
       <div class="dp-text${showOrig?" is-orig":""}" ${showOrig?`lang="${TENDER_LANGUAGE}"`:""}>${esc(showOrig?r.textOriginal:r.text)}</div>
       <div class="dp-textbar">
@@ -3280,10 +3343,12 @@ function renderDecisionPanel(p,r,br){
     refreshAll();
   });
 }
-/* Ask the client about one assignment: the question goes to the Q&A register and the
-   assignment's status becomes `awaiting_qa`, whatever it was — an answered one
-   included, which then no longer counts as answered. */
+/* Ask the client about one assignment: the question goes to the Q&A register. Only an
+   assignment awaiting its answer moves to `awaiting_qa`; any other keeps its status
+   (proposed, returned, already awaiting Q&A). An answered one is refused (DEC-092):
+   its verdict is given, there is nothing left to ask. */
 function escalate(r,br,question){
+  if(br && isAnswered(br)){ toast(ASK_DONE_TIP,"warn"); return; }
   /* DEC-088 — the question enters the tender's Q&A register as a draft (via the
      shell), where the project manager reviews and sends it; the id comes from
      there so both screens name it the same. */
@@ -3298,7 +3363,7 @@ function escalate(r,br,question){
     id=shared.id; } }catch(e){}
   logReq(r.id,{cat:"compliance", what:`${br?TY(br.typology).code+" — ":""}question ${id} to the client: “${qtext}”`, k:"human"});
   QA.unshift({id,st:"draft",q:qtext,reqs:[r.id],from:asker,date:"Today"});
-  if(br){ br.status="awaiting_qa"; br.qaRefs=[...(br.qaRefs||(br.qaRef?[br.qaRef]:[])), id]; br.qaRef=id; br.qaNote=br.qaNote||(state.role==="contributor"
+  if(br){ if(br.status==="awaiting_answer") br.status="awaiting_qa"; br.qaRefs=[...(br.qaRefs||(br.qaRef?[br.qaRef]:[])), id]; br.qaRef=id; br.qaNote=br.qaNote||(state.role==="contributor"
       ? "The contributor asked the client — the answer can come before or after the verdict."
       : "Escalated to the client by the project manager — it doesn't hold the assignment up."); }
   toast(`${r.id}${br?` · ${TY(br.typology).label}`:""} — question ${id} added to the Q&A register (To send)`,"ok",()=>{
@@ -3334,7 +3399,7 @@ function renderTriage2(){
 ===================================================== */
 function select(id,branchIdx){
   state.sel=id;
-  // default to the allocated system that is holding consolidation up — that is what the manager needs
+  // default to the assignment a pending requirement names first (BLOCK_PRIORITY) — that is what the manager needs
   if(branchIdx==null){
     const r=findR(id), c=r?consolidate(r):null;
     state.selBranch = (c&&c.blocking) ? r.branches.indexOf(c.blocking) : 0;
@@ -3826,8 +3891,9 @@ document.addEventListener("keydown",e=>{
   if(TE.handleNavKeydown({key:navKey},state,fNavAdapter)){ e.preventDefault(); return; }
   if((e.key==="r"||e.key==="R")&&state.sel){
     const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
-    if(br&&br.manager){ br.lastFollowup="Today"; toast(`Reminder sent to ${mgrOf(br.manager).name} for ${r.id} · ${TY(br.typology).label}`,"ok"); refreshAll(); }
-    else toast(`Nobody assigned yet on this assignment`,"warn");
+    const why=remindBlock(br);
+    if(why) toast(why,"warn");
+    else { const n=sendReminder(r,br); toast(`Reminder sent to ${n} for ${r.id} · ${TY(br.typology).label}`,"ok"); refreshAll(); }
   }
   if((e.key==="s"||e.key==="S")&&state.sel){
     const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
@@ -3837,6 +3903,7 @@ document.addEventListener("keydown",e=>{
     const r=findR(state.sel), br=r.branches[Math.min(state.selBranch||0,r.branches.length-1)];
     // a contributor writes their own question — Q opens the form instead of drafting a canned one
     if(isDeciding(br)){ e.preventDefault(); state.openForm="ask"; renderPanel2(); document.getElementById("ask-text")?.focus(); return; }
+    if(br && isAnswered(br)){ toast(ASK_DONE_TIP,"warn"); return; }
     escalate(r,br);
   }
 });
@@ -3974,7 +4041,34 @@ window.setDemoContributorView=function(){
   if(roleSel){ roleSel.value="contributor"; roleSel.dispatchEvent(new Event("change")); }
   else { state.role="contributor"; state.contribTypo=MANAGERS[0].typology; refreshAll(); }
 };
+/* LIFE-007 (DEC-016) — a new document version reopens the answers on the
+   requirements it modified (recorded by Documents & versions in the shell, see
+   recordVersionChange in build_merge.py). Applied on load, before the first render,
+   to this screen's fresh seed: each answered assignment on a modified requirement
+   goes back to awaiting answer, verdict cleared; unchanged requirements are left
+   alone. The log is written once per version (ch.logged), and the count reopened
+   is written back so Documents announces exactly that. The index reported first is
+   the seed's, before any version applies — the shell picks from it. */
+const docOfReq=r=>SEC_DOC[r.sec]||DOCS[0].id;   // a section no document claims sits in the first one, as on the Document view
+function applyVersionChanges(){
+  const idx={}; REQS.forEach(r=>{ const l=idx[docOfReq(r)]=idx[docOfReq(r)]||[]; if(l.length<12) l.push({id:r.id, answered:r.branches.filter(isAnswered).length}); });
+  shell("reportDocReqIndex", idx);
+  (shell("getVersionChanges")||[]).forEach(ch=>{
+    const label=`${ch.docName||(DOC(ch.doc)||{}).name||ch.doc} ${ch.num}`;
+    let n=0;
+    (ch.modified||[]).forEach(id=>{ const r=findR(id); if(!r) return;
+      const wasDone=isConsolidated(r);
+      r.branches.forEach(b=>{ if(!isAnswered(b)) return;
+        if(!ch.logged) logReq(r.id,{who:"Documents & versions", cat:"status", what:`${TY(b.typology).code} — reopened by ${label} — the requirement changed`, from:CMP[b.internal]||"Answered", to:BST.awaiting_answer, k:"warn"});
+        b.status="awaiting_answer"; b.internal=null; b.resp=null; b.age=0; b.reopenedBy=label; n++; });
+      if(wasDone && !ch.logged) logReq(r.id,{who:"Documents & versions", cat:"status", what:"No longer consolidated — a system is open again", k:"warn"});
+    });
+    ch.reopened=n; ch.logged=true;
+  });
+}
 /* Init — this file is the Compliance step and nothing else now. */
+pullQaRegister();
+applyVersionChanges();
 setScreen(2);
 applyFPanels();
 document.getElementById("risk-focus-clear")?.addEventListener("click",()=>{ state.riskFocus=null; refreshAll(); });

@@ -374,7 +374,7 @@ const REG=(()=>{ try{ return window.parent.getQaRegister(PID); }catch(e){ return
 REG.flags=REG.flags||{};
 function saveFlag(q){
   REG.flags[q.id]={st:q.st,sentDate:q.sentDate,ans:q.ans,ansDate:q.ansDate,suggest:q.suggest||null};
-  // Keep the shell's copy in step (read back by pullSharedQuestions; Compliance doesn't read it yet)
+  // Keep the shell's copy in step (read back by pullSharedQuestions here and by Compliance's pullQaRegister)
   try{ const sq=(window.parent.getQuestions(PID)||[]).find(x=>x.id===q.id); if(sq){ sq.st=q.st; sq.ans=q.ans; } }catch(e){}
 }
 

@@ -286,7 +286,7 @@ window.resetDemo = function(){
   currentProjectId="stb2026";
   projectMode='ai';
   aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage=seedStrategyUsage(); risks=seedRisks(); gapDocs=seedGapDocs(); gapStats=seedGapStats(); reqLog=seedReqLog();
-  reassignRequests.length=0; sharedQuestions={}; qaRegister={}; homeIntroHidden=false;
+  reassignRequests.length=0; sharedQuestions={}; qaRegister={}; homeIntroHidden=false; docReqIndex=seedDocReqIndex(); versionChanges={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
   window.route("home");
@@ -585,6 +585,38 @@ window.getQaRegister = (projectId)=>{ const k=projectId||"_"; return qaRegister[
 window.withdrawQuestion = function(projectId, id){
   const l=sharedQuestions[projectId||"_"]; if(!l) return;
   const i=l.findIndex(x=>x.id===id); if(i>=0) l.splice(i,1);
+};
+// LIFE-007 (DEC-016) — a new version of a document reopens the answers on the
+// requirements it modified. Documents & versions records each upload here, per
+// tender (recordVersionChange): which requirements it modified and how many
+// answers that reopens. Compliance applies the list on every load (its seed
+// reloads with the screen), logs each reopening once, and writes back the count
+// it actually reopened. Which requirements a document holds, and how many answers
+// each has in Compliance's seed, is Compliance's to say: it reports its first
+// requirements per document on each load; seedDocReqIndex() is that report as
+// Compliance computes it for the demo data, for an upload made before it opened.
+function seedDocReqIndex(){
+  const L=s=>s.split(" ").map(t=>{ const [id,n]=t.split(":"); return {id, answered:+n}; });   // "id:answers", document order
+  return {
+    stb2026:{d1:L("SRM-00001:0 SRM-00002:0 SRM-00003:1 SRM-00004:1 SRM-00005:1 SRM-00006:0 SRM-00007:1 SRM-00008:1 SRM-00015:2 SRM-00018:1 SRM-00021:0 SRM-00024:0"),
+             d2:L("SRM-00009:1 SRM-00010:0 SRM-00011:1 SRM-00012:0 SRM-00013:0 SRM-00014:0 SRM-00016:1 SRM-00017:1 SRM-00019:1 SRM-00020:0 SRM-00022:0 SRM-00023:0")},
+    rfp114:{d1:L("L4-0004:1 L4-0005:1 L4-0006:0 L4-0008:0 L4-0009:0 L4-0010:1 L4-0011:0 L4-0012:0 L4-0014:1 L4-0015:0 L4-0017:1 L4-0018:0")},
+  };
+}
+let docReqIndex = seedDocReqIndex();
+let versionChanges = {};
+window.reportDocReqIndex = (projectId, idx)=>{ docReqIndex[projectId||"_"]=idx||{}; };
+window.getVersionChanges = (projectId)=>versionChanges[projectId||"_"]||[];
+// The version modifies `m` requirements of the document: those with answers first,
+// in document order, skipping any an earlier version already modified (their
+// answers are already reopened) — so the count announced is the count reopened.
+window.recordVersionChange = function(projectId, ch){
+  const k=projectId||"_", list=versionChanges[k]=versionChanges[k]||[];
+  const prior=new Set(list.filter(c=>c.doc===ch.doc).flatMap(c=>c.modified));
+  const pool=(((docReqIndex[k]||{})[ch.doc])||[]).filter(x=>!prior.has(x.id));
+  const pick=pool.filter(x=>x.answered>0).concat(pool.filter(x=>!x.answered)).slice(0, ch.m||0);
+  const rec=Object.assign({}, ch, {modified:pick.map(x=>x.id), reopened:pick.reduce((n,x)=>n+x.answered,0), logged:false});
+  list.push(rec); return rec;
 };
 window.updateReassignRequest = function(id, patch){
   const r = reassignRequests.find(x=>x.id===id);

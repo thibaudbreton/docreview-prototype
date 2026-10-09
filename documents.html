@@ -720,15 +720,22 @@ function move(id,delta){
 /* A new version replaces the document in place; gap analysis runs automatically
    and every answer it reopens is flagged here rather than discovered later — a
    requirement the version changed has its verdict put back to pending (DEC-016,
-   LIFE-007). The field keeps its old name, `stale`; only the labels say
-   "reopened" (DEC-119). */
+   LIFE-007). The upload is recorded in the shell, per tender
+   (recordVersionChange): it picks the `gap.m` requirements modified among those
+   Compliance holds for the document and counts their answers — `stale` is that
+   count, the number Compliance reopens when it next loads (and writes back).
+   The field keeps its old name, `stale`; only the labels say "reopened" (DEC-119). */
+const PID=(()=>{ try{ return window.parent.getCurrentProject().id; }catch(e){ return "_"; } })();
+const docShort=d=>d.name.split("\u2014")[0].trim();
 function uploadVersion(id){
   const d=DOC(id); if(!d) return;
   const cur=d.versions[0].num.replace(/^v/,"").split(".").map(Number);
   const next=`v${cur[0]}.${(cur[1]||0)+1}`;
   const gap={a:1+(d.versions.length%3), m:2+(d.versions.length%2), r:d.versions.length%2};
-  const stale=gap.m;
-  d.versions.unshift({num:next, date:"Today", note:"New issue uploaded from this screen", gap, stale});
+  const note="New issue uploaded from this screen";
+  let stale=0;
+  try{ if(window.parent!==window && window.parent.recordVersionChange) stale=window.parent.recordVersionChange(PID,{doc:id, docName:docShort(d), num:next, m:gap.m, gap, note}).reopened; }catch(e){}
+  d.versions.unshift({num:next, date:"Today", note, gap, stale});
   /* The dashboard narrates "a new version arrived" behind window.isV22Uploaded(),
      and nothing had set it since Compliance's old "Simulate upload — v2.2" button
      went away — so that narration could never appear. This screen owns versions,
@@ -828,6 +835,13 @@ document.getElementById("add-doc").addEventListener("click",addDocument);
 document.getElementById("doc-search").addEventListener("input",e=>{ state.search=e.target.value; renderDocs(); });
 document.getElementById("doc-filter").addEventListener("change",e=>{ state.filter=e.target.value; renderDocs(); });
 
+/* Every route reloads this screen: the versions uploaded earlier on this tender
+   come back from the shell, each with the count of answers Compliance reopened. */
+(function replayVersionChanges(){
+  let list=[]; try{ list=(window.parent!==window && window.parent.getVersionChanges)?window.parent.getVersionChanges(PID):[]; }catch(e){}
+  list.forEach(ch=>{ const d=DOC(ch.doc); if(!d || d.versions.some(v=>v.num===ch.num)) return;
+    d.versions.unshift({num:ch.num, date:"Today", note:ch.note, gap:ch.gap, stale:ch.reopened}); });
+})();
 renderSummary(); renderDocs(); fillExportDocs();
 </script>
 </body>
