@@ -2064,6 +2064,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-10-01
 - **notes**: **Hidden since 2026-10-01** (`CHAT_ENABLED = False` in build_merge.py) — not built into either output until it is planned; the code stays in tender-chat.html. Asks Claude through the claude.ai artifact runtime's `sample` capability, on the viewer's own Claude account — works only in the published artifact (artifact/srm-prototype.html). Claude reads the captured blocks (`window.CHAT_CAPTURE`, generated from data.js at build time, STB-2026 only) and the shared records (strategies, risks, activity log) through six page tools: search_blocks, get_blocks, list_documents, count_blocks, requirement_record, list_risks. Where the view cannot run tools, the page searches itself and sends the top 25 excerpts. A cited [SRM-…] opens the block in Allocation. Colors are literals duplicated from the screens' tokens, not shared variables — flagged.
 
+## Removed
+
 ### Risk Weight Pill — removed 2026-09-30, no longer needed (DEC-113: risks carry no weight)
 
 ### Risk Matrix (weight × strategy) — removed 2026-09-30, no longer needed (DEC-113)
