@@ -402,15 +402,15 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-01
 - **notes**: `.rex-ring`, a `conic-gradient` donut for REX match-percentage, driven by an inline `--p` variable. Entirely hardcoded geometry (22–26px, mask radius, gradient stops) — no tokens beyond the fill color.
 
-### Logo Mark
+### Brand Logo
 - **level**: atom
-- **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html
-- **variants**: dark, light (two inline SVGs toggled by `html[data-theme]`)
-- **tokens**: none
+- **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html, risks.html
+- **variants**: light theme (the company's colour logo), dark theme (its white logo) — two `<img>` toggled by `html[data-theme]`
+- **tokens**: --space-4, --line
 - **built-from**: none
-- **added**: 2026-09-22
-- **changed**: 2026-09-23
-- **notes**: The three lobes and the dot are hardcoded `#fff` / `#1E3246` inside the SVG, not tokens. Height hardcoded 22px. The dot took `--brand-red` on 2026-09-22 and went back to white on 2026-09-23 at the user's request — brand red stays off the logo. The shell's favicon is a base64 copy of the same SVG.
+- **added**: 2026-10-09
+- **changed**: 2026-10-09
+- **notes**: `.brand-logo`, first thing in every header: the Alstom logo, a 1px `--line` rule, then the product's name "SRM" in text (the App Header's `.logo`) — the company's logo is required; the SRM mark beside it was one symbol too many. The files supplied, cropped to the ink and reduced (PNG, 72px high, ~3 KB each), inlined as data URIs in each screen — colours are the logo's own, not tokens. Height 15px (cap line of "SRM") and box 20px hardcoded. Also in the published build (user's choice, 2026-10-09).
 
 ### Page Title
 - **level**: atom
@@ -1527,13 +1527,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### App Header
 - **level**: organism
-- **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html
+- **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html, risks.html
 - **variants**: home (logo + reset + primary CTA + avatar), wizard (logo + static crumb + cancel), workspace (logo-link + crumb + nav/icon buttons + avatar), review (adds mode-switch, version pill), compliance (adds Demo Role Switcher, Icon Cluster, Export)
 - **tokens**: --space-4, --space-5, --panel, --line
-- **built-from**: Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
+- **built-from**: Brand Logo, Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
-- **changed**: 2026-09-22
-- **notes**: Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
+- **changed**: 2026-10-09
+- **notes**: 2026-10-09: opens on the Brand Logo, a rule, then "SRM" in text — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
 - **level**: organism
@@ -2184,3 +2184,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.why-box`, a floating fixed-position card appearing only on high-confidence AI overrides, to solicit a training-feedback reason. Auto-dismisses after a hardcoded 14000ms.
+
+### Logo Mark — removed 2026-10-09, replaced by the Brand Logo and the product's name in text (the SRM mark — the "02 Fan Ribbons" drawing chosen on 2026-10-07, ink / slate with a red AI ribbon — is now only the favicon, in the screens and the shell's HEADER)
+- **level**: atom
+- **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html
+- **variants**: dark, light (two inline SVGs toggled by `html[data-theme]`)
+- **tokens**: none
+- **built-from**: none
+- **added**: 2026-09-22
+- **changed**: 2026-09-23
+- **notes**: The three lobes and the dot are hardcoded `#fff` / `#1E3246` inside the SVG, not tokens. Height hardcoded 22px. The dot took `--brand-red` on 2026-09-22 and went back to white on 2026-09-23 at the user's request — brand red stays off the logo. The shell's favicon is a base64 copy of the same SVG.
