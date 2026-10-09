@@ -1420,7 +1420,7 @@ body.seg-on .tbl-gran{display:inline-flex}
 /* view-as — demo-only contributor preview, collapsed to a small icon like the other header icon-buttons */
 .viewas{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border-radius:var(--radius-md);border:1px solid transparent;background:none;color:var(--text-2);cursor:pointer;transition:all .15s;position:relative}
 .viewas:hover{background:var(--panel-3);color:var(--text)}
-.viewas.restricted{background:var(--ia-soft);color:var(--ia)}
+.viewas.as-contributor{background:var(--ia-soft);color:var(--ia)}
 .viewas .exp-avatar{width:22px;height:22px;font-size:var(--text-xs)}
 .viewas-menu{display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:230px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);box-shadow:0 12px 34px rgba(0,0,0,.55);padding:var(--space-1);z-index:30}
 .viewas.open .viewas-menu{display:block}
@@ -1428,21 +1428,17 @@ body.seg-on .tbl-gran{display:inline-flex}
 .va-opt:hover{background:var(--panel-3);color:var(--text)}
 .va-opt .exp-avatar{width:24px;height:24px;font-size:var(--text-xs)}
 .va-opt .vr{font-size:var(--text-xs);color:var(--text-3)}
-.restrict-banner{display:none;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-4);background:var(--ia-soft);border-bottom:1px solid rgba(224,164,60,.4);font-size:var(--text-sm);color:var(--text-2);flex-shrink:0}
-body.restricted .restrict-banner{display:flex}
-.restrict-banner b{color:var(--ia)}
-.restrict-banner .exit{margin-left:auto;font-size:var(--text-sm);color:var(--accent);cursor:pointer}
-/* redacted passages in document view */
-.blk.redacted{cursor:default}
-.blk.redacted .redact-fill{background:repeating-linear-gradient(90deg,#c9c4b8,#c9c4b8 7px,#bdb7a8 7px,#bdb7a8 14px);color:transparent;border-radius:var(--radius-xs);user-select:none;display:inline}
-.blk.redacted .type-chip,.blk.redacted .blk-id,.blk.redacted .marker{display:none!important}
-.redact-note{position:absolute;top:8px;right:10px;font-size:var(--text-xs);font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#8a8f9a;font-family:var(--font-ui)}
+/* DEC-012 — who the view is for and what they may change; nothing is hidden */
+.viewas-banner{display:none;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-4);background:var(--ia-soft);border-bottom:1px solid rgba(224,164,60,.4);font-size:var(--text-sm);color:var(--text-2);flex-shrink:0}
+body.as-contributor .viewas-banner{display:flex}
+.viewas-banner b{color:var(--ia)}
+.viewas-banner .exit{margin-left:auto;font-size:var(--text-sm);color:var(--accent);cursor:pointer}
 
 /* ---------- Custom columns (SPEC-custom-columns.md) ---------- */
 .cf-edit{margin-left:2px;padding:0 4px;border-radius:var(--radius-sm);color:var(--text-3);font-size:var(--text-xs);line-height:1.6}
 .cf-edit:hover{color:var(--accent);background:var(--accent-soft)}
-body.restricted .cf-edit, body.restricted #cf-add-btn{display:none}
-body.restricted #sel-class-btn{display:none}   /* DEC-086 — no bulk Classify for a contributor */
+body.as-contributor .cf-edit, body.as-contributor #cf-add-btn{display:none}
+body.as-contributor #sel-class-btn{display:none}   /* DEC-086 — no bulk Classify for a contributor */
 .char-ro{font-size:var(--text-xs);color:var(--text-3);margin-top:4px}
 /* DEC-120 — the characterisation model's level beside a field label */
 .field>label .char-conf{margin-left:var(--space-2);letter-spacing:0;text-transform:none;font-weight:600}
@@ -1619,9 +1615,9 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
     </div>
   </header>
 
-  <div class="restrict-banner">
-    <span><i class=ic-lock></i> Restricted view — showing <b id="restrict-who"></b>'s system. Passages outside their scope are redacted.</span>
-    <span class="exit" id="restrict-exit">Exit to admin view</span>
+  <div class="viewas-banner">
+    <span><i class=ic-eye></i> <span id="viewas-banner-text"></span></span>
+    <span class="exit" id="viewas-exit">Exit to admin view</span>
   </div>
 
   <!-- Notifications dropdown -->
@@ -1958,7 +1954,7 @@ function bindPersonSearch(container, addr, onPick){
   });
   document.addEventListener("click",e=>{ if(!e.target.closest(`[data-psearch="${addr}"]`)) close(); });
 }
-/* Current viewer — admin by default; "View as" switches to a contributor's restricted view */
+/* Current viewer — admin by default; "View as" previews a contributor: reads everything, changes only their system (DEC-012/100) */
 let VIEWER = "admin";
 function isAdmin(){ return (MGR(VIEWER)||{}).admin; }
 
@@ -2909,11 +2905,10 @@ function computeCharStatus(x){
 }
 function computeAllocStatus(target){
   if(target.allocStatus==="allocated") return;
-  /* An unassigned target.manager is missing data — full stop. It can never
-     read as "To review" or "To validate" no matter how confident the AI's
-     OBS *suggestion* is, because a suggestion nobody accepted isn't a
-     completed field — it's still Incomplete. */
-  if(!targetAssigned(target) || (!target.pbs && !target.abs && !target.obs)){ target.allocStatus="incomplete"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
+  /* Incomplete while ABS / PBS / OBS are all empty (DEC-103). A missing
+     person is not missing data: it shows ("Unassigned", "To assign") but
+     never holds the allocation back (DEC-025). */
+  if(!target.pbs && !target.abs && !target.obs){ target.allocStatus="incomplete"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
   const weak=weakestLink(target);
   if(weak){ target.allocStatus="doubt"; target.allocDoubtField=weak.k.toLowerCase(); target.allocReviewReason=`Weak ${weak.k} derivation (${weak.c}%) — the proposed assignment may be wrong`; return; }
   target.allocStatus="tovalidate"; target.allocDoubtField=null; target.allocReviewReason=null;
@@ -2965,10 +2960,9 @@ function applyCaptureDemoStatuses(){
     x.type = PBS_TYPES[h % PBS_TYPES.length];
     x.manager = mgrList[h % mgrList.length].id;
     if(bucket < 2){
-      // Incomplete — 2%: characterised, but no organisation derived for it yet.
-      // Independent of the confidence model — an absolute floor, same rule
-      // as everywhere else in this app — not something the AI was ever
-      // "confident" or "unsure" about, it just never ran.
+      // Incomplete — 2%: characterised, but no ABS / PBS / OBS derived for it
+      // yet (DEC-103). Independent of the confidence model — not something
+      // the AI was ever "confident" or "unsure" about, it just never ran.
       x.manager = null; x.pbs = null; x.abs = null; x.obs = null;
     } else {
       x.pbs = {v:"", c: conf.pbs!=null ? conf.pbs : 90+(h%9)};
@@ -3100,16 +3094,15 @@ function applyFreshProjectStatuses(){
   const reviewPicks = [reviewCandidates[0], reviewCandidates[Math.floor(reviewCandidates.length/2)]].filter(Boolean);
   items.forEach(x=>{
     if(unassignedIds.includes(x.id)){
-      x.manager=null; x.techAI=false; x.perimAI=false;
-      (x.branches||[]).forEach(br=>{ br.manager=null; (br.teams||[]).forEach(t=>{ t.manager=null; }); br.allocStatus="incomplete"; });
+      // nothing derived and nobody on it — Incomplete for the empty ABS / PBS / OBS (DEC-103), not for the missing person (DEC-025)
+      x.manager=null; x.pbs=null; x.abs=null; x.obs=null; x.techAI=false; x.perimAI=false;
+      (x.branches||[]).forEach(br=>{ br.manager=null; br.pbs=null; br.abs=null; br.obs=null; (br.teams||[]).forEach(t=>{ t.manager=null; t.pbs=null; t.abs=null; t.obs=null; }); br.allocStatus="incomplete"; });
       x.status="incomplete"; x.doubtField=null; x.reviewReason=null;
       x.allocStatus="incomplete"; x.allocDoubtField=null; x.allocReviewReason=null;
       return;
     }
-    // every other bucket needs a real assignment — an unassigned requirement
-    // is an absolute floor to Incomplete (§8.2.1), and only the 2 picks above
-    // are meant to read Incomplete in this story.
-    // (on its OBS entries — a member of each system, DEC-087/102)
+    // every other bucket gets a person on each OBS entry (a member of each
+    // system, DEC-087/102); only the 2 picks above read Incomplete.
     const anyone=MANAGERS.filter(m=>!m.admin)[0];
     (x.branches||[]).filter(br=>!isPartner(br.typology)).forEach(br=>{
       const who=(systemMembers(br.typology)[0]||anyone).id;
@@ -3133,10 +3126,10 @@ const STATUS_RANK = {incomplete:0, reassign:1, doubt:1, tovalidate:2, allocated:
 /* B7 — combines characterisation and allocation into the ONE status a row's
    pill shows, "most restrictive wins" (same principle as compliance
    consolidation, §4): whichever axis is LESS far along is what's displayed,
-   never the more advanced one. An unassigned OBS makes allocStatus
+   never the more advanced one. An empty ABS / PBS / OBS makes allocStatus
    "incomplete" (see computeAllocStatus) regardless of how confident the AI
    was on Class/System — so a row can never read "To validate"/"To review"
-   while its actual OBS is still empty. Multi-branch parents are
+   while nothing is allocated. Multi-branch parents are
    the one exception: once characterisation is allocated, each branch tracks
    its own allocation individually (B6), so the parent row just hands off to
    the per-branch rollup instead of combining with a single branch's numbers.
@@ -3227,16 +3220,16 @@ function validateCtaInner(b,es){
   if(brs.length>1){
     return `<div class="validate-sys"><div class="validate-sys-h">Validate per system</div>
       ${brs.map((br,i)=>{
-        const done=br.allocStatus==="allocated", noOne=!br.allocStatus||br.allocStatus==="incomplete";
-        const why=charWhy||(noOne?"assign someone first":null);
+        const done=br.allocStatus==="allocated", empty=!br.allocStatus||br.allocStatus==="incomplete";
+        const why=charWhy||(empty?"complete ABS / PBS / OBS first":null);
         return `<div class="validate-sys-row"><span class="ptag${ptagCls(br.typology)}">${TY(br.typology).code}</span>
           ${done?`<span class="validate-done">✓ Allocated — sent</span>`
-            :`<button class="mini-btn validate-sys-btn" data-validatebranch="${i}" ${why?`disabled title="${escHtml(why)}"`:""}>✓ Validate &amp; send</button>${why?`<span class="validate-why inline">${escHtml(why)}</span>`:""}`}
+            :`<button class="mini-btn validate-sys-btn" data-validatebranch="${i}" ${why?`disabled title="${escHtml(why)}"`:""}>✓ Validate &amp; send</button>${why?`<span class="validate-why inline">${escHtml(why)}</span>`:unassignedNoteHTML(slotsOfBranch(br),true)}`}
         </div>`; }).join("")}</div>`;
   }
   if(es.val==="allocated") return `<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`;
-  const allocWhy=(allocHolder(b).allocStatus||"incomplete")==="incomplete"?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null;
-  return btn("✓ Validate &amp; send to Compliance",`id="validate-btn"`, charWhy||allocWhy);
+  const allocWhy=(allocHolder(b).allocStatus||"incomplete")==="incomplete"?"Allocation incomplete — complete ABS / PBS / OBS first.":null;
+  return btn("✓ Validate &amp; send to Compliance",`id="validate-btn"`, charWhy||allocWhy)+(charWhy||allocWhy?"":unassignedNoteHTML(allocSlots(b)));
 }
 
 /* =====================================================
@@ -3297,7 +3290,6 @@ const state = {
      the system view is showing. */
   panelView:"pm",
   panelActivity:null,
-  redactMode:(function(){try{return (window.parent!==window&&window.parent.getRedactMode)?window.parent.getRedactMode():"redact";}catch(e){return "redact";}})(),
 };
 // TH-followup3 — nav starts fully collapsed (state.selected is still null at
 // this point, so nothing needs to stay open yet); selectBlock() re-opens the
@@ -3729,9 +3721,12 @@ function reclassify(id, nature){
 /* =====================================================
    RENDER — LEFT NAV
 ===================================================== */
-function visibleTo(b){
+/* Whether the viewer may change this block. A contributor reads the whole
+   tender (DEC-012) and changes only requirements on their own system, or
+   one they hold (DEC-100). Visibility never depends on it. */
+function isMine(b){
   if(isAdmin()) return true;
-  if(blockNature(b)==="info") return true; // nobody's requirement — not owned by any manager, never restricted
+  if(blockNature(b)==="info") return true; // nobody's requirement — not owned by any system
   if(allocPeople(b).includes(VIEWER)) return true;
   return !!myBranchOf(b);
 }
@@ -3938,7 +3933,7 @@ function setAllocManager(b, branch, tidx, id){
   if(id) registerPerson(id);
   t.manager=id||null;
   if(teams.length===1) branch.manager=t.manager;
-  markAllocEdited(branch); if((b.branches||[]).length===1) markAllocEdited(b);   // the person can complete the allocation
+  markAllocEdited(branch); if((b.branches||[]).length===1) markAllocEdited(b);   // a human touched it; the person alone never decides the status (DEC-025)
   return t;
 }
 /* DEC-087 — who answers is set per allocation: each OBS entry of each system
@@ -3961,11 +3956,13 @@ function assignCount(b){ const s=allocSlots(b); return {n:s.filter(t=>t.manager)
 function unassignedLabel(b){ const {n,m}=assignCount(b); return n===m ? null : n===0 ? "Unassigned" : `${n}/${m} assigned`; }
 /* the slots of one system the viewer may act on: their own system (DEC-102), or one they hold */
 const viewerOnBranch=br=>br.typology===viewerSystem() || slotsOfBranch(br).some(t=>t.manager===VIEWER);
-/* whether a status target (requirement, system or OBS entry) has its person(s) */
-function targetAssigned(target){
-  if(target.branches&&target.branches.length){ const {n,m}=assignCount(target); return m>0 && n===m; }
-  if(target.teams&&target.teams.length>1) return target.teams.every(t=>t.manager);
-  return !!target.manager;
+/* DEC-025 — under an open validate button: who is still missing on these OBS
+   entries. Informative, never a reason to disable the button. */
+function unassignedNoteHTML(slots, inline){
+  const m=slots.length, k=slots.filter(t=>!t.manager).length;
+  if(!m || !k) return "";
+  const txt=`${k===m?"No one assigned yet":`${k} of ${m} ${OBS_NOUN}s with no one assigned`} — you can still validate${inline?"":"; the system's contributors can answer"}.`;
+  return inline ? `<span class="validate-why inline">${escHtml(txt)}</span>` : `<div class="validate-why">${escHtml(txt)}</div>`;
 }
 /* most restrictive wins, pending until everyone has answered — the ticket's
    one rule, used at both levels (§6). Order is COMPLIANCE_DEFS' own. */
@@ -4274,7 +4271,6 @@ function activityItemHTML(e){
     </div>`;
 }
 function matchesFilter(b){
-  if(!visibleTo(b)) return false;
   if(state.filterToSelection) return state.selection.has(b.id);
   if(!passesColFilters(b)) return false;
   if(!passesAdvFilter(b)) return false;
@@ -4498,19 +4494,12 @@ function renderDoc(){
         if(b.sourceImage) return;
         const el = document.createElement("div");
         const pass = matchesFilter(b)&&matchesSearch(b);
-        const restricted = !visibleTo(b);
-        if(restricted && state.redactMode==="hide"){ return; }
         const nat = blockNature(b);
         const cch = cmpChangeOf(b);
         const unas = nat==="requirement" ? unassignedLabel(b) : null;
-        el.className = `blk nat-${nat} st-${b.status||""}`+(unas?" unallocated":"")+(b.uncertain?" uncertain":"")+(cch?" ch-"+cch.type:"")+(state.selected===b.id?" selected":"")+(pass?"":" dimmed")+(restricted?" redacted":"");
+        el.className = `blk nat-${nat} st-${b.status||""}`+(unas?" unallocated":"")+(b.uncertain?" uncertain":"")+(cch?" ch-"+cch.type:"")+(state.selected===b.id?" selected":"")+(pass?"":" dimmed");
         el.dataset.id = b.id; if(unas) el.dataset.unassigned = unas;
         if(cch) el.dataset.chlabel = `${cch.type==="added"?"Added":"Modified"} in ${cch.to}`;
-        if(restricted){
-          el.innerHTML = `<span class="redact-fill">${(b.text||"").replace(/<[^>]+>/g,"")}</span><span class="redact-note">Restricted</span>`;
-          paper.appendChild(el);
-          return;
-        }
         if(b.kind==="image"){
           // B9 — no container: just the figure, plus however many requirement
           // rows are attached to it (one auto-created, more via Duplicate).
@@ -4676,7 +4665,18 @@ function bulkAssignManager(mid){
   else toast(`${c} requirement${c>1?"s":""} → ${who}${skipped?` · ${skipped} left as is${sys?` (not on ${TY(sys).code}, or every ${OBS_NOUN} there already has its person)`:""}`:""}`,"ok");
   state.selection.clear(); lastSel=null; refresh();
 }
+/* DEC-100 — a contributor may select any row, but a bulk action changes only
+   their own: the others leave the selection, counted. True when nothing is left. */
+function keepOwnSelection(){
+  if(isAdmin()) return false;
+  let n=0;
+  [...state.selection].forEach(id=>{ const f=findBlock(id); if(f && !isMine(f.b)){ state.selection.delete(id); n++; } });
+  if(n) toast(`${n} selected requirement${n>1?"s are":" is"} not on your system — left as is`,"warn");
+  if(n && !state.selection.size){ lastSel=null; refresh(); return true; }
+  return false;
+}
 function bulkSetTypology(pid){
+  if(keepOwnSelection()) return;
   let c=0;
   state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){
     f.b.perim=f.b.perim||[]; if(!f.b.perim.includes(pid)){ f.b.perim=[...f.b.perim,pid].sort((x,y)=>TYPO.findIndex(t=>t.id===x)-TYPO.findIndex(t=>t.id===y)); syncBranchesFromPerim(f.b); } f.b.perimAI=false; c++; } });   // the new system gets its branch, as a single edit does
@@ -4691,6 +4691,7 @@ function bulkSetClass(cls){
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkMarkToReview(){
+  if(keepOwnSelection()) return;
   let c=0;
   state.selection.forEach(id=>{ const f=findBlock(id); if(!f)return;
     f.b.status="doubt"; f.b.doubtField=null; f.b.reviewReason="Flagged for review in bulk"; c++; });
@@ -4698,6 +4699,7 @@ function bulkMarkToReview(){
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkReclassifyInfo(){
+  if(!canCharacterise()){ charDenied(); return; }
   let c=0;
   state.selection.forEach(id=>{
     const f=findBlock(id); if(!f) return;
@@ -4716,6 +4718,7 @@ function bulkReclassifyInfo(){
    Allocated, allocation — is next in the waterfall for that row). Everything
    else in the selection is skipped, not blocked — the summary says how many. */
 function bulkValidate(){
+  if(keepOwnSelection()) return;
   let done=0, skipped=0;
   const snaps=[];
   state.selection.forEach(id=>{
@@ -4730,24 +4733,27 @@ function bulkValidate(){
   else toast(`Nothing to validate — ${skipped} row${skipped>1?"s were":" was"} not ready`,"warn");
   state.selection.clear(); lastSel=null; refresh();
 }
-/* VIEW AS — a contributor's restricted view (demo) */
+/* VIEW AS — a contributor's view (demo): the whole tender, read only outside their system */
 function setViewer(id){
   VIEWER=id;
-  document.body.classList.toggle("restricted", !isAdmin());
+  document.body.classList.toggle("as-contributor", !isAdmin());
   state.selection.clear();
   renderViewAs(); refresh();
-  if(!isAdmin()) toast(`Viewing as ${MGR(id).name} — showing their system's requirements`,"ok");
+  if(!isAdmin()) toast(`Viewing as ${MGR(id).name}`,"ok");
 }
 function renderViewAs(){
   const host=document.getElementById("viewas"); if(!host) return;
   const m=MGR(VIEWER);
-  host.className="viewas"+(isAdmin()?"":" restricted");
+  host.className="viewas"+(isAdmin()?"":" as-contributor");
   host.title = isAdmin() ? "Preview a contributor's view (demo only)" : `Previewing as ${m.name} — click to change`;
   host.querySelector(".va-current").innerHTML = isAdmin()
     ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>`
     : `<span class="exp-avatar" style="background:${m.color}">${m.init}</span>`;
-  const who=document.getElementById("restrict-who");
-  if(who) who.textContent=isAdmin()?"":MGR(VIEWER).name;
+  const txt=document.getElementById("viewas-banner-text");
+  if(txt){
+    const sys=viewerSystem(), code=sys?TY(sys).code:null;
+    txt.innerHTML=isAdmin()?"":`Viewing as <b>${escHtml(m.name)}</b> — ${code?`contributor on <b>${escHtml(code)}</b>: everything is readable, only ${escHtml(code)} can be changed.`:"contributor: everything is readable, only their own system can be changed."}`;
+  }
 }
 
 /* A requirement row's Assigned to with several OBS entries (several systems,
@@ -5242,14 +5248,14 @@ function nextNeedingAction(){
   const cur=state.activeCell.id||state.selected, start=Math.max(-1,ids.indexOf(cur));
   for(let k=1;k<=ids.length;k++){
     const id=ids[(start+k)%ids.length], f=findBlock(id);
-    if(f && needsAllocAction(f.b)){
+    if(f && isMine(f.b) && needsAllocAction(f.b)){   // a contributor's queue: their own system only
       selectBlock(id);
       state.activeCell={id,bidx:null,col:(state.activeCell.col&&state.activeCell.col!=="sel")?state.activeCell.col:"id"};
       paintActiveCell(); scrollActiveCellIntoView();
       return;
     }
   }
-  toast("Nothing left to review or validate in this view","ok");
+  toast(isAdmin()?"Nothing left to review or validate in this view":"Nothing of yours left to review or validate in this view","ok");
 }
 function scrollActiveCellIntoView(){ TE.scrollActiveCellIntoView(state,navAdapter); }
 function moveActiveCellDelta(dRow,dCol){ TE.moveActiveCellDelta(state,dRow,dCol,navAdapter); }
@@ -5918,9 +5924,9 @@ function contributorDetailHTML(b,s,myBranch,derivSrc,myReassignBranch,myReassign
     ${(function(){   // DEC-104 — the contributor validates their own system
       const i=(b.branches||[]).indexOf(myBranch), st=myBranch.allocStatus;
       if(st==="allocated") return validateZone(`<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`, true);
-      const why = (!st||st==="incomplete") ? "Allocation incomplete — assign someone and complete ABS / PBS / OBS first." : null;
+      const why = (!st||st==="incomplete") ? "Allocation incomplete — complete ABS / PBS / OBS first." : null;
       return validateZone(why ? `<button class="validate-cta" disabled title="${escHtml(why)}">✓ Validate &amp; send to Compliance</button><div class="validate-why">${escHtml(why)}</div>`
-                 : `<button class="validate-cta" data-validatebranch="${i}">✓ Validate &amp; send to Compliance</button>`);
+                 : `<button class="validate-cta" data-validatebranch="${i}">✓ Validate &amp; send to Compliance</button>${unassignedNoteHTML(slotsOfBranch(myBranch))}`);
     })()}
     ${cfPanelHTML(b)}
     ${proposeBlockHTML(b,true,myBranch)}
@@ -6066,8 +6072,8 @@ function activityDetailHTML(b,bidx){
      SIG tender (nature, class, that system's model ABS / PBS / OBS with its
      re-run, the person on each OBS, the validation), plus the reassignment
      buttons. It used to be a read-only summary with "Type" and a bare name. */
-  const done=branch.allocStatus==="allocated", noOne=!branch.allocStatus||branch.allocStatus==="incomplete";
-  const why=(noOne?"Allocation incomplete — assign someone and complete ABS / PBS / OBS first.":null);
+  const done=branch.allocStatus==="allocated", empty=!branch.allocStatus||branch.allocStatus==="incomplete";
+  const why=(empty?"Allocation incomplete — complete ABS / PBS / OBS first.":null);
   return `<div class="act-detail-head">
       <button class="mini-btn" id="act-back">← All systems</button>
       <span class="ptag${ptagCls(branch.typology)}">${TY(branch.typology).code}</span>
@@ -6081,7 +6087,7 @@ function activityDetailHTML(b,bidx){
     ${systemAllocationsHTML(branch, bidx)}
     ${validateZone(done?`<button class="validate-cta" disabled>✓ Allocated — sent to Compliance</button>`
       :(why?`<button class="validate-cta" disabled title="${escHtml(why)}">✓ Validate &amp; send to Compliance</button><div class="validate-why">${escHtml(why)}</div>`
-           :`<button class="validate-cta" data-validatebranch="${bidx}">✓ Validate &amp; send to Compliance</button>`), done)}
+           :`<button class="validate-cta" data-validatebranch="${bidx}">✓ Validate &amp; send to Compliance</button>${unassignedNoteHTML(slotsOfBranch(branch))}`), done)}
     ${proposeBlockHTML(b, true, branch)}`;
 }
 function renderSettings(){
@@ -6669,16 +6675,13 @@ function selectBlock(id,{scroll=false}={}){
    separate axes now; a manual correction on one never touches the other, and
    neither ever downgrades an item that already reached Allocated. */
 function markCharEdited(b){ if(b.status!=="allocated") b.status="tovalidate"; }
-/* An unassigned target.manager is an absolute floor: no edit to PBS/ABS/OBS
-   can move the row past Incomplete while nobody is assigned yet — a
-   confident AI suggestion nobody has accepted isn't a completed field. Only
-   once someone is actually assigned does a manual edit count as "a human
-   touched this, it's ready to validate". */
+/* A manual edit makes the allocation To validate once ABS, PBS or OBS holds
+   something; with all three empty it is Incomplete (DEC-103 — a system with
+   no model starts that way). Whether anyone is assigned plays no part
+   (DEC-025). */
 function markAllocEdited(target){
   if(!target || target.allocStatus==="allocated") return;
-  // DEC-103 — missing data is Incomplete, whatever the reason (a system with no
-  // model simply starts with ABS / PBS / OBS empty, nothing derived).
-  target.allocStatus = (targetAssigned(target) && (target.pbs || target.abs || target.obs)) ? "tovalidate" : "incomplete";
+  target.allocStatus = (target.pbs || target.abs || target.obs) ? "tovalidate" : "incomplete";
   target.allocDoubtField=null; target.allocReviewReason=null;
 }
 /* B6/B7 — the one validate action: the row's status-pill click, each allocated system's
@@ -6692,7 +6695,7 @@ function markAllocEdited(target){
 function validateAllocTarget(target, isRealBranch){
   if(!target || ["allocated","incomplete"].includes(target.allocStatus)) return false;
   target.allocStatus="allocated"; target.allocDoubtField=null; delete target.allocReviewReason;
-  if(isRealBranch && !target.branchStatus) target.branchStatus="awaiting_answer"; // TD2 — sent to Contributor Review, contributor already assigned (allocStatus just became "allocated")
+  if(isRealBranch && !target.branchStatus) target.branchStatus="awaiting_answer"; // TD2 — sent to Compliance, assigned or not (DEC-025)
   return true;
 }
 /* DEC-099 — one gesture validates the whole requirement: its characterisation
@@ -6777,7 +6780,7 @@ function setMode(mode){
   const switchingMode = state.mode!==mode;
   state.mode = mode;
   document.body.className = "mode-"+mode;
-  document.body.classList.toggle("restricted", !isAdmin());   // the "View as" preview survives a mode switch
+  document.body.classList.toggle("as-contributor", !isAdmin());   // the "View as" preview survives a mode switch
   if(mode!=="document") state.seg=false;
   if(state.seg) document.body.classList.add("seg-on");
   // the Changes lens is the Document view's — its switch stays on Document
@@ -6809,9 +6812,9 @@ function setFilter(f){
    TRIAGE / PROGRESS
 ===================================================== */
 function renderTriage(){
-  // counts what the viewer can actually filter to — a contributor's pills
-  // count their own requirements, with their own system's status
-  const r = reqs().filter(visibleTo);
+  // the whole tender, for everyone (DEC-012); on a Turnkey tender a
+  // contributor's own requirements count with their system's status (effectiveStatus)
+  const r = reqs();
   document.getElementById("total-count").textContent = `${r.length} requirement${r.length>1?"s":""}`;
   document.getElementById("n-incomplete").textContent = r.filter(b=>effectiveStatus(b).val==="incomplete").length;
   document.getElementById("n-doubt").textContent = r.filter(b=>effectiveStatus(b).val==="doubt").length;
@@ -6946,6 +6949,7 @@ document.querySelectorAll("[data-selcls]").forEach(b=>b.addEventListener("click"
    project's model and destroys answers on purpose. */
 function bulkRerun(productId){
   const product=PRODUCT(productId); if(!product) return;
+  if(keepOwnSelection()) return;
   const ids=[...state.selection];
   let done=0, skipped=0, noLeaf=0, notReq=0;
   ids.forEach(id=>{
@@ -7013,7 +7017,7 @@ document.getElementById("viewas").addEventListener("click",e=>{
   document.getElementById("viewas").classList.toggle("open");
 });
 document.addEventListener("click",e=>{ if(!e.target.closest("#viewas")) document.getElementById("viewas").classList.remove("open"); });
-document.getElementById("restrict-exit").addEventListener("click",()=>setViewer("admin"));
+document.getElementById("viewas-exit").addEventListener("click",()=>setViewer("admin"));
 renderViewAs();
 
 /* System toolbar */
@@ -7323,7 +7327,7 @@ function advGroupHTML(group, topIdx){
    the same screen. Same baseline, same word ("requirements"), same number. */
 function advLiveMatch(){
   const d=advPruned(state.advFilterDraft);
-  const baseline=reqs().filter(visibleTo);
+  const baseline=reqs();
   const matched=baseline.filter(b=>passesColFilters(b)&&TE.matchesFilter(ADV_FILTER_FIELDS,d,b));
   let culprit=null;
   // §5 — "say which condition is the restrictive one where that can be
@@ -7903,7 +7907,7 @@ const exportState={steps:new Set(["capture","charac","alloc"]),format:"xlsx",doc
    filter specifically, and those two are a considered "which subset should
    go out," not a passing lens for browsing the table. */
 function exportRows(){
-  return reqs().filter(visibleTo)
+  return reqs()
     .filter(b=>exportState.docId==="all" || (b.section&&b.section.docId===exportState.docId))
     .filter(passesColFilters).filter(passesAdvFilter);
 }

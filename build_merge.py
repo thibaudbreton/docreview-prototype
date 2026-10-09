@@ -284,7 +284,7 @@ window.resetDemo = function(){
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   projectMode='ai';
-  aiFeedback.length=0; redactMode='redact'; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage=seedStrategyUsage(); risks=seedRisks(); gapDocs=seedGapDocs(); gapStats=seedGapStats(); reqLog=seedReqLog();
+  aiFeedback.length=0; v22Uploaded=false; customFields={}; tableLayouts={}; partners=seedPartners(); partnerUsage=seedPartnerUsage(); allocProgress={}; strategies=seedStrategies(); strategyUsage=seedStrategyUsage(); risks=seedRisks(); gapDocs=seedGapDocs(); gapStats=seedGapStats(); reqLog=seedReqLog();
   reassignRequests.length=0; sharedQuestions={}; qaRegister={}; homeIntroHidden=false; docReqIndex=seedDocReqIndex(); versionChanges={};
   if(procTimer){ clearInterval(procTimer); procTimer=null; }
   startProcLoop();
@@ -622,9 +622,6 @@ window.updateReassignRequest = function(id, patch){
   if(r) Object.assign(r, patch);
   return r;
 };
-let redactMode = 'redact';
-window.getRedactMode = ()=>redactMode;
-window.setRedactMode = (m)=>{ redactMode = m || 'redact'; };
 let theme = 'light';
 window.getTheme = ()=>theme;
 window.setTheme = (t)=>{ theme = (t==='light')?'light':'dark';
