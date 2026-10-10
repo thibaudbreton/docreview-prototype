@@ -2905,10 +2905,11 @@ function computeCharStatus(x){
 }
 function computeAllocStatus(target){
   if(target.allocStatus==="allocated") return;
-  /* Incomplete while ABS / PBS / OBS are all empty (DEC-103). A missing
-     person is not missing data: it shows ("Unassigned", "To assign") but
-     never holds the allocation back (DEC-025). */
-  if(!target.pbs && !target.abs && !target.obs){ target.allocStatus="incomplete"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
+  /* Incomplete while there is no organisation (OBS) at all, or ABS / PBS / OBS
+     are all empty (DEC-103, DEC-076, ALLOC-T32). A missing person is not
+     missing data: it shows ("Unassigned", "To assign") but never holds the
+     allocation back (DEC-025). */
+  if(!hasObs(target) || (!target.pbs && !target.abs && !target.obs)){ target.allocStatus="incomplete"; target.allocDoubtField=null; target.allocReviewReason=null; return; }
   const weak=weakestLink(target);
   if(weak){ target.allocStatus="doubt"; target.allocDoubtField=weak.k.toLowerCase(); target.allocReviewReason=`Weak ${weak.k} derivation (${weak.c}%) — the proposed assignment may be wrong`; return; }
   target.allocStatus="tovalidate"; target.allocDoubtField=null; target.allocReviewReason=null;
@@ -3956,6 +3957,18 @@ function assignCount(b){ const s=allocSlots(b); return {n:s.filter(t=>t.manager)
 function unassignedLabel(b){ const {n,m}=assignCount(b); return n===m ? null : n===0 ? "Unassigned" : `${n}/${m} assigned`; }
 /* the slots of one system the viewer may act on: their own system (DEC-102), or one they hold */
 const viewerOnBranch=br=>br.typology===viewerSystem() || slotsOfBranch(br).some(t=>t.manager===VIEWER);
+/* DEC-076 / ALLOC-T32 — an allocation needs at least one organisation (OBS):
+   removing the last one sends it back to Incomplete. The person on it may be
+   missing (DEC-025). */
+function hasObs(target){
+  // self-contained: computeAllocStatus runs during init, before the slot
+  // helpers below are initialised
+  const val=o=>!!(o && (typeof o==="string" ? o.trim() : o.v));
+  const teamsOf=br=>(br.teams&&br.teams.length)?br.teams:[br];
+  const slots=(target.branches&&target.branches.length)
+    ? target.branches.filter(br=>!br.partner).flatMap(teamsOf) : teamsOf(target);
+  return val(target.obs) || slots.some(t=>val(t.obs));
+}
 /* DEC-025 — under an open validate button: who is still missing on these OBS
    entries. Informative, never a reason to disable the button. */
 function unassignedNoteHTML(slots, inline){
@@ -6681,7 +6694,7 @@ function markCharEdited(b){ if(b.status!=="allocated") b.status="tovalidate"; }
    (DEC-025). */
 function markAllocEdited(target){
   if(!target || target.allocStatus==="allocated") return;
-  target.allocStatus = (target.pbs || target.abs || target.obs) ? "tovalidate" : "incomplete";
+  target.allocStatus = (hasObs(target) && (target.pbs || target.abs || target.obs)) ? "tovalidate" : "incomplete";
   target.allocDoubtField=null; target.allocReviewReason=null;
 }
 /* B6/B7 — the one validate action: the row's status-pill click, each allocated system's
