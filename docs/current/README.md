@@ -42,6 +42,7 @@ Sept sources actives sont assemblées dans `index.html` et `docreview-app.html` 
 | Décisions à prendre et contradictions | [Arbitrages](OPEN-QUESTIONS.md) |
 | Sources, changements, limites de l'audit | [Traçabilité](AUDIT.md) |
 | Préparer une tâche pour un agent | [Modèle de tâche](TASK-TEMPLATE.md) |
+| Backlog : user stories par épopée, couverture des règles, points ouverts | [User stories](../stories/README.md) |
 
 ## Utilisation par un agent de développement
 
