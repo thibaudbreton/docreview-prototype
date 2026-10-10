@@ -27,7 +27,7 @@
 
 **Méthode.** L'analyse compare les deux versions du dépôt : code, documents et messages de commit. Rien n'a été retesté dans un navigateur pour l'écrire.
 
-**Hors périmètre.** Les user stories, qui seront refaites entièrement.
+**User stories.** Réécrites entièrement le 10 octobre : [docs/stories/](../stories/README.md) — 239 stories en 16 épopées, avec la couverture des règles et les points ouverts.
 
 **Règle d'autorité.** La décision la plus récente prime. Elle l'emporte sur une spec du 8 septembre, sur un constat du prototype, et même sur une ligne de `docs/current/` restée en retard (liste plus bas).
 

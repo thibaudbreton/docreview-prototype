@@ -302,16 +302,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-09-24
 - **notes**: `.spill`. No leading dot since 2026-09-24 (it was a hardcoded 6px `currentColor` circle) — the colour carries the state. Backgrounds rely on untracked `--panel-3`/`--ok-soft`/`--warn-soft`.
 
-### Blocking Chip
-- **level**: atom
-- **file**: compliance.html
-- **variants**: none
-- **tokens**: --space-1, --space-2, --radius-sm, --text-xs, --warn
-- **built-from**: none
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.blocking-chip` ("⛔ Reassignment needed"). Background relies on untracked `--warn-soft`.
-
 ### Compliance Pill
 - **level**: atom
 - **file**: revue-documentaire.html
@@ -331,16 +321,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-01
 - **changed**: 2026-09-01
 - **notes**: `.type-chip`, floats above a Document Block. All four colors are **fully hardcoded hex pairs**, deliberately not `--warn`/`--ia`/`--human`/`--ok` (the paper background is always light regardless of app theme) — but this means the chip's palette silently can't be updated by changing the tokens. Same disconnect as compliance.html's `.vtag` inside Document Block there.
-
-### Deadline Chip
-- **level**: atom
-- **file**: accueil.html
-- **variants**: default, soon, urgent
-- **tokens**: --ia, --warn
-- **built-from**: none
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Text-only, no background/pill — the simplest of the status-signal atoms, inconsistent in form with Status Badge / Chip despite a similar purpose.
 
 ### Required Field Marker
 - **level**: atom
@@ -1945,16 +1925,6 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-10-09
 - **notes**: 2026-10-09 (DEC-122): the new-version item is built from what Documents & versions recorded for this tender (`getVersionChanges()`): document, version, gap and the answers Compliance reopened — it said "v2.2 · +2 ~1 −0 · SRM-00009" whatever was uploaded, on every tender. 2026-09-30: the Not compliant item reads Compliance's totals once available — "N Not compliant verdicts", and how many still lack a risk or a strategy — instead of "declared Compliant to the client". `.att-card` ("What needs you now"), 5 items conditionally gated by phase.
 
-### Project Health Panel
-- **level**: organism
-- **file**: dashboard-et-config.html
-- **variants**: none
-- **tokens**: none beyond its parts
-- **built-from**: Stat Tile / Card (Health Stat Tile variant)
-- **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.health-stats` grid, gap hardcoded 14px.
-
 ### Experts Summary Panel
 - **level**: organism
 - **file**: dashboard-et-config.html
@@ -2196,3 +2166,33 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-09-22
 - **changed**: 2026-09-23
 - **notes**: The three lobes and the dot are hardcoded `#fff` / `#1E3246` inside the SVG, not tokens. Height hardcoded 22px. The dot took `--brand-red` on 2026-09-22 and went back to white on 2026-09-23 at the user's request — brand red stays off the logo. The shell's favicon is a base64 copy of the same SVG.
+
+### Blocking Chip — removed 2026-09-14, no longer needed (recorded 2026-10-10): the status column's single pill split into Status and Compliance (`06efeea`), and "Reassignment needed" became an ordinary progress pill
+- **level**: atom
+- **file**: compliance.html
+- **variants**: none
+- **tokens**: --space-1, --space-2, --radius-sm, --text-xs, --warn
+- **built-from**: none
+- **added**: 2026-09-01
+- **changed**: 2026-09-01
+- **notes**: `.blocking-chip` ("⛔ Reassignment needed"). Background relies on untracked `--warn-soft`.
+
+### Deadline Chip — removed 2026-09-13, no longer needed (recorded 2026-10-10): tender cards dropped the days-left countdown (`2dd1fb4`); `deadlineChip()` left the code
+- **level**: atom
+- **file**: accueil.html
+- **variants**: default, soon, urgent
+- **tokens**: --ia, --warn
+- **built-from**: none
+- **added**: 2026-09-01
+- **changed**: 2026-09-01
+- **notes**: Text-only, no background/pill — the simplest of the status-signal atoms, inconsistent in form with Status Badge / Chip despite a similar purpose.
+
+### Project Health Panel — removed 2026-09-13, replaced by the Recent comments feed (recorded 2026-10-10): `f21b2b5` moved the requirement volume into the hero; `.health-stats` left the code
+- **level**: organism
+- **file**: dashboard-et-config.html
+- **variants**: none
+- **tokens**: none beyond its parts
+- **built-from**: Stat Tile / Card (Health Stat Tile variant)
+- **added**: 2026-09-01
+- **changed**: 2026-09-01
+- **notes**: `.health-stats` grid, gap hardcoded 14px.
