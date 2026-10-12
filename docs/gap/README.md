@@ -18,6 +18,7 @@
 | [SPECS.md](SPECS.md) | Les règles métier, domaine par domaine : ce qui est nouveau, modifié, retiré, encore ouvert, avec les décisions et les règles de `docs/current/`. Commence par la carte des documents : où est passé chaque fichier de spec du 8 septembre. | D'abord |
 | [DECISIONS.md](DECISIONS.md) | Les 125 décisions, chacune avec son effet par rapport au 8 septembre. On y trouve aussi le sort des anciennes décisions D1–D15, les 15 décisions qui renversent le plus et la liste complète des points ouverts. | En référence |
 | [CODE.md](CODE.md) | Le prototype : écrans, shell, build, données, fonctions ajoutées ou retirées, et ce qui ne relève que de la démo. | Pour reprendre un comportement ou retrouver où il est implémenté |
+| [INTERFACE.md](INTERFACE.md) | L'interface seule, écran par écran, jusqu'au 10 octobre : ce qui est apparu, a disparu ou a changé à l'écran (composants, libellés, comportements visibles, style), avec quelques captures avant / après. | Pour refaire le front |
 
 **Marques.**
 - **(R)** : règle métier, à appliquer dans le produit.
