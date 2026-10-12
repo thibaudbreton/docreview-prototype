@@ -20,3 +20,6 @@ artifact/
 
 # Deck screenshot tooling: holds the client-name substitution list and derived tender content
 deck/
+
+# UI gap screenshots (docs/gap/INTERFACE.md): local only, made by deck/ui-gap/
+docs/gap/captures/

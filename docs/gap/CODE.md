@@ -1,6 +1,6 @@
 # Écart de code — du 8 septembre au 9 octobre 2026
 
-Départ : `5e7ae6b` (`main` le 8 septembre 2026 à 14 h 14). Arrivée : `main` au 9 octobre 2026 (`b675936`). Synthèse et mode d'emploi : [README.md](README.md). Règles métier : [SPECS.md](SPECS.md).
+Départ : `5e7ae6b` (`main` le 8 septembre 2026 à 14 h 14). Arrivée : `main` au 9 octobre 2026 (`b675936`). Synthèse et mode d'emploi : [README.md](README.md). Règles métier : [SPECS.md](SPECS.md). L'interface seule, écran par écran : [INTERFACE.md](INTERFACE.md).
 
 Chaque point porte une marque : **(R)** règle métier, à appliquer dans le produit ; **(P)** comportement de prototype ou de démonstration, à ne pas reproduire ; **(X)** retiré. « (déduit) » signale une conclusion tirée de la lecture du code ou des documents, non vérifiée autrement. Références : `DEC-xxx` = décisions (`docs/current/OPEN-QUESTIONS.md`, détail dans [DECISIONS.md](DECISIONS.md)) ; `ALLOC-`, `CONF-`, `LIFE-`, `ACC-`, `QA-`, `AI-`, `PLAT-`, `JRN-`, `UX-`, `CUST-`, `KEY-`, `TYPE-` = règles de `docs/current/` ; les hash (`8c748a3`…) sont des commits (`git show <hash>`).
 
