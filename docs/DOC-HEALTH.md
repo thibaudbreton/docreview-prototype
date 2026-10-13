@@ -9,7 +9,31 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
+- Last run: 2026-10-11T22:00Z (covered commits after `14a287e`, i.e.
+  `e5ee6e3` through `f2568cb`, DEC-120 to DEC-125 plus the 10 Oct stories
+  rewrite). Earlier runs (2026-09-27 to 2026-10-07, PRs #27, #29-#33) are
+  still unmerged, so this file on `main` still carries the 2026-09-23 entry
+  below; expect a textual conflict with those PRs.
+- Findings this run:
+  - DEC-120 (`e5ee6e3`) and DEC-121 to DEC-125 (`8c748a3`) landed their
+    `docs/current` entries in the same commit as the code; DEC-025/DEC-012
+    (`3d779af`) updated ALLOCATION/ACCESS likewise. Consistent.
+  - `0776cb0` (an allocation needs at least one organisation again,
+    DEC-076, ALLOC-T32) restores behaviour ALLOC-020 and DEC-076 already
+    describe; the new stories note it as a prototype gap. Consistent.
+  - `325989b` rewrote the stories from scratch (`docs/stories/`, 239
+    stories) and archived the 17 Sept backlog to
+    `docs/archive/stories-2026-09-17/`. The new stories state "no Finalize
+    allocation" (DEC-084) and reference DEC-103/DEC-116. **#28 targets the
+    archived file and looks obsolete**; left open for the owner to close.
+  - No edits to specs this run; nothing ambiguous enough for a new issue.
+  - #12, #15, #20 (and PR #14) still open; no commit touches the files
+    they cite. Not re-flagged.
+- Baseline for the next run: commits after `f2568cb` (2026-10-11T22:00Z).
+
+## Previous run (kept for history)
+
+- Run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
   `ccf3bb4`). Most of that range is the previous run landing and a
   same-day reconciliation merge (`c07f072`, `db8fa39`, `ccf3bb4`) that
   touch only this file — already accounted for by the 2026-09-21 entry
