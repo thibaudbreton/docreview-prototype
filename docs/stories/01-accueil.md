@@ -1,13 +1,13 @@
 <!-- Généré depuis le backlog du 10 octobre 2026 ; voir README.md pour les conventions. -->
 # Accueil — My tenders (US-HOME)
 
-L'accueil est la porte d'entrée de SRM pour tout utilisateur, chef de projet ou contributeur. Il ouvre le parcours JRN-001 : retrouver ses tenders, voir où chacun en est, en reprendre un ou en créer un nouveau (voir US-NEW).
+L'accueil est la porte d'entrée de Smart Req pour tout utilisateur, chef de projet ou contributeur. Il ouvre le parcours JRN-001 : retrouver ses tenders, voir où chacun en est, en reprendre un ou en créer un nouveau (voir US-NEW).
 Termes : **ligne produit** = le type de tender fixé à la création (Turnkey, SIG, RSC) ; **ligne du tender** = les quatre stations Capture → Allocation → Compliance → Submission, dessinées en miniature sur chaque carte ; **rôle** = « Project manager » ou « Contributor », un seul par personne et par tender (DEC-030).
-La page actuelle (bandeau, carte « Pick up where you left off », bloc « How a tender travels through SRM », cartes de tender) n'a aucune spec écrite : les stories qui en viennent le disent par un point ouvert.
+La page actuelle (bandeau, carte « Pick up where you left off », bloc « How a tender travels through Smart Req », cartes de tender) n'a aucune spec écrite : les stories qui en viennent le disent par un point ouvert.
 
 ### US-HOME-01 — Être accueilli et orienté dès l'arrivée
-**Carte :** En tant que chef de projet ou contributeur, je veux voir dès l'arrivée à quoi sert SRM et quelle place j'occupe sur mes tenders, afin de savoir tout de suite par où commencer.
-**Conversation :** Le bandeau salue la personne par son prénom, dit en une phrase ce que fait SRM et résume ses rôles : combien de tenders elle dirige comme chef de projet, à combien elle contribue. Il porte les deux entrées principales : créer un tender et comprendre le parcours. Une personne qui n'a encore aucun tender doit savoir quoi faire au lieu de tomber sur une page vide. L'identité vient de l'annuaire (SSO), jamais d'une saisie.
+**Carte :** En tant que chef de projet ou contributeur, je veux voir dès l'arrivée à quoi sert Smart Req et quelle place j'occupe sur mes tenders, afin de savoir tout de suite par où commencer.
+**Conversation :** Le bandeau salue la personne par son prénom, dit en une phrase ce que fait Smart Req et résume ses rôles : combien de tenders elle dirige comme chef de projet, à combien elle contribue. Il porte les deux entrées principales : créer un tender et comprendre le parcours. Une personne qui n'a encore aucun tender doit savoir quoi faire au lieu de tomber sur une page vide. L'identité vient de l'annuaire (SSO), jamais d'une saisie.
 **Maquette :** Accueil — `accueil.html` (route `#home`), Home Hero.
 **Règles :** JRN-001, DEC-030, PLAT-002  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
@@ -15,7 +15,7 @@ La page actuelle (bandeau, carte « Pick up where you left off », bloc « How a
 2. Une ligne dit « You lead N tenders as project manager and contribute to M. », comptée sur les seuls tenders dont la personne est membre ; la fin « and contribute to M » disparaît quand M vaut 0.
 3. Sans aucun tender, cette ligne dit « No tender yet — create the first one, or ask a project manager to add you to theirs. »
 4. « ＋ New tender », dans le bandeau comme dans l'en-tête, ouvre l'assistant de création (voir US-NEW).
-5. « How SRM works » réaffiche le bloc « How a tender travels through SRM » s'il était masqué et y amène la page (voir [US-HOME-03](#us-home-03--comprendre-comment-un-tender-traverse-srm)).
+5. « How Smart Req works » réaffiche le bloc « How a tender travels through Smart Req » s'il était masqué et y amène la page (voir [US-HOME-03](#us-home-03--comprendre-comment-un-tender-traverse-smart-req)).
 Point ouvert : pas de règle écrite, comportement tiré de la maquette.
 Point ouvert : qui a le droit de créer un tender n'est pas fixé (JRN-001, « politique globale à préciser ») ; l'affichage de « ＋ New tender » à tous ne doit pas être lu comme une décision.
 
@@ -33,16 +33,16 @@ Point ouvert : qui a le droit de créer un tender n'est pas fixé (JRN-001, « p
 Écart maquette : le tender proposé est choisi par un marquage de démonstration, pas d'après l'usage de la personne.
 Point ouvert : pas de règle écrite, comportement tiré de la maquette ; la règle de choix du tender à reprendre (le dernier ouvert par la personne ?) n'est pas décidée. Le compte « still to answer in Compliance » relève de l'après-pilote (DEC-022).
 
-### US-HOME-03 — Comprendre comment un tender traverse SRM
-**Carte :** En tant que chef de projet ou contributeur qui découvre SRM, je veux voir d'un coup d'œil les étapes d'un tender et qui fait quoi, afin de comprendre où mon travail s'insère.
-**Conversation :** Le bloc « How a tender travels through SRM » présente les quatre stations, une phrase sur chacune et qui la porte, puis les écrans toujours ouverts à côté. Il s'adresse à qui découvre l'outil : une fois lu, on le masque, et on peut le rouvrir. Ses textes suivent le vocabulaire décidé (Allocation et Compliance, contributeur, système, organisation (OBS), stratégie d'écart, risque).
+### US-HOME-03 — Comprendre comment un tender traverse Smart Req
+**Carte :** En tant que chef de projet ou contributeur qui découvre Smart Req, je veux voir d'un coup d'œil les étapes d'un tender et qui fait quoi, afin de comprendre où mon travail s'insère.
+**Conversation :** Le bloc « How a tender travels through Smart Req » présente les quatre stations, une phrase sur chacune et qui la porte, puis les écrans toujours ouverts à côté. Il s'adresse à qui découvre l'outil : une fois lu, on le masque, et on peut le rouvrir. Ses textes suivent le vocabulaire décidé (Allocation et Compliance, contributeur, système, organisation (OBS), stratégie d'écart, risque).
 **Maquette :** Accueil — `accueil.html` (route `#home`), Onboarding Line, Home Section Head.
 **Règles :** JRN-001, DEC-029, DEC-030  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Le bloc affiche, dans l'ordre, Capture, Allocation, Compliance et Submission, chacune avec une phrase et le rôle qui la porte (« Project manager », « Project manager, then each system », « Contributors », « Project manager »).
 2. Sous les stations, une ligne cite les écrans toujours ouverts : « Documents & versions · Q&A with the client · Risks · Team casting ».
 3. « Got it — hide » masque le bloc ; il reste masqué pour cette personne lors de ses visites suivantes, sur tout poste.
-4. « How SRM works » le réaffiche et fait défiler la page jusqu'à lui.
+4. « How Smart Req works » le réaffiche et fait défiler la page jusqu'à lui.
 5. Masquer le bloc chez une personne ne le masque pas chez les autres.
 Écart maquette : l'état masqué n'est gardé qu'en mémoire et revient à chaque réinitialisation.
 Point ouvert : pas de règle écrite, comportement tiré de la maquette ; la conservation de l'état masqué comme préférence personnelle est une déduction.
@@ -90,5 +90,5 @@ Point ouvert : pas de règle écrite, comportement tiré de la maquette ; le pas
 Point ouvert : ouverture d'un tender en traitement depuis l'accueil (« Still processing — it will open when the models finish » dans la maquette) — reprise non décidée (JRN-001 → OPEN-05).
 
 ## Couverture
-- Règles couvertes : JRN-001 → [US-HOME-01](#us-home-01--être-accueilli-et-orienté-dès-larrivée), [US-HOME-02](#us-home-02--reprendre-le-tender-en-cours), [US-HOME-03](#us-home-03--comprendre-comment-un-tender-traverse-srm), [US-HOME-04](#us-home-04--voir-la-liste-de-mes-tenders), [US-HOME-05](#us-home-05--lire-lavancement-dun-tender-sur-sa-ligne), [US-HOME-06](#us-home-06--ouvrir-un-tender-depuis-laccueil) (la partie « création en quatre étapes » : US-NEW) ; TYPE-T06 → [US-HOME-04](#us-home-04--voir-la-liste-de-mes-tenders) (le type de chaque tender est affiché ; la règle de recette elle-même s'applique par le champ « Variantes » de chaque story).
+- Règles couvertes : JRN-001 → [US-HOME-01](#us-home-01--être-accueilli-et-orienté-dès-larrivée), [US-HOME-02](#us-home-02--reprendre-le-tender-en-cours), [US-HOME-03](#us-home-03--comprendre-comment-un-tender-traverse-smart-req), [US-HOME-04](#us-home-04--voir-la-liste-de-mes-tenders), [US-HOME-05](#us-home-05--lire-lavancement-dun-tender-sur-sa-ligne), [US-HOME-06](#us-home-06--ouvrir-un-tender-depuis-laccueil) (la partie « création en quatre étapes » : US-NEW) ; TYPE-T06 → [US-HOME-04](#us-home-04--voir-la-liste-de-mes-tenders) (le type de chaque tender est affiché ; la règle de recette elle-même s'applique par le champ « Variantes » de chaque story).
 - Non couvertes, avec la raison : reprise d'un tender en traitement depuis l'accueil — point ouvert (JRN-001 → OPEN-05) ; DEC-115 (police de la marque) — pas de story, charte graphique (US-X).

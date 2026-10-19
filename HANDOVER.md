@@ -1,6 +1,6 @@
 > **Référence documentaire mise à jour le 8 septembre 2026 : [docs/current/README.md](docs/current/README.md).** Le texte historique ci-dessous reste conservé ; ses mentions de six écrans, Expert Space et Follow-up séparés ne décrivent plus l’assemblage actuel à huit sources (et `data.js` vient désormais d’`import_capture_doors.py`). Les divergences métier sont recensées dans le registre d’arbitrages.
 
-# Smart Requirement Manager / SRM (iSenS) — Prototype Handover
+# Smart Req (iSenS) — Prototype Handover
 
 > Paste this into the new environment (e.g. as `HANDOVER.md` or the start of a `CLAUDE.md`). It is the single source of truth for picking the project back up.
 
@@ -8,7 +8,7 @@
 
 ## 1. What this is and why it exists
 
-**Smart Requirement Manager** ("**SRM**" for short — working name for the **iSenS** requirements-review experience) is an interactive, dark-UI web prototype of an AI-assisted platform for processing **rail-industry tender / bid documents** (AOs). A tender is captured, its requirements are segmented and characterised by AI, then a human reviews, assigns, and answers them.
+**Smart Req** (called "Smart Requirement Manager" / "SRM" until 2026-10-19 — working name for the **iSenS** requirements-review experience) is an interactive, dark-UI web prototype of an AI-assisted platform for processing **rail-industry tender / bid documents** (AOs). A tender is captured, its requirements are segmented and characterised by AI, then a human reviews, assigns, and answers them.
 
 **Purpose of the prototype:**
 - Test a **restructured interface** for the requirements workflow with real users (moderated 1-on-1 sessions).

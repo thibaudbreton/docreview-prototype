@@ -389,8 +389,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-4, --line
 - **built-from**: none
 - **added**: 2026-10-09
-- **changed**: 2026-10-09
-- **notes**: `.brand-logo`, first thing in every header: the Alstom logo, a 1px `--line` rule, then the product's name "SRM" in text (the App Header's `.logo`) — the company's logo is required; the SRM mark beside it was one symbol too many. The files supplied, cropped to the ink and reduced (PNG, 72px high, ~3 KB each), inlined as data URIs in each screen — colours are the logo's own, not tokens. Height 15px (cap line of "SRM") and box 20px hardcoded. Also in the published build (user's choice, 2026-10-09).
+- **changed**: 2026-10-19
+- **notes**: `.brand-logo`, first thing in every header: the Alstom logo, a 1px `--line` rule, then the product's name "Smart Req" in text (the App Header's `.logo`) — the company's logo is required; the product mark beside it was one symbol too many. The files supplied, cropped to the ink and reduced (PNG, 72px high, ~3 KB each), inlined as data URIs in each screen — colours are the logo's own, not tokens. Height 15px (cap line of the name) and box 20px hardcoded. Also in the published build (user's choice, 2026-10-09). 2026-10-19: the product is renamed "Smart Req" (it was "SRM", "Smart Requirement Manager") — header text, page titles and home page.
 
 ### Page Title
 - **level**: atom
@@ -1512,8 +1512,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-4, --space-5, --panel, --line
 - **built-from**: Brand Logo, Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
-- **changed**: 2026-10-09
-- **notes**: 2026-10-09: opens on the Brand Logo, a rule, then "SRM" in text — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
+- **changed**: 2026-10-19
+- **notes**: 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req" in text (renamed from "SRM" on 2026-10-19) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
 - **level**: organism
@@ -1772,8 +1772,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --panel, --accent-soft, --accent, --brand-red, --line, --radius-lg, --space-2, --space-3, --space-5, --space-8, --text-xs, --text-sm, --text-lg, --text-2, --text-3, --font-heading
 - **built-from**: Page Title, Primary Button, Ghost Button, Continue Card
 - **added**: 2026-10-06
-- **changed**: 2026-10-06
-- **notes**: 2026-10-06 (colour pass): the kicker and the first name in the second brand blue; the hero fades from `--panel` to the pale blue; the map's three lines in navy, the second blue and the brand red, more present. The page above the hero takes a pale-blue wash (`.scroll` background, `local`). Uses the untracked `--brand-blue`, `--brand-blue-soft`, `--brand-slate` (accueil.html only, both themes, not on the tracked scale). The home page's front door: a kicker, a time-of-day greeting with the user's first name (the Page Title, at a hardcoded 32px — above the type scale), what SRM is for in one sentence, the user's roles counted from their tenders, New tender / How SRM works, and the Continue Card. Background: a hardcoded 115° gradient from `--panel` to `--accent-soft`, and `.hero-map`, an inline SVG metro map in the brand's colours (navy and red lines, 45° bends, an interchange) — decorative only, the red never on anything clickable (DEC-063). Hardcoded line widths, opacities and positions in the SVG; below a 1220px viewport there is no room beside the Continue card: the card moves under the greeting and the map (440px) fills the free corner beside it, clear of the text.
+- **changed**: 2026-10-19
+- **notes**: 2026-10-06 (colour pass): the kicker and the first name in the second brand blue; the hero fades from `--panel` to the pale blue; the map's three lines in navy, the second blue and the brand red, more present. The page above the hero takes a pale-blue wash (`.scroll` background, `local`). Uses the untracked `--brand-blue`, `--brand-blue-soft`, `--brand-slate` (accueil.html only, both themes, not on the tracked scale). The home page's front door: a kicker, a time-of-day greeting with the user's first name (the Page Title, at a hardcoded 32px — above the type scale), what Smart Req is for in one sentence, the user's roles counted from their tenders, New tender / How Smart Req works, and the Continue Card. Background: a hardcoded 115° gradient from `--panel` to `--accent-soft`, and `.hero-map`, an inline SVG metro map in the brand's colours (navy and red lines, 45° bends, an interchange) — decorative only, the red never on anything clickable (DEC-063). Hardcoded line widths, opacities and positions in the SVG; below a 1220px viewport there is no room beside the Continue card: the card moves under the greeting and the map (440px) fills the free corner beside it, clear of the text. 2026-10-19: kicker "Smart Req" (was "Smart Requirement Manager"), "How Smart Req works".
 
 ### Continue Card
 - **level**: molecule
@@ -1788,12 +1788,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Onboarding Line
 - **level**: organism
 - **file**: accueil.html
-- **variants**: shown / dismissed ("Got it — hide"; "How SRM works" in the hero reopens it)
+- **variants**: shown / dismissed ("Got it — hide"; "How Smart Req works" in the hero reopens it)
 - **tokens**: --bg, --accent, --accent-soft, --radius-lg, --radius-pill, --space-1 to --space-6, --text-xs, --text-sm, --text-lg, --text-2, --text-3, --font-heading
 - **built-from**: Home Section Head
 - **added**: 2026-10-06
-- **changed**: 2026-10-06
-- **notes**: 2026-10-06 (colour pass): the line runs from the second brand blue to navy, the station dots step along it (`color-mix`), the way a tender moves on; the who-tags take the role colours — project manager navy, contributors the second blue — the same code as the Role Chip. 2026-10-06 (later): no frame any more — the section sits on the page, the stations ringed in `--bg`; the who-tags take `--radius-md` and balance their wrap, so a two-line tag on a narrow window stays a block, not a pill. "How a tender travels through SRM": the four stations of the Tender Line, numbered, each with one sentence and who does it, then the always-open screens. Dismissal is kept in the shell (`getHomeIntroHidden` / `setHomeIntroHidden`) so it survives navigation and a demo reset brings it back. Hardcoded 30px stations and 5px line.
+- **changed**: 2026-10-19
+- **notes**: 2026-10-06 (colour pass): the line runs from the second brand blue to navy, the station dots step along it (`color-mix`), the way a tender moves on; the who-tags take the role colours — project manager navy, contributors the second blue — the same code as the Role Chip. 2026-10-06 (later): no frame any more — the section sits on the page, the stations ringed in `--bg`; the who-tags take `--radius-md` and balance their wrap, so a two-line tag on a narrow window stays a block, not a pill. "How a tender travels through Smart Req": the four stations of the Tender Line, numbered, each with one sentence and who does it, then the always-open screens. Dismissal is kept in the shell (`getHomeIntroHidden` / `setHomeIntroHidden`) so it survives navigation and a demo reset brings it back. Hardcoded 30px stations and 5px line.
 
 ### Home Section Head
 - **level**: atom

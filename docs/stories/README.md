@@ -1,4 +1,4 @@
-# User stories de SRM
+# User stories de Smart Req
 
 Backlog complet du produit, réécrit le 10 octobre 2026 à partir des décisions DEC-001 à DEC-125 et des règles de `docs/current/`, avec la maquette comme référence visuelle (`main` du 10 octobre). Il remplace le backlog extrait de la maquette le 17 septembre, archivé dans [docs/archive/stories-2026-09-17/](../archive/stories-2026-09-17/STORIES-extracted-from-prototype.md).
 
@@ -55,7 +55,7 @@ Les stories marquées « Pilote 1 » mais dont une partie (Compliance) vient apr
 |---|---|---|---|
 | [US-HOME-01](01-accueil.md#us-home-01--être-accueilli-et-orienté-dès-larrivée) | Être accueilli et orienté dès l'arrivée | Pilote 1 (à confirmer) | Toutes |
 | [US-HOME-02](01-accueil.md#us-home-02--reprendre-le-tender-en-cours) | Reprendre le tender en cours | Pilote 1 (à confirmer) | Toutes |
-| [US-HOME-03](01-accueil.md#us-home-03--comprendre-comment-un-tender-traverse-srm) | Comprendre comment un tender traverse SRM | Pilote 1 (à confirmer) | Toutes |
+| [US-HOME-03](01-accueil.md#us-home-03--comprendre-comment-un-tender-traverse-smart-req) | Comprendre comment un tender traverse Smart Req | Pilote 1 (à confirmer) | Toutes |
 | [US-HOME-04](01-accueil.md#us-home-04--voir-la-liste-de-mes-tenders) | Voir la liste de mes tenders | Pilote 1 | Toutes |
 | [US-HOME-05](01-accueil.md#us-home-05--lire-lavancement-dun-tender-sur-sa-ligne) | Lire l'avancement d'un tender sur sa ligne | Pilote 1 (à confirmer) | Toutes |
 | [US-HOME-06](01-accueil.md#us-home-06--ouvrir-un-tender-depuis-laccueil) | Ouvrir un tender depuis l'accueil | Pilote 1 | Toutes |
