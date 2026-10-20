@@ -389,8 +389,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-4, --line
 - **built-from**: none
 - **added**: 2026-10-09
-- **changed**: 2026-10-19
-- **notes**: `.brand-logo`, first thing in every header: the Alstom logo, a 1px `--line` rule, then the product's name "Smart Req" in text (the App Header's `.logo`) — the company's logo is required; the product mark beside it was one symbol too many. The files supplied, cropped to the ink and reduced (PNG, 72px high, ~3 KB each), inlined as data URIs in each screen — colours are the logo's own, not tokens. Height 15px (cap line of the name) and box 20px hardcoded. Also in the published build (user's choice, 2026-10-09). 2026-10-19: the product is renamed "Smart Req" (it was "SRM", "Smart Requirement Manager") — header text, page titles and home page.
+- **changed**: 2026-10-20
+- **notes**: `.brand-logo`, first thing in every header: the Alstom logo, a 1px `--line` rule, then the product's name "Smart Req." in text (the App Header's `.logo`) — the company's logo is required; the product mark beside it was one symbol too many. The files supplied, cropped to the ink and reduced (PNG, 72px high, ~3 KB each), inlined as data URIs in each screen — colours are the logo's own, not tokens. Height 15px (cap line of the name) and box 20px hardcoded. Also in the published build (user's choice, 2026-10-09). 2026-10-19: the product is renamed "Smart Req" (it was "SRM", "Smart Requirement Manager") — header text, page titles and home page. 2026-10-20: the header writes "Smart Req." with a full stop; page titles and the home page keep "Smart Req".
 
 ### Page Title
 - **level**: atom
@@ -1512,8 +1512,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-4, --space-5, --panel, --line
 - **built-from**: Brand Logo, Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
-- **changed**: 2026-10-19
-- **notes**: 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req" in text (renamed from "SRM" on 2026-10-19) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
+- **changed**: 2026-10-20
+- **notes**: 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req." in text (renamed from "SRM" on 2026-10-19; the header writes it with a full stop, 2026-10-20) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
 - **level**: organism
