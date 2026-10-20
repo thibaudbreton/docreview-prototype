@@ -1,4 +1,4 @@
-# Glossaire SRM
+# Glossaire Smart Req
 
 La référence actuelle est le [modèle métier](current/DOMAIN.md), complété par les [décisions utilisateur](current/OPEN-QUESTIONS.md).
 

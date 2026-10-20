@@ -8,7 +8,7 @@ DEC-021 : même fonctionnement Q&A pour Turnkey et SIG. Fonction décrite pour l
 |---|---|---|
 | QA-001 | Une question est identifiée, attribuée à son auteur et liée aux exigences/affectations concernées. | DOC/OBS simulé |
 | QA-002 | ~~Le PM prépare le lot, fusionne les doublons ou exclut une question de l'export sans la supprimer du registre.~~ **Remplacée par DEC-116** : plus de lot, de fusion ni d'exclusion ; chaque question a un statut À envoyer / Envoyée / Répondue, et le PM la **marque « envoyée » à la main**, une par une ou par sélection. | DOC/OBS |
-| QA-003 | L'export prévu est Excel avec identifiant de l'exigence. L'envoi client est réalisé hors SRM. Depuis DEC-116, l'export ne marque rien : c'est le PM qui marque « envoyée ». | DOC ; export simulé |
+| QA-003 | L'export prévu est Excel avec identifiant de l'exigence. L'envoi client est réalisé hors Smart Req. Depuis DEC-116, l'export ne marque rien : c'est le PM qui marque « envoyée ». | DOC ; export simulé |
 | QA-004 | La cible actuelle décrit un seul cycle par tender ; les lots multiples ne sont pas implicitement acquis. | DOC |
 | QA-005 | Importer fichier ou contenu, extraire les paires Q/R et proposer des liens avec questions propres ou exigences pour les réponses à d'autres soumissionnaires. | DOC ; extraction/matching simulés |
 | QA-006 | Réponse validée à notre question : débloquer le travail associé sans inventer une conformité. Une réponse à un concurrent ajoute du contexte sans changement d'état. | DOC |
