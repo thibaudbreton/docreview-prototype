@@ -178,7 +178,7 @@ Point ouvert : formules — dénominateur, revue effective, corrections répét�
 2. Le canal choisi est enregistré pour le tender.
 3. L'export des questions de Q&A prend la forme du canal choisi.
 4. Aucun réglage « AI duplicate detection » ni « Internal review before sending » n'est proposé.
-5. Aucun canal ne déclenche un envoi au client depuis SRM.
+5. Aucun canal ne déclenche un envoi au client depuis Smart Req.
 Écart maquette : le réglage n'agit pas sur l'écran Q&A.
 Point ouvert : gabarit attendu pour « Buyer portal » et « Standard form », non fourni.
 
