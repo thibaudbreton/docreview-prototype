@@ -1,6 +1,6 @@
-# Claude Design prompt — SRM roadmap slide
+# Claude Design prompt — Smart Req roadmap slide
 
-> Paste into Claude Design. Goal: one polished pitch-deck slide (16:9) showing the SRM quarterly roadmap. Aim for a high-end, editorial roadmap — not a basic kanban of cards. Editable on the canvas.
+> Paste into Claude Design. Goal: one polished pitch-deck slide (16:9) showing the Smart Req quarterly roadmap. Aim for a high-end, editorial roadmap — not a basic kanban of cards. Editable on the canvas.
 
 ---
 
@@ -14,7 +14,7 @@ A **horizontal swimlane roadmap** (gantt-style). Time flows left → right acros
 - Flat and modern: no gradients-as-decoration, no drop shadows, no neon. Clean surfaces, thin hairlines, strong type hierarchy.
 - Sentence case everywhere. Two font weights only (regular + medium).
 - One accent colour per workstream; everything else neutral. The colour should read at a glance.
-- Title: "SRM roadmap" with a light subtitle "3-month batches".
+- Title: "Smart Req roadmap" with a light subtitle "3-month batches".
 
 ## Columns (time axis, left → right)
 

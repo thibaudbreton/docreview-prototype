@@ -1,10 +1,10 @@
-# Nightly Ticket Runner — SRM prototype
+# Nightly Ticket Runner — Smart Req prototype
 
 > Paste this as the routine's prompt at claude.ai/code/routines (or via `/schedule` in the CLI). Attach a **Scheduled** trigger for overnight hours. Select the SRM-PROTO repository. This prompt is meant to run fully unattended — no one will be there to clarify or course-correct, so follow it literally.
 
 ## Context
 
-This repository is the SRM (Smart Requirement Management) prototype. Before doing anything, read:
+This repository is the Smart Req prototype (called SRM, Smart Requirement Manager, until 2026-10-19). Before doing anything, read:
 - `HANDOVER.md` — project context, architecture, conventions
 - Any `SPEC-*.md` files relevant to the ticket you pick up
 - **The ticket queue file** — the Markdown file whose top-level heading is `# Tickets — Continuity & consistency fixes`. Locate it by that heading rather than by filename, so a rename doesn't break this routine.

@@ -27,7 +27,7 @@ Lignes de `docs/current/` ou de décisions qui se contredisent ; la décision la
 - [US-HOME-01](01-accueil.md#us-home-01--être-accueilli-et-orienté-dès-larrivée) — pas de règle écrite, comportement tiré de la maquette.
 - [US-HOME-01](01-accueil.md#us-home-01--être-accueilli-et-orienté-dès-larrivée) — qui a le droit de créer un tender n'est pas fixé (JRN-001, « politique globale à préciser ») ; l'affichage de « ＋ New tender » à tous ne doit pas être lu comme une décision.
 - [US-HOME-02](01-accueil.md#us-home-02--reprendre-le-tender-en-cours) — pas de règle écrite, comportement tiré de la maquette ; la règle de choix du tender à reprendre (le dernier ouvert par la personne ?) n'est pas décidée. Le compte « still to answer in Compliance » relève de l'après-pilote (DEC-022).
-- [US-HOME-03](01-accueil.md#us-home-03--comprendre-comment-un-tender-traverse-srm) — pas de règle écrite, comportement tiré de la maquette ; la conservation de l'état masqué comme préférence personnelle est une déduction.
+- [US-HOME-03](01-accueil.md#us-home-03--comprendre-comment-un-tender-traverse-smart-req) — pas de règle écrite, comportement tiré de la maquette ; la conservation de l'état masqué comme préférence personnelle est une déduction.
 - [US-HOME-04](01-accueil.md#us-home-04--voir-la-liste-de-mes-tenders) — pas de règle écrite pour la carte, comportement tiré de la maquette ; ce qui fait passer un tender à « Submitted » n'est décrit nulle part.
 - [US-HOME-05](01-accueil.md#us-home-05--lire-lavancement-dun-tender-sur-sa-ligne) — pas de règle écrite, comportement tiré de la maquette ; le passage à Submission n'est pas spécifié ; le compteur Compliance relève de l'après-pilote (DEC-022).
 - [US-HOME-06](01-accueil.md#us-home-06--ouvrir-un-tender-depuis-laccueil) — ouverture d'un tender en traitement depuis l'accueil (« Still processing — it will open when the models finish » dans la maquette) — reprise non décidée (JRN-001 → OPEN-05).
@@ -213,7 +213,7 @@ La maquette simule ou diffère ; à corriger dans la maquette ou à ignorer, jam
 ### Accueil (My tenders)
 
 - [US-HOME-02](01-accueil.md#us-home-02--reprendre-le-tender-en-cours) — le tender proposé est choisi par un marquage de démonstration, pas d'après l'usage de la personne.
-- [US-HOME-03](01-accueil.md#us-home-03--comprendre-comment-un-tender-traverse-srm) — l'état masqué n'est gardé qu'en mémoire et revient à chaque réinitialisation.
+- [US-HOME-03](01-accueil.md#us-home-03--comprendre-comment-un-tender-traverse-smart-req) — l'état masqué n'est gardé qu'en mémoire et revient à chaque réinitialisation.
 - [US-HOME-04](01-accueil.md#us-home-04--voir-la-liste-de-mes-tenders) — la liste montre des tenders de démonstration non ouvrables (« Demo project — list & status only ») et déduit le rôle d'un texte libre ; rien de cela n'existe dans le produit.
 - [US-HOME-05](01-accueil.md#us-home-05--lire-lavancement-dun-tender-sur-sa-ligne) — les compteurs de démonstration ne concordent pas avec ceux du tableau de bord ; dans le produit, ce sont les mêmes données.
 - [US-HOME-06](01-accueil.md#us-home-06--ouvrir-un-tender-depuis-laccueil) — l'ouverture des tenders de démonstration non construits est bloquée par un message ; sans objet dans le produit.

@@ -49,7 +49,7 @@ Point ouvert : mentions « @ » (le champ les annonce, aucune règle) ; droit de
 **Maquette :** non maquetté (identité fournie par la démo ; avatar de l'en-tête — Header Avatar).
 **Règles :** PLAT-002, ACC-007, ACC-T09, DEC-012, JRN-001  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
-1. L'accès à SRM passe par l'authentification d'entreprise (SSO) ; aucun mot de passe propre à SRM n'est demandé.
+1. L'accès à Smart Req passe par l'authentification d'entreprise (SSO) ; aucun mot de passe propre à Smart Req n'est demandé.
 2. L'avatar de l'en-tête affiche l'identité fournie par l'annuaire (nom, initiales).
 3. « My tenders » ne liste que les tenders dont l'utilisateur est membre.
 4. Ouvrir par son adresse un tender dont on n'est pas membre affiche un refus d'accès, sans aucun contenu ni compteur de ce tender.
@@ -133,7 +133,7 @@ Point ouvert : formats exacts, correspondance des attributs DOORS et boucle alle
 2. Chaque notification contient un lien qui ouvre l'écran concerné du tender.
 3. Un contributeur n'est notifié que du travail de son système ; la personne relancée pour une affectation est la personne de son OBS.
 4. Aucune notification ne propose à une personne une action qui lui est adressée à elle-même.
-5. SRM n'envoie jamais rien au client.
+5. Smart Req n'envoie jamais rien au client.
 Point ouvert : déclencheurs, destinataires, regroupement, fréquence et relances (PLAT-005, OPEN-11) ; lien avec « Maximum reminder cadence » ([US-CFG-05](15-configuration.md#us-cfg-05--régler-le-seuil-de-retard-et-la-cadence-des-relances)) ; la relance de Compliance (DEC-125) envoie-t-elle un e-mail.
 
 ### US-X-11 — Travailler sur 100 000 lignes à dix en même temps

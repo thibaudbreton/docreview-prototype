@@ -8,6 +8,8 @@
 - l'alignement sur DEC-025 et DEC-012 (`3d779af`) ;
 - le retour de la règle « au moins une organisation » (`0776cb0`).
 
+> **Nom de l'outil.** Depuis le 19 octobre 2026, l'outil s'appelle « Smart Req ». Ce document décrit l'état au 10 octobre : partout où il cite « SRM » ou « Smart Requirement Manager » comme nom de l'outil (en-tête, titres de page, « How SRM works »…), lire « Smart Req ». Les identifiants d'exigence (SRM-00001…) ne changent pas.
+
 > **Vocabulaire pas encore figé.** Les termes métier (système, sous-système, organisation (OBS), allocation, affectation…) sont en cours de validation. Les libellés cités ici sont ceux de la maquette au 10 octobre et peuvent encore changer : ne pas les graver en dur.
 
 **Ce qui est dedans.** Quatre couches, pour chaque écran :

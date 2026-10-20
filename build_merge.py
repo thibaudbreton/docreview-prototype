@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Merge the 8 Smart Requirement Manager (SRM) source screens into the single-file docreview-app.html deliverable.
+"""Merge the 8 Smart Req source screens into the single-file docreview-app.html deliverable.
 
 Usage: python3 build_merge.py
 Reads the 8 source files below, base64-encodes each (UTF-8), and writes docreview-app.html
@@ -109,7 +109,7 @@ HEADER = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Requirement Manager — STB-2026 · Full app</title>
+<title>Smart Req — STB-2026 · Full app</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0ibm9uZSI+PHJlY3QgaWQ9InRpbGUiIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSIjMEYxQjJEIi8+PGcgaWQ9ImxpbmVzIiBmaWxsPSIjOEM5RkJCIj48cGF0aCBpZD0icmliYm9uLTEiIGQ9Ik0xMDcuMjYgNDAxLjA0TDEwNy4yNiAxMTEuMTdBMjkwLjA4IDI5MC4wOCAwIDAgMSAxNjguNTcgMTE1LjM0TDEzMS4zNSAzNDcuNjhBMTUwLjIyIDE1MC4yMiAwIDAgMCAxMjkuNDYgMzcxLjQ0TDEyOS40NiA0MDEuMDRaIi8+PHBhdGggaWQ9InJpYmJvbi0yIiBkPSJNMTM5LjgyIDQwMS4wNEwxMzkuODIgMzcxLjQ0QTEzOS44NiAxMzkuODYgMCAwIDEgMTQ4LjQ0IDMyMy4wOUwyMTkuODQgMTI5LjI5QTI5MC4wOCAyOTAuMDggMCAwIDEgMjY3Ljc3IDE1Mi40TDE3Ny4xIDMxMy44MUExMTcuNjYgMTE3LjY2IDAgMCAwIDE2Mi4wMiAzNzEuNDRMMTYyLjAyIDQwMS4wNFoiLz48cGF0aCBpZD0icmliYm9uLTQiIGQ9Ik0yMDQuOTQgNDAxLjA0TDIwNC45NCAzNzEuNDRBNzQuNzQgNzQuNzQgMCAwIDEgMjQzLjA3IDMwNi4yOEwzNjAuMDIgMjQwLjU4QTI5MC4wOCAyOTAuMDggMCAwIDEgMzgxLjA5IDI3OC4wOUwyNjEuNTIgMzIyLjE0QTUyLjU0IDUyLjU0IDAgMCAwIDIyNy4xNCAzNzEuNDRMMjI3LjE0IDQwMS4wNFoiLz48cGF0aCBpZD0icmliYm9uLTUiIGQ9Ik0yMzcuNSA0MDEuMDRMMjM3LjUgMzcxLjQ0QTQyLjE4IDQyLjE4IDAgMCAxIDI3My4wMSAzMjkuNzlMMzkzLjkyIDMxMC40MkEyOTAuMDggMjkwLjA4IDAgMCAxIDQwNC4xNyAzNTEuNDZMMjc5LjY4IDM1MS40NkExOS45OCAxOS45OCAwIDAgMCAyNTkuNyAzNzEuNDRMMjU5LjcgNDAxLjA0WiIvPjwvZz48ZyBpZD0iYWkiIGZpbGw9IiNFODVENTciPjxwYXRoIGlkPSJhaS1yaWJib24iIGQ9Ik0xNzIuMzggNDAxLjA0TDE3Mi4zOCAzNzEuNDRBMTA3LjMgMTA3LjMgMCAwIDEgMTk4LjAzIDMwMS44M0wzNDcuODcgMTI2LjA3QTM1OC4xNiAzNTguMTYgMCAwIDEgMzg4Ljk4IDE2Ni40M0wyMjQuNDcgMzA2LjY4QTg1LjEgODUuMSAwIDAgMCAxOTQuNTggMzcxLjQ0TDE5NC41OCA0MDEuMDRaIi8+PC9nPjwvc3ZnPg==">
 <style>
 html,body{margin:0;height:100%;background:#0d0f14}
@@ -117,7 +117,7 @@ html,body{margin:0;height:100%;background:#0d0f14}
 </style>
 </head>
 <body>
-<iframe id="frame" title="Smart Requirement Manager"></iframe>
+<iframe id="frame" title="Smart Req"></iframe>
 <script>
 const BLOBS = {
 """
@@ -198,7 +198,7 @@ window.getCurrentProject = ()=>PROJECTS.find(p=>p.id===currentProjectId)||null;
 // screens and the user model now assume an identity handed to them, not typed.
 const CURRENT_USER = {id:"admin", name:"Thibaud Breton", title:"Bid Director", email:"thibaud.breton@company.com", init:"TB"};
 window.getCurrentUser = ()=>CURRENT_USER;
-// the home page's "How a tender travels through SRM" — dismissed once read; a demo reset brings it back
+// the home page's "How a tender travels through Smart Req" — dismissed once read; a demo reset brings it back
 let homeIntroHidden = false;
 window.getHomeIntroHidden = ()=>homeIntroHidden;
 window.setHomeIntroHidden = (v)=>{ homeIntroHidden = !!v; };
@@ -769,7 +769,7 @@ def main():
     inner = body.split("<body>", 1)[1].rsplit("</body>", 1)[0]
     Path(ARTIFACT_OUTPUT).parent.mkdir(exist_ok=True)
     with open(ARTIFACT_OUTPUT, "w", encoding="utf-8") as f:
-        f.write("<title>SRM Prototype</title>\n" + style + inner)
+        f.write("<title>Smart Req Prototype</title>\n" + style + inner)
     print(f"Wrote {ARTIFACT_OUTPUT} for publishing on claude.ai.")
 
 if __name__ == "__main__":

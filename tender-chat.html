@@ -161,7 +161,7 @@
        return (shell("getRisks")||[]).map(x=>({id:x.id, justification:riskText(x), created_by:x.createdBy, requirements:docs.filter(([,d])=>(d.risks||[]).includes(x.id)).map(([k])=>k.split("#")[0])})); }},
   ];
 
-  const RULES=`You are the bid team's assistant for a tender being answered in Smart Requirement Manager. The tender's documents were captured into blocks (requirements, information paragraphs, headings): ${CAP.docs.length} documents, ${ROWS.length} blocks. You read them ONLY through the tools — you have no other copy of the tender.
+  const RULES=`You are the bid team's assistant for a tender being answered in Smart Req. The tender's documents were captured into blocks (requirements, information paragraphs, headings): ${CAP.docs.length} documents, ${ROWS.length} blocks. You read them ONLY through the tools — you have no other copy of the tender.
 How to work:
 - Search before answering, with English terms (the tender is in English) and synonyms; read the blocks you quote with get_blocks; use list_documents for broad questions and count_blocks for "how many".
 - For what the team decided (gap strategy, risks, corrections, who did what), use requirement_record and list_risks.

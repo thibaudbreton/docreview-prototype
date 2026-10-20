@@ -6,6 +6,8 @@
 
 **Arrivée.** `main` au 9 octobre 2026 (`b675936`), plus l'alignement de la maquette sur DEC-025 et DEC-012 fait le même jour, après l'analyse (`3d779af`).
 
+**Nom de l'outil.** Depuis le 19 octobre 2026, l'outil s'appelle « Smart Req » (en-tête, titres de page, accueil). Ce dossier décrit l'état au 10 octobre : ses mentions de « SRM » ou de « Smart Requirement Manager » comme nom de l'outil se lisent « Smart Req ». Les identifiants d'exigence (SRM-00001…) ne changent pas.
+
 **Ampleur.**
 - 163 commits, dont 148 hors fusions.
 - 82 fichiers touchés, soit +16 071 / −5 929 lignes, sans compter `index.html` et `docreview-app.html`, qui sont des sorties du build.
