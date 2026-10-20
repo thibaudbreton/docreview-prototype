@@ -235,12 +235,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Block Badge
 - **level**: atom
 - **file**: revue-documentaire.html
-- **variants**: default (comment count), branch count, blocking, container count ("N requirements captured", on an image block)
+- **variants**: default (comment count), blocking, container count ("N requirements captured", on an image block)
 - **tokens**: --font-ui, --text-xs, --text-2, --space-1, --space-2, --radius-lg, --accent, --accent-soft, --warn, --human
 - **built-from**: Icon
 - **added**: 2026-10-06
-- **changed**: 2026-10-06
-- **notes**: `.cbadge` — missed by the 2026-09-01 inventory, entered when next changed. The small pills beside a requirement in the review table and on document blocks. 2026-10-06: sets `--font-ui` itself — on an image block it sits on the document's paper and was inheriting Georgia, the source document's face, unlike the type chip beside it. Vertical padding hardcoded at 2px; default background is the untracked `--panel-3`, and the variants use the untracked `--warn-soft` / `--human-soft`.
+- **changed**: 2026-10-20
+- **notes**: 2026-10-20: the branch-count variant ("⑂ N") is gone — the count now sits in the Disclosure / Expand Chevron, which both says how many systems and opens them. `.cbadge` — missed by the 2026-09-01 inventory, entered when next changed. The small pills beside a requirement in the review table and on document blocks. 2026-10-06: sets `--font-ui` itself — on an image block it sits on the document's paper and was inheriting Georgia, the source document's face, unlike the type chip beside it. Vertical padding hardcoded at 2px; default background is the untracked `--panel-3`, and the variants use the untracked `--warn-soft` / `--human-soft`.
 
 ### Activity / Requirement Tag
 - **level**: atom
@@ -335,12 +335,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Disclosure / Expand Chevron
 - **level**: atom
 - **file**: documents.html, dashboard-et-config.html, revue-documentaire.html, compliance.html
-- **variants**: collapsed, expanded (rotated)
-- **tokens**: --text-3, --text-xs, --radius-sm
+- **variants**: collapsed, expanded (rotated); with count — a requirement on several systems (Allocation, Compliance)
+- **tokens**: --text-3, --text-xs, --radius-sm, --space-1, --accent, --accent-soft
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-24
-- **notes**: 2026-09-24: Allocation's `.branch-caret` now sits in the Requirement cell before the text, as on Compliance (it was beside the ID); `margin-right` dropped, the cell's gap spaces it. Row/group-level expand affordance — `▶` glyph in documents.html (9px, no tokens at all), `.cast-caret` (▾) in dashboard-et-config.html, `.branch-caret` in revue-documentaire.html (has real button chrome, hardcoded 20×20px). Distinct from Panel Toggle Chevron (below), which collapses whole side panels rather than a row.
+- **changed**: 2026-10-20
+- **notes**: 2026-10-20: on a requirement with several systems, Allocation's and Compliance's `.branch-caret` is one control: chevron, fork icon and the number of systems, on `--accent-soft` — it replaces the chevron plus the separate "⑂ N" Block Badge (Allocation) that said the same thing. Only the chevron turns when open; tooltip "N systems — expand to see each" / "collapse them", `aria-expanded`. Height 20px hardcoded, border the untracked `--line-2`. 2026-09-24: Allocation's `.branch-caret` now sits in the Requirement cell before the text, as on Compliance (it was beside the ID); `margin-right` dropped, the cell's gap spaces it. Row/group-level expand affordance — `▶` glyph in documents.html (9px, no tokens at all), `.cast-caret` (▾) in dashboard-et-config.html, `.branch-caret` in revue-documentaire.html (has real button chrome, hardcoded 20×20px). Distinct from Panel Toggle Chevron (below), which collapses whole side panels rather than a row.
 
 ### Panel Toggle Chevron
 - **level**: atom

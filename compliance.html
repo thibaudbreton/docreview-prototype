@@ -302,9 +302,13 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 .rrow .c-req .excerpt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.45}
 /* one caret expands every system row for that requirement (and, inside each,
    its teams — §4.4 never gave teams a collapse of their own) */
-.branch-caret{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:var(--radius-sm);border:1px solid var(--line-2);background:var(--panel-3);color:var(--text-2);transition:all .15s;flex-shrink:0;font-size:var(--text-xs);font-weight:700;cursor:pointer}
-.branch-caret:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
-.branch-caret.open{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);transform:rotate(90deg)}
+/* one control for a requirement on several systems: how many (the fork and
+   the count) and the way to see them (the chevron) — same as Allocation, 2026-10-20 */
+.branch-caret{display:inline-flex;align-items:center;gap:3px;height:20px;padding:0 var(--space-1);border-radius:var(--radius-sm);border:1px solid var(--line-2);background:var(--accent-soft);color:var(--accent);transition:all .15s;flex-shrink:0;font-size:var(--text-xs);font-weight:600;cursor:pointer;font-family:inherit}
+.branch-caret:hover{border-color:var(--accent)}
+.branch-caret.open{border-color:var(--accent)}
+.branch-caret .ic-chevron{transition:transform .15s}
+.branch-caret.open .ic-chevron{transform:rotate(90deg)}
 /* USER-TEST-session-3.md §1.5 — the compliance comment sits under the verdict pill,
    visible at a glance instead of behind an interaction. */
 /* the comment is its own column now, so Status is back to a single centred pill */
@@ -2708,7 +2712,7 @@ function fRowInnerHTML(r){
   const multi=r.branches.length>1;
   const expanded=multi&&state.expandedBranches.has(r.id);
   const caretHTML=multi
-    ? `<button class="branch-caret${expanded?" open":""}" data-branchtoggle="${r.id}" title="${expanded?"Collapse systems":`Expand ${r.branches.length} systems`}"><i class=ic-chevron></i></button>`
+    ? `<button class="branch-caret${expanded?" open":""}" data-branchtoggle="${r.id}" title="${r.branches.length} systems — ${expanded?"collapse them":"expand to see each"}" aria-expanded="${expanded}"><i class=ic-chevron></i><i class=ic-fork></i>${r.branches.length}</button>`
     : "";
   const lastFollowup=r.branches.reduce((latest,b)=>b.lastFollowup?b.lastFollowup:latest,null);
   return `
