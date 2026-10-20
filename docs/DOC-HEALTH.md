@@ -9,6 +9,33 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
+- Last run: 2026-10-14T00:00Z (covered commits from `ccf3bb4` through
+  `40a06a6`, 111 commits). Findings this run:
+  - Code commits with a DEC in their message (DEC-084 to DEC-125, risks,
+    Q&A, statistics, changes tab, characterisation confidence) landed their
+    `docs/current` / `docs/specs` update in the same commit. UI-only commits
+    (home page, dashboard rail line, header, Turnkey cards, tender chat
+    hidden behind `CHAT_ENABLED`) touch no doc, but the stories rewritten on
+    2026-10-10 (`325989b`) and the gap analysis (`docs/gap/`, 2026-10-12)
+    already describe them. Checked line by line against `01-accueil.md`,
+    `02-creation.md`, `05-allocation.md`, `07-vue-document.md`,
+    `11-qa.md`, `13-tableau-de-bord.md`. Consistent, no spec edited.
+  - **#28 closed**: the file it complained about
+    (`STORIES-extracted-from-prototype.md`) was replaced by the 16 new story
+    files; Finalize, Compare, INFRA/Rolling Stock, awaiting-manual-allocation
+    and the old Q&A arbitration are gone from them.
+  - **#20 still open, commented.** DEC-028/031/039 now exist in
+    `OPEN-QUESTIONS.md` (DEC-031 replaces DEC-001), but `COMPLIANCE.md`,
+    `DOMAIN.md`, `ACCESS.md`, `LIFECYCLE.md`, `PLATFORM.md` and
+    `DECISIONS.md` D6/D8 still describe three verdicts and the lock, and now
+    disagree with `stories/09-compliance.md`. Product call, not edited.
+  - #12 and #15 (and PR #14): no commit touches their files. Not re-flagged.
+- Baseline for the next run: commits after `40a06a6` (2026-10-12), plus
+  open #12, #15 (PR #14) and #20 (bring the five `docs/current` files in
+  line with DEC-028/031/039, then close).
+
+Previous run:
+
 - Last run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
   `ccf3bb4`). Most of that range is the previous run landing and a
   same-day reconciliation merge (`c07f072`, `db8fa39`, `ccf3bb4`) that
