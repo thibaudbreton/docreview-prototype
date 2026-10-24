@@ -11,7 +11,7 @@
 | DOM-005 | Branche de système | Un système associé à une exigence ; peut contenir plusieurs équipes. OBS dans Allocation |
 | DOM-006 | Affectation d'équipe | Feuille de l'arbre d'allocation. Ne pas confondre équipe/service, personne responsable et rôle d'accès. DEC-087 : **la personne assignée à l'OBS est responsable de sa conformité** — elle répond et est relancée ; une personne par entrée OBS ; pas de responsable au niveau exigence |
 | DOM-007 | Proposition IA | Valeur proposée pour une étape ou un champ. Sa confiance ne constitue pas une validation humaine. OBS/DOC |
-| DOM-008 | Réponse | Réponse de conformité, commentaire et, selon verdict, catégorie/topic. Consolidation par équipes/systèmes distincte du responsable unique de suivi ; DEC-014 confirme le calcul |
+| DOM-008 | Réponse | Réponse de conformité, commentaire et, selon verdict, catégorie/topic. Consolidation par équipes/systèmes distincte de la personne assignée à chaque OBS (DEC-087, plus de responsable de suivi global) ; DEC-014 confirme le calcul |
 | DOM-009 | Verdict dérivé / final | Résultat calculé et résultat retenu au niveau exigence ; un verrou peut les rendre différents. OBS dans Allocation |
 | DOM-010 | Question / réponse client | Objets identifiés avec liens vers questions, exigences et travail bloqué. DOC |
 | DOM-011 | Événement d'audit | Changement avec auteur humain/machine, date, objet et ancienne/nouvelle valeur. DOC, pas de stockage réel dans le prototype |
