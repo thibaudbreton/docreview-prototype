@@ -21,6 +21,7 @@
 | [DECISIONS.md](DECISIONS.md) | Les 125 décisions, chacune avec son effet par rapport au 8 septembre. On y trouve aussi le sort des anciennes décisions D1–D15, les 15 décisions qui renversent le plus et la liste complète des points ouverts. | En référence |
 | [CODE.md](CODE.md) | Le prototype : écrans, shell, build, données, fonctions ajoutées ou retirées, et ce qui ne relève que de la démo. | Pour reprendre un comportement ou retrouver où il est implémenté |
 | [INTERFACE.md](INTERFACE.md) | L'interface seule, écran par écran, jusqu'au 10 octobre : ce qui est apparu, a disparu ou a changé à l'écran (composants, libellés, comportements visibles, style), avec quelques captures avant / après. | Pour refaire le front |
+| [VOCABULAIRE-2026-10-26.md](VOCABULAIRE-2026-10-26.md) | Le changement de vocabulaire du 26 octobre (DEC-126) : Project → Tender, Team casting → Users, Assigned to → PIC, System → Sub-system (un seul niveau), Nature → Type, nouveau champ Region, Combination supprimé. | Avant de lire tout document daté d'avant le 26 octobre |
 
 **Marques.**
 - **(R)** : règle métier, à appliquer dans le produit.

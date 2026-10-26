@@ -137,11 +137,11 @@ const frame = document.getElementById('frame');
 
 /* ============ WORKSPACE — project list + background processing ============ */
 /* builtOut:true = the project's Dashboard/Allocation/Compliance screens show
-   real, hand-authored content for this project specifically. Two tenders qualify:
+   real, hand-authored content for this tender specifically. Two tenders qualify:
    "stb2026", the Turnkey demo, and "rfp114", the standalone SIG tender (DEC-044).
    The other three seeds exist only to illustrate the tender list, status badges and
    background processing — opening one is blocked in accueil.html with an explanatory
-   toast instead of silently substituting another tender's content (TA1). Projects
+   toast instead of silently substituting another tender's content (TA1). Tenders
    created via the wizard (addProject) don't set this flag at all — they're
    intentionally exempt from the block, see addProject below. */
 function seedProjects(){
@@ -163,8 +163,8 @@ function seedProjects(){
     // capture dataset (data.js, gitignored — not this repo's problem to
     // translate) stays English; see TENDER_LANGUAGE's own fallback.
     {id:"stb2026", ref:"STB-2026", name:"Energy Monitoring System", line:"Turnkey", days:23,
-     status:"requirement_review", total:12, allocated:10, complianceFilled:0, updated:"today", primary:true, role:"Project manager", builtOut:true,
-     language:"fr"},
+     status:"requirement_review", total:12, allocated:10, complianceFilled:0, updated:"today", primary:true, role:"Tender manager", builtOut:true,
+     language:"fr", region:"FR"},
     // DEC-044 — the standalone SIG tender, built out so TENDER-PROFILES' "Tender
     // SIG autonome" column is verifiable on a real project. English source
     // (language:"en") exercises the no-translation path, the other half of
@@ -173,13 +173,13 @@ function seedProjects(){
     // 4 of them allocated.
     {id:"rfp114", ref:"RFP-2026-114", name:"Line 4 Resignalling — ETCS L2", line:"SIG", days:9,
      status:"requirement_review", total:12, allocated:4, complianceFilled:0, updated:"2h ago", role:"Signalling manager", builtOut:true,
-     language:"en", system:"Mainline", product:"Mainline Wayside"},
+     language:"en", system:"Mainline", product:"Mainline Wayside", region:"NAM"},
     {id:"ao088", ref:"AO-2026-088", name:"Depot Maintenance Systems", line:"Services", days:41,
-     status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now", role:"Project manager", builtOut:false},
+     status:"processing", progress:38, procLabel:"Characterising requirements…", updated:"just now", role:"Tender manager", builtOut:false, region:"LAM"},
     {id:"stb133", ref:"STB-2026-133", name:"Regional Fleet Telemetry", line:"Rolling Stock", days:5,
-     status:"qa_versioning", total:63, allocated:63, complianceFilled:58, updated:"yesterday", role:"Contributor", builtOut:false},
+     status:"qa_versioning", total:63, allocated:63, complianceFilled:58, updated:"yesterday", role:"Contributor", builtOut:false, region:"FR"},
     {id:"stb2025", ref:"STB-2025-071", name:"Metro Depot Power Supply", line:"INFRA", days:-12,
-     status:"submitted", reqs:88, updated:"Jun 3", role:"Contributor", builtOut:false},
+     status:"submitted", reqs:88, updated:"Jun 3", role:"Contributor", builtOut:false, region:"NAM"},
   ];
 }
 let PROJECTS = seedProjects();
@@ -246,7 +246,7 @@ window.addProject = function(meta){
   const manual = meta.mode==="manual";
   const p={ id, ref:meta.ref||("AO-"+id.slice(-4).toUpperCase()), name:meta.name||"Untitled tender",
     line:meta.line||"—", days:meta.days!=null?meta.days:30, updated:"just now",
-    role:"Project manager",
+    role:"Tender manager",
     // TICKET-tender-creation-rework.md — casting left the creation wizard
     // entirely (it's ongoing project user management on its own screen now,
     // TICKET-casting-screen-redesign.md), so there's no per-system roster
@@ -267,6 +267,7 @@ window.addProject = function(meta){
     // whether the PBS/OBS/ABS keys apply). It was collected by the wizard and
     // then dropped here, so a tender created in the app could never have one.
     product: meta.product||null,
+    region: meta.region||null,   // DEC-126 — NAM / LAM / FR, chosen at creation
     pmTeam: Array.isArray(meta.pmTeam) ? meta.pmTeam : [] };  // whoever creates the tender owns it
   if(manual){ p.status="requirement_review"; p.total=0; p.allocated=0; p.complianceFilled=0; }
   else { p.status="processing"; p.progress=3; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); p.allocated=0; p.complianceFilled=0; }
@@ -274,6 +275,8 @@ window.addProject = function(meta){
   startProcLoop();
   return id;
 };
+// DEC-126 — the tender's region: code shown on cards, name in full where there is room
+window.REGIONS = {NAM:"North America", LAM:"Latin America", FR:"France"};
 window.openProject = function(id){
   const p=PROJECTS.find(x=>x.id===id);
   if(!p || p.status==="processing") return;
@@ -492,7 +495,7 @@ function seedReqLog(){
         E("2026-07-11T10:06","Thibaud Breton","alloc","SIG — assigned to Louis Renaud",{k:"human"}),
         E("2026-07-11T10:07","Thibaud Breton","status","Allocated — sent to Compliance",{milestone:"allocated",k:"ok"}),
         E("2026-07-14T16:30","Louis Renaud","compliance","SIG — verdict",{from:"Awaiting answer",to:"Not compliant",k:"warn"}),
-        E("2026-07-14T16:31","Louis Renaud","status","Every system has answered — consolidated Not compliant",{milestone:"answered",k:"warn"}),
+        E("2026-07-14T16:31","Louis Renaud","status","Every sub-system has answered — consolidated Not compliant",{milestone:"answered",k:"warn"}),
         E("2026-07-14T16:40","Louis Renaud","compliance","SIG — gap strategy: Keep as a gap (the client is told Compliant)",{k:"human"}),
         E("2026-07-14T16:42","Louis Renaud","compliance","SIG — linked RSK-00001",{k:"human"}),
         E("2026-07-14T16:42:30","Louis Renaud","status","Declared to the client: Compliant",{milestone:"declared",k:"ok"}),
@@ -518,7 +521,7 @@ function seedReqLog(){
       "L4-0010":[
         E("2026-07-09T10:20","Thibaud Breton","status","Allocated — sent to Compliance",{milestone:"allocated",k:"ok"}),
         E("2026-07-16T15:30","Louis Renaud","compliance","SIG — verdict",{from:"Awaiting answer",to:"Not compliant",k:"warn"}),
-        E("2026-07-16T15:31","Louis Renaud","status","Every system has answered — consolidated Not compliant",{milestone:"answered",k:"warn"}),
+        E("2026-07-16T15:31","Louis Renaud","status","Every sub-system has answered — consolidated Not compliant",{milestone:"answered",k:"warn"}),
         E("2026-07-16T15:38","Louis Renaud","compliance","SIG — gap strategy: Keep as a gap (the client is told Compliant)",{k:"human"}),
         E("2026-07-16T15:40","Louis Renaud","compliance","SIG — linked RSK-00001",{k:"human"}),
         E("2026-07-16T15:40:30","Louis Renaud","status","Declared to the client: Compliant",{milestone:"declared",k:"ok"}),

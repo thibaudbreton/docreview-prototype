@@ -4,14 +4,14 @@
 
 | ID | Objet | Définition et statut |
 |---|---|---|
-| DOM-001 | Projet / tender | Dossier de travail contenant identité, documents ordonnés, mode de traitement et équipe projet. OBS |
-| DOM-002 | Document / version | Un document possède plusieurs versions ; une nouvelle version ne constitue pas un autre projet. OBS/DOC |
+| DOM-001 | Tender | Dossier de travail (« projet » jusqu'à DEC-126) contenant identité — dont la région, champ « Region » (DEC-126) —, documents ordonnés, mode de traitement et équipe de gestion du tender. OBS |
+| DOM-002 | Document / version | Un document possède plusieurs versions ; une nouvelle version ne constitue pas un autre tender. OBS/DOC |
 | DOM-003 | Élément capturé | Titre, information ou exigence. L'identifiant doit rester stable lors d'une correction de type. DOC, test utilisateur session 3 |
-| DOM-004 | Exigence | Élément qui peut être caractérisé, alloué et faire l'objet de réponses de conformité ; pas de responsable de suivi global : la responsabilité est portée par la personne de chaque OBS (DEC-087, remplace DEC-010) ; absence permise DEC-025 |
-| DOM-005 | Branche de système | Un système associé à une exigence ; peut contenir plusieurs équipes. OBS dans Allocation |
-| DOM-006 | Affectation d'équipe | Feuille de l'arbre d'allocation. Ne pas confondre équipe/service, personne responsable et rôle d'accès. DEC-087 : **la personne assignée à l'OBS est responsable de sa conformité** — elle répond et est relancée ; une personne par entrée OBS ; pas de responsable au niveau exigence |
+| DOM-004 | Exigence | Élément qui peut être caractérisé, alloué et faire l'objet de réponses de conformité ; pas de responsable de suivi global : la responsabilité est portée par la personne en charge (PIC) de chaque OBS (DEC-087, remplace DEC-010) ; absence permise DEC-025 |
+| DOM-005 | Branche de sous-système | Un sous-système associé à une exigence ; peut contenir plusieurs équipes. OBS dans Allocation |
+| DOM-006 | Affectation d'équipe | Feuille de l'arbre d'allocation. Ne pas confondre équipe/service, personne responsable et rôle d'accès. DEC-087 : **le PIC de l'OBS est responsable de sa conformité** — elle répond et est relancée ; une personne par entrée OBS ; pas de responsable au niveau exigence |
 | DOM-007 | Proposition IA | Valeur proposée pour une étape ou un champ. Sa confiance ne constitue pas une validation humaine. OBS/DOC |
-| DOM-008 | Réponse | Réponse de conformité, commentaire et, selon verdict, catégorie/topic. Consolidation par équipes/systèmes distincte du responsable unique de suivi ; DEC-014 confirme le calcul |
+| DOM-008 | Réponse | Réponse de conformité, commentaire et, selon verdict, catégorie/topic. Consolidation par équipes/sous-systèmes distincte du responsable unique de suivi ; DEC-014 confirme le calcul |
 | DOM-009 | Verdict dérivé / final | Résultat calculé et résultat retenu au niveau exigence ; un verrou peut les rendre différents. OBS dans Allocation |
 | DOM-010 | Question / réponse client | Objets identifiés avec liens vers questions, exigences et travail bloqué. DOC |
 | DOM-011 | Événement d'audit | Changement avec auteur humain/machine, date, objet et ancienne/nouvelle valeur. DOC, pas de stockage réel dans le prototype |
@@ -26,7 +26,7 @@
 
 ## Vocabulaire de rôles
 
-Le ticket de fusion et le test utilisateur remplacent manager/expert par Contributor dans le travail de conformité. Project Manager conserve un périmètre projet. VIP/Admin sont décrits par les exigences backend, sans implémentation réelle démontrée. Les clés historiques `manager`, `expert` et `byRole:"expert"` ne prouvent pas l'existence de permissions métier distinctes.
+Le ticket de fusion et le test utilisateur remplacent manager/expert par Contributor dans le travail de conformité. Tender Manager (« Project Manager » jusqu'à DEC-126) conserve le périmètre du tender. VIP/Admin sont décrits par les exigences backend, sans implémentation réelle démontrée. Les clés historiques `manager`, `expert` et `byRole:"expert"` ne prouvent pas l'existence de permissions métier distinctes.
 
 ## Identité et traçabilité pour la production — PROP
 
@@ -42,7 +42,7 @@ DOM-013 : conserver séparément la proposition IA, la valeur retenue et l'évé
 
 [Variantes de tender](TENDER-PROFILES.md) : le type n’est pas un simple libellé, il sélectionne parcours et configuration. Un tender SIG autonome n’est pas un Turnkey filtré.
 
-DEC-087 (remplace DEC-010) : la responsabilité est celle de **la personne assignée à chaque OBS** — elle répond et c'est elle qu'on relance ; l'outil ne désigne pas de responsable du suivi global, ni par exigence ni par activité. Plusieurs personnes dans un périmètre = plusieurs OBS. DEC-025 : l'absence de personne ne bloque pas la validation d'allocation. DEC-012 : tous les contributeurs d’un système sont au même niveau ; ils consultent les autres systèmes sans les modifier.
+DEC-087 (remplace DEC-010) : la responsabilité est celle de **la personne en charge (PIC) de chaque OBS** — elle répond et c'est elle qu'on relance ; l'outil ne désigne pas de responsable du suivi global, ni par exigence ni par activité. Plusieurs personnes dans un périmètre = plusieurs OBS. DEC-025 : l'absence de personne ne bloque pas la validation d'allocation. DEC-012 : tous les contributeurs d’un sous-système sont au même niveau ; ils consultent les autres sous-systèmes sans les modifier.
 
 La séquence historique PBS → ABS → OBS est corrigée pour SIG par DEC-008 : **ABS → PBS → OBS → personne**.
 
@@ -54,13 +54,13 @@ DEC-054. **OBS = Organisation Breakdown Structure.** C'est une **organisation**,
 
 | | Ce que l'OBS désigne | Où |
 |---|---|---|
-| **TK OBS** | Un **système ou sous-système** — une très grande équipe | Passe 1, distribution Turnkey |
-| **OBS · team** | Une **équipe** au sein d'un système ou sous-système | Passe 2, modèle du système |
+| **TK OBS** | Un **sous-système** — une très grande équipe (un seul niveau depuis DEC-126) | Passe 1, distribution Turnkey |
+| **OBS · team** | Une **équipe** au sein d'un sous-système | Passe 2, modèle du sous-système |
 | **OBS · role** | Un **poste** — intitulé avec ses codes Skills / SoA / Job (DEC-062) | Passe 2, modèle **Mainline** sur les clés PBS/OBS/ABS |
 
 **La maille dépend du modèle.** Le classeur de référence de SIG ([KEYS](KEYS.md)) range les OBS par poste, sous les catégories ABS : pour le modèle Mainline, dériver un OBS, c'est dire « c'est ce poste-là qui s'en occupe ». Un poste n'est pas une personne — DEC-054 tient — mais ce n'est pas non plus « Signalling Design — FR ». Urban n'a pas été tranché et garde la maille équipe.
 
-**La personne vient après, et séparément.** On assigne ensuite, le plus souvent, au responsable de cette équipe **dans la région où se joue le tender**. Au moment de la dérivation, l'organisation n'est pas encore rattachée à une région : la chaîne s'arrête sur une équipe, l'affectation d'une personne est une étape distincte.
+**La personne vient après, et séparément.** On assigne ensuite, le plus souvent, au responsable de cette équipe **dans la région où se joue le tender** (son champ « Region », DEC-126). Au moment de la dérivation, l'organisation n'est pas encore rattachée à une région : la chaîne s'arrête sur une équipe, l'affectation d'une personne est une étape distincte.
 
 **Cardinalité (DEC-055).** ABS et PBS sont **uniques** pour une exigence ; l'**OBS peut être multiple**. Une exigence concerne parfois plusieurs équipes, et chacune doit vérifier si elle est conforme : chaque organisation porte donc **sa** personne qui vérifie et **son** verdict, consolidés ensuite au niveau exigence (DEC-037, le plus restrictif gagne). Ne jamais dupliquer un ABS ou un PBS par équipe — deux équipes qui ne partageraient pas le même ABS décriraient deux exigences, pas une.
 

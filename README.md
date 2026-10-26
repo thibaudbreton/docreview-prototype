@@ -1,4 +1,4 @@
-> **Référence documentaire mise à jour le 8 septembre 2026 : [docs/current/README.md](docs/current/README.md).** Le texte historique ci-dessous reste conservé ; ses mentions de six écrans, Expert Space et Follow-up séparés ne décrivent plus l’assemblage actuel à sept sources. Les divergences métier sont recensées dans le registre d’arbitrages.
+> **Référence documentaire mise à jour le 8 septembre 2026 : [docs/current/README.md](docs/current/README.md).** Le texte historique ci-dessous reste conservé ; ses mentions de six écrans, Expert Space et Follow-up séparés ne décrivent plus l’assemblage actuel à sept sources. Les divergences métier sont recensées dans le registre d’arbitrages. Depuis DEC-126, l’outil dit « tender » et non plus « project » (« Tender manager », « TM »), « Sub-system » au lieu de « System », « Users » au lieu de « Team casting », « PIC » au lieu de « Assigned to », « Type » au lieu de « Nature » ; le texte historique garde l’ancien vocabulaire.
 
 # Smart Req — interactive prototype
 
@@ -20,7 +20,7 @@ copies once (`python3 build_fonts.py "/path/to/Alstom Font"`), run `python3 buil
 
 ## Try it
 
-The demo opens on **Energy Monitoring System** (`STB-2026`), the one fully navigable project.
+The demo opens on **Energy Monitoring System** (`STB-2026`), the one fully navigable tender.
 The other tenders in the list illustrate statuses and background processing only.
 
 Worth a look:

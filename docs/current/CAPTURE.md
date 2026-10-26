@@ -1,12 +1,12 @@
 # Capture — conversion du document source
 
-Fait fourni le 22 septembre 2026 : les paramètres du projet portent des **réglages avancés de configuration de la capture**, distincts de la segmentation. Ils gouvernent la **conversion** — ce qui sort du fichier source — et s'appliquent donc *avant* le découpage en blocs.
+Fait fourni le 22 septembre 2026 : les paramètres du tender portent des **réglages avancés de configuration de la capture**, distincts de la segmentation. Ils gouvernent la **conversion** — ce qui sort du fichier source — et s'appliquent donc *avant* le découpage en blocs.
 
 ## Les réglages connus
 
 | Réglage | Valeurs | Ce qu'il décide |
 |---|---|---|
-| **Conversion range** | Toutes les pages · Pages spécifiques | Quelles pages du document source sont capturées. Ce qui est hors plage **n'existe pas** dans le projet : ce n'est pas un filtre sur la table de revue, c'est une absence d'exigences |
+| **Conversion range** | Toutes les pages · Pages spécifiques | Quelles pages du document source sont capturées. Ce qui est hors plage **n'existe pas** dans le tender : ce n'est pas un filtre sur la table de revue, c'est une absence d'exigences |
 | **Default table conversion format** | Image · Dataframe | Un tableau est capturé comme une image de lui-même, ou comme des données structurées |
 | **Sentences in paragraphs** | Comme le fichier source · Découpé | Un paragraphe reste un bloc, ou devient un bloc par phrase |
 | **Format of equations** | Images · Formules | Une équation est capturée comme image ou comme formule |

@@ -5,9 +5,9 @@ Ce qui vaut pour tous les écrans et toutes les étapes : le journal d'activité
 
 ### US-X-01 — Consulter le journal d'activité d'une exigence
 **Carte :** En tant que contributeur, je veux voir tout ce qui est arrivé à une exigence — qui a changé quoi, quand, avant et après —, afin de comprendre une décision sans interroger mes collègues.
-**Conversation :** Un seul journal par exigence, le même dans Allocation et dans Compliance (onglet « Activity » du panneau de détail). Ce qu'Allocation y écrit est fixé dans [US-ALM-35](05-allocation.md#us-alm-35--inscrire-les-actions-dallocation-au-journal-de-lexigence) (systèmes, réassignations, relances avec le modèle utilisé — y compris un modèle emprunté, DEC-043 — et « same result », DEC-091, statuts, chaîne, personnes, nature, classe) ; Compliance y écrit verdicts, stratégie, liens de risque, correction du chef de projet, déclaration au client, question, renvoi, relance et réouverture par une version (voir US-CMP, US-RSK). Cette story fixe la lecture du journal. Aucune règle écrite ne va au-delà de DOM-011 et PLAT-003.
+**Conversation :** Un seul journal par exigence, le même dans Allocation et dans Compliance (onglet « Activity » du panneau de détail). Ce qu'Allocation y écrit est fixé dans [US-ALM-35](05-allocation.md#us-alm-35--inscrire-les-actions-dallocation-au-journal-de-lexigence) (sous-systèmes, réassignations, relances avec le modèle utilisé — y compris un modèle emprunté, DEC-043 — et « same result », DEC-091, statuts, chaîne, personnes, type, classe) ; Compliance y écrit verdicts, stratégie, liens de risque, correction du tender manager, déclaration au client, question, renvoi, relance et réouverture par une version (voir US-CMP, US-RSK). Cette story fixe la lecture du journal. Aucune règle écrite ne va au-delà de DOM-011 et PLAT-003.
 **Maquette :** Allocation — `revue-documentaire.html` (route `#review`) et Compliance — `compliance.html` (route `#compliance`), panneau de détail › onglet « Activity » (Activity Timeline, Activity Timeline Entry).
-**Règles :** DOM-011, PLAT-003, ALLOC-014, DEC-043, DEC-091, DEC-122, DEC-125  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
+**Règles :** DOM-011, PLAT-003, ALLOC-014, DEC-043, DEC-091, DEC-122, DEC-125, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. L'onglet « Activity » d'une exigence affiche les mêmes entrées dans Allocation et dans Compliance, de la plus récente à la plus ancienne.
 2. Chaque entrée indique son auteur — une personne, ou le traitement automatique (capture, nouvelle version, modèle) —, la date et l'heure, et ce qui a changé.
@@ -19,16 +19,16 @@ Point ouvert : liste exacte des événements tracés, rétention et droits de le
 
 ### US-X-02 — Commenter une exigence
 **Carte :** En tant que contributeur, je veux laisser sur une exigence un commentaire visible de toute l'équipe dans les deux étapes, afin de partager une information au bon endroit plutôt que par e-mail.
-**Conversation :** Le champ de commentaire est au bas de l'onglet « Activity » ; un commentaire entre au journal de l'exigence, catégorie Comments ([US-X-01](#us-x-01--consulter-le-journal-dactivité-dune-exigence)). Il alimente « Recent comments » du tableau de bord ([US-DASH-12](13-tableau-de-bord.md#us-dash-12--lire-les-derniers-commentaires-du-tender)) et compte pour le système de l'exigence dans l'activité de la semaine ([US-STAT-04](14-statistiques.md#us-stat-04--voir-les-systèmes-les-plus-actifs-de-la-semaine)), jamais pour son auteur (DEC-118).
+**Conversation :** Le champ de commentaire est au bas de l'onglet « Activity » ; un commentaire entre au journal de l'exigence, catégorie Comments ([US-X-01](#us-x-01--consulter-le-journal-dactivité-dune-exigence)). Il alimente « Recent comments » du tableau de bord ([US-DASH-12](13-tableau-de-bord.md#us-dash-12--lire-les-derniers-commentaires-du-tender)) et compte pour le sous-système de l'exigence dans l'activité de la semaine ([US-STAT-04](14-statistiques.md#us-stat-04--voir-les-sous-systèmes-les-plus-actifs-de-la-semaine)), jamais pour son auteur (DEC-118).
 **Maquette :** Allocation — `revue-documentaire.html` (route `#review`) et Compliance — `compliance.html` (route `#compliance`), onglet « Activity » › champ « Comment… ».
-**Règles :** DOM-011, PLAT-003, DEC-118  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
+**Règles :** DOM-011, PLAT-003, DEC-118, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Écrire un texte puis Entrée ou « ↑ » publie le commentaire et affiche « Comment posted » ; le champ se vide.
 2. Le commentaire apparaît dans le journal avec son auteur, sa date et son texte, dans Allocation comme dans Compliance.
 3. Un commentaire vide n'est pas publié.
 4. Le nombre de commentaires de l'exigence, partout où il s'affiche, augmente de un.
 5. Le commentaire apparaît dans « Recent comments » du tableau de bord à sa prochaine ouverture.
-Point ouvert : mentions « @ » (le champ les annonce, aucune règle) ; droit de commenter une exigence hors de son système, que DEC-100 met en lecture seule ; modifier ou supprimer un commentaire.
+Point ouvert : mentions « @ » (le champ les annonce, aucune règle) ; droit de commenter une exigence hors de son sous-système, que DEC-100 met en lecture seule ; modifier ou supprimer un commentaire.
 
 ### US-X-03 — Retrouver tout le travail après reconnexion
 **Carte :** En tant que contributeur, je veux retrouver après une déconnexion ou un redémarrage tout ce qui a été saisi sur le tender, afin de ne jamais refaire un travail perdu.
@@ -45,7 +45,7 @@ Point ouvert : mentions « @ » (le champ les annonce, aucune règle) ; droit de
 
 ### US-X-04 — Se connecter par SSO et n'accéder qu'à ses tenders
 **Carte :** En tant que contributeur, je veux me connecter avec mon compte d'entreprise et ne voir que les tenders dont je suis membre, afin d'accéder à mon travail sans compte supplémentaire et sans voir les tenders des autres.
-**Conversation :** SSO et droits par tender contrôlés côté serveur (PLAT-002). Être membre d'un tender — équipe de gestion ou casting — ouvre la lecture de tout ce tender (DEC-012, ACC-007) ; aucun accès à un autre tender n'en est déduit (ACC-T09). Qui peut créer un tender reste à préciser (JRN-001).
+**Conversation :** SSO et droits par tender contrôlés côté serveur (PLAT-002). Être membre d'un tender — équipe de gestion ou staffing — ouvre la lecture de tout ce tender (DEC-012, ACC-007) ; aucun accès à un autre tender n'en est déduit (ACC-T09). Qui peut créer un tender reste à préciser (JRN-001).
 **Maquette :** non maquetté (identité fournie par la démo ; avatar de l'en-tête — Header Avatar).
 **Règles :** PLAT-002, ACC-007, ACC-T09, DEC-012, JRN-001  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
@@ -57,23 +57,23 @@ Point ouvert : mentions « @ » (le champ les annonce, aucune règle) ; droit de
 Point ouvert : politique de création d'un tender (JRN-001) ; rôles Admin et VIP (OPEN-02) ; standards de sécurité (OPEN-11).
 
 ### US-X-05 — Faire respecter les droits du tender par le serveur
-**Carte :** En tant que chef de projet, je veux que les droits de chacun soient contrôlés par le serveur, pas seulement masqués à l'écran, afin qu'aucune modification interdite ne passe par un autre chemin.
-**Conversation :** Un contributeur lit tout le tender mais ne modifie que son système (DEC-012, ACC-007) ; il ne modifie ni la nature ni la classe (DEC-086), ni rien sur une exigence dont aucun système n'est le sien (DEC-100). La gestion globale — documents, relation client, validation de l'aiguillage Turnkey — appartient à l'équipe de gestion (ACCESS, DEC-104). Droits et consolidation se calculent par des règles métier, jamais par un modèle d'IA (AI-013). Le détail par écran est dans US-TEAM, US-ALM et US-CMP.
+**Carte :** En tant que tender manager, je veux que les droits de chacun soient contrôlés par le serveur, pas seulement masqués à l'écran, afin qu'aucune modification interdite ne passe par un autre chemin.
+**Conversation :** Un contributeur lit tout le tender mais ne modifie que son sous-système (DEC-012, ACC-007) ; il ne modifie ni le type ni la classe (DEC-086), ni rien sur une exigence dont aucun sous-système n'est le sien (DEC-100). La gestion globale — documents, relation client, validation de l'aiguillage Turnkey — appartient à l'équipe de gestion (ACCESS, DEC-104). Droits et consolidation se calculent par des règles métier, jamais par un modèle d'IA (AI-013). Le détail par écran est dans US-TEAM, US-ALM et US-CMP.
 **Maquette :** non maquetté (la maquette ne contrôle les droits que dans l'écran ; « View as » est une démo).
-**Règles :** PLAT-002, ACC-007, ACC-012, ACC-013, ACC-014, ACC-T04, ACC-T10, DEC-086, DEC-100, AI-013  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
+**Règles :** PLAT-002, ACC-007, ACC-012, ACC-013, ACC-014, ACC-T04, ACC-T10, DEC-086, DEC-100, AI-013, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
-1. Une modification d'un autre système envoyée par un contributeur en requête directe est refusée par le serveur avec un message de droit, et rien n'est enregistré.
-2. Une modification de nature ou de classe par un contributeur est refusée par le serveur, quel que soit le chemin (panneau, table, action groupée, vue Document, requête directe).
-3. Les compteurs, la recherche et les exports d'un contributeur couvrent tout le tender en lecture, sans lui ouvrir d'action hors de son système.
-4. Une action groupée sur une sélection qui contient des exigences hors de son système n'agit que sur les siennes et dit combien ont été écartées.
+1. Une modification d'un autre sous-système envoyée par un contributeur en requête directe est refusée par le serveur avec un message de droit, et rien n'est enregistré.
+2. Une modification de type ou de classe par un contributeur est refusée par le serveur, quel que soit le chemin (panneau, table, action groupée, vue Document, requête directe).
+3. Les compteurs, la recherche et les exports d'un contributeur couvrent tout le tender en lecture, sans lui ouvrir d'action hors de son sous-système.
+4. Une action groupée sur une sélection qui contient des exigences hors de son sous-système n'agit que sur les siennes et dit combien ont été écartées.
 5. Chaque refus s'affiche avec sa raison, et l'action refusée n'apparaît jamais comme réussie.
 Écart maquette : les refus ne sont simulés que dans l'interface.
 
 ### US-X-06 — Tracer tout changement, humain ou machine
-**Carte :** En tant que chef de projet, je veux que chaque changement de donnée, fait par une personne ou par un traitement automatique, soit tracé avec son auteur, sa date et ses valeurs avant et après, afin de pouvoir justifier une réponse au client et retrouver l'origine d'une erreur.
+**Carte :** En tant que tender manager, je veux que chaque changement de donnée, fait par une personne ou par un traitement automatique, soit tracé avec son auteur, sa date et ses valeurs avant et après, afin de pouvoir justifier une réponse au client et retrouver l'origine d'une erreur.
 **Conversation :** Audit des changements humains et machine — identité, date, avant / après — et traçabilité des traitements de l'IA avec leur coût (PLAT-003, DOM-011). Le journal d'une exigence ([US-X-01](#us-x-01--consulter-le-journal-dactivité-dune-exigence)) en est la lecture fonctionnelle. Suivi de session, rétention et standards de sécurité sont à fournir (OPEN-11).
 **Maquette :** non maquetté.
-**Règles :** PLAT-003, DOM-011, AI-001  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
+**Règles :** PLAT-003, DOM-011, AI-001, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Toute création, modification ou suppression d'une donnée métier enregistre l'auteur (personne ou traitement), la date et l'heure, l'objet concerné, l'ancienne et la nouvelle valeur.
 2. Chaque traitement de l'IA (capture, traduction, caractérisation, dérivation, relance) enregistre le traitement ou modèle utilisé, l'élément traité (tender, document, version, exigence), l'heure et son coût.
@@ -83,12 +83,12 @@ Point ouvert : politique de création d'un tender (JRN-001) ; rôles Admin et VI
 Point ouvert : rétention, suivi de session et standards de sécurité (OPEN-11) ; unité et granularité du coût des traitements de l'IA.
 
 ### US-X-07 — Garder séparées la proposition de l'IA, la valeur retenue et la correction
-**Carte :** En tant que chef de projet, je veux que la proposition de l'IA, la valeur retenue par l'équipe et la correction restent distinctes, afin qu'un retraitement n'efface jamais en silence une décision humaine.
+**Carte :** En tant que tender manager, je veux que la proposition de l'IA, la valeur retenue par l'équipe et la correction restent distinctes, afin qu'un retraitement n'efface jamais en silence une décision humaine.
 **Conversation :** DOM-013 (PROP) : conserver séparément la proposition IA, la valeur retenue et l'événement de correction ; une reprise de traitement ne doit pas effacer silencieusement une décision humaine (reprise après incident : [US-CAP-11](04-capture-ia.md#us-cap-11--reprendre-un-traitement-interrompu-sans-doublon)). Les relances voulues restent possibles : unitaire ou en masse (ALLOC-014, DEC-052), globale et annoncée (ALLOC-015), ciblée par une nouvelle version sur les exigences modifiées (LIFE-011). La confiance de l'IA ne s'affiche que tant que la valeur est la sienne (DEC-120).
 **Maquette :** Allocation — `revue-documentaire.html` (route `#review`), panneau de détail (Confidence Level Badge, Derivation Chain).
-**Règles :** DOM-013, AI-001, AI-011, DEC-120, LIFE-011, ALLOC-014  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
+**Règles :** DOM-013, AI-001, AI-011, DEC-120, LIFE-011, ALLOC-014, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
-1. Pour chaque champ proposé par l'IA (nature, classe, système routé, ABS, PBS, OBS), la proposition et sa confiance sont conservées à côté de la valeur retenue.
+1. Pour chaque champ proposé par l'IA (type, classe, sous-système routé, ABS, PBS, OBS), la proposition et sa confiance sont conservées à côté de la valeur retenue.
 2. Corriger une valeur crée un événement de correction (qui, quand, proposition → valeur retenue) sans effacer la proposition.
 3. Le niveau ou le pourcentage de confiance ne s'affiche que tant que la valeur affichée est celle de l'IA ; un choix humain n'en porte pas.
 4. Une reprise automatique de traitement, par exemple après un incident, ne remplace aucune valeur retenue par un humain.
@@ -96,10 +96,10 @@ Point ouvert : rétention, suivi de session et standards de sécurité (OPEN-11)
 Point ouvert : modalités de reprise et de correspondance entre versions (OPEN-07, OPEN-09).
 
 ### US-X-08 — Exporter les exigences du tender
-**Carte :** En tant que chef de projet, je veux exporter les exigences d'un ou de tous les documents, avec les étapes et le format de mon choix, afin de les reprendre dans Excel ou dans DOORS.
+**Carte :** En tant que tender manager, je veux exporter les exigences d'un ou de tous les documents, avec les étapes et le format de mon choix, afin de les reprendre dans Excel ou dans DOORS.
 **Conversation :** Le menu « Export ▾ » d'Allocation porte l'export du registre (DEC-084). L'export reprend ce que montrent les filtres de colonne et le filtre avancé, et l'annonce avant de produire le fichier. Le texte d'exigence part dans sa langue originale, les contributions en anglais (LANG-003) ; un contributeur exporte tout le tender en lecture, jamais au-delà (PLAT-002). Les colonnes personnalisées suivent [US-TAB-24](06-tables.md#us-tab-24--modifier-une-colonne-personnalisée) ; l'export de Compliance a ses propres options (US-CMP) ; l'export par document de Documents & versions est dans US-DOC.
 **Maquette :** Allocation — `revue-documentaire.html` (route `#review`), bouton « Export ▾ » › panneau « Export requirements » (Export Panel (header ad-hoc export)).
-**Règles :** PLAT-004, PLAT-002, LANG-003, LIFE-004, DEC-084, UX-002  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
+**Règles :** PLAT-004, PLAT-002, LANG-003, LIFE-004, DEC-084, UX-002, DEC-126  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Le panneau « Export requirements » propose le document (« All documents (N) » ou un seul) et annonce « N requirements — <filtres actifs> », ou « Nothing matches the current scope ».
 2. « Include steps » propose « Capture », « Characterisation » et « Allocation » ; générer sans aucune étape est refusé (« Select at least one step to export »).
@@ -111,10 +111,10 @@ Point ouvert : modalités de reprise et de correspondance entre versions (OPEN-0
 Point ouvert : formats, correspondances et aller-retour DOORS à contractualiser (PLAT-004, OPEN-10, OPEN-12).
 
 ### US-X-09 — Importer un export DOORS comme document du tender
-**Carte :** En tant que chef de projet, je veux importer un module exporté de DOORS 9 ou de DOORS Next comme document du tender, afin de partir d'exigences déjà tenues dans DOORS.
+**Carte :** En tant que tender manager, je veux importer un module exporté de DOORS 9 ou de DOORS Next comme document du tender, afin de partir d'exigences déjà tenues dans DOORS.
 **Conversation :** PLAT-004 prévoit l'import et l'export DOORS 9 et DOORS NG ; DEC-018 range les échanges DOORS parmi les formats pris en charge. L'ajout de document se fait à la création (US-NEW) ou dans Documents & versions (US-DOC) : cette story fixe ce que la plateforme accepte et garde. Il n'y a pas de connecteur direct à un serveur DOORS : son inclusion n'est pas confirmée (OPEN-12).
 **Maquette :** non maquetté (la capture de démonstration est importée hors de l'application).
-**Règles :** PLAT-004, DEC-018, DOM-012, AI-012, LANG-002  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
+**Règles :** PLAT-004, DEC-018, DOM-012, AI-012, LANG-002, DEC-126  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Un fichier d'export DOORS 9 ou DOORS Next, dans un format convenu, est accepté là où l'on ajoute un document.
 2. Le document importé suit la même chaîne que les autres : capture, traduction si besoin, caractérisation, allocation.
@@ -127,20 +127,20 @@ Point ouvert : formats exacts, correspondance des attributs DOORS et boucle alle
 **Carte :** En tant que contributeur, je veux être prévenu dans l'application et par e-mail quand un travail m'attend, afin de ne pas devoir surveiller chaque écran.
 **Conversation :** Les notifications sont internes et par e-mail (PLAT-005) ; leurs déclencheurs, destinataires, regroupement et relances ne sont pas finalisés (OPEN-11). La règle d'affichage est celle de la cloche ([US-DASH-15](13-tableau-de-bord.md#us-dash-15--ouvrir-la-cloche-du-tableau-de-bord)) : calculée, résumée par nature avec son compte, nommant l'exigence quand il n'y en a qu'une. L'envoi des questions au client reste hors outil (QA-003) ; le geste de relance de Compliance est dans US-CMP (DEC-125).
 **Maquette :** Cloches de `dashboard-et-config.html`, `compliance.html`, `documents.html` et `qa.html` (Notifications Dropdown) ; e-mail non maquetté.
-**Règles :** PLAT-005, PLAT-008, CONF-021, DEC-087, QA-003, DEC-116  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
+**Règles :** PLAT-005, PLAT-008, CONF-021, DEC-087, QA-003, DEC-116, DEC-126  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Une notification, dans la cloche comme par e-mail, résume par nature avec son compte et nomme l'exigence quand il n'y en a qu'une.
 2. Chaque notification contient un lien qui ouvre l'écran concerné du tender.
-3. Un contributeur n'est notifié que du travail de son système ; la personne relancée pour une affectation est la personne de son OBS.
+3. Un contributeur n'est notifié que du travail de son sous-système ; la personne relancée pour une affectation est la personne de son OBS.
 4. Aucune notification ne propose à une personne une action qui lui est adressée à elle-même.
 5. Smart Req n'envoie jamais rien au client.
 Point ouvert : déclencheurs, destinataires, regroupement, fréquence et relances (PLAT-005, OPEN-11) ; lien avec « Maximum reminder cadence » ([US-CFG-05](15-configuration.md#us-cfg-05--régler-le-seuil-de-retard-et-la-cadence-des-relances)) ; la relance de Compliance (DEC-125) envoie-t-elle un e-mail.
 
 ### US-X-11 — Travailler sur 100 000 lignes à dix en même temps
-**Carte :** En tant que chef de projet, je veux que les tables restent utilisables jusqu'à 100 000 lignes avec dix personnes connectées en même temps, afin de traiter les plus gros tenders sans attendre l'outil.
-**Conversation :** Dimensionnement confirmé : jusqu'à 100 000 lignes, titres et blocs d'information compris, et 10 utilisateurs simultanés (DEC-023, PLAT-006). La rapidité est requise, mais l'ancienne cible P95 ≤ 300 ms n'est pas un engagement confirmé : les budgets mesurables (recherche, filtres, navigation, actions groupées) restent à fixer, les traitements de l'IA se mesurent à part (PLAT-007, OPEN-08). Recherche et filtres portent sur tout le jeu autorisé (UX-005, voir [US-TAB-02](06-tables.md#us-tab-02--déplier-une-exigence-en-lignes-par-système-et-par-organisation) et [US-TAB-04](06-tables.md#us-tab-04--rechercher-une-exigence-par-son-identifiant-ou-son-texte)).
+**Carte :** En tant que tender manager, je veux que les tables restent utilisables jusqu'à 100 000 lignes avec dix personnes connectées en même temps, afin de traiter les plus gros tenders sans attendre l'outil.
+**Conversation :** Dimensionnement confirmé : jusqu'à 100 000 lignes, titres et blocs d'information compris, et 10 utilisateurs simultanés (DEC-023, PLAT-006). La rapidité est requise, mais l'ancienne cible P95 ≤ 300 ms n'est pas un engagement confirmé : les budgets mesurables (recherche, filtres, navigation, actions groupées) restent à fixer, les traitements de l'IA se mesurent à part (PLAT-007, OPEN-08). Recherche et filtres portent sur tout le jeu autorisé (UX-005, voir [US-TAB-02](06-tables.md#us-tab-02--déplier-une-exigence-en-lignes-par-sous-système-et-par-organisation) et [US-TAB-04](06-tables.md#us-tab-04--rechercher-une-exigence-par-son-identifiant-ou-son-texte)).
 **Maquette :** non maquetté (la démo compte quelques centaines de lignes).
-**Règles :** PLAT-006, PLAT-007, DEC-023, UX-005  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
+**Règles :** PLAT-006, PLAT-007, DEC-023, UX-005, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Un tender de 100 000 lignes s'ouvre dans Allocation et dans Compliance, et la table défile sans blocage.
 2. Les compteurs d'un tender de 100 000 lignes (statuts, consolidation, statistiques) portent sur tout le jeu, pas sur la partie chargée.

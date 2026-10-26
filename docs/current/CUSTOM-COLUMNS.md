@@ -2,15 +2,15 @@
 
 Spec reçue le 23 septembre 2026 (`SPEC-custom-columns.md`), reprise ici avec les décisions prises et ce que le prototype en fait.
 
-**L'intention.** Garder la souplesse d'un tableur sans perdre le modèle dessous : sans cette fonction, le premier système qui a un besoin particulier repart dans Excel.
+**L'intention.** Garder la souplesse d'un tableur sans perdre le modèle dessous : sans cette fonction, le premier sous-système qui a un besoin particulier repart dans Excel.
 
 ## Ce qu'est une colonne personnalisée
 
-Une **définition de champ** créée par un chef de projet, qui porte une donnée **saisie par des humains** sur chaque exigence.
+Une **définition de champ** créée par un tender manager, qui porte une donnée **saisie par des humains** sur chaque exigence.
 
 - **Portée : un tender, les deux étapes** (DEC-097, remplace « une phase »). Une colonne appartient au tender et porte les mêmes valeurs dans Allocation et Compliance. Elle est visible par défaut sur l'écran où elle a été créée et masquée par défaut sur l'autre, où le menu View l'affiche ; ce choix est retenu par écran. Elle ne passe pas au tender suivant.
 - **Deux types** : **texte libre** et **liste** — un ensemble fermé d'options défini à la création. Une liste est à **choix unique ou multiple** (DEC-066).
-- **Seuls les chefs de projet** créent, modifient et suppriment les colonnes. Les contributeurs les remplissent, dans leur périmètre, comme n'importe quel champ.
+- **Seuls les tender managers** créent, modifient et suppriment les colonnes. Les contributeurs les remplissent, dans leur périmètre, comme n'importe quel champ.
 - **L'IA ne les remplit jamais.** Pas de confiance, pas de doute, et elles ne font jamais passer une exigence « à revoir ».
 - **Toujours facultatives** (DEC-067) : une colonne vide ne bloque jamais la validation. Cohérent avec DEC-025, où même l'absence de responsable ne bloque pas.
 
@@ -40,7 +40,7 @@ Retenu par défaut, sur la recommandation de la spec : **incluses dans les expor
 
 **Supprimer une colonne supprime toutes ses valeurs**, irréversiblement. La confirmation donne **le nombre d'exigences qui ont une valeur** : « supprimer cette colonne » et « supprimer 340 valeurs » sont la même action, et c'est la seconde formulation que l'utilisateur doit voir.
 
-**Retirer une option d'une liste** est **refusé tant qu'elle est utilisée** (DEC-065), avec le nombre d'exigences concernées. Aucune valeur n'est jamais perdue ni laissée orpheline en silence ; le chef de projet sait ce qu'il doit nettoyer d'abord.
+**Retirer une option d'une liste** est **refusé tant qu'elle est utilisée** (DEC-065), avec le nombre d'exigences concernées. Aucune valeur n'est jamais perdue ni laissée orpheline en silence ; le tender manager sait ce qu'il doit nettoyer d'abord.
 
 **Modifier une définition** (défaut retenu, §8.5 de la spec) : renommer est toujours permis ; **changer le type est bloqué dès qu'une valeur existe**. Passer une liste de choix unique à multiple est permis — chaque valeur devient une liste d'un élément, rien ne se perd. L'inverse est bloqué dès qu'une exigence tient plusieurs valeurs.
 
@@ -56,10 +56,10 @@ Retenu par défaut, sur la recommandation de la spec : **incluses dans les expor
 
 Construit **dans Allocation uniquement** (DEC-064) ; Compliance viendra ensuite sur le même modèle.
 
-**24 septembre 2026 (DEC-081) : Compliance a ses propres colonnes**, même modèle, phase « compliance » — une colonne créée dans Compliance n'existe que là, et celles d'Allocation n'y apparaissent pas (la portée par phase tient). Mêmes règles d'édition, de verrou et de suppression ; valeurs par exigence, vides sur les lignes système/équipe. Différences : pas de filtre depuis l'en-tête (les filtres de colonne de Compliance portent sur les affectations) — le constructeur de filtres les couvre. À l'export, une colonne personnalisée est **décochée par défaut et marquée « internal »** ; la cocher déclenche un avertissement.
+**24 septembre 2026 (DEC-081) : Compliance a ses propres colonnes**, même modèle, phase « compliance » — une colonne créée dans Compliance n'existe que là, et celles d'Allocation n'y apparaissent pas (la portée par phase tient). Mêmes règles d'édition, de verrou et de suppression ; valeurs par exigence, vides sur les lignes sous-système/équipe. Différences : pas de filtre depuis l'en-tête (les filtres de colonne de Compliance portent sur les affectations) — le constructeur de filtres les couvre. À l'export, une colonne personnalisée est **décochée par défaut et marquée « internal »** ; la cocher déclenche un avertissement.
 
-- Bouton **＋ Column** dans la barre de la table, visible des seuls chefs de projet ; ✎ sur l'en-tête de chaque colonne personnalisée pour la modifier ou la supprimer.
-- Cellules éditables dans la table : champ texte, liste déroulante, ou sélecteur à cases pour le choix multiple. Les sous-lignes système/équipe et les blocs d'information ont une cellule vide, pour garder la grille alignée.
+- Bouton **＋ Column** dans la barre de la table, visible des seuls tender managers ; ✎ sur l'en-tête de chaque colonne personnalisée pour la modifier ou la supprimer.
+- Cellules éditables dans la table : champ texte, liste déroulante, ou sélecteur à cases pour le choix multiple. Les sous-lignes sous-système/équipe et les blocs d'information ont une cellule vide, pour garder la grille alignée.
 - Section dans le panneau de détail, avec une ligne qui rappelle que ce sont des données humaines.
 - Groupe **Custom columns** dans le constructeur de filtres ; entonnoir d'en-tête pour les listes ; tri par l'en-tête.
 - L'export interne annonce les colonnes incluses et rappelle qu'elles ne partent jamais dans la matrice client.

@@ -4,12 +4,12 @@ La stack communiquée par l'utilisateur est React côté front et Azure côté b
 
 ## Besoins conservés
 
-- PLAT-001 — DOC : persistance des projets, documents, exigences, affectations, réponses et états ; accès après redémarrage.
-- PLAT-002 — DOC : SSO et droits projet/système contrôlés côté serveur. La séparation entre projets et les droits de modification doivent couvrir requêtes directes, compteurs, recherche et exports. Dans un projet, lecture de tous les systèmes autorisée aux contributeurs par DEC-012.
+- PLAT-001 — DOC : persistance des tenders, documents, exigences, affectations, réponses et états ; accès après redémarrage.
+- PLAT-002 — DOC : SSO et droits tender/sous-système contrôlés côté serveur. La séparation entre tenders et les droits de modification doivent couvrir requêtes directes, compteurs, recherche et exports. Dans un tender, lecture de tous les sous-systèmes autorisée aux contributeurs par DEC-012.
 - PLAT-003 — DOC : audit des changements humains et machines, identité, date, avant/après ; traçabilité des traitements IA et coût. Le suivi de session et sa rétention doivent être précisés (OPEN-11).
 - PLAT-004 — DOC : import/export DOORS 9 et DOORS NG, export Excel. Les menus CSV/ReqIF de démonstration ne prouvent pas une intégration. Formats, mappings et boucle aller-retour à contractualiser (OPEN-10/12).
 - PLAT-005 — DOC : notifications internes et email ; déclencheurs, destinataires, regroupement et relances non finalisés. L'envoi client Q&A reste hors outil (QA-003).
-- PLAT-006 — DEC-023 : tableaux jusqu’à **100 000 lignes**, jusqu’à **10 utilisateurs simultanés**. Ces cibles remplacent les anciens 30 000 éléments/10 000 utilisateurs comme hypothèse de dimensionnement. 100 000 lignes ne signifie pas nécessairement 100 000 exigences : titres et informations comptent aussi. La portée exacte projet/table sera précisée pour le test de charge ; ne pas réduire le maximum à une page affichée.
+- PLAT-006 — DEC-023 : tableaux jusqu’à **100 000 lignes**, jusqu’à **10 utilisateurs simultanés**. Ces cibles remplacent les anciens 30 000 éléments/10 000 utilisateurs comme hypothèse de dimensionnement. 100 000 lignes ne signifie pas nécessairement 100 000 exigences : titres et informations comptent aussi. La portée exacte tender/table sera précisée pour le test de charge ; ne pas réduire le maximum à une page affichée.
 - PLAT-007 — DEC-023 : rapidité requise. Ancienne cible P95 ≤ 300 ms et < 3 s pour 10 000 lignes : références historiques, **pas SLA confirmé à 100 000 lignes**. Spécifier ensuite budgets mesurables sur recherche, filtres, navigation et actions groupées ; transfert/traitement IA mesurés séparément.
 
 ## Métriques — PLAT-008 (DOC, formules à compléter)
@@ -17,19 +17,19 @@ La stack communiquée par l'utilisateur est React côté front et Azure côté b
 | Mesure | Unité et règle |
 |---|---|
 | Profil de conformité | Exigences : ce que le client recevra (Compliant / Not compliant), le reste « pas encore réglé » ; ne pas omettre les inconnus. Depuis DEC-117, une phrase de la progression vers le client plutôt qu'une barre à part |
-| Attente des exigences ouvertes | Exigences sans réponse consolidée, chacune dans **une seule** file : renvoyée pour réallocation (décision du chef de projet), puis en attente du client (Q&A), puis chez un contributeur (en retard au-delà de 5 jours, la plus ancienne et chez qui), sinon non affectée (DEC-117) |
+| Attente des exigences ouvertes | Exigences sans réponse consolidée, chacune dans **une seule** file : renvoyée pour réallocation (décision du tender manager), puis en attente du client (Q&A), puis chez un contributeur (en retard au-delà de 5 jours, la plus ancienne et chez qui), sinon non affectée (DEC-117) |
 | Blocage client | Affectations `awaiting_qa`, ancienneté de la question liée ; date de réponse attendue du client |
-| Casting incomplet | Périmètres/systèmes utiles au dossier sans personne ; une personne par OBS, responsable de sa conformité (DEC-087) ; absence non bloquante (DEC-025) |
+| Staffing incomplet | Périmètres/sous-systèmes utiles au dossier sans personne ; une personne en charge (PIC) par OBS, responsable de sa conformité (DEC-087) ; absence non bloquante (DEC-025) |
 | Travail à revoir | Réponses affectées par une nouvelle version, selon OPEN-07 |
 | Trajectoire | % d'exigences allouées et répondues dans le temps, de la réception à la soumission ; projection au rythme des 7 derniers jours, dite comme telle (« à ce rythme »), jamais comme un plan. Nécessite snapshots ou historique exploitable |
-| Activité de la semaine | **Par système et sous-système, jamais par personne** (DEC-118), sur 7 jours glissants : exigences validées en Allocation (une fois par exigence), réponses données (une fois par affectation), commentaires et questions, chacune comptée pour le système sur lequel elle porte, quel qu'en soit l'auteur. Les modifications de champ ne comptent pas — un classement de clics récompenserait l'agitation, pas le travail |
-| Réponses par système | Affectations confiées / répondues par système (par sous-système sur un tender à un seul système), retards (âge ≥ 5 jours) et le plus ancien. Le nom de la personne n'apparaît que sur l'affectation en retard à relancer (DEC-118) |
-| Réallocations | Exigences renvoyées par un système : réallouées, maintenues, à décider ; par motif (bon système mais mauvaise personne, mauvais système, système non concerné) et par demandeur |
-| Corrections IA | Propositions modifiées par champ ; définir dénominateur, revue effective et corrections répétées. **Hors tableau de bord du projet** (DEC-117) : reste dans Configuration › AI feedback |
+| Activité de la semaine | **Par sous-système, jamais par personne** (DEC-118 ; un seul niveau depuis DEC-126), sur 7 jours glissants : exigences validées en Allocation (une fois par exigence), réponses données (une fois par affectation), commentaires et questions, chacune comptée pour le sous-système sur lequel elle porte, quel qu'en soit l'auteur. Les modifications de champ ne comptent pas — un classement de clics récompenserait l'agitation, pas le travail |
+| Réponses par sous-système | Affectations confiées / répondues par sous-système (sur un tender à un seul sous-système, l'ancien découpage par niveau inférieur n'existe plus : DEC-126), retards (âge ≥ 5 jours) et le plus ancien. Le nom de la personne n'apparaît que sur l'affectation en retard à relancer (DEC-118) |
+| Réallocations | Exigences renvoyées par un sous-système : réallouées, maintenues, à décider ; par motif (bon sous-système mais mauvaise personne, mauvais sous-système, sous-système non concerné) et par demandeur |
+| Corrections IA | Propositions modifiées par champ ; définir dénominateur, revue effective et corrections répétées. **Hors tableau de bord du tender** (DEC-117) : reste dans Configuration › AI feedback |
 
 **Une cloche de notification qui ne fait rien est un mensonge d'interface.** Un contrôle inerte sur quatre écrans sur cinq apprend au lecteur qu'il est inerte partout. Ce qu'une notification affiche se calcule depuis l'état réel de l'écran, résume **par nature avec son compte** plutôt que d'énumérer (une ligne par affectation donne cinquante lignes sur un vrai jeu de données — un tableau, pas une notification), et dit explicitement quand rien n'attend le lecteur. Un élément unique nomme son exigence : un compte de un qui cache laquelle ne sert à rien.
 
-Une métrique doit annoncer son unité : exigences, systèmes, équipes, réponses et personnes ne sont pas interchangeables. Aucun indicateur composite santé ni pourcentage global unique n'est adopté sans définition métier. Les valeurs de démo ne constituent pas une mesure réelle.
+Une métrique doit annoncer son unité : exigences, sous-systèmes, équipes, réponses et personnes ne sont pas interchangeables. Aucun indicateur composite santé ni pourcentage global unique n'est adopté sans définition métier. Les valeurs de démo ne constituent pas une mesure réelle.
 
 ## Correspondance avec les 29 FR historiques
 
@@ -47,7 +47,7 @@ Une métrique doit annoncer son unité : exigences, systèmes, équipes, répons
 | 19–20 | QA-001 à QA-009 | Deux flux, pas un chat générique |
 | 21 | PLAT-006/007 | DEC-023 : 10 utilisateurs simultanés, 100 000 lignes |
 | 22–23 | PLAT-003 | Périmètre audit et conservation OPEN-11 |
-| 24–26 | ACC-001 à ACC-007, PLAT-002 | DEC-012/013 : lecture projet, édition système, actions PM |
+| 24–26 | ACC-001 à ACC-007, PLAT-002 | DEC-012/013 : lecture tender, édition sous-système, actions TM |
 | 27 | OPEN-11 | Standards et contraintes à fournir |
 | 28–29 | PLAT-004 | Contrats d'échange et priorité OPEN-10/12 |
 
