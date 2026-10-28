@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Req — Statistics, proposal v2</title>
+<!-- Proposal page, not part of the prototype build. React 18 + @wick-charts/react 0.9.0
+     loaded as ES modules from jsdelivr (no build step). All figures are invented demo data. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F5F9; --panel:#FFFFFF; --panel-2:#F7F9FC; --line:#E1E6EE; --line-2:#CFD7E3;
+  --text:#1E3246; --text-2:#4F6378; --text-3:#8494A7; --accent:#0B294A; --accent-soft:#E6EBF2; --brand-red:#E4002B;
+  --c:#2E9E5B; --nc:#D6404A; --qa:#E8B931; --ret:#E8873A; --open:#3B6FD9; --unalloc:#A3AEBD;
+  --good:#2E9E5B; --good-soft:#E3F3EA; --mid:#C98A0C; --mid-soft:#FBF1DC; --bad:#C8323C; --bad-soft:#FBE5E6;
+  --font:"Noto Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:16px;height:52px;padding:0 24px;background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{font-weight:700;letter-spacing:-.2px}
+.crumb{color:var(--text-2)}
+.tag{margin-left:auto;font-size:12px;color:var(--text-2);border:1px dashed var(--line-2);border-radius:999px;padding:3px 10px}
+.wrap{max-width:1240px;margin:0 auto;padding:20px 24px 60px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:8px;line-height:1.55}
+.intro h1{margin:0;font-size:20px;display:flex;align-items:center;gap:10px}
+.intro h1:before{content:"";width:5px;height:.85em;background:var(--brand-red);display:inline-block}
+.intro p{margin:0;color:var(--text-2);max-width:960px}
+.map{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--text-2)}
+.map b{color:var(--text)}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin:16px 0}
+.ctl{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)}
+.seg{display:flex;gap:2px;padding:2px;border:1px solid var(--line-2);border-radius:8px;background:var(--panel-2)}
+.seg button{border:0;background:transparent;padding:5px 11px;border-radius:6px;color:var(--text-2);font-weight:500}
+.seg button.on{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+select{font-family:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line-2);border-radius:8px;background:var(--panel);color:var(--text)}
+.focus{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--accent);color:#fff;font-size:12px;font-weight:600}
+.focus button{border:0;background:transparent;color:#fff;padding:0 0 0 4px}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.tabs button{border:0;background:transparent;padding:10px 14px;color:var(--text-2);font-weight:600;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.card.wide{grid-column:1/-1}
+.ch{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ch h2{margin:0;font-size:15px}
+.badge{font-size:11px;font-weight:600;border-radius:999px;padding:2px 8px;background:var(--accent-soft);color:var(--accent)}
+.badge.kept{background:var(--panel-2);color:var(--text-2);border:1px solid var(--line)}
+.ch .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.take{color:var(--text);line-height:1.5}
+.take b.bad{color:var(--bad)} .take b.good{color:var(--good)} .take b.mid{color:var(--mid)}
+.why{font-size:12px;color:var(--text-3);line-height:1.5;border-top:1px dashed var(--line);padding-top:8px}
+.why b{color:var(--text-2)}
+.chart{height:300px;min-width:0} .chart.tall{height:340px} .chart.short{height:240px}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .k{font-size:12px;color:var(--text-2)}
+.kpi .v{font-size:26px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12px;font-variant-numeric:tabular-nums}
+.kpi.hero{border-color:var(--accent)} .kpi.hero .v{font-size:32px}
+.up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--text-3)}
+.up.badway{color:var(--bad)} .down.goodway{color:var(--good)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-3);font-weight:600;text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+th:first-child,td:first-child{text-align:left}
+td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+tr.row{cursor:pointer} tr.row:hover td{background:var(--panel-2)} tr.row.sel td{background:var(--accent-soft)}
+td.code{font-family:var(--mono);font-weight:600}
+td.nc{color:var(--nc);font-weight:600}
+.rag{display:inline-block;min-width:54px;text-align:center;border-radius:6px;padding:2px 6px;font-weight:700}
+.rag.g{background:var(--good-soft);color:var(--good)} .rag.a{background:var(--mid-soft);color:var(--mid)} .rag.r{background:var(--bad-soft);color:var(--bad)}
+.legend-rag{display:flex;gap:12px;font-size:12px;color:var(--text-2);flex-wrap:wrap}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.step{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:6px;background:var(--panel-2)}
+.step .n{font-size:22px;font-weight:700}
+.step .bar{height:6px;border-radius:3px;background:var(--line)} .step .bar span{display:block;height:100%;border-radius:3px;background:var(--accent)}
+.step .s{font-size:12px;color:var(--text-2)}
+.queues{display:grid;gap:8px}
+.q{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.q .t{font-weight:600} .q .s{font-size:12px;color:var(--text-2);grid-column:1/-1} .q .n{font-weight:700;font-variant-numeric:tabular-nums}
+.risk{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.risk code{font-weight:700;font-size:12px}
+.report{white-space:pre-wrap;font-family:var(--mono);font-size:12px;line-height:1.6;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0}
+.btn{border:1px solid var(--line-2);background:var(--panel);border-radius:8px;padding:5px 10px;color:var(--text);font-weight:500}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.note{font-size:12px;color:var(--text-2)}
+@media (max-width:1000px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<script>window.process={env:{NODE_ENV:"production"}};</script>
+<script type="importmap">{"imports":{
+"react":"https://cdn.jsdelivr.net/npm/react@18.3.1/+esm",
+"react/jsx-runtime":"https://cdn.jsdelivr.net/npm/react@18.3.1/jsx-runtime/+esm",
+"react-dom/client":"https://cdn.jsdelivr.net/npm/react-dom@18.3.1/client/+esm",
+"htm":"https://cdn.jsdelivr.net/npm/htm@3.1.1/+esm",
+"@wick-charts/react":"https://cdn.jsdelivr.net/npm/@wick-charts/react@0.9.0/dist/index.js"}}</script>
+</head>
+<body>
+<div id="root"></div>
+<script type="module">
+import React, {useState, useMemo} from "react";
+import {createRoot} from "react-dom/client";
+import htm from "htm";
+import {ChartContainer, BarSeries, LineSeries, HeatmapSeries, HeatmapTooltip, PieSeries, PieLegend, PieTooltip,
+        Tooltip, Legend, YAxis, XAxis, Sparkline, NumberFlow, createTheme} from "@wick-charts/react";
+const html = htm.bind(React.createElement);
+
+/* ---------------- demo data (invented, deterministic) ---------------- */
+function rng(seed){ return ()=>{ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const WEEKS = ["W35","W36","W37","W38","W39","W40","W41","W42","W43"];
+const WEEK_T = WEEKS.map((w,i)=>Date.UTC(2026,7,24)+i*7*86400000);   // Mondays, for sparklines
+const SUBMISSION = "W46";
+const STATUSES = [
+  {k:"c",      label:"Compliant",                    color:"#2E9E5B"},
+  {k:"nc",     label:"Not compliant",                color:"#D6404A"},
+  {k:"qa",     label:"Question to the client",       color:"#E8B931"},
+  {k:"ret",    label:"Returned — not this sub-system",color:"#E8873A"},
+  {k:"open",   label:"Awaiting answer",              color:"#3B6FD9"},
+  {k:"unalloc",label:"Not allocated yet",            color:"#A3AEBD"},
+];
+const SK = STATUSES.map(s=>s.k);
+
+function simulate(units, seed){
+  const r=rng(seed);
+  return units.map(u=>{
+    const speed=u.speed??(0.55+r()*0.9), ncRate=u.nc??(0.02+r()*0.1), start=u.start??(r()*2);
+    const weeks=WEEKS.map((_,i)=>{
+      const t=Math.max(0,i-start);
+      const alloc=Math.min(1,0.45+0.13*t*Math.min(speed,1.2));
+      const ans=Math.min(0.995,1/(1+Math.exp(-(t*speed-3.2)/1.1)));
+      const allocated=Math.round(u.total*alloc), answered=Math.round(allocated*ans);
+      const nc=Math.round(answered*ncRate), rest=allocated-answered;
+      const qa=Math.round(rest*Math.max(0.05,0.28-0.025*i)), ret=Math.round(rest*0.06);
+      return {c:answered-nc, nc, qa, ret, open:Math.max(0,rest-qa-ret), unalloc:u.total-allocated};
+    });
+    return {...u, weeks};
+  });
+}
+const TURNKEY_UNITS = [
+  {code:"POS",total:4690},{code:"COM",total:1330},{code:"SPM",total:3100,speed:1.4,nc:.02},{code:"SIG",total:1055},
+  {code:"DEQ",total:680},{code:"AFC",total:780,speed:1.35},{code:"SCADA",total:655},{code:"PSD",total:570,speed:.62},
+  {code:"SEN",total:590,nc:.11},{code:"RST",total:640,speed:.25,start:3,nc:.12},{code:"RAMS",total:120,speed:.5},{code:"CYB",total:60,nc:.14},
+];
+/* SIG standalone tender: one sub-system, so the second parameter is the organisation (OBS) or the ABS category.
+   14 organisations sit under 8 ABS categories — more organisations than a chart can show legibly. */
+const SIG_ORGS = [
+  ["Signalling design authority","Design",420],["Interlocking application design","Design",380],["Wayside equipment design","Design",310],
+  ["Radio & telecom engineering","Interfaces",260],["Power & earthing","Interfaces",140],["Safety assurance","Safety",230],["RAMS engineering","Safety",120],
+  ["Verification & validation","V&V",300],["Installation engineering","Installation",210],["Testing & commissioning","Testing & commissioning",250],
+  ["Systems integration","Interfaces",160],["Maintenance engineering","Maintenance",90],["Training","Project management",40],["Project engineering","Project management",110],
+].map(([code,abs,total],i)=>({code,abs,total,speed:[1.1,.8,1.2,.7,1.3,.45,.9,1,.6,.5,1.15,1.25,1.4,1][i]}));
+
+function aggregate(units, keyFn){
+  const by=new Map();
+  units.forEach(u=>{ const k=keyFn(u); const g=by.get(k)||{code:k,total:0,weeks:WEEKS.map(()=>Object.fromEntries(SK.map(s=>[s,0])))};
+    g.total+=u.total; u.weeks.forEach((w,i)=>SK.forEach(s=>g.weeks[i][s]+=w[s])); by.set(k,g); });
+  return [...by.values()];
+}
+function topN(units, n){
+  if(units.length<=n) return units;
+  const sorted=[...units].sort((a,b)=>b.total-a.total), keep=sorted.slice(0,n), rest=sorted.slice(n);
+  const other=aggregate(rest,()=>`Other (${rest.length})`)[0];
+  return [...keep, other];
+}
+const TK = simulate(TURNKEY_UNITS, 7);
+const SIGO = simulate(SIG_ORGS, 11);
+const DATASETS = {
+  tk:  {name:"STB-2026 · Turnkey (demo)", dims:{unit:{label:"Sub-system", units:TK}}},
+  sig: {name:"RFP-2026-114 · SIG (demo)", dims:{
+         abs:{label:"ABS category", units:aggregate(SIGO,u=>u.abs)},
+         org:{label:"Organisation (OBS)", units:topN(SIGO,8), all:SIGO}}},
+};
+
+/* ---------------- helpers ---------------- */
+const sum=(o)=>SK.reduce((s,k)=>s+o[k],0);
+const answered=(w)=>w.c+w.nc;
+const pct=(a,b)=>b?Math.round(a/b*1000)/10:0;
+const prog=(w)=>pct(answered(w),sum(w));
+const allocPct=(w)=>pct(sum(w)-w.unalloc,sum(w));
+const fmt=(n)=>n.toLocaleString("en-US");
+const rag=(p)=>p>=90?"g":p>=50?"a":"r";
+function totalOf(units, i, focus){ const t=Object.fromEntries(SK.map(k=>[k,0])); units.filter(u=>!focus||u.code===focus).forEach(u=>SK.forEach(k=>t[k]+=u.weeks[i][k])); return t; }
+function delta(n){ return n>0?`+${fmt(n)}`:n<0?`−${fmt(-n)}`:"±0"; }
+function dpts(n){ const r=Math.round(n*10)/10; return r>0?`+${r} pts`:r<0?`−${-r} pts`:"±0 pts"; }
+function andList(l){ return l.length<2?l.join(""):`${l.slice(0,-1).join(", ")} and ${l[l.length-1]}`; }
+
+const theme = createTheme({ background:"#FFFFFF", typography:{fontFamily:"Noto Sans, system-ui, sans-serif", fontSize:11}, fontUrl:null, grid:{color:"#EEF1F5", style:"solid"},
+  seriesColors:["#0B294A","#3B6FD9","#1B9AAA","#E8873A","#7B3FE4","#D6404A","#2E9E5B","#E8B931","#5F7A99","#C2185B"] }).theme;
+const PCT_SCALE = {pct:{position:"right", min:0, max:100}};
+
+/* ---------------- blocks: weekly follow-up ---------------- */
+function Kpis({units, wi, focus}){
+  const now=totalOf(units,wi,focus), prev=totalOf(units,Math.max(0,wi-1),focus);
+  const series=k=>WEEKS.slice(0,wi+1).map((_,i)=>({time:WEEK_T[i], value:k(totalOf(units,i,focus))}));
+  const items=[
+    {k:"Overall progress", v:prog(now), d:prog(now)-prog(prev), unit:"%", hero:true, s:series(prog), good:"up"},
+    {k:"Allocated", v:allocPct(now), d:allocPct(now)-allocPct(prev), unit:"%", s:series(allocPct), good:"up"},
+    {k:"Compliant", v:now.c, d:now.c-prev.c, s:series(w=>w.c), good:"up"},
+    {k:"Not compliant", v:now.nc, d:now.nc-prev.nc, s:series(w=>w.nc), good:"down", color:"#D6404A"},
+    {k:"Questions to the client", v:now.qa, d:now.qa-prev.qa, s:series(w=>w.qa), good:"down", color:"#C98A0C"},
+    {k:"Still to answer", v:now.open+now.qa+now.ret+now.unalloc, d:(now.open+now.qa+now.ret+now.unalloc)-(prev.open+prev.qa+prev.ret+prev.unalloc), s:series(w=>w.open+w.qa+w.ret+w.unalloc), good:"down"},
+  ];
+  return html`<div class="kpis">${items.map(it=>{
+    const dir=it.d>0?"up":it.d<0?"down":"flat";
+    const cls=dir==="flat"?"flat":(dir===it.good?dir:`${dir} ${dir==="up"?"badway":"goodway"}`);
+    const dtxt=it.unit==="%"?dpts(it.d):delta(it.d);
+    return html`<div class=${"kpi"+(it.hero?" hero":"")}>
+      <div class="k">${it.k}</div>
+      <div class="v"><${NumberFlow} value=${it.v} format=${v=>it.unit==="%"?`${Math.round(v)}%`:fmt(Math.round(v))}/></div>
+      <div class=${"d "+cls}>${dtxt} vs ${WEEKS[Math.max(0,wi-1)]}</div>
+      <${Sparkline} data=${it.s} theme=${theme} width=${150} height=${30} valuePosition="none" color=${it.color||"#0B294A"} area=${{visible:true}} style=${{minHeight:0,border:0,background:"transparent"}}/>
+    </div>`; })}</div>`;
+}
+
+function WeeklyChart({units, wi, focus, unitLabel}){
+  const ws=WEEKS.slice(0,wi+1);
+  const t=ws.map((_,i)=>totalOf(units,i,focus));
+  const layers=STATUSES.map(s=>({label:s.label, color:s.color, data:ws.map((w,i)=>({x:w, value:t[i][s.k]}))}));
+  const now=t[wi], prev=t[Math.max(0,wi-1)];
+  return html`<div class="card wide">
+    <div class="ch"><h2>Weekly progress</h2><span class="badge">new</span><span class="note">${focus?`${unitLabel} ${focus}`:"whole tender"} · ${WEEKS[0]} → ${WEEKS[wi]}</span></div>
+    <div class="take">Overall progress <b>${prog(now)}%</b> in ${WEEKS[wi]} (<b class=${prog(now)>=prog(prev)?"good":"bad"}>${dpts(prog(now)-prog(prev))}</b> on ${WEEKS[Math.max(0,wi-1)]}), ${fmt(answered(now))} of ${fmt(sum(now))} assignments answered; ${allocPct(now)}% allocated. Submission ${SUBMISSION}.</div>
+    <div class="chart tall"><${ChartContainer} key=${"wk"+focus+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",categories:ws}, y:{position:"left"}}} scales=${PCT_SCALE} interactive=${false} style=${{minHeight:0}}>
+      <${BarSeries} data=${layers} options=${{stacking:"normal", cornerRadius:2}}/>
+      <${LineSeries} scale="pct" data=${[{label:"Overall progress %", color:"#7B3FE4", data:ws.map((w,i)=>({x:w,value:prog(t[i])}))},
+                                        {label:"Allocated %", color:"#1B9AAA", data:ws.map((w,i)=>({x:w,value:allocPct(t[i])}))}]}
+          options=${{strokeWidth:2.5, points:{visible:true, radius:3}}}/>
+      <${YAxis} format=${v=>v>=1000?`${Math.round(v/100)/10}k`:`${v}`}/><${YAxis} scale="pct" format=${v=>`${Math.round(v)}%`}/><${XAxis}/>
+      <${Tooltip}/><${Legend}/>
+    </${ChartContainer}></div>
+    <div class="why"><b>Pourquoi.</b> Le graphe 1 du reporting, avec les mêmes deux paramètres (semaine × ${unitLabel.toLowerCase()}) : un clic sur une ligne du tableau ci-dessous filtre ce graphe. Les deux courbes sont sur leur propre échelle en %, à droite, pour ne pas écraser les barres.</div>
+  </div>`;
+}
+
+function UnitBars({units, wi, unitLabel, focus}){
+  const [mode,setMode]=useState("normal");
+  const rows=[...units].sort((a,b)=>prog(a.weeks[wi])-prog(b.weeks[wi]));
+  const cats=rows.map(u=>u.code);
+  const layers=STATUSES.map(s=>({label:s.label,color:s.color,data:rows.map(u=>({x:u.code,value:u.weeks[wi][s.k]}))}));
+  const late=rows.filter(u=>prog(u.weeks[wi])<50).map(u=>`${u.code} ${Math.round(prog(u.weeks[wi]))}%`);
+  return html`<div class="card wide">
+    <div class="ch"><h2>By ${unitLabel.toLowerCase()} — ${WEEKS[wi]}</h2><span class="badge">improved</span>
+      <div class="right"><div class="seg"><button class=${mode==="normal"?"on":""} onClick=${()=>setMode("normal")}>Counts</button><button class=${mode==="percent"?"on":""} onClick=${()=>setMode("percent")}>Share %</button></div></div></div>
+    <div class="take">${late.length?html`<b class="bad">${late.length} behind</b> (under 50%): ${andList(late)}.`:html`<b class="good">Everyone is past 50%.</b>`} Sorted from the furthest behind.</div>
+    <div class="chart"><${ChartContainer} key=${"ub"+mode+wi+unitLabel+cats.join()} theme=${theme} axis=${{x:{type:"category",categories:cats}}} interactive=${false} style=${{minHeight:0}}>
+      <${BarSeries} data=${layers} options=${{stacking:mode, cornerRadius:2}}/>
+      <${YAxis} format=${v=>mode==="percent"?`${Math.round(v)}%`:v>=1000?`${Math.round(v/100)/10}k`:`${v}`}/><${XAxis}/><${Tooltip}/><${Legend}/>
+    </${ChartContainer}></div>
+    <div class="why"><b>Pourquoi.</b> Le graphe 2, trié du plus en retard au plus avancé. La vue « Share % » met un petit ${unitLabel.toLowerCase()} (60 exigences) au même niveau qu'un gros (4 000) : c'est ce que les barres en nombre cachent.</div>
+  </div>`;
+}
+
+function Scorecard({units, wi, unitLabel, focus, setFocus}){
+  const [sort,setSort]=useState({k:"prog",dir:1});
+  const rows=units.map(u=>{ const w=u.weeks[wi], p=u.weeks[Math.max(0,wi-1)];
+    return {code:u.code, total:sum(w), c:w.c, nc:w.nc, dnc:w.nc-p.nc, qa:w.qa, ret:w.ret, open:w.open, unalloc:w.unalloc, prog:prog(w), dprog:prog(w)-prog(p),
+            trend:u.weeks.slice(0,wi+1).map((x,i)=>({time:WEEK_T[i],value:prog(x)}))}; });
+  rows.sort((a,b)=>sort.dir*((a[sort.k]>b[sort.k])-(a[sort.k]<b[sort.k])));
+  const tot=totalOf(units,wi), ptot=totalOf(units,Math.max(0,wi-1));
+  const H=(k,l)=>html`<th onClick=${()=>setSort(s=>({k,dir:s.k===k?-s.dir:1}))}>${l}${sort.k===k?(sort.dir>0?" ▲":" ▼"):""}</th>`;
+  return html`<div class="card wide">
+    <div class="ch"><h2>${unitLabel} scorecard — ${WEEKS[wi]}</h2><span class="badge">improved</span>
+      <div class="right legend-rag"><span><span class="rag r">${"< 50%"}</span></span><span><span class="rag a">50–89%</span></span><span><span class="rag g">≥ 90%</span></span></div></div>
+    <div class="tablewrap"><table>
+      <thead><tr>${H("code",unitLabel)}${H("total","Assignments")}${H("c","C")}${H("nc","NC")}${H("dnc","NC Δ")}${H("qa","Q&A")}${H("ret","Returned")}${H("open","Awaiting")}${H("unalloc","Not allocated")}${H("prog","Progress")}${H("dprog","Δ week")}<th style=${{textAlign:"left",cursor:"default"}}>Trend</th></tr></thead>
+      <tbody>${rows.map(r=>html`<tr class=${"row"+(focus===r.code?" sel":"")} onClick=${()=>setFocus(focus===r.code?null:r.code)} title="Click to filter the page on this line">
+        <td class="code">${r.code}</td><td>${fmt(r.total)}</td><td>${fmt(r.c)}</td><td class="nc">${fmt(r.nc)}</td>
+        <td class=${r.dnc>0?"down":r.dnc<0?"up":"flat"}>${delta(r.dnc)}</td><td>${fmt(r.qa)}</td><td>${fmt(r.ret)}</td><td>${fmt(r.open)}</td><td>${fmt(r.unalloc)}</td>
+        <td><span class=${"rag "+rag(r.prog)}>${Math.round(r.prog)}%</span></td>
+        <td class=${r.dprog>0?"up":r.dprog<0?"down":"flat"}>${dpts(r.dprog)}</td>
+        <td style=${{textAlign:"left",minWidth:"130px"}}><div style=${{width:"120px",height:"26px"}}><${Sparkline} data=${r.trend} theme=${theme} width=${120} height=${26} valuePosition="none" color=${r.prog>=90?"#2E9E5B":r.prog>=50?"#C98A0C":"#C8323C"} style=${{minHeight:0,border:0,background:"transparent",width:"120px",display:"flex"}}/></div></td>
+      </tr>`)}
+      <tr><td><b>Total</b></td><td><b>${fmt(sum(tot))}</b></td><td><b>${fmt(tot.c)}</b></td><td class="nc"><b>${fmt(tot.nc)}</b></td><td><b>${delta(tot.nc-ptot.nc)}</b></td><td><b>${fmt(tot.qa)}</b></td><td><b>${fmt(tot.ret)}</b></td><td><b>${fmt(tot.open)}</b></td><td><b>${fmt(tot.unalloc)}</b></td><td><span class=${"rag "+rag(prog(tot))}>${Math.round(prog(tot))}%</span></td><td><b>${dpts(prog(tot)-prog(ptot))}</b></td><td></td></tr>
+      </tbody></table></div>
+    <div class="why"><b>Pourquoi.</b> Les graphes 3 et 5 en un seul tableau : la colonne Δ et la tendance sur ${wi+1} semaines disent qui avance et qui stagne, ce que la photo d'une semaine ne dit pas. Tri par colonne ; un clic sur une ligne filtre toute la page.</div>
+  </div>`;
+}
+
+function NcTrend({units, wi, unitLabel}){
+  const ws=WEEKS.slice(0,wi+1);
+  const byNc=[...units].sort((a,b)=>b.weeks[wi].nc-a.weeks[wi].nc);
+  const top=byNc.slice(0,6), rest=byNc.slice(6);
+  const layers=top.map(u=>({label:u.code, data:ws.map((w,i)=>({x:w,value:u.weeks[i].nc}))}));
+  if(rest.length) layers.push({label:`Other (${rest.length})`, color:"#A3AEBD", data:ws.map((w,i)=>({x:w,value:rest.reduce((s,u)=>s+u.weeks[i].nc,0)}))});
+  const now=totalOf(units,wi).nc, prev=totalOf(units,Math.max(0,wi-1)).nc;
+  const movers=units.map(u=>({code:u.code,d:u.weeks[wi].nc-u.weeks[Math.max(0,wi-1)].nc})).filter(x=>x.d>0).sort((a,b)=>b.d-a.d).slice(0,3);
+  return html`<div class="card">
+    <div class="ch"><h2>Not compliant, week by week</h2><span class="badge">improved</span></div>
+    <div class="take"><b class="bad">${fmt(now)}</b> not compliant (${delta(now-prev)} on ${WEEKS[Math.max(0,wi-1)]})${movers.length?html`, mostly from ${andList(movers.map(m=>`${m.code} (+${m.d})`))}`:""}.</div>
+    <div class="chart"><${ChartContainer} key=${"nc"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",categories:ws}}} interactive=${false} style=${{minHeight:0}}>
+      <${LineSeries} data=${layers} options=${{stacking:"normal", area:{visible:true}, strokeWidth:1.5, curve:"smooth"}}/>
+      <${YAxis}/><${XAxis}/><${Tooltip} sort="desc"/><${Legend}/>
+    </${ChartContainer}></div>
+    <div class="why"><b>Pourquoi.</b> Le graphe 4, limité aux 6 ${unitLabel.toLowerCase()}s qui portent le plus de NC (le reste groupé) pour rester lisible ; la phrase du haut est celle que le reporting écrit à la main (« +13, from POS and RST »).</div>
+  </div>`;
+}
+
+function Heat({units, wi, unitLabel}){
+  const ws=WEEKS.slice(0,wi+1), rows=[...units].sort((a,b)=>prog(a.weeks[wi])-prog(b.weeks[wi])).map(u=>u.code);
+  const data=units.flatMap(u=>ws.map((w,i)=>({x:w, y:u.code, value:prog(u.weeks[i])})));
+  return html`<div class="card">
+    <div class="ch"><h2>Progress map</h2><span class="badge">new</span></div>
+    <div class="take">Each cell is a ${unitLabel.toLowerCase()} in a week, from red (nothing answered) to green (all answered).</div>
+    <div class="chart"><${ChartContainer} key=${"hm"+wi+unitLabel} theme=${theme} interactive=${false} style=${{minHeight:0}}>
+      <${HeatmapSeries} data=${data} options=${{colors:["#C8323C","#E8B931","#2E9E5B"], min:0, max:100, gap:2, cornerRadius:3, columns:ws, rows, cellLabels:{format:v=>`${Math.round(v)}`}}}/>
+      <${HeatmapTooltip} format=${v=>`${Math.round(v)}%`}/>
+    </${ChartContainer}></div>
+    <div class="why"><b>Pourquoi.</b> En un coup d'œil : qui est en retard, et depuis quand. Remplace la lecture de dix tableaux hebdomadaires mis bout à bout.</div>
+  </div>`;
+}
+
+function Report({units, wi, unitLabel, tenderName}){
+  const now=totalOf(units,wi), prev=totalOf(units,Math.max(0,wi-1));
+  const movers=units.map(u=>({code:u.code,d:u.weeks[wi].nc-u.weeks[Math.max(0,wi-1)].nc})).filter(x=>x.d>0).sort((a,b)=>b.d-a.d).slice(0,3);
+  const behind=units.filter(u=>prog(u.weeks[wi])<50).sort((a,b)=>prog(a.weeks[wi])-prog(b.weeks[wi]));
+  const stalled=units.filter(u=>prog(u.weeks[wi])<90 && prog(u.weeks[wi])-prog(u.weeks[Math.max(0,wi-1)])<1);
+  const done=units.filter(u=>prog(u.weeks[wi])>=99);
+  const text=[`${tenderName} — weekly compliance follow-up, ${WEEKS[wi]}`, ``,
+    `Overall progress: ${prog(now)}% (${dpts(prog(now)-prog(prev))} on ${WEEKS[Math.max(0,wi-1)]}) — ${fmt(answered(now))} of ${fmt(sum(now))} assignments answered, ${allocPct(now)}% allocated.`,
+    `Not compliant: ${fmt(now.nc)} (${delta(now.nc-prev.nc)})${movers.length?`, mostly from ${andList(movers.map(m=>`${m.code} +${m.d}`))}`:""}.`,
+    `Questions with the client: ${fmt(now.qa)} (${delta(now.qa-prev.qa)}).`,
+    behind.length?`Behind (under 50%): ${andList(behind.map(u=>`${u.code} ${Math.round(prog(u.weeks[wi]))}%`))}.`:`No ${unitLabel.toLowerCase()} under 50%.`,
+    stalled.length?`No progress this week: ${andList(stalled.map(u=>u.code))}.`:``,
+    done.length?`Done: ${andList(done.map(u=>u.code))}.`:``,
+  ].filter((l,i,a)=>l!==""||i===1).join("\n");
+  const [copied,setCopied]=useState(false);
+  const copy=()=>{ navigator.clipboard?.writeText(text).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),1500);}).catch(()=>{}); };
+  return html`<div class="card wide">
+    <div class="ch"><h2>Weekly report</h2><span class="badge">new</span><div class="right"><button class="btn primary" onClick=${copy}>${copied?"Copied ✓":"Copy the text"}</button></div></div>
+    <pre class="report">${text}</pre>
+    <div class="why"><b>Pourquoi.</b> Le mail du mardi s'écrit tout seul à partir des mêmes chiffres : plus de copier-coller de captures Power BI, et les phrases (« +13, from POS and RST ») sont calculées, pas tapées.</div>
+  </div>`;
+}
+
+/* ---------------- blocks: compliance ---------------- */
+const STRATEGIES=[["Deviation accepted by design","#7B3FE4"],["Alternative offered","#1B9AAA"],["Clarify with the client","#E8B931"],["Kept as a gap","#D6404A"]];
+function complianceOf(units, wi){
+  const r=rng(1000+wi);
+  return units.map(u=>{ const w=u.weeks[wi], nc=w.nc; const docShare=Math.min(.95,.35+wi*.07);
+    const withStrat=Math.round(nc*docShare), withRisk=Math.round(withStrat*Math.min(.97,.55+wi*.05));
+    const strat=STRATEGIES.map((s,i)=>Math.round(withStrat*[.34,.26,.22,.18][i]));
+    const pendingExt=Math.round(w.open+w.qa+w.ret+w.unalloc+(nc-withStrat));
+    const extNc=Math.round(withStrat*.4), extC=w.c+(withStrat-extNc);
+    return {code:u.code, nc, withStrat, withRisk, missingStrat:nc-withStrat, missingRisk:withStrat-withRisk, strat, extC, extNc, pendingExt, total:sum(w), allocated:sum(w)-w.unalloc, answered:answered(w)}; });
+}
+function ComplianceTab({units, wi, unitLabel}){
+  const rows=complianceOf(units,wi);
+  const T=k=>rows.reduce((s,x)=>s+(Array.isArray(x[k])?0:x[k]),0);
+  const total=T("total"), allocated=T("allocated"), ans=T("answered"), nc=T("nc"), doc=T("withRisk"), extC=T("extC"), extNc=T("extNc"), pend=T("pendingExt");
+  const settled=extC+extNc;
+  const steps=[["Assigned",pct(allocated,total),`${fmt(allocated)} of ${fmt(total)} assignments`],["Internal compliance",pct(ans,total),`${fmt(ans)} answered · ${fmt(nc)} Not compliant`],
+               ["Not compliant documented",pct(doc,nc),`${fmt(doc)} of ${fmt(nc)} with a strategy and a risk`],["External compliance",pct(settled,settled+pend),`${fmt(settled)} settled · ${fmt(pend)} pending`]];
+  const sorted=[...rows].sort((a,b)=>(b.missingStrat+b.missingRisk)-(a.missingStrat+a.missingRisk));
+  const docLayers=[{label:"Strategy and risk",color:"#2E9E5B",data:sorted.map(x=>({x:x.code,value:x.withRisk}))},
+                   {label:"Risk missing",color:"#E8873A",data:sorted.map(x=>({x:x.code,value:x.missingRisk}))},
+                   {label:"Strategy missing",color:"#D6404A",data:sorted.map(x=>({x:x.code,value:x.missingStrat}))}];
+  const stratTotals=STRATEGIES.map((s,i)=>({label:s[0],color:s[1],value:rows.reduce((t,x)=>t+x.strat[i],0)})).concat([{label:"Strategy missing",color:"#A3AEBD",value:T("missingStrat")}]);
+  const worst=sorted.filter(x=>x.missingStrat+x.missingRisk>0).slice(0,3);
+  const queues=[["On a contributor",T("pendingExt")-0,"answers due — the oldest 12 days, in RST"],["On the client","","questions asked, the oldest 9 days ago · answers expected W44"],["On your decision","","returned for reallocation"],["Not assigned yet","","no one to answer yet"]];
+  const ws=units.map(u=>u.weeks[wi]);
+  queues[0][1]=fmt(ws.reduce((s,w)=>s+w.open,0)); queues[1][1]=fmt(ws.reduce((s,w)=>s+w.qa,0)); queues[2][1]=fmt(ws.reduce((s,w)=>s+w.ret,0)); queues[3][1]=fmt(ws.reduce((s,w)=>s+w.unalloc,0));
+  return html`<div class="grid">
+    <div class="card wide">
+      <div class="ch"><h2>Progress to the client</h2><span class="badge kept">kept</span></div>
+      <div class="take">So far the client will be told <b class="good">Compliant on ${fmt(extC)}</b> and <b class="bad">Not compliant on ${fmt(extNc)}</b> — <b class="mid">${fmt(pend)}</b> are not settled yet.</div>
+      <div class="steps">${steps.map(([t,p,s])=>html`<div class="step"><div class="s">${t}</div><div class="n">${Math.round(p)}%</div><div class="bar"><span style=${{width:`${p}%`}}></span></div><div class="s">${s}</div></div>`)}</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h2>What the client is told</h2><span class="badge">new</span></div>
+      <div class="chart short"><${ChartContainer} key=${"pie"+wi+unitLabel} theme=${theme} style=${{minHeight:0}}>
+        <${PieSeries} data=${[{label:"Compliant",value:extC,color:"#2E9E5B"},{label:"Not compliant",value:extNc,color:"#D6404A"},{label:"Pending",value:pend,color:"#A3AEBD"}]} options=${{innerRadiusRatio:.62, padAngle:1.2}}/>
+        <${PieLegend} position="right"/><${PieTooltip}/>
+      </${ChartContainer}></div>
+      <div class="why"><b>Pourquoi.</b> La conformité externe en une forme : ce qui partirait chez le client si on soumettait aujourd'hui.</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h2>Not compliant by gap strategy</h2><span class="badge kept">kept</span></div>
+      <div class="take"><b class="bad">${fmt(nc)}</b> Not compliant answers — <b class=${T("missingStrat")?"mid":"good"}>${fmt(T("missingStrat"))}</b> still without a strategy.</div>
+      <div class="chart short"><${ChartContainer} key=${"st"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",categories:stratTotals.map(s=>s.label)}}} interactive=${false} style=${{minHeight:0}}>
+        <${BarSeries} data=${stratTotals.map(s=>({label:s.label,color:s.color,data:stratTotals.map(t=>({x:t.label,value:t.label===s.label?s.value:0}))}))} options=${{stacking:"normal", valueLabels:true, cornerRadius:3}}/>
+        <${YAxis}/><${XAxis}/><${Tooltip}/>
+      </${ChartContainer}></div>
+    </div>
+    <div class="card wide">
+      <div class="ch"><h2>Not compliant documentation, by ${unitLabel.toLowerCase()}</h2><span class="badge">new</span></div>
+      <div class="take">${worst.length?html`Most left to document: ${andList(worst.map(x=>`${x.code} (${x.missingStrat} without strategy, ${x.missingRisk} without risk)`))}.`:html`<b class="good">Every Not compliant has its strategy and its risk.</b>`}</div>
+      <div class="chart"><${ChartContainer} key=${"doc"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",categories:sorted.map(x=>x.code)}}} interactive=${false} style=${{minHeight:0}}>
+        <${BarSeries} data=${docLayers} options=${{stacking:"normal", cornerRadius:2}}/>
+        <${YAxis}/><${XAxis}/><${Tooltip}/><${Legend}/>
+      </${ChartContainer}></div>
+      <div class="why"><b>Pourquoi.</b> Le bloc « Not compliant by gap strategy » dit combien il manque ; celui-ci dit chez qui, pour savoir qui relancer.</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h2>Answers by ${unitLabel.toLowerCase()}</h2><span class="badge kept">kept</span></div>
+      <div class="take">Now part of the scorecard of the follow-up tab (columns C, NC, Awaiting, Progress), with its trend.</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h2>What the open requirements are waiting on</h2><span class="badge kept">kept</span></div>
+      <div class="queues">${queues.map(([t,n,s])=>html`<div class="q"><span class="t">${t}</span><span class="n">${n}</span><span class="s">${s}</span></div>`)}</div>
+    </div>
+    <div class="card wide">
+      <div class="ch"><h2>Risks</h2><span class="badge kept">kept</span></div>
+      <div class="take"><b>6 risks</b> in the list, linked 41 times to Not compliant answers — 3 shared by several requirements.</div>
+      ${[["RSK-00002","the client's escalation matrix cannot be wired into the alerting as delivered","×14"],["RSK-00005","the gateway firmware cannot encrypt dashboard layouts within 2 seconds","×9"],["RSK-00001","third-party tools load the telemetry API beyond its rate limits","×7"],["RSK-00004","regional aggregation reports are logged later than 2 seconds after the event","×5"]].map(([id,t,n])=>html`<div class="risk"><code>${id}</code><span>There is a risk that ${t}.</span><b>${n}</b></div>`)}
+    </div>
+  </div>`;
+}
+
+/* ---------------- app ---------------- */
+function App(){
+  const [tender,setTender]=useState("tk");
+  const [dim,setDim]=useState("unit");
+  const [wi,setWi]=useState(WEEKS.length-1);
+  const [focus,setFocus]=useState(null);
+  const [tab,setTab]=useState("follow");
+  const ds=DATASETS[tender], d=ds.dims[dim]||Object.values(ds.dims)[0];
+  const units=d.units, unitLabel=d.label;
+  const pickTender=t=>{ setTender(t); setDim(t==="tk"?"unit":"abs"); setFocus(null); };
+  return html`
+  <div class="top"><span class="brand">Smart Req.</span><span class="crumb">/ ${ds.name} / Statistics</span><span class="tag">Proposal v2 — invented data</span></div>
+  <div class="wrap">
+    <div class="intro">
+      <h1>Statistics, proposal v2</h1>
+      <p>Le suivi que le business fait aujourd'hui à la main dans ses rapports hebdomadaires, refait dans l'outil avec les mêmes deux paramètres : <b>la semaine</b> et <b>le sous-système</b> sur un Turnkey. Sur un tender SIG ou RSC (un seul sous-système), le second paramètre devient <b>la catégorie ABS</b> ou <b>l'organisation (OBS)</b>. Rien n'est jamais compté par personne (DEC-118).</p>
+      <div class="map"><span>Correspondance avec le reporting (à confirmer) :</span><span><b>C</b> → Compliant</span><span><b>NC</b> → Not compliant</span><span><b>TBD</b> → Question to the client</span><span><b>OMS</b> → Returned — not this sub-system</span><span><b>REQ Not Analyzed</b> → Awaiting answer</span><span><b>RFP Not Identified</b> → Not allocated yet</span><span><b>GlobalProgress</b> → Overall progress</span><span><b>% RFP Analyzed</b> → Allocated</span></div>
+    </div>
+    <div class="controls">
+      <div class="ctl">Tender <div class="seg"><button class=${tender==="tk"?"on":""} onClick=${()=>pickTender("tk")}>Turnkey</button><button class=${tender==="sig"?"on":""} onClick=${()=>pickTender("sig")}>SIG</button></div></div>
+      ${tender==="sig"?html`<div class="ctl">Second parameter <div class="seg">${Object.entries(ds.dims).map(([k,v])=>html`<button class=${dim===k?"on":""} onClick=${()=>{setDim(k);setFocus(null);}}>${v.label}</button>`)}</div></div>`:html`<div class="ctl">Second parameter <b style=${{color:"var(--text)"}}>Sub-system</b></div>`}
+      <div class="ctl">Week <select value=${wi} onChange=${e=>setWi(+e.target.value)}>${WEEKS.map((w,i)=>html`<option value=${i}>${w}${i===WEEKS.length-1?" (this week)":""}</option>`)}</select></div>
+      ${focus?html`<span class="focus">${unitLabel}: ${focus}<button onClick=${()=>setFocus(null)} aria-label="Clear the filter">✕</button></span>`:""}
+    </div>
+    ${tender==="sig"&&dim==="org"?html`<div class="intro" style=${{marginBottom:"16px"}}><p><b>${d.all.length} organisations</b> sur ce tender : au-delà de 8, les plus petites sont regroupées dans « Other » pour que les graphes restent lisibles. Suggestion : par défaut <b>la catégorie ABS</b> (liste fixe, jamais trop longue, comparable d'un tender à l'autre), avec l'organisation en détail quand on en a peu (tender Urban, ≤ 12 équipes).</p></div>`:""}
+    <div class="tabs"><button class=${tab==="follow"?"on":""} onClick=${()=>setTab("follow")}>Weekly follow-up</button><button class=${tab==="compl"?"on":""} onClick=${()=>setTab("compl")}>Compliance</button></div>
+    ${tab==="follow"?html`
+      <${Kpis} units=${units} wi=${wi} focus=${focus}/>
+      <div class="grid">
+        <${WeeklyChart} units=${units} wi=${wi} focus=${focus} unitLabel=${unitLabel}/>
+        <${Scorecard} units=${units} wi=${wi} unitLabel=${unitLabel} focus=${focus} setFocus=${setFocus}/>
+        <${UnitBars} units=${units} wi=${wi} unitLabel=${unitLabel} focus=${focus}/>
+        <${NcTrend} units=${units} wi=${wi} unitLabel=${unitLabel}/>
+        <${Heat} units=${units} wi=${wi} unitLabel=${unitLabel}/>
+        <${Report} units=${units} wi=${wi} unitLabel=${unitLabel} tenderName=${ds.name}/>
+      </div>`:html`<${ComplianceTab} units=${units} wi=${wi} unitLabel=${unitLabel}/>`}
+  </div>`;
+}
+createRoot(document.getElementById("root")).render(html`<${App}/>`);
+</script>
+</body>
+</html>
