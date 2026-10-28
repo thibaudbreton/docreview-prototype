@@ -222,7 +222,7 @@ function WeeklyChart({units, wi, focus, unitLabel}){
   return html`<div class="card wide">
     <div class="ch"><h2>Weekly progress</h2><span class="badge">new</span><span class="note">${focus?`${unitLabel} ${focus}`:"whole tender"} · ${WEEKS[0]} → ${WEEKS[wi]}</span></div>
     <div class="take">Overall progress <b>${prog(now)}%</b> in ${WEEKS[wi]} (<b class=${prog(now)>=prog(prev)?"good":"bad"}>${dpts(prog(now)-prog(prev))}</b> on ${WEEKS[Math.max(0,wi-1)]}), ${fmt(answered(now))} of ${fmt(sum(now))} assignments answered; ${allocPct(now)}% allocated. Submission ${SUBMISSION}.</div>
-    <div class="chart tall"><${ChartContainer} key=${"wk"+focus+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",categories:ws}, y:{position:"left"}}} scales=${PCT_SCALE} interactive=${false} style=${{minHeight:0}}>
+    <div class="chart tall"><${ChartContainer} key=${"wk"+focus+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:ws}, y:{position:"left"}}} scales=${PCT_SCALE} style=${{minHeight:0}}>
       <${BarSeries} data=${layers} options=${{stacking:"normal", cornerRadius:2}}/>
       <${LineSeries} scale="pct" data=${[{label:"Overall progress %", color:"#7B3FE4", data:ws.map((w,i)=>({x:w,value:prog(t[i])}))},
                                         {label:"Allocated %", color:"#1B9AAA", data:ws.map((w,i)=>({x:w,value:allocPct(t[i])}))}]}
@@ -244,7 +244,7 @@ function UnitBars({units, wi, unitLabel, focus}){
     <div class="ch"><h2>By ${unitLabel.toLowerCase()} — ${WEEKS[wi]}</h2><span class="badge">improved</span>
       <div class="right"><div class="seg"><button class=${mode==="normal"?"on":""} onClick=${()=>setMode("normal")}>Counts</button><button class=${mode==="percent"?"on":""} onClick=${()=>setMode("percent")}>Share %</button></div></div></div>
     <div class="take">${late.length?html`<b class="bad">${late.length} behind</b> (under 50%): ${andList(late)}.`:html`<b class="good">Everyone is past 50%.</b>`} Sorted from the furthest behind.</div>
-    <div class="chart"><${ChartContainer} key=${"ub"+mode+wi+unitLabel+cats.join()} theme=${theme} axis=${{x:{type:"category",categories:cats}}} interactive=${false} style=${{minHeight:0}}>
+    <div class="chart"><${ChartContainer} key=${"ub"+mode+wi+unitLabel+cats.join()} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:cats}}} style=${{minHeight:0}}>
       <${BarSeries} data=${layers} options=${{stacking:mode, cornerRadius:2}}/>
       <${YAxis} format=${v=>mode==="percent"?`${Math.round(v)}%`:v>=1000?`${Math.round(v/100)/10}k`:`${v}`}/><${XAxis}/><${Tooltip}/><${Legend}/>
     </${ChartContainer}></div>
@@ -268,9 +268,9 @@ function Scorecard({units, wi, unitLabel, focus, setFocus}){
       <tbody>${rows.map(r=>html`<tr class=${"row"+(focus===r.code?" sel":"")} onClick=${()=>setFocus(focus===r.code?null:r.code)} title="Click to filter the page on this line">
         <td class="code">${r.code}</td><td>${fmt(r.total)}</td><td>${fmt(r.c)}</td><td class="nc">${fmt(r.nc)}</td>
         <td class=${r.dnc>0?"down":r.dnc<0?"up":"flat"}>${delta(r.dnc)}</td><td>${fmt(r.qa)}</td><td>${fmt(r.ret)}</td><td>${fmt(r.open)}</td><td>${fmt(r.unalloc)}</td>
-        <td><span class=${"rag "+rag(r.prog)}>${Math.round(r.prog)}%</span></td>
+        <td title=${`${fmt(r.c+r.nc)} of ${fmt(r.total)} assignments answered`}><span class=${"rag "+rag(r.prog)}>${Math.round(r.prog)}%</span></td>
         <td class=${r.dprog>0?"up":r.dprog<0?"down":"flat"}>${dpts(r.dprog)}</td>
-        <td style=${{textAlign:"left",minWidth:"130px"}}><div style=${{width:"120px",height:"26px"}}><${Sparkline} data=${r.trend} theme=${theme} width=${120} height=${26} valuePosition="none" color=${r.prog>=90?"#2E9E5B":r.prog>=50?"#C98A0C":"#C8323C"} style=${{minHeight:0,border:0,background:"transparent",width:"120px",display:"flex"}}/></div></td>
+        <td style=${{textAlign:"left",minWidth:"130px"}} title=${r.trend.map((t,i)=>`${WEEKS[i]}: ${Math.round(t.value)}%`).join("\n")}><div style=${{width:"120px",height:"26px"}}><${Sparkline} data=${r.trend} theme=${theme} width=${120} height=${26} valuePosition="none" color=${r.prog>=90?"#2E9E5B":r.prog>=50?"#C98A0C":"#C8323C"} style=${{minHeight:0,border:0,background:"transparent",width:"120px",display:"flex"}}/></div></td>
       </tr>`)}
       <tr><td><b>Total</b></td><td><b>${fmt(sum(tot))}</b></td><td><b>${fmt(tot.c)}</b></td><td class="nc"><b>${fmt(tot.nc)}</b></td><td><b>${delta(tot.nc-ptot.nc)}</b></td><td><b>${fmt(tot.qa)}</b></td><td><b>${fmt(tot.ret)}</b></td><td><b>${fmt(tot.open)}</b></td><td><b>${fmt(tot.unalloc)}</b></td><td><span class=${"rag "+rag(prog(tot))}>${Math.round(prog(tot))}%</span></td><td><b>${dpts(prog(tot)-prog(ptot))}</b></td><td></td></tr>
       </tbody></table></div>
@@ -289,7 +289,7 @@ function NcTrend({units, wi, unitLabel}){
   return html`<div class="card">
     <div class="ch"><h2>Not compliant, week by week</h2><span class="badge">improved</span></div>
     <div class="take"><b class="bad">${fmt(now)}</b> not compliant (${delta(now-prev)} on ${WEEKS[Math.max(0,wi-1)]})${movers.length?html`, mostly from ${andList(movers.map(m=>`${m.code} (+${m.d})`))}`:""}.</div>
-    <div class="chart"><${ChartContainer} key=${"nc"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",categories:ws}}} interactive=${false} style=${{minHeight:0}}>
+    <div class="chart"><${ChartContainer} key=${"nc"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:ws}}} style=${{minHeight:0}}>
       <${LineSeries} data=${layers} options=${{stacking:"normal", area:{visible:true}, strokeWidth:1.5, curve:"smooth"}}/>
       <${YAxis}/><${XAxis}/><${Tooltip} sort="desc"/><${Legend}/>
     </${ChartContainer}></div>
@@ -303,7 +303,7 @@ function Heat({units, wi, unitLabel}){
   return html`<div class="card">
     <div class="ch"><h2>Progress map</h2><span class="badge">new</span></div>
     <div class="take">Each cell is a ${unitLabel.toLowerCase()} in a week, from red (nothing answered) to green (all answered).</div>
-    <div class="chart"><${ChartContainer} key=${"hm"+wi+unitLabel} theme=${theme} interactive=${false} style=${{minHeight:0}}>
+    <div class="chart"><${ChartContainer} key=${"hm"+wi+unitLabel} theme=${theme} style=${{minHeight:0}}>
       <${HeatmapSeries} data=${data} options=${{colors:["#C8323C","#E8B931","#2E9E5B"], min:0, max:100, gap:2, cornerRadius:3, columns:ws, rows, cellLabels:{format:v=>`${Math.round(v)}`}}}/>
       <${HeatmapTooltip} format=${v=>`${Math.round(v)}%`}/>
     </${ChartContainer}></div>
@@ -378,7 +378,7 @@ function ComplianceTab({units, wi, unitLabel}){
     <div class="card">
       <div class="ch"><h2>Not compliant by gap strategy</h2><span class="badge kept">kept</span></div>
       <div class="take"><b class="bad">${fmt(nc)}</b> Not compliant answers — <b class=${T("missingStrat")?"mid":"good"}>${fmt(T("missingStrat"))}</b> still without a strategy.</div>
-      <div class="chart short"><${ChartContainer} key=${"st"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",categories:stratTotals.map(s=>s.label)}}} interactive=${false} style=${{minHeight:0}}>
+      <div class="chart short"><${ChartContainer} key=${"st"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:stratTotals.map(s=>s.label)}}} style=${{minHeight:0}}>
         <${BarSeries} data=${stratTotals.map(s=>({label:s.label,color:s.color,data:stratTotals.map(t=>({x:t.label,value:t.label===s.label?s.value:0}))}))} options=${{stacking:"normal", valueLabels:true, cornerRadius:3}}/>
         <${YAxis}/><${XAxis}/><${Tooltip}/>
       </${ChartContainer}></div>
@@ -386,7 +386,7 @@ function ComplianceTab({units, wi, unitLabel}){
     <div class="card wide">
       <div class="ch"><h2>Not compliant documentation, by ${unitLabel.toLowerCase()}</h2><span class="badge">new</span></div>
       <div class="take">${worst.length?html`Most left to document: ${andList(worst.map(x=>`${x.code} (${x.missingStrat} without strategy, ${x.missingRisk} without risk)`))}.`:html`<b class="good">Every Not compliant has its strategy and its risk.</b>`}</div>
-      <div class="chart"><${ChartContainer} key=${"doc"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",categories:sorted.map(x=>x.code)}}} interactive=${false} style=${{minHeight:0}}>
+      <div class="chart"><${ChartContainer} key=${"doc"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:sorted.map(x=>x.code)}}} style=${{minHeight:0}}>
         <${BarSeries} data=${docLayers} options=${{stacking:"normal", cornerRadius:2}}/>
         <${YAxis}/><${XAxis}/><${Tooltip}/><${Legend}/>
       </${ChartContainer}></div>
