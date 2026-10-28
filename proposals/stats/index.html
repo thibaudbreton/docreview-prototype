@@ -87,6 +87,9 @@ td.nc{color:var(--nc);font-weight:600}
 .btn{border:1px solid var(--line-2);background:var(--panel);border-radius:8px;padding:5px 10px;color:var(--text);font-weight:500}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .note{font-size:12px;color:var(--text-2)}
+.mailbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.mailmsg{font-size:12px;color:var(--text-2)}
+.mailpreview{border:1px solid var(--line);border-radius:8px;background:#fff;padding:16px;max-height:720px;overflow:auto}
 @media (max-width:1000px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 <script>window.process={env:{NODE_ENV:"production"}};</script>
@@ -222,7 +225,7 @@ function WeeklyChart({units, wi, focus, unitLabel}){
   return html`<div class="card wide">
     <div class="ch"><h2>Weekly progress</h2><span class="badge">new</span><span class="note">${focus?`${unitLabel} ${focus}`:"whole tender"} · ${WEEKS[0]} → ${WEEKS[wi]}</span></div>
     <div class="take">Overall progress <b>${prog(now)}%</b> in ${WEEKS[wi]} (<b class=${prog(now)>=prog(prev)?"good":"bad"}>${dpts(prog(now)-prog(prev))}</b> on ${WEEKS[Math.max(0,wi-1)]}), ${fmt(answered(now))} of ${fmt(sum(now))} assignments answered; ${allocPct(now)}% allocated. Submission ${SUBMISSION}.</div>
-    <div class="chart tall"><${ChartContainer} key=${"wk"+focus+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:ws}, y:{position:"left"}}} scales=${PCT_SCALE} style=${{minHeight:0}}>
+    <div class="chart tall" data-mail="weekly"><${ChartContainer} key=${"wk"+focus+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:ws}, y:{position:"left"}}} scales=${PCT_SCALE} style=${{minHeight:0}}>
       <${BarSeries} data=${layers} options=${{stacking:"normal", cornerRadius:2}}/>
       <${LineSeries} scale="pct" data=${[{label:"Overall progress %", color:"#7B3FE4", data:ws.map((w,i)=>({x:w,value:prog(t[i])}))},
                                         {label:"Allocated %", color:"#1B9AAA", data:ws.map((w,i)=>({x:w,value:allocPct(t[i])}))}]}
@@ -244,7 +247,7 @@ function UnitBars({units, wi, unitLabel, focus}){
     <div class="ch"><h2>By ${unitLabel.toLowerCase()} — ${WEEKS[wi]}</h2><span class="badge">improved</span>
       <div class="right"><div class="seg"><button class=${mode==="normal"?"on":""} onClick=${()=>setMode("normal")}>Counts</button><button class=${mode==="percent"?"on":""} onClick=${()=>setMode("percent")}>Share %</button></div></div></div>
     <div class="take">${late.length?html`<b class="bad">${late.length} behind</b> (under 50%): ${andList(late)}.`:html`<b class="good">Everyone is past 50%.</b>`} Sorted from the furthest behind.</div>
-    <div class="chart"><${ChartContainer} key=${"ub"+mode+wi+unitLabel+cats.join()} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:cats}}} style=${{minHeight:0}}>
+    <div class="chart" data-mail="units"><${ChartContainer} key=${"ub"+mode+wi+unitLabel+cats.join()} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:cats}}} style=${{minHeight:0}}>
       <${BarSeries} data=${layers} options=${{stacking:mode, cornerRadius:2}}/>
       <${YAxis} format=${v=>mode==="percent"?`${Math.round(v)}%`:v>=1000?`${Math.round(v/100)/10}k`:`${v}`}/><${XAxis}/><${Tooltip}/><${Legend}/>
     </${ChartContainer}></div>
@@ -289,7 +292,7 @@ function NcTrend({units, wi, unitLabel}){
   return html`<div class="card">
     <div class="ch"><h2>Not compliant, week by week</h2><span class="badge">improved</span></div>
     <div class="take"><b class="bad">${fmt(now)}</b> not compliant (${delta(now-prev)} on ${WEEKS[Math.max(0,wi-1)]})${movers.length?html`, mostly from ${andList(movers.map(m=>`${m.code} (+${m.d})`))}`:""}.</div>
-    <div class="chart"><${ChartContainer} key=${"nc"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:ws}}} style=${{minHeight:0}}>
+    <div class="chart" data-mail="nc"><${ChartContainer} key=${"nc"+wi+unitLabel} theme=${theme} axis=${{x:{type:"category",panZoom:false,categories:ws}}} style=${{minHeight:0}}>
       <${LineSeries} data=${layers} options=${{stacking:"normal", area:{visible:true}, strokeWidth:1.5, curve:"smooth"}}/>
       <${YAxis}/><${XAxis}/><${Tooltip} sort="desc"/><${Legend}/>
     </${ChartContainer}></div>
@@ -303,12 +306,83 @@ function Heat({units, wi, unitLabel}){
   return html`<div class="card">
     <div class="ch"><h2>Progress map</h2><span class="badge">new</span></div>
     <div class="take">Each cell is a ${unitLabel.toLowerCase()} in a week, from red (nothing answered) to green (all answered).</div>
-    <div class="chart"><${ChartContainer} key=${"hm"+wi+unitLabel} theme=${theme} style=${{minHeight:0}}>
+    <div class="chart" data-mail="heat"><${ChartContainer} key=${"hm"+wi+unitLabel} theme=${theme} style=${{minHeight:0}}>
       <${HeatmapSeries} data=${data} options=${{colors:["#C8323C","#E8B931","#2E9E5B"], min:0, max:100, gap:2, cornerRadius:3, columns:ws, rows, cellLabels:{format:v=>`${Math.round(v)}`}}}/>
       <${HeatmapTooltip} format=${v=>`${Math.round(v)}%`}/>
     </${ChartContainer}></div>
     <div class="why"><b>Pourquoi.</b> En un coup d'œil : qui est en retard, et depuis quand. Remplace la lecture de dix tableaux hebdomadaires mis bout à bout.</div>
   </div>`;
+}
+
+/* ---------------- the weekly email, with its charts ---------------- */
+const MAIL_CHARTS=[["weekly","Weekly progress"],["units","By sub-system — this week"],["nc","Not compliant, week by week"],["heat","Progress map"]];
+/* A chart is canvases (bars, lines, grid) under a few HTML labels (axes, legend):
+   draw the canvases, then each label's text and each legend swatch where it sits. */
+function snapChart(el, S=2){
+  const r=el.getBoundingClientRect(), c=document.createElement("canvas");
+  c.width=Math.round(r.width*S); c.height=Math.round(r.height*S);
+  const x=c.getContext("2d"); x.fillStyle="#ffffff"; x.fillRect(0,0,c.width,c.height);
+  el.querySelectorAll("canvas").forEach(cv=>{ const cr=cv.getBoundingClientRect(); if(cr.width&&cr.height) x.drawImage(cv,(cr.left-r.left)*S,(cr.top-r.top)*S,cr.width*S,cr.height*S); });
+  const clear=bg=>!bg||bg==="transparent"||/rgba\(\d+, \d+, \d+, 0\)/.test(bg);
+  el.querySelectorAll("*").forEach(n=>{
+    if(n.tagName==="CANVAS") return;
+    const cs=getComputedStyle(n); if(cs.display==="none"||cs.visibility==="hidden"||+cs.opacity===0) return;
+    const nr=n.getBoundingClientRect(); if(!nr.width||!nr.height||nr.bottom<r.top||nr.top>r.bottom) return;
+    if(!n.textContent.trim() && nr.width<=18 && nr.height<=18 && !clear(cs.backgroundColor)){       // legend swatch
+      x.fillStyle=cs.backgroundColor; const rad=Math.min(parseFloat(cs.borderTopLeftRadius)||0, nr.height/2)*S;
+      x.beginPath(); x.roundRect((nr.left-r.left)*S,(nr.top-r.top)*S,nr.width*S,nr.height*S,rad); x.fill(); return; }
+    n.childNodes.forEach(t=>{ if(t.nodeType!==3||!t.textContent.trim()) return;
+      const rg=document.createRange(); rg.selectNodeContents(t); const tr=rg.getBoundingClientRect(); if(!tr.width) return;
+      x.font=`${cs.fontStyle} ${cs.fontWeight} ${parseFloat(cs.fontSize)*S}px ${cs.fontFamily}`; x.fillStyle=cs.color; x.textBaseline="middle";
+      x.fillText(t.textContent.trim(),(tr.left-r.left)*S,(tr.top-r.top+tr.height/2)*S); });
+  });
+  return {url:c.toDataURL("image/png"), w:r.width, h:r.height};
+}
+/* wait until the chart has redrawn at its new width and its animation has settled */
+async function settled(el){
+  const sig=()=>[...el.querySelectorAll("canvas")].map(cv=>{ try{ const d=cv.getContext("2d").getImageData(0,0,cv.width,cv.height).data; let n=0; for(let i=0;i<d.length;i+=4*211) n+=d[i]+d[i+1]*3+d[i+2]*7; return n; }catch(e){ return 0; } }).join("|");
+  await new Promise(r=>setTimeout(r,1300));   // the entrance animation replays after a resize
+  let last="", same=0;
+  for(let t=0;t<30&&same<3;t++){ await new Promise(r=>setTimeout(r,120)); const s=sig(); same=(s===last&&!/^(0\|?)+$/.test(s))?same+1:0; last=s; }
+}
+async function snapCharts(){
+  const out={}, y0=window.scrollY;
+  for(const [k] of MAIL_CHARTS){ const el=document.querySelector(`[data-mail="${k}"]`); if(!el) continue;
+    // drawn at the email's width, so labels keep their size once the picture is in the message
+    // the chart only repaints while on screen: bring it into view, resize, let it settle
+    el.scrollIntoView({block:"center"});
+    const w=el.style.width; el.style.width="680px";
+    await settled(el);
+    out[k]=snapChart(el); el.style.width=w; }
+  window.scrollTo(0, y0);
+  return out;
+}
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function mailHTML({title, lines, rows, tot, ptot, unitLabel, imgs, src}){
+  const F='font-family:Arial,Helvetica,sans-serif;color:#1E3246';
+  const ragBg=p=>p>=90?"#E3F3EA":p>=50?"#FBF1DC":"#FBE5E6", ragFg=p=>p>=90?"#2E9E5B":p>=50?"#A26F07":"#C8323C";
+  const th=t=>`<th style="${F};font-size:11px;color:#8494A7;text-align:right;padding:4px 8px;border-bottom:1px solid #E1E6EE;text-transform:uppercase">${t}</th>`;
+  const td=(t,x="")=>`<td style="${F};font-size:13px;text-align:right;padding:4px 8px;border-bottom:1px solid #E1E6EE;${x}">${t}</td>`;
+  const img=k=>imgs[k]?`<p style="${F};font-size:14px;font-weight:bold;margin:18px 0 6px">${MAIL_CHARTS.find(m=>m[0]===k)[1].replace("sub-system",unitLabel.toLowerCase())}</p><img src="${src(k)}" width="680" style="display:block;width:680px;max-width:100%;border:1px solid #E1E6EE" alt="${esc(k)}">`:"";
+  const table=`<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-top:6px"><tr>${th(unitLabel).replace("text-align:right","text-align:left")}${th("Assignments")}${th("C")}${th("NC")}${th("NC Δ")}${th("Q&amp;A")}${th("Awaiting")}${th("Not allocated")}${th("Progress")}${th("Δ week")}</tr>`
+    + rows.map(r=>`<tr>${td(`<b>${esc(r.code)}</b>`,"text-align:left")}${td(fmt(r.total))}${td(fmt(r.c))}${td(fmt(r.nc),"color:#D6404A;font-weight:bold")}${td(delta(r.dnc))}${td(fmt(r.qa))}${td(fmt(r.open))}${td(fmt(r.unalloc))}${td(`<span style="display:inline-block;min-width:44px;text-align:center;padding:1px 6px;border-radius:4px;background:${ragBg(r.prog)};color:${ragFg(r.prog)};font-weight:bold">${Math.round(r.prog)}%</span>`)}${td(dpts(r.dprog))}</tr>`).join("")
+    + `<tr>${td("<b>Total</b>","text-align:left")}${td(`<b>${fmt(sum(tot))}</b>`)}${td(`<b>${fmt(tot.c)}</b>`)}${td(`<b>${fmt(tot.nc)}</b>`,"color:#D6404A")}${td(`<b>${delta(tot.nc-ptot.nc)}</b>`)}${td(`<b>${fmt(tot.qa)}</b>`)}${td(`<b>${fmt(tot.open)}</b>`)}${td(`<b>${fmt(tot.unalloc)}</b>`)}${td(`<b>${Math.round(prog(tot))}%</b>`)}${td(`<b>${dpts(prog(tot)-prog(ptot))}</b>`)}</tr></table>`;
+  return `<div style="${F};font-size:14px;line-height:1.5;max-width:680px">
+<p style="${F};font-size:18px;font-weight:bold;margin:0 0 10px">${esc(title)}</p>
+<ul style="${F};font-size:14px;margin:0 0 6px;padding-left:20px">${lines.map(l=>`<li>${esc(l)}</li>`).join("")}</ul>
+${img("weekly")}
+<p style="${F};font-size:14px;font-weight:bold;margin:18px 0 0">${esc(unitLabel)} scorecard</p>${table}
+${img("units")}${img("nc")}${img("heat")}
+<p style="${F};font-size:12px;color:#8494A7;margin-top:18px">Generated by Smart Req. from the tender's data — figures as of ${WEEKS[WEEKS.length-1]}.</p></div>`;
+}
+const b64=str=>btoa(unescape(encodeURIComponent(str)));
+const wrap76=t=>t.replace(/.{1,76}/g,"$&\r\n");
+function emlOf(subject, html, imgs){
+  const B="----=_SmartReq_"+Date.now().toString(36);
+  let m=`X-Unsent: 1\r\nSubject: =?UTF-8?B?${b64(subject)}?=\r\nMIME-Version: 1.0\r\nContent-Type: multipart/related; boundary="${B}"; type="text/html"\r\n\r\n`;
+  m+=`--${B}\r\nContent-Type: text/html; charset="utf-8"\r\nContent-Transfer-Encoding: base64\r\n\r\n${wrap76(b64(html))}`;
+  Object.entries(imgs).forEach(([k,v])=>{ m+=`--${B}\r\nContent-Type: image/png; name="${k}.png"\r\nContent-Transfer-Encoding: base64\r\nContent-ID: <${k}@smartreq>\r\nContent-Disposition: inline; filename="${k}.png"\r\n\r\n${wrap76(v.url.split(",")[1])}`; });
+  return m+`--${B}--\r\n`;
 }
 
 function Report({units, wi, unitLabel, tenderName}){
@@ -317,20 +391,42 @@ function Report({units, wi, unitLabel, tenderName}){
   const behind=units.filter(u=>prog(u.weeks[wi])<50).sort((a,b)=>prog(a.weeks[wi])-prog(b.weeks[wi]));
   const stalled=units.filter(u=>prog(u.weeks[wi])<90 && prog(u.weeks[wi])-prog(u.weeks[Math.max(0,wi-1)])<1);
   const done=units.filter(u=>prog(u.weeks[wi])>=99);
-  const text=[`${tenderName} — weekly compliance follow-up, ${WEEKS[wi]}`, ``,
+  const title=`${tenderName} — weekly compliance follow-up, ${WEEKS[wi]}`;
+  const lines=[
     `Overall progress: ${prog(now)}% (${dpts(prog(now)-prog(prev))} on ${WEEKS[Math.max(0,wi-1)]}) — ${fmt(answered(now))} of ${fmt(sum(now))} assignments answered, ${allocPct(now)}% allocated.`,
     `Not compliant: ${fmt(now.nc)} (${delta(now.nc-prev.nc)})${movers.length?`, mostly from ${andList(movers.map(m=>`${m.code} +${m.d}`))}`:""}.`,
     `Questions with the client: ${fmt(now.qa)} (${delta(now.qa-prev.qa)}).`,
     behind.length?`Behind (under 50%): ${andList(behind.map(u=>`${u.code} ${Math.round(prog(u.weeks[wi]))}%`))}.`:`No ${unitLabel.toLowerCase()} under 50%.`,
-    stalled.length?`No progress this week: ${andList(stalled.map(u=>u.code))}.`:``,
-    done.length?`Done: ${andList(done.map(u=>u.code))}.`:``,
-  ].filter((l,i,a)=>l!==""||i===1).join("\n");
-  const [copied,setCopied]=useState(false);
-  const copy=()=>{ navigator.clipboard?.writeText(text).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),1500);}).catch(()=>{}); };
+    stalled.length?`No progress this week: ${andList(stalled.map(u=>u.code))}.`:"",
+    done.length?`Done: ${andList(done.map(u=>u.code))}.`:"",
+  ].filter(Boolean);
+  const text=[title,"",...lines].join("\n");
+  const rows=units.map(u=>{ const w=u.weeks[wi], p=u.weeks[Math.max(0,wi-1)];
+    return {code:u.code,total:sum(w),c:w.c,nc:w.nc,dnc:w.nc-p.nc,qa:w.qa,open:w.open,unalloc:w.unalloc,prog:prog(w),dprog:prog(w)-prog(p)}; }).sort((a,b)=>a.prog-b.prog);
+  const [msg,setMsg]=useState(""); const [preview,setPreview]=useState(null); const [busy,setBusy]=useState(false);
+  const build=async()=>{ const imgs=await snapCharts(); return {imgs, html:mailHTML({title,lines,rows,tot:now,ptot:prev,unitLabel,imgs,src:k=>imgs[k].url})}; };
+  const run=async(fn)=>{ setBusy(true); setMsg("Taking the charts…"); try{ await fn(); }catch(e){ setMsg("Could not build the email: "+e.message); } setBusy(false); };
+  const copyText=()=>navigator.clipboard?.writeText(text).then(()=>setMsg("Text copied.")).catch(()=>setMsg("Copy refused by the browser."));
+  const copyMail=()=>run(async()=>{ const {html}=await build();
+    await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]);
+    setMsg("Email copied with its charts — paste it into a new message."); });
+  const draft=()=>run(async()=>{ const {imgs}=await build();
+    const html=mailHTML({title,lines,rows,tot:now,ptot:prev,unitLabel,imgs,src:k=>`cid:${k}@smartreq`});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([emlOf(title,html,imgs)],{type:"message/rfc822"}));
+    a.download=`Smart-Req-weekly-${WEEKS[wi]}.eml`; document.body.appendChild(a); a.click(); a.remove();
+    setMsg("Draft downloaded — open it: Outlook shows it as a new message, charts included."); });
+  const show=()=>run(async()=>{ if(preview){ setPreview(null); setMsg(""); return; } const {html}=await build(); setPreview(html); setMsg(""); });
   return html`<div class="card wide">
-    <div class="ch"><h2>Weekly report</h2><span class="badge">new</span><div class="right"><button class="btn primary" onClick=${copy}>${copied?"Copied ✓":"Copy the text"}</button></div></div>
-    <pre class="report">${text}</pre>
-    <div class="why"><b>Pourquoi.</b> Le mail du mardi s'écrit tout seul à partir des mêmes chiffres : plus de copier-coller de captures Power BI, et les phrases (« +13, from POS and RST ») sont calculées, pas tapées.</div>
+    <div class="ch"><h2>Weekly report</h2><span class="badge">new</span>
+      <div class="right mailbar">
+        <button class="btn" onClick=${copyText} disabled=${busy}>Copy the text</button>
+        <button class="btn" onClick=${show} disabled=${busy}>${preview?"Hide the preview":"Preview the email"}</button>
+        <button class="btn" onClick=${copyMail} disabled=${busy}>Copy for email</button>
+        <button class="btn primary" onClick=${draft} disabled=${busy}>Download Outlook draft</button>
+      </div></div>
+    ${msg?html`<div class="mailmsg">${msg}</div>`:""}
+    ${preview?html`<div class="mailpreview" dangerouslySetInnerHTML=${{__html:preview}}></div>`:html`<pre class="report">${text}</pre>`}
+    <div class="why"><b>Pourquoi.</b> Le mail du mardi s'écrit tout seul à partir des mêmes chiffres, graphes compris : le graphe de progression, le scorecard en tableau, la répartition par ${unitLabel.toLowerCase()}, les NC semaine par semaine et la carte de progression. « Download Outlook draft » donne un brouillon .eml qu'Outlook ouvre comme un nouveau message, images intégrées ; « Copy for email » le copie pour le coller dans un message déjà ouvert.</div>
   </div>`;
 }
 
