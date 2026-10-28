@@ -358,22 +358,85 @@ async function snapCharts(){
   return out;
 }
 const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-function mailHTML({title, lines, rows, tot, ptot, unitLabel, imgs, src}){
+/* What the email says: facts first, the pace each sub-system has to hold to finish
+   before submission, and who moved most this week. Never a person's name (DEC-118). */
+const weekNo=w=>+w.replace(/\D/g,"");
+function standing(units, wi){
+  const left=Math.max(1, weekNo(SUBMISSION)-weekNo(WEEKS[wi]));
+  return units.map(u=>{
+    const p=prog(u.weeks[wi]), p1=prog(u.weeks[Math.max(0,wi-1)]), p2=prog(u.weeks[Math.max(0,wi-2)]);
+    const week=p-p1, pace=Math.max(0,(p-p2)/Math.min(2,Math.max(1,wi))), need=Math.max(0,(100-p)/left);
+    const state=p>=99.95?"done":pace>=need*0.95?"on":pace>=need*0.6?"speed":"risk";
+    const finish=p>=99.95?WEEKS[wi]:pace>0?`W${weekNo(WEEKS[wi])+Math.ceil((100-p)/pace)}`:"—";
+    return {code:u.code, p, week, pace, need, state, finish, nc:u.weeks[wi].nc, dnc:u.weeks[wi].nc-u.weeks[Math.max(0,wi-1)].nc};
+  });
+}
+const STATE={done:["Done","#2E9E5B","#E3F3EA"], on:["On track","#2E9E5B","#E3F3EA"], speed:["Needs to speed up","#A26F07","#FBF1DC"], risk:["At risk for "+SUBMISSION,"#C8323C","#FBE5E6"]};
+function mailContent({units, wi, unitLabel, tenderName}){
+  const now=totalOf(units,wi), prev=totalOf(units,Math.max(0,wi-1)), prev2=totalOf(units,Math.max(0,wi-2));
+  const left=Math.max(1, weekNo(SUBMISSION)-weekNo(WEEKS[wi]));
+  const P=prog(now), dP=P-prog(prev), pace=Math.max(0,(P-prog(prev2))/Math.min(2,Math.max(1,wi)));
+  const finishW=P>=99.95?weekNo(WEEKS[wi]):pace>0?weekNo(WEEKS[wi])+Math.ceil((100-P)/pace):null;
+  const spare=finishW!=null?weekNo(SUBMISSION)-finishW:null;
+  const st=standing(units,wi).sort((a,b)=>b.p-a.p);
+  const late=st.filter(s=>s.state==="risk"||s.state==="speed").sort((a,b)=>a.p-b.p);
+  const movers=[...st].filter(s=>s.state!=="done"&&s.week>0).sort((a,b)=>b.week-a.week).slice(0,3);
+  const comp=complianceOf(units,wi), toDoc=comp.reduce((s,x)=>s+x.missingStrat+x.missingRisk,0);
+  const docBy=[...comp].filter(x=>x.missingStrat+x.missingRisk>0).sort((a,b)=>(b.missingStrat+b.missingRisk)-(a.missingStrat+a.missingRisk)).slice(0,3);
+  const ncUp=st.filter(s=>s.dnc>0).sort((a,b)=>b.dnc-a.dnc).slice(0,2);
+  const ref=tenderName.split(" · ")[0], unit=unitLabel.toLowerCase(), units_=unit+"s";
+  const paceLine=finishW==null?`No progress this week — at this pace the tender is not answered by ${SUBMISSION}.`
+    : spare>=1?`At the current pace, every assignment is answered by W${finishW} — ${spare} week${spare>1?"s":""} before submission.`
+    : spare===0?`At the current pace, the last answers come in the week of submission (${SUBMISSION}) — no margin left.`
+    : `At the current pace, the last answers come in W${finishW} — ${-spare} week${-spare>1?"s":""} after submission (${SUBMISSION}).`;
+  const subject=`${ref} compliance ${WEEKS[wi]} — ${Math.round(P)}% (${dpts(dP)})${late.length?` · ${late.length} ${late.length>1?units_:unit} to speed up`:""}`;
+  const inShort=[
+    `${fmt(answered(now))} of ${fmt(sum(now))} assignments answered; ${Math.round(allocPct(now))}% allocated.`,
+    late.length?`${late.length} ${late.length>1?units_:unit} below the pace needed for ${SUBMISSION}: ${andList(late.map(s=>s.code))}.`:`Every ${unit} is on the pace needed for ${SUBMISSION}.`,
+    `${fmt(now.nc)} Not compliant (${delta(now.nc-prev.nc)})${toDoc?`, ${fmt(toDoc)} still to document with a gap strategy and a risk`:""}.`,
+  ];
+  return {subject, P, dP, left, paceLine, spare, inShort, st, late, movers, docBy, ncUp, now, prev, ref, unit, units_};
+}
+function mailText(c, unitLabel){
+  const L=[c.subject,"",`${Math.round(c.P)}% answered (${dpts(c.dP)} this week) · submission ${SUBMISSION}, ${c.left} week${c.left>1?"s":""} left`,c.paceLine,"",
+    "In short", ...c.inShort.map(l=>"- "+l), "", `Where each ${c.unit} stands`];
+  c.st.forEach(s=>L.push(`  ${s.code.padEnd(14)} ${String(Math.round(s.p)).padStart(3)}%  ${dpts(s.week).padStart(10)}  ${STATE[s.state][0]}${s.state==="speed"||s.state==="risk"?` (needs ~${Math.ceil(s.need)} pts/week)`:""}`));
+  if(c.movers.length) L.push("",`Moving fastest this week: ${andList(c.movers.map(m=>`${m.code} ${dpts(m.week)}`))}.`);
+  if(c.late.length){ L.push("","To speed up"); c.late.forEach(s=>L.push(`- ${s.code}: ${Math.round(s.p)}%, ${dpts(s.week)} this week; about ${Math.ceil(s.need)} pts a week are needed to finish by ${SUBMISSION}.`)); }
+  L.push("","Not compliant",`- ${fmt(c.now.nc)} in total, ${delta(c.now.nc-c.prev.nc)} this week${c.ncUp.length?` (${andList(c.ncUp.map(s=>`${s.code} +${s.dnc}`))})`:""}.`);
+  if(c.docBy.length) L.push(`- Still to document: ${andList(c.docBy.map(x=>`${x.code} ${x.missingStrat+x.missingRisk}`))}.`);
+  L.push(`- Questions waiting on the client: ${fmt(c.now.qa)} (${delta(c.now.qa-c.prev.qa)}).`);
+  return L.join("\n");
+}
+function mailHTML(c, {imgs, src}){
   const F='font-family:Arial,Helvetica,sans-serif;color:#1E3246';
-  const ragBg=p=>p>=90?"#E3F3EA":p>=50?"#FBF1DC":"#FBE5E6", ragFg=p=>p>=90?"#2E9E5B":p>=50?"#A26F07":"#C8323C";
-  const th=t=>`<th style="${F};font-size:11px;color:#8494A7;text-align:right;padding:4px 8px;border-bottom:1px solid #E1E6EE;text-transform:uppercase">${t}</th>`;
-  const td=(t,x="")=>`<td style="${F};font-size:13px;text-align:right;padding:4px 8px;border-bottom:1px solid #E1E6EE;${x}">${t}</td>`;
-  const img=k=>imgs[k]?`<p style="${F};font-size:14px;font-weight:bold;margin:18px 0 6px">${MAIL_CHARTS.find(m=>m[0]===k)[1].replace("sub-system",unitLabel.toLowerCase())}</p><img src="${src(k)}" width="680" style="display:block;width:680px;max-width:100%;border:1px solid #E1E6EE" alt="${esc(k)}">`:"";
-  const table=`<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-top:6px"><tr>${th(unitLabel).replace("text-align:right","text-align:left")}${th("Assignments")}${th("C")}${th("NC")}${th("NC Δ")}${th("Q&amp;A")}${th("Awaiting")}${th("Not allocated")}${th("Progress")}${th("Δ week")}</tr>`
-    + rows.map(r=>`<tr>${td(`<b>${esc(r.code)}</b>`,"text-align:left")}${td(fmt(r.total))}${td(fmt(r.c))}${td(fmt(r.nc),"color:#D6404A;font-weight:bold")}${td(delta(r.dnc))}${td(fmt(r.qa))}${td(fmt(r.open))}${td(fmt(r.unalloc))}${td(`<span style="display:inline-block;min-width:44px;text-align:center;padding:1px 6px;border-radius:4px;background:${ragBg(r.prog)};color:${ragFg(r.prog)};font-weight:bold">${Math.round(r.prog)}%</span>`)}${td(dpts(r.dprog))}</tr>`).join("")
-    + `<tr>${td("<b>Total</b>","text-align:left")}${td(`<b>${fmt(sum(tot))}</b>`)}${td(`<b>${fmt(tot.c)}</b>`)}${td(`<b>${fmt(tot.nc)}</b>`,"color:#D6404A")}${td(`<b>${delta(tot.nc-ptot.nc)}</b>`)}${td(`<b>${fmt(tot.qa)}</b>`)}${td(`<b>${fmt(tot.open)}</b>`)}${td(`<b>${fmt(tot.unalloc)}</b>`)}${td(`<b>${Math.round(prog(tot))}%</b>`)}${td(`<b>${dpts(prog(tot)-prog(ptot))}</b>`)}</tr></table>`;
-  return `<div style="${F};font-size:14px;line-height:1.5;max-width:680px">
-<p style="${F};font-size:18px;font-weight:bold;margin:0 0 10px">${esc(title)}</p>
-<ul style="${F};font-size:14px;margin:0 0 6px;padding-left:20px">${lines.map(l=>`<li>${esc(l)}</li>`).join("")}</ul>
-${img("weekly")}
-<p style="${F};font-size:14px;font-weight:bold;margin:18px 0 0">${esc(unitLabel)} scorecard</p>${table}
-${img("units")}${img("nc")}${img("heat")}
-<p style="${F};font-size:12px;color:#8494A7;margin-top:18px">Generated by Smart Req. from the tender's data — figures as of ${WEEKS[WEEKS.length-1]}.</p></div>`;
+  const pill=s=>`<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:bold;color:${STATE[s][1]};background:${STATE[s][2]};white-space:nowrap">${STATE[s][0]}</span>`;
+  const bar=(p,s)=>`<table cellpadding="0" cellspacing="0" style="width:140px;border-collapse:collapse"><tr><td style="background:${STATE[s][1]};height:8px;width:${Math.max(1,Math.round(p*1.4))}px;font-size:1px">&nbsp;</td><td style="background:#E9EDF3;height:8px;font-size:1px">&nbsp;</td></tr></table>`;
+  const td=(t,x="")=>`<td style="${F};font-size:13px;padding:6px 8px;border-bottom:1px solid #E9EDF3;${x}">${t}</td>`;
+  const th=(t,x="")=>`<td style="${F};font-size:11px;color:#8494A7;padding:4px 8px;border-bottom:1px solid #CFD7E3;text-transform:uppercase;${x}">${t}</td>`;
+  const h=t=>`<p style="${F};font-size:15px;font-weight:bold;margin:22px 0 6px">${t}</p>`;
+  const img=(k,t)=>imgs[k]?`${h(t)}<img src="${src(k)}" width="680" style="display:block;width:680px;max-width:100%;border:1px solid #E1E6EE" alt="${esc(t)}">`:"";
+  const paceColor=c.spare==null||c.spare<0?"#C8323C":c.spare===0?"#A26F07":"#2E9E5B";
+  const rows=c.st.map(s=>`<tr>${td(`<b>${esc(s.code)}</b>`)}${td(bar(s.p,s.state))}${td(`<b>${Math.round(s.p)}%</b>`,"text-align:right")}${td(dpts(s.week),`text-align:right;color:${s.week>0.5?"#2E9E5B":"#8494A7"}`)}${td(s.state==="speed"||s.state==="risk"?`~${Math.ceil(s.need)} pts`:"—","text-align:right;color:#4F6378")}${td(pill(s.state))}</tr>`).join("");
+  return `<div style="${F};font-size:14px;line-height:1.5;max-width:700px">
+<div style="display:none;max-height:0;overflow:hidden">${esc(c.inShort.join(" "))}</div>
+<p style="${F};font-size:12px;color:#8494A7;text-transform:uppercase;letter-spacing:.5px;margin:0">${esc(c.ref)} · weekly compliance follow-up · ${WEEKS[WEEKS.length-1]}</p>
+<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:8px 0 4px;width:auto"><tr>
+<td style="${F};font-size:40px;font-weight:bold;padding-right:14px;line-height:1">${Math.round(c.P)}%</td>
+<td style="${F};font-size:14px;line-height:1.4">answered<br><b style="color:${c.dP>=0?"#2E9E5B":"#C8323C"}">${dpts(c.dP)}</b> this week · submission <b>${SUBMISSION}</b>, ${c.left} week${c.left>1?"s":""} left</td></tr></table>
+<p style="${F};font-size:14px;margin:6px 0 0;padding:8px 12px;border-left:4px solid ${paceColor};background:#F7F9FC">${esc(c.paceLine)}</p>
+${h("In short")}<ul style="${F};font-size:14px;margin:0;padding-left:20px">${c.inShort.map(l=>`<li style="margin:2px 0">${esc(l)}</li>`).join("")}</ul>
+${h(`Where each ${esc(c.unit)} stands`)}
+<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%"><tr>${th(esc(c.unit))}${th("Progress")}${th("","text-align:right")}${th("This week","text-align:right")}${th(`Needed / week`,"text-align:right")}${th("")}</tr>${rows}</table>
+<p style="${F};font-size:12px;color:#8494A7;margin:4px 0 0">« Needed / week » is what is left divided by the weeks to ${SUBMISSION}; the pace is the average of the last two weeks.</p>
+${c.movers.length?`${h("Moving fastest this week")}<p style="${F};font-size:14px;margin:0">${c.movers.map(m=>`<b>${esc(m.code)}</b> <span style="color:#2E9E5B">${dpts(m.week)}</span>`).join(" &nbsp;·&nbsp; ")}</p>`:""}
+${c.late.length?`${h("To speed up")}<ul style="${F};font-size:14px;margin:0;padding-left:20px">${c.late.map(s=>`<li style="margin:2px 0"><b>${esc(s.code)}</b> — ${Math.round(s.p)}%, ${dpts(s.week)} this week; about <b>${Math.ceil(s.need)} pts a week</b> are needed to finish by ${SUBMISSION}.</li>`).join("")}</ul>`:""}
+${h("Not compliant")}<ul style="${F};font-size:14px;margin:0;padding-left:20px">
+<li style="margin:2px 0"><b>${fmt(c.now.nc)}</b> in total, ${delta(c.now.nc-c.prev.nc)} this week${c.ncUp.length?` (${andList(c.ncUp.map(s=>`${esc(s.code)} +${s.dnc}`))})`:""}.</li>
+${c.docBy.length?`<li style="margin:2px 0">Still to document with a gap strategy and a risk: ${andList(c.docBy.map(x=>`<b>${esc(x.code)}</b> ${x.missingStrat+x.missingRisk}`))}.</li>`:""}
+<li style="margin:2px 0">Questions waiting on the client: <b>${fmt(c.now.qa)}</b> (${delta(c.now.qa-c.prev.qa)}).</li></ul>
+${img("weekly","Weekly progress")}${img("units",`By ${esc(c.unit)} — this week`)}${img("nc","Not compliant, week by week")}${img("heat","Progress map")}
+<p style="${F};font-size:12px;color:#8494A7;margin-top:22px">Figures from Smart Req., counted per ${esc(c.unit)} — never per person. Next report next Tuesday.</p></div>`;
 }
 const b64=str=>btoa(unescape(encodeURIComponent(str)));
 const wrap76=t=>t.replace(/.{1,76}/g,"$&\r\n");
@@ -386,33 +449,18 @@ function emlOf(subject, html, imgs){
 }
 
 function Report({units, wi, unitLabel, tenderName}){
-  const now=totalOf(units,wi), prev=totalOf(units,Math.max(0,wi-1));
-  const movers=units.map(u=>({code:u.code,d:u.weeks[wi].nc-u.weeks[Math.max(0,wi-1)].nc})).filter(x=>x.d>0).sort((a,b)=>b.d-a.d).slice(0,3);
-  const behind=units.filter(u=>prog(u.weeks[wi])<50).sort((a,b)=>prog(a.weeks[wi])-prog(b.weeks[wi]));
-  const stalled=units.filter(u=>prog(u.weeks[wi])<90 && prog(u.weeks[wi])-prog(u.weeks[Math.max(0,wi-1)])<1);
-  const done=units.filter(u=>prog(u.weeks[wi])>=99);
-  const title=`${tenderName} — weekly compliance follow-up, ${WEEKS[wi]}`;
-  const lines=[
-    `Overall progress: ${prog(now)}% (${dpts(prog(now)-prog(prev))} on ${WEEKS[Math.max(0,wi-1)]}) — ${fmt(answered(now))} of ${fmt(sum(now))} assignments answered, ${allocPct(now)}% allocated.`,
-    `Not compliant: ${fmt(now.nc)} (${delta(now.nc-prev.nc)})${movers.length?`, mostly from ${andList(movers.map(m=>`${m.code} +${m.d}`))}`:""}.`,
-    `Questions with the client: ${fmt(now.qa)} (${delta(now.qa-prev.qa)}).`,
-    behind.length?`Behind (under 50%): ${andList(behind.map(u=>`${u.code} ${Math.round(prog(u.weeks[wi]))}%`))}.`:`No ${unitLabel.toLowerCase()} under 50%.`,
-    stalled.length?`No progress this week: ${andList(stalled.map(u=>u.code))}.`:"",
-    done.length?`Done: ${andList(done.map(u=>u.code))}.`:"",
-  ].filter(Boolean);
-  const text=[title,"",...lines].join("\n");
-  const rows=units.map(u=>{ const w=u.weeks[wi], p=u.weeks[Math.max(0,wi-1)];
-    return {code:u.code,total:sum(w),c:w.c,nc:w.nc,dnc:w.nc-p.nc,qa:w.qa,open:w.open,unalloc:w.unalloc,prog:prog(w),dprog:prog(w)-prog(p)}; }).sort((a,b)=>a.prog-b.prog);
+  const c=mailContent({units, wi, unitLabel, tenderName});
+  const text=mailText(c, unitLabel);
   const [msg,setMsg]=useState(""); const [preview,setPreview]=useState(null); const [busy,setBusy]=useState(false);
-  const build=async()=>{ const imgs=await snapCharts(); return {imgs, html:mailHTML({title,lines,rows,tot:now,ptot:prev,unitLabel,imgs,src:k=>imgs[k].url})}; };
+  const build=async()=>{ const imgs=await snapCharts(); return {imgs, html:mailHTML(c,{imgs,src:k=>imgs[k].url})}; };
   const run=async(fn)=>{ setBusy(true); setMsg("Taking the charts…"); try{ await fn(); }catch(e){ setMsg("Could not build the email: "+e.message); } setBusy(false); };
   const copyText=()=>navigator.clipboard?.writeText(text).then(()=>setMsg("Text copied.")).catch(()=>setMsg("Copy refused by the browser."));
   const copyMail=()=>run(async()=>{ const {html}=await build();
     await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([html],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]);
     setMsg("Email copied with its charts — paste it into a new message."); });
   const draft=()=>run(async()=>{ const {imgs}=await build();
-    const html=mailHTML({title,lines,rows,tot:now,ptot:prev,unitLabel,imgs,src:k=>`cid:${k}@smartreq`});
-    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([emlOf(title,html,imgs)],{type:"message/rfc822"}));
+    const html=mailHTML(c,{imgs,src:k=>`cid:${k}@smartreq`});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([emlOf(c.subject,html,imgs)],{type:"message/rfc822"}));
     a.download=`Smart-Req-weekly-${WEEKS[wi]}.eml`; document.body.appendChild(a); a.click(); a.remove();
     setMsg("Draft downloaded — open it: Outlook shows it as a new message, charts included."); });
   const show=()=>run(async()=>{ if(preview){ setPreview(null); setMsg(""); return; } const {html}=await build(); setPreview(html); setMsg(""); });
@@ -425,8 +473,9 @@ function Report({units, wi, unitLabel, tenderName}){
         <button class="btn primary" onClick=${draft} disabled=${busy}>Download Outlook draft</button>
       </div></div>
     ${msg?html`<div class="mailmsg">${msg}</div>`:""}
+    <div class="mailmsg"><b>Subject:</b> ${c.subject}</div>
     ${preview?html`<div class="mailpreview" dangerouslySetInnerHTML=${{__html:preview}}></div>`:html`<pre class="report">${text}</pre>`}
-    <div class="why"><b>Pourquoi.</b> Le mail du mardi s'écrit tout seul à partir des mêmes chiffres, graphes compris : le graphe de progression, le scorecard en tableau, la répartition par ${unitLabel.toLowerCase()}, les NC semaine par semaine et la carte de progression. « Download Outlook draft » donne un brouillon .eml qu'Outlook ouvre comme un nouveau message, images intégrées ; « Copy for email » le copie pour le coller dans un message déjà ouvert.</div>
+    <div class="why"><b>Pourquoi.</b> Lisible en 30 secondes : un chiffre, une phrase qui dit si le tender finit à temps, trois points, puis le détail. La pression vient des faits, pas du ton : l'allure qu'il faut tenir jusqu'à ${SUBMISSION}, chaque ${unitLabel.toLowerCase()} classé à côté des autres, et ceux qui avancent le plus mis en avant. Les mots restent neutres (« Needs to speed up », « At risk for ${SUBMISSION} »), jamais un nom de personne (DEC-118). L'objet du mail porte déjà l'essentiel pour le management.</div>
   </div>`;
 }
 
