@@ -43,7 +43,8 @@ Point ouvert : ce qui n'est pas décidé (la story ne le tranche pas).
 | 14 | Statistiques (`US-STAT`) | [14-statistiques.md](14-statistiques.md) | 14 | 8 | 6 |
 | 15 | Configuration du tender (`US-CFG`) | [15-configuration.md](15-configuration.md) | 15 | 12 | 3 |
 | 16 | Transverse : journal, notifications, plateforme (`US-X`) | [16-transverse.md](16-transverse.md) | 14 | 14 | 0 |
-| | **Total** | | **239** | **152** | **87** |
+| 17 | Administration de la plateforme (`US-ADM`) | [17-administration.md](17-administration.md) | 6 | 4 | 2 |
+| | **Total** | | **245** | **156** | **89** |
 
 Les stories marquées « Pilote 1 » mais dont une partie (Compliance) vient après le pilote sont comptées en Pilote 1. Matrice règle → stories : [COUVERTURE.md](COUVERTURE.md). Points non décidés et écarts de la maquette : [POINTS-OUVERTS.md](POINTS-OUVERTS.md).
 
@@ -367,3 +368,14 @@ Les stories marquées « Pilote 1 » mais dont une partie (Compliance) vient apr
 | [US-X-12](16-transverse.md#us-x-12--comprendre-létat-dun-écran--chargement-vide-absence-de-droit) | Comprendre l'état d'un écran : chargement, vide, absence de droit | Pilote 1 | Toutes |
 | [US-X-13](16-transverse.md#us-x-13--ne-rien-perdre-en-cas-déchec-ou-de-conflit-denregistrement) | Ne rien perdre en cas d'échec ou de conflit d'enregistrement | Pilote 1 | Toutes |
 | [US-X-14](16-transverse.md#us-x-14--lire-des-couleurs-qui-gardent-toujours-le-même-sens) | Lire des couleurs qui gardent toujours le même sens | Pilote 1 | Toutes |
+
+### Administration de la plateforme
+
+| Story | Titre | Périmètre | Variantes |
+|---|---|---|---|
+| [US-ADM-01](17-administration.md#us-adm-01--donner-ou-retirer-le-droit-de-créer-un-tender) | Donner ou retirer le droit de créer un tender | Pilote 1 (à confirmer) | Toutes |
+| [US-ADM-02](17-administration.md#us-adm-02--désactiver-une-personne-qui-part) | Désactiver une personne qui part | Pilote 1 (à confirmer) | Toutes |
+| [US-ADM-03](17-administration.md#us-adm-03--voir-tous-les-tenders-et-en-garder-un-pilote) | Voir tous les tenders et en garder un pilote | Pilote 1 (à confirmer) | Toutes |
+| [US-ADM-04](17-administration.md#us-adm-04--consulter-le-journal-daudit-de-la-plateforme) | Consulter le journal d'audit de la plateforme | Pilote 1 (à confirmer) | Toutes |
+| [US-ADM-05](17-administration.md#us-adm-05--suivre-la-plateforme-dans-son-ensemble) | Suivre la plateforme dans son ensemble | Après pilote | Toutes |
+| [US-ADM-06](17-administration.md#us-adm-06--suivre-ce-que-fait-lia-et-reprendre-un-traitement-échoué) | Suivre ce que fait l'IA et reprendre un traitement échoué | Après pilote | Toutes |

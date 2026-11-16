@@ -472,6 +472,26 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-10-26
 - **notes**: 2026-10-26 (DEC-126): labels renamed — Tender, Users, PIC, Sub-system, Type. 2026-10-08 (DEC-120): the AI-typed title gives the characterisation model's level ("…with low confidence") instead of "detected by the AI". 2026-09-28 (DEC-086): disabled for a contributor, in the Document view too (`attachReclassify` leaves it inert with a "Set by the tender manager" title). Document view only since 2026-09-23 — the table row's compact "▾" variant (`.row-natpick`, on requirement and information rows) was removed; in the table, nature is corrected in the detail panel's Nature field. `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
 
+### Platform Status Tag
+- **level**: atom
+- **file**: admin.html
+- **variants**: Admin, Tender leader, Deactivated · {date}, None active (a tender without an active tender manager), Archived
+- **tokens**: --text-xs, --radius-pill, --accent, --accent-soft, --human, --human-soft, --warn, --warn-soft, --panel-3, --text-3
+- **built-from**: none
+- **added**: 2026-11-16
+- **changed**: 2026-11-16
+- **notes**: `.ad-tag` (DEC-127). The pill that says what the platform lets a person do, or that a tender needs attention. Uses the untracked `--human-soft`, `--warn-soft`, `--panel-3`. Close to the Status Pill but platform-level — not a requirement state, so kept apart.
+
+### AI Step Dot
+- **level**: atom
+- **file**: admin.html
+- **variants**: done (✓), running (…), failed (✕), waiting (·), skipped (–)
+- **tokens**: --ok, --ia, --warn, --text-3, --text-sm
+- **built-from**: none
+- **added**: 2026-11-16
+- **changed**: 2026-11-16
+- **notes**: `.ad-step` — one per AI step (capture, translation, characterisation, allocation) in AI tracking; states follow AI-012. 22px circle hardcoded; fills use the untracked `--ok-soft`, `--ia-soft`, `--warn-soft`, `--panel-2`.
+
 ## Molecules
 
 
@@ -1503,17 +1523,37 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-10-06
 - **notes**: `.rk-row` in a `.st-list`, Statistics › Compliance › Risks (DEC-117): the four most-linked risks — ID, "There is a risk that…", who raised it, ×links; opens the Risks page.
 
+### Admin Side Nav
+- **level**: molecule
+- **file**: admin.html
+- **variants**: item default, active; count badge (tenders without an active tender manager, AI processing to resume)
+- **tokens**: --panel, --line, --text-2, --text-3, --accent, --accent-soft, --warn, --warn-soft, --radius-md, --radius-pill, --space-2, --space-3, --space-4
+- **built-from**: Icon
+- **added**: 2026-11-16
+- **changed**: 2026-11-16
+- **notes**: `.ad-nav` (DEC-127). The five sections of Administration — Users, Tenders, Audit log, Statistics, AI tracking — with a note that a tender's own settings stay in its Configuration. Same role as the Config Sidebar Nav, drawn apart; width hardcoded 220px (170px below 900px). Hover uses the untracked `--panel-2`.
+
+### Handover Panel
+- **level**: molecule
+- **file**: admin.html
+- **variants**: with tenders to hand over (one select per tender), without
+- **tokens**: --panel, --warn, --radius-lg, --radius-md, --space-2, --space-4, --text-sm, --text-2, --font-heading
+- **built-from**: Select Dropdown, Ghost Button
+- **added**: 2026-11-16
+- **changed**: 2026-11-16
+- **notes**: `.ad-leave` (DEC-127, ACC-017). Opens on « Deactivate »: what the person leaves behind, and a replacement to name for each tender where they are the only active tender manager — refused until each is named. The destructive button `.btn-danger` is solid `--warn` with white text, the only one of its kind.
+
 ## Organisms
 
 ### App Header
 - **level**: organism
-- **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html, risks.html
+- **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html, risks.html, admin.html
 - **variants**: home (logo + reset + primary CTA + avatar), wizard (logo + static crumb + cancel), workspace (logo-link + crumb + nav/icon buttons + avatar), review (adds mode-switch, version pill), compliance (adds Demo Role Switcher, Icon Cluster, Export)
 - **tokens**: --space-4, --space-5, --panel, --line
 - **built-from**: Brand Logo, Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
-- **changed**: 2026-10-20
-- **notes**: 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req." in text (renamed from "SRM" on 2026-10-19; the header writes it with a full stop, 2026-10-20) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (DEC-127): home gains « Admin » (shield icon, admins only); « ＋ New tender » shows only to a Tender leader (home and dashboard); admin.html has its own variant — crumb « Administration », « My tenders », avatar. 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req." in text (renamed from "SRM" on 2026-10-19; the header writes it with a full stop, 2026-10-20) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
 - **level**: organism
@@ -2033,6 +2073,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-10-01
 - **changed**: 2026-10-01
 - **notes**: **Hidden since 2026-10-01** (`CHAT_ENABLED = False` in build_merge.py) — not built into either output until it is planned; the code stays in tender-chat.html. Asks Claude through the claude.ai artifact runtime's `sample` capability, on the viewer's own Claude account — works only in the published artifact (artifact/srm-prototype.html). Claude reads the captured blocks (`window.CHAT_CAPTURE`, generated from data.js at build time, STB-2026 only) and the shared records (strategies, risks, activity log) through six page tools: search_blocks, get_blocks, list_documents, count_blocks, requirement_record, list_risks. Where the view cannot run tools, the page searches itself and sends the top 25 excerpts. A cited [SRM-…] opens the block in Allocation. Colors are literals duplicated from the screens' tokens, not shared variables — flagged.
+
+### Administration Screen
+- **level**: organism
+- **file**: admin.html (route `#admin`)
+- **variants**: Users, Tenders, Audit log, Statistics, AI tracking
+- **tokens**: --panel, --line, --text-2, --text-3, --accent, --accent-soft, --warn, --ok, --radius-lg, --space-3, --space-4, --space-6, --text-xs, --text-sm, --text-xl, --font-mono, --font-heading
+- **built-from**: App Header, Admin Side Nav, Risk List (`.rk-table`), Platform Status Tag, Handover Panel, AI Step Dot, Select Dropdown, Ghost Button, Toast
+- **added**: 2026-11-16
+- **changed**: 2026-11-16
+- **notes**: DEC-127 — the platform, not one tender, for admins only (reached from the home page's « Admin » button). Every section is a list: people (status, tenders, last sign-in; Tender leader granted or withdrawn; deactivation with handover), every tender (managers, stage, progress, region, archive), the audit trail of all tenders plus admin actions (read-only), platform tiles and breakdowns (never per person), AI processing per tender (steps, resume, low confidence, corrections, cost). Tables reuse the Risks screen's `.rk-table` styles copied into the file (no shared stylesheet beyond components.css). Tiles (`.ad-tile`), bars (`.ad-bar`) and the region code (`.ad-reg`, same look as the Tender Card's `.pc-region`) are local. Demo data from the shell (platform users, admin log, AI usage).
 
 ## Removed
 

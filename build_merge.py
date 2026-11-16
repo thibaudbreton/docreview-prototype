@@ -59,6 +59,8 @@ SOURCES = [
     ("qa", "qa.html"),
     # SPEC-risks.md §6 — the tender's risk register, a support screen like Q&A.
     ("risks", "risks.html"),
+    # DEC-127 — the platform administration: users, all tenders, audit, statistics, AI.
+    ("admin", "admin.html"),
 ]
 
 INCLUDE_MARKER = "/* @include table-engine.js */"
@@ -124,7 +126,7 @@ const BLOBS = {
 
 FOOTER = """
 };
-const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "compliance": ["compliance", "compliance"], "compliance-contributor": ["compliance", "compliance-contributor"], "documents": ["documents", null], "qa": ["qa", null], "risks": ["risks", null], "new": ["create", null]};
+const ROUTES = {"home": ["home", null], "dashboard": ["dash", "dashboard"], "config": ["dash", "config"], "team": ["dash", "team"], "review": ["review", null], "compliance": ["compliance", "compliance"], "compliance-contributor": ["compliance", "compliance-contributor"], "documents": ["documents", null], "qa": ["qa", null], "risks": ["risks", null], "admin": ["admin", null], "new": ["create", null]};
 function b64utf8(s){return decodeURIComponent(Array.prototype.map.call(atob(s),c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));}
 // DEC-115 — the Alstom face, embedded once (window.BRAND_FONTS) in the outputs
 // allowed to carry it: each screen's @font-face points at fonts/…, swapped
@@ -196,8 +198,83 @@ window.getCurrentProject = ()=>PROJECTS.find(p=>p.id===currentProjectId)||null;
 // initials), fetched by every screen the same way getCurrentProject() already
 // is. No real SSO integration — prototype-level, per the ticket — but the
 // screens and the user model now assume an identity handed to them, not typed.
-const CURRENT_USER = {id:"admin", name:"Thibaud Breton", title:"Bid Director", email:"thibaud.breton@company.com", init:"TB"};
+const CURRENT_USER = {id:"admin", name:"Thibaud Breton", title:"Bid Director", email:"thibaud.breton@company.com", init:"TB", admin:true};
 window.getCurrentUser = ()=>CURRENT_USER;
+
+/* ---------- DEC-127 — platform administration ----------
+   The people the platform knows (from the SSO directory), what the platform
+   lets them do, and the admin's own actions. Two platform statuses only:
+   Admin — sees and manages every tender, the users and the audit; no business
+   authority of its own (ACCESS.md) — and Tender leader — may create tenders,
+   granted by an admin; creating a tender makes you its tender manager. Later,
+   SSO roles such as Bid Manager or Requirement Manager grant Tender leader by
+   themselves (SSO_LEADER_ROLES, not active in the pilot). Demo data: the
+   people are the demo's own fictional names. */
+const SSO_LEADER_ROLES = ["Bid Director","Bid Manager","Requirement Manager"];
+function seedPlatformUsers(){
+  const U=(id,name,init,color,sso,region,admin,leader,last,tenders,extra)=>Object.assign({id,name,init,color,sso,region,admin,leader,last,tenders,active:true},extra||{});
+  return [
+    U("admin","Thibaud Breton","TB","#6e7bf2","Bid Director","FR",true,true,"Today",{stb2026:"tm",ao088:"tm",rfp114:"contributor",stb133:"contributor",stb2025:"contributor"}),
+    U("u-cm","Claire Moreau","CM","#e0a43c","Requirement Manager","FR",false,true,"Today",{stb2026:"tm"}),
+    U("u-sl","Sophie Lang","SL","#5b8cf5","Bid Manager","NAM",false,true,"Yesterday",{rfp114:"tm",stb2025:"tm",stb2026:"contributor"}),
+    U("u-er","Elena Ruiz","ER","#1b9aaa","Bid Manager","LAM",false,true,"3 days ago",{ao088:"tm"}),
+    U("u-lr","Louis Renaud","LR","#3fbe86","Signalling Engineer","FR",false,false,"Today",{stb2026:"contributor",rfp114:"contributor"}),
+    U("u-kb","Karim Benali","KB","#c4763a","Systems Engineer","FR",false,false,"2 days ago",{stb2026:"contributor"}),
+    U("u-pf","Paolo Ferri","PF","#a06ef2","Telecom Engineer","LAM",false,false,"Today",{stb2026:"contributor"}),
+    U("u-ac","Amina Cherif","AC","#e4572e","Track Engineer","FR",false,false,"Last week",{stb2026:"contributor"}),
+    U("u-jc","James Carter","JC","#4f6a88","Requirement Manager","NAM",false,false,"4 days ago",{rfp114:"contributor"}),
+    U("u-md","Marc Dubois","MD","#8b9aad","Requirement Manager","NAM",false,true,"Sep 30",{stb133:"tm"},{active:false, leftOn:"Oct 2"}),
+  ];
+}
+function seedAdminLog(){
+  const A=(iso,who,what,extra)=>Object.assign({ts:Date.parse(iso), time:new Date(Date.parse(iso)).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}), who, cat:"admin", what},extra||{});
+  return [
+    A("2026-10-02T09:12","Thibaud Breton","Marc Dubois deactivated — left the company",{tender:"stb133",from:"Active",to:"Deactivated"}),
+    A("2026-09-28T16:40","Thibaud Breton","Tender leader granted to Elena Ruiz",{from:"—",to:"Tender leader"}),
+    A("2026-09-21T11:05","Thibaud Breton","Tender RFP-2026-114 created",{tender:"rfp114"}),
+    A("2026-09-15T08:30","Thibaud Breton","Tender leader granted to Sophie Lang",{from:"—",to:"Tender leader"}),
+  ];
+}
+/* What the AI did on each tender. The figures are the demo's own — the real
+   ones come from the AI workstream (DEC-020) and the platform's cost tracing
+   (PLAT-003). States follow AI-012: done, running, failed (to resume). */
+function seedAIUsage(){
+  const S=(capture,translation,characterisation,allocation)=>({capture,translation,characterisation,allocation});
+  return {
+    stb2026:{steps:S("done","done","done","done"), blocks:842, reqs:825, low:12, corrected:9, cost:184, last:"Today, 08:12"},
+    rfp114: {steps:S("done","skipped","done","failed"), blocks:46, reqs:12, low:8, corrected:17, cost:11, last:"2h ago", error:"Allocation stopped at 7 of 12 requirements — the model timed out"},
+    ao088:  {steps:S("done","done","running","waiting"), blocks:318, reqs:0, low:null, corrected:null, cost:22, last:"Running now"},
+    stb133: {steps:S("done","skipped","done","done"), blocks:71, reqs:63, low:6, corrected:5, cost:14, last:"Oct 1"},
+    stb2025:{steps:S("done","skipped","done","done"), blocks:96, reqs:88, low:10, corrected:7, cost:16, last:"Jun 3"},
+  };
+}
+let platformUsers = seedPlatformUsers(), adminLog = seedAdminLog(), aiUsage = seedAIUsage(), archivedTenders = new Set();
+const adminLogPush=(what,extra)=>{ const d=new Date(); adminLog.unshift(Object.assign({ts:Date.now(), time:"Today, "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"), who:CURRENT_USER.name, cat:"admin", what, live:true},extra||{})); };
+window.isAdmin = ()=>!!CURRENT_USER.admin;
+// DEC-127 — only a tender leader creates a tender (the admin grants it)
+window.canCreateTender = ()=>{ const u=platformUsers.find(x=>x.id===CURRENT_USER.id); return !!(u && u.active && u.leader); };
+window.getSSOLeaderRoles = ()=>SSO_LEADER_ROLES.slice();
+window.getPlatformUsers = ()=>platformUsers;
+window.setTenderLeader = (id,on)=>{ const u=platformUsers.find(x=>x.id===id); if(!u||!!u.leader===!!on) return;
+  u.leader=!!on; adminLogPush(on?`Tender leader granted to ${u.name}`:`Tender leader withdrawn from ${u.name}`,{from:on?"—":"Tender leader",to:on?"Tender leader":"—"}); };
+/* Deactivating someone: the tenders where they were the only active tender
+   manager get the replacement named in `handover` ({tenderId: userId}). */
+window.setUserActive = (id,on,handover)=>{ const u=platformUsers.find(x=>x.id===id); if(!u) return;
+  u.active=!!on; if(!on) u.leftOn="Today";
+  Object.entries(handover||{}).forEach(([t,rid])=>{ const r=platformUsers.find(x=>x.id===rid); if(r){ r.tenders[t]="tm"; adminLogPush(`${r.name} made tender manager of ${(PROJECTS.find(p=>p.id===t)||{}).ref||t}`,{tender:t,from:"—",to:"Tender manager"}); } });
+  adminLogPush(on?`${u.name} reactivated`:`${u.name} deactivated`,{from:on?"Deactivated":"Active",to:on?"Active":"Deactivated"}); };
+window.addTenderManager = (tenderId,id)=>{ const u=platformUsers.find(x=>x.id===id); if(!u) return;
+  u.tenders[tenderId]="tm"; adminLogPush(`${u.name} made tender manager of ${(PROJECTS.find(p=>p.id===tenderId)||{}).ref||tenderId}`,{tender:tenderId,from:"—",to:"Tender manager"}); };
+window.isTenderArchived = (id)=>archivedTenders.has(id);
+window.setTenderArchived = (id,on)=>{ if(on) archivedTenders.add(id); else archivedTenders.delete(id);
+  adminLogPush(`${(PROJECTS.find(p=>p.id===id)||{}).ref||id} ${on?"archived":"restored"}`,{tender:id,from:on?"Active":"Archived",to:on?"Archived":"Active"}); };
+window.getAdminLog = ()=>adminLog;
+// every tender's requirement log, each event with its tender and requirement
+window.getAllActivity = ()=>Object.entries(reqLog).flatMap(([pid,m])=>Object.entries(m).flatMap(([reqId,l])=>l.map(e=>Object.assign({tender:pid,reqId},e))));
+window.getAIUsage = ()=>aiUsage;
+window.retryAIStep = (tenderId)=>{ const a=aiUsage[tenderId]; if(!a) return;
+  Object.keys(a.steps).forEach(k=>{ if(a.steps[k]==="failed") a.steps[k]="running"; }); a.last="Resumed just now"; delete a.error;
+  adminLogPush(`AI processing resumed on ${(PROJECTS.find(p=>p.id===tenderId)||{}).ref||tenderId} — from where it stopped`,{tender:tenderId}); };
 // the home page's "How a tender travels through Smart Req" — dismissed once read; a demo reset brings it back
 let homeIntroHidden = false;
 window.getHomeIntroHidden = ()=>homeIntroHidden;
@@ -284,6 +361,7 @@ window.openProject = function(id){
   window.route("dashboard");
 };
 window.resetDemo = function(){
+  platformUsers = seedPlatformUsers(); adminLog = seedAdminLog(); aiUsage = seedAIUsage(); archivedTenders = new Set();
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   projectMode='ai';
@@ -659,6 +737,7 @@ const URLMAP = {
   'documents.html':'documents',
   'qa.html':'qa',
   'risks.html':'risks',
+  'admin.html':'admin',
   'dashboard-et-config.html':'dashboard',
   'dashboard-et-config.html#config':'config',
   'creation-projet.html':'new'

@@ -18,6 +18,10 @@
 | ACC-012 | **Le type et la classe d'une exigence appartiennent au tender manager.** Un contributeur (le responsable d'un sous-système) les voit mais ne peut pas les modifier — ni dans le détail, ni dans la table, ni par l'action groupée « Classify », ni dans la vue Document. Ils déterminent ce que le modèle dérive pour chaque sous-système. | DEC-086, DEC-126 |
 | ACC-013 | **Un contributeur ne modifie rien sur une exigence dont aucun sous-système ne lui est assigné** : il la lit (type, classe, allocation de chaque sous-système), sans aucun contrôle actif, dans le panneau comme dans la table. | DEC-100 |
 | ACC-014 | **Une personne appartient à un seul sous-système.** « Son » sous-système est celui dont elle est membre (plus celui où elle est affectée) : c'est ce qui décide ACC-013. Elle n'est proposée comme PIC d'un OBS que sur ce sous-système. Un sous-système est validé par son contributeur ou par le TM ; l'aiguillage Turnkey, par le TM seul. | DEC-102/104 |
+| ACC-015 | **Seul un Tender leader crée un tender** ; le statut est accordé (ou retiré) par un admin, et le créateur devient tender manager du tender créé. Retirer le statut ne retire rien sur les tenders existants. Plus tard, des rôles SSO (Bid Director, Bid Manager, Requirement Manager…) le donneront d'eux-mêmes — pas au pilote. | DEC-127 |
+| ACC-016 | **L'admin voit tous les tenders** (écran Administration, en liste) et agit sur les personnes et les tenders : statut Tender leader, désactivation, ajout d'un tender manager, archivage. **Aucune autorité métier** : il ne valide pas, ne donne pas de verdict, ne modifie pas le contenu d'un tender. | DEC-127 |
+| ACC-017 | **Désactiver une personne** l'empêche de se connecter et garde son travail (réponses, verdicts, historique à son nom). Si elle est le seul tender manager actif d'un tender, l'admin doit nommer un remplaçant avant de valider. Ses affectations (PIC) apparaissent sans personne chez les tender managers concernés. | DEC-127, ACC-002, ACC-006 |
+| ACC-018 | **Toute action d'administration s'inscrit au journal d'audit** (qui, quand, avant → après), consultable par l'admin avec le journal de tous les tenders, en lecture seule (PLAT-003). | DEC-127 |
 
 ## Matrice métier
 
@@ -33,11 +37,13 @@
 
 SIG dans Turnkey suit le même modèle de travail que SIG autonome, mais la gestion globale appartient à l'équipe du tender global. Un simple rattachement SIG ne donne pas les pouvoirs de TM Turnkey.
 
-Admin/VIP restent des besoins historiques non détaillés pour le pilote ; un rôle technique Admin n'ajoute pas implicitement une autorité métier. Les anciennes restrictions de lecture entre sous-systèmes et hiérarchies manager/expert sont dépassées par les décisions utilisateur.
+Admin et Tender leader sont précisés par DEC-127 (ACC-015 à ACC-018) ; VIP reste un besoin historique non détaillé. Un rôle technique Admin n'ajoute pas implicitement une autorité métier. Les anciennes restrictions de lecture entre sous-systèmes et hiérarchies manager/expert sont dépassées par les décisions utilisateur.
 
 ## Critères d'acceptation
 
 ACC-T01 : suppression du dernier TM refusée. ACC-T02 : rattachement en double refusé. ACC-T03 : réaffecter le travail avant suppression de son responsable. ACC-T04 : contributeur SIG consulte un autre sous-système du même tender mais ne le modifie pas, y compris par requête directe. ACC-T05 : contributeur SIG peut répondre à une exigence SIG dont un collègue porte le suivi. ACC-T06 : il peut ajouter un contributeur SIG sans permission manager distincte. ACC-T07 : TM peut amorcer un sous-système vide. ACC-T08 : TM saisit/modifie une réponse. ACC-T09 : aucune fuite inter-tenders par la règle « tout voir ».
+
+ACC-T11 : une personne sans statut Tender leader ne voit pas « ＋ New tender ». ACC-T12 : désactiver le seul tender manager actif d'un tender est refusé tant qu'un remplaçant n'est pas nommé. ACC-T13 : un admin ouvre un tender dont il n'est pas membre, sans pouvoir y valider ni y donner de verdict. ACC-T14 : chaque action d'administration apparaît au journal d'audit avec son auteur, sa date et son avant → après.
 
 ## Écart avec la maquette
 

@@ -771,6 +771,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
 .ic-sparkle{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z'/%3E%3Cpath d='M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z'/%3E%3C/svg%3E")}
 .ic-undo{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 11a8 8 0 1 1 2.3 5.7'/%3E%3Cpath d='M4 4v7h7'/%3E%3C/svg%3E")}
 .ic-lang{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h9M8.5 3v2M6 5c1 3.5 3 6 6 7.5M11 5c-1 3.5-3 6-7 8'/%3E%3Cpath d='M13 21l4-9 4 9M14.5 18h5'/%3E%3C/svg%3E")}
+[hidden]{display:none!important}
 </style>
 <script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 </head>
@@ -1509,6 +1510,8 @@ document.getElementById("ph-risks").addEventListener("click",e=>{e.preventDefaul
 document.getElementById("ph-qa").addEventListener("click",e=>{e.preventDefault();goRoute("qa.html");});
 document.getElementById("demo-contributor-link").addEventListener("click",()=>goRoute("compliance.html#contributor"));
 document.getElementById("new-proj").addEventListener("click",e=>{e.preventDefault();goRoute("creation-projet.html");});
+// DEC-127 — only a Tender leader creates a tender
+try{ if(window.parent.canCreateTender && !window.parent.canCreateTender()) document.getElementById("new-proj").hidden=true; }catch(e){}
 
 /* Config nav */
 document.querySelectorAll(".cfg-nav-item").forEach(it=>it.addEventListener("click",()=>{
