@@ -294,6 +294,7 @@ window.setCurrentProject = function(id){ if(PROJECTS.some(p=>p.id===id)) current
 
 /* background processing loop — runs in the shell, survives navigation */
 let procTimer=null;
+const DEMO_PROC_SECONDS = 60;
 function startProcLoop(){
   if(procTimer) return;
   procTimer=setInterval(()=>{
@@ -301,7 +302,9 @@ function startProcLoop(){
     PROJECTS.forEach(p=>{
       if(p.status==="processing"){
         anyActive=true;
-        p.progress=(p.progress||0)+ (2+Math.random()*4);
+        // demo pace: a tender is processed in about a minute (DEMO_PROC_SECONDS) —
+        // long enough to watch, where the real thing takes hours (p.etaMin)
+        p.progress=(p.progress||0)+ (100*0.7/DEMO_PROC_SECONDS)*(0.75+Math.random()*0.5);
         if(p.progress>=100){
           p.progress=100; p.status="requirement_review";
           p.total=p.total|| (60+Math.floor(Math.random()*40));
@@ -309,14 +312,14 @@ function startProcLoop(){
         }else if(p.language && p.language!=="en"){
           // SPEC-translation.md §2/§7 — translation runs after capture, before
           // characterisation, on any tender whose source language isn't English.
-          if(p.progress<25) p.procLabel="Capturing requirements…";
-          else if(p.progress<50) p.procLabel="Translating requirements…";
-          else if(p.progress<75) p.procLabel="Characterising requirements…";
-          else p.procLabel="Allocating to contributors…";
+          if(p.progress<25){ p.procLabel="Capturing requirements…"; p.procStep="capture"; }
+          else if(p.progress<50){ p.procLabel="Translating requirements…"; p.procStep="translation"; }
+          else if(p.progress<75){ p.procLabel="Characterising requirements…"; p.procStep="characterisation"; }
+          else { p.procLabel="Allocating to contributors…"; p.procStep="allocation"; }
         }else{
-          if(p.progress<35) p.procLabel="Capturing requirements…";
-          else if(p.progress<70) p.procLabel="Characterising requirements…";
-          else p.procLabel="Allocating to contributors…";
+          if(p.progress<35){ p.procLabel="Capturing requirements…"; p.procStep="capture"; }
+          else if(p.progress<70){ p.procLabel="Characterising requirements…"; p.procStep="characterisation"; }
+          else { p.procLabel="Allocating to contributors…"; p.procStep="allocation"; }
         }
       }
     });
@@ -351,10 +354,13 @@ window.addProject = function(meta){
     // whether the PBS/OBS/ABS keys apply). It was collected by the wizard and
     // then dropped here, so a tender created in the app could never have one.
     product: meta.product||null,
+    // what the real processing would take, from the wizard's estimate — the
+    // processing panel and the home card count it down at demo pace
+    etaMin: meta.etaMin||null,
     region: meta.region||null,   // DEC-126 — NAM / LAM / FR, chosen at creation
     pmTeam: Array.isArray(meta.pmTeam) ? meta.pmTeam : [] };  // whoever creates the tender owns it
   if(manual){ p.status="requirement_review"; p.total=0; p.allocated=0; p.complianceFilled=0; }
-  else { p.status="processing"; p.progress=3; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); p.allocated=0; p.complianceFilled=0; }
+  else { p.status="processing"; p.progress=1; p.procStep="capture"; p.procLabel="Capturing requirements…"; p.total=(60+Math.floor(Math.random()*40)); p.allocated=0; p.complianceFilled=0; }
   PROJECTS.unshift(p);
   startProcLoop();
   return id;

@@ -28,7 +28,7 @@ Point ouvert : ce qui n'est pas décidé (la story ne le tranche pas).
 | # | Épopée | Fichier | Stories | Pilote 1 | Après pilote |
 |---|---|---|---|---|---|
 | 1 | Accueil (My tenders) (`US-HOME`) | [01-accueil.md](01-accueil.md) | 6 | 6 | 0 |
-| 2 | Création d'un tender (`US-NEW`) | [02-creation.md](02-creation.md) | 9 | 9 | 0 |
+| 2 | Création d'un tender (`US-NEW`) | [02-creation.md](02-creation.md) | 10 | 10 | 0 |
 | 3 | Documents et versions (`US-DOC`) | [03-documents.md](03-documents.md) | 8 | 6 | 2 |
 | 4 | Capture, segmentation, traduction et IA (`US-CAP`) | [04-capture-ia.md](04-capture-ia.md) | 13 | 11 | 2 |
 | 5 | Allocation — modèle et panneau (`US-ALM`) | [05-allocation.md](05-allocation.md) | 35 | 33 | 2 |
@@ -44,7 +44,7 @@ Point ouvert : ce qui n'est pas décidé (la story ne le tranche pas).
 | 15 | Configuration du tender (`US-CFG`) | [15-configuration.md](15-configuration.md) | 15 | 12 | 3 |
 | 16 | Transverse : journal, notifications, plateforme (`US-X`) | [16-transverse.md](16-transverse.md) | 14 | 14 | 0 |
 | 17 | Administration de la plateforme (`US-ADM`) | [17-administration.md](17-administration.md) | 6 | 4 | 2 |
-| | **Total** | | **245** | **156** | **89** |
+| | **Total** | | **246** | **157** | **89** |
 
 Les stories marquées « Pilote 1 » mais dont une partie (Compliance) vient après le pilote sont comptées en Pilote 1. Matrice règle → stories : [COUVERTURE.md](COUVERTURE.md). Points non décidés et écarts de la maquette : [POINTS-OUVERTS.md](POINTS-OUVERTS.md).
 
@@ -74,6 +74,7 @@ Les stories marquées « Pilote 1 » mais dont une partie (Compliance) vient apr
 | [US-NEW-07](02-creation.md#us-new-07--constituer-léquipe-de-gestion-du-tender) | Constituer l'équipe de gestion du tender | Pilote 1 | Toutes |
 | [US-NEW-08](02-creation.md#us-new-08--vérifier-le-récapitulatif-et-créer-le-tender) | Vérifier le récapitulatif et créer le tender | Pilote 1 | Toutes |
 | [US-NEW-09](02-creation.md#us-new-09--retrouver-dans-le-tender-créé-tout-ce-que-lassistant-a-fixé) | Retrouver dans le tender créé tout ce que l'assistant a fixé | Pilote 1 | Turnkey, SIG (dont Mainline), RSC |
+| [US-NEW-10](02-creation.md#us-new-10--suivre-le-traitement-du-tender-créé) | Suivre le traitement du tender créé | Pilote 1 | Toutes |
 
 ### Documents et versions
 

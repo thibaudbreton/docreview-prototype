@@ -104,13 +104,13 @@ Point ouvert : DEC-095 fige « le mode d'assistance IA » sans dire si les régl
 
 ### US-NEW-08 — Vérifier le récapitulatif et créer le tender
 **Carte :** En tant que tender manager, je veux relire tout ce que j'ai saisi puis créer le tender, afin d'arriver directement sur un tender au travail.
-**Conversation :** L'étape 4 se termine par un récapitulatif de tout le tender et par « ✓ Create tender ». La création ferme l'assistant et lance le traitement : avec une étape IA active, on arrive sur le tableau de bord pendant que la capture tourne en arrière-plan ; en mode tout manuel, on arrive directement dans Allocation (JRN-001). Le tender apparaît aussitôt dans « My tenders ».
-**Maquette :** Nouveau tender — `creation-projet.html` (route `#new`), « Summary » de l'étape 4 (Key-Value Summary Row), Processing Overlay ; puis Tableau de bord (route `#dashboard`) ou Allocation (route `#review`).
+**Conversation :** L'étape 4 se termine par un récapitulatif de tout le tender et par « ✓ Create tender ». La création lance le traitement : avec une étape IA active, le panneau de traitement s'ouvre et en montre l'avancement (voir [US-NEW-10](#us-new-10--suivre-le-traitement-du-tender-créé)) ; en mode tout manuel, on arrive directement dans Allocation (JRN-001). Le tender apparaît aussitôt dans « My tenders ».
+**Maquette :** Nouveau tender — `creation-projet.html` (route `#new`), « Summary » de l'étape 4 (Key-Value Summary Row), Processing Overlay ; ou Allocation (route `#review`) en mode manuel.
 **Règles :** JRN-001, LIFE-001, LIFE-003, LIFE-T01, AI-009, PLAT-001, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Le récapitulatif liste nom, BO-ID, ligne produit, produit, région, langue source, émetteur, échéance, documents, mode de traitement et équipe de gestion ; un nom, un BO-ID ou un produit manquant y paraît « Not set », l'absence de document « None attached ».
 2. « ✓ Create tender » ne crée le tender que si le nom et le BO-ID sont présents ; sinon l'assistant revient à l'étape 1 avec le message d'[US-NEW-01](#us-new-01--décrire-lidentité-du-tender).
-3. Avec au moins une étape IA active, une confirmation « Tender created » dit que la capture a démarré en arrière-plan, puis le tableau de bord du nouveau tender s'ouvre.
+3. Avec au moins une étape IA active, le panneau de traitement s'ouvre sur le nouveau tender, titré « Tender created » (détail : [US-NEW-10](#us-new-10--suivre-le-traitement-du-tender-créé)).
 4. En mode tout manuel, le tender s'ouvre directement dans Allocation.
 5. Le nouveau tender figure en tête de « My tenders » pour chaque membre de l'équipe de gestion, en traitement s'il a une étape IA, et il survit à une déconnexion (PLAT-001).
 6. Si l'enregistrement échoue, aucun succès n'est affiché, aucun tender incomplet n'apparaît et la saisie de l'assistant est conservée.
@@ -129,6 +129,26 @@ Point ouvert : DEC-095 fige « le mode d'assistance IA » sans dire si les régl
 6. Aucun sous-système n'a de contributeur tant que le casting n'est pas fait, et la capture tourne quand même (LIFE-T02).
 Écart maquette : un tender créé dans la maquette réutilise le contenu du tender de référence (bandeau « Prototype scope ») ; ni l'émetteur, ni l'échéance, ni les documents, ni le mode ne sont conservés sur lui.
 Point ouvert : la possibilité de modifier les autres réglages de traitement après le démarrage n'est pas décidée (LIFE-002, OPEN-05 résiduel).
+
+### US-NEW-10 — Suivre le traitement du tender créé
+**Carte :** En tant que tender manager, je veux voir le traitement de mon nouveau tender démarrer, savoir combien de temps il prendra et pouvoir partir pendant qu'il tourne, afin de ne pas attendre devant l'écran.
+**Conversation :**
+- Le traitement d'un tender dure plusieurs heures : capture, traduction si la source n'est pas en anglais, caractérisation, allocation.
+- Le panneau de traitement le montre clairement, mais n'oblige personne à attendre : on revient à « My tenders » quand on veut, le traitement continue, et le tender s'ouvre depuis sa carte une fois prêt.
+- L'estimation vient d'une règle par page et par étape activée ; le vrai chiffre viendra du chantier IA (DEC-020).
+
+**Maquette :** Nouveau tender — `creation-projet.html` (route `#new`), Processing Overlay et Train Track ; Accueil — `accueil.html` (route `#home`), Tender Card.
+**Règles :** JRN-001, LIFE-001, AI-009, AI-012, PLAT-001  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
+**Critères d'acceptation :**
+1. Le panneau affiche l'estimation (« Estimated processing about 3 h 20 min ») et le temps restant, qui diminue avec l'avancement. L'étape 3 de l'assistant annonce la même estimation, en tenant compte des documents et de la langue choisis.
+2. Les étapes activées sont listées : terminée (✓), en cours, en attente. La traduction n'apparaît que si la source n'est pas en anglais.
+3. Une voie ferrée montre l'avancement : un petit train la parcourt et s'arrête au signal, qui passe au vert à la fin.
+4. « Back to My tenders », ✕ ou Échap ramènent à l'accueil sans arrêter le traitement. La carte du tender y affiche « Processing — about {durée} left » et ne s'ouvre qu'une fois le traitement terminé.
+5. À la fin, le panneau passe à « Ready » et propose « Open the tender → ». Si l'on est sur l'accueil, un message dit « {nom} is ready — open it from its card ».
+
+Écart maquette : le traitement est simulé ; il dure environ une minute pour la démonstration (DEMO_PROC_SECONDS).
+
+Point ouvert : la vraie estimation et ses unités (chantier IA, DEC-020) ; être averti ailleurs que sur l'accueil quand le traitement se termine (PLAT-005).
 
 ## Couverture
 - Règles couvertes : LIFE-001 → [US-NEW-01](#us-new-01--décrire-lidentité-du-tender), [US-NEW-02](#us-new-02--choisir-la-ligne-produit-fixée-à-la-création), [US-NEW-05](#us-new-05--joindre-et-ordonner-les-documents-source), [US-NEW-07](#us-new-07--constituer-léquipe-de-gestion-du-tender), [US-NEW-08](#us-new-08--vérifier-le-récapitulatif-et-créer-le-tender) ; LIFE-002 → [US-NEW-02](#us-new-02--choisir-la-ligne-produit-fixée-à-la-création), [US-NEW-03](#us-new-03--choisir-le-produit-du-tender), [US-NEW-06](#us-new-06--choisir-le-mode-dassistance-ia-fixé-à-la-création), [US-NEW-09](#us-new-09--retrouver-dans-le-tender-créé-tout-ce-que-lassistant-a-fixé) ; LIFE-003 → [US-NEW-06](#us-new-06--choisir-le-mode-dassistance-ia-fixé-à-la-création), [US-NEW-07](#us-new-07--constituer-léquipe-de-gestion-du-tender), [US-NEW-08](#us-new-08--vérifier-le-récapitulatif-et-créer-le-tender) (enchaînement : [US-CAP-01](04-capture-ia.md#us-cap-01--enchaîner-automatiquement-les-étapes-ia-activées)) ; LIFE-004 → [US-NEW-05](#us-new-05--joindre-et-ordonner-les-documents-source) (suite : US-DOC) ; LIFE-T01 → [US-NEW-01](#us-new-01--décrire-lidentité-du-tender), [US-NEW-08](#us-new-08--vérifier-le-récapitulatif-et-créer-le-tender) ; LIFE-T02 → [US-NEW-07](#us-new-07--constituer-léquipe-de-gestion-du-tender), [US-NEW-09](#us-new-09--retrouver-dans-le-tender-créé-tout-ce-que-lassistant-a-fixé) ; LANG-001 → [US-NEW-04](#us-new-04--déclarer-la-langue-source-unique-du-tender) ; LANG-002 → [US-NEW-04](#us-new-04--déclarer-la-langue-source-unique-du-tender) ; AI-009 → [US-NEW-06](#us-new-06--choisir-le-mode-dassistance-ia-fixé-à-la-création), [US-NEW-08](#us-new-08--vérifier-le-récapitulatif-et-créer-le-tender) ; JRN-001 → [US-NEW-01](#us-new-01--décrire-lidentité-du-tender), [US-NEW-08](#us-new-08--vérifier-le-récapitulatif-et-créer-le-tender) ; DOM-001 → [US-NEW-01](#us-new-01--décrire-lidentité-du-tender), [US-NEW-05](#us-new-05--joindre-et-ordonner-les-documents-source), [US-NEW-06](#us-new-06--choisir-le-mode-dassistance-ia-fixé-à-la-création), [US-NEW-09](#us-new-09--retrouver-dans-le-tender-créé-tout-ce-que-lassistant-a-fixé) ; DOM-002 → [US-NEW-05](#us-new-05--joindre-et-ordonner-les-documents-source) ; TYPE-T01 → [US-NEW-09](#us-new-09--retrouver-dans-le-tender-créé-tout-ce-que-lassistant-a-fixé) ; TYPE-T04 → [US-NEW-09](#us-new-09--retrouver-dans-le-tender-créé-tout-ce-que-lassistant-a-fixé) ; TYPE-T05 → [US-NEW-02](#us-new-02--choisir-la-ligne-produit-fixée-à-la-création), [US-NEW-09](#us-new-09--retrouver-dans-le-tender-créé-tout-ce-que-lassistant-a-fixé).

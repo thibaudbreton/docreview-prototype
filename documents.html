@@ -274,9 +274,8 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 :root{--motion-fast:120ms; --motion-base:180ms; --motion-slow:400ms; --motion-flash:1100ms; --ease-out:cubic-bezier(.2,.8,.2,1)}
 /* ---- Micro-animations, lot 2 (2026-11-16) — what opens comes from somewhere ----
    Menus open from their button (fade, 4px drop, slight scale), windows rise over
-   a fading backdrop, the selection bar rises from the bottom, the detail panel
-   slides in when another item is opened (never on an edit), the screen fades in
-   when it loads. Opacity and transform only; reduced motion switches it off. */
+   a fading backdrop, the selection bar rises from the bottom, the screen fades
+   in when it loads (the detail panel's slide-in was tried and dropped). Opacity and transform only; reduced motion switches it off. */
 @keyframes menuIn{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
 @keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes fadeOnly{from{opacity:0}to{opacity:1}}

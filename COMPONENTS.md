@@ -1543,6 +1543,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-11-16
 - **notes**: `.ad-leave` (DEC-127, ACC-017). Opens on « Deactivate »: what the person leaves behind, and a replacement to name for each tender where they are the only active tender manager — refused until each is named. The destructive button `.btn-danger` is solid `--warn` with white text, the only one of its kind.
 
+### Train Track
+- **level**: molecule
+- **file**: creation-projet.html
+- **variants**: running (wheels turning, a slight bob), arrived (stopped at the signal, signal green)
+- **tokens**: --accent, --brand-red, --panel, --panel-3, --line-2, --ok, --space-2, --space-3
+- **built-from**: none
+- **added**: 2026-11-16
+- **changed**: 2026-11-16
+- **notes**: The processing panel's progress bar drawn as a railway: sleepers (a repeating gradient), a rail that fills in `--accent` behind the train, a small inline-SVG train (wagon + locomotive in `--accent`, windows in `--panel`, a `--brand-red` stripe — decorative, never stateful), and a signal at the end that turns `--ok` when processing is done. The train's position follows the tender's progress (left and fill over .7s, linear); the wheels spin and the train bobs while running. Sizes hardcoded (98×34px train, 52px track); the ok ring uses the untracked `--ok-soft`. Reduced motion stops wheels and bob.
+
 ## Organisms
 
 ### App Header
@@ -1782,8 +1792,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --panel, --line, --radius-lg, --space-3, --space-4, --accent
 - **built-from**: Product Line Badge, Role Chip, Tender Line (mini)
 - **added**: 2026-09-01
-- **changed**: 2026-10-26
-- **notes**: 2026-10-26 (DEC-126): `.pc-region` — the tender's region code (NAM / LAM / FR) beside the reference, its name in the tooltip; `--text-xs`, `--text-2`, `--radius-xs`, border the untracked `--line-2`. 2026-10-06 (colour pass): "Processing" in the second blue. 2026-10-06 (later): rebuilt around what a tender asks of you — top row: the Product Line Badge, the reference, your Role Chip on the right; then the name in the heading face, the line, the footer. The stage pill (Allocation / Compliance / Processing / Submitted) and the two plain rows (product line with a bar, role with a dot) are gone: the line carries the stage, the badge and the chip carry the rest. 2026-10-06: its gauge is the Tender Line in miniature (`gaugeHTML()`), replacing the Allocation / Compliance progress bar and the submitted card's text line; the processing label and "Response submitted" moved to its tooltip. `min-height:172px` and hover `translateY(-2px)` hardcoded. Listed at molecule level (assembles several atoms into one repeatable card) even though it sits inside the Tender Dashboard Grid organism above.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16: a processing tender created in the wizard shows its time left (« Processing — about 2 h 40 min left »), counted down from the real estimate at demo pace; when one finishes while the list is open, a toast says « {name} is ready — open it from its card ». 2026-10-26 (DEC-126): `.pc-region` — the tender's region code (NAM / LAM / FR) beside the reference, its name in the tooltip; `--text-xs`, `--text-2`, `--radius-xs`, border the untracked `--line-2`. 2026-10-06 (colour pass): "Processing" in the second blue. 2026-10-06 (later): rebuilt around what a tender asks of you — top row: the Product Line Badge, the reference, your Role Chip on the right; then the name in the heading face, the line, the footer. The stage pill (Allocation / Compliance / Processing / Submitted) and the two plain rows (product line with a bar, role with a dot) are gone: the line carries the stage, the badge and the chip carry the rest. 2026-10-06: its gauge is the Tender Line in miniature (`gaugeHTML()`), replacing the Allocation / Compliance progress bar and the submitted card's text line; the processing label and "Response submitted" moved to its tooltip. `min-height:172px` and hover `translateY(-2px)` hardcoded. Listed at molecule level (assembles several atoms into one repeatable card) even though it sits inside the Tender Dashboard Grid organism above.
 
 ### Product Line Badge
 - **level**: atom
@@ -1858,12 +1868,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Processing Overlay
 - **level**: organism
 - **file**: creation-projet.html
-- **variants**: none
-- **tokens**: --radius-lg, --space-6, --text-lg, --text-sm, --text-3, --text-2, --font-mono
-- **built-from**: Progress Bar
+- **variants**: processing (estimate, time left, steps, « Back to My tenders »), ready (« Open the tender → »)
+- **tokens**: --radius-lg, --radius-md, --space-2, --space-3, --space-4, --space-5, --space-6, --text-xs, --text-sm, --text-base, --text-lg, --text-2, --text-3, --accent, --ok, --line, --panel, --font-heading
+- **built-from**: Train Track, Primary Button, Ghost Button
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: Backdrop blur and box-shadow both hardcoded — no elevation/overlay token exists anywhere in the codebase, so every overlay/modal/dropdown hand-picks its own shadow value independently.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16: rebuilt as the processing panel. It no longer flashes and jumps to the dashboard: it stays open on the new tender — the real estimate (« about 3 h 20 min », from pages and enabled steps) and what is left, the steps (capture, translation when the source isn't English, characterisation, allocation; done ✓ / running / waiting), the Train Track, and « Back to My tenders » (also ✕ and Esc), processing carrying on in the background. At the end: « Ready », « Open the tender → ». Demo pace about a minute (DEMO_PROC_SECONDS in the shell). The ok-soft ring of the ready signal and the white ✓ are hardcoded/untracked. Backdrop blur and box-shadow both hardcoded — no elevation/overlay token exists anywhere in the codebase, so every overlay/modal/dropdown hand-picks its own shadow value independently.
 
 ### Project Management Team Section
 - **level**: organism

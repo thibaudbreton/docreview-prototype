@@ -209,9 +209,8 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 :root{--motion-fast:120ms; --motion-base:180ms; --motion-slow:400ms; --motion-flash:1100ms; --ease-out:cubic-bezier(.2,.8,.2,1)}
 /* ---- Micro-animations, lot 2 (2026-11-16) — what opens comes from somewhere ----
    Menus open from their button (fade, 4px drop, slight scale), windows rise over
-   a fading backdrop, the selection bar rises from the bottom, the detail panel
-   slides in when another item is opened (never on an edit), the screen fades in
-   when it loads. Opacity and transform only; reduced motion switches it off. */
+   a fading backdrop, the selection bar rises from the bottom, the screen fades
+   in when it loads (the detail panel's slide-in was tried and dropped). Opacity and transform only; reduced motion switches it off. */
 @keyframes menuIn{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
 @keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes fadeOnly{from{opacity:0}to{opacity:1}}
@@ -386,7 +385,7 @@ function gaugeHTML(p){
 }
 function cardHTML(p){
   const pm=/(tender|project)\s*manager/i.test(p.role||"");   // §1.4 — one role per person per tender, two labels
-  const foot = p.status==="processing" ? `<span class="pc-proc"><span class="bdot"></span>Processing — opens when it completes</span>`
+  const foot = p.status==="processing" ? `<span class="pc-proc"><span class="bdot"></span>Processing — ${p.etaMin?`about ${fmtLeft(p.etaMin*(1-(p.progress||0)/100))} left`:"opens when it completes"}</span>`
     : p.builtOut===false ? `<span class="pc-processing-note">Demo tender — list &amp; status only</span>`
     : `Updated ${p.updated||"recently"}`;
   return `<div class="pcard ${p.status}" data-id="${p.id}">
@@ -502,7 +501,16 @@ document.getElementById("howto-btn").addEventListener("click",()=>{
 // poll so background processing bars animate live
 renderHowto();
 render();
-setInterval(()=>{ if(getProjects().some(p=>p.status==="processing")) render(); }, 700);
+/* time left on a processing tender: the real estimate (etaMin), counted down at demo pace */
+function fmtLeft(min){ min=Math.max(0,Math.round(min)); if(min<60) return `${Math.max(1,min)} min`; const h=Math.floor(min/60), m=Math.round((min%60)/10)*10; return m?`${h} h ${m} min`:`${h} h`; }
+/* a tender that finishes processing while the list is open says so */
+let wasProcessing=new Set(getProjects().filter(p=>p.status==="processing").map(p=>p.id));
+setInterval(()=>{
+  const ps=getProjects();
+  ps.filter(p=>wasProcessing.has(p.id) && p.status!=="processing").forEach(p=>{ try{ toast(`${p.name} is ready — open it from its card`,"ok"); }catch(e){} });
+  wasProcessing=new Set(ps.filter(p=>p.status==="processing").map(p=>p.id));
+  if(ps.some(p=>p.status==="processing")||wasProcessing.size) render();
+}, 700);
 // apply theme
 try{ var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light"; document.documentElement.setAttribute("data-theme",t);}catch(e){}
 </script>
