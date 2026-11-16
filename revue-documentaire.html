@@ -1557,9 +1557,6 @@ body.as-contributor #sel-class-btn{display:none}   /* DEC-086 — no bulk Classi
 /* sub-rows unroll under their requirement when it is expanded — once, not on later renders */
 @keyframes unfold{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .rrow.unfold{animation:unfold 160ms var(--ease-out)}
-/* after « ↻ Re-run », the ABS / PBS step or OBS row the model changed glows once in the AI's amber */
-@keyframes aiFlash{from{background:var(--ia-soft);box-shadow:inset 0 0 0 1px var(--ia)}to{background:transparent;box-shadow:inset 0 0 0 1px transparent}}
-.ai-flash{animation:aiFlash 1300ms var(--ease-out);border-radius:var(--radius-md)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* ---- brand touches (22 Sept 2026) ---------------------------------------
    Titles take the heading face. The red is DECORATIVE ONLY: a small mark
@@ -2673,17 +2670,6 @@ function rerunModelChoices(systemId){
    characterisation once and then every organisation under it. Re-running one
    organisation on its own would mean giving it an ABS its siblings do not
    share, which would describe a different requirement. */
-/* Micro-animations, lot 3 — what a re-run changed: ABS, PBS and each OBS entry, before and after */
-function rerunSnap(branch){ const teams=ensureTeams(branch); return {abs:branch.abs&&(branch.abs.id||branch.abs.v), pbs:branch.pbs&&(branch.pbs.id||branch.pbs.v), obs:teams.map(t=>t.obs&&(t.obs.id||t.obs.v))}; }
-function flashRerun(before, after){
-  setTimeout(()=>{ const root=document.getElementById("settings-body"); if(!root) return;
-    const glow=el=>{ el.classList.remove("ai-flash"); void el.offsetWidth; el.classList.add("ai-flash"); setTimeout(()=>el.classList.remove("ai-flash"),1400); };
-    root.querySelectorAll(".deriv-step").forEach(step=>{ const l=((step.querySelector(".deriv-label")||{}).textContent||"").trim();
-      if(/^ABS/.test(l) && before.abs!==after.abs) glow(step);
-      else if(/^PBS/.test(l) && before.pbs!==after.pbs) glow(step);
-      else if(/^OBS/.test(l)) step.querySelectorAll(".ui-list-row").forEach((row,i)=>{ if(before.obs[i]!==after.obs[i]) glow(row); });
-    }); },0);
-}
 function applyRerunTo(b, branchIdx, productId){
   const branch=(b.branches||[])[branchIdx]; if(!branch) return null;
   const teams=ensureTeams(branch);
@@ -5843,7 +5829,6 @@ function bindRerunControls(root, b){
     const blocked=branchRerunBlockedReason(branch);
     if(blocked){ toast(`Cannot re-run — ${blocked}.`,"warn"); return; }
     const borrowed = productSystem(productId)!==branch.typology;
-    const snapB=rerunSnap(branch);
     const res=applyRerunTo(b, idx, productId);
     // DEC-043 — the borrow leaves no persistent marker anywhere a reader looks;
     // the branch history is the one place it survives, and that is deliberate.
@@ -5851,19 +5836,16 @@ function bindRerunControls(root, b){
       `Re-ran allocation with ${product.label}${borrowed?" (borrowed — this sub-system has no model of its own)":""}${res&&!res.changed?" — same result":""}`, "ok");
     if(res && res.changed) toast(`${b.id} — re-derived with ${product.label}`,"ok");
     refresh();
-    if(res && res.changed) flashRerun(snapB, rerunSnap(branch));
   }));
   document.addEventListener("click",()=>root.querySelectorAll(".rerun-menu.on").forEach(m=>m.classList.remove("on")),{once:true});
   root.querySelectorAll("[data-rerun-now]").forEach(btn=>btn.addEventListener("click",()=>{
     const idx=+btn.dataset.rerunNow, product=PRODUCT(btn.dataset.product);
     const branch=(b.branches||[])[idx]; if(!branch||!product) return;
     const why=charChange(b);
-    const snapB=rerunSnap(branch);
     const res2=applyRerunTo(b, idx, product.id);
     pushBranchLog(b, MGR(VIEWER).name, `Re-ran allocation with ${product.label} after its ${why&&why.nature?"nature":"class"} changed${res2&&!res2.changed?" — same result":""}`, "ok");
     if(res2 && res2.changed) toast(`${b.id} — re-derived with ${product.label}`,"ok");
     refresh();
-    if(res2 && res2.changed) flashRerun(snapB, rerunSnap(branch));
   }));
 }
 function derivationChainHTML(b,myBranch,derivSrc){
@@ -6986,6 +6968,17 @@ function flashChangedRows(before, after){
     setTimeout(()=>row.classList.remove("just-changed"),1200);
   })),0);
 }
+/* The panel's content — its scrolling area included — is redrawn on every
+   refresh, which sent the scroll back to the top after any edit or re-run on the
+   open requirement. Same requirement, same tab: keep where the reader was. */
+{ const _rs=renderSettings; let shown=null;
+  renderSettings=function(){
+    const key=state.selected?state.selected+"|"+state.tab:null;
+    const sb=document.querySelector("#settings-body .set-body"), top=sb?sb.scrollTop:0;
+    _rs.apply(this,arguments);
+    if(key && key===shown){ const nb=document.querySelector("#settings-body .set-body"); if(nb) nb.scrollTop=top; }
+    shown=key;
+  }; }
 function refresh(){
   const sigBefore=state.statusSig, sigAfter=statusSignature(); state.statusSig=sigAfter;
   logReqDiffs();
