@@ -1537,21 +1537,29 @@ body.as-contributor #sel-class-btn{display:none}   /* DEC-086 — no bulk Classi
 @media(max-width:1100px){.settings{width:290px}.nav{width:230px}}
 /* ---- Micro-animations, lot 2 (2026-11-16) — what opens comes from somewhere ----
    Menus open from their button (fade, 4px drop, slight scale), windows rise over
-   a fading backdrop, the selection bar rises from the bottom, the detail panel
-   slides in when another item is opened (never on an edit), the screen fades in
-   when it loads. Opacity and transform only; reduced motion switches it off. */
+   a fading backdrop, the selection bar rises from the bottom, the screen fades
+   in when it loads (the detail panel's slide-in was tried and dropped). Opacity and transform only; reduced motion switches it off. */
 @keyframes menuIn{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
 @keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes fadeOnly{from{opacity:0}to{opacity:1}}
 #app{animation:fadeOnly 160ms var(--ease-out)}
-@keyframes panelIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
 .view-panel.on,.export-panel.on,.adv-panel.on,.rerun-menu.on,.notif-drop.open{transform-origin:top right;animation:menuIn var(--motion-fast) var(--ease-out)}
 .colf-pop.on,.cf-pop.on,.chg-pop.on,.nat-menu{transform-origin:top left;animation:menuIn var(--motion-fast) var(--ease-out)}
 .kbd-help:hover .kbd-help-pop,.kbd-help:focus-within .kbd-help-pop{transform-origin:top right;animation:menuIn var(--motion-fast) var(--ease-out)}
 .overlay.open{animation:fadeOnly var(--motion-base) var(--ease-out)}
 .overlay.open .modal{animation:riseIn var(--motion-base) var(--ease-out)}
 .sel-bar.on{animation:riseIn var(--motion-base) var(--ease-out)}
-.swap-in{animation:panelIn var(--motion-base) var(--ease-out)}
+/* ---- Micro-animations, lot 3 (2026-11-16) ----
+   A refused action shakes the control that asked for it, alongside its message
+   (never a partial success, which offers Undo). */
+@keyframes refuse{0%,100%{transform:none}20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+.refused{animation:refuse 320ms var(--ease-out)}
+/* sub-rows unroll under their requirement when it is expanded — once, not on later renders */
+@keyframes unfold{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.rrow.unfold{animation:unfold 160ms var(--ease-out)}
+/* after « ↻ Re-run », the ABS / PBS step or OBS row the model changed glows once in the AI's amber */
+@keyframes aiFlash{from{background:var(--ia-soft);box-shadow:inset 0 0 0 1px var(--ia)}to{background:transparent;box-shadow:inset 0 0 0 1px transparent}}
+.ai-flash{animation:aiFlash 1300ms var(--ease-out);border-radius:var(--radius-md)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* ---- brand touches (22 Sept 2026) ---------------------------------------
    Titles take the heading face. The red is DECORATIVE ONLY: a small mark
@@ -2665,6 +2673,17 @@ function rerunModelChoices(systemId){
    characterisation once and then every organisation under it. Re-running one
    organisation on its own would mean giving it an ABS its siblings do not
    share, which would describe a different requirement. */
+/* Micro-animations, lot 3 — what a re-run changed: ABS, PBS and each OBS entry, before and after */
+function rerunSnap(branch){ const teams=ensureTeams(branch); return {abs:branch.abs&&(branch.abs.id||branch.abs.v), pbs:branch.pbs&&(branch.pbs.id||branch.pbs.v), obs:teams.map(t=>t.obs&&(t.obs.id||t.obs.v))}; }
+function flashRerun(before, after){
+  setTimeout(()=>{ const root=document.getElementById("settings-body"); if(!root) return;
+    const glow=el=>{ el.classList.remove("ai-flash"); void el.offsetWidth; el.classList.add("ai-flash"); setTimeout(()=>el.classList.remove("ai-flash"),1400); };
+    root.querySelectorAll(".deriv-step").forEach(step=>{ const l=((step.querySelector(".deriv-label")||{}).textContent||"").trim();
+      if(/^ABS/.test(l) && before.abs!==after.abs) glow(step);
+      else if(/^PBS/.test(l) && before.pbs!==after.pbs) glow(step);
+      else if(/^OBS/.test(l)) step.querySelectorAll(".ui-list-row").forEach((row,i)=>{ if(before.obs[i]!==after.obs[i]) glow(row); });
+    }); },0);
+}
 function applyRerunTo(b, branchIdx, productId){
   const branch=(b.branches||[])[branchIdx]; if(!branch) return null;
   const teams=ensureTeams(branch);
@@ -5359,6 +5378,7 @@ function bindVRows(win){
     const id=btn.dataset.branchtoggle;
     state.expandedBranches.has(id) ? state.expandedBranches.delete(id) : state.expandedBranches.add(id);
     renderReview();
+    if(state.expandedBranches.has(id)) document.querySelectorAll(`.rrow[data-branchof="${CSS.escape(id)}"]`).forEach(r=>r.classList.add("unfold"));
   }));
   /* second level — teams within one system. Independent of the system
      caret: collapsing the requirement hides everything under it, but an
@@ -5823,6 +5843,7 @@ function bindRerunControls(root, b){
     const blocked=branchRerunBlockedReason(branch);
     if(blocked){ toast(`Cannot re-run — ${blocked}.`,"warn"); return; }
     const borrowed = productSystem(productId)!==branch.typology;
+    const snapB=rerunSnap(branch);
     const res=applyRerunTo(b, idx, productId);
     // DEC-043 — the borrow leaves no persistent marker anywhere a reader looks;
     // the branch history is the one place it survives, and that is deliberate.
@@ -5830,16 +5851,19 @@ function bindRerunControls(root, b){
       `Re-ran allocation with ${product.label}${borrowed?" (borrowed — this sub-system has no model of its own)":""}${res&&!res.changed?" — same result":""}`, "ok");
     if(res && res.changed) toast(`${b.id} — re-derived with ${product.label}`,"ok");
     refresh();
+    if(res && res.changed) flashRerun(snapB, rerunSnap(branch));
   }));
   document.addEventListener("click",()=>root.querySelectorAll(".rerun-menu.on").forEach(m=>m.classList.remove("on")),{once:true});
   root.querySelectorAll("[data-rerun-now]").forEach(btn=>btn.addEventListener("click",()=>{
     const idx=+btn.dataset.rerunNow, product=PRODUCT(btn.dataset.product);
     const branch=(b.branches||[])[idx]; if(!branch||!product) return;
     const why=charChange(b);
+    const snapB=rerunSnap(branch);
     const res2=applyRerunTo(b, idx, product.id);
     pushBranchLog(b, MGR(VIEWER).name, `Re-ran allocation with ${product.label} after its ${why&&why.nature?"nature":"class"} changed${res2&&!res2.changed?" — same result":""}`, "ok");
     if(res2 && res2.changed) toast(`${b.id} — re-derived with ${product.label}`,"ok");
     refresh();
+    if(res2 && res2.changed) flashRerun(snapB, rerunSnap(branch));
   }));
 }
 function derivationChainHTML(b,myBranch,derivSrc){
@@ -6903,7 +6927,13 @@ function undoLast(){
   u.fn(); if(u.el) u.el.remove();
   toast(`Undone — ${u.msg}`,"ok");
 }
+/* Micro-animations, lot 3 — a refused action shakes the control that asked for it */
+var lastPress={el:null,t:0};
+document.addEventListener("pointerdown",e=>{ lastPress={el:e.target.closest("button,a,.status-pill,[role=button]"),t:Date.now()}; },true);
+function shakeRefused(){ const el=lastPress.el; if(!el||Date.now()-lastPress.t>800||!el.isConnected) return;
+  el.classList.remove("refused"); void el.offsetWidth; el.classList.add("refused"); setTimeout(()=>el.classList.remove("refused"),400); }
 function toast(msg,kind="ok",undo){
+  if(kind==="warn" && !undo) shakeRefused();
   const zone = document.getElementById("toast-zone");
   const t = document.createElement("div");
   t.className="toast";
@@ -6956,15 +6986,6 @@ function flashChangedRows(before, after){
     setTimeout(()=>row.classList.remove("just-changed"),1200);
   })),0);
 }
-/* Micro-animations, lot 2 — the detail panel slides in when another item is
-   opened (or the first one), never when the same one is re-rendered after an edit */
-function panelSwap(el, key){
-  if(!el || panelSwap.last===key){ panelSwap.last=key; return; }
-  panelSwap.last=key;
-  if(key==null) return;
-  el.classList.remove("swap-in"); void el.offsetWidth; el.classList.add("swap-in");
-}
-{ const _rs=renderSettings; renderSettings=function(){ _rs.apply(this,arguments); panelSwap(document.getElementById("settings-body"), state.selected||null); }; }
 function refresh(){
   const sigBefore=state.statusSig, sigAfter=statusSignature(); state.statusSig=sigAfter;
   logReqDiffs();

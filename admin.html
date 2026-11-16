@@ -227,6 +227,11 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 @keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes fadeOnly{from{opacity:0}to{opacity:1}}
 #app{animation:fadeOnly 160ms var(--ease-out)}
+/* ---- Micro-animations, lot 3 (2026-11-16) ----
+   A refused action shakes the control that asked for it, alongside its message
+   (never a partial success, which offers Undo). */
+@keyframes refuse{0%,100%{transform:none}20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+.refused{animation:refuse 320ms var(--ease-out)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* ---- brand touches (22 Sept 2026) ---------------------------------------
    Titles take the heading face. The red is DECORATIVE ONLY: a small mark
@@ -312,7 +317,13 @@ function shell(name,...args){ try{ if(P!==window && P[name]) return P[name](...a
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 const pct=(a,b)=>b?Math.round(a/b*100):0;
 const nOf=(n,one,many)=>`${n} ${n===1?one:(many||one+"s")}`;
+/* Micro-animations, lot 3 — a refused action shakes the control that asked for it */
+var lastPress={el:null,t:0};
+document.addEventListener("pointerdown",e=>{ lastPress={el:e.target.closest("button,a,.status-pill,[role=button]"),t:Date.now()}; },true);
+function shakeRefused(){ const el=lastPress.el; if(!el||Date.now()-lastPress.t>800||!el.isConnected) return;
+  el.classList.remove("refused"); void el.offsetWidth; el.classList.add("refused"); setTimeout(()=>el.classList.remove("refused"),400); }
 function toast(msg,kind="ok"){
+  if(kind==="warn") shakeRefused();
   const z=document.getElementById("toast-zone"),t=document.createElement("div");
   t.className="toast";
   t.innerHTML=`<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>`;
