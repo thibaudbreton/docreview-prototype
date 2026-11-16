@@ -250,6 +250,12 @@ function seedAIUsage(){
 }
 let platformUsers = seedPlatformUsers(), adminLog = seedAdminLog(), aiUsage = seedAIUsage(), archivedTenders = new Set();
 const adminLogPush=(what,extra)=>{ const d=new Date(); adminLog.unshift(Object.assign({ts:Date.now(), time:"Today, "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"), who:CURRENT_USER.name, cat:"admin", what, live:true},extra||{})); };
+/* Micro-animations (lot 1): the last value each screen showed for a figure,
+   so a screen that reloads on every visit (the dashboard) can show what moved
+   since — a bar glides from its old width, a number bumps. Session only. */
+const seenValues = {};
+window.getSeen = (k)=>seenValues[k];
+window.setSeen = (k,v)=>{ seenValues[k]=v; };
 window.isAdmin = ()=>!!CURRENT_USER.admin;
 // DEC-127 — only a tender leader creates a tender (the admin grants it)
 window.canCreateTender = ()=>{ const u=platformUsers.find(x=>x.id===CURRENT_USER.id); return !!(u && u.active && u.leader); };

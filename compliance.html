@@ -809,10 +809,25 @@ body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:no
 .lock-note{font-size:var(--text-xs);color:var(--text-3);display:flex;gap:6px;align-items:center;margin-bottom:12px}
 
 #toast-zone{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:var(--space-2);align-items:center}
-.toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .3s cubic-bezier(.34,1.3,.64,1)}
+.toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn var(--motion-base) var(--ease-out)}
 .toast .undo{color:var(--accent);font-weight:600;font-size:var(--text-sm);margin-left:var(--space-2)}
 .toast .undo:hover{text-decoration:underline}
-@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.toast.leaving{opacity:0;transform:translateY(6px);transition:opacity var(--motion-base) var(--ease-out),transform var(--motion-base) var(--ease-out)}
+/* ---- Micro-animations, lot 1 (2026-11-16) — same as Allocation ---------------
+   A row whose answer, verdict or consolidation just changed lights up once in
+   the neutral accent and its pills settle in; a status-bar count that moved
+   bumps; the consolidation ring turns to its new value. Opacity and transform
+   only; the reduced-motion rule below switches it all off. */
+:root{--motion-fast:120ms; --motion-base:180ms; --motion-slow:400ms; --motion-flash:1100ms; --ease-out:cubic-bezier(.2,.8,.2,1)}
+@property --p{syntax:"<number>";inherits:false;initial-value:0}
+@keyframes rowFlash{from{background:var(--accent-soft)}to{background:transparent}}
+@keyframes pillIn{from{opacity:.3;transform:scale(.9)}to{opacity:1;transform:none}}
+@keyframes countBump{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+.rrow.just-changed > .rcell{animation:rowFlash var(--motion-flash) var(--ease-out)}
+.rrow.just-changed .spill,.rrow.just-changed .vpill{animation:pillIn var(--motion-base) var(--ease-out)}
+.tpill .n.bump,#p2-num.bump{display:inline-block;animation:countBump 260ms var(--ease-out)}
+.p2-ring{transition:--p var(--motion-slow) var(--ease-out)}
 .toast .t-ok{color:var(--ok)}
 
 /* @include components.css */
@@ -2092,7 +2107,7 @@ function toast(msg,kind="ok",undo){
     setTimeout(()=>{ entry.el=null; },3900);
   }
   z.appendChild(t);
-  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3600);
+  setTimeout(()=>{t.classList.add("leaving");setTimeout(()=>t.remove(),200)},3600);
 }
 
 /* =====================================================
@@ -3379,16 +3394,39 @@ function renderTriage2(){
   const brs=allBranches();
   const consolidated=REQS.filter(isConsolidated).length;
   const pct=REQS.length?Math.round(consolidated/REQS.length*100):0;
-  document.getElementById("p2-num").textContent=`${consolidated}/${REQS.length}`;
+  setCount("p2-num", `${consolidated}/${REQS.length}`);
   const ring=document.getElementById("p2-fill"); ring.style.setProperty("--p",pct);
   ring.parentElement.title=`${pct}% of requirements consolidated · ${brs.filter(isAnswered).length}/${brs.length} assignments answered`;
   const asideN=state.role==="contributor"?allBranches().filter(b=>isDeciding(b)&&isAside(b.req,b)).length:0;
   const ap=document.getElementById("tp-aside"); if(ap){ ap.style.display=state.role==="contributor"?"":"none"; document.getElementById("n-aside").textContent=asideN; }
   const mp=document.getElementById("tp-mine"); if(mp){ mp.style.display=state.role==="contributor"?"":"none"; mp.classList.toggle("active",state.role==="contributor"&&state.mineOnly); document.getElementById("n-mine").textContent=brs.filter(canAnswer).length; }
-  document.getElementById("n-answered").textContent=brs.filter(isAnswered).length;
-  document.getElementById("n-await").textContent=brs.filter(isAwaitingAnswer).length;
-  document.getElementById("n-qa").textContent=brs.filter(isAwaitingQA).length;
-  document.getElementById("n-reassign").textContent=brs.filter(needsReassign).length;
+  setCount("n-answered", brs.filter(isAnswered).length);
+  setCount("n-await", brs.filter(isAwaitingAnswer).length);
+  setCount("n-qa", brs.filter(isAwaitingQA).length);
+  setCount("n-reassign", brs.filter(needsReassign).length);
+  state.triageShown=true;
+}
+/* Micro-animations, lot 1 — a count that moved bumps once (never on the first paint) */
+function setCount(id, v){
+  const el=document.getElementById(id); if(!el) return;
+  const was=el.textContent; el.textContent=v;
+  if(state.triageShown && was!==String(v)){ el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+}
+/* …and the rows whose answers, verdicts or consolidation changed since the last
+   refresh light up once — whatever caused it (verdict, reminder, return, Undo) */
+function statusSignature(){
+  const m=new Map();
+  REQS.forEach(r=>m.set(r.id, (isConsolidated(r)?"C":"")+"|"+r.branches.map(b=>(b.status||"")+":"+(b.internal||"")).join(",")));
+  return m;
+}
+function flashChangedRows(before, after){
+  if(!before) return;
+  const ids=[]; after.forEach((v,id)=>{ if(before.has(id) && before.get(id)!==v) ids.push(id); });
+  if(!ids.length || ids.length>400) return;
+  setTimeout(()=>ids.forEach(id=>document.querySelectorAll(`.rrow[data-id="${CSS.escape(id)}"]`).forEach(row=>{
+    row.classList.remove("just-changed"); void row.offsetWidth; row.classList.add("just-changed");
+    setTimeout(()=>row.classList.remove("just-changed"),1200);
+  })),0);
 }
 
 /* =====================================================
@@ -3456,6 +3494,7 @@ function applyFPanels(){
 document.getElementById("nav2-toggle")?.addEventListener("click",()=>{ state.navPanelCollapsed=!state.navPanelCollapsed; applyFPanels(); });
 document.getElementById("settings2-toggle")?.addEventListener("click",()=>{ state.detailPanelCollapsed=!state.detailPanelCollapsed; applyFPanels(); });
 function refreshAll(){
+  const sigBefore=state.statusSig, sigAfter=statusSignature(); state.statusSig=sigAfter;
   logCmpDiffs();
   syncReassignRequestsFromShell();
   /* SPEC-risks.md §2.1 — Settings forbids deleting a strategy in use and
@@ -3478,6 +3517,7 @@ function refreshAll(){
   renderAdvFilterBanner();
   renderColFilterIndicators();
   renderNotifDrop();   // the bell's dot shows only while something is waiting
+  flashChangedRows(sigBefore, sigAfter);
 }
 document.querySelectorAll("#s2-views button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 /* ---------- Column filters: on the column header, not in the toolbar ----------
