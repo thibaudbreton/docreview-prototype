@@ -114,7 +114,8 @@ HEADER = """<!DOCTYPE html>
 <title>Smart Req — STB-2026 · Full app</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0ibm9uZSI+PHJlY3QgaWQ9InRpbGUiIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSIjMEYxQjJEIi8+PGcgaWQ9ImxpbmVzIiBmaWxsPSIjOEM5RkJCIj48cGF0aCBpZD0icmliYm9uLTEiIGQ9Ik0xMDcuMjYgNDAxLjA0TDEwNy4yNiAxMTEuMTdBMjkwLjA4IDI5MC4wOCAwIDAgMSAxNjguNTcgMTE1LjM0TDEzMS4zNSAzNDcuNjhBMTUwLjIyIDE1MC4yMiAwIDAgMCAxMjkuNDYgMzcxLjQ0TDEyOS40NiA0MDEuMDRaIi8+PHBhdGggaWQ9InJpYmJvbi0yIiBkPSJNMTM5LjgyIDQwMS4wNEwxMzkuODIgMzcxLjQ0QTEzOS44NiAxMzkuODYgMCAwIDEgMTQ4LjQ0IDMyMy4wOUwyMTkuODQgMTI5LjI5QTI5MC4wOCAyOTAuMDggMCAwIDEgMjY3Ljc3IDE1Mi40TDE3Ny4xIDMxMy44MUExMTcuNjYgMTE3LjY2IDAgMCAwIDE2Mi4wMiAzNzEuNDRMMTYyLjAyIDQwMS4wNFoiLz48cGF0aCBpZD0icmliYm9uLTQiIGQ9Ik0yMDQuOTQgNDAxLjA0TDIwNC45NCAzNzEuNDRBNzQuNzQgNzQuNzQgMCAwIDEgMjQzLjA3IDMwNi4yOEwzNjAuMDIgMjQwLjU4QTI5MC4wOCAyOTAuMDggMCAwIDEgMzgxLjA5IDI3OC4wOUwyNjEuNTIgMzIyLjE0QTUyLjU0IDUyLjU0IDAgMCAwIDIyNy4xNCAzNzEuNDRMMjI3LjE0IDQwMS4wNFoiLz48cGF0aCBpZD0icmliYm9uLTUiIGQ9Ik0yMzcuNSA0MDEuMDRMMjM3LjUgMzcxLjQ0QTQyLjE4IDQyLjE4IDAgMCAxIDI3My4wMSAzMjkuNzlMMzkzLjkyIDMxMC40MkEyOTAuMDggMjkwLjA4IDAgMCAxIDQwNC4xNyAzNTEuNDZMMjc5LjY4IDM1MS40NkExOS45OCAxOS45OCAwIDAgMCAyNTkuNyAzNzEuNDRMMjU5LjcgNDAxLjA0WiIvPjwvZz48ZyBpZD0iYWkiIGZpbGw9IiNFODVENTciPjxwYXRoIGlkPSJhaS1yaWJib24iIGQ9Ik0xNzIuMzggNDAxLjA0TDE3Mi4zOCAzNzEuNDRBMTA3LjMgMTA3LjMgMCAwIDEgMTk4LjAzIDMwMS44M0wzNDcuODcgMTI2LjA3QTM1OC4xNiAzNTguMTYgMCAwIDEgMzg4Ljk4IDE2Ni40M0wyMjQuNDcgMzA2LjY4QTg1LjEgODUuMSAwIDAgMCAxOTQuNTggMzcxLjQ0TDE5NC41OCA0MDEuMDRaIi8+PC9nPjwvc3ZnPg==">
 <style>
-html,body{margin:0;height:100%;background:#0d0f14}
+html,body{margin:0;height:100%;background:#F4F5FA}
+html.dark,html.dark body{background:#071A30}
 #frame{border:0;width:100vw;height:100vh;display:block}
 </style>
 </head>
@@ -711,7 +712,9 @@ window.updateReassignRequest = function(id, patch){
 };
 let theme = 'light';
 window.getTheme = ()=>theme;
-window.setTheme = (t)=>{ theme = (t==='light')?'light':'dark';
+// micro-animations, lot 2 — the shell's own ground follows the theme, so a screen fading in never shows a dark flash on a light theme
+document.documentElement.classList.toggle('dark', theme==='dark');
+window.setTheme = (t)=>{ theme = (t==='light')?'light':'dark'; document.documentElement.classList.toggle('dark', theme==='dark');
   try{ const fr=document.getElementById('frame'); if(fr&&fr.contentDocument) fr.contentDocument.documentElement.setAttribute('data-theme',theme); }catch(e){}
 };
 let _sub = null;

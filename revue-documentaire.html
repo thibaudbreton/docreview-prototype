@@ -1535,6 +1535,23 @@ body.as-contributor #sel-class-btn{display:none}   /* DEC-086 — no bulk Classi
 .nd-item .nd-time{font-size:var(--text-xs);color:var(--text-3);margin-top:2px}
 
 @media(max-width:1100px){.settings{width:290px}.nav{width:230px}}
+/* ---- Micro-animations, lot 2 (2026-11-16) — what opens comes from somewhere ----
+   Menus open from their button (fade, 4px drop, slight scale), windows rise over
+   a fading backdrop, the selection bar rises from the bottom, the detail panel
+   slides in when another item is opened (never on an edit), the screen fades in
+   when it loads. Opacity and transform only; reduced motion switches it off. */
+@keyframes menuIn{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeOnly{from{opacity:0}to{opacity:1}}
+#app{animation:fadeOnly 160ms var(--ease-out)}
+@keyframes panelIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
+.view-panel.on,.export-panel.on,.adv-panel.on,.rerun-menu.on,.notif-drop.open{transform-origin:top right;animation:menuIn var(--motion-fast) var(--ease-out)}
+.colf-pop.on,.cf-pop.on,.chg-pop.on,.nat-menu{transform-origin:top left;animation:menuIn var(--motion-fast) var(--ease-out)}
+.kbd-help:hover .kbd-help-pop,.kbd-help:focus-within .kbd-help-pop{transform-origin:top right;animation:menuIn var(--motion-fast) var(--ease-out)}
+.overlay.open{animation:fadeOnly var(--motion-base) var(--ease-out)}
+.overlay.open .modal{animation:riseIn var(--motion-base) var(--ease-out)}
+.sel-bar.on{animation:riseIn var(--motion-base) var(--ease-out)}
+.swap-in{animation:panelIn var(--motion-base) var(--ease-out)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* ---- brand touches (22 Sept 2026) ---------------------------------------
    Titles take the heading face. The red is DECORATIVE ONLY: a small mark
@@ -6939,6 +6956,15 @@ function flashChangedRows(before, after){
     setTimeout(()=>row.classList.remove("just-changed"),1200);
   })),0);
 }
+/* Micro-animations, lot 2 — the detail panel slides in when another item is
+   opened (or the first one), never when the same one is re-rendered after an edit */
+function panelSwap(el, key){
+  if(!el || panelSwap.last===key){ panelSwap.last=key; return; }
+  panelSwap.last=key;
+  if(key==null) return;
+  el.classList.remove("swap-in"); void el.offsetWidth; el.classList.add("swap-in");
+}
+{ const _rs=renderSettings; renderSettings=function(){ _rs.apply(this,arguments); panelSwap(document.getElementById("settings-body"), state.selected||null); }; }
 function refresh(){
   const sigBefore=state.statusSig, sigAfter=statusSignature(); state.statusSig=sigAfter;
   logReqDiffs();

@@ -469,8 +469,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text-xs, --radius-sm, --ia, --paper-ink-2
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-10-26
-- **notes**: 2026-10-26 (DEC-126): labels renamed — Tender, Users, PIC, Sub-system, Type. 2026-10-08 (DEC-120): the AI-typed title gives the characterisation model's level ("…with low confidence") instead of "detected by the AI". 2026-09-28 (DEC-086): disabled for a contributor, in the Document view too (`attachReclassify` leaves it inert with a "Set by the tender manager" title). Document view only since 2026-09-23 — the table row's compact "▾" variant (`.row-natpick`, on requirement and information rows) was removed; in the table, nature is corrected in the detail panel's Nature field. `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): opens from its button — fade, 4px drop, slight scale, --motion-fast (motion tokens local to each screen, not on the tracked scale). Applies to the floating type menu (`.nat-menu`). 2026-10-26 (DEC-126): labels renamed — Tender, Users, PIC, Sub-system, Type. 2026-10-08 (DEC-120): the AI-typed title gives the characterisation model's level ("…with low confidence") instead of "detected by the AI". 2026-09-28 (DEC-086): disabled for a contributor, in the Document view too (`attachReclassify` leaves it inert with a "Set by the tender manager" title). Document view only since 2026-09-23 — the table row's compact "▾" variant (`.row-natpick`, on requirement and information rows) was removed; in the table, nature is corrected in the detail panel's Nature field. `.nat-pick` / `natureTag()`, "Information ▾" beside a block, opens the reclassify menu. Since 2026-09-23 it is where an AI-detected Type shows on headings and information blocks, which no longer carry a status (DEC-073); picking the type the block already has confirms it (it used to do nothing). Background `rgba(0,0,0,.05)` hardcoded.
 
 ### Platform Status Tag
 - **level**: atom
@@ -511,8 +511,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --line-2, --radius-md, --radius-xs, --panel, --panel-2, --text, --text-2, --text-3, --text-sm, --text-xs, --font-mono, --accent, --space-2, --space-3
 - **built-from**: Kbd Key
 - **added**: 2026-09-24
-- **changed**: 2026-10-07
-- **notes**: 2026-10-07 (DEC-119): Allocation's list adds C — show / hide the Changes column. 2026-09-24 (DEC-085): lists the new selection keys (X, Shift+↑/↓, ⌘/Ctrl+A, Esc), N and ⌘/Ctrl+Z. `.kbd-help`, a 30px "⌨" at the right end of the filter toolbar; the list (`.kbd-help-pop`, 320px, right-aligned under the icon) opens on hover and on keyboard focus (`:focus-within`, tabindex 0), pure CSS. The rows are written by hand from each screen's keydown handlers — a new shortcut has to be added here too. CSS duplicated in both files. Hardcoded: 30px square, 320px width, 96px key column, shadow `rgba(0,0,0,.25)`. Depends on untracked `--line-2`, `--panel-2`.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): opens from its button — fade, 4px drop, slight scale, --motion-fast (motion tokens local to each screen, not on the tracked scale). 2026-10-07 (DEC-119): Allocation's list adds C — show / hide the Changes column. 2026-09-24 (DEC-085): lists the new selection keys (X, Shift+↑/↓, ⌘/Ctrl+A, Esc), N and ⌘/Ctrl+Z. `.kbd-help`, a 30px "⌨" at the right end of the filter toolbar; the list (`.kbd-help-pop`, 320px, right-aligned under the icon) opens on hover and on keyboard focus (`:focus-within`, tabindex 0), pure CSS. The rows are written by hand from each screen's keydown handlers — a new shortcut has to be added here too. CSS duplicated in both files. Hardcoded: 30px square, 320px width, 96px key column, shadow `rgba(0,0,0,.25)`. Depends on untracked `--line-2`, `--panel-2`.
 
 ### Search Box
 - **level**: molecule
@@ -791,8 +791,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --text-xs, --text-sm, --accent, --line
 - **built-from**: Checkbox
 - **added**: 2026-09-01
-- **changed**: 2026-10-26
-- **notes**: 2026-10-26 (DEC-126): labels renamed — Tender, Users, PIC, Sub-system, Type. 2026-10-09 (DEC-123): Assigned to lists one value per OBS entry, plus "TM · for partner" when the tender has partners. `.view-sec` + `.colf-opt`, repeated per data column in the Filter Panel.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): opens from its button — fade, 4px drop, slight scale, --motion-fast (motion tokens local to each screen, not on the tracked scale). On the column-filter popover (`.colf-pop`) and the custom-column picker (`.cf-pop`). 2026-10-26 (DEC-126): labels renamed — Tender, Users, PIC, Sub-system, Type. 2026-10-09 (DEC-123): Assigned to lists one value per OBS entry, plus "TM · for partner" when the tender has partners. `.view-sec` + `.colf-opt`, repeated per data column in the Filter Panel.
 
 ### Reorderable Column Row
 - **level**: molecule
@@ -1240,8 +1240,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --panel, --line-2, --radius-md, --text-xs
 - **built-from**: Ghost Button (`.mini-btn`), menu options
 - **added**: 2026-09-17
-- **changed**: 2026-10-26
-- **notes**: 2026-10-26 (DEC-126): labels renamed — Tender, Users, PIC, Sub-system, Type. `rerunControlHTML()`. Menu groups the system's own products first, then borrowable models under a distinct header. Placed in: the model header of the qualification block (manager, single system), the header of a Turnkey system's detail ("Open sub-system detail"), and the head of the contributor view (added 2026-09-23 — ALLOC-014 gives contributors the right). It sat on each system card of the Turnkey PM view from 2026-09-23 until removed the same day at the user's request; the system's detail keeps it. `.rerun-wrap` has `margin-left:auto` for title rows. Menu `min-width:210px` hardcoded. Depends on untracked `--line-2`.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): opens from its button — fade, 4px drop, slight scale, --motion-fast (motion tokens local to each screen, not on the tracked scale). The « ↻ Re-run ▾ » menu. 2026-10-26 (DEC-126): labels renamed — Tender, Users, PIC, Sub-system, Type. `rerunControlHTML()`. Menu groups the system's own products first, then borrowable models under a distinct header. Placed in: the model header of the qualification block (manager, single system), the header of a Turnkey system's detail ("Open sub-system detail"), and the head of the contributor view (added 2026-09-23 — ALLOC-014 gives contributors the right). It sat on each system card of the Turnkey PM view from 2026-09-23 until removed the same day at the user's request; the system's detail keeps it. `.rerun-wrap` has `margin-left:auto` for title rows. Menu `min-width:210px` hardcoded. Depends on untracked `--line-2`.
 
 ### OBS List
 - **level**: molecule
@@ -1321,8 +1321,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-1, --space-2, --radius-md, --radius-sm, --line, --text-xs, --text-sm, --text, --text-2, --text-3, --accent
 - **built-from**: Version Picker Button (its anchor)
 - **added**: 2026-10-07
-- **changed**: 2026-10-07
-- **notes**: DEC-119. One `#chg-pop` element appended to the body, fixed-positioned under its button (`openChgRowPop()`, `openChgAllPop()`); closes on an outside click and on Esc. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`. Hardcoded: min/max width 250/340px, z-index 80, shadow `rgba(0,0,0,.35)`, item padding 6px. One more popover implementation next to the column filter's (`#colf-pop`) and the custom column picker's (`#cf-pop`).
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): opens from its button — fade, 4px drop, slight scale, --motion-fast (motion tokens local to each screen, not on the tracked scale). DEC-119. One `#chg-pop` element appended to the body, fixed-positioned under its button (`openChgRowPop()`, `openChgAllPop()`); closes on an outside click and on Esc. Depends on untracked `--panel-2`, `--panel-3`, `--line-2`. Hardcoded: min/max width 250/340px, z-index 80, shadow `rgba(0,0,0,.35)`, item padding 6px. One more popover implementation next to the column filter's (`#colf-pop`) and the custom column picker's (`#cf-pop`).
 
 ### Change List Card
 - **level**: molecule
@@ -1553,7 +1553,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Brand Logo, Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
 - **changed**: 2026-11-16
-- **notes**: 2026-11-16 (DEC-127): home gains « Admin » (shield icon, admins only); « ＋ New tender » shows only to a Tender leader (home and dashboard); admin.html has its own variant — crumb « Administration », « My tenders », avatar. 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req." in text (renamed from "SRM" on 2026-10-19; the header writes it with a full stop, 2026-10-20) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
+- **notes**: 2026-11-16 (micro-animations, lot 2): every screen's `#app` fades in on load (160ms), and the shell's own ground follows the theme (light #F4F5FA, dark #071A30, hardcoded in build_merge.py) — it was always dark, so a light screen flashed dark between two routes. 2026-11-16 (DEC-127): home gains « Admin » (shield icon, admins only); « ＋ New tender » shows only to a Tender leader (home and dashboard); admin.html has its own variant — crumb « Administration », « My tenders », avatar. 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req." in text (renamed from "SRM" on 2026-10-19; the header writes it with a full stop, 2026-10-20) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
 - **level**: organism
@@ -1652,8 +1652,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3, --space-4, --line, --accent, --panel
 - **built-from**: Detail Field / Frozen Field, Status/Verdict Pill, Manager Assignment Card, AI Suggestion Card, Allocated-Activity Detail Card, Propose/Reassign Form / Inline Form Shell, Activity Timeline Entry / Timeline Item, REX Match Item, Role Recap Row, Comment Composer
 - **added**: 2026-09-01
-- **changed**: 2026-10-09
-- **notes**: 2026-10-09 (DEC-012/100) compliance.html: a contributor can open other systems' assignments, read-only — next-step text "Read only — <SYS>'s assignment…", no reminder, reallocate, ask or set aside; they land on their own assignment first (`select()`). 2026-10-09 (DEC-121, DEC-122, DEC-125) compliance.html: "Ask the client" is disabled once the verdict is given (`.cta:disabled`, opacity .45 hardcoded; tooltip `ASK_DONE_TIP`), and the Q key answers with the same reason; "Send a reminder" shows only on an assignment still owed by its contributor (awaiting answer or Q&A), never to that contributor; the Awaiting-Q&A block is "Question to the client" and lists each question's register status and answer; the Requirement tab says "Pending — X not answered yet" and opens on the awaiting-answer assignment first (`BLOCK_PRIORITY`). 2026-10-09 (legacy cleanup): compliance.html's leftover render branch for the Document tab (gone 2026-09-24) is removed; in revue-documentaire.html the person-proposal card and the Why Box are gone (see AI Suggestion Card and the Removed section), and selecting a requirement that isn't in the tender (a stale link) shows a toast instead of throwing. 2026-09-29: revue-documentaire.html gains a read-only mode for a contributor on a requirement that isn't theirs (`readOnlyReqHTML`, `.ro-note`, DEC-100; table rows locked by `lockForeignRows`), and the Turnkey system detail is now the SIG panel plus reassignment (DEC-101). compliance.html (2026-09-24): a contributor's own open assignment renders the Decision Panel instead. `.settings`. Fixed width (326px in revue-documentaire.html), narrows under a hardcoded breakpoint. The single largest, most role-branching render path in the app — output differs substantially by viewer role, block type, and branch count. compliance.html's version has an unbuilt Chat tab, present only as an empty-state stub per its own code comment.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): its content slides in (8px, fade, --motion-base) when another requirement or assignment is opened — or the first one — and never when the same one re-renders after an edit (`panelSwap`, wrapping renderSettings / renderPanel2). 2026-10-09 (DEC-012/100) compliance.html: a contributor can open other systems' assignments, read-only — next-step text "Read only — <SYS>'s assignment…", no reminder, reallocate, ask or set aside; they land on their own assignment first (`select()`). 2026-10-09 (DEC-121, DEC-122, DEC-125) compliance.html: "Ask the client" is disabled once the verdict is given (`.cta:disabled`, opacity .45 hardcoded; tooltip `ASK_DONE_TIP`), and the Q key answers with the same reason; "Send a reminder" shows only on an assignment still owed by its contributor (awaiting answer or Q&A), never to that contributor; the Awaiting-Q&A block is "Question to the client" and lists each question's register status and answer; the Requirement tab says "Pending — X not answered yet" and opens on the awaiting-answer assignment first (`BLOCK_PRIORITY`). 2026-10-09 (legacy cleanup): compliance.html's leftover render branch for the Document tab (gone 2026-09-24) is removed; in revue-documentaire.html the person-proposal card and the Why Box are gone (see AI Suggestion Card and the Removed section), and selecting a requirement that isn't in the tender (a stale link) shows a toast instead of throwing. 2026-09-29: revue-documentaire.html gains a read-only mode for a contributor on a requirement that isn't theirs (`readOnlyReqHTML`, `.ro-note`, DEC-100; table rows locked by `lockForeignRows`), and the Turnkey system detail is now the SIG panel plus reassignment (DEC-101). compliance.html (2026-09-24): a contributor's own open assignment renders the Decision Panel instead. `.settings`. Fixed width (326px in revue-documentaire.html), narrows under a hardcoded breakpoint. The single largest, most role-branching render path in the app — output differs substantially by viewer role, block type, and branch count. compliance.html's version has an unbuilt Chat tab, present only as an empty-state stub per its own code comment.
 
 ### Role Recap Card
 - **level**: organism
@@ -1682,8 +1682,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-2, --space-3, --radius-lg, --radius-md
 - **built-from**: Advanced Filter Condition Row, Mini/Ghost Button, Cancel Button
 - **added**: 2026-09-01
-- **changed**: 2026-10-09
-- **notes**: 2026-10-09 (legacy cleanup): Cancel and Apply are styled (Cancel Button, `.btn-submit.ok`), and so is the empty-state hint (`.field-hint`) — they rendered unstyled. `.adv-panel`, wider than Filter Panel (460px, documented in a CSS comment as needed for "field + operator + value in one row"). Draft/apply pattern edits a scratch object that only commits on Apply. Saved-filter persistence via `table-engine.js` (`TE.loadSavedFilters`/`saveSavedFilters`).
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): opens from its button — fade, 4px drop, slight scale, --motion-fast (motion tokens local to each screen, not on the tracked scale). 2026-10-09 (legacy cleanup): Cancel and Apply are styled (Cancel Button, `.btn-submit.ok`), and so is the empty-state hint (`.field-hint`) — they rendered unstyled. `.adv-panel`, wider than Filter Panel (460px, documented in a CSS comment as needed for "field + operator + value in one row"). Draft/apply pattern edits a scratch object that only commits on Apply. Saved-filter persistence via `table-engine.js` (`TE.loadSavedFilters`/`saveSavedFilters`).
 
 ### Columns Panel
 - **level**: organism
@@ -1692,8 +1692,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3
 - **built-from**: Reorderable Column Row
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.view-panel#cols-panel`, reuses the Filter Panel's `.view-panel` shell with a single section.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): opens from its button — fade, 4px drop, slight scale, --motion-fast (motion tokens local to each screen, not on the tracked scale). `.view-panel#cols-panel`, reuses the Filter Panel's `.view-panel` shell with a single section.
 
 ### Export Options Modal
 - **level**: organism
@@ -1702,8 +1702,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --panel, --panel-2, --line, --line-2, --radius-lg, --radius-pill, --text-sm, --text-xs, --text-3, --accent, --space-2, --space-3, --space-4, --space-5
 - **built-from**: Modal (`.overlay` + `.modal`), Segmented Control (`.gseg`), Checkbox, Radio, Custom Column Tag, Primary Button, Ghost Button
 - **added**: 2026-09-24
-- **changed**: 2026-09-24
-- **notes**: `openExport()` / `renderExport()`, opened by Compliance's Export button (and the export-ready banner). It used to generate one fixed register straight away. Generation is still a toast in the prototype (file name, rows, columns, risk summary, a warning when internal custom columns are included, the text language). Columns ticked by default follow what's visible in the table. Modal backdrop `rgba(6,8,12,.7)` and shadow hardcoded. Depends on untracked `--panel-2`, `--line-2`.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16: opens like every Modal Dialog — fading backdrop, window rising. `openExport()` / `renderExport()`, opened by Compliance's Export button (and the export-ready banner). It used to generate one fixed register straight away. Generation is still a toast in the prototype (file name, rows, columns, risk summary, a warning when internal custom columns are included, the text language). Columns ticked by default follow what's visible in the table. Modal backdrop `rgba(6,8,12,.7)` and shadow hardcoded. Depends on untracked `--panel-2`, `--line-2`.
 
 ### Export Panel (header ad-hoc export)
 - **level**: organism
@@ -1712,8 +1712,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-2, --space-3, --space-4, --radius-sm, --radius-lg
 - **built-from**: Select Dropdown, Checkbox, Primary Button
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.export-panel`, from the header's "Export ▾" — a lightweight document/steps/format export, distinct from the milestone Finalize/Export Modal below.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): opens from its button — fade, 4px drop, slight scale, --motion-fast (motion tokens local to each screen, not on the tracked scale). `.export-panel`, from the header's "Export ▾" — a lightweight document/steps/format export, distinct from the milestone Finalize/Export Modal below.
 
 ### Bulk Selection Action Bar
 - **level**: organism
@@ -1722,8 +1722,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-2, --space-3, --radius-lg, --radius-md, --ok
 - **built-from**: Select Dropdown, menu options
 - **added**: 2026-09-01
-- **changed**: 2026-10-26
-- **notes**: 2026-10-26 (DEC-126): labels renamed — Tender, Users, PIC, Sub-system, Type. 2026-10-09 (DEC-012): revue-documentaire.html drops rows not on the contributor's system from bulk validate, mark to review, add system and re-run (`keepOwnSelection()`), with "k selected requirements are not on your sub-system — left as is". 2026-10-09 (DEC-123, DEC-125): revue-documentaire.html's Assign writes the person to the OBS entries of their own system in each selected requirement (`setAllocManager`) and says how many were skipped; compliance.html's Send reminder reminds only eligible assignments, reports the skipped ones, and is hidden for a contributor. 2026-10-09 (legacy cleanup): adding a system to the selection creates each requirement's row for it (`syncBranchesFromPerim()`) — the tag appeared without the system's allocation row. `.sel-bar`, explicitly documented as shared between these two screens' tables. revue-documentaire.html's bar carries a Re-run menu (`#sel-rerun-menu`); since 2026-09-23 it skips information blocks and headings and counts them apart ("N not requirements") instead of deriving onto them. Fixed to viewport bottom (24px) — a code comment explains centering via `margin-inline:auto` was chosen deliberately over `left:50%;translateX(-50%)` to avoid capping width at half the viewport. Its Assign menu lost the "PBS" field that set Functional / Performance / Security / Interface / Regulatory on the selection (DEC-074) — it now holds Assigned to and System.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): rises from the bottom when the first row is selected (--motion-base). 2026-10-26 (DEC-126): labels renamed — Tender, Users, PIC, Sub-system, Type. 2026-10-09 (DEC-012): revue-documentaire.html drops rows not on the contributor's system from bulk validate, mark to review, add system and re-run (`keepOwnSelection()`), with "k selected requirements are not on your sub-system — left as is". 2026-10-09 (DEC-123, DEC-125): revue-documentaire.html's Assign writes the person to the OBS entries of their own system in each selected requirement (`setAllocManager`) and says how many were skipped; compliance.html's Send reminder reminds only eligible assignments, reports the skipped ones, and is hidden for a contributor. 2026-10-09 (legacy cleanup): adding a system to the selection creates each requirement's row for it (`syncBranchesFromPerim()`) — the tag appeared without the system's allocation row. `.sel-bar`, explicitly documented as shared between these two screens' tables. revue-documentaire.html's bar carries a Re-run menu (`#sel-rerun-menu`); since 2026-09-23 it skips information blocks and headings and counts them apart ("N not requirements") instead of deriving onto them. Fixed to viewport bottom (24px) — a code comment explains centering via `margin-inline:auto` was chosen deliberately over `left:50%;translateX(-50%)` to avoid capping width at half the viewport. Its Assign menu lost the "PBS" field that set Functional / Performance / Security / Interface / Regulatory on the selection (DEC-074) — it now holds Assigned to and System.
 
 ### Modal Dialog
 - **level**: organism
@@ -1732,8 +1732,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --panel, --radius-lg, --space-5, --text-lg, --text-sm, --text-2, --space-2, --space-3
 - **built-from**: Warning / Notice Box, Modal Field Group, Cancel Button, Danger Button, Primary Button
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.modal-back`/`.modal`. A code comment explicitly documents this shell as shared between its two use cases — the clearest example in the codebase of a component built with reuse as an explicit goal, though it's a separate implementation from revue-documentaire.html's Finalize/Export Modal shell.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): the backdrop fades in and the window rises 8px over --motion-base, with no overshoot (was a springy .25s pop). `.modal-back`/`.modal`. A code comment explicitly documents this shell as shared between its two use cases — the clearest example in the codebase of a component built with reuse as an explicit goal, though it's a separate implementation from revue-documentaire.html's Finalize/Export Modal shell.
 
 ### Notifications Dropdown
 - **level**: organism
@@ -1742,8 +1742,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-3, --space-4, --radius-lg, --line
 - **built-from**: Notification Item
 - **added**: 2026-09-01
-- **changed**: 2026-10-09
-- **notes**: 2026-10-09 (DEC-122) compliance.html (its own drop, not this entry's revue-documentaire.html one): a new item, "N answers reopened by a new document version", filters to those requirements. `.notif-drop`, positioned with hardcoded absolute offsets tied to the current header layout rather than anchored to its trigger button.
+- **changed**: 2026-11-16
+- **notes**: 2026-11-16 (micro-animations, lot 2): opens from its button — fade, 4px drop, slight scale, --motion-fast (motion tokens local to each screen, not on the tracked scale). On every screen that has one (Allocation, Compliance, dashboard, Documents, Q&A). 2026-10-09 (DEC-122) compliance.html (its own drop, not this entry's revue-documentaire.html one): a new item, "N answers reopened by a new document version", filters to those requirements. `.notif-drop`, positioned with hardcoded absolute offsets tied to the current header layout rather than anchored to its trigger button.
 
 ### View-As Switcher
 - **level**: organism

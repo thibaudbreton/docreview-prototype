@@ -206,6 +206,16 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 .toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:tin .3s cubic-bezier(.34,1.3,.64,1)}
 @keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .t-ok{color:var(--ok)}.t-warn{color:var(--ia)}
+:root{--motion-fast:120ms; --motion-base:180ms; --motion-slow:400ms; --motion-flash:1100ms; --ease-out:cubic-bezier(.2,.8,.2,1)}
+/* ---- Micro-animations, lot 2 (2026-11-16) — what opens comes from somewhere ----
+   Menus open from their button (fade, 4px drop, slight scale), windows rise over
+   a fading backdrop, the selection bar rises from the bottom, the detail panel
+   slides in when another item is opened (never on an edit), the screen fades in
+   when it loads. Opacity and transform only; reduced motion switches it off. */
+@keyframes menuIn{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeOnly{from{opacity:0}to{opacity:1}}
+#app{animation:fadeOnly 160ms var(--ease-out)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* ---- brand touches (22 Sept 2026) ---------------------------------------
    Titles take the heading face. The red is DECORATIVE ONLY: a small mark
