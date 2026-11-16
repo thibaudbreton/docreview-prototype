@@ -201,7 +201,7 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 .alloc-pct{display:inline-flex;align-items:center;gap:6px;font-size:var(--text-sm);color:var(--text-2);white-space:nowrap;font-variant-numeric:tabular-nums}
 .alloc-pct b{color:var(--text)}
 .alloc-pct-bar{width:64px;height:6px;border-radius:var(--radius-pill);background:var(--panel-3);overflow:hidden}
-.alloc-pct-bar span{display:block;height:100%;width:0;background:var(--ok);border-radius:var(--radius-pill);transition:width .3s}
+.alloc-pct-bar span{display:block;height:100%;width:0;background:var(--ok);border-radius:var(--radius-pill);transition:width var(--motion-slow) var(--ease-out)}
 .tpill{
   display:inline-flex;align-items:center;gap:6px;
   padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);border:1px solid var(--line);
@@ -1495,9 +1495,25 @@ body.as-contributor #sel-class-btn{display:none}   /* DEC-086 — no bulk Classi
   display:flex;align-items:center;gap:var(--space-3);
   background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);
   padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.5);
-  animation:toastIn .3s cubic-bezier(.34,1.3,.64,1);
+  animation:toastIn var(--motion-base) var(--ease-out);
 }
-@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.toast.leaving{opacity:0;transform:translateY(6px);transition:opacity var(--motion-base) var(--ease-out),transform var(--motion-base) var(--ease-out)}
+/* ---- Micro-animations, lot 1 (2026-11-16) ---------------------------------
+   Short, decelerating, opacity and transform only — never the height of a
+   table. They show the link between a gesture and its effect: the rows whose
+   status just changed light up once (validation, bulk action, Undo — whatever
+   the cause), their status pill settles in, the status-bar counts that moved
+   bump, the % allocated gauge glides. The highlight is the neutral accent: red
+   and green keep their meaning. The reduced-motion rule below switches it all
+   off. Durations are tokens of their own (--motion-*), not on the tracked scale. */
+:root{--motion-fast:120ms; --motion-base:180ms; --motion-slow:400ms; --motion-flash:1100ms; --ease-out:cubic-bezier(.2,.8,.2,1)}
+@keyframes rowFlash{from{background:var(--accent-soft)}to{background:transparent}}
+@keyframes pillIn{from{opacity:.3;transform:scale(.9)}to{opacity:1;transform:none}}
+@keyframes countBump{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+.rrow.just-changed > .rcell{animation:rowFlash var(--motion-flash) var(--ease-out)}
+.rrow.just-changed .status-pill{animation:pillIn var(--motion-base) var(--ease-out)}
+.tpill .n.bump,.alloc-pct-n.bump{display:inline-block;animation:countBump 260ms var(--ease-out)}
 .toast .t-ok{color:var(--ok)}
 .toast .undo{color:var(--accent);font-weight:600;font-size:var(--text-sm)}
 .toast .undo:hover{text-decoration:underline}
@@ -6832,14 +6848,15 @@ function renderTriage(){
   // contributor's own requirements count with their system's status (effectiveStatus)
   const r = reqs();
   document.getElementById("total-count").textContent = `${r.length} requirement${r.length>1?"s":""}`;
-  document.getElementById("n-incomplete").textContent = r.filter(b=>effectiveStatus(b).val==="incomplete").length;
-  document.getElementById("n-doubt").textContent = r.filter(b=>effectiveStatus(b).val==="doubt").length;
-  document.getElementById("n-tovalidate").textContent = r.filter(b=>effectiveStatus(b).val==="tovalidate").length;
+  setCount("n-incomplete", r.filter(b=>effectiveStatus(b).val==="incomplete").length);
+  setCount("n-doubt", r.filter(b=>effectiveStatus(b).val==="doubt").length);
+  setCount("n-tovalidate", r.filter(b=>effectiveStatus(b).val==="tovalidate").length);
   const nAlloc=r.filter(b=>effectiveStatus(b).val==="allocated").length;
-  document.getElementById("n-allocated").textContent = nAlloc;
+  setCount("n-allocated", nAlloc);
   const pct=r.length?Math.round(nAlloc/r.length*100):0;
-  const pn=document.getElementById("alloc-pct-n"), pf=document.getElementById("alloc-pct-fill");
-  if(pn) pn.textContent=pct+"%"; if(pf) pf.style.width=pct+"%";
+  const pf=document.getElementById("alloc-pct-fill");
+  setCount("alloc-pct-n", pct+"%"); if(pf) pf.style.width=pct+"%";
+  state.triageShown=true;
   // requirements added or modified in the version of their document in force — the "+ 1" that padded this count is gone
   document.getElementById("n-changes").textContent = allBlocks().filter(b=>blockNature(b)==="requirement"&&b.change).length;
   // B10 — the pending-reassignment pill only ever occupies space in the triage
@@ -6881,7 +6898,7 @@ function toast(msg,kind="ok",undo){
     setTimeout(()=>{ entry.el=null; },3800);   // the toast is gone; the entry stays undoable
   }
   zone.appendChild(t);
-  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3400);
+  setTimeout(()=>{t.classList.add("leaving");setTimeout(()=>t.remove(),200)},3400);
 }
 
 /* =====================================================
@@ -6900,12 +6917,36 @@ function reportAllocProgress(){
     window.parent.reportAllocationProgress(window.parent.getCurrentProject().id,{allocated:reqsNow.filter(isFullyAllocated).length,total:reqsNow.length});
   }catch(e){}
 }
+/* Micro-animations, lot 1 — a count that moved bumps once (never on the first paint) */
+function setCount(id, v){
+  const el=document.getElementById(id); if(!el) return;
+  const was=el.textContent; el.textContent=v;
+  if(state.triageShown && was!==String(v)){ el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+}
+/* …and the rows whose status changed since the last refresh light up once:
+   compared on what the row and its sub-rows show, whatever caused it */
+function statusSignature(){
+  const m=new Map();
+  reqs().forEach(b=>m.set(b.id, effectiveStatus(b).val+"|"+(b.branches||[]).map(br=>br.allocStatus||"").join(",")));
+  return m;
+}
+function flashChangedRows(before, after){
+  if(!before) return;
+  const ids=[]; after.forEach((v,id)=>{ if(before.has(id) && before.get(id)!==v) ids.push(id); });
+  if(!ids.length || ids.length>400) return;
+  setTimeout(()=>ids.forEach(id=>document.querySelectorAll(`.rrow[data-id="${CSS.escape(id)}"]`).forEach(row=>{
+    row.classList.remove("just-changed"); void row.offsetWidth; row.classList.add("just-changed");
+    setTimeout(()=>row.classList.remove("just-changed"),1200);
+  })),0);
+}
 function refresh(){
+  const sigBefore=state.statusSig, sigAfter=statusSignature(); state.statusSig=sigAfter;
   logReqDiffs();
   syncReassignRequestsFromShell();
   reportPartnerUse();
   reportAllocProgress();   // DEC-098 — the dashboard card reads it
   renderNav(); renderDoc(); renderReview(); renderSettings(); renderTriage();
+  flashChangedRows(sigBefore, sigAfter);
 }
 
 /* =====================================================
