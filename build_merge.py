@@ -95,9 +95,10 @@ TENDERS_FILE = "tenders.js"
 # only answers in the published artifact; ARTIFACT_OUTPUT is that version:
 # the same page without its own <html>/<head> (the publish wraps it).
 CHAT_FILE = "tender-chat.html"
-# Hidden for now (2026-10-01): the chat is not part of what gets built next.
-# Set to True to put it back in both outputs.
-CHAT_ENABLED = False
+# Hidden from 2026-10-01 to 2026-11-17 (not part of what gets built next, and
+# REX/Chat is out of V1 by DEC-021); shown again on 2026-11-17 for the demos.
+# Set to False to take it out of every output.
+CHAT_ENABLED = True
 ARTIFACT_OUTPUT = "artifact/srm-prototype.html"
 
 OUTPUT = "docreview-app.html"
