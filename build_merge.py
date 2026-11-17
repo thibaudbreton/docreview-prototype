@@ -257,6 +257,14 @@ const adminLogPush=(what,extra)=>{ const d=new Date(); adminLog.unshift(Object.a
 const seenValues = {};
 window.getSeen = (k)=>seenValues[k];
 window.setSeen = (k,v)=>{ seenValues[k]=v; };
+// DEC-138, NOTIF-021/022 — the person's notification settings, in Settings on
+// the home page. Email only: nothing is muted in the app, the bell is the
+// reference. Defaults are the plan's: summary on working days at 8:00, every
+// immediate email on, no tender muted. Session only, like the theme.
+function seedNotifPrefs(){ return {digest:"workdays", reminder:true, mention:true, processing:true, muted:[]}; }
+let notifPrefs = seedNotifPrefs();
+window.getNotifPrefs = ()=>JSON.parse(JSON.stringify(notifPrefs));
+window.setNotifPrefs = (patch)=>{ Object.assign(notifPrefs, patch||{}); return window.getNotifPrefs(); };
 window.isAdmin = ()=>!!CURRENT_USER.admin;
 // DEC-137 — only a tender leader creates a tender (the admin grants it)
 window.canCreateTender = ()=>{ const u=platformUsers.find(x=>x.id===CURRENT_USER.id); return !!(u && u.active && u.leader); };
@@ -375,6 +383,7 @@ window.openProject = function(id){
 };
 window.resetDemo = function(){
   platformUsers = seedPlatformUsers(); adminLog = seedAdminLog(); aiUsage = seedAIUsage(); archivedTenders = new Set();
+  notifPrefs = seedNotifPrefs();
   PROJECTS = seedProjects();
   currentProjectId="stb2026";
   projectMode='ai';

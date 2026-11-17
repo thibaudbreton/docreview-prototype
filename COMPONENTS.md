@@ -124,13 +124,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Toggle Switch
 - **level**: atom
-- **file**: creation-projet.html, dashboard-et-config.html, revue-documentaire.html, compliance.html
+- **file**: creation-projet.html, dashboard-et-config.html, revue-documentaire.html, compliance.html, accueil.html
 - **variants**: on, off
 - **tokens**: --radius-pill, --accent, --accent-soft
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-24
-- **notes**: 2026-09-24: compliance.html gets the same "Wrap text" `.wrap-switch` as Allocation, CSS copied (no shared stylesheet) — full requirement text, comments and risk notes wrap; rows grow. Three independent implementations (`.tog` in dashboard-et-config.html at 40×22px, creation-projet.html's at 38×21px, revue-documentaire.html's bespoke `.wrap-switch` at 30×17px) — same concept, three different hardcoded geometries, none on any scale.
+- **changed**: 2026-11-17
+- **notes**: 2026-11-17: accueil.html gets a copy of dashboard-et-config.html's `.tog` for the Settings Window's « By tender » rows (`role=switch`, `aria-checked`) — one more copy, no shared stylesheet. 2026-09-24: compliance.html gets the same "Wrap text" `.wrap-switch` as Allocation, CSS copied (no shared stylesheet) — full requirement text, comments and risk notes wrap; rows grow. Three independent implementations (`.tog` in dashboard-et-config.html at 40×22px, creation-projet.html's at 38×21px, revue-documentaire.html's bespoke `.wrap-switch` at 30×17px) — same concept, three different hardcoded geometries, none on any scale.
 
 ### Chip Toggle
 - **level**: atom
@@ -2099,10 +2099,10 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **file**: accueil.html
 - **variants**: none
 - **tokens**: --panel, --line, --text-3, --accent, --radius-lg, --radius-md, --space-1, --space-3, --space-4, --space-5, --text-xs, --text-sm, --text-base, --text-lg, --font-heading
-- **built-from**: Header Avatar, Theme Picker, Config Field Row (re-implemented under `.set-win`), Select Dropdown, Primary Button, Toast
+- **built-from**: Header Avatar, Theme Picker, Config Field Row (re-implemented under `.set-win`), Select Dropdown, Toggle Switch, Primary Button, Toast
 - **added**: 2026-11-17
 - **changed**: 2026-11-17
-- **notes**: DEC-138 — the person's own, general settings, reached from the home header (« Settings » or the avatar) by everyone, before any tender is open: who is signed in (name, title, company account), Appearance › Theme (Light / Dark, applied at once with « <Theme> theme applied ») and Language › Interface language (English; « Français — later » disabled). Closes on ✕, « Done », Esc or a click on the backdrop; nothing to save. `.set-back`/`.set-win`: same shape as documents.html's Modal Dialog but a separate copy — backdrop `rgba(0,0,0,.45)` and shadow `0 24px 80px rgba(0,0,0,.6)` hardcoded, max-width 560px hardcoded. Rows re-implement Config Field Row with the label on the left and the control on the right (no 230px column). Uses off-scale `--panel-2`, `--line-2` and the motion tokens (`--motion-base`, `--ease-out`). Section labels (`.set-st`) hardcode `letter-spacing:.06em`.
+- **notes**: 2026-11-17 (NOTIF-021/022, US-X-18): a Notifications rubric follows Language — « Daily email summary » (radio: Working days at 8:00 by default, Every day at 8:00, Off), « Right away by email » (checkboxes: reminder, mention, a processing you launched; « You're added to a tender » checked and disabled, always sent), « By tender » (one Toggle Switch per tender in progress, « Email and bell » / « Bell only »). Email only — nothing mutes the bell. Kept in the shell for the session (`getNotifPrefs` / `setNotifPrefs`, reset by « Reset demo »). The window now scrolls inside itself (`max-height` from `--space-4`). `.set-tn .st` width hardcoded at 86px. DEC-138 — the person's own, general settings, reached from the home header (« Settings » or the avatar) by everyone, before any tender is open: who is signed in (name, title, company account), Appearance › Theme (Light / Dark, applied at once with « <Theme> theme applied ») and Language › Interface language (English; « Français — later » disabled). Closes on ✕, « Done », Esc or a click on the backdrop; nothing to save. `.set-back`/`.set-win`: same shape as documents.html's Modal Dialog but a separate copy — backdrop `rgba(0,0,0,.45)` and shadow `0 24px 80px rgba(0,0,0,.6)` hardcoded, max-width 560px hardcoded. Rows re-implement Config Field Row with the label on the left and the control on the right (no 230px column). Uses off-scale `--panel-2`, `--line-2` and the motion tokens (`--motion-base`, `--ease-out`). Section labels (`.set-st`) hardcode `letter-spacing:.06em`.
 
 ## Removed
 

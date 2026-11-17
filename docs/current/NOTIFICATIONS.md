@@ -2,7 +2,7 @@
 
 **Validé le 17 novembre 2026 (DEC-127 à DEC-136).** Ce plan fait référence pour les notifications de Smart Req. Il remplace la ligne PLAT-005 (« déclencheurs, destinataires, regroupement et relances non finalisés ») et la part notifications d'OPEN-11.
 
-- Maquette de la cloche, de l'accueil et des réglages : [`proposals/notifications/index.html`](../../proposals/notifications/index.html).
+- Maquette de la cloche, de l'accueil et des réglages : [`proposals/notifications/index.html`](../../proposals/notifications/index.html). Les réglages sont aussi dans le prototype : fenêtre Settings de l'accueil (DEC-138).
 - Les huit e-mails, en HTML pour messagerie, avec leur version texte et un `.eml` à ouvrir dans Outlook : [`proposals/notifications/emails/`](../../proposals/notifications/emails/index.html).
 - Les user stories : US-X-10, US-X-15 à US-X-18, US-HOME-07, US-DASH-15, US-CMP-24, US-CMP-26 et US-CFG-05 ([backlog](../stories/README.md)).
 
@@ -177,7 +177,7 @@ Les modèles sont dans [`proposals/notifications/emails/`](../../proposals/notif
 
 ## 7. Réglages
 
-- **NOTIF-021 — DEC-127 : des réglages personnels, pas par tender.** Ils s'ouvrent depuis le menu de l'avatar et valent pour tous les tenders de la personne. Le seuil de retard et le plafond de relance restent dans la Configuration du tender (US-CFG-05) : ils engagent toute l'équipe.
+- **NOTIF-021 — DEC-127 : des réglages personnels, pas par tender.** Ils s'ouvrent depuis le menu de l'avatar et valent pour tous les tenders de la personne. Le seuil de retard et le plafond de relance restent dans la Configuration du tender (US-CFG-05) : ils engagent toute l'équipe. Dans le prototype, ces réglages forment la rubrique Notifications de la fenêtre **Settings**, ouverte depuis l'accueil (bouton « Settings » ou avatar), avec le thème et la langue de l'interface (DEC-138, US-X-18).
 - **NOTIF-022 — DEC-127, DEC-131 : peu de réglages, des défauts sobres.**
   - Résumé quotidien : jours ouvrés à 8:00 (par défaut), tous les jours à 8:00, ou aucun.
   - E-mail pour une relance : oui par défaut.

@@ -41,6 +41,7 @@ Lignes de `docs/current/` ou de décisions qui se contredisent ; la décision la
 - [US-NEW-05](02-creation.md#us-new-05--joindre-et-ordonner-les-documents-source) — la liste exacte des formats et contrats d'import (DOORS, Excel) et le cas d'un PDF fait uniquement d'images sont à préciser avec l'équipe technique (OPEN-10, OPEN-12) ; aucune limite de taille n'est décidée.
 - [US-NEW-06](02-creation.md#us-new-06--choisir-le-mode-dassistance-ia-fixé-à-la-création) — DEC-095 fige « le mode d'assistance IA » sans dire si les réglages par étape en font partie. En mode tout manuel, la manière de créer les exigences à la main n'est pas spécifiée (« Edit segmentation » est masqué dans la maquette). L'estimation de durée affichée n'a pas de règle.
 - [US-NEW-09](02-creation.md#us-new-09--retrouver-dans-le-tender-créé-tout-ce-que-lassistant-a-fixé) — la possibilité de modifier les autres réglages de traitement après le démarrage n'est pas décidée (LIFE-002, OPEN-05 résiduel).
+- [US-NEW-10](02-creation.md#us-new-10--suivre-le-traitement-du-tender-créé) — la vraie estimation et ses unités (chantier IA, DEC-020).
 
 ### Documents et versions
 
@@ -118,9 +119,8 @@ Lignes de `docs/current/` ou de décisions qui se contredisent ; la décision la
 - [US-CMP-12](09-compliance.md#us-cmp-12--qualifier-un-not-compliant-par-category-et-topic-sur-un-tender-turnkey) — la liste réelle des catégories de non-conformité est à fournir par le métier avant la mise en production de Compliance (OPEN-04, DEC-038).
 - [US-CMP-15](09-compliance.md#us-cmp-15--consulter-les-questions-et-les-exigences-similaires) — la capacité de similarité de la plateforme — source, classement, nombre d'exigences montrées — reste à spécifier (DEC-079, SPEC-compliance-decision-panel §8).
 - [US-CMP-16](09-compliance.md#us-cmp-16--poser-une-question-au-client-depuis-une-affectation) — le tender manager pose-t-il aussi des questions depuis Compliance ? La maquette ne lui donne qu'un raccourci Q qui crée une question générique, comportement de démonstration à ne pas reproduire (docs/gap CODE) ; rien n'est décidé.
-- [US-CMP-17](09-compliance.md#us-cmp-17--suivre-dans-compliance-létat-des-questions-et-la-réponse-du-client) — ce que l'arrivée d'une réponse change à l'avancement de l'affectation (elle reste « Awaiting Q&A » ?) et si son contributeur en est prévenu ne sont pas spécifiés ; QA-006 parle encore de « débloquer » (docs/gap SPECS, « Q&A avec le client », Toujours ouvert ; PLAT-005).
+- [US-CMP-17](09-compliance.md#us-cmp-17--suivre-dans-compliance-létat-des-questions-et-la-réponse-du-client) — ce que l'arrivée d'une réponse change à l'avancement de l'affectation (elle reste « Awaiting Q&A » ?) n'est pas spécifié ; QA-006 parle encore de « débloquer » (docs/gap SPECS, « Q&A avec le client », Toujours ouvert). Qui est prévenu de la réponse : [US-QA-09](11-qa.md#us-qa-09--lire-la-réponse-du-client-sous-sa-question).
 - [US-CMP-19](09-compliance.md#us-cmp-19--renvoyer-une-affectation-qui-nest-pas-la-sienne) — sur un tender à un seul sous-système (SIG, Mainline), ce que proposent « Wrong sub-system » et « This sub-system doesn't apply here » n'est pas défini ; ne pas inventer d'équivalent de la passe 1 (ALLOCATION, « Réallocation » ; OPEN-15).
-- [US-CMP-24](09-compliance.md#us-cmp-24--relancer-le-contributeur-dune-affectation-due) — le canal de la relance (notification interne, e-mail) et son contenu ne sont pas définis ; la maquette ne fait que dater et journaliser (PLAT-005, OPEN-11).
 - [US-CMP-25](09-compliance.md#us-cmp-25--saisir-ou-modifier-une-réponse-en-tant-que-tender-manager) — un contributeur peut-il réviser son propre verdict une fois donné ? Qui documente la stratégie et le risque d'un Not compliant saisi par le tender manager sur l'affectation d'un contributeur ? Rien ne le décide (docs/gap SPECS, « Modèle de conformité », Toujours ouvert ; SPEC-risks §1).
 - [US-CMP-27](09-compliance.md#us-cmp-27--rouvrir-les-verdicts-dune-exigence-modifiée-par-une-nouvelle-version) — le sort de la stratégie d'écart, des risques liés et de la correction du tender manager d'une affectation rouverte n'est pas décidé (voir US-RSK-09) ; l'effet d'une correction de traduction sur une exigence déjà répondue (To review seulement, ou verdicts rouverts ?) non plus (LIFE-008 ; docs/gap README).
 - [US-CMP-28](09-compliance.md#us-cmp-28--exporter-le-registre-de-conformité-avec-options) — la langue par défaut de l'export (LANG-003 : originale ; maquette : anglais) ; ce qui part au client — la conformité externe seule ou aussi l'interne, quelles colonnes — n'est pas défini, et « colonnes personnalisées hors export client » reste un défaut à confirmer (DEC-068 ; docs/gap SPECS, « Écran Compliance », Toujours ouvert).
@@ -140,7 +140,7 @@ Lignes de `docs/current/` ou de décisions qui se contredisent ; la décision la
 - [US-QA-05](11-qa.md#us-qa-05--exporter-vers-excel-les-questions-à-envoyer) — le droit d'exporter n'est pas précisé (déduit : tender manager, au titre de la relation client) ; le format attendu par le client (réglage « Issuer channel », voir US-CFG) n'est pas fixé.
 - [US-QA-07](11-qa.md#us-qa-07--importer-le-dossier-de-réponses-du-client) — format réel du dossier du client, à obtenir avant de construire l'extraction (OPEN-10) ; plusieurs vagues ou plusieurs dossiers par tender (QA-004, OPEN-06) ; seuil de certitude d'un rapprochement ; réponse importée pour une question encore To send (la maquette ne rapproche que les Sent) ; droit d'importer (déduit : tender manager).
 - [US-QA-08](11-qa.md#us-qa-08--confirmer-ou-écarter-une-réponse-incertaine) — ce que devient une réponse écartée (rangée parmi les autres soumissionnaires ou abandonnée) n'est pas précisé, la maquette l'abandonne ; qui peut confirmer ou écarter n'est pas précisé (déduit : tender manager).
-- [US-QA-09](11-qa.md#us-qa-09--lire-la-réponse-du-client-sous-sa-question) — l'état d'avancement de l'affectation après la réponse (QA-006 et QA-T03 parlent encore de « débloquer », alors que rien n'est bloqué depuis DEC-092) et la notification du contributeur à l'arrivée de la réponse (PLAT-005) ne sont pas spécifiés.
+- [US-QA-09](11-qa.md#us-qa-09--lire-la-réponse-du-client-sous-sa-question) — l'état d'avancement de l'affectation après la réponse (QA-006 et QA-T03 parlent encore de « débloquer », alors que rien n'est bloqué depuis DEC-092) n'est pas spécifié.
 - [US-QA-10](11-qa.md#us-qa-10--consulter-les-questions-réponses-des-autres-soumissionnaires) — rattacher à la main une question-réponse « No requirement linked » à une exigence n'est pas spécifié.
 - [US-QA-11](11-qa.md#us-qa-11--réserver-à-léquipe-de-gestion-le-marquage-des-questions-envoyées) — les droits d'importer, d'exporter et de confirmer ou écarter une réponse ne sont pas précisés (déduit : tender manager, « relation client globale » de la matrice d'ACCESS).
 
@@ -157,12 +157,11 @@ Lignes de `docs/current/` ou de décisions qui se contredisent ; la décision la
 - [US-DASH-01](13-tableau-de-bord.md#us-dash-01--voir-lidentité-et-léchéance-du-tender-ouvert) — mention « Bid Director » et place de l'équipe de gestion dans l'en-tête — vocabulaire non refermé par écrit, DEC-030 ne retient que Project manager (Tender manager depuis DEC-126) / Contributor ; affichage une fois l'échéance passée, non décrit.
 - [US-DASH-03](13-tableau-de-bord.md#us-dash-03--suivre-létape-compliance-en-parallèle) — dénominateur M — toutes les exigences du tender ou seulement celles déjà affectées (non écrit).
 - [US-DASH-07](13-tableau-de-bord.md#us-dash-07--voir-ce-qui-mattend-dans--what-needs-you-now-) — ce que voit un contributeur sur ce tableau de bord (ACC-007 lui ouvre la lecture, aucun texte ne décrit sa vue).
-- [US-DASH-08](13-tableau-de-bord.md#us-dash-08--voir-le-travail-dallocation-qui-mattend) — valeur du seuil de confiance des modèles d'allocation (75 % dans la maquette, sans règle écrite ni réglage) ; compter encore un OBS faible sur une exigence déjà validée ou non ; ce qui retire le signal de découpe incertaine et la correction manuelle de la découpe (US-CAP-05).
+- [US-DASH-08](13-tableau-de-bord.md#us-dash-08--voir-le-travail-dallocation-qui-mattend) — valeur du seuil de confiance des modèles d'allocation (75 % dans la maquette, sans règle écrite ni réglage) ; compter encore un OBS faible sur une exigence déjà validée ou non ; ce qui retire le signal de découpe incertaine et la correction manuelle de la découpe ([US-CAP-05](04-capture-ia.md#us-cap-05--signaler-une-découpe-incertaine)).
 - [US-DASH-09](13-tableau-de-bord.md#us-dash-09--voir-larrivée-dune-nouvelle-version-et-ses-effets) — plusieurs versions téléversées à la suite — raconter seulement la dernière ou chacune (non écrit).
-- [US-DASH-10](13-tableau-de-bord.md#us-dash-10--voir-les-réponses-en-retard-et-les-not-compliant-à-documenter) — seuil de 5 jours fixé par PLAT-008 face au réglage « Overdue threshold » des paramètres, relié à rien (US-CFG-05).
+- [US-DASH-10](13-tableau-de-bord.md#us-dash-10--voir-les-réponses-en-retard-et-les-not-compliant-à-documenter) — seuil de 5 jours fixé par PLAT-008 face au réglage « Overdue threshold » des paramètres, relié à rien ([US-CFG-05](15-configuration.md#us-cfg-05--régler-le-seuil-de-retard-et-la-cadence-des-relances)).
 - [US-DASH-12](13-tableau-de-bord.md#us-dash-12--lire-les-derniers-commentaires-du-tender) — liste exacte des événements qui comptent comme commentaire dans ce fil (non écrite).
 - [US-DASH-14](13-tableau-de-bord.md#us-dash-14--suivre-lactivité-récente-du-tender) — liste des faits qui entrent dans ce fil et sa profondeur (non écrites).
-- [US-DASH-15](13-tableau-de-bord.md#us-dash-15--ouvrir-la-cloche-du-tableau-de-bord) — déclencheurs, destinataires et regroupement des notifications (PLAT-005, OPEN-11).
 
 ### Statistiques
 
@@ -181,7 +180,7 @@ Lignes de `docs/current/` ou de décisions qui se contredisent ; la décision la
 - [US-CFG-02](15-configuration.md#us-cfg-02--consulter-les-informations-générales-du-tender) — modifier le nom, le BO-ID et la région après création (non décidé) ; liste réelle des régions à compléter (DEC-126) ; les interrupteurs par étape IA font-ils partie du mode figé (DEC-095 ne le dit pas).
 - [US-CFG-03](15-configuration.md#us-cfg-03--régler-léchéance-de-soumission) — accepter ou non une échéance déjà passée (non écrit).
 - [US-CFG-04](15-configuration.md#us-cfg-04--voir-les-contributeurs-du-tender-depuis-les-paramètres) — garder cette section ou la réduire à un lien vers l'écran Users (doublon) ; effet des « Assignment criteria » (PBS, ABS, OBS), non spécifié.
-- [US-CFG-05](15-configuration.md#us-cfg-05--régler-le-seuil-de-retard-et-la-cadence-des-relances) — le seuil remplace-t-il les 5 jours fixés par PLAT-008 pour le tableau de bord et les statistiques ; la cadence limite-t-elle les relances manuelles ou pilote-t-elle des relances automatiques (déclencheurs de PLAT-005, OPEN-11).
+- [US-CFG-05](15-configuration.md#us-cfg-05--régler-le-seuil-de-retard-et-la-cadence-des-relances) — le seuil remplace-t-il les 5 jours fixés par PLAT-008 pour le tableau de bord et les statistiques.
 - [US-CFG-06](15-configuration.md#us-cfg-06--consulter-le-sous-système-le-produit-et-le-modèle-appliqué) — produits et modèles RSC non fournis (DEC-047, OPEN-15) ; maille de l'OBS du modèle Urban non tranchée.
 - [US-CFG-07](15-configuration.md#us-cfg-07--changer-de-modèle-et-relancer-toute-la-dérivation) — statut des exigences après la relance (à revoir ou à valider) et sort des personnes affectées, des stratégies et des risques — non écrits ; forme du geste de confirmation renforcée ; changement de modèle sur un Turnkey (non décrit ; le champ « Combination » n'existe plus, DEC-126).
 - [US-CFG-11](15-configuration.md#us-cfg-11--capter-chaque-correction-dune-proposition-de-lia) — destination et anonymisation des retours vers le chantier IA (DEC-020).
@@ -193,16 +192,21 @@ Lignes de `docs/current/` ou de décisions qui se contredisent ; la décision la
 ### Transverse : journal, notifications, plateforme
 
 - [US-X-01](16-transverse.md#us-x-01--consulter-le-journal-dactivité-dune-exigence) — liste exacte des événements tracés, rétention et droits de lecture du journal (DOM-011, PLAT-003, OPEN-11).
-- [US-X-02](16-transverse.md#us-x-02--commenter-une-exigence) — mentions « @ » (le champ les annonce, aucune règle) ; droit de commenter une exigence hors de son sous-système, que DEC-100 met en lecture seule ; modifier ou supprimer un commentaire.
+- [US-X-02](16-transverse.md#us-x-02--commenter-une-exigence) — droit de commenter une exigence hors de son sous-système, que DEC-100 met en lecture seule ; modifier ou supprimer un commentaire.
 - [US-X-04](16-transverse.md#us-x-04--se-connecter-par-sso-et-naccéder-quà-ses-tenders) — politique de création d'un tender (JRN-001) ; rôles Admin et VIP (OPEN-02) ; standards de sécurité (OPEN-11).
 - [US-X-06](16-transverse.md#us-x-06--tracer-tout-changement-humain-ou-machine) — rétention, suivi de session et standards de sécurité (OPEN-11) ; unité et granularité du coût des traitements de l'IA.
 - [US-X-07](16-transverse.md#us-x-07--garder-séparées-la-proposition-de-lia-la-valeur-retenue-et-la-correction) — modalités de reprise et de correspondance entre versions (OPEN-07, OPEN-09).
 - [US-X-08](16-transverse.md#us-x-08--exporter-les-exigences-du-tender) — formats, correspondances et aller-retour DOORS à contractualiser (PLAT-004, OPEN-10, OPEN-12).
 - [US-X-09](16-transverse.md#us-x-09--importer-un-export-doors-comme-document-du-tender) — formats exacts, correspondance des attributs DOORS et boucle aller-retour (OPEN-10, OPEN-12).
-- [US-X-10](16-transverse.md#us-x-10--recevoir-les-notifications-dans-lapplication-et-par-e-mail) — déclencheurs, destinataires, regroupement, fréquence et relances (PLAT-005, OPEN-11) ; lien avec « Maximum reminder cadence » (US-CFG-05) ; la relance de Compliance (DEC-125) envoie-t-elle un e-mail.
+- [US-X-10](16-transverse.md#us-x-10--recevoir-les-notifications-dans-lapplication-et-par-e-mail) — le mode d'envoi des e-mails (Microsoft Graph ou High Volume Email) et la boîte d'envoi, à fixer avec l'IT (DEC-136) ; la présentation du dispositif aux représentants du personnel avant le déploiement (DEC-118).
 - [US-X-11](16-transverse.md#us-x-11--travailler-sur-100-000-lignes-à-dix-en-même-temps) — budgets chronométrés, portée exacte du jeu de 100 000 lignes et protocole de mesure (OPEN-08) ; sélection de toutes les pages et « Filter to Selection » à cette échelle (OPEN-13, UX-006).
 - [US-X-13](16-transverse.md#us-x-13--ne-rien-perdre-en-cas-déchec-ou-de-conflit-denregistrement) — mode de résolution d'un conflit (dernière écriture avec avertissement, fusion, rechargement) non choisi.
 - [US-X-14](16-transverse.md#us-x-14--lire-des-couleurs-qui-gardent-toujours-le-même-sens) — référentiel d'accessibilité à atteindre (contrastes, lecteur d'écran, navigation au clavier hors tables) — aucune règle écrite ; rouge exact de la marque à confirmer (DEC-063).
+
+### Administration de la plateforme
+
+- [US-ADM-04](17-administration.md#us-adm-04--consulter-le-journal-daudit-de-la-plateforme) — la durée de conservation du journal (OPEN-11).
+- [US-ADM-06](17-administration.md#us-adm-06--suivre-ce-que-fait-lia-et-reprendre-un-traitement-échoué) — la source réelle des coûts et des compteurs (chantier IA, DEC-020).
 
 ## Écarts de la maquette, par story
 
@@ -215,6 +219,7 @@ La maquette simule ou diffère ; à corriger dans la maquette ou à ignorer, jam
 - [US-HOME-04](01-accueil.md#us-home-04--voir-la-liste-de-mes-tenders) — la liste montre des tenders de démonstration non ouvrables (« Demo tender — list & status only ») et déduit le rôle d'un texte libre ; rien de cela n'existe dans le produit.
 - [US-HOME-05](01-accueil.md#us-home-05--lire-lavancement-dun-tender-sur-sa-ligne) — les compteurs de démonstration ne concordent pas avec ceux du tableau de bord ; dans le produit, ce sont les mêmes données.
 - [US-HOME-06](01-accueil.md#us-home-06--ouvrir-un-tender-depuis-laccueil) — l'ouverture des tenders de démonstration non construits est bloquée par un message ; sans objet dans le produit.
+- [US-HOME-07](01-accueil.md#us-home-07--voir-ce-qui-a-changé-depuis-ma-dernière-visite) — l'accueil n'a ni cloche ni carte « Since your last visit ».
 
 ### Création d'un tender
 
@@ -224,6 +229,8 @@ La maquette simule ou diffère ; à corriger dans la maquette ou à ignorer, jam
 - [US-NEW-06](02-creation.md#us-new-06--choisir-le-mode-dassistance-ia-fixé-à-la-création) — le mode est une seule valeur pour toute la démonstration, pas une propriété du tender, et les paramètres ne l'affichent pas. La phrase « The AI never overwrites a manual correction » contredit les relances qui écrasent les dérivations (ALLOC-015, DEC-027).
 - [US-NEW-07](02-creation.md#us-new-07--constituer-léquipe-de-gestion-du-tender) — l'équipe saisie ici est stockée sur le tender mais l'écran Users ne la lit pas ; l'annuaire est une liste locale de démonstration.
 - [US-NEW-09](02-creation.md#us-new-09--retrouver-dans-le-tender-créé-tout-ce-que-lassistant-a-fixé) — un tender créé dans la maquette réutilise le contenu du tender de référence (bandeau « Prototype scope ») ; ni l'émetteur, ni l'échéance, ni les documents, ni le mode ne sont conservés sur lui.
+- [US-NEW-10](02-creation.md#us-new-10--suivre-le-traitement-du-tender-créé) — le traitement est simulé ; il dure environ une minute pour la démonstration (DEMO_PROC_SECONDS).
+- [US-NEW-10](02-creation.md#us-new-10--suivre-le-traitement-du-tender-créé) — le message de l'accueil tient lieu de notification ; la maquette n'a ni la cloche personnelle (US-X-15) ni l'e-mail (US-X-17).
 
 ### Documents et versions
 
@@ -291,7 +298,9 @@ La maquette simule ou diffère ; à corriger dans la maquette ou à ignorer, jam
 - [US-CMP-20](09-compliance.md#us-cmp-20--consolider-les-verdicts-dune-exigence) — la maquette saisit le verdict au niveau du sous-système ; les organisations y sont affichées avec des valeurs écrites à la main et n'entrent pas dans le calcul.
 - [US-CMP-22](09-compliance.md#us-cmp-22--voir-ce-qui-est-attendu-dans-le-panneau-du-tender-manager) — la maquette affiche aussi les onglets REX (exemples) et Chat (non construit), hors V1 (DEC-021).
 - [US-CMP-23](09-compliance.md#us-cmp-23--réaffecter-une-affectation-renvoyée) — le formulaire de réaffectation s'affiche aussi pour un contributeur du sous-système de l'affectation.
+- [US-CMP-24](09-compliance.md#us-cmp-24--relancer-le-contributeur-dune-affectation-due) — la maquette ne fait que dater et journaliser : ni notification, ni e-mail, ni plafond, ni mot facultatif.
 - [US-CMP-25](09-compliance.md#us-cmp-25--saisir-ou-modifier-une-réponse-en-tant-que-tender-manager) — la maquette ne permet au tender manager de saisir que le verdict d'un partenaire ; personne n'y révise un verdict donné, hors annulation (⌘/Ctrl + Z) et réouverture par une version.
+- [US-CMP-26](09-compliance.md#us-cmp-26--être-prévenu-de-ce-qui-bouge-dans-compliance) — la cloche de Compliance compte ce qui attend sur l'écran (renvois, questions chez le client, réponses rouvertes) au lieu de prévenir de ce qui a changé.
 - [US-CMP-27](09-compliance.md#us-cmp-27--rouvrir-les-verdicts-dune-exigence-modifiée-par-une-nouvelle-version) — la maquette choisit elle-même les exigences « modifiées » et rejoue la réouverture à chaque ouverture de l'écran.
 - [US-CMP-28](09-compliance.md#us-cmp-28--exporter-le-registre-de-conformité-avec-options) — la génération n'est qu'un message ; l'anglais y est coché par défaut, alors que LANG-003 veut le texte original.
 
@@ -328,14 +337,14 @@ La maquette simule ou diffère ; à corriger dans la maquette ou à ignorer, jam
 - [US-DASH-05](13-tableau-de-bord.md#us-dash-05--voir-les-risques-et-les-questions-au-client-dans-le-rail) — le chiffre Q&A (« 5 questions · 1 answered ») est écrit à la main et ne lit pas le registre.
 - [US-DASH-06](13-tableau-de-bord.md#us-dash-06--voir-les-demandes-de-réallocation-en-attente) — la boîte de demandes n'est pas propre au tender (filtrage par préfixe d'identifiant) ; « Review → » ouvre Allocation sans sélectionner l'exigence.
 - [US-DASH-07](13-tableau-de-bord.md#us-dash-07--voir-ce-qui-mattend-dans--what-needs-you-now-) — la liste ne dit rien quand elle est vide.
-- [US-DASH-08](13-tableau-de-bord.md#us-dash-08--voir-le-travail-dallocation-qui-mattend) — les OBS faibles ne figurent que dans la cloche, pas dans cette liste ; « 2 uncertain segmentations » est écrit à la main.
+- [US-DASH-08](13-tableau-de-bord.md#us-dash-08--voir-le-travail-dallocation-qui-mattend) — les OBS faibles ne figurent que dans la cloche du tableau de bord, pas dans cette liste, alors qu'un OBS faible ne fait jamais l'objet d'une notification (NOTIF-009) ; « 2 uncertain segmentations » est écrit à la main.
 - [US-DASH-09](13-tableau-de-bord.md#us-dash-09--voir-larrivée-dune-nouvelle-version-et-ses-effets) — l'écart est simulé par Documents et seul le dernier téléversement est raconté.
-- [US-DASH-10](13-tableau-de-bord.md#us-dash-10--voir-les-réponses-en-retard-et-les-not-compliant-à-documenter) — les retards sont une liste fixe, pas un calcul d'âge ; le libellé dit « unopened for N days » alors que la règle compte l'âge sans réponse.
+- [US-DASH-10](13-tableau-de-bord.md#us-dash-10--voir-les-réponses-en-retard-et-les-not-compliant-à-documenter) — les retards sont une liste fixe, pas un calcul d'âge ; le libellé dit « unopened for N days » alors que la règle compte l'âge sans réponse ; Smart Req ne suit pas qui ouvre quoi (NOTIF-023) : le libellé cible est « no answer for N days ».
 - [US-DASH-11](13-tableau-de-bord.md#us-dash-11--voir-les-questions-à-envoyer-au-client) — « 2 questions to send » est écrit à la main et ne lit pas le registre.
 - [US-DASH-12](13-tableau-de-bord.md#us-dash-12--lire-les-derniers-commentaires-du-tender) — seules les demandes de réallocation sont réelles ; les autres lignes sont écrites à la main, le fil ne lit pas le journal et ses éléments ne sont pas cliquables.
 - [US-DASH-13](13-tableau-de-bord.md#us-dash-13--suivre-les-réponses-par-sous-système) — les chiffres sont écrits à la main.
 - [US-DASH-14](13-tableau-de-bord.md#us-dash-14--suivre-lactivité-récente-du-tender) — deux lignes sont écrites à la main (une question posée par une personne nommée, « QA-01 marked as sent »).
-- [US-DASH-15](13-tableau-de-bord.md#us-dash-15--ouvrir-la-cloche-du-tableau-de-bord) — la cloche du tableau de bord ne nomme pas l'exigence quand il n'y en a qu'une ; celle d'Allocation affiche encore une liste figée (mention, version v2.1, rappel), contraire à la règle.
+- [US-DASH-15](13-tableau-de-bord.md#us-dash-15--lire-ce-qui-mattend-au-pied-de-la-cloche) — chaque écran a sa propre cloche d'état, dont le point reste allumé tant que quelque chose attend ; celle du tableau de bord ne nomme pas l'exigence quand il n'y en a qu'une ; celle d'Allocation affiche encore une liste figée (mention, version v2.1, rappel).
 
 ### Statistiques
 
@@ -354,7 +363,7 @@ La maquette simule ou diffère ; à corriger dans la maquette ou à ignorer, jam
 - [US-CFG-02](15-configuration.md#us-cfg-02--consulter-les-informations-générales-du-tender) — le mode d'assistance IA n'apparaît pas dans les paramètres (c'est une valeur unique pour toute la démo) ; nom et BO-ID sont des champs de saisie sans effet.
 - [US-CFG-03](15-configuration.md#us-cfg-03--régler-léchéance-de-soumission) — la date est un champ sans effet ; le compte à rebours est figé à la création.
 - [US-CFG-04](15-configuration.md#us-cfg-04--voir-les-contributeurs-du-tender-depuis-les-paramètres) — la liste est saisie au clavier (nom et équipe libres), indépendante de l'écran Users.
-- [US-CFG-05](15-configuration.md#us-cfg-05--régler-le-seuil-de-retard-et-la-cadence-des-relances) — les deux réglages ne sont reliés à rien ; le tableau de bord compte les retards avec une règle fixe.
+- [US-CFG-05](15-configuration.md#us-cfg-05--régler-le-seuil-de-retard-et-la-cadence-des-relances) — les deux réglages ne sont reliés à rien ; le tableau de bord compte les retards avec une règle fixe ; « Manual only » est encore proposé.
 - [US-CFG-06](15-configuration.md#us-cfg-06--consulter-le-sous-système-le-produit-et-le-modèle-appliqué) — sur un tender RSC ou « Services », le produit affiche le message prévu pour un Turnkey.
 - [US-CFG-07](15-configuration.md#us-cfg-07--changer-de-modèle-et-relancer-toute-la-dérivation) — la section n'est qu'un affichage — le sélecteur est sans effet, le bouton désactivé et les chiffres viennent d'une copie.
 - [US-CFG-08](15-configuration.md#us-cfg-08--ajouter-un-partenaire-externe-à-la-liste-obs-turnkey) — la couleur des partenaires est hors de l'échelle de jetons.
@@ -371,4 +380,11 @@ La maquette simule ou diffère ; à corriger dans la maquette ou à ignorer, jam
 - [US-X-03](16-transverse.md#us-x-03--retrouver-tout-le-travail-après-reconnexion) — rien n'est persisté ; chaque écran garde sa propre copie des données et les compteurs du tableau de bord sont écrits à la main.
 - [US-X-05](16-transverse.md#us-x-05--faire-respecter-les-droits-du-tender-par-le-serveur) — les refus ne sont simulés que dans l'interface.
 - [US-X-08](16-transverse.md#us-x-08--exporter-les-exigences-du-tender) — aucun fichier n'est produit (message seulement) ; CSV et ReqIF sont proposés sans intégration.
+- [US-X-15](16-transverse.md#us-x-15--ouvrir-ma-cloche-la-même-sur-tous-les-écrans) — chaque écran a sa propre cloche, calculée sur son seul contenu, dont le point reste allumé tant que quelque chose attend ; l'accueil et Risks n'en ont pas.
+- [US-X-18](16-transverse.md#us-x-18--régler-mes-notifications) — seul l'accueil ouvre Settings ; les choix valent pour la session de démo et n'envoient rien, la maquette n'ayant pas d'e-mail.
 
+### Administration de la plateforme
+
+- [US-ADM-01](17-administration.md#us-adm-01--donner-ou-retirer-le-droit-de-créer-un-tender) — le refus côté serveur n'est pas simulé.
+- [US-ADM-03](17-administration.md#us-adm-03--voir-tous-les-tenders-et-en-garder-un-pilote) — un tender archivé n'est pas encore retiré de l'accueil des autres personnes, et la lecture seule d'un tender archivé n'est pas simulée.
+- [US-ADM-06](17-administration.md#us-adm-06--suivre-ce-que-fait-lia-et-reprendre-un-traitement-échoué) — les chiffres et coûts sont des valeurs de démonstration.

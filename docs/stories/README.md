@@ -27,7 +27,7 @@ Point ouvert : ce qui n'est pas décidé (la story ne le tranche pas).
 
 | # | Épopée | Fichier | Stories | Pilote 1 | Après pilote |
 |---|---|---|---|---|---|
-| 1 | Accueil (My tenders) (`US-HOME`) | [01-accueil.md](01-accueil.md) | 6 | 6 | 0 |
+| 1 | Accueil (My tenders) (`US-HOME`) | [01-accueil.md](01-accueil.md) | 7 | 7 | 0 |
 | 2 | Création d'un tender (`US-NEW`) | [02-creation.md](02-creation.md) | 10 | 10 | 0 |
 | 3 | Documents et versions (`US-DOC`) | [03-documents.md](03-documents.md) | 8 | 6 | 2 |
 | 4 | Capture, segmentation, traduction et IA (`US-CAP`) | [04-capture-ia.md](04-capture-ia.md) | 13 | 11 | 2 |
@@ -42,9 +42,9 @@ Point ouvert : ce qui n'est pas décidé (la story ne le tranche pas).
 | 13 | Tableau de bord du tender (`US-DASH`) | [13-tableau-de-bord.md](13-tableau-de-bord.md) | 15 | 8 | 7 |
 | 14 | Statistiques (`US-STAT`) | [14-statistiques.md](14-statistiques.md) | 14 | 8 | 6 |
 | 15 | Configuration du tender (`US-CFG`) | [15-configuration.md](15-configuration.md) | 15 | 12 | 3 |
-| 16 | Transverse : journal, notifications, plateforme (`US-X`) | [16-transverse.md](16-transverse.md) | 14 | 14 | 0 |
+| 16 | Transverse : journal, notifications, plateforme (`US-X`) | [16-transverse.md](16-transverse.md) | 18 | 18 | 0 |
 | 17 | Administration de la plateforme (`US-ADM`) | [17-administration.md](17-administration.md) | 6 | 4 | 2 |
-| | **Total** | | **246** | **157** | **89** |
+| | **Total** | | **251** | **162** | **89** |
 
 Les stories marquées « Pilote 1 » mais dont une partie (Compliance) vient après le pilote sont comptées en Pilote 1. Matrice règle → stories : [COUVERTURE.md](COUVERTURE.md). Points non décidés et écarts de la maquette : [POINTS-OUVERTS.md](POINTS-OUVERTS.md).
 
@@ -60,6 +60,7 @@ Les stories marquées « Pilote 1 » mais dont une partie (Compliance) vient apr
 | [US-HOME-04](01-accueil.md#us-home-04--voir-la-liste-de-mes-tenders) | Voir la liste de mes tenders | Pilote 1 | Toutes |
 | [US-HOME-05](01-accueil.md#us-home-05--lire-lavancement-dun-tender-sur-sa-ligne) | Lire l'avancement d'un tender sur sa ligne | Pilote 1 (à confirmer) | Toutes |
 | [US-HOME-06](01-accueil.md#us-home-06--ouvrir-un-tender-depuis-laccueil) | Ouvrir un tender depuis l'accueil | Pilote 1 | Toutes |
+| [US-HOME-07](01-accueil.md#us-home-07--voir-ce-qui-a-changé-depuis-ma-dernière-visite) | Voir ce qui a changé depuis ma dernière visite | Pilote 1 | Toutes |
 
 ### Création d'un tender
 
@@ -232,7 +233,7 @@ Les stories marquées « Pilote 1 » mais dont une partie (Compliance) vient apr
 | [US-CMP-23](09-compliance.md#us-cmp-23--réaffecter-une-affectation-renvoyée) | Réaffecter une affectation renvoyée | Après pilote | Toutes |
 | [US-CMP-24](09-compliance.md#us-cmp-24--relancer-le-contributeur-dune-affectation-due) | Relancer le contributeur d'une affectation due | Après pilote | Toutes |
 | [US-CMP-25](09-compliance.md#us-cmp-25--saisir-ou-modifier-une-réponse-en-tant-que-tender-manager) | Saisir ou modifier une réponse en tant que tender manager | Après pilote | Toutes |
-| [US-CMP-26](09-compliance.md#us-cmp-26--voir-dans-la-cloche-ce-qui-attend) | Voir dans la cloche ce qui attend | Après pilote | Toutes |
+| [US-CMP-26](09-compliance.md#us-cmp-26--être-prévenu-de-ce-qui-bouge-dans-compliance) | Être prévenu de ce qui bouge dans Compliance | Après pilote | Toutes |
 | [US-CMP-27](09-compliance.md#us-cmp-27--rouvrir-les-verdicts-dune-exigence-modifiée-par-une-nouvelle-version) | Rouvrir les verdicts d'une exigence modifiée par une nouvelle version | Après pilote | Toutes |
 | [US-CMP-28](09-compliance.md#us-cmp-28--exporter-le-registre-de-conformité-avec-options) | Exporter le registre de conformité avec options | Après pilote | Toutes |
 
@@ -310,7 +311,7 @@ Les stories marquées « Pilote 1 » mais dont une partie (Compliance) vient apr
 | [US-DASH-12](13-tableau-de-bord.md#us-dash-12--lire-les-derniers-commentaires-du-tender) | Lire les derniers commentaires du tender | Pilote 1 (à confirmer) | Toutes |
 | [US-DASH-13](13-tableau-de-bord.md#us-dash-13--suivre-les-réponses-par-sous-système) | Suivre les réponses par sous-système | Après pilote | Toutes |
 | [US-DASH-14](13-tableau-de-bord.md#us-dash-14--suivre-lactivité-récente-du-tender) | Suivre l'activité récente du tender | Après pilote | Toutes |
-| [US-DASH-15](13-tableau-de-bord.md#us-dash-15--ouvrir-la-cloche-du-tableau-de-bord) | Ouvrir la cloche du tableau de bord | Pilote 1 | Toutes |
+| [US-DASH-15](13-tableau-de-bord.md#us-dash-15--lire-ce-qui-mattend-au-pied-de-la-cloche) | Lire ce qui m'attend au pied de la cloche | Pilote 1 | Toutes |
 
 ### Statistiques
 
@@ -364,11 +365,15 @@ Les stories marquées « Pilote 1 » mais dont une partie (Compliance) vient apr
 | [US-X-07](16-transverse.md#us-x-07--garder-séparées-la-proposition-de-lia-la-valeur-retenue-et-la-correction) | Garder séparées la proposition de l'IA, la valeur retenue et la correction | Pilote 1 | Toutes |
 | [US-X-08](16-transverse.md#us-x-08--exporter-les-exigences-du-tender) | Exporter les exigences du tender | Pilote 1 (à confirmer) | Toutes |
 | [US-X-09](16-transverse.md#us-x-09--importer-un-export-doors-comme-document-du-tender) | Importer un export DOORS comme document du tender | Pilote 1 (à confirmer) | Toutes |
-| [US-X-10](16-transverse.md#us-x-10--recevoir-les-notifications-dans-lapplication-et-par-e-mail) | Recevoir les notifications dans l'application et par e-mail | Pilote 1 (à confirmer) | Toutes |
+| [US-X-10](16-transverse.md#us-x-10--recevoir-les-notifications-dans-lapplication-et-par-e-mail) | Recevoir les notifications dans l'application et par e-mail | Pilote 1 | Toutes |
 | [US-X-11](16-transverse.md#us-x-11--travailler-sur-100-000-lignes-à-dix-en-même-temps) | Travailler sur 100 000 lignes à dix en même temps | Pilote 1 | Toutes |
 | [US-X-12](16-transverse.md#us-x-12--comprendre-létat-dun-écran--chargement-vide-absence-de-droit) | Comprendre l'état d'un écran : chargement, vide, absence de droit | Pilote 1 | Toutes |
 | [US-X-13](16-transverse.md#us-x-13--ne-rien-perdre-en-cas-déchec-ou-de-conflit-denregistrement) | Ne rien perdre en cas d'échec ou de conflit d'enregistrement | Pilote 1 | Toutes |
 | [US-X-14](16-transverse.md#us-x-14--lire-des-couleurs-qui-gardent-toujours-le-même-sens) | Lire des couleurs qui gardent toujours le même sens | Pilote 1 | Toutes |
+| [US-X-15](16-transverse.md#us-x-15--ouvrir-ma-cloche-la-même-sur-tous-les-écrans) | Ouvrir ma cloche, la même sur tous les écrans | Pilote 1 | Toutes |
+| [US-X-16](16-transverse.md#us-x-16--recevoir-le-résumé-quotidien-par-e-mail) | Recevoir le résumé quotidien par e-mail | Pilote 1 | Toutes |
+| [US-X-17](16-transverse.md#us-x-17--recevoir-tout-de-suite-ce-qui-mest-adressé-ou-que-jattends) | Recevoir tout de suite ce qui m'est adressé ou que j'attends | Pilote 1 | Toutes |
+| [US-X-18](16-transverse.md#us-x-18--régler-mes-notifications) | Régler mes notifications | Pilote 1 | Toutes |
 
 ### Administration de la plateforme
 

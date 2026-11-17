@@ -222,7 +222,7 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
    same rows as Configuration's Config Field Row; same Theme Picker. */
 .set-back{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:70;display:none;align-items:center;justify-content:center;padding:var(--space-4);animation:fadeOnly var(--motion-base) var(--ease-out)}
 .set-back.on{display:flex}
-.set-win{width:100%;max-width:560px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 24px 80px rgba(0,0,0,.6);padding:var(--space-5);animation:riseIn var(--motion-base) var(--ease-out)}
+.set-win{width:100%;max-width:560px;max-height:calc(100vh - 2*var(--space-4));overflow-y:auto;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 24px 80px rgba(0,0,0,.6);padding:var(--space-5);animation:riseIn var(--motion-base) var(--ease-out)}
 .set-head{display:flex;align-items:flex-start;gap:var(--space-3);margin-bottom:var(--space-4)}
 .set-head h3{font-size:var(--text-lg);font-weight:700}
 .set-head p{font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-1);line-height:1.5}
@@ -240,6 +240,25 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 .set-win .frow .fc{flex-shrink:0}
 .set-win .sel{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base);min-width:170px}
 .set-win .sel:focus{border-color:var(--accent)}
+/* Notifications rubric (NOTIF-021/022) — options stacked under their label */
+.set-win .frow.stack{flex-direction:column;align-items:stretch;gap:var(--space-2)}
+.set-note{font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-2);line-height:1.5}
+.set-opts{display:flex;flex-direction:column;gap:var(--space-1)}
+.set-opt{display:flex;align-items:flex-start;gap:var(--space-2);font-size:var(--text-base);padding:var(--space-1) 0;cursor:pointer}
+.set-opt input{accent-color:var(--accent);margin-top:3px;flex-shrink:0}
+.set-opt .d{color:var(--text-3)}
+.set-opt.is-fixed{cursor:default;color:var(--text-2)}
+.set-tenders{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden}
+.set-tn{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-top:1px solid var(--line)}
+.set-tn:first-child{border-top:0}
+.set-tn .tn{flex:1;min-width:0;font-size:var(--text-sm)}
+.set-tn .tn b{font-family:var(--font-mono);font-weight:600}
+.set-tn .tn span{display:block;color:var(--text-3);font-size:var(--text-xs)}
+.set-tn .st{font-size:var(--text-xs);color:var(--text-3);width:86px;text-align:right}
+.tog{position:relative;width:40px;height:22px;border-radius:var(--radius-pill);background:var(--panel-3);border:1px solid var(--line-2);cursor:pointer;transition:all .2s;flex-shrink:0}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--text-2);transition:all .2s}
+.tog.on{background:var(--accent-soft);border-color:var(--accent)}
+.tog.on::after{left:20px;background:var(--accent)}
 .set-foot{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-5);font-size:var(--text-sm);color:var(--text-3)}
 .set-foot .btn-primary{margin-left:auto}
 .theme-pick{display:inline-flex;gap:8px}
@@ -377,6 +396,23 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
     <div class="set-st">Language</div>
     <div class="frow"><div class="fl"><div class="flt">Interface language</div><div class="fld">The language of the screens. Requirement texts keep their own; a tender's source and working languages are in its Configuration.</div></div>
       <div class="fc"><select class="sel" id="set-lang"><option value="en">English</option><option value="fr" disabled>Français — later</option></select></div></div>
+    <div class="set-st">Notifications</div>
+    <div class="set-note">In Smart Req, everything that concerns you is under the bell — nothing to set there. What follows is email only.</div>
+    <div class="frow stack"><div class="fl"><div class="flt">Daily email summary</div><div class="fld">Sent only when something new hasn't been seen in Smart Req. Your time zone: Europe/Paris, from your company profile.</div></div>
+      <div class="set-opts" id="set-digest">
+        <label class="set-opt"><input type="radio" name="digest" value="workdays"><span>Working days at 8:00 <span class="d">— Monday to Friday</span></span></label>
+        <label class="set-opt"><input type="radio" name="digest" value="daily"><span>Every day at 8:00 <span class="d">— for the last weeks before a submission</span></span></label>
+        <label class="set-opt"><input type="radio" name="digest" value="off"><span>Off <span class="d">— you'll see everything under the bell</span></span></label>
+      </div></div>
+    <div class="frow stack"><div class="fl"><div class="flt">Right away by email</div><div class="fld">Sent 10 minutes later if you haven't seen it in Smart Req by then.</div></div>
+      <div class="set-opts" id="set-now">
+        <label class="set-opt"><input type="checkbox" data-k="reminder"><span>A tender manager sends you a reminder</span></label>
+        <label class="set-opt"><input type="checkbox" data-k="mention"><span>Someone mentions you in a comment</span></label>
+        <label class="set-opt"><input type="checkbox" data-k="processing"><span>A processing you launched finishes or fails <span class="d">— capture, new document, new version</span></span></label>
+        <label class="set-opt is-fixed"><input type="checkbox" checked disabled><span>You're added to a tender <span class="d">— always sent: it's how you hear about the tender at all</span></span></label>
+      </div></div>
+    <div class="frow stack"><div class="fl"><div class="flt">By tender</div><div class="fld">Turn a tender off to keep it under the bell only — useful when you follow it from afar.</div></div>
+      <div class="set-tenders" id="set-tenders"></div></div>
     <div class="set-foot"><span>Changes apply at once.</span><button class="btn-primary" id="set-done">Done</button></div>
   </div>
 </div>
@@ -567,7 +603,7 @@ document.getElementById("reset-btn").addEventListener("click",()=>{
       document.getElementById("set-name").textContent=u.name;
       document.getElementById("set-role").textContent=(u.title?u.title+" · ":"")+"signed in with your company account";
     }catch(e){}
-    paint(curTheme()); back.classList.add("on");
+    paint(curTheme()); paintNotif(); back.classList.add("on");
     setTimeout(()=>{ const on=document.querySelector(".theme-opt.on"); if(on) on.focus(); },0);
   }
   function close(){ back.classList.remove("on"); }
@@ -586,6 +622,32 @@ document.getElementById("reset-btn").addEventListener("click",()=>{
     try{ if(P&&P.setTheme) P.setTheme(t); }catch(e){}
     toast(`${t.charAt(0).toUpperCase()+t.slice(1)} theme applied`,"ok");
   }));
+  /* Notifications (NOTIF-021/022, US-X-18) — email only, applied at once */
+  const DIGEST={workdays:"Daily summary on working days at 8:00",daily:"Daily summary every day at 8:00",off:"No daily summary — everything stays under the bell"};
+  const NOW={reminder:"reminders",mention:"mentions",processing:"processing results"};
+  let prefs={digest:"workdays",reminder:true,mention:true,processing:true,muted:[]};
+  function getPrefs(){ try{ if(P&&P.getNotifPrefs) prefs=P.getNotifPrefs(); }catch(e){} return prefs; }
+  function setPrefs(patch){ Object.assign(prefs,patch); try{ if(P&&P.setNotifPrefs) prefs=P.setNotifPrefs(patch); }catch(e){} }
+  function paintNotif(){
+    const pr=getPrefs();
+    document.querySelectorAll('#set-digest input').forEach(i=>i.checked=(i.value===pr.digest));
+    document.querySelectorAll('#set-now input[data-k]').forEach(i=>i.checked=!!pr[i.dataset.k]);
+    const mine=getProjects().filter(p=>p.status!=="submitted");
+    const pm=r=>/(tender|project)\s*manager/i.test(r||"");
+    document.getElementById("set-tenders").innerHTML=mine.length?mine.map(p=>{ const on=!pr.muted.includes(p.id);
+      return `<div class="set-tn"><div class="tn"><b>${p.ref}</b> · ${p.name}<span>${pm(p.role)?"Tender manager":"Contributor"}${p.line?" · "+p.line:""}</span></div>
+        <span class="st">${on?"Email and bell":"Bell only"}</span><button class="tog${on?" on":""}" data-tn="${p.id}" role="switch" aria-checked="${on}" aria-label="Email for ${p.ref}"></button></div>`; }).join("")
+      :`<div class="set-tn"><div class="tn"><span>No tender in progress.</span></div></div>`;
+    document.querySelectorAll("#set-tenders .tog").forEach(b=>b.addEventListener("click",()=>{
+      const id=b.dataset.tn, muted=getPrefs().muted.slice(), i=muted.indexOf(id);
+      if(i<0) muted.push(id); else muted.splice(i,1);
+      setPrefs({muted}); paintNotif();
+      const p=getProjects().find(x=>x.id===id);
+      toast(i<0?`${p?p.ref:id}: bell only — no more email for this tender`:`${p?p.ref:id}: email back on`,"ok");
+    }));
+  }
+  document.querySelectorAll('#set-digest input').forEach(i=>i.addEventListener("change",()=>{ setPrefs({digest:i.value}); toast(DIGEST[i.value],"ok"); }));
+  document.querySelectorAll('#set-now input[data-k]').forEach(i=>i.addEventListener("change",()=>{ const k=i.dataset.k; setPrefs({[k]:i.checked}); toast(`Email for ${NOW[k]} ${i.checked?"on":"off"}`,"ok"); }));
 })();
 document.getElementById("howto-btn").addEventListener("click",()=>{
   try{ window.parent.setHomeIntroHidden(false); }catch(e){}
