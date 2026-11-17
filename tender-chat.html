@@ -66,6 +66,8 @@
 .tc-send:disabled{opacity:.45;cursor:not-allowed}
 .tc-send.stop{background:var(--tc-warn)}
 @media (prefers-reduced-motion:reduce){#tc-fab,#tc-panel{transition:none}}
+/* hidden must win over the display rules above: the claude.ai page reset did it, the local and GitHub copies have no such reset */
+#tc-fab[hidden],#tc-panel[hidden]{display:none}
 </style>
 <div class="tc-root" id="tc-root">
   <button id="tc-fab" type="button" title="Ask a question about the tender">
@@ -250,5 +252,6 @@ Answer in the user's language, concisely (under 200 words unless asked for more)
   form.addEventListener("submit",e=>{ e.preventDefault(); if(state.busy){ if(state.ctl) state.ctl.abort(); } else ask(); });
   input.addEventListener("input",autosize);
   input.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); if(!state.busy) ask(); } if(e.key==="Escape") close(); });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!panel.hidden){ close(); fab.focus(); } });
 })();
 </script>
