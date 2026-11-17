@@ -97,7 +97,7 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#e0a43c,#c4763a);display:grid;place-items:center;font-size:var(--text-xs);font-weight:700;color:#fff;cursor:pointer}
 
 /* Same flat --bg as every project screen (2026-10-07): a blue wash at the top
-   of this page made home and project read as two different apps, and the
+   of this page made home and tender read as two different apps, and the
    colour already lives in the hero, the line map and the accents. */
 .scroll{flex:1;overflow-y:auto}
 .wrap{max-width:1180px;margin:0 auto;padding:var(--space-8) var(--space-6) 80px}
@@ -169,6 +169,8 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 .pcard.submitted{opacity:.72}
 .pc-top{display:flex;align-items:center;gap:8px}
 .pc-ref{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3);letter-spacing:.3px}
+/* DEC-126 — the tender's region, its code beside the reference */
+.pc-region{font-size:var(--text-xs);font-weight:500;color:var(--text-2);border:1px solid var(--line-2);border-radius:var(--radius-xs);padding:0 5px;line-height:18px;letter-spacing:.3px}
 /* 2026-10-06 — the two facts that decide what a tender asks of you, made
    visible: its product line, as a metro-line badge, and your role on it. The
    stage pill went — the tender's line already says where it stands. */
@@ -204,6 +206,71 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 .toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.5);animation:tin .3s cubic-bezier(.34,1.3,.64,1)}
 @keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .t-ok{color:var(--ok)}.t-warn{color:var(--ia)}
+:root{--motion-fast:120ms; --motion-base:180ms; --motion-slow:400ms; --motion-flash:1100ms; --ease-out:cubic-bezier(.2,.8,.2,1)}
+/* ---- Micro-animations, lot 2 (2026-11-16) — what opens comes from somewhere ----
+   Menus open from their button (fade, 4px drop, slight scale), windows rise over
+   a fading backdrop, the selection bar rises from the bottom, the screen fades
+   in when it loads (the detail panel's slide-in was tried and dropped). Opacity and transform only; reduced motion switches it off. */
+@keyframes menuIn{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeOnly{from{opacity:0}to{opacity:1}}
+#app{animation:fadeOnly 160ms var(--ease-out)}
+/* ---- Settings (2026-11-17, DEC-138) — the personal, general settings ----
+   Theme and interface language are the person's own, not a tender's: they
+   open from the home header (« Settings » or the avatar), for everyone, before
+   any tender is opened. Same window shape as documents.html's Modal Dialog;
+   same rows as Configuration's Config Field Row; same Theme Picker. */
+.set-back{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:70;display:none;align-items:center;justify-content:center;padding:var(--space-4);animation:fadeOnly var(--motion-base) var(--ease-out)}
+.set-back.on{display:flex}
+.set-win{width:100%;max-width:560px;max-height:calc(100vh - 2*var(--space-4));overflow-y:auto;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 24px 80px rgba(0,0,0,.6);padding:var(--space-5);animation:riseIn var(--motion-base) var(--ease-out)}
+.set-head{display:flex;align-items:flex-start;gap:var(--space-3);margin-bottom:var(--space-4)}
+.set-head h3{font-size:var(--text-lg);font-weight:700}
+.set-head p{font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-1);line-height:1.5}
+.set-x{margin-left:auto;width:28px;height:28px;border-radius:var(--radius-md);color:var(--text-3);display:grid;place-items:center;flex-shrink:0}
+.set-x:hover{background:var(--panel-2);color:var(--text)}
+.set-who{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:var(--space-2)}
+.set-who .avatar{cursor:default;flex-shrink:0}
+.set-who b{display:block;font-size:var(--text-base)}
+.set-who span{font-size:var(--text-sm);color:var(--text-3)}
+.set-st{font-size:var(--text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-top:var(--space-4)}
+.set-win .frow{display:flex;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:1px solid var(--line);align-items:center}
+.set-win .frow .fl{flex:1;min-width:0}
+.set-win .frow .flt{font-size:var(--text-base);font-weight:600}
+.set-win .frow .fld{font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-1);line-height:1.45}
+.set-win .frow .fc{flex-shrink:0}
+.set-win .sel{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base);min-width:170px}
+.set-win .sel:focus{border-color:var(--accent)}
+/* Notifications rubric (NOTIF-021/022) — options stacked under their label */
+.set-win .frow.stack{flex-direction:column;align-items:stretch;gap:var(--space-2)}
+.set-note{font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-2);line-height:1.5}
+.set-opts{display:flex;flex-direction:column;gap:var(--space-1)}
+.set-opt{display:flex;align-items:flex-start;gap:var(--space-2);font-size:var(--text-base);padding:var(--space-1) 0;cursor:pointer}
+.set-opt input{accent-color:var(--accent);margin-top:3px;flex-shrink:0}
+.set-opt .d{color:var(--text-3)}
+.set-opt.is-fixed{cursor:default;color:var(--text-2)}
+.set-tenders{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden}
+.set-tn{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-top:1px solid var(--line)}
+.set-tn:first-child{border-top:0}
+.set-tn .tn{flex:1;min-width:0;font-size:var(--text-sm)}
+.set-tn .tn b{font-family:var(--font-mono);font-weight:600}
+.set-tn .tn span{display:block;color:var(--text-3);font-size:var(--text-xs)}
+.set-tn .st{font-size:var(--text-xs);color:var(--text-3);width:86px;text-align:right}
+.tog{position:relative;width:40px;height:22px;border-radius:var(--radius-pill);background:var(--panel-3);border:1px solid var(--line-2);cursor:pointer;transition:all .2s;flex-shrink:0}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--text-2);transition:all .2s}
+.tog.on{background:var(--accent-soft);border-color:var(--accent)}
+.tog.on::after{left:20px;background:var(--accent)}
+.set-foot{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-5);font-size:var(--text-sm);color:var(--text-3)}
+.set-foot .btn-primary{margin-left:auto}
+.theme-pick{display:inline-flex;gap:8px}
+.theme-opt{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);border-radius:var(--radius-lg);border:1.5px solid var(--line-2);color:var(--text-2);font-size:var(--text-base);font-weight:500;transition:all .15s}
+.theme-opt:hover{border-color:var(--accent);color:var(--text)}
+.theme-opt.on{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
+.theme-opt .sw{width:26px;height:18px;border-radius:var(--radius-sm);border:1px solid var(--line-2)}
+/* Literal previews, not tokens on purpose — this swatch shows both themes'
+   accents at once regardless of which theme is currently active, so it can't
+   read from var(--accent). Keep these in sync with the current --accent values. */
+.theme-opt .sw-dark{background:linear-gradient(135deg,#071A30 50%,#4C82FF 50%)}
+.theme-opt .sw-light{background:linear-gradient(135deg,#ffffff 50%,#0B294A 50%)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* ---- brand touches (22 Sept 2026) ---------------------------------------
    Titles take the heading face. The red is DECORATIVE ONLY: a small mark
@@ -243,6 +310,8 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
 .ic-columns{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Cpath d='M9 4v16M15 4v16'/%3E%3C/svg%3E")}
 .ic-sliders{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0'/%3E%3Ccircle cx='16' cy='6' r='2'/%3E%3Ccircle cx='10' cy='12' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/svg%3E")}
 .ic-users{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20a6.5 6.5 0 0 1 13 0'/%3E%3Cpath d='M16 4.5a3.5 3.5 0 0 1 0 7M18.5 20a6.5 6.5 0 0 0-3-5.5'/%3E%3C/svg%3E")}
+.ic-shield{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z'/%3E%3C/svg%3E")}
+[hidden]{display:none!important}
 .ic-flow{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h13M13 3l4 4-4 4M20 17H7M11 13l-4 4 4 4'/%3E%3C/svg%3E")}
 .ic-refresh{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11a8 8 0 1 0-2.3 5.7'/%3E%3Cpath d='M20 4v7h-7'/%3E%3C/svg%3E")}
 .ic-contrast{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 3v18a9 9 0 0 0 0-18z' fill='black'/%3E%3C/svg%3E")}
@@ -258,8 +327,10 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
     <div class="logo">Smart Req.</div>
     <div class="hdr-r">
       <button class="reset-btn" id="reset-btn" title="Reset the demo to its initial state (for user testing)">↺ Reset demo</button>
+      <button class="btn-ghost" id="settings-btn" title="Settings — theme and interface language, for every tender"><i class=ic-sliders></i> Settings</button>
+      <button class="btn-ghost" id="admin-btn" hidden title="Administration — users, every tender, audit, statistics, AI"><i class=ic-shield></i> Admin</button>
       <button class="btn-primary" id="new-btn">＋ New tender</button>
-      <div class="avatar" id="header-avatar">TB</div>
+      <div class="avatar" id="header-avatar" role="button" tabindex="0">TB</div>
     </div>
   </header>
 
@@ -303,6 +374,46 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
       <div class="grid" id="grid"></div>
 
     </div>
+  </div>
+</div>
+<!-- Settings (DEC-138) — personal, general settings, opened from the header -->
+<div class="set-back" id="set-back">
+  <div class="set-win" role="dialog" aria-modal="true" aria-labelledby="set-h">
+    <div class="set-head">
+      <div>
+        <h3 id="set-h">Settings</h3>
+        <p>Your own settings. They follow you into every tender and change nothing for anyone else.</p>
+      </div>
+      <button class="set-x" id="set-x" title="Close (Esc)" aria-label="Close">✕</button>
+    </div>
+    <div class="set-who"><div class="avatar" id="set-av">TB</div><div><b id="set-name">Thibaud Breton</b><span id="set-role">Bid Director · signed in with your company account</span></div></div>
+    <div class="set-st">Appearance</div>
+    <div class="frow"><div class="fl"><div class="flt">Theme</div><div class="fld">Light is the default. Dark reduces glare in a dim room.</div></div>
+      <div class="fc"><div class="theme-pick" id="theme-pick">
+        <button class="theme-opt" data-theme="light"><span class="sw sw-light"></span>Light</button>
+        <button class="theme-opt" data-theme="dark"><span class="sw sw-dark"></span>Dark</button>
+      </div></div></div>
+    <div class="set-st">Language</div>
+    <div class="frow"><div class="fl"><div class="flt">Interface language</div><div class="fld">The language of the screens. Requirement texts keep their own; a tender's source and working languages are in its Configuration.</div></div>
+      <div class="fc"><select class="sel" id="set-lang"><option value="en">English</option><option value="fr" disabled>Français — later</option></select></div></div>
+    <div class="set-st">Notifications</div>
+    <div class="set-note">In Smart Req, everything that concerns you is under the bell — nothing to set there. What follows is email only.</div>
+    <div class="frow stack"><div class="fl"><div class="flt">Daily email summary</div><div class="fld">Sent only when something new hasn't been seen in Smart Req. Your time zone: Europe/Paris, from your company profile.</div></div>
+      <div class="set-opts" id="set-digest">
+        <label class="set-opt"><input type="radio" name="digest" value="workdays"><span>Working days at 8:00 <span class="d">— Monday to Friday</span></span></label>
+        <label class="set-opt"><input type="radio" name="digest" value="daily"><span>Every day at 8:00 <span class="d">— for the last weeks before a submission</span></span></label>
+        <label class="set-opt"><input type="radio" name="digest" value="off"><span>Off <span class="d">— you'll see everything under the bell</span></span></label>
+      </div></div>
+    <div class="frow stack"><div class="fl"><div class="flt">Right away by email</div><div class="fld">Sent 10 minutes later if you haven't seen it in Smart Req by then.</div></div>
+      <div class="set-opts" id="set-now">
+        <label class="set-opt"><input type="checkbox" data-k="reminder"><span>A tender manager sends you a reminder</span></label>
+        <label class="set-opt"><input type="checkbox" data-k="mention"><span>Someone mentions you in a comment</span></label>
+        <label class="set-opt"><input type="checkbox" data-k="processing"><span>A processing you launched finishes or fails <span class="d">— capture, new document, new version</span></span></label>
+        <label class="set-opt is-fixed"><input type="checkbox" checked disabled><span>You're added to a tender <span class="d">— always sent: it's how you hear about the tender at all</span></span></label>
+      </div></div>
+    <div class="frow stack"><div class="fl"><div class="flt">By tender</div><div class="fld">Turn a tender off to keep it under the bell only — useful when you follow it from afar.</div></div>
+      <div class="set-tenders" id="set-tenders"></div></div>
+    <div class="set-foot"><span>Changes apply at once.</span><button class="btn-primary" id="set-done">Done</button></div>
   </div>
 </div>
 <div id="toast-zone"></div>
@@ -370,14 +481,14 @@ function gaugeHTML(p){
   return `<div class="pc-line"${title?` title="${title}"`:""}><div class="ml">${segs}${dots}</div><div class="ml-lbl">${lbls}</div></div>`;
 }
 function cardHTML(p){
-  const pm=/project\s*manager/i.test(p.role||"");   // §1.4 — one role per person per project, two labels
-  const foot = p.status==="processing" ? `<span class="pc-proc"><span class="bdot"></span>Processing — opens when it completes</span>`
-    : p.builtOut===false ? `<span class="pc-processing-note">Demo project — list &amp; status only</span>`
+  const pm=/(tender|project)\s*manager/i.test(p.role||"");   // §1.4 — one role per person per tender, two labels
+  const foot = p.status==="processing" ? `<span class="pc-proc"><span class="bdot"></span>Processing — ${p.etaMin?`about ${fmtLeft(p.etaMin*(1-(p.progress||0)/100))} left`:"opens when it completes"}</span>`
+    : p.builtOut===false ? `<span class="pc-processing-note">Demo tender — list &amp; status only</span>`
     : `Updated ${p.updated||"recently"}`;
   return `<div class="pcard ${p.status}" data-id="${p.id}">
     <div class="pc-top">
-      <span class="pc-lineb ${/^turnkey$/i.test(p.line)?"l-turnkey":/^sig$/i.test(p.line)?"l-sig":"l-other"}" title="Product line">${p.line}</span><span class="pc-ref">${p.ref}</span>
-      <span class="pc-role${pm?" is-pm":""}" title="Your role on this tender"><i class=${pm?"ic-flag":"ic-users"}></i>${pm?"Project manager":"Contributor"}</span>
+      <span class="pc-lineb ${/^turnkey$/i.test(p.line)?"l-turnkey":/^sig$/i.test(p.line)?"l-sig":"l-other"}" title="Product line">${p.line}</span><span class="pc-ref">${p.ref}</span>${p.region?`<span class="pc-region" title="Region — ${(window.parent.REGIONS||{})[p.region]||p.region}">${p.region}</span>`:""}
+      <span class="pc-role${pm?" is-pm":""}" title="Your role on this tender"><i class=${pm?"ic-flag":"ic-users"}></i>${pm?"Tender manager":"Contributor"}</span>
     </div>
     <div class="pc-name">${p.name}</div>
     ${gaugeHTML(p)}
@@ -389,7 +500,7 @@ function currentUser(){
   try{ if(window.parent!==window && window.parent.getCurrentUser) return window.parent.getCurrentUser(); }catch(e){}
   return {name:"Thibaud Breton",title:"Bid Director",init:"TB"};
 }
-const isPM=p=>/project\s*manager/i.test(p.role||"");
+const isPM=p=>/(tender|project)\s*manager/i.test(p.role||"");
 const escH=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 /* the tender to pick up again: the one marked primary, else the first open, built-out one */
 function continueProject(projects){
@@ -406,8 +517,8 @@ function renderHero(projects){
   document.getElementById("hero-hello").innerHTML=`${h<12?"Good morning":h<18?"Good afternoon":"Good evening"}, <span class="hello-name">${escH((u.name||"").split(" ")[0]||"welcome")}</span>`;
   const lead=projects.filter(isPM).length, contrib=projects.length-lead;
   document.getElementById("hero-roles").innerHTML=projects.length
-    ? `You lead <b>${lead}</b> tender${lead!==1?"s":""} as project manager${contrib?` and contribute to <b>${contrib}</b>`:""}.`
-    : "No tender yet — create the first one, or ask a project manager to add you to theirs.";
+    ? `You lead <b>${lead}</b> tender${lead!==1?"s":""} as tender manager${contrib?` and contribute to <b>${contrib}</b>`:""}.`
+    : "No tender yet — create the first one, or ask a tender manager to add you to theirs.";
   const c=continueProject(projects), slot=document.getElementById("continue-slot");
   slot.innerHTML = c ? `<div class="continue" id="continue-card" title="Open ${escH(c.name)}">
       <div class="continue-k">Pick up where you left off</div>
@@ -421,10 +532,10 @@ function renderHero(projects){
 /* how a tender travels through Smart Req — shown until dismissed (kept in the shell,
    so a demo reset brings it back); "How Smart Req works" in the hero reopens it */
 const HOWTO=[
-  ["Capture","The AI reads the tender's documents and captures every requirement, table row and figure. You check what it found.","Project manager","pm"],
-  ["Allocation","Each requirement gets its nature, class and systems, then the organisation (OBS) and the person who will answer it.","Project manager, then each system","pm"],
+  ["Capture","The AI reads the tender's documents and captures every requirement, table row and figure. You check what it found.","Tender manager","pm"],
+  ["Allocation","Each requirement gets its type, class and sub-systems, then the organisation (OBS) and the person who will answer it.","Tender manager, then each sub-system","pm"],
   ["Compliance","Each contributor gives a verdict. A Not compliant gets a gap strategy and a risk; the verdicts consolidate per requirement.","Contributors","contrib"],
-  ["Submission","Export to DOORS or Excel, and hand the client the compliance matrix.","Project manager","pm"],
+  ["Submission","Export to DOORS or Excel, and hand the client the compliance matrix.","Tender manager","pm"],
 ];
 function introHidden(){ try{ return !!window.parent.getHomeIntroHidden(); }catch(e){ return false; } }
 function renderHowto(){
@@ -433,7 +544,7 @@ function renderHowto(){
   el.hidden=false;
   el.innerHTML=`<div class="home-sec"><h3>How a tender travels through Smart Req</h3><span class="hint">four stations, the same for every tender</span><button class="act" id="howto-hide">Got it — hide</button></div>
     <div class="ht-line">${HOWTO.map(([n,t,w,k],i)=>`<div class="ht-st"><span class="ht-dot">${i+1}</span><span class="ht-name">${n}</span><span class="ht-txt">${t}</span><span class="ht-who ${k}">${w}</span></div>`).join("")}</div>
-    <div class="ht-always">Always open alongside: <b>Documents &amp; versions</b> · <b>Q&amp;A with the client</b> · <b>Risks</b> · <b>Team casting</b></div>`;
+    <div class="ht-always">Always open alongside: <b>Documents &amp; versions</b> · <b>Q&amp;A with the client</b> · <b>Risks</b> · <b>Users</b></div>`;
   el.querySelector("#howto-hide").addEventListener("click",()=>{ try{ window.parent.setHomeIntroHidden(true); }catch(e){} renderHowto(); });
 }
 function openTender(p){
@@ -443,7 +554,7 @@ function openTender(p){
   // build_merge.py's seedProjects). The other seeds exist to illustrate the
   // list/status/processing only — say so explicitly instead of silently opening
   // into another tender's content.
-  if(p.builtOut===false){ toast("This is a demo-only project in this prototype — open Energy Monitoring System (STB-2026) or Line 4 Resignalling (RFP-2026-114) for a full, navigable build","warn"); return; }
+  if(p.builtOut===false){ toast("This is a demo-only tender in this prototype — open Energy Monitoring System (STB-2026) or Line 4 Resignalling (RFP-2026-114) for a full, navigable build","warn"); return; }
   try{ if(window.parent!==window && window.parent.openProject) window.parent.openProject(p.id); }catch(e){}
 }
 
@@ -468,12 +579,76 @@ function render(){
   grid.querySelectorAll(".pcard").forEach(c=>c.addEventListener("click",()=>openTender(projects.find(x=>x.id===c.dataset.id))));
 }
 document.getElementById("new-btn").addEventListener("click",()=>{ try{ window.parent.route("new"); }catch(e){} });
+/* DEC-137 — Administration for admins only; a tender is created by a Tender leader only */
+(function(){ try{
+  const P=window.parent, adm=document.getElementById("admin-btn");
+  if(P.isAdmin && P.isAdmin()){ adm.hidden=false; adm.addEventListener("click",()=>P.route("admin")); }
+  if(P.canCreateTender && !P.canCreateTender()){ ["new-btn","new-btn-2"].forEach(id=>{ const b=document.getElementById(id); if(b) b.hidden=true; }); }
+}catch(e){} })();
 document.getElementById("new-btn-2").addEventListener("click",()=>{ try{ window.parent.route("new"); }catch(e){} });
 document.getElementById("reset-btn").addEventListener("click",()=>{
   if(confirm("Reset the demo to its initial state? This clears all progress made during the session.")){
     try{ if(window.parent!==window && window.parent.resetDemo) window.parent.resetDemo(); }catch(e){}
   }
 });
+/* Settings (2026-11-17, DEC-138) — theme and interface language, personal */
+(function(){
+  const back=document.getElementById("set-back");
+  const P=(window.parent!==window)?window.parent:null;
+  function curTheme(){ try{ if(P&&P.getTheme) return P.getTheme(); }catch(e){} return document.documentElement.getAttribute("data-theme")||"light"; }
+  function paint(t){ document.querySelectorAll(".theme-opt").forEach(b=>b.classList.toggle("on",b.dataset.theme===t)); }
+  function open(){
+    try{ const u=(P&&P.getCurrentUser)?P.getCurrentUser():{name:"Thibaud Breton",title:"Bid Director",init:"TB"};
+      document.getElementById("set-av").textContent=u.init;
+      document.getElementById("set-name").textContent=u.name;
+      document.getElementById("set-role").textContent=(u.title?u.title+" · ":"")+"signed in with your company account";
+    }catch(e){}
+    paint(curTheme()); paintNotif(); back.classList.add("on");
+    setTimeout(()=>{ const on=document.querySelector(".theme-opt.on"); if(on) on.focus(); },0);
+  }
+  function close(){ back.classList.remove("on"); }
+  document.getElementById("settings-btn").addEventListener("click",open);
+  const av=document.getElementById("header-avatar");
+  av.addEventListener("click",open);
+  av.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } });
+  av.title=(av.title?av.title+" — ":"")+"Settings";
+  document.getElementById("set-x").addEventListener("click",close);
+  document.getElementById("set-done").addEventListener("click",close);
+  back.addEventListener("click",e=>{ if(e.target===back) close(); });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&back.classList.contains("on")) close(); });
+  document.querySelectorAll(".theme-opt").forEach(b=>b.addEventListener("click",()=>{
+    const t=b.dataset.theme; if(t===curTheme()) return;
+    document.documentElement.setAttribute("data-theme",t); paint(t);
+    try{ if(P&&P.setTheme) P.setTheme(t); }catch(e){}
+    toast(`${t.charAt(0).toUpperCase()+t.slice(1)} theme applied`,"ok");
+  }));
+  /* Notifications (NOTIF-021/022, US-X-18) — email only, applied at once */
+  const DIGEST={workdays:"Daily summary on working days at 8:00",daily:"Daily summary every day at 8:00",off:"No daily summary — everything stays under the bell"};
+  const NOW={reminder:"reminders",mention:"mentions",processing:"processing results"};
+  let prefs={digest:"workdays",reminder:true,mention:true,processing:true,muted:[]};
+  function getPrefs(){ try{ if(P&&P.getNotifPrefs) prefs=P.getNotifPrefs(); }catch(e){} return prefs; }
+  function setPrefs(patch){ Object.assign(prefs,patch); try{ if(P&&P.setNotifPrefs) prefs=P.setNotifPrefs(patch); }catch(e){} }
+  function paintNotif(){
+    const pr=getPrefs();
+    document.querySelectorAll('#set-digest input').forEach(i=>i.checked=(i.value===pr.digest));
+    document.querySelectorAll('#set-now input[data-k]').forEach(i=>i.checked=!!pr[i.dataset.k]);
+    const mine=getProjects().filter(p=>p.status!=="submitted");
+    const pm=r=>/(tender|project)\s*manager/i.test(r||"");
+    document.getElementById("set-tenders").innerHTML=mine.length?mine.map(p=>{ const on=!pr.muted.includes(p.id);
+      return `<div class="set-tn"><div class="tn"><b>${p.ref}</b> · ${p.name}<span>${pm(p.role)?"Tender manager":"Contributor"}${p.line?" · "+p.line:""}</span></div>
+        <span class="st">${on?"Email and bell":"Bell only"}</span><button class="tog${on?" on":""}" data-tn="${p.id}" role="switch" aria-checked="${on}" aria-label="Email for ${p.ref}"></button></div>`; }).join("")
+      :`<div class="set-tn"><div class="tn"><span>No tender in progress.</span></div></div>`;
+    document.querySelectorAll("#set-tenders .tog").forEach(b=>b.addEventListener("click",()=>{
+      const id=b.dataset.tn, muted=getPrefs().muted.slice(), i=muted.indexOf(id);
+      if(i<0) muted.push(id); else muted.splice(i,1);
+      setPrefs({muted}); paintNotif();
+      const p=getProjects().find(x=>x.id===id);
+      toast(i<0?`${p?p.ref:id}: bell only — no more email for this tender`:`${p?p.ref:id}: email back on`,"ok");
+    }));
+  }
+  document.querySelectorAll('#set-digest input').forEach(i=>i.addEventListener("change",()=>{ setPrefs({digest:i.value}); toast(DIGEST[i.value],"ok"); }));
+  document.querySelectorAll('#set-now input[data-k]').forEach(i=>i.addEventListener("change",()=>{ const k=i.dataset.k; setPrefs({[k]:i.checked}); toast(`Email for ${NOW[k]} ${i.checked?"on":"off"}`,"ok"); }));
+})();
 document.getElementById("howto-btn").addEventListener("click",()=>{
   try{ window.parent.setHomeIntroHidden(false); }catch(e){}
   renderHowto(); document.getElementById("howto").scrollIntoView({behavior:"smooth",block:"center"});
@@ -481,7 +656,16 @@ document.getElementById("howto-btn").addEventListener("click",()=>{
 // poll so background processing bars animate live
 renderHowto();
 render();
-setInterval(()=>{ if(getProjects().some(p=>p.status==="processing")) render(); }, 700);
+/* time left on a processing tender: the real estimate (etaMin), counted down at demo pace */
+function fmtLeft(min){ min=Math.max(0,Math.round(min)); if(min<60) return `${Math.max(1,min)} min`; const h=Math.floor(min/60), m=Math.round((min%60)/10)*10; return m?`${h} h ${m} min`:`${h} h`; }
+/* a tender that finishes processing while the list is open says so */
+let wasProcessing=new Set(getProjects().filter(p=>p.status==="processing").map(p=>p.id));
+setInterval(()=>{
+  const ps=getProjects();
+  ps.filter(p=>wasProcessing.has(p.id) && p.status!=="processing").forEach(p=>{ try{ toast(`${p.name} is ready — open it from its card`,"ok"); }catch(e){} });
+  wasProcessing=new Set(ps.filter(p=>p.status==="processing").map(p=>p.id));
+  if(ps.some(p=>p.status==="processing")||wasProcessing.size) render();
+}, 700);
 // apply theme
 try{ var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light"; document.documentElement.setAttribute("data-theme",t);}catch(e){}
 </script>

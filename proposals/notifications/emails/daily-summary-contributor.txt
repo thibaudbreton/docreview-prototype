@@ -1,0 +1,24 @@
+Smart Req
+
+Daily summary · Wed 18 Nov
+
+2 updates for you since Tue 08:00
+
+Louis, here's what's new for you on STB-2026.
+
+STB-2026 · Energy Monitoring System
+Contributor · SIG · submission Fri 11 Dec, 23 days left
+
+* 23 requirements reached SIG and need allocating.
+  Open them in Allocation: https://smartreq.example/tenders/STB-2026/allocation?subsystem=SIG&show=to-allocate
+
+* Your reallocation request for SRM-00042 was declined: it stays with
+  SIG. Thibaud Breton: “The interface part is ours.”
+  Open SRM-00042: https://smartreq.example/tenders/STB-2026/requirements/SRM-00042
+
+-- 
+You get this summary on working days when something new for you hasn't
+been seen in Smart Req. What you've already seen there isn't repeated.
+Notification settings — change the frequency, or stop emails for one
+tender: https://smartreq.example/settings/notifications
+Sent by Smart Req from an unattended mailbox: replies aren't read.

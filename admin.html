@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Brand type: Alstom, the brand's own typeface, for every interface text
+     (DEC-115, 6 Oct 2026); Antarctica first for titles once its files are
+     supplied (DEC-063). Both are licensed and not versioned — see fonts/README.md.
+     Noto Sans, from Google Fonts, is the fallback the Alstom face is matched to. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Req — Administration</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0ibm9uZSI+PHJlY3QgaWQ9InRpbGUiIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTEyIiBmaWxsPSIjMEYxQjJEIi8+PGcgaWQ9ImxpbmVzIiBmaWxsPSIjOEM5RkJCIj48cGF0aCBpZD0icmliYm9uLTEiIGQ9Ik0xMDcuMjYgNDAxLjA0TDEwNy4yNiAxMTEuMTdBMjkwLjA4IDI5MC4wOCAwIDAgMSAxNjguNTcgMTE1LjM0TDEzMS4zNSAzNDcuNjhBMTUwLjIyIDE1MC4yMiAwIDAgMCAxMjkuNDYgMzcxLjQ0TDEyOS40NiA0MDEuMDRaIi8+PHBhdGggaWQ9InJpYmJvbi0yIiBkPSJNMTM5LjgyIDQwMS4wNEwxMzkuODIgMzcxLjQ0QTEzOS44NiAxMzkuODYgMCAwIDEgMTQ4LjQ0IDMyMy4wOUwyMTkuODQgMTI5LjI5QTI5MC4wOCAyOTAuMDggMCAwIDEgMjY3Ljc3IDE1Mi40TDE3Ny4xIDMxMy44MUExMTcuNjYgMTE3LjY2IDAgMCAwIDE2Mi4wMiAzNzEuNDRMMTYyLjAyIDQwMS4wNFoiLz48cGF0aCBpZD0icmliYm9uLTQiIGQ9Ik0yMDQuOTQgNDAxLjA0TDIwNC45NCAzNzEuNDRBNzQuNzQgNzQuNzQgMCAwIDEgMjQzLjA3IDMwNi4yOEwzNjAuMDIgMjQwLjU4QTI5MC4wOCAyOTAuMDggMCAwIDEgMzgxLjA5IDI3OC4wOUwyNjEuNTIgMzIyLjE0QTUyLjU0IDUyLjU0IDAgMCAwIDIyNy4xNCAzNzEuNDRMMjI3LjE0IDQwMS4wNFoiLz48cGF0aCBpZD0icmliYm9uLTUiIGQ9Ik0yMzcuNSA0MDEuMDRMMjM3LjUgMzcxLjQ0QTQyLjE4IDQyLjE4IDAgMCAxIDI3My4wMSAzMjkuNzlMMzkzLjkyIDMxMC40MkEyOTAuMDggMjkwLjA4IDAgMCAxIDQwNC4xNyAzNTEuNDZMMjc5LjY4IDM1MS40NkExOS45OCAxOS45OCAwIDAgMCAyNTkuNyAzNzEuNDRMMjU5LjcgNDAxLjA0WiIvPjwvZz48ZyBpZD0iYWkiIGZpbGw9IiNFODVENTciPjxwYXRoIGlkPSJhaS1yaWJib24iIGQ9Ik0xNzIuMzggNDAxLjA0TDE3Mi4zOCAzNzEuNDRBMTA3LjMgMTA3LjMgMCAwIDEgMTk4LjAzIDMwMS44M0wzNDcuODcgMTI2LjA3QTM1OC4xNiAzNTguMTYgMCAwIDEgMzg4Ljk4IDE2Ni40M0wyMjQuNDcgMzA2LjY4QTg1LjEgODUuMSAwIDAgMCAxOTQuNTggMzcxLjQ0TDE5NC41OCA0MDEuMDRaIi8+PC9nPjwvc3ZnPg==">
+<style>
+/* Antarctica — the brand title face. Not on any public CDN and not installed
+   here, so it resolves in this order: an installed copy, then the files under
+   fonts/ (drop Antarctica-Regular.woff2 and Antarctica-Bold.woff2 there — the
+   srcdoc screens resolve relative URLs against index.html), then Alstom.
+   Nothing breaks while the files are missing; titles simply stay in Alstom. */
+@font-face{font-family:"Antarctica";font-weight:400;font-display:swap;src:local("Antarctica"),local("Antarctica-Regular"),url("fonts/Antarctica-Regular.woff2") format("woff2")}
+@font-face{font-family:"Antarctica";font-weight:700;font-display:swap;src:local("Antarctica Bold"),local("Antarctica-Bold"),url("fonts/Antarctica-Bold.woff2") format("woff2")}
+/* Alstom — the brand's own typeface (DEC-115): all interface text, and the
+   titles until Antarctica is supplied. Licensed: build_fonts.py makes the web
+   copies under fonts/, never versioned; build_merge.py embeds them only in the
+   outputs allowed to carry them. Never local(): the desktop TTFs carry 1-bit
+   bitmaps that Chrome on Windows draws instead of the outlines at 9-18 px.
+   Matched to Noto Sans, the fallback: size-adjust brings its x-height to
+   Noto's (0.479 → 0.536 em) and the overrides set Noto's ascent and descent
+   (1.069 / 0.293 em, divided by the 1.12 they get scaled by) — same baseline,
+   same line boxes, so the fallback changes the letters, never the layout.
+   No SemiBold or ExtraBold in the family: 600 is drawn with the Medium, 800
+   with the Bold, each declared as its own face so Chrome doesn't fake-bolden
+   it. No italic either: italics are the Regular slanted, which is what this
+   kind of face does anyway. */
+@font-face{font-family:"Alstom UI";font-weight:400;font-display:swap;src:url("fonts/Alstom-Regular.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:500;font-display:swap;src:url("fonts/Alstom-Medium.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:600;font-display:swap;src:url("fonts/Alstom-Medium.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:700;font-display:swap;src:url("fonts/Alstom-Bold.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+@font-face{font-family:"Alstom UI";font-weight:800;font-display:swap;src:url("fonts/Alstom-Bold.woff") format("woff");size-adjust:112%;ascent-override:95.4%;descent-override:26.2%;line-gap-override:0%}
+
+:root{
+  --bg:#071A30; --panel:#0B294A; --panel-2:#143556; --panel-3:#1D4062;
+  --line:#1F3E5F; --line-2:#2E4E70;
+  --text:#EEF1F8; --text-2:#AAB6C6; --text-3:#8B9AAD;
+  --accent:#4C82FF; --accent-soft:#1B3F6B; --accent-hover:color-mix(in srgb, var(--accent) 75%, white);
+  --ia:#E3A64B; --ia-soft:rgba(227,166,75,.12);
+  --ok:#3FBE86; --ok-soft:rgba(63,190,134,.12);
+  --human:#a06ef2; --human-soft:rgba(160,110,242,.12);
+  --warn:#F2604F; --warn-soft:rgba(242,96,79,.12);
+  --paper:#fbfaf6; --paper-ink:#1d2129; --paper-ink-2:#4a5162;
+  --text-xs:11px; --text-sm:12px; --text-base:13px; --text-lg:16px; --text-xl:21px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
+  --radius-xs:4px; --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-pill:999px;
+  --font-ui:"Alstom UI","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-heading:"Antarctica","Alstom UI","Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --brand-red:#E4002B; /* placeholder — exact brand red to confirm */
+  --font-doc:Georgia,"Times New Roman",serif;
+  --font-mono:"Alstom UI",ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace; /* IDs and codes: the brand face (its figures all share one width, so IDs still line up), the monospace stack wherever it is absent */
+}
+
+html[data-theme="light"]{
+  --bg:#F4F5FA;
+  --panel:#FFFFFF;
+  --panel-2:#F4F5FA;
+  --panel-3:#E6E6F0;
+  --line:#E1E3EE;
+  --line-2:#CDD2E3;
+  --text:#1E3246;
+  --text-2:#4A5A6E;
+  --text-3:#637187;
+  --accent:#0B294A;
+  --accent-soft:#E6EBF2;
+  --ia:#C67A16;
+  --ia-soft:rgba(198,122,22,.12);
+  --ok:#1E8E5A;
+  --ok-soft:rgba(30,142,90,.12);
+  --human:#8250dc;
+  --human-soft:rgba(130,80,220,.12);
+  --warn:#DC3223;
+  --warn-soft:rgba(220,50,35,.10);
+  --paper:#ffffff;
+  --paper-ink:#1d2129;
+  --paper-ink-2:#4a5162;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);font-size:var(--text-base);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:var(--radius-sm);border:2px solid var(--bg)}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius-xs)}
+#app{display:flex;flex-direction:column;height:100vh}
+
+/* ---------- Header ---------- */
+header{display:flex;align-items:center;gap:var(--space-4);height:52px;padding:0 var(--space-4);background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+.logo{display:flex;align-items:center;gap:var(--space-2);font-weight:700;font-size:var(--text-base);letter-spacing:-.2px}
+/* the company's logo, then the product's name in text (2026-10-09) — the product
+   mark stays the favicon. Colour on light, white on dark: the files supplied,
+   not tokens; height on the cap line of "Smart Req" */
+.brand-logo{display:flex;align-items:center;padding-right:var(--space-4);border-right:1px solid var(--line);height:20px;flex-shrink:0}
+.brand-logo img{height:15px;width:auto;display:block}
+.brand-logo .brand-light{display:none}
+html[data-theme="light"] .brand-logo .brand-light{display:block}
+html[data-theme="light"] .brand-logo .brand-dark{display:none}
+.crumb{display:flex;align-items:center;gap:var(--space-2);color:var(--text-2);min-width:0}
+.crumb .sep{color:var(--text-3)}
+.crumb .project{color:var(--text);font-weight:600;white-space:nowrap;text-decoration:none;cursor:pointer;border-radius:var(--radius-xs);transition:color .15s}
+.crumb .project:hover{color:var(--accent)}
+.hdr-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{position:relative;width:32px;height:32px;border-radius:var(--radius-md);display:grid;place-items:center;color:var(--text-2);transition:all .15s}
+.icon-btn:hover{background:var(--panel-3);color:var(--text)}
+
+.btn-ghost{padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);color:var(--text-2);font-weight:500;font-size:var(--text-sm);transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+/* main menu bar — icon + label button for moving between screens. Reads as a
+   destination rather than a back-arrow, which is what the plain "X →" ghost
+   links had become once the breadcrumb took over "back to the dashboard". */
+.nav-btn{display:inline-flex;align-items:center;gap:7px;padding:6px var(--space-3);border-radius:var(--radius-md);border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);font-size:var(--text-sm);font-weight:600;white-space:nowrap;text-decoration:none;transition:all .15s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#e0a43c,#c4763a);display:grid;place-items:center;font-size:var(--text-xs);font-weight:700;color:#fff;cursor:pointer}
+/* ===================== Administration (DEC-137) =====================
+   The platform, not one tender: a side menu of five sections (Users, Tenders,
+   Audit log, Statistics, AI tracking), each a list. Tables reuse the Risks
+   screen's list (.rk-table); everything else is the admin's own. */
+.crumb .cur{color:var(--text);font-weight:600}
+.ad-body{flex:1;display:flex;min-height:0}
+.ad-nav{width:220px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);padding:var(--space-4) var(--space-3);display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.ad-nav-h{font-size:var(--text-xs);font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text-3);padding:0 var(--space-2) var(--space-2)}
+.ad-nav-i{display:flex;align-items:center;gap:var(--space-2);padding:7px var(--space-2);border-radius:var(--radius-md);color:var(--text-2);font-weight:500;text-align:left}
+.ad-nav-i:hover{background:var(--panel-2);color:var(--text)}
+.ad-nav-i.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.ad-nav-i span:first-of-type{flex:1}
+.ad-nav-b{min-width:18px;height:18px;padding:0 5px;border-radius:var(--radius-pill);background:var(--warn-soft);color:var(--warn);font-size:var(--text-xs);font-weight:700;display:grid;place-items:center}
+.ad-nav-note{margin-top:auto;padding:var(--space-3) var(--space-2) 0;font-size:var(--text-xs);color:var(--text-3);line-height:1.5}
+.wrap{max-width:1280px;margin:0;padding:var(--space-6) var(--space-6) 80px}
+.scroll{flex:1;overflow-y:auto;min-width:0}
+.view-head{display:flex;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap}
+.view-head h2{font-size:var(--text-lg);font-weight:600;letter-spacing:-.2px}
+.view-head .sub{font-size:var(--text-sm);color:var(--text-3)}
+.rk-tools{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3);flex-wrap:wrap}
+.rk-tools input:not([type]),.rk-tools input[type="text"]{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:6px var(--space-3);font-size:var(--text-sm);color:var(--text);width:280px}
+.rk-tools .spacer{flex:1}
+.rk-count{font-size:var(--text-sm);color:var(--text-3)}
+.sel{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:5px var(--space-2);font-size:var(--text-sm);color:var(--text)}
+.rk-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;font-size:var(--text-sm)}
+.rk-table th{text-align:left;font-size:var(--text-xs);font-weight:600;color:var(--text-3);background:var(--panel-2);padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--line);vertical-align:bottom}
+.rk-table td{padding:var(--space-3);border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+.rk-table tr:last-child td{border-bottom:none}
+.rk-table .c{text-align:center}
+.ad-table tr.is-off td{color:var(--text-3)}
+.ad-table.flat{border:none;border-radius:0}
+.rk-empty{padding:var(--space-8) var(--space-4);text-align:center;color:var(--text-3);font-size:var(--text-sm);line-height:1.6;background:var(--panel);border:1px dashed var(--line-2);border-radius:var(--radius-lg);margin-top:var(--space-3)}
+.btn-ghost.sm{padding:3px var(--space-2);font-size:var(--text-xs)}
+.btn-danger{padding:6px var(--space-3);border-radius:var(--radius-md);background:var(--warn);color:#fff;font-weight:600;font-size:var(--text-sm)}
+.mono{font-family:var(--font-mono)}
+.nowrap{white-space:nowrap}
+.ad-muted{color:var(--text-3)}
+.ad-hint{font-size:var(--text-xs);color:var(--text-3);margin-top:2px;line-height:1.45}
+.ad-ref{font-size:var(--text-xs);color:var(--text-3)}
+.ad-who{display:flex;align-items:center;gap:var(--space-2)}
+.ad-av{width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.ad-avs{display:flex;gap:2px}
+.ad-you{font-size:var(--text-xs);color:var(--text-3);font-weight:400}
+.ad-reg{font-size:var(--text-xs);font-weight:500;color:var(--text-2);border:1px solid var(--line-2);border-radius:var(--radius-xs);padding:0 5px;line-height:18px;letter-spacing:.3px}
+.ad-tag{display:inline-block;font-size:var(--text-xs);font-weight:600;border-radius:var(--radius-pill);padding:1px 8px;white-space:nowrap}
+.ad-tag.lead{background:var(--accent-soft);color:var(--accent)}
+.ad-tag.admin{background:var(--human-soft);color:var(--human)}
+.ad-tag.off{background:var(--panel-3);color:var(--text-3)}
+.ad-tag.warn{background:var(--warn-soft);color:var(--warn)}
+.ad-act{white-space:nowrap;text-align:right}
+.ad-act .btn-ghost{margin-left:4px}
+.ad-pill{padding:4px 10px;border-radius:var(--radius-pill);border:1px solid var(--line-2);font-size:var(--text-sm);color:var(--text-2)}
+.ad-pill.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.ad-check{display:inline-flex;align-items:center;gap:6px;font-size:var(--text-sm);color:var(--text-2)}
+.ad-rule{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);font-size:var(--text-sm);line-height:1.55}
+.ad-rule-later{color:var(--text-3)}
+.ad-later{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ia);margin-right:4px}
+.ad-chip{font-size:var(--text-xs);border:1px dashed var(--line-2);border-radius:var(--radius-pill);padding:0 7px;color:var(--text-2)}
+.ad-warn{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-sm);margin-bottom:var(--space-3)}
+.ad-leave{background:var(--panel);border:1px solid var(--warn);border-radius:var(--radius-lg);padding:var(--space-4);margin-bottom:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--text-sm)}
+.ad-leave-h{font-family:var(--font-heading);font-weight:700;font-size:var(--text-base)}
+.ad-leave-t,.ad-leave-sec{color:var(--text-2);line-height:1.5}
+.ad-leave-row{display:flex;align-items:center;gap:var(--space-3)}
+.ad-leave-row .mono{width:120px;font-size:var(--text-xs)}
+.ad-leave-btns{display:flex;justify-content:flex-end;gap:var(--space-2);margin-top:var(--space-2)}
+.ad-addtm{display:flex;gap:4px;margin-top:6px;align-items:center}
+.ad-bar{height:6px;background:var(--panel-3);border-radius:var(--radius-pill);overflow:hidden;min-width:80px}
+.ad-bar span{display:block;height:100%;background:var(--accent);border-radius:var(--radius-pill)}
+.ad-late{color:var(--warn);font-weight:600}
+.ad-kind{font-size:var(--text-xs);font-weight:600;color:var(--text-2);background:var(--panel-2);border-radius:var(--radius-xs);padding:1px 6px;white-space:nowrap}
+.ad-kind.k-admin{background:var(--human-soft);color:var(--human)}
+.ad-from{text-decoration:line-through;color:var(--warn)}
+.ad-to{color:var(--ok)}
+.ad-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--space-3);margin-bottom:var(--space-4)}
+.ad-tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4)}
+.ad-tile.is-warn{border-color:var(--warn)}
+.ad-tile-n{font-family:var(--font-heading);font-size:var(--text-xl);font-weight:700}
+.ad-tile.is-warn .ad-tile-n{color:var(--warn)}
+.ad-tile-l{font-size:var(--text-sm);color:var(--text-2)}
+.ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-3)}
+.ad-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);overflow:hidden}
+.ad-card-h{font-weight:600;margin-bottom:var(--space-2)}
+.ad-hrow{display:grid;grid-template-columns:110px 1fr 28px;align-items:center;gap:var(--space-2);padding:4px 0;font-size:var(--text-sm)}
+.ad-hrow b{text-align:right}
+.ad-step{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-weight:700;font-size:var(--text-sm)}
+.ad-step.s-ok{background:var(--ok-soft);color:var(--ok)}
+.ad-step.s-run{background:var(--ia-soft);color:var(--ia)}
+.ad-step.s-fail{background:var(--warn-soft);color:var(--warn)}
+.ad-step.s-wait,.ad-step.s-skip{background:var(--panel-2);color:var(--text-3)}
+.ad-err{font-size:var(--text-xs);color:var(--warn);margin-top:2px}
+@media(max-width:900px){.ad-grid{grid-template-columns:1fr}.ad-nav{width:170px}}
+#toast-zone{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:var(--space-2);align-items:center}
+.toast{display:flex;align-items:center;gap:var(--space-3);background:var(--panel-3);border:1px solid var(--line-2);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-base);box-shadow:0 8px 32px rgba(0,0,0,.35)}
+.toast .t-ok{color:var(--ok)}
+:root{--motion-fast:120ms; --motion-base:180ms; --motion-slow:400ms; --motion-flash:1100ms; --ease-out:cubic-bezier(.2,.8,.2,1)}
+/* ---- Micro-animations, lot 2 (2026-11-16) — what opens comes from somewhere ----
+   Menus open from their button (fade, 4px drop, slight scale), windows rise over
+   a fading backdrop, the selection bar rises from the bottom, the screen fades
+   in when it loads (the detail panel's slide-in was tried and dropped). Opacity and transform only; reduced motion switches it off. */
+@keyframes menuIn{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeOnly{from{opacity:0}to{opacity:1}}
+#app{animation:fadeOnly 160ms var(--ease-out)}
+/* ---- Micro-animations, lot 3 (2026-11-16) ----
+   A refused action shakes the control that asked for it, alongside its message
+   (never a partial success, which offers Undo). */
+@keyframes refuse{0%,100%{transform:none}20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+.refused{animation:refuse 320ms var(--ease-out)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ---- brand touches (22 Sept 2026) ---------------------------------------
+   Titles take the heading face. The red is DECORATIVE ONLY: a small mark
+   ahead of page titles — never on anything clickable or stateful,
+   because red already means "not compliant" / "warn" in this UI and a red
+   control would read as an error. Exact brand red still to be confirmed. */
+h1,h2,h3,.cfg-h,.set-title,.view-panel-head,.fb-bh{font-family:var(--font-heading)}
+h1::before,h2::before{content:"";display:inline-block;width:5px;height:.85em;border-radius:2px;background:var(--brand-red);margin-right:.45em;vertical-align:-.08em}
+/* icons (2026-09-24): one stroke style for every UI icon, drawn with a CSS mask so it takes the text colour.
+   Replaces emoji (rendered as coloured Apple emoji) and symbols Noto Sans doesn't carry (rendered tiny or
+   in a fallback font). Markup: <i class=ic-NAME></i> — no quotes, so it is safe inside any JS string. */
+i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.16em;flex-shrink:0;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat;font-style:normal}
+.ic-file{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 3v5h5'/%3E%3C/svg%3E")}
+.ic-lock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E")}
+.ic-bell{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.94 1.94 0 0 0 3.4 0'/%3E%3C/svg%3E")}
+.ic-camera{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z'/%3E%3Ccircle cx='12' cy='13' r='3'/%3E%3C/svg%3E")}
+.ic-trash{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M8 6V4h8v2'/%3E%3Cpath d='M19 6l-1 14H6L5 6'/%3E%3C/svg%3E")}
+.ic-copy{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1'/%3E%3C/svg%3E")}
+.ic-eye{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E")}
+.ic-clock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E")}
+.ic-hourglass{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4'/%3E%3C/svg%3E")}
+.ic-chat{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E")}
+.ic-globe{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18'/%3E%3C/svg%3E")}
+.ic-clip{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 8.5'/%3E%3C/svg%3E")}
+.ic-ask{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M8 7h9v9'/%3E%3C/svg%3E")}
+.ic-keyboard{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10'/%3E%3C/svg%3E")}
+.ic-search{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E")}
+.ic-flag{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22V4M5 4h13l-2.5 4.5L18 13H5'/%3E%3C/svg%3E")}
+.ic-flagfill{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22V4'/%3E%3Cpath d='M5 4h13l-2.5 4.5L18 13H5z' fill='black'/%3E%3C/svg%3E")}
+.ic-fork{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='5' r='2'/%3E%3Ccircle cx='18' cy='5' r='2'/%3E%3Ccircle cx='12' cy='19' r='2'/%3E%3Cpath d='M6 7v1a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 11v6'/%3E%3C/svg%3E")}
+.ic-merge{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='18' r='2'/%3E%3Ccircle cx='6' cy='6' r='2'/%3E%3Ccircle cx='18' cy='12' r='2'/%3E%3Cpath d='M6 8v8M8 6c5 0 8 2 8 6'/%3E%3C/svg%3E")}
+.ic-upload{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4M7 9l5-5 5 5'/%3E%3Cpath d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E")}
+.ic-download{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v12M7 11l5 5 5-5'/%3E%3Cpath d='M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'/%3E%3C/svg%3E")}
+.ic-corner{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4v7a4 4 0 0 0 4 4h10M15 11l4 4-4 4'/%3E%3C/svg%3E")}
+.ic-chevron{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E")}
+.ic-filter{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 4h18l-7 8v6l-4 2v-8z'/%3E%3C/svg%3E")}
+.ic-columns{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Cpath d='M9 4v16M15 4v16'/%3E%3C/svg%3E")}
+.ic-sliders{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0'/%3E%3Ccircle cx='16' cy='6' r='2'/%3E%3Ccircle cx='10' cy='12' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/svg%3E")}
+.ic-users{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20a6.5 6.5 0 0 1 13 0'/%3E%3Cpath d='M16 4.5a3.5 3.5 0 0 1 0 7M18.5 20a6.5 6.5 0 0 0-3-5.5'/%3E%3C/svg%3E")}
+.ic-flow{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h13M13 3l4 4-4 4M20 17H7M11 13l-4 4 4 4'/%3E%3C/svg%3E")}
+.ic-refresh{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11a8 8 0 1 0-2.3 5.7'/%3E%3Cpath d='M20 4v7h-7'/%3E%3C/svg%3E")}
+.ic-contrast{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 3v18a9 9 0 0 0 0-18z' fill='black'/%3E%3C/svg%3E")}
+.ic-sparkle{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z'/%3E%3Cpath d='M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z'/%3E%3C/svg%3E")}
+.ic-undo{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 11a8 8 0 1 1 2.3 5.7'/%3E%3Cpath d='M4 4v7h7'/%3E%3C/svg%3E")}
+.ic-lang{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h9M8.5 3v2M6 5c1 3.5 3 6 6 7.5M11 5c-1 3.5-3 6-7 8'/%3E%3Cpath d='M13 21l4-9 4 9M14.5 18h5'/%3E%3C/svg%3E")}
+.ic-shield{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z'/%3E%3C/svg%3E")}
+</style>
+<script>(function(){try{var t=(window.parent!==window&&window.parent.getTheme)?window.parent.getTheme():"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand-logo" title="Alstom"><img class="brand-light" alt="Alstom" src="data:image/png;base64,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"><img class="brand-dark" alt="Alstom" src="data:image/png;base64,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"></div>
+    <div class="logo"><a href="javascript:parent.route('home')" style="display:flex;align-items:center;gap:var(--space-2);color:inherit;text-decoration:none">Smart Req.</a></div>
+    <div class="crumb"><span class="sep">/</span><span class="cur">Administration</span></div>
+    <div class="hdr-actions" style="margin-left:auto">
+      <a class="nav-btn" href="javascript:parent.route('home')" title="Back to My tenders"><i class=ic-file></i>My tenders</a>
+      <div class="avatar" id="header-avatar" title="Thibaud Breton">TB</div>
+    </div>
+  </header>
+  <div class="ad-body">
+    <nav class="ad-nav" id="ad-nav" aria-label="Administration sections"></nav>
+    <div class="scroll" id="ad-scroll"><div class="wrap" id="ad-main"></div></div>
+  </div>
+</div>
+<div id="toast-zone"></div>
+<script>
+/* ===================== Administration (DEC-137) =====================
+   The platform, not one tender: every user, every tender, the audit trail,
+   platform statistics and what the AI did. An admin sees all of it and acts
+   on people and tenders (rights, departures, archiving); an admin has no
+   business authority of its own — no validation, no verdict, nothing inside a
+   tender's content (ACCESS.md). Data comes from the shell (build_merge.py). */
+(function(){
+  try{
+    const u=window.parent.getCurrentUser();
+    const av=document.getElementById("header-avatar");
+    if(av){ av.textContent=u.init; av.title=u.title?`${u.name} — ${u.title}`:u.name; }
+  }catch(e){}
+})();
+const P=window.parent;
+function shell(name,...args){ try{ if(P!==window && P[name]) return P[name](...args); }catch(e){} return undefined; }
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const nOf=(n,one,many)=>`${n} ${n===1?one:(many||one+"s")}`;
+/* Micro-animations, lot 3 — a refused action shakes the control that asked for it */
+var lastPress={el:null,t:0};
+document.addEventListener("pointerdown",e=>{ lastPress={el:e.target.closest("button,a,.status-pill,[role=button]"),t:Date.now()}; },true);
+function shakeRefused(){ const el=lastPress.el; if(!el||Date.now()-lastPress.t>800||!el.isConnected) return;
+  el.classList.remove("refused"); void el.offsetWidth; el.classList.add("refused"); setTimeout(()=>el.classList.remove("refused"),400); }
+function toast(msg,kind="ok"){
+  if(kind==="warn") shakeRefused();
+  const z=document.getElementById("toast-zone"),t=document.createElement("div");
+  t.className="toast";
+  t.innerHTML=`<span class="${kind==="ok"?"t-ok":""}" style="${kind==="warn"?"color:var(--warn)":""}">${kind==="ok"?"✓":"⚠"}</span><span>${msg}</span>`;
+  z.appendChild(t);
+  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300)},3600);
+}
+const REGIONS=shell("REGIONS")||(P.REGIONS)||{NAM:"North America",LAM:"Latin America",FR:"France"};
+const users=()=>shell("getPlatformUsers")||[];
+const tenders=()=>shell("getProjects")||[];
+const archived=id=>!!shell("isTenderArchived",id);
+const userById=id=>users().find(u=>u.id===id);
+const tmsOf=tid=>users().filter(u=>u.tenders[tid]==="tm");
+const activeTms=tid=>tmsOf(tid).filter(u=>u.active);
+const tenderRef=id=>{ const t=tenders().find(x=>x.id===id); return t?t.ref:id; };
+const STAGE={processing:"Capture",requirement_review:"Allocation",expert_review:"Compliance",qa_versioning:"Compliance",submitted:"Submitted"};
+function stageOf(t){
+  const s=STAGE[t.status]||"Allocation";
+  if(s==="Allocation" && t.total && t.allocated>=t.total) return "Compliance";
+  return s;
+}
+function progressOf(t){
+  const s=stageOf(t);
+  if(s==="Capture"){ const v=Math.round(t.progress||0); return {label:`${v}% captured`, v}; }
+  if(s==="Allocation") return {label:`${t.allocated||0}/${t.total||0} allocated`, v:pct(t.allocated||0,t.total||0)};
+  if(s==="Compliance") return {label:`${t.complianceFilled||0}/${t.total||0} answered`, v:pct(t.complianceFilled||0,t.total||0)};
+  return {label:`${t.reqs||t.total||0} requirements · sent`, v:100};
+}
+const av=u=>`<span class="ad-av" style="background:${u.color}" title="${esc(u.name)}">${esc(u.init)}</span>`;
+
+const SECTIONS=[
+  {k:"users", label:"Users", icon:"ic-users"},
+  {k:"tenders", label:"Tenders", icon:"ic-file"},
+  {k:"audit", label:"Audit log", icon:"ic-clock"},
+  {k:"stats", label:"Statistics", icon:"ic-columns"},
+  {k:"ai", label:"AI tracking", icon:"ic-sparkle"},
+];
+const state={sec:"users", uq:"", uFilter:"all", tq:"", tRegion:"", tStage:"", tArchived:false, aq:"", aTender:"", aCat:"", aWho:"", leave:null, addTm:null};
+
+function renderNav(){
+  const orphans=tenders().filter(t=>!archived(t.id) && !activeTms(t.id).length).length;
+  const failed=Object.values(shell("getAIUsage")||{}).filter(a=>Object.values(a.steps).includes("failed")).length;
+  const badge={tenders:orphans, ai:failed};
+  document.getElementById("ad-nav").innerHTML=`<div class="ad-nav-h">Administration</div>`+SECTIONS.map(s=>`<button class="ad-nav-i${state.sec===s.k?" on":""}" data-sec="${s.k}"><i class=${s.icon}></i><span>${s.label}</span>${badge[s.k]?`<span class="ad-nav-b" title="${s.k==="tenders"?"Tenders without an active tender manager":"AI processing to resume"}">${badge[s.k]}</span>`:""}</button>`).join("")
+    +`<div class="ad-nav-note">Platform-wide. What belongs to one tender stays in that tender's Configuration.</div>`;
+  document.querySelectorAll("[data-sec]").forEach(b=>b.addEventListener("click",()=>{ state.sec=b.dataset.sec; state.leave=null; state.addTm=null; render(); document.getElementById("ad-scroll").scrollTop=0; }));
+}
+function render(){ renderNav(); ({users:renderUsers, tenders:renderTenders, audit:renderAudit, stats:renderStats, ai:renderAI})[state.sec](); }
+const head=(title,sub)=>`<div class="view-head"><h2>${title}</h2><span class="sub">${sub}</span></div>`;
+
+/* ---------- Users ---------- */
+function renderUsers(){
+  const el=document.getElementById("ad-main"), all=users(), roles=shell("getSSOLeaderRoles")||[];
+  const q=state.uq.trim().toLowerCase();
+  const rows=all.filter(u=>(!q||[u.name,u.sso,u.region].join(" ").toLowerCase().includes(q))
+    && (state.uFilter==="all" || (state.uFilter==="leaders"&&u.leader&&u.active) || (state.uFilter==="admins"&&u.admin) || (state.uFilter==="inactive"&&!u.active)));
+  const leaders=all.filter(u=>u.leader&&u.active).length, inactive=all.filter(u=>!u.active).length;
+  const pill=(k,l,n)=>`<button class="ad-pill${state.uFilter===k?" on":""}" data-uf="${k}">${l}${n!=null?` <b>${n}</b>`:""}</button>`;
+  el.innerHTML=head("Users","Everyone who has signed in through the company SSO. People are never created here — only what the platform lets them do.")
+   +`<div class="ad-rule"><div><b>Who can create a tender.</b> Only a <span class="ad-tag lead">Tender leader</span>, granted here by an admin. Creating a tender makes that person its tender manager.</div>
+      <div class="ad-rule-later"><span class="ad-later">Later</span> These SSO roles will make someone a Tender leader by themselves: ${roles.map(r=>`<span class="ad-chip">${esc(r)}</span>`).join(" ")} — not active in the pilot, leaders are granted by hand.</div></div>`
+   +`<div class="rk-tools"><input id="u-q" placeholder="Search a person, an SSO role or a region" value="${esc(state.uq)}" autocomplete="off">
+      ${pill("all","All",all.length)}${pill("leaders","Tender leaders",leaders)}${pill("admins","Admins",all.filter(u=>u.admin).length)}${pill("inactive","Deactivated",inactive)}
+      <span class="spacer"></span><button class="btn-ghost" id="u-sso"><i class=ic-refresh></i> Sync with the SSO directory</button></div>`
+   +(state.leave?leavePanel(state.leave):"")
+   +`<table class="rk-table ad-table"><thead><tr><th>Person</th><th>SSO role</th><th>Region</th><th>Platform status</th><th>Tenders</th><th>Last sign-in</th><th></th></tr></thead><tbody>
+     ${rows.map(u=>{ const ts=Object.entries(u.tenders); const tm=ts.filter(([,r])=>r==="tm").length;
+       const eligible=!u.leader&&roles.includes(u.sso);
+       return `<tr class="${u.active?"":"is-off"}">
+       <td><div class="ad-who">${av(u)}<div><b>${esc(u.name)}</b>${u.id===shell("getCurrentUser").id?` <span class="ad-you">you</span>`:""}</div></div></td>
+       <td>${esc(u.sso)}</td>
+       <td><span class="ad-reg" title="${esc(REGIONS[u.region]||"")}">${esc(u.region)}</span></td>
+       <td>${!u.active?`<span class="ad-tag off">Deactivated · ${esc(u.leftOn||"")}</span>`
+          :`${u.admin?`<span class="ad-tag admin">Admin</span> `:""}${u.leader?`<span class="ad-tag lead">Tender leader</span>`:`<span class="ad-muted">—</span>`}${eligible?`<div class="ad-hint">Eligible by SSO role, once the rule is active</div>`:""}`}</td>
+       <td>${ts.length?`<span class="nowrap">${nOf(ts.length,"tender")}${tm?` · TM on ${tm}`:""}</span><div class="ad-hint">${ts.slice(0,3).map(([t])=>esc(tenderRef(t))).join(" · ")}${ts.length>3?` · +${ts.length-3}`:""}</div>`:`<span class="ad-muted">none</span>`}</td>
+       <td class="ad-muted">${esc(u.last)}</td>
+       <td class="ad-act">${u.active?`<button class="btn-ghost sm" data-lead="${u.id}">${u.leader?"Withdraw leader":"Make tender leader"}</button>${u.admin?"":`<button class="btn-ghost sm" data-leave="${u.id}">Deactivate</button>`}`
+          :`<button class="btn-ghost sm" data-back="${u.id}">Reactivate</button>`}</td></tr>`; }).join("")}
+   </tbody></table>${rows.length?"":`<div class="rk-empty">No one matches.</div>`}`;
+  const $=s=>el.querySelector(s), $$=s=>el.querySelectorAll(s);
+  $("#u-q").addEventListener("input",e=>{ state.uq=e.target.value; renderUsers(); const i=document.getElementById("u-q"); i.focus(); i.setSelectionRange(i.value.length,i.value.length); });
+  $$("[data-uf]").forEach(b=>b.addEventListener("click",()=>{ state.uFilter=b.dataset.uf; renderUsers(); }));
+  $("#u-sso").addEventListener("click",()=>toast("Directory synced — no new person since the last sync (simulated)"));
+  $$("[data-lead]").forEach(b=>b.addEventListener("click",()=>{ const u=userById(b.dataset.lead), on=!u.leader;
+    shell("setTenderLeader",u.id,on); toast(on?`${u.name} is a Tender leader — they can create tenders`:`${u.name} can no longer create tenders — their tenders stay theirs`); render(); }));
+  $$("[data-leave]").forEach(b=>b.addEventListener("click",()=>{ state.leave=b.dataset.leave; renderUsers(); el.querySelector(".ad-leave")?.scrollIntoView({block:"nearest"}); }));
+  $$("[data-back]").forEach(b=>b.addEventListener("click",()=>{ const u=userById(b.dataset.back); shell("setUserActive",u.id,true); toast(`${u.name} reactivated`); render(); }));
+  bindLeave(el);
+}
+/* deactivating: what the person leaves behind, and who takes over a tender
+   they were the only active tender manager of — never a tender left orphan */
+function leavePanel(id){
+  const u=userById(id); if(!u) return "";
+  const sole=Object.entries(u.tenders).filter(([t,r])=>r==="tm" && !archived(t) && activeTms(t).filter(x=>x.id!==u.id).length===0).map(([t])=>t);
+  const others=Object.entries(u.tenders).filter(([t])=>!sole.includes(t));
+  const cand=users().filter(x=>x.active && x.id!==u.id);
+  return `<div class="ad-leave"><div class="ad-leave-h">Deactivate ${esc(u.name)}</div>
+    <div class="ad-leave-t">They can no longer sign in. Their work stays: answers, verdicts and history keep their name.</div>
+    ${sole.length?`<div class="ad-leave-sec"><b>Only tender manager of ${nOf(sole.length,"tender")}</b> — name who takes over, or the tender is left without anyone to run it.</div>
+      ${sole.map(t=>`<div class="ad-leave-row"><span class="mono">${esc(tenderRef(t))}</span><select class="sel" data-ho="${t}"><option value="">— Choose a tender manager —</option>${cand.map(x=>`<option value="${x.id}">${esc(x.name)} — ${esc(x.sso)}</option>`).join("")}</select></div>`).join("")}`:""}
+    ${others.length?`<div class="ad-leave-sec">${nOf(others.length,"other tender")} (${others.map(([t,r])=>`${esc(tenderRef(t))} as ${r==="tm"?"tender manager":"contributor"}`).join(", ")}): the items where they are the PIC show up as unassigned to their tender managers.</div>`:""}
+    <div class="ad-leave-btns"><button class="btn-ghost" id="leave-cancel">Cancel</button><button class="btn-danger" id="leave-go">Deactivate</button></div></div>`;
+}
+function bindLeave(el){
+  const go=el.querySelector("#leave-go"); if(!go) return;
+  el.querySelector("#leave-cancel").addEventListener("click",()=>{ state.leave=null; renderUsers(); });
+  go.addEventListener("click",()=>{ const u=userById(state.leave), ho={}; let missing=0;
+    el.querySelectorAll("[data-ho]").forEach(s=>{ if(s.value) ho[s.dataset.ho]=s.value; else missing++; });
+    if(missing){ toast(`Name a tender manager for ${nOf(missing,"tender")} first`,"warn"); return; }
+    shell("setUserActive",u.id,false,ho); state.leave=null; toast(`${u.name} deactivated${Object.keys(ho).length?` — ${nOf(Object.keys(ho).length,"tender")} handed over`:""}`); render(); });
+}
+
+/* ---------- Tenders ---------- */
+function renderTenders(){
+  const el=document.getElementById("ad-main"), all=tenders();
+  const q=state.tq.trim().toLowerCase();
+  const rows=all.filter(t=>(state.tArchived||!archived(t.id)) && (!q||[t.ref,t.name,t.line].join(" ").toLowerCase().includes(q))
+    && (!state.tRegion||t.region===state.tRegion) && (!state.tStage||stageOf(t)===state.tStage));
+  const orphan=all.filter(t=>!archived(t.id) && !activeTms(t.id).length);
+  const opt=(v,l,cur)=>`<option value="${v}"${v===cur?" selected":""}>${l}</option>`;
+  el.innerHTML=head("Tenders","Every tender on the platform — yours or not. Opening one shows it as its tender managers see it.")
+   +(orphan.length?`<div class="ad-warn"><b>${nOf(orphan.length,"tender")} without an active tender manager:</b> ${orphan.map(t=>esc(t.ref)).join(", ")} — name one below, nobody can run it otherwise.</div>`:"")
+   +`<div class="rk-tools"><input id="t-q" placeholder="Search a reference, a name or a line" value="${esc(state.tq)}" autocomplete="off">
+      <select class="sel" id="t-region">${opt("","All regions",state.tRegion)}${Object.entries(REGIONS).map(([k,v])=>opt(k,`${k} — ${v}`,state.tRegion)).join("")}</select>
+      <select class="sel" id="t-stage">${opt("","All stages",state.tStage)}${["Capture","Allocation","Compliance","Submitted"].map(s=>opt(s,s,state.tStage)).join("")}</select>
+      <label class="ad-check"><input type="checkbox" id="t-arch"${state.tArchived?" checked":""}> Show archived</label>
+      <span class="rk-count">${rows.length} of ${all.length}</span><span class="spacer"></span>
+      <button class="btn-ghost" id="t-export"><i class=ic-download></i> Export</button></div>`
+   +`<table class="rk-table ad-table"><thead><tr><th>Tender</th><th>Line</th><th>Region</th><th>Tender managers</th><th>Stage</th><th>Progress</th><th>Submission</th><th>Last activity</th><th></th></tr></thead><tbody>
+     ${rows.map(t=>{ const tms=tmsOf(t.id), act=tms.filter(u=>u.active), pr=progressOf(t), arch=archived(t.id), days=t.days;
+       return `<tr class="${arch?"is-off":""}">
+       <td><div class="mono ad-ref">${esc(t.ref)}</div><b>${esc(t.name)}</b>${arch?` <span class="ad-tag off">Archived</span>`:""}</td>
+       <td>${esc(t.line)}</td>
+       <td>${t.region?`<span class="ad-reg" title="${esc(REGIONS[t.region]||"")}">${esc(t.region)}</span>`:`<span class="ad-muted">—</span>`}</td>
+       <td>${act.length?`<div class="ad-avs">${act.map(av).join("")}</div><div class="ad-hint">${act.map(u=>esc(u.name)).join(", ")}</div>`:`<span class="ad-tag warn">None active</span>${tms.length?`<div class="ad-hint">${tms.map(u=>esc(u.name)+" (deactivated)").join(", ")}</div>`:""}`}
+         ${state.addTm===t.id?`<div class="ad-addtm"><select class="sel" id="tm-pick"><option value="">— Choose a person —</option>${users().filter(u=>u.active&&u.tenders[t.id]!=="tm").map(u=>`<option value="${u.id}">${esc(u.name)} — ${esc(u.sso)}</option>`).join("")}</select><button class="btn-ghost sm" id="tm-ok">Add</button><button class="btn-ghost sm" id="tm-x">Cancel</button></div>`:""}</td>
+       <td>${stageOf(t)}</td>
+       <td><div class="ad-bar"><span style="width:${pr.v}%"></span></div><div class="ad-hint">${pr.label}</div></td>
+       <td class="nowrap ${days!=null&&days<0?"":days!=null&&days<=10?"ad-late":""}">${days==null?"—":days<0?"Submitted":`${days} days left`}</td>
+       <td class="ad-muted">${esc(t.updated||"—")}</td>
+       <td class="ad-act"><button class="btn-ghost sm" data-open="${t.id}">Open</button><button class="btn-ghost sm" data-addtm="${t.id}">+ Tender manager</button><button class="btn-ghost sm" data-arch="${t.id}">${arch?"Restore":"Archive"}</button></td></tr>`; }).join("")}
+   </tbody></table>${rows.length?"":`<div class="rk-empty">No tender matches.</div>`}`;
+  const $=s=>el.querySelector(s), $$=s=>el.querySelectorAll(s);
+  $("#t-q").addEventListener("input",e=>{ state.tq=e.target.value; renderTenders(); const i=document.getElementById("t-q"); i.focus(); i.setSelectionRange(i.value.length,i.value.length); });
+  $("#t-region").addEventListener("change",e=>{ state.tRegion=e.target.value; renderTenders(); });
+  $("#t-stage").addEventListener("change",e=>{ state.tStage=e.target.value; renderTenders(); });
+  $("#t-arch").addEventListener("change",e=>{ state.tArchived=e.target.checked; renderTenders(); });
+  $("#t-export").addEventListener("click",()=>toast(`Tender list exported — ${nOf(rows.length,"tender")} (simulated)`));
+  $$("[data-open]").forEach(b=>b.addEventListener("click",()=>{ const t=all.find(x=>x.id===b.dataset.open);
+    if(t.status==="processing"){ toast(`${t.ref} is still being processed — it opens when capture completes`,"warn"); return; }
+    if(t.builtOut===false){ toast(`${t.ref} is a demo-only tender in this prototype — list and status only`,"warn"); return; }
+    shell("openProject",t.id); }));
+  $$("[data-addtm]").forEach(b=>b.addEventListener("click",()=>{ state.addTm=state.addTm===b.dataset.addtm?null:b.dataset.addtm; renderTenders(); }));
+  const ok=$("#tm-ok"); if(ok){ ok.addEventListener("click",()=>{ const v=$("#tm-pick").value; if(!v){ toast("Choose a person first","warn"); return; }
+      shell("addTenderManager",state.addTm,v); toast(`${userById(v).name} is now a tender manager of ${tenderRef(state.addTm)}`); state.addTm=null; render(); });
+    $("#tm-x").addEventListener("click",()=>{ state.addTm=null; renderTenders(); }); }
+  $$("[data-arch]").forEach(b=>b.addEventListener("click",()=>{ const id=b.dataset.arch, on=!archived(id);
+    shell("setTenderArchived",id,on); toast(on?`${tenderRef(id)} archived — read-only, out of everyone's list`:`${tenderRef(id)} restored`); render(); }));
+}
+
+/* ---------- Audit log ---------- */
+const CAT_LABEL={admin:"Administration",status:"Status",alloc:"Allocation",compliance:"Compliance",comment:"Comments"};
+function renderAudit(){
+  const el=document.getElementById("ad-main");
+  const all=[...(shell("getAdminLog")||[]),...(shell("getAllActivity")||[])].sort((a,b)=>b.ts-a.ts);
+  const q=state.aq.trim().toLowerCase();
+  const rows=all.filter(e=>(!state.aTender||e.tender===state.aTender) && (!state.aCat||e.cat===state.aCat) && (!state.aWho||e.who===state.aWho)
+    && (!q||[e.what,e.reqId,e.from,e.to,e.who].join(" ").toLowerCase().includes(q)));
+  const whos=[...new Set(all.map(e=>e.who).filter(Boolean))].sort();
+  const tids=[...new Set(all.map(e=>e.tender).filter(Boolean))];
+  const opt=(v,l,cur)=>`<option value="${v}"${v===cur?" selected":""}>${esc(l)}</option>`;
+  el.innerHTML=head("Audit log","Who changed what, when — people and the platform alike. Read-only: nothing here can be edited or deleted.")
+   +`<div class="rk-tools"><input id="a-q" placeholder="Search a change, an ID or a value" value="${esc(state.aq)}" autocomplete="off">
+      <select class="sel" id="a-tender">${opt("","All tenders",state.aTender)}${tids.map(t=>opt(t,tenderRef(t),state.aTender)).join("")}</select>
+      <select class="sel" id="a-cat">${opt("","All kinds",state.aCat)}${Object.entries(CAT_LABEL).map(([k,v])=>opt(k,v,state.aCat)).join("")}</select>
+      <select class="sel" id="a-who">${opt("","Everyone",state.aWho)}${whos.map(w=>opt(w,w,state.aWho)).join("")}</select>
+      <span class="rk-count">${rows.length} of ${all.length}</span><span class="spacer"></span>
+      <button class="btn-ghost" id="a-export"><i class=ic-download></i> Export</button></div>`
+   +(rows.length?`<table class="rk-table ad-table"><thead><tr><th>When</th><th>Who</th><th>Tender</th><th>Item</th><th>Kind</th><th>What</th><th>Before → after</th></tr></thead><tbody>
+     ${rows.slice(0,200).map(e=>`<tr><td class="ad-muted nowrap">${esc(e.time||"")}</td><td class="nowrap">${esc(e.who||"—")}</td>
+       <td class="mono">${e.tender?esc(tenderRef(e.tender)):"—"}</td><td class="mono">${esc(e.reqId||"—")}</td>
+       <td><span class="ad-kind k-${esc(e.cat)}">${esc(CAT_LABEL[e.cat]||e.cat||"—")}</span></td><td>${esc(e.what)}</td>
+       <td>${e.from||e.to?`<span class="ad-from">${esc(e.from||"—")}</span> → <span class="ad-to">${esc(e.to||"—")}</span>`:`<span class="ad-muted">—</span>`}</td></tr>`).join("")}
+   </tbody></table>${rows.length>200?`<div class="ad-hint" style="margin-top:8px">The 200 most recent are shown — narrow the filters, or export them all.</div>`:""}`
+   :`<div class="rk-empty">No change matches.</div>`);
+  const $=s=>el.querySelector(s);
+  $("#a-q").addEventListener("input",e=>{ state.aq=e.target.value; renderAudit(); const i=document.getElementById("a-q"); i.focus(); i.setSelectionRange(i.value.length,i.value.length); });
+  $("#a-tender").addEventListener("change",e=>{ state.aTender=e.target.value; renderAudit(); });
+  $("#a-cat").addEventListener("change",e=>{ state.aCat=e.target.value; renderAudit(); });
+  $("#a-who").addEventListener("change",e=>{ state.aWho=e.target.value; renderAudit(); });
+  $("#a-export").addEventListener("click",()=>toast(`Audit exported — ${nOf(rows.length,"change")} with who, when, before and after (simulated)`));
+}
+
+/* ---------- Statistics ---------- */
+function renderStats(){
+  const el=document.getElementById("ad-main"), live=tenders().filter(t=>!archived(t.id)), us=users();
+  const open=live.filter(t=>stageOf(t)!=="Submitted");
+  const reqs=open.reduce((n,t)=>n+(t.total||0),0), alloc=open.reduce((n,t)=>n+(t.allocated||0),0), ans=open.reduce((n,t)=>n+(t.complianceFilled||0),0);
+  const recent=us.filter(u=>u.active && /Today|Yesterday|days ago/.test(u.last)).length;
+  const tile=(n,l,s)=>`<div class="ad-tile"><div class="ad-tile-n">${n}</div><div class="ad-tile-l">${l}</div>${s?`<div class="ad-hint">${s}</div>`:""}</div>`;
+  const stages=["Capture","Allocation","Compliance","Submitted"].map(s=>[s,live.filter(t=>stageOf(t)===s).length]);
+  const maxS=Math.max(1,...stages.map(x=>x[1]));
+  const byReg=Object.keys(REGIONS).map(k=>{ const ts=live.filter(t=>t.region===k); const r=ts.reduce((n,t)=>n+(t.total||0),0);
+    return {k, n:ts.length, open:ts.filter(t=>stageOf(t)!=="Submitted").length, r, a:pct(ts.reduce((n,t)=>n+(t.allocated||0),0),r), c:pct(ts.reduce((n,t)=>n+(t.complianceFilled||0),0),r)}; });
+  const lines=[...new Set(live.map(t=>t.line))].map(l=>[l,live.filter(t=>t.line===l).length]);
+  el.innerHTML=head("Statistics","The platform as a whole — how many tenders, where they stand and who uses the tool. Never a ranking of people.")
+   +`<div class="ad-tiles">${tile(open.length,"tenders in progress",`${live.length-open.length} submitted · ${tenders().length-live.length} archived`)}
+      ${tile(reqs.toLocaleString("en-GB"),"requirements in progress",`on the ${nOf(open.length,"open tender")}`)}
+      ${tile(pct(alloc,reqs)+"%","allocated",`${alloc.toLocaleString("en-GB")} of ${reqs.toLocaleString("en-GB")}`)}
+      ${tile(pct(ans,reqs)+"%","answered in Compliance",`${ans.toLocaleString("en-GB")} of ${reqs.toLocaleString("en-GB")}`)}
+      ${tile(`${recent} / ${us.filter(u=>u.active).length}`,"people active this week",`${nOf(us.filter(u=>u.leader&&u.active).length,"tender leader")}`)}</div>`
+   +`<div class="ad-grid"><div class="ad-card"><div class="ad-card-h">Tenders by stage</div>${stages.map(([s,n])=>`<div class="ad-hrow"><span>${s}</span><div class="ad-bar"><span style="width:${n/maxS*100}%"></span></div><b>${n}</b></div>`).join("")}</div>
+      <div class="ad-card"><div class="ad-card-h">Tenders by line</div>${lines.map(([l,n])=>`<div class="ad-hrow"><span>${esc(l)}</span><div class="ad-bar"><span style="width:${n/Math.max(1,...lines.map(x=>x[1]))*100}%"></span></div><b>${n}</b></div>`).join("")}</div></div>`
+   +`<div class="ad-card"><div class="ad-card-h">By region</div><table class="rk-table ad-table flat"><thead><tr><th>Region</th><th>Tenders</th><th>In progress</th><th>Requirements</th><th>Allocated</th><th>Answered</th></tr></thead><tbody>
+      ${byReg.map(r=>`<tr><td><span class="ad-reg">${r.k}</span> ${esc(REGIONS[r.k])}</td><td>${r.n}</td><td>${r.open}</td><td>${r.r.toLocaleString("en-GB")}</td><td>${r.a}%</td><td>${r.c}%</td></tr>`).join("")}</tbody></table></div>
+    <div class="ad-hint" style="margin-top:12px">Counted from each tender's figures. A tender's own statistics stay on its dashboard.</div>`;
+}
+
+/* ---------- AI tracking ---------- */
+const STEP_L={capture:"Capture",translation:"Translation",characterisation:"Characterisation",allocation:"Allocation"};
+const STEP_S={done:["✓","ok","Done"],running:["…","run","Running"],failed:["✕","fail","Failed — to resume"],waiting:["·","wait","Waiting"],skipped:["–","skip","Not needed (English source)"]};
+function renderAI(){
+  const el=document.getElementById("ad-main"), ai=shell("getAIUsage")||{}, ts=tenders();
+  const rows=ts.filter(t=>ai[t.id]).map(t=>Object.assign({t},ai[t.id]));
+  const failed=rows.filter(r=>Object.values(r.steps).includes("failed")), running=rows.filter(r=>Object.values(r.steps).includes("running"));
+  const withRate=rows.filter(r=>r.corrected!=null&&r.reqs);
+  const corr=withRate.length?Math.round(withRate.reduce((n,r)=>n+r.corrected,0)/withRate.length):0;
+  const cost=rows.reduce((n,r)=>n+(r.cost||0),0);
+  const tile=(n,l,s,cls)=>`<div class="ad-tile${cls?" "+cls:""}"><div class="ad-tile-n">${n}</div><div class="ad-tile-l">${l}</div>${s?`<div class="ad-hint">${s}</div>`:""}</div>`;
+  el.innerHTML=head("AI tracking","What the AI processed on each tender, what failed, how often people corrected it and what it cost. The AI proposes; people decide.")
+   +`<div class="ad-tiles">${tile(running.length,"running now",running.map(r=>esc(r.t.ref)).join(", ")||"nothing")}
+      ${tile(failed.length,"to resume",failed.map(r=>esc(r.t.ref)).join(", ")||"nothing failed",failed.length?"is-warn":"")}
+      ${tile(rows.reduce((n,r)=>n+r.blocks,0).toLocaleString("en-GB"),"blocks captured",`${rows.reduce((n,r)=>n+r.reqs,0).toLocaleString("en-GB")} requirements characterised`)}
+      ${tile(corr+"%","proposals corrected by people","average over the tenders, all fields")}
+      ${tile("€ "+cost.toLocaleString("en-GB"),"processing cost this month","estimated")}</div>`
+   +`<table class="rk-table ad-table"><thead><tr><th>Tender</th>${Object.values(STEP_L).map(s=>`<th class="c">${s}</th>`).join("")}<th>Requirements</th><th title="Characterisation proposals at Low confidence (DEC-120) — they go to To review">Low confidence</th><th title="AI proposals a person changed">Corrected</th><th>Last run</th><th>Cost</th><th></th></tr></thead><tbody>
+     ${rows.map(r=>`<tr><td><div class="mono ad-ref">${esc(r.t.ref)}</div><b>${esc(r.t.name)}</b>${r.error?`<div class="ad-err">${esc(r.error)}</div>`:""}</td>
+       ${Object.keys(STEP_L).map(k=>{ const [g,c,l]=STEP_S[r.steps[k]]||STEP_S.waiting; return `<td class="c"><span class="ad-step s-${c}" title="${STEP_L[k]} — ${l}">${g}</span></td>`; }).join("")}
+       <td>${r.reqs?r.reqs.toLocaleString("en-GB"):"—"}</td><td>${r.low!=null?r.low+"%":"—"}</td><td>${r.corrected!=null?r.corrected+"%":"—"}</td>
+       <td class="ad-muted nowrap">${esc(r.last)}</td><td class="nowrap">€ ${r.cost}</td>
+       <td class="ad-act">${Object.values(r.steps).includes("failed")?`<button class="btn-ghost sm" data-retry="${r.t.id}"><i class=ic-refresh></i> Resume</button>`:""}</td></tr>`).join("")}
+   </tbody></table>
+   <div class="ad-hint" style="margin-top:12px">Demo figures — the real ones come from the AI workstream and the platform's cost tracing. Resuming starts from where processing stopped, without duplicating what was already done. What the corrections teach the models stays in each tender's Configuration › AI feedback.</div>`;
+  el.querySelectorAll("[data-retry]").forEach(b=>b.addEventListener("click",()=>{ shell("retryAIStep",b.dataset.retry); toast(`Processing resumed on ${tenderRef(b.dataset.retry)} — from where it stopped`); render(); }));
+}
+
+/* an admin only: anyone else is sent back home */
+if(shell("isAdmin")===false){ document.getElementById("ad-main").innerHTML=`<div class="rk-empty"><b>Administration is for admins.</b></div>`; }
+else render();
+</script>
+</body>
+</html>

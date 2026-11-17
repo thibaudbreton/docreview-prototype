@@ -18,9 +18,9 @@ Les anciens prompts et tickets sont des sources historiques, pas des instruction
 
 ## Produit et navigation
 
-Smart Req organise la capture, la caractérisation, l'allocation et la revue de conformité des exigences d'un appel d'offres. Le travail est assisté par IA et comporte des validations humaines. La distinction fonctionnelle récente est Project Manager / Contributor ; les structures historiques manager/expert subsistent par endroits (OPEN-02).
+Smart Req organise la capture, la caractérisation, l'allocation et la revue de conformité des exigences d'un appel d'offres. Le travail est assisté par IA et comporte des validations humaines. La distinction fonctionnelle récente est Tender Manager / Contributor (« Project Manager » jusqu'à DEC-126) ; les structures historiques manager/expert subsistent par endroits (OPEN-02).
 
-Sept sources actives sont assemblées dans `index.html` et `docreview-app.html` : `accueil.html`, `creation-projet.html`, `dashboard-et-config.html`, `revue-documentaire.html`, `compliance.html`, `documents.html`, `qa.html`. Dashboard, configuration et casting partagent un fichier. Il n'existe plus de route autonome Expert Space dans la liste d'assemblage. Le build écrit aussi `local/index.html`, non versionné : la même application avec la police de la marque Alstom embarquée (DEC-115, voir `fonts/README.md`).
+Sept sources actives sont assemblées dans `index.html` et `docreview-app.html` : `accueil.html`, `creation-projet.html`, `dashboard-et-config.html`, `revue-documentaire.html`, `compliance.html`, `documents.html`, `qa.html`. Dashboard, configuration et écran Users (anciennement Team casting) partagent un fichier. Il n'existe plus de route autonome Expert Space dans la liste d'assemblage. Le build écrit aussi `local/index.html`, non versionné : la même application avec la police de la marque Alstom embarquée (DEC-115, voir `fonts/README.md`).
 
 ## Carte de lecture
 
@@ -29,16 +29,17 @@ Sept sources actives sont assemblées dans `index.html` et `docreview-app.html` 
 | Variantes Turnkey / SIG / Mainline / RSC | [Profils de tender](TENDER-PROFILES.md) |
 | Clés PBS / OBS / ABS de SIG — le fichier et sa lecture | [Clés](KEYS.md) |
 | Conversion du document source — réglages de capture | [Capture](CAPTURE.md) |
-| Colonnes ajoutées par le chef de projet | [Colonnes personnalisées](CUSTOM-COLUMNS.md) |
+| Colonnes ajoutées par le tender manager | [Colonnes personnalisées](CUSTOM-COLUMNS.md) |
 | Définitions, objets, vocabulaire | [Modèle métier](DOMAIN.md) |
 | Création, documents, versions, traduction | [Cycle documentaire](LIFECYCLE.md) |
 | Allocation, dépendances, validation | [Allocation](ALLOCATION.md) |
 | Réponses, consolidation, verrouillage | [Conformité](COMPLIANCE.md) |
-| Casting, droits, périmètres | [Accès et équipes](ACCESS.md) |
+| Utilisateurs (écran Users), droits, périmètres | [Accès et équipes](ACCESS.md) |
 | Questions, réponses client, arbitrage | [Q&A](QA.md) |
 | Parcours et interactions des écrans | [Parcours](JOURNEYS.md) |
 | Comportement fonctionnel des traitements existants | [Frontière IA](AI.md) |
 | Persistance, intégrations, performance, métriques | [Exigences transverses](PLATFORM.md) |
+| Notifications dans l'application et par e-mail, modèles d'e-mails | [Plan de notification](NOTIFICATIONS.md) |
 | Décisions à prendre et contradictions | [Arbitrages](OPEN-QUESTIONS.md) |
 | Sources, changements, limites de l'audit | [Traçabilité](AUDIT.md) |
 | Préparer une tâche pour un agent | [Modèle de tâche](TASK-TEMPLATE.md) |

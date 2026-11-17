@@ -151,8 +151,7 @@ Nombre de lignes de chaque tableau du chapitre (un changement par ligne). Le sty
 
 Huit écrans, pris le 12 octobre 2026 sur les deux versions, sur le tender de démo STB-2026, côté chef de projet. Risks n'existe que dans la nouvelle version.
 
-**Fichiers locaux, non versionnés.**
-- `docs/gap/captures/` est dans `.gitignore` : les liens ne marchent que sur une copie locale, transmise à part.
+**À savoir.**
 - Sur les écrans d'Allocation, le texte réel des exigences, des documents et des sections est masqué par des barres grises. Les autres écrans montrent des données de démo.
 - Pour les refaire : outillage local `deck/ui-gap/` (non versionné), avec le prototype servi sur le port 8934.
 

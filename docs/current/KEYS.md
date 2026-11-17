@@ -8,7 +8,7 @@ Source : classeur **« PBSOBSABS Keys v260720.xlsx »**, fourni le 21 septembre 
 
 | Feuille | Ce que c'est | Structure | Volume |
 |---|---|---|---|
-| **PBS** | Product Breakdown Structure — les éléments du produit | Arbre à trois niveaux : famille (`2` Signalling, `3` Infrastructure, `4` Telecoms, `5` M&E, `6` Services, `7` Transverse, `8` Civil Works, `12` Digital) → sous-système (`2.1` IXL, `2.2` ATC Mainline Wayside…) → élément (`2.1.2` Point Machine…) | 223 éléments ; 48 cochés Mainline Wayside, 34 Urban, 40 Onboard |
+| **PBS** | Product Breakdown Structure — les éléments du produit | Arbre à trois niveaux : famille (`2` Signalling, `3` Infrastructure, `4` Telecoms, `5` M&E, `6` Services, `7` Transverse, `8` Civil Works, `12` Digital) → sous-ensemble (`2.1` IXL, `2.2` ATC Mainline Wayside… — niveau du classeur, distinct du sous-système de l'outil, DEC-126) → élément (`2.1.2` Point Machine…) | 223 éléments ; 48 cochés Mainline Wayside, 34 Urban, 40 Onboard |
 | **ABS** | Activity Breakdown Structure — les catégories d'activité | Liste plate | 16 catégories, toutes cochées Mainline Wayside |
 | **OBS** | Organisation Breakdown Structure — les **postes** | Liste **regroupée sous les catégories ABS** ; chaque poste porte ses codes Skills / SoA / Job code | 66 postes ; 45 cochés Mainline Wayside, 2 Onboard, 0 Urban |
 
@@ -17,12 +17,12 @@ Source : classeur **« PBSOBSABS Keys v260720.xlsx »**, fourni le 21 septembre 
 **Ce que le fichier corrige dans le modèle du prototype** (DEC-062) :
 
 - **L'OBS est un poste**, pas une équipe. « IXL Application Design Eng. », pas « Signalling Design — FR ». Un poste n'est pas une personne — l'esprit de DEC-054 tient — mais la maille n'est pas celle qu'on avait supposée. Établi pour le modèle Mainline ; non énoncé pour Urban, qui garde son vocabulaire antérieur.
-- **Le PBS est un élément produit**, pas une nature d'exigence. La colonne que le prototype appelait PBS affichait Functional / Performance / Security / Interface / Regulatory. C'est la **nature**, utile, mais autre chose ; elle a désormais son propre champ et sa propre colonne. *Précisé par DEC-074 : ces cinq valeurs ne sont pas non plus la « nature », qui désigne Information / Heading / Requirement ; elles ont quitté Allocation.*
+- **Le PBS est un élément produit**, pas une nature d'exigence. La colonne que le prototype appelait PBS affichait Functional / Performance / Security / Interface / Regulatory. C'est la **nature**, utile, mais autre chose ; elle a désormais son propre champ et sa propre colonne. *Précisé par DEC-074 : ces cinq valeurs ne sont pas non plus la « nature » — le « type » depuis DEC-126 —, qui désigne Information / Heading / Requirement ; elles ont quitté Allocation.*
 - **Mainline se divise en Wayside et Onboard**, avec des clés différentes. Ce sont deux produits SIG distincts (DEC-061), non un sous-produit.
 
 ## Ce qui est ignoré, délibérément
 
-Pour ce prototype (DEC-061) : les deux listes annexes de la feuille ABS (colonnes F et I : « Risk Management, Time Management… » et « ILL, ILS, Basic Design… ») ; les anomalies du fichier — lignes sans identifiant (rattachées au niveau 3 de leur famille, sauf quand elles sont insérées dans la fratrie d'un sous-système), *Cybersecurity Manager* en double, cinq *Subsystem Manager* qui partagent le code PB-PM-05, `x` / `X` mélangés. Elles sont chargées telles quelles : la correction appartient au fichier.
+Pour ce prototype (DEC-061) : les deux listes annexes de la feuille ABS (colonnes F et I : « Risk Management, Time Management… » et « ILL, ILS, Basic Design… ») ; les anomalies du fichier — lignes sans identifiant (rattachées au niveau 3 de leur famille, sauf quand elles sont insérées dans la fratrie d'un sous-ensemble), *Cybersecurity Manager* en double, cinq *Subsystem Manager* qui partagent le code PB-PM-05, `x` / `X` mélangés. Elles sont chargées telles quelles : la correction appartient au fichier.
 
 ## Ce que le prototype en fait
 

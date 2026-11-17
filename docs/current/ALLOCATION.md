@@ -6,36 +6,36 @@ Applicabilité : [variantes de tender](TENDER-PROFILES.md). Le prototype est la 
 
 | ID | Règle | Statut et portée |
 |---|---|---|
-| ALLOC-001 | Turnkey distribue entre systèmes, puis applique leur modèle. Un tender SIG commence directement dans SIG. | DEC-005/006, DOC autres non-Turnkey |
-| ALLOC-002 | Passe 1 Turnkey : classe technique vers PBS, non technique vers ABS, puis système TK OBS — affiché dans la colonne System, avec la certitude du routage à côté (DEC-077 ; il n'y a plus de colonne TK OBS). Cette distinction ne s'applique pas à l'allocation SIG. | DOC passe 1, DEC-008 exclusion SIG |
+| ALLOC-001 | Turnkey distribue entre sous-systèmes, puis applique leur modèle. Un tender SIG commence directement dans SIG. | DEC-005/006, DOC autres non-Turnkey |
+| ALLOC-002 | Passe 1 Turnkey : classe technique vers PBS, non technique vers ABS, puis sous-système TK OBS — affiché dans la colonne Sub-system, avec la certitude du routage à côté (DEC-077 ; il n'y a plus de colonne TK OBS). Cette distinction ne s'applique pas à l'allocation SIG. | DOC passe 1, DEC-008 exclusion SIG, DEC-126 |
 | ALLOC-003 | Allocation SIG : **ABS → PBS → OBS → personne**. Aucune différence de chaîne technique/non technique. Corriger un champ invalide les propositions qui en dépendent ; les corrections de décisions déjà validées suivent LIFE-008. | DEC-008 prime sur l'ancien PBS → ABS → OBS |
-| ALLOC-004 | Distribution multiple entre systèmes en Turnkey, puis affectations d'équipes ; ne pas dupliquer l'exigence pour représenter les branches. | DOC, consolidation confirmée DEC-014 |
-| ALLOC-005 | Système sans modèle : allocation manuelle, identifiée et filtrable, sans bloquer les autres systèmes. | DOC ; contenu/gestion des modèles hors spec fonctionnelle |
+| ALLOC-004 | Distribution multiple entre sous-systèmes en Turnkey, puis affectations d'équipes ; ne pas dupliquer l'exigence pour représenter les branches. | DOC, consolidation confirmée DEC-014 |
+| ALLOC-005 | Sous-système sans modèle : allocation manuelle, identifiée et filtrable, sans bloquer les autres sous-systèmes. | DOC ; contenu/gestion des modèles hors spec fonctionnelle |
 | ALLOC-006 | Incertitude affichée par champ/étape applicable ; aucun indicateur de passe 1 en SIG. | DOC/DEC-006 |
 | ALLOC-007 | La confiance IA ne remplace pas la validation humaine de l'allocation. | DOC, borne du pilote DEC-022 |
 | ALLOC-008 | La validation d'allocation rend le travail disponible pour la suite de conformité ; pas de construction de Compliance exigée dans le premier pilote. | DOC + DEC-022 |
 | ALLOC-009 | Les exigences progressent indépendamment. Un cas incomplet n'arrête pas les autres. | DOC |
 | ALLOC-010 | L’allocation peut être validée sans responsable. L’absence reste visible, sans bloquer cette exigence ni les autres. | DEC-025 |
-| ALLOC-011 | **La personne assignée à un OBS est responsable de sa conformité** : elle répond et c'est elle qu'on relance. L'outil ne désigne **pas** de responsable du suivi global, ni par exigence ni par activité. Plusieurs personnes dans un même périmètre = plusieurs entrées OBS, une personne chacune. Tous les contributeurs du système peuvent répondre. | DEC-087 (remplace DEC-010) + DEC-002 |
-| ALLOC-012 | La validation relève de l'équipe de gestion du projet, composée de bid managers et requirement managers de SIG selon la réponse utilisateur. Ces fonctions ne créent pas une hiérarchie des contributeurs. | DEC-009 ; portée générale aux autres types OPEN-15 |
+| ALLOC-011 | **La personne en charge (PIC) d'un OBS est responsable de sa conformité** : elle répond et c'est elle qu'on relance. L'outil ne désigne **pas** de responsable du suivi global, ni par exigence ni par activité. Plusieurs personnes dans un même périmètre = plusieurs entrées OBS, une personne chacune. Tous les contributeurs du sous-système peuvent répondre. | DEC-087 (remplace DEC-010) + DEC-002, DEC-126 |
+| ALLOC-012 | La validation relève de l'équipe de gestion du tender, composée de bid managers et requirement managers de SIG selon la réponse utilisateur. Ces fonctions ne créent pas une hiérarchie des contributeurs. | DEC-009 ; portée générale aux autres types OPEN-15 |
 
 ## Absence de responsable — décision
 
-DEC-025 : absence autorisée, y compris après validation d’allocation. Afficher « Non désigné » et permettre d’isoler ces exigences avec le filtre de champ vide existant ; ne pas ajouter de validation bloquante. Les contributeurs gardent leurs droits dans leur système. Une personne peut être désignée ensuite sur l'entrée OBS ; elle devient responsable de sa conformité (DEC-087). La proposition de blocage formulée précédemment a été refusée. La maquette suit cette règle depuis le 9 octobre 2026 : une entrée OBS sans personne ne rend pas l'exigence Incomplete et ne désactive pas la validation ; le panneau le signale (« No one assigned yet — you can still validate »).
+DEC-025 : absence autorisée, y compris après validation d’allocation. Afficher « Non désigné » et permettre d’isoler ces exigences avec le filtre de champ vide existant ; ne pas ajouter de validation bloquante. Les contributeurs gardent leurs droits dans leur sous-système. Une personne peut être désignée ensuite sur l'entrée OBS ; elle devient responsable de sa conformité (DEC-087). La proposition de blocage formulée précédemment a été refusée. La maquette suit cette règle depuis le 9 octobre 2026 : une entrée OBS sans personne ne rend pas l'exigence Incomplete et ne désactive pas la validation ; le panneau le signale (« No one assigned yet — you can still validate »).
 
 ## Réallocation — référence vérifiée dans la maquette
 
 ALLOC-013 — DEC-011 : conserver le mécanisme de demande de réallocation de la maquette, pas inventer une nouvelle interaction.
 
-- Motifs : bon système/mauvaise personne ; mauvais système ; système non applicable.
-- Justification requise ; proposer une personne de remplacement pour le premier, un système de remplacement pour les deux autres dans le parcours Turnkey.
+- Motifs : bon sous-système/mauvaise personne ; mauvais sous-système ; sous-système non applicable.
+- Justification requise ; proposer une personne de remplacement pour le premier, un sous-système de remplacement pour les deux autres dans le parcours Turnkey.
 - La demande passe à `reassignment_needed`. La maquette offre approbation/refus.
 - Approbation personne : remplacement du responsable, travail remis à disposition. Le code historique utilise des identifiants équipe/personne incohérents par écran ; ne pas reproduire cette duplication avec DEC-010.
-- Approbation système : remplacement de la branche, état proposé/en attente et nouvelle allocation. La maquette remplace au lieu de laisser zéro système.
+- Approbation sous-système : remplacement de la branche, état proposé/en attente et nouvelle allocation. La maquette remplace au lieu de laisser zéro sous-système.
 - Refus : retour à l'état antérieur.
-- La gestion projet reçoit les demandes au niveau global ; les anciens rôles manager/expert du code ne recréent pas une hiérarchie métier après DEC-003/012.
+- La gestion du tender reçoit les demandes au niveau global ; les anciens rôles manager/expert du code ne recréent pas une hiérarchie métier après DEC-003/012.
 
-Dans un tender SIG, les actions de distribution Turnkey sont absentes (DEC-006). Ne pas laisser un menu de changement de système qui lancerait la passe 1. Les cas hors système en standalone devront être explicités si nécessaires (OPEN-15), sans inventer leur équivalent.
+Dans un tender SIG, les actions de distribution Turnkey sont absentes (DEC-006). Ne pas laisser un menu de changement de sous-système qui lancerait la passe 1. Les cas hors sous-système en standalone devront être explicités si nécessaires (OPEN-15), sans inventer leur équivalent.
 
 Sources : `revue-documentaire.html:renderReassignForm/submitReassignRequest/approveReassign/rejectReassign`, `compliance.html:reassign-submit`. Inspection du code ; pas de recette navigateur.
 
@@ -43,17 +43,17 @@ Sources : `revue-documentaire.html:renderReassignForm/submitReassignRequest/appr
 
 ALLOC-014 — DEC-040 à DEC-043 : rejouer un modèle d'allocation sur une exigence déjà traitée, en choisissant lequel. Mécanisme distinct de la réallocation (ALLOC-013) : la réallocation change **qui** répond, la relance recalcule **ce que le modèle dérive**. Les deux ne se remplacent pas.
 
-**Granularité (DEC-056, remplace DEC-040 sur ce point).** La relance porte sur l'**exigence** au sein de son système : elle re-dérive **ABS, PBS et l'ensemble des organisations**. La granularité « équipe » de DEC-040 reposait sur l'idée que les ABS/PBS/OBS vivaient à la feuille ; DEC-055 établit que seuls les OBS s'y trouvent — ABS et PBS sont uniques pour l'exigence. Relancer une organisation isolément n'a donc pas de sens : elle partage son ABS et son PBS avec ses sœurs. Elle est bloquée dès qu'**une seule** de ses organisations l'est, puisqu'elle les réécrit toutes.
+**Granularité (DEC-056, remplace DEC-040 sur ce point).** La relance porte sur l'**exigence** au sein de son sous-système : elle re-dérive **ABS, PBS et l'ensemble des organisations**. La granularité « équipe » de DEC-040 reposait sur l'idée que les ABS/PBS/OBS vivaient à la feuille ; DEC-055 établit que seuls les OBS s'y trouvent — ABS et PBS sont uniques pour l'exigence. Relancer une organisation isolément n'a donc pas de sens : elle partage son ABS et son PBS avec ses sœurs. Elle est bloquée dès qu'**une seule** de ses organisations l'est, puisqu'elle les réécrit toutes.
 
 **Deux cas d'entrée.**
 
-- Cas A — le système a un modèle : la relance rejoue ce modèle. C'est le cas d'une exigence déjà dérivée automatiquement, dont on veut recalculer le résultat.
-- Cas B — le système n'a pas de modèle : la relance reste possible en **empruntant** le modèle d'un autre système, désigné explicitement. ALLOC-005 n'est pas remplacée — l'allocation manuelle reste le fonctionnement par défaut d'un système sans modèle ; l'emprunt est une action délibérée, jamais une substitution automatique.
+- Cas A — le sous-système a un modèle : la relance rejoue ce modèle. C'est le cas d'une exigence déjà dérivée automatiquement, dont on veut recalculer le résultat.
+- Cas B — le sous-système n'a pas de modèle : la relance reste possible en **empruntant** le modèle d'un autre sous-système, désigné explicitement. ALLOC-005 n'est pas remplacée — l'allocation manuelle reste le fonctionnement par défaut d'un sous-système sans modèle ; l'emprunt est une action délibérée, jamais une substitution automatique.
 
 **Choix du modèle.** Proposé à chaque relance, dans les deux cas, et présenté en deux temps (DEC-047) :
 
-1. **Les produits du système concerné**, d'abord — pour SIG, choisir entre le modèle *Urban* et le modèle *Mainline*. Ce n'est pas un emprunt : les deux sont des modèles légitimes du même système, et c'est le cas d'usage principal. Le produit du tender présélectionne le sien.
-2. **Le modèle d'un autre système**, ensuite et distinctement — le cas B, l'exception. La liste doit dire laquelle des deux natures elle propose ; sans quoi emprunter devient aussi banal que choisir.
+1. **Les produits du sous-système concerné**, d'abord — pour SIG, choisir entre le modèle *Urban* et le modèle *Mainline*. Ce n'est pas un emprunt : les deux sont des modèles légitimes du même sous-système, et c'est le cas d'usage principal. Le produit du tender présélectionne le sien.
+2. **Le modèle d'un autre sous-système**, ensuite et distinctement — le cas B, l'exception. La liste doit dire laquelle des deux natures elle propose ; sans quoi emprunter devient aussi banal que choisir.
 
 Choisir l'autre produit à la relance **ne change pas le produit du tender**, qui est figé à la création (DEC-049). La relance reste ponctuelle.
 
@@ -61,13 +61,13 @@ Choisir l'autre produit à la relance **ne change pas le produit du tender**, qu
 
 **Condition.** La relance est **interdite dès qu'une réponse est enregistrée** sur l'une quelconque de ses organisations. Le contrôle est alors visible mais inactif, avec le motif affiché — pas masqué, sinon l'absence s'interprète comme un défaut. Cette règle est ce qui rend l'application directe sans risque : rien en aval ne peut être détruit, puisque rien en aval n'existe encore.
 
-**Emprunt ponctuel.** Le modèle emprunté au cas B ne laisse **aucun marqueur persistant** : ni sur l'exigence, ni dans les filtres, ni à l'export. L'emprunt vaut pour cette relance seulement et ne devient pas la configuration du système.
+**Emprunt ponctuel.** Le modèle emprunté au cas B ne laisse **aucun marqueur persistant** : ni sur l'exigence, ni dans les filtres, ni à l'export. L'emprunt vaut pour cette relance seulement et ne devient pas la configuration du sous-système.
 
 **Trace.** La relance écrit dans l'historique de branche comme toute autre action — qui, quand, quel modèle, cas A ou B. C'est le seul endroit où la provenance subsiste, et c'est voulu : l'emprunt est silencieux dans l'interface courante, pas effacé de l'historique.
 
-**Droits.** L'équipe de gestion du projet et les contributeurs du système concerné (DEC-003, DEC-012). La relance n'ouvre aucun droit nouveau et n'en retire aucun.
+**Droits.** L'équipe de gestion du tender et les contributeurs du sous-système concerné (DEC-003, DEC-012). La relance n'ouvre aucun droit nouveau et n'en retire aucun.
 
-**Où se trouve le contrôle.** En tête du bloc de qualification pour le PM sur un tender à un système ; **sur chaque carte système** dans la vue PM d'un Turnkey, puisque chaque système a son propre modèle ; en tête de la vue contributeur. Un contrôle réservé au détail d'un système, un clic plus loin, n'a pas été trouvé à l'usage (23 septembre 2026). La relance **en masse** ne touche que les exigences : blocs d'information et titres sont écartés et comptés à part.
+**Où se trouve le contrôle.** En tête du bloc de qualification pour le TM sur un tender à un sous-système ; **sur chaque carte sous-système** dans la vue TM d'un Turnkey, puisque chaque sous-système a son propre modèle ; en tête de la vue contributeur. Un contrôle réservé au détail d'un sous-système, un clic plus loin, n'a pas été trouvé à l'usage (23 septembre 2026). La relance **en masse** ne touche que les exigences : blocs d'information et titres sont écartés et comptés à part.
 
 **Confiance.** Les scores issus d'une relance suivent ALLOC-006 et ALLOC-007 : affichés par champ, et sans jamais dispenser de la validation humaine. Une relance ne vaut pas validation.
 
@@ -79,44 +79,44 @@ ALLOC-018 — DEC-073 : **un titre ou un bloc d'information n'a pas de statut.**
 
 ALLOC-017 — DEC-061/062 : sur un tender dont le produit a des clés ([KEYS](KEYS.md)), la chaîne ABS → PBS → OBS se choisit dans les listes cochées pour ce produit, jamais en texte libre. L'OBS proposé en premier est celui rangé sous l'ABS de l'exigence, comme dans le classeur ; les autres restent accessibles. La relance dérive de même l'OBS sous l'ABS qu'elle vient de dériver. Le PBS est un élément produit (DEC-062). Les valeurs Functional / Performance / Security / Interface / Regulatory, que le prototype affichait d'abord sous « PBS » puis sous « Nature », **ne font plus partie d'Allocation** (DEC-074).
 
-**Nature et classe (DEC-074).** La **nature** d'un bloc, c'est ce qu'il est : **Information, Heading ou Requirement** — rien d'autre. Elle se lit et se corrige dans le détail, en tête, et **n'a pas de colonne dans la table**. La **classe** (technique / non technique) s'affiche dans le détail de toute exigence, juste en dessous — elle n'y figurait que dans la vue du chef de projet Turnkey, si bien qu'un tender SIG ne la montrait pas. Une nature ou une classe détectée par l'IA le dit, avec un bouton pour la confirmer. Critères : ALLOC-T25 — le détail d'une exigence montre Nature (trois valeurs) et Class, sur tout tender ; ALLOC-T26 — aucune colonne Nature dans la table, et aucune valeur Functional / Performance / Security / Interface / Regulatory dans Allocation.
+**Type et classe (DEC-074, DEC-126).** Le **type** d'un bloc (« Nature » jusqu'à DEC-126), c'est ce qu'il est : **Information, Heading ou Requirement** — rien d'autre. Il se lit et se corrige dans le détail, en tête, et **n'a pas de colonne dans la table**. La **classe** (technique / non technique) s'affiche dans le détail de toute exigence, juste en dessous — elle n'y figurait que dans la vue du tender manager Turnkey, si bien qu'un tender SIG ne la montrait pas. Le type comme la classe, s'ils ont été détectés par l'IA, le disent, avec un bouton pour les confirmer. Critères : ALLOC-T25 — le détail d'une exigence montre Type (trois valeurs) et Class, sur tout tender ; ALLOC-T26 — aucune colonne Type dans la table, et aucune valeur Functional / Performance / Security / Interface / Regulatory dans Allocation.
 
-ALLOC-019 — DEC-075 : **changer la nature ou la classe propose de relancer le modèle.** Une ligne colorée « ↻ Re-run the model » s'affiche au-dessus d'ABS, PBS et OBS, avec la raison (nature changed / class changed). Rien n'est relancé tout seul. Elle disparaît quand la caractérisation revient à celle de la dérivation, ou après une relance, quelle que soit sa voie. Relance bloquée : la même ligne le dit, sans bouton. Critère : ALLOC-T27 — basculer la classe d'une exigence SIG non répondue affiche le bouton ; le cliquer re-dérive ABS / PBS / OBS et le bouton disparaît ; sur une exigence répondue, la ligne dit « re-run blocked ».
+ALLOC-019 — DEC-075, DEC-126 : **changer le type ou la classe propose de relancer le modèle.** Une ligne colorée « ↻ Re-run the model » s'affiche au-dessus d'ABS, PBS et OBS, avec la raison (type changed / class changed). Rien n'est relancé tout seul. Elle disparaît quand la caractérisation revient à celle de la dérivation, ou après une relance, quelle que soit sa voie. Relance bloquée : la même ligne le dit, sans bouton. Critère : ALLOC-T27 — basculer la classe d'une exigence SIG non répondue affiche le bouton ; le cliquer re-dérive ABS / PBS / OBS et le bouton disparaît ; sur une exigence répondue, la ligne dit « re-run blocked ».
 
-ALLOC-020 — DEC-076 : **tout OBS et tout système se supprime, jusqu'à zéro.** Le ✕ est sur chaque ligne de la liste OBS (SIG comme Turnkey) et de la liste System du Turnkey. Plus rien : la liste le dit (« No role yet », « No system yet ») et l'exigence est Incomplete. Une entrée déjà répondue demande confirmation. Critère : ALLOC-T28 — sur une exigence SIG à un seul OBS, le ✕ est présent et le retire ; sur une exigence Turnkey à deux systèmes, les deux se retirent et l'exigence passe Incomplete. Le chef de projet ajoute un système directement (« + Add system », recherche sur le code et le nom), y compris sur une exigence qui n'en a plus ; seul le contributeur passe par une proposition (« + Missing system »).
+ALLOC-020 — DEC-076, DEC-126 : **tout OBS et tout sous-système se supprime, jusqu'à zéro.** Le ✕ est sur chaque ligne de la liste OBS (SIG comme Turnkey) et de la liste Sub-system du Turnkey. Plus rien : la liste le dit (« No role yet », « No sub-system yet ») et l'exigence est Incomplete. Une entrée déjà répondue demande confirmation. Critère : ALLOC-T28 — sur une exigence SIG à un seul OBS, le ✕ est présent et le retire ; sur une exigence Turnkey à deux sous-systèmes, les deux se retirent et l'exigence passe Incomplete. Le tender manager ajoute un sous-système directement (« + Add sub-system », recherche sur le code et le nom), y compris sur une exigence qui n'en a plus ; seul le contributeur passe par une proposition (« + Missing sub-system »).
 
-ALLOC-021 — DEC-082 : **un partenaire externe est un système de la liste OBS Turnkey**, ajouté par le chef de projet dans les paramètres du tender, jamais prédit par le modèle. Couleur propre partout, pas de passe 2 (la branche est allouée dès qu'elle est attribuée au partenaire), responsable affiché « PM · for partner ». Critère : ALLOC-T29 — sur le Turnkey de démo, Voltara Engineering apparaît en bleu-vert dans la cellule System, dans la liste System du détail et dans « + Add system » ; son détail ne montre ni ABS / PBS / OBS ni équipe.
+ALLOC-021 — DEC-082, DEC-126 : **un partenaire externe est un sous-système de la liste OBS Turnkey**, ajouté par le tender manager dans les paramètres du tender, jamais prédit par le modèle. Couleur propre partout, pas de passe 2 (la branche est allouée dès qu'elle est attribuée au partenaire), responsable affiché « TM · for partner ». Critère : ALLOC-T29 — sur le Turnkey de démo, Voltara Engineering apparaît en bleu-vert dans la cellule Sub-system, dans la liste Sub-system du détail et dans « + Add sub-system » ; son détail ne montre ni ABS / PBS / OBS ni équipe.
 
-ALLOC-022 — DEC-084 : **pas de jalon « Finalize allocation »** ; la validation se fait exigence par exigence (pastille de statut, bouton du panneau, touche V, ou action groupée). Le panneau montre toujours l'étape suivante — grisée avec sa raison quand elle n'est pas possible. **Depuis DEC-099, c'est une seule validation** : caractérisation et allocation ensemble (par système quand il y en a plusieurs). Critère : ALLOC-T30 — sur une exigence SIG à un système, valider la caractérisation fait apparaître « Validate allocation & send » ; une exigence Turnkey à deux systèmes montre une ligne par système ; aucun bouton Finalize nulle part.
+ALLOC-022 — DEC-084 : **pas de jalon « Finalize allocation »** ; la validation se fait exigence par exigence (pastille de statut, bouton du panneau, touche V, ou action groupée). Le panneau montre toujours l'étape suivante — grisée avec sa raison quand elle n'est pas possible. **Depuis DEC-099, c'est une seule validation** : caractérisation et allocation ensemble (par sous-système quand il y en a plusieurs). Critère : ALLOC-T30 — sur une exigence SIG à un sous-système, valider la caractérisation fait apparaître « Validate allocation & send » ; une exigence Turnkey à deux sous-systèmes montre une ligne par sous-système ; aucun bouton Finalize nulle part.
 
 ALLOC-023 — DEC-091 : une relance au résultat identique ne dit rien ; le journal note « same result ». DEC-093 : un partenaire ajouté se retire des paramètres tant qu'aucune exigence ne lui est attribuée. DEC-094 : aucun bloc capturé ne se supprime à la main — on le reclasse en Information.
 
-ALLOC-024 — DEC-099 à DEC-101 : une validation par exigence (V compris), sans étape « confirmer l'IA » ; lecture seule complète pour un contributeur sur une exigence qui n'est pas à lui ; détail d'un système Turnkey identique à la vue SIG, plus la réassignation. Critère : ALLOC-T31 — sur L4-0011, V passe l'exigence à Allocated en une fois ; un contributeur sur une exigence d'un autre système n'a aucun contrôle actif ; le PBS modifié dans le détail d'un système Turnkey ne change que ce système.
+ALLOC-024 — DEC-099 à DEC-101 : une validation par exigence (V compris), sans étape « confirmer l'IA » ; lecture seule complète pour un contributeur sur une exigence qui n'est pas à lui ; détail d'un sous-système Turnkey identique à la vue SIG, plus la réassignation. Critère : ALLOC-T31 — sur L4-0011, V passe l'exigence à Allocated en une fois ; un contributeur sur une exigence d'un autre sous-système n'a aucun contrôle actif ; le PBS modifié dans le détail d'un sous-système Turnkey ne change que ce sous-système.
 
-ALLOC-025 — DEC-102 à DEC-104 : une personne n'est affectable que sur son système ; un système sans modèle démarre vide, donc Incomplete (aucun statut « Awaiting manual allocation ») ; sur Turnkey, le PM valide l'aiguillage (statut propre au niveau Turnkey, « Reassignment requested » tant qu'une réassignation attend) et chaque système est validé par son contributeur ou le PM. Critère : ALLOC-T32 — en vue Paolo Ferri (SEN), une exigence est Incomplete avec ABS/PBS/OBS vides ; remplir ABS, PBS et un OBS la passe à To validate, même sans personne (DEC-025), sa validation à Allocated ; le sélecteur de personne SEN ne propose aucun membre SIG ; en vue PM Turnkey, « Validate & send to the systems » passe l'exigence à Allocated sans afficher le statut des systèmes.
+ALLOC-025 — DEC-102 à DEC-104, DEC-126 : une personne n'est affectable que sur son sous-système ; un sous-système sans modèle démarre vide, donc Incomplete (aucun statut « Awaiting manual allocation ») ; sur Turnkey, le TM valide l'aiguillage (statut propre au niveau Turnkey, « Reassignment requested » tant qu'une réassignation attend) et chaque sous-système est validé par son contributeur ou le TM. Critère : ALLOC-T32 — en vue Paolo Ferri (SEN), une exigence est Incomplete avec ABS/PBS/OBS vides ; remplir ABS, PBS et un OBS la passe à To validate, même sans personne (DEC-025), sa validation à Allocated ; le sélecteur de personne SEN ne propose aucun membre SIG ; en vue TM Turnkey, « Validate & send to the sub-systems » passe l'exigence à Allocated sans afficher le statut des sous-systèmes.
 
 ## Une allocation par organisation
 
-ALLOC-016 — DEC-060 : **une allocation est une organisation et la personne qui y répond.** Une exigence qui atteint trois organisations est **trois allocations à faire**, et le compte affiché est celui des organisations, pas celui des systèmes.
+ALLOC-016 — DEC-060 : **une allocation est une organisation et la personne qui y répond.** Une exigence qui atteint trois organisations est **trois allocations à faire**, et le compte affiché est celui des organisations, pas celui des sous-systèmes.
 
 Il y avait auparavant deux blocs disant la même chose : la liste des organisations d'un côté, un bloc « qui vérifie » de l'autre, qui reprenait la même liste pour y accrocher une personne. **DEC-060 remplace DEC-057** : il n'y a pas de bloc d'affectations séparé, c'est l'allocation elle-même qui porte sa personne.
 
 Ce que cela implique :
 
-- Le libellé de chaque allocation est **l'organisation**, pas le système. Le système reste affiché en étiquette là où il distingue quelque chose — un Turnkey, ou une exigence qui atteint plusieurs systèmes — et disparaît là où il serait le même code sur toutes les cartes.
+- Le libellé de chaque allocation est **l'organisation**, pas le sous-système. Le sous-système reste affiché en étiquette là où il distingue quelque chose — un Turnkey, ou une exigence qui atteint plusieurs sous-systèmes — et disparaît là où il serait le même code sur toutes les cartes.
 - Le statut et le verdict se lisent **par organisation**, puisque chacune répond pour elle-même et que les verdicts se consolident ensuite (DEC-055, DEC-037).
 - L'étape OBS de la chaîne de dérivation **reste** : elle est la lecture de ce que le modèle a dérivé, avec ses scores de confiance et ses ajouts/retraits. L'allocation, elle, est le travail qui en découle. Les deux se ressemblent parce que l'une décrit ce que l'autre traite ; elles ne se dupliquent pas.
-- Sur une exigence à **une seule** organisation dans **un seul** système, la personne affectée à l'allocation est aussi la personne de l'exigence : les deux champs ne peuvent pas diverger sans que l'un des deux mente.
+- Sur une exigence à **une seule** organisation dans **un seul** sous-système, la personne affectée à l'allocation est aussi la personne de l'exigence : les deux champs ne peuvent pas diverger sans que l'un des deux mente.
 
 ## Relance globale au changement de modèle
 
-ALLOC-015 — DEC-050 : les paramètres du projet permettent de **changer le modèle appliqué**, indépendamment du produit qui reste figé (DEC-049). Ce changement relance la dérivation sur **toutes les exigences du tender**.
+ALLOC-015 — DEC-050 : les paramètres du tender permettent de **changer le modèle appliqué**, indépendamment du produit qui reste figé (DEC-049). Ce changement relance la dérivation sur **toutes les exigences du tender**.
 
-**Elle écrase tout, réponses comprises.** C'est l'inverse exact de la relance unitaire, et c'est voulu : si le modèle du projet était le mauvais, alors toutes les dérivations produites jusque-là sont fausses, et les réponses qui s'appuient dessus le sont aussi. Même logique qu'une nouvelle version de document (DEC-027), appliquée à la cause plutôt qu'au texte.
+**Elle écrase tout, réponses comprises.** C'est l'inverse exact de la relance unitaire, et c'est voulu : si le modèle du tender était le mauvais, alors toutes les dérivations produites jusque-là sont fausses, et les réponses qui s'appuient dessus le sont aussi. Même logique qu'une nouvelle version de document (DEC-027), appliquée à la cause plutôt qu'au texte.
 
 **Conséquences à assumer à l'écran.** L'action est destructrice et doit se présenter comme telle : annoncer le nombre d'exigences touchées **et le nombre de réponses perdues** avant de confirmer, pas après. Une confirmation ordinaire ne suffit pas pour une action qui efface le travail des contributeurs.
 
-**Les deux relances ne se remplacent pas.** L'unitaire est chirurgicale, donc protégée (ALLOC-014, interdite si réponse). La globale est un changement de prémisse du projet, donc totale. Ne pas offrir l'une comme repli de l'autre, et ne pas fusionner leurs contrôles.
+**Les deux relances ne se remplacent pas.** L'unitaire est chirurgicale, donc protégée (ALLOC-014, interdite si réponse). La globale est un changement de prémisse du tender, donc totale. Ne pas offrir l'une comme repli de l'autre, et ne pas fusionner leurs contrôles.
 
 **Ce qui bloque, précisément** (DEC-089, remplace DEC-051 sur ce point). **Seule une réponse enregistrée** (ou un verdict) bloque. L'attente d'une réponse du client (`awaiting_qa`) **ne bloque plus** : rien n'est encore répondu sur l'affectation, une relance n'y perd rien. Les états qui ne bloquent pas : proposé, assigné, en attente de réponse du contributeur, en attente de réponse client, réallocation demandée.
 
@@ -128,9 +128,9 @@ ALLOC-015 — DEC-050 : les paramètres du projet permettent de **changer le mod
 
 Conserver la distinction Incomplete / To review / To validate / Allocated ; ne pas assimiler validation de l'allocation et conformité finale.
 
-- ALLOC-T01 : Turnkey multi-système garde une exigence et plusieurs branches.
+- ALLOC-T01 : un Turnkey à plusieurs sous-systèmes garde une exigence et plusieurs branches.
 - ALLOC-T02 : en SIG, corriger ABS invalide ses propositions PBS/OBS dépendantes ; corriger PBS invalide OBS. Ancien ordre interdit pour SIG.
-- ALLOC-T03 : système sans modèle : travail manuel possible, autres exigences indépendantes.
+- ALLOC-T03 : sous-système sans modèle : travail manuel possible, autres exigences indépendantes.
 - ALLOC-T04 : résultat IA complet reste à valider explicitement.
 - ALLOC-T05 : chaque entrée OBS porte au plus une personne, responsable de sa conformité ; aucun champ « responsable du suivi » au niveau exigence (DEC-087).
 - ALLOC-T06 : validation sans responsable autorisée, absence affichée ; aucun blocage de validation lié au seul responsable manquant.
@@ -139,17 +139,17 @@ Conserver la distinction Incomplete / To review / To validate / Allocated ; ne p
 - ALLOC-T09 : relancer une exigence recalcule ses seuls ABS/PBS/OBS ; les personnes affectées à chacune de ses organisations sont inchangées après la relance.
 - ALLOC-T10 : une exigence dont une organisation a enregistré sa réponse n'est pas relançable ; le contrôle reste visible et inactif, avec son motif.
 - ALLOC-T11 : relancer une exigence ne modifie aucune autre exigence ; à l'intérieur, elle re-dérive bien toutes ses organisations, jamais une seule.
-- ALLOC-T12 : un système sans modèle peut être relancé avec le modèle d'un autre, choisi explicitement ; le système reste sans modèle après coup et les exigences suivantes restent en allocation manuelle.
+- ALLOC-T12 : un sous-système sans modèle peut être relancé avec le modèle d'un autre, choisi explicitement ; le sous-système reste sans modèle après coup et les exigences suivantes restent en allocation manuelle.
 - ALLOC-T13 : après un emprunt, aucune trace du modèle emprunté n'apparaît sur l'exigence ni à l'export ; l'historique de branche, lui, la porte.
-- ALLOC-T14 : le sélecteur de relance distingue les produits du système concerné de l'emprunt à un autre système ; le produit du tender y est présélectionné.
-- ALLOC-T15 : relancer avec l'autre produit laisse le produit du tender inchangé ; rien dans le projet n'indique ensuite qu'il aurait changé.
+- ALLOC-T14 : le sélecteur de relance distingue les produits du sous-système concerné de l'emprunt à un autre sous-système ; le produit du tender y est présélectionné.
+- ALLOC-T15 : relancer avec l'autre produit laisse le produit du tender inchangé ; rien dans le tender n'indique ensuite qu'il aurait changé.
 - ALLOC-T16 : changer le modèle dans les paramètres annonce, avant confirmation, le nombre d'exigences touchées et le nombre de réponses détruites.
 - ALLOC-T17 : après une relance globale, aucune exigence ne conserve de dérivation issue du modèle précédent.
-- ALLOC-T18 : le nombre d'allocations affiché égale le nombre d'organisations de l'exigence, et non celui de ses systèmes.
+- ALLOC-T18 : le nombre d'allocations affiché égale le nombre d'organisations de l'exigence, et non celui de ses sous-systèmes.
 - ALLOC-T19 : aucun écran ne propose deux endroits pour désigner la personne d'une même organisation.
 - ALLOC-T20 : affecter une personne sur une exigence à organisation unique donne la même personne partout où l'exigence l'affiche — table comprise.
 - ALLOC-T21 : supprimer des organisations jusqu'à n'en garder qu'une rend à la table la personne de celle qui reste.
 - ALLOC-T22 : une relance en masse ne dérive rien sur un bloc qui n'est pas une exigence.
-- ALLOC-T23 : le contrôle de relance est visible sans navigation supplémentaire pour le PM (y compris sur un Turnkey) comme pour le contributeur du système.
+- ALLOC-T23 : le contrôle de relance est visible sans navigation supplémentaire pour le TM (y compris sur un Turnkey) comme pour le contributeur du sous-système.
 
 Une correction des métadonnées n’est pas assimilée par défaut à une modification du texte source/de travail. Toute modification du texte/traduction entraîne une revue selon LIFE-008 ; les modifications structurelles d'allocation suivent la réallocation.

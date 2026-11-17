@@ -1,0 +1,31 @@
+Smart Req
+
+STB-2026 · Energy Monitoring System
+
+Thibaud Breton added you to this tender
+
+You're a contributor for the SIG sub-system. When requirements reach
+SIG, you'll check who in SIG takes each one, and later answer the ones
+assigned to you.
+
+Nothing to do yet. Smart Req will tell you when there is.
+
+Tender manager:  Thibaud Breton
+Your sub-system: SIG
+Submission:      Fri 11 Dec 2026
+
+Open STB-2026: https://smartreq.example/tenders/STB-2026
+
+New to Smart Req? It's where this tender's requirements are captured,
+routed to the people who answer them, and prepared for the client. Sign
+in with your company account.
+
+Everything appears in Smart Req, under the bell. By email, you get at
+most one summary a day, only about what you haven't seen there, and a
+message when someone mentions you.
+
+-- 
+You get this email because you were added to a tender. This one is
+always sent.
+Notification settings: https://smartreq.example/settings/notifications
+Sent by Smart Req from an unattended mailbox: replies aren't read.

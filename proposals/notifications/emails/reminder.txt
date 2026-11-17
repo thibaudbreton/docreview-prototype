@@ -1,0 +1,29 @@
+Smart Req
+
+STB-2026 · Energy Monitoring System
+
+Thibaud Breton is waiting on your answer for 4 assignments
+
+> We need SIG's answers before the QCD review on Thursday.
+> — Thibaud Breton · Tender manager
+
+SRM-00001  The system shall record the energy consumed by each
+           substation every 15 minutes.
+           Waiting 9 days
+SRM-00004  The system shall provide a monthly consumption report for
+           each line.
+           Waiting 6 days
+SRM-00021  Unacknowledged alarms shall be escalated to the control
+           centre within 2 minutes.
+           Waiting 6 days
+SRM-00030  Reports shall be exportable to CSV and PDF.
+           Waiting 3 days
+
+Answer them in Smart Req: https://smartreq.example/tenders/STB-2026/compliance?show=reminded&at=2026-12-01T14:32
+
+Reply to this email to write to Thibaud directly.
+
+-- 
+Thibaud Breton sent this reminder from Smart Req at 14:32. Reminders are
+always sent by a person, at most once every 2 days on this tender.
+Notification settings: https://smartreq.example/settings/notifications

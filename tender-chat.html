@@ -146,7 +146,7 @@
      execute(i){ step(`Counting${i.query?` “${i.query}”`:""}…`); const res=i.query?search(i.query,i).map(x=>x.r):filterRows(i);
        const by={}; res.forEach(r=>{ by[CAP.docs[r.doc]]=(by[CAP.docs[r.doc]]||0)+1; }); return {total:res.length, by_document:by, example_ids:res.slice(0,8).map(r=>r.id)}; }},
     {name:"requirement_record",
-     description:"What the bid team has recorded on one requirement: gap strategy and linked risks for each Not compliant system, any project-manager correction of what the client is told, and its recent activity (who changed what, when).",
+     description:"What the bid team has recorded on one requirement: gap strategy and linked risks for each Not compliant sub-system, any tender-manager correction of what the client is told, and its recent activity (who changed what, when).",
      inputSchema:{type:"object",properties:{id:{type:"string"}},required:["id"]},
      execute(i){ const id=String(i.id||""); step(`Opening the record of ${id}…`);
        const docs=Object.entries(shell("getGapDocs")||{}).filter(([k])=>k.startsWith(id+"#"));
@@ -188,7 +188,7 @@ Answer in the user's language, concisely (under 200 words unless asked for more)
   }
   function scopeLine(){
     const p=pid();
-    return `Captured tender: ${CAP.docs.length} documents · ${ROWS.length.toLocaleString("en")} blocks${p!=="stb2026"?" · reads the STB-2026 capture, not this project":""}. Answers use your own Claude account.`;
+    return `Captured tender: ${CAP.docs.length} documents · ${ROWS.length.toLocaleString("en")} blocks${p!=="stb2026"?" · reads the STB-2026 capture, not this tender":""}. Answers use your own Claude account.`;
   }
   function render(){
     $("tc-scope").textContent=scopeLine();
