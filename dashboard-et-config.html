@@ -1436,7 +1436,10 @@ const SIG_CAST_ACTIVITIES=[
   if(reg){ reg.textContent=p.region?`${p.region} — ${regName||p.region}`:""; reg.hidden=!p.region; }
   const days=document.querySelector(".dash-hero .d-num"); if(days&&p.days!=null) days.textContent=p.days;
   if(p.builtOut===true) return;
-  const banner=document.getElementById("dash-scope-banner"); if(banner) banner.style.display="block";
+  const banner=document.getElementById("dash-scope-banner"); if(!banner) return;
+  banner.style.display="block";
+  // a generated tender (tenders.js) has its own Allocation content and nothing else
+  if(p.ownAllocation) banner.innerHTML="<b>Prototype scope.</b> Allocation shows this tender's own content. Compliance, Statistics and Users reuse a reference tender's content for this test phase.";
 })();
 
 /* Phase gating — reads shared state from the shell (merged app) */

@@ -460,6 +460,14 @@ body.mode-review .doc-scroll{display:none}
 .rrow .c-req{gap:8px;position:relative}
 .rrow .c-req .excerpt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.45}
 .req-badges{display:inline-flex;gap:var(--space-1);flex-shrink:0}
+/* An OBS value is often longer than its column — a job title of the keys
+   ("ICC Application Design Eng. CTC / TMS") wrapped onto three lines and the
+   fixed-height row showed the middle of them. One line, cut with "…", the
+   whole name on hover; wrap mode shows it in full. The "+N" beside it counts
+   the requirement's other roles. */
+.rrow .c-obs .fval{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rgrid-full.wrap-text .rrow .c-obs .fval{white-space:normal;overflow:visible}
+.rrow .c-obs .ptag-more{margin-left:var(--space-1);flex-shrink:0}
 /* B8 — information rows: no system/allocation/compliance/status, just id+text+category */
 .rrow.info-row{cursor:default}
 .rrow.info-row .c-req{gap:var(--space-2)}
@@ -1735,7 +1743,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
                ellipsis-truncated, fixed-max-width treatment. -->
           <div class="search-box" style="width:220px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input type="text" id="table-search" placeholder="Search requirement, ID…">
+            <input type="text" id="table-search" placeholder="Search, or an ID then Enter" title="Filters as you type. Enter goes to the block whose ID was typed — or just its number — and clears the search. Shortcut: / or G">
           </div>
           <span class="shown-count" id="review-sub" hidden></span>
           <div class="active-filter" id="adv-filter-banner" style="display:none">
@@ -1761,9 +1769,9 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
             <div class="kbd-help" tabindex="0" aria-label="Keyboard shortcuts"><span class="kbd-help-ic"><i class=ic-keyboard></i></span>
               <div class="kbd-help-pop" role="tooltip">
                 <div class="kbd-help-h">Move</div>
-                <div class="kbd-help-row"><span class="k"><kbd>↑</kbd><kbd>↓</kbd> or <kbd>J</kbd><kbd>K</kbd></span><span>Previous / next row</span></div><div class="kbd-help-row"><span class="k"><kbd>←</kbd><kbd>→</kbd></span><span>Previous / next column</span></div><div class="kbd-help-row"><span class="k"><kbd>Space</kbd></span><span>Select the row (on the checkbox column)</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>↑</kbd><kbd>↓</kbd> or <kbd>J</kbd><kbd>K</kbd></span><span>Previous / next row</span></div><div class="kbd-help-row"><span class="k"><kbd>←</kbd><kbd>→</kbd></span><span>Previous / next column</span></div><div class="kbd-help-row"><span class="k"><kbd>/</kbd> or <kbd>G</kbd></span><span>Go to an ID: type it, or its number, then <kbd>Enter</kbd></span></div><div class="kbd-help-row"><span class="k"><kbd>Space</kbd></span><span>Select the row (on the checkbox column)</span></div>
                 <div class="kbd-help-h">Edit</div>
-                <div class="kbd-help-row"><span class="k"><kbd>Enter</kbd> or <kbd>F2</kbd></span><span>Edit the active cell</span></div><div class="kbd-help-row"><span class="k"><kbd>Enter</kbd></span><span>While editing: confirm and go down</span></div><div class="kbd-help-row"><span class="k"><kbd>Esc</kbd></span><span>While editing: cancel</span></div><div class="kbd-help-row"><span class="k"><kbd>A</kbd></span><span>Go to the selected row's PIC</span></div>
+                <div class="kbd-help-row"><span class="k"><kbd>Enter</kbd> or <kbd>F2</kbd></span><span>Edit the active cell — on Class or Status, switch or validate</span></div><div class="kbd-help-row"><span class="k"><kbd>Enter</kbd></span><span>While editing: confirm and go down</span></div><div class="kbd-help-row"><span class="k"><kbd>Esc</kbd></span><span>While editing: cancel</span></div><div class="kbd-help-row"><span class="k"><kbd>A</kbd></span><span>Go to the selected row's PIC</span></div><div class="kbd-help-row"><span class="k"><kbd>O</kbd></span><span>Add a role (OBS) to the selected requirement, then its PIC</span></div>
                 <div class="kbd-help-h">Select</div>
                 <div class="kbd-help-row"><span class="k"><kbd>X</kbd></span><span>Tick / untick the active row, from any column</span></div>
                 <div class="kbd-help-row"><span class="k"><kbd>⇧</kbd><kbd>↑</kbd><kbd>↓</kbd></span><span>Extend the selection row by row</span></div>
@@ -1875,6 +1883,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
 })();
 /* @include data.js */
 /* @include keys.js */
+/* @include tenders.js */
 /* @include table-engine.js */
 /* =====================================================
    FEATURE FLAGS
@@ -2037,6 +2046,20 @@ const IS_SIG_TENDER = (function(){
     return !!p && p.line==="SIG";
   }catch(e){ return false; }
 })();
+/* A generated tender (tenders.js, written by build_tender.py — RFP-2026-152
+   today): when the open tender has one, its documents, its sections and its
+   people replace the hand-written content below. Same block shapes as
+   seedSigSections(), at working volume. Its people are sub-system members like
+   any others: they join the roster, so every picker, filter and count reads
+   them the usual way. */
+const TENDER_SET = (function(){
+  try{
+    if(window.parent===window||!window.parent.getCurrentProject) return null;
+    const p=window.parent.getCurrentProject();
+    return (p && window.SRM_TENDERS && window.SRM_TENDERS[p.id]) || null;
+  }catch(e){ return null; }
+})();
+if(TENDER_SET) (TENDER_SET.people||[]).forEach(p=>{ if(!MGR(p.id)) MANAGERS.push(Object.assign({},p)); });
 /* =====================================================
    SIG TENDER CONTENT — RFP-2026-114 "Line 4 Resignalling — ETCS Level 2" (product: Mainline Wayside)
    DEC-044 / TYPE-T07. A standalone SIG tender, so the "Tender SIG autonome"
@@ -2174,7 +2197,8 @@ function seedSigSections(){
 /* TYPE-T07 — the capture (window.SRM_DATA) is STB-2026's own document set, so a
    SIG tender never reads it: it would show Energy Monitoring System's content on
    a signalling tender, which is exactly what DEC-044 rules out. */
-const DOCS = IS_SIG_TENDER ? seedSigDocs()
+const DOCS = TENDER_SET ? TENDER_SET.docs
+  : IS_SIG_TENDER ? seedSigDocs()
   : (window.SRM_DATA && Array.isArray(window.SRM_DATA.documents) && window.SRM_DATA.documents.length)
   ? window.SRM_DATA.documents.map(d=>({id:d.id, name:d.name, file:"", versions:[{v:"v1.0", date:"", note:"As captured"}]}))
   : seedDemoDocs();
@@ -2396,7 +2420,8 @@ function seedDemoSections(){
   },
   ];
 }
-const SECTIONS = IS_SIG_TENDER ? seedSigSections() : (buildDataFromCapture() || seedDemoSections());
+const SECTIONS = TENDER_SET ? TENDER_SET.sections
+  : IS_SIG_TENDER ? seedSigSections() : (buildDataFromCapture() || seedDemoSections());
 
 /* B7 — the characterisation/allocation progression. Replaces the old
    suggested/edited/toreview/validated vocabulary: those conflated "AI is
@@ -3727,8 +3752,9 @@ function reclassify(id, nature){
   if(!canCharacterise()){ charDenied(); return; }
   const f=findBlock(id); if(!f) return;
   const b=f.b, before=blockNature(b);
+  const undo=blockRestorer(b);   // a requirement turned into information loses its whole allocation: this is what brings it back
   // picking the type it already has is how an AI-detected type gets confirmed
-  if(before===nature){ if(b.typeAI){ b.typeAI=false; dropCharConf(b,"type"); computeCharStatus(b); refresh(); toast(`${b.id} — nature confirmed: ${NATURE_LABEL[nature]}`,"ok"); } return; }
+  if(before===nature){ if(b.typeAI){ b.typeAI=false; dropCharConf(b,"type"); computeCharStatus(b); refresh(); toast(`${b.id} — nature confirmed: ${NATURE_LABEL[nature]}`,"ok",undo); } return; }
   // TICKET-ai-uncertainty-display.md — an explicit reclassification IS the
   // human resolving whatever Type uncertainty existed, whichever direction
   // it goes. Cleared unconditionally; computeCharStatus() below derives the
@@ -3756,7 +3782,7 @@ function reclassify(id, nature){
   }
   computeCharStatus(b);
   logFeedback("char", id, NATURE_LABEL[before], NATURE_LABEL[nature], null);
-  toast(`${id} reclassified as ${NATURE_LABEL[nature]}`,"ok");
+  toast(`${id} reclassified as ${NATURE_LABEL[nature]}`,"ok",undo);
   if(nature==="heading"||nature==="info") state.selected=null;
   refresh();
 }
@@ -4061,6 +4087,14 @@ function deriveRequirementCompliance(b){
    (no obs, no team, nobody) rather than an empty array, which ensureTeams()
    would refill from the branch. */
 const obsSlotEmpty=t=>!t || (!(t.obs&&t.obs.v) && !t.team && !t.manager);
+/* After a role is added: the keyboard goes to the PIC field of that role's
+   allocation, further down the panel, so "which role, then who" needs no
+   scrolling and no click in between. */
+function focusAllocPerson(b, branch, tidx){
+  const bi=(b.branches||[]).indexOf(branch); if(bi<0) return;
+  const sel=document.querySelector(`[data-panelallocmgr="${bi}::${tidx}"]`);
+  if(sel){ sel.scrollIntoView({block:"nearest"}); sel.focus(); }
+}
 function obsListHTML(myBranch, ctx){
   const teams=ensureTeams(myBranch);
   const none = teams.length===1 && obsSlotEmpty(teams[0]);
@@ -4098,17 +4132,26 @@ function bindObsList(body,myBranch,b){
     const row=body.querySelector("#obs-add-row");
     const teams=ensureTeams(myBranch);
     const addEntry=(obs)=>{
+      const undo=blockRestorer(b);
       const entry=Object.assign({c:null},obs);
-      if(teams.length===1 && obsSlotEmpty(teams[0])){      // filling the emptied slot, not adding a second
-        teams[0].obs=entry; myBranch.obs=entry;
-        if((b.branches||[]).length===1) b.obs=entry;
-      } else
-      teams.push({team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",obs:entry});
-      myBranch.obs = myBranch.obs || entry;
+      /* A slot left without a role takes the new one, instead of a second
+         entry being added beside it: the one emptied slot (✕ on the last
+         role), and any slot whose role a corrected ABS or PBS cleared. That
+         slot keeps the person it had — changing what is derived never
+         reassigns, as for a re-run (DEC-042). It used to stay behind as a
+         "No role derived yet" line holding the person, with the new role
+         added under it and the table still showing no role at all. */
+      let at=teams.findIndex(t=>!(t.obs&&t.obs.v) && !t.team);
+      if(at>=0) teams[at].obs=entry;
+      else at=teams.push({team:null,manager:null,branchStatus:"proposed",allocStatus:"incomplete",compliance:"pending",obs:entry})-1;
+      // the sub-system — and the requirement, when this is its only one — show the first role
+      myBranch.obs=teams[0].obs;
+      if((b.branches||[]).length===1) b.obs=teams[0].obs;
       markAllocEdited(myBranch); if((b.branches||[]).length===1) markAllocEdited(b);   // a filled OBS can move the sub-system out of Incomplete
       deriveRequirementCompliance(b);
-      toast(`${obs.v} added`,"ok");
+      toast(`${escHtml(obs.v)} added`,"ok",undo);
       refresh();
+      focusAllocPerson(b, myBranch, at);   // a role, then who is in charge of it: one gesture after the other
     };
     let candidates;   // [{key, label, sub, group, obs}]
     if(TENDER_KEYS){
@@ -4169,6 +4212,10 @@ function bindObsList(body,myBranch,b){
     });
     row.querySelector("#obs-add-cancel").addEventListener("click",()=>refresh());
     draw(); input.focus();
+    /* The list opens downwards, towards the validate button pinned to the
+       bottom of the panel: on a short screen the first roles were behind it.
+       The field and its list are brought to the middle of the panel. */
+    row.querySelector(".obs-pick").scrollIntoView({block:"center"});
   });
   body.querySelectorAll("[data-obsrm]").forEach(btn=>btn.addEventListener("click",()=>{
     const idx=+btn.dataset.obsrm;
@@ -4176,6 +4223,7 @@ function bindObsList(body,myBranch,b){
     const team=teams[idx]; if(!team) return;
     if(team.branchStatus==="answered" && !confirm(`This ${OBS_NOUN} already has a recorded answer. Removing it permanently deletes that work — this can't be undone. Continue?`)) return;
     const gone=(team.obs&&team.obs.v)||(team.team?TEAM(team.team).label:OBS_NOUN_CAP);
+    const undo=blockRestorer(b);
     if(teams.length===1){
       /* The last one: the slot stays, emptied — organisation and its person go
          together — and the allocation is Incomplete again until someone adds one. */
@@ -4184,7 +4232,7 @@ function bindObsList(body,myBranch,b){
       if((b.branches||[]).length===1) Object.assign(b,{obs:null,allocStatus:"incomplete",allocDoubtField:null,allocReviewReason:null});
       deriveRequirementCompliance(b);
       pushBranchLog(b, MGR(VIEWER).name, `Removed ${gone} — no ${OBS_NOUN} left`, "warn");
-      toast(`${gone} removed — no ${OBS_NOUN} left`,"ok");
+      toast(`${gone} removed — no ${OBS_NOUN} left`,"ok",undo);
       refresh(); return;
     }
     teams.splice(idx,1);
@@ -4196,7 +4244,7 @@ function bindObsList(body,myBranch,b){
       if((b.branches||[]).length===1) b.obs=teams[0].obs;
     }
     deriveRequirementCompliance(b);
-    toast(`${gone} removed`,"ok");
+    toast(`${gone} removed`,"ok",undo);
     refresh();
   }));
 }
@@ -4296,8 +4344,23 @@ function snapReq(b){
       obs:ts.map(t=>(t.obs&&t.obs.v)||"").join(" | "), mgr:ts.map(t=>t.manager||"").join("|")}; });
   return {nature:blockNature(b), tech:b.tech||null, st:b.status||null, full:isFullyAllocated(b), brs};
 }
+/* Unsaved work (2026-11-13). This screen's edits live in this screen only: a
+   reload, the browser's Back, a click on another screen, and they are gone
+   (the prototype stores nothing). The first time a refresh finds a requirement
+   changed, the shell is told; it then asks before leaving the screen or the
+   page (build_merge.py, markUnsaved). Nothing is saved by this — it only
+   stops the work from being lost by accident. */
+let LOG_SNAP_STR=null;
+function noteUnsavedWork(now){
+  const s=JSON.stringify(now);
+  if(LOG_SNAP_STR!==null && s!==LOG_SNAP_STR){
+    try{ if(window.parent!==window && window.parent.markUnsaved) window.parent.markUnsaved("review"); }catch(e){}
+  }
+  LOG_SNAP_STR=s;
+}
 function logReqDiffs(){
   const now={}; reqs().forEach(b=>{ now[b.id]=snapReq(b); });
+  noteUnsavedWork(now);
   if(!LOG_SNAP){ LOG_SNAP=now; return; }
   Object.entries(now).forEach(([id,n])=>{ const o=LOG_SNAP[id]; if(!o) return;
     if(o.nature!==n.nature) logReq(id,{cat:"alloc", what:"Type", from:NATURE_LABEL[o.nature]||"—", to:NATURE_LABEL[n.nature]||"—", k:"human"});
@@ -4702,6 +4765,7 @@ function renderSelBar(){
    holds the person itself. Everything writes through setAllocManager. */
 function bulkAssignManager(mid){
   const sys=mid?(MGR(mid)||{}).system||null:null;
+  const undo=selectionRestorer();
   let c=0, skipped=0;
   state.selection.forEach(id=>{ const f=findBlock(id); if(!f||blockNature(f.b)!=="requirement") return;
     const b=f.b, brs=(b.branches||[]).filter(br=>!isPartner(br.typology));
@@ -4717,7 +4781,7 @@ function bulkAssignManager(mid){
   });
   const who=mid?MGR(mid).name:"Unassigned";
   if(!c) toast(mid ? `Nothing assigned — no ${OBS_NOUN} in the selection${sys?` on ${TY(sys).code}`:""} is open to ${who}` : `Nothing to unassign in the selection`,"warn");
-  else toast(`${c} requirement${c>1?"s":""} → ${who}${skipped?` · ${skipped} left as is${sys?` (not on ${TY(sys).code}, or every ${OBS_NOUN} there already has its person)`:""}`:""}`,"ok");
+  else toast(`${c} requirement${c>1?"s":""} → ${who}${skipped?` · ${skipped} left as is${sys?` (not on ${TY(sys).code}, or every ${OBS_NOUN} there already has its person)`:""}`:""}`,"ok",undo);
   state.selection.clear(); lastSel=null; refresh();
 }
 /* DEC-100 — a contributor may select any row, but a bulk action changes only
@@ -4732,29 +4796,33 @@ function keepOwnSelection(){
 }
 function bulkSetTypology(pid){
   if(keepOwnSelection()) return;
+  const undo=selectionRestorer();
   let c=0;
   state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){
     f.b.perim=f.b.perim||[]; if(!f.b.perim.includes(pid)){ f.b.perim=[...f.b.perim,pid].sort((x,y)=>TYPO.findIndex(t=>t.id===x)-TYPO.findIndex(t=>t.id===y)); syncBranchesFromPerim(f.b); } f.b.perimAI=false; c++; } });   // the new sub-system gets its branch, as a single edit does
-  toast(`${TY(pid).label} added to ${c} requirement${c>1?"s":""}`,"ok");
+  toast(`${TY(pid).label} added to ${c} requirement${c>1?"s":""}`,"ok",undo);
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkSetClass(cls){
   if(!canCharacterise()){ charDenied(); return; }
+  const undo=selectionRestorer();
   let c=0;
   state.selection.forEach(id=>{ const f=findBlock(id); if(f&&blockNature(f.b)==="requirement"){ f.b.tech=cls; f.b.techAI=false; dropCharConf(f.b,"class"); markCharEdited(f.b); c++; } });
-  toast(`Classification set to ${cls==="tech"?"Technical":"Non-technical"} for ${c} requirement${c>1?"s":""}`,"ok");
+  toast(`Classification set to ${cls==="tech"?"Technical":"Non-technical"} for ${c} requirement${c>1?"s":""}`,"ok",undo);
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkMarkToReview(){
   if(keepOwnSelection()) return;
+  const undo=selectionRestorer();
   let c=0;
   state.selection.forEach(id=>{ const f=findBlock(id); if(!f)return;
     f.b.status="doubt"; f.b.doubtField=null; f.b.reviewReason="Flagged for review in bulk"; c++; });
-  toast(`${c} requirement${c>1?"s":""} marked to review`,"warn");
+  toast(`${c} requirement${c>1?"s":""} marked to review`,"warn",undo);
   state.selection.clear(); lastSel=null; refresh();
 }
 function bulkReclassifyInfo(){
   if(!canCharacterise()){ charDenied(); return; }
+  const undo=selectionRestorer();   // it deletes each requirement's allocation: the one bulk action that most needs it
   let c=0;
   state.selection.forEach(id=>{
     const f=findBlock(id); if(!f) return;
@@ -4765,7 +4833,7 @@ function bulkReclassifyInfo(){
     c++;
   });
   state.selected=null;
-  toast(`${c} requirement${c>1?"s":""} reclassified as Information`,"warn");
+  toast(`${c} requirement${c>1?"s":""} reclassified as Information`,"warn",undo);
   state.selection.clear(); lastSel=null; refresh();
 }
 /* B6 — bulk validate: only acts on rows currently eligible (To review or To
@@ -4820,15 +4888,35 @@ function assignSummaryHTML(b){
   const PM=`<span class="partner-who" title="The partner works outside the tool — the tender manager answers for it">TM · for partner</span>`;
   if(!m) return PM;
   const nm=id=>(MGR(id)||{}).name||id;
-  const per=(b.branches||[]).filter(br=>!isPartner(br.typology)).map(br=>`${TY(br.typology).code}: ${slotsOfBranch(br).map(t=>t.manager?nm(t.manager):"—").join(", ")}`).join(" · ");
+  const brs=(b.branches||[]).filter(br=>!isPartner(br.typology));
+  /* One sub-system with several roles: the tooltip pairs each role with its
+     person, which is the question this cell gets asked ("who answers for
+     which?"). Several sub-systems: one line each, as before. */
+  const per = (b.branches||[]).length===1 && brs.length===1
+    ? slotsOfBranch(brs[0]).map(roleLine).join("&#10;")
+    : escHtml(brs.map(br=>`${TY(br.typology).code}: ${slotsOfBranch(br).map(t=>t.manager?nm(t.manager):"—").join(", ")}`).join(" · "));
   const txt = n===0 ? "Unassigned" : n<m ? `${n}/${m} assigned` : allocPeople(b).map(id=>nm(id).split(" ")[0]).join(", ");
-  return `<span class="multi-ph" title="${escHtml(per)}&#10;${(b.branches||[]).length>1?"Expand to change each":"Change each in the panel"}">${escHtml(txt)}</span>`;
+  return `<span class="multi-ph" title="${per}&#10;Expand to change each">${escHtml(txt)}</span>`;
+}
+/* "Role — person", for a tooltip: one OBS entry and who is in charge of it */
+function roleLine(t, i){
+  const role=(t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:`${OBS_NOUN_CAP} ${i+1}`);
+  return escHtml(`${role} — ${t.manager?((MGR(t.manager)||{}).name||t.manager):"nobody yet"}`);
 }
 function rowInnerHTML(b){
   const plain = (b.text||"").replace(/<[^>]+>/g,"");
   const slots = allocSlots(b);
   const mgrOptions = mgrOptionsFor(((b.branches||[])[0]||{}).typology || (b.perim||[])[0], (slots[0]||{}).manager);
   const hasBranches = (b.branches||[]).length>1;
+  /* One sub-system holding several roles — the usual shape of a multi-role
+     requirement on a SIG tender. The row used to show its first role only and
+     had no way to open: roles two and three were visible in the panel alone.
+     It now counts them and opens on one sub-row per role, the same way a
+     multi-system row opens on its sub-systems. */
+  const soleBranch = (b.branches||[]).length===1 && !isPartner(b.branches[0].typology) ? b.branches[0] : null;
+  const roleSlots = soleBranch ? slotsOfBranch(soleBranch) : [];
+  const multiRole = roleSlots.length>1;
+  const rolesOpen = multiRole && state.expandedTeams.has(b.id+"::0");
   // B1/B10 — computed live from branchStatus (blockedBranchOf), not just the
   // hand-typed demo field: any row with a branch stuck on "reassignment
   // needed" shows this on the COLLAPSED row, single-system or not — that's
@@ -4848,6 +4936,8 @@ function rowInnerHTML(b){
   const typoTags = typoTagsHTML(b.perim||[], proposedTypos);
   const caretHTML = hasBranches
     ? `<button class="branch-caret${state.expandedBranches.has(b.id)?" open":""}" data-branchtoggle="${b.id}" title="${b.branches.length} sub-systems — ${state.expandedBranches.has(b.id)?"collapse them":"expand to see each"}" aria-expanded="${state.expandedBranches.has(b.id)}"><i class=ic-chevron></i><i class=ic-fork></i>${b.branches.length}</button>`
+    : multiRole
+    ? `<button class="branch-caret${rolesOpen?" open":""}" data-teamtoggle="${b.id}::0" title="${roleSlots.length} ${OBS_NOUN}s — ${rolesOpen?"collapse them":"expand to see who is in charge of each"}" aria-expanded="${rolesOpen}"><i class=ic-chevron></i><i class=ic-fork></i>${roleSlots.length}</button>`
     : "";
   /* one OBS entry: its person, edited in place (through setAllocManager) */
   const mgrCellHTML = (hasBranches || slots.length!==1)
@@ -4863,7 +4953,9 @@ function rowInnerHTML(b){
     ? `<span class="sys-conf${tk1.c<OBS_THRESHOLD?" weak":""}" title="Turnkey routing — ${tk1.c}% confidence${tk1.c<OBS_THRESHOLD?` (below the ${OBS_THRESHOLD}% threshold — which sub-system this belongs to is uncertain)`:""}">${tk1.c}%</span>` : "";
   const obsCellHTML = hasBranches
     ? `<span class="multi-ph" title="This requirement has ${b.branches.length} parallel allocations — expand to see the team per branch">Multiple (${b.branches.length})</span>`
-    : `<span class="fval">${escHtml((b.obs&&b.obs.v)||"—")}</span>`;
+    : multiRole
+    ? `<span class="fval" title="${roleSlots.map(roleLine).join("&#10;")}">${escHtml((roleSlots[0].obs&&roleSlots[0].obs.v)||"—")}</span><span class="ptag ptag-more" title="${roleSlots.slice(1).map(roleLine).join("&#10;")}">+${roleSlots.length-1}</span>`
+    : `<span class="fval" title="${escHtml((b.obs&&b.obs.v)||"")}">${escHtml((b.obs&&b.obs.v)||"—")}</span>`;
   /* B7 — status pill: characterisation (Class/System, on b) and allocation
      (ABS/PBS/OBS) combine "most restrictive wins" via effectiveStatus() — per
      branch for multi-branch rows (shown on the branch sub-row instead, see
@@ -5114,6 +5206,12 @@ function advFilterActiveCount(){ return advFlatConditions(state.advFilter).lengt
    requirement is expanded. UI-only: no recomputation. */
 function pushRow(b){
   VROWS.push({type:"row",b});
+  const brs=b.branches||[];
+  /* one sub-system holding several roles: they open straight under the requirement */
+  if(brs.length===1 && !isPartner(brs[0].typology) && slotsOfBranch(brs[0]).length>1 && state.expandedTeams.has(`${b.id}::0`)){
+    brs[0].teams.forEach((team,tidx)=>VROWS.push({type:"team",parent:b,branch:brs[0],bidx:0,team,tidx}));
+    return;
+  }
   if((b.branches||[]).length>1 && state.expandedBranches.has(b.id)){
     b.branches.forEach((branch,idx)=>{
       VROWS.push({type:"branch",parent:b,branch,idx});
@@ -5270,8 +5368,12 @@ function navCols(){ return ["sel","id","req",...state.colOrder].filter(c=>!state
    current sort/filter/branch-expansion, exactly what Up/Down should step through.
    This stays host-specific (VROWS is revue's own row model) — everything below it
    is generic and shared with the follow-up screen via table-engine.js (TE). */
+/* Team / role sub-rows are left out: they have no active-cell address of their
+   own (activeCellRowEl knows requirement and sub-system rows only), so each
+   one used to hold the cursor on its parent for one more key press. Their
+   PIC lists are reached with Tab or the mouse. */
 function visibleDataRows(){
-  return VROWS.filter(it=>it.type==="row"||it.type==="branch"||it.type==="team").map(it=>
+  return VROWS.filter(it=>it.type==="row"||it.type==="branch").map(it=>
     it.type==="row" ? {id:it.b.id,bidx:null} : {id:it.parent.id,bidx:it.idx});
 }
 function activeCellRowEl(ac){
@@ -5324,6 +5426,12 @@ function editActiveCell(){
   if(multi){ cfOpenMulti(multi,{keyboard:true}); return true; }
   const ctrl=cell.querySelector("input:not([type=checkbox]),select");
   if(ctrl){ if(ctrl.tagName==="INPUT"){ ctrl.dataset.orig=ctrl.value; } ctrl.focus(); if(ctrl.select && ctrl.tagName==="INPUT") ctrl.select(); return true; }
+  /* A cell whose content is one button — the class switch, the status pill,
+     the caret that opens a requirement's roles — is "edited" by pressing that
+     button: Enter did nothing there, so the class could not be corrected nor a
+     row validated from its own cell without the mouse. */
+  const btn=cell.querySelector("button.cls-flip:not([disabled]),button.status-pill:not([disabled])");
+  if(btn){ btn.click(); return true; }
   return false;
 }
 function bindCellEditKeys(el){ TE.bindCellEditKeys(el,state,navAdapter); }
@@ -5385,7 +5493,10 @@ function bindVRows(win){
   };
   win.querySelectorAll("[data-teammgr]").forEach(sel=>sel.addEventListener("change",e=>{
     e.stopPropagation(); const key=sel.dataset.teammgr, t=teamAt(key); if(!t)return;
-    setAllocManager(t.b, t.branch, +key.split("::")[2], sel.value); refresh();
+    const undo=blockRestorer(t.b);
+    const slot=setAllocManager(t.b, t.branch, +key.split("::")[2], sel.value); refresh();
+    const what=(slot&&slot.obs&&slot.obs.v)||OBS_NOUN_CAP;
+    toast(slot&&slot.manager?`${t.b.id} · ${escHtml(what)}: assigned to ${escHtml(MGR(slot.manager).name)}`:`${t.b.id} · ${escHtml(what)}: unassigned`,"ok",undo);
   }));
   win.querySelectorAll("[data-gotoimg]").forEach(btn=>btn.addEventListener("click",e=>{
     e.stopPropagation();
@@ -5396,23 +5507,30 @@ function bindVRows(win){
     const [id,idx]=sel.dataset.branchmgr.split("::"); const f=findBlock(id); if(!f)return;
     const branch=f.b.branches[+idx];
     /* Only rendered on a single-organisation system, so leaf 0 is the one. */
+    const undo=blockRestorer(f.b);
     setAllocManager(f.b, branch, 0, sel.value);
-    toast(`${branch.label}: ${branch.manager?"assigned to "+MGR(branch.manager).name:"unassigned"}`,"ok");
+    toast(`${branch.label}: ${branch.manager?"assigned to "+MGR(branch.manager).name:"unassigned"}`,"ok",undo);
     refresh();
   }));
   win.querySelectorAll("[data-abs]").forEach(inp=>{
     inp.addEventListener("click",e=>e.stopPropagation());
     inp.addEventListener("change",e=>{ const f=findBlock(inp.dataset.abs); if(!f) return;
-      if(TENDER_KEYS){ const a=KEY_ABS(inp.value); f.b.domain=a?a.label:""; f.b.abs=a?{v:a.label,id:a.id,c:null}:null; if((f.b.branches||[]).length===1) f.b.branches[0].abs=f.b.abs; }
-      else f.b.domain=inp.value.trim();
+      /* On a keyed tender the cell is the same list as the panel's, so it obeys
+         the same chain rule (afterDerivEdit). The free-text cell of the other
+         tenders only renames the ABS, as before. */
+      if(TENDER_KEYS){ const undo=blockRestorer(f.b);
+        const a=KEY_ABS(inp.value); f.b.domain=a?a.label:""; f.b.abs=a?{v:a.label,id:a.id,c:null}:null; if((f.b.branches||[]).length===1) f.b.branches[0].abs=f.b.abs;
+        const cleared=afterDerivEdit(f.b, f.b, "abs"); refresh(); announceDerivCleared(cleared,"ABS",undo); return; }
+      f.b.domain=inp.value.trim();
       markAllocEdited(f.b); refresh(); });
   });
   win.querySelectorAll("[data-pbs]").forEach(sel=>{
     sel.addEventListener("click",e=>e.stopPropagation());
     sel.addEventListener("change",e=>{ const f=findBlock(sel.dataset.pbs); if(!f) return;
+      const undo=blockRestorer(f.b);
       const el=KEY_PBS(sel.value); f.b.pbs=el?{v:PBS_LABEL(el),id:el.id,c:null}:null;
       if((f.b.branches||[]).length===1) f.b.branches[0].pbs=f.b.pbs;
-      markAllocEdited(f.b); refresh(); });
+      const cleared=afterDerivEdit(f.b, f.b, "pbs"); refresh(); announceDerivCleared(cleared,"PBS",undo); });
   });
   /* a requirement row with one OBS entry: the person goes on that entry
      (DEC-087); only a requirement with no sub-system yet holds it itself */
@@ -5434,6 +5552,7 @@ function bindVRows(win){
     e.stopPropagation();
     if(!canCharacterise()){ charDenied(); return; }
     const id=btn.dataset.clsflip, f=findBlock(id); if(!f)return;
+    pushUndo(`${id} — class switched`, blockRestorer(f.b));
     const before=f.b.tech, was=f.b.techAI;
     f.b.tech = before==="tech" ? "nontech" : "tech"; f.b.techAI=false; dropCharConf(f.b,"class"); markCharEdited(f.b);
     if(was) logFeedback("char", id, before==="tech"?"Technical":"Non-technical", f.b.tech==="tech"?"Technical":"Non-technical", null);
@@ -6346,6 +6465,7 @@ function renderSettings(){
       refresh(); toast(id?`PIC ${personLabel(id)}`:"Unassigned","ok");
     });
     body.querySelector("#f-tech")?.addEventListener("change",e=>{
+      pushUndo(`${b.id} — class changed`, blockRestorer(b));
       const before=b.tech, was=b.techAI;
       b.tech=e.target.value; b.techAI=false; dropCharConf(b,"class"); markCharEdited(b);
       if(was) logFeedback("char", b.id, before==="tech"?"Technical":"Non-technical", b.tech==="tech"?"Technical":"Non-technical", null);
@@ -6357,10 +6477,7 @@ function renderSettings(){
        doing, so the consequence is applied and then stated. */
     const actBranch = actView ? (b.branches||[])[state.panelActivity] : null;   // DEC-101 — the sub-system opened
     const derivTarget = () => actBranch || (typeof myBranchOf==="function" && myBranchOf(b)) || b;
-    const announceCleared = (cleared,changed)=>{
-      if(!cleared.length) return;
-      toast(`${changed.toUpperCase()} changed — ${cleared.map(c=>c.toUpperCase()).join(" and ")} cleared, they were derived from it`,"warn");
-    };
+    const announceCleared = announceDerivCleared;
     /* A human pick carries no confidence: the badge goes, the value stays. On a
        single-system requirement the branch mirrors the requirement, as
        everywhere else in this file. */
@@ -6370,6 +6487,7 @@ function renderSettings(){
       if(t===b && (b.branches||[]).length===1) b.branches[0][key]=val;
     };
     body.querySelector("#f-domain")?.addEventListener("change",e=>{
+      const undo=blockRestorer(b);
       if(TENDER_KEYS){
         const a=KEY_ABS(e.target.value);
         b.domain=a?a.label:""; writeDeriv("abs", a?{v:a.label,id:a.id,c:null}:null);
@@ -6377,20 +6495,19 @@ function renderSettings(){
         const v=e.target.value.trim();
         if(derivTarget()!==b) writeDeriv("abs", v?{v,c:null}:null); else b.domain=v;
       }
-      const cleared=invalidateDownstream(derivTarget(),"abs");
-      markAllocEdited(derivTarget()); if(derivTarget()!==b) markAllocEdited(b); refresh();
-      announceCleared(cleared,"ABS");
+      const cleared=afterDerivEdit(b, derivTarget(), "abs"); refresh();
+      announceCleared(cleared,"ABS",undo);
     });
     body.querySelector("#f-pbs")?.addEventListener("change",e=>{
+      const undo=blockRestorer(b);
       if(TENDER_KEYS){
         const el=KEY_PBS(e.target.value);
         writeDeriv("pbs", el?{v:PBS_LABEL(el),id:el.id,c:null}:null);
       }else{
         const v=e.target.value.trim(); writeDeriv("pbs", v?{v,c:null}:null);
       }
-      const cleared=invalidateDownstream(derivTarget(),"pbs");
-      markAllocEdited(derivTarget()); if(derivTarget()!==b) markAllocEdited(b); refresh();
-      cleared.length ? announceCleared(cleared,"PBS") : toast("PBS updated","ok");
+      const cleared=afterDerivEdit(b, derivTarget(), "pbs"); refresh();
+      announceCleared(cleared,"PBS",undo);
     });
     /* One propose block everywhere (the contributor's, "bolder propose buttons"
        2026-09-10) — the sub-system detail used to carry an older "Raise a problem"
@@ -6418,9 +6535,10 @@ function renderSettings(){
     body.querySelectorAll("[data-panelallocmgr]").forEach(sel=>sel.addEventListener("change",e=>{
       const [bi,ti]=sel.dataset.panelallocmgr.split("::").map(Number);
       const branch=(b.branches||[])[bi]; if(!branch) return;
+      const undo=blockRestorer(b);
       const t=setAllocManager(b, branch, ti, e.target.value); if(!t) return;
       const who=(t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:null)||branch.label||TY(branch.typology).code;
-      toast(t.manager?`${who}: assigned to ${MGR(t.manager).name}`:`${who}: unassigned`,"ok");
+      toast(t.manager?`${who}: assigned to ${MGR(t.manager).name}`:`${who}: unassigned`,"ok",undo);
       refresh();
     }));
     body.querySelector("#validate-btn")?.addEventListener("click",()=>validateBlock(b.id));
@@ -6739,6 +6857,30 @@ function markAllocEdited(target){
   target.allocStatus = (hasObs(target) && (target.pbs || target.abs || target.obs)) ? "tovalidate" : "incomplete";
   target.allocDoubtField=null; target.allocReviewReason=null;
 }
+/* A hand correction of ABS or PBS, from the table or from the panel: what
+   follows it in the chain is cleared (ALLOC-T02 — a new ABS clears PBS and OBS,
+   a new PBS clears OBS), then every holder of the allocation status is marked
+   as edited. `target` is what the correction was written on: the requirement,
+   or one of its sub-systems.
+   Two gaps this closes (2026-11-13), both on a requirement with one
+   sub-system — every requirement of a SIG tender — corrected by the tender
+   manager: the status is read on its one branch (allocHolder) while only the
+   requirement was marked, so a corrected weak derivation went on reading
+   "To review — weak ABS (61%)"; and the table skipped the clearing the panel
+   applies. Returns the fields it cleared, for the caller to say so. */
+function afterDerivEdit(b, target, changed){
+  const cleared=invalidateDownstream(target, changed);
+  const only=(b.branches||[]).length===1 ? b.branches[0] : null;
+  if(only && target===only) cleared.forEach(k=>{ b[k]=null; });   // the requirement mirrors its one sub-system
+  markAllocEdited(target);
+  if(target!==b) markAllocEdited(b);
+  if(only && target!==only) markAllocEdited(only);
+  return cleared;
+}
+function announceDerivCleared(cleared, changed, undo){
+  if(cleared.length) toast(`${changed} changed — ${cleared.map(c=>c.toUpperCase()).join(" and ")} cleared, they were derived from it`,"warn",undo);
+  else toast(`${changed} updated`,"ok",undo);
+}
 /* B6/B7 — the one validate action: the row's status-pill click, each allocated system's
    own status-pill click, and the Bulk Action Bar all route through this.
    Advances characterisation first (requirement-level), then — once that's
@@ -6929,6 +7071,29 @@ function toast(msg,kind="ok",undo){
   zone.appendChild(t);
   setTimeout(()=>{t.classList.add("leaving");setTimeout(()=>t.remove(),200)},3400);
 }
+/* Undo for an edit of one or several blocks (2026-11-13). Ctrl/⌘+Z covered a
+   person picked in a table cell and a validation; every other correction —
+   class, type, ABS or PBS with what they clear, a role added or removed, a
+   bulk action — could only be redone by hand, from memory. A block is plain
+   data, so its whole state is kept as text before the change and put back
+   exactly. Call BEFORE the change; give the result to toast() as its undo, or
+   to pushUndo() where the action shows no toast. null when a block cannot be
+   copied (the action then simply has no undo). */
+function blockRestorer(blocks){
+  const list=(Array.isArray(blocks)?blocks:[blocks]).filter(Boolean);
+  if(!list.length) return null;
+  let snaps;
+  try{ snaps=list.map(b=>JSON.stringify(b)); }catch(e){ return null; }
+  return ()=>{
+    list.forEach((b,i)=>{ Object.keys(b).forEach(k=>{ delete b[k]; }); Object.assign(b, JSON.parse(snaps[i])); });
+    refresh();
+  };
+}
+const selectionRestorer=()=>blockRestorer([...state.selection].map(id=>(findBlock(id)||{}).b));
+function pushUndo(msg, fn){
+  if(!fn) return;
+  UNDO_STACK.push({msg, fn, el:null}); if(UNDO_STACK.length>30) UNDO_STACK.shift();
+}
 
 /* =====================================================
    GLOBAL REFRESH
@@ -7000,6 +7165,45 @@ document.querySelectorAll(".tpill").forEach(p=>p.addEventListener("click",()=>se
 document.getElementById("clear-filter").addEventListener("click",()=>setFilter(state.filter));
 document.getElementById("nav-search").addEventListener("input",e=>{state.search=e.target.value;document.getElementById("table-search").value=e.target.value;refresh()});
 document.getElementById("table-search")?.addEventListener("input",e=>{state.search=e.target.value;document.getElementById("nav-search").value=e.target.value;refresh()});
+/* Go to a block (2026-11-13). Enter in the table's search box goes to one
+   block instead of leaving a filtered list behind: the block whose ID was
+   typed — "NC-0113", or just its number, "113" — else the first requirement
+   the search shows. The search is cleared, so the block is back among its
+   neighbours, selected, with the keyboard on its row. Escape empties the box
+   and returns to the table. "/" or G, from the table, puts the cursor in the
+   box (the Review key handler, further down). */
+function setSearch(v){
+  state.search=v;
+  ["nav-search","table-search"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=v; });
+  refresh();
+}
+function goToBlock(id){
+  const f=findBlock(id); if(!f) return false;
+  selectBlock(id);
+  const row=document.querySelector(`.rrow[data-id="${id}"]:not(.branch-row),.rgrid-sub[data-id="${id}"]`);
+  // a filter can hide it: say so, rather than select a row that is not on screen
+  if(!row){ toast(`${id} is hidden by the current filters`,"warn"); return false; }
+  if(blockNature(f.b)==="requirement"){
+    state.activeCell={id, bidx:null, col:(state.activeCell.col&&state.activeCell.col!=="sel")?state.activeCell.col:"id"};
+    paintActiveCell();
+  }
+  row.scrollIntoView({block:"center"});
+  return true;
+}
+function goToTyped(){
+  const q=state.search.trim(); if(!q) return;
+  const all=allBlocks().filter(b=>["requirement","info","heading"].includes(blockNature(b)));
+  let hit=all.find(b=>String(b.id).toLowerCase()===q.toLowerCase());
+  if(!hit && /^\d+$/.test(q)) hit=all.find(b=>{ const m=/(\d+)$/.exec(b.id||""); return m && +m[1]===+q; });
+  const id = hit ? hit.id : (currentVisIds||[])[0];
+  if(!id){ toast(`Nothing matches “${escHtml(q)}”`,"warn"); return; }
+  setSearch("");
+  goToBlock(id);
+}
+document.getElementById("table-search")?.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){ e.preventDefault(); goToTyped(); e.target.blur(); }
+  else if(e.key==="Escape"){ e.preventDefault(); setSearch(""); e.target.blur(); }
+});
 
 /* Bulk selection wiring */
 document.getElementById("sel-all").addEventListener("change",e=>{
@@ -7239,8 +7443,12 @@ function openColFilterPop(col, anchor){
     updateColfFoot(p,c);
     refresh();
   }));
-  p.querySelectorAll("[data-viewall]").forEach(el=>el.addEventListener("click",()=>{ state.colFilters[col].clear(); openColFilterPop(col,anchor); refresh(); }));
-  p.querySelectorAll("[data-viewnone]").forEach(el=>el.addEventListener("click",()=>{ def.options.forEach(o=>state.colFilters[col].add(o.v)); openColFilterPop(col,anchor); refresh(); }));
+  /* All / None redraw the list, which removes the very element that was
+     clicked: the click then reached the document's "outside the popover"
+     handler with a target no longer inside it, and the popover closed — right
+     when "None" is the first half of "only this value". The click stops here. */
+  p.querySelectorAll("[data-viewall]").forEach(el=>el.addEventListener("click",e=>{ e.stopPropagation(); state.colFilters[col].clear(); openColFilterPop(col,anchor); refresh(); }));
+  p.querySelectorAll("[data-viewnone]").forEach(el=>el.addEventListener("click",e=>{ e.stopPropagation(); def.options.forEach(o=>state.colFilters[col].add(o.v)); openColFilterPop(col,anchor); refresh(); }));
 }
 function updateColfFoot(p,col){
   const def=COL_FILTER_DEFS[col], excluded=state.colFilters[col];
@@ -8008,6 +8216,83 @@ function exportRows(){
     .filter(b=>exportState.docId==="all" || (b.section&&b.section.docId===exportState.docId))
     .filter(passesColFilters).filter(passesAdvFilter);
 }
+/* ---- the CSV export, for real (2026-11-13) ----
+   Every other format is still announced by a toast and writes nothing. The
+   CSV is the state of the table as it stands, one line per block in document
+   order, so what was done on this screen can be taken out of it and checked:
+   - with "Capture", headings and information blocks are listed too (a filter
+     on the table leaves the requirements it shows, and nothing else);
+   - "Characterisation" adds type, class, their confidence while the model's
+     call still stands, and the status;
+   - "Allocation" adds ABS, PBS, then one line per role (OBS) and, beside it,
+     one line per person in charge — "Unassigned" where a role has nobody —
+     so the two cells read side by side.
+   Comma-separated, quoted where needed, UTF-8 with a BOM so Excel opens it. */
+function exportProtoNote(){
+  return exportState.format==="csv"
+    ? "Prototype: the CSV is written for real, from the table as it stands."
+    : "Prototype: only the CSV is written for real — this format is announced, not generated.";
+}
+function csvCell(v){ const s=String(v==null?"":v); return /[",\r\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }
+function downloadTextFile(name, text, mime){
+  const url=URL.createObjectURL(new Blob([text],{type:mime}));
+  const a=document.createElement("a"); a.href=url; a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function buildExportCsv(){
+  const st=exportState.steps, cap=st.has("capture"), cha=st.has("charac"), alo=st.has("alloc");
+  const filtered=!!(colFilterActiveCount()||advFilterActiveCount());
+  const keep=new Set(exportRows().map(b=>b.id));
+  const cols=["ID"];
+  if(cap) cols.push("Document","Section");
+  if(cap||cha) cols.push("Type");
+  if(cha){ cols.push("Type confidence","Class","Class confidence"); if(!IS_SIG_TENDER) cols.push("Sub-system"); cols.push("Status"); }
+  if(alo) cols.push("ABS","PBS",TENDER_KEYS?"OBS role":"OBS","PIC","Lowest confidence");
+  if(cap) cols.push("Text");
+  const plain=t=>String(t||"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();
+  const level=(b,axis)=>{ const c=charConfOf(b,axis); return c&&c.level ? CHAR_LEVEL_LABEL[c.level] : ""; };
+  const lines=[cols];
+  const push=o=>lines.push(cols.map(c=>o[c]==null?"":o[c]));
+  SECTIONS.forEach(sec=>{
+    if(exportState.docId!=="all" && sec.docId!==exportState.docId) return;
+    const base={"Document":(DOC(sec.docId)||{}).name||"", "Section":[sec.num,sec.title].filter(Boolean).join(" ")};
+    const structure = cap && !filtered;   // headings and information: the whole document only
+    if(structure) push(Object.assign({}, base, {"ID":sec.hid||"", "Type":"Heading", "Text":base["Section"]}));
+    sec.blocks.flatMap(x=>x.kind==="table"?x.rows:[x]).forEach(b=>{
+      const nat=blockNature(b);
+      if(nat==="heading"||nat==="info"){
+        if(structure) push(Object.assign({}, base, {"ID":b.id, "Type":NATURE_LABEL[nat], "Type confidence":level(b,"type"), "Text":plain(b.text)}));
+        return;
+      }
+      if(nat!=="requirement" || !keep.has(b.id)) return;
+      const brs=(b.branches||[]).filter(br=>!isPartner(br.typology)), several=brs.length>1;
+      // one entry per role: [sub-system code, the OBS entry]; a requirement with no sub-system yet holds its own
+      const slots = brs.length ? brs.flatMap(br=>slotsOfBranch(br).map(t=>[TY(br.typology).code,t])) : [["",b]];
+      const holders = brs.length ? brs : [b];
+      const roleOf=t=>(t.obs&&t.obs.v)||(t.team?TEAM(t.team).label:"");
+      const withRole=slots.filter(([,t])=>roleOf(t));
+      const confs=holders.flatMap(h=>[h.abs,h.pbs]).concat(slots.map(([,t])=>t.obs)).map(x=>x&&x.c).filter(c=>c!=null);
+      push(Object.assign({}, base, {
+        "ID":b.id, "Type":"Requirement", "Type confidence":level(b,"type"),
+        "Class":TECH_LBL[b.tech]||"", "Class confidence":level(b,"class"),
+        "Sub-system":(b.perim||[]).map(p=>TY(p).code).join("\n"),
+        "Status":STATUS_LABEL[effectiveStatus(b).val]||"",
+        "ABS":holders.map(h=>(h.abs&&h.abs.v)||(h===b?b.domain:"")||"").filter(Boolean).join("\n"),
+        "PBS":holders.map(h=>(h.pbs&&h.pbs.v)||"").filter(Boolean).join("\n"),
+        [TENDER_KEYS?"OBS role":"OBS"]:withRole.map(([code,t])=>(several?code+": ":"")+roleOf(t)).join("\n"),
+        "PIC":withRole.map(([,t])=>t.manager?((MGR(t.manager)||{}).name||t.manager):"Unassigned").join("\n")
+              || slots.map(([,t])=>t.manager?((MGR(t.manager)||{}).name||t.manager):"").filter(Boolean).join("\n"),
+        "Lowest confidence":confs.length?Math.min(...confs)+"%":"",
+        "Text":plain(b.text),
+      }));
+    });
+  });
+  let ref="tender"; try{ ref=window.parent.getCurrentProject().ref||ref; }catch(e){}
+  const d=new Date(), two=n=>String(n).padStart(2,"0");
+  const name=`${ref}-allocation-${d.getFullYear()}${two(d.getMonth()+1)}${two(d.getDate())}-${two(d.getHours())}${two(d.getMinutes())}.csv`;
+  return {name, lines:lines.length-1, text:"﻿"+lines.map(r=>r.map(csvCell).join(",")).join("\r\n")+"\r\n"};
+}
 function exportScopeHTML(){
   const rows=exportRows();
   const filterParts=colFilterActiveCount()||advFilterActiveCount()
@@ -8036,14 +8321,22 @@ function renderExportPanel(){
     <div class="exp-sec-lbl">Target format</div>
     <select id="exp-format" class="exp-format">${EXPORT_FORMATS.map(f=>`<option value="${f.k}" ${exportState.format===f.k?"selected":""}>${f.label}</option>`).join("")}</select>
     <button class="exp-go" id="exp-go">Generate export</button>
+    <div class="exp-note" id="exp-proto-note">${exportProtoNote()}</div>
     <div class="exp-note">DOORS import keeps the requirement register upstream. Export late — most of the review stays in the tool.</div>`;
   p.querySelector("#exp-doc").addEventListener("change",e=>{ exportState.docId=e.target.value; document.getElementById("exp-scope").innerHTML=exportScopeHTML(); });
   p.querySelectorAll("[data-estep]").forEach(cb=>cb.addEventListener("change",()=>{ cb.checked?exportState.steps.add(cb.dataset.estep):exportState.steps.delete(cb.dataset.estep); }));
-  p.querySelector("#exp-format").addEventListener("change",e=>exportState.format=e.target.value);
+  p.querySelector("#exp-format").addEventListener("change",e=>{ exportState.format=e.target.value; document.getElementById("exp-proto-note").textContent=exportProtoNote(); });
   p.querySelector("#exp-go").addEventListener("click",()=>{
     if(!exportState.steps.size){ toast("Select at least one step to export","warn"); return; }
     const rows=exportRows();
     if(!rows.length){ toast("Nothing to export — the current filters match 0 requirements","warn"); return; }
+    if(exportState.format==="csv"){   // the one format this prototype really writes
+      const out=buildExportCsv();
+      downloadTextFile(out.name, out.text, "text/csv;charset=utf-8");
+      exportState.open=false; renderExportPanel();
+      toast(`Export downloaded — ${escHtml(out.name)} · ${out.lines.toLocaleString()} line${out.lines>1?"s":""}`,"ok");
+      return;
+    }
     const fmt=EXPORT_FORMATS.find(f=>f.k===exportState.format).label.split(" ")[0];
     const steps=[...exportState.steps].map(k=>EXPORT_STEPS.find(s=>s.k===k).label).join(" + ");
     const scope=exportState.docId==="all"?"all documents":("Doc "+(DOCS.findIndex(d=>d.id===exportState.docId)+1));
@@ -8134,6 +8427,19 @@ document.addEventListener("keydown",e=>{
     TE.toggleSelect(state.selection,id); lastSel=id; renderReview(); return;
   }
   if(e.key==="n"||e.key==="N"){ e.preventDefault(); nextNeedingAction(); return; }
+  // "/" or G — to the search box, where an ID then Enter goes to that block (goToTyped)
+  if((e.key==="/"||e.key==="g"||e.key==="G") && !state.filterToSelection){
+    const box=document.getElementById("table-search");
+    if(box){ e.preventDefault(); box.focus(); box.select(); return; }
+  }
+  /* O — add a role (OBS) to the selected requirement: opens the panel's own
+     search, where typing then Enter adds it and moves on to who is in charge.
+     Only where the panel offers "+ Add" (a requirement the viewer may change). */
+  if((e.key==="o"||e.key==="O") && state.selected){
+    if(state.detailPanelCollapsed){ state.detailPanelCollapsed=false; applyPanels(); }
+    const add=document.getElementById("obs-add-btn");
+    if(add && !add.disabled){ e.preventDefault(); add.click(); return; }
+  }
   if(e.key==="c"||e.key==="C"){ e.preventDefault(); toggleChgColumn(); return; }
   const navKey=(e.key==="j"||e.key==="J")?"ArrowDown":(e.key==="k"||e.key==="K")?"ArrowUp":e.key;
   if(TE.handleNavKeydown({key:navKey},state,navAdapter)){ e.preventDefault(); return; }
