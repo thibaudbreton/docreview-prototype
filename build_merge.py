@@ -59,7 +59,7 @@ SOURCES = [
     ("qa", "qa.html"),
     # SPEC-risks.md §6 — the tender's risk register, a support screen like Q&A.
     ("risks", "risks.html"),
-    # DEC-127 — the platform administration: users, all tenders, audit, statistics, AI.
+    # DEC-137 — the platform administration: users, all tenders, audit, statistics, AI.
     ("admin", "admin.html"),
 ]
 
@@ -202,7 +202,7 @@ window.getCurrentProject = ()=>PROJECTS.find(p=>p.id===currentProjectId)||null;
 const CURRENT_USER = {id:"admin", name:"Thibaud Breton", title:"Bid Director", email:"thibaud.breton@company.com", init:"TB", admin:true};
 window.getCurrentUser = ()=>CURRENT_USER;
 
-/* ---------- DEC-127 — platform administration ----------
+/* ---------- DEC-137 — platform administration ----------
    The people the platform knows (from the SSO directory), what the platform
    lets them do, and the admin's own actions. Two platform statuses only:
    Admin — sees and manages every tender, the users and the audit; no business
@@ -258,7 +258,7 @@ const seenValues = {};
 window.getSeen = (k)=>seenValues[k];
 window.setSeen = (k,v)=>{ seenValues[k]=v; };
 window.isAdmin = ()=>!!CURRENT_USER.admin;
-// DEC-127 — only a tender leader creates a tender (the admin grants it)
+// DEC-137 — only a tender leader creates a tender (the admin grants it)
 window.canCreateTender = ()=>{ const u=platformUsers.find(x=>x.id===CURRENT_USER.id); return !!(u && u.active && u.leader); };
 window.getSSOLeaderRoles = ()=>SSO_LEADER_ROLES.slice();
 window.getPlatformUsers = ()=>platformUsers;

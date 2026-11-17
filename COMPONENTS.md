@@ -110,7 +110,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-09-01
 - **changed**: 2026-11-17
-- **notes**: 2026-11-17 (DEC-128): on the home page the avatar is a button (`role=button`, keyboard Enter/Space) that opens the Settings Window; elsewhere it still does nothing. `.avatar`, byte-for-byte identical across every screen that has it (absent from creation-projet.html's header). Background is a hardcoded gradient `linear-gradient(135deg,#e0a43c,#c4763a)`, text hardcoded `#fff`, radius hardcoded `50%` instead of `--radius-pill` — none of this can follow a theme change.
+- **notes**: 2026-11-17 (DEC-138): on the home page the avatar is a button (`role=button`, keyboard Enter/Space) that opens the Settings Window; elsewhere it still does nothing. `.avatar`, byte-for-byte identical across every screen that has it (absent from creation-projet.html's header). Background is a hardcoded gradient `linear-gradient(135deg,#e0a43c,#c4763a)`, text hardcoded `#fff`, radius hardcoded `50%` instead of `--radius-pill` — none of this can follow a theme change.
 
 ### Person Avatar
 - **level**: atom
@@ -480,7 +480,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-11-16
 - **changed**: 2026-11-16
-- **notes**: `.ad-tag` (DEC-127). The pill that says what the platform lets a person do, or that a tender needs attention. Uses the untracked `--human-soft`, `--warn-soft`, `--panel-3`. Close to the Status Pill but platform-level — not a requirement state, so kept apart.
+- **notes**: `.ad-tag` (DEC-137). The pill that says what the platform lets a person do, or that a tender needs attention. Uses the untracked `--human-soft`, `--warn-soft`, `--panel-3`. Close to the Status Pill but platform-level — not a requirement state, so kept apart.
 
 ### AI Step Dot
 - **level**: atom
@@ -1102,7 +1102,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-09-01
 - **changed**: 2026-11-17
-- **notes**: 2026-11-17 (DEC-128): moved from Configuration › Appearance to the home page's Settings Window — the theme is personal, not a tender's. CSS and behaviour moved with it (dashboard-et-config.html keeps only applying the theme on load); Light now comes first, as the default. 2026-10-09 (legacy cleanup): the swatches use the current theme values — dark #071A30 / #4C82FF, light #ffffff / #0B294A (they still showed #171b24 and #0050E3). `.theme-pick`/`.theme-opt`. Swatch previews are deliberately hardcoded hex gradients per a code comment — they must show both themes' literal accents regardless of which theme is currently active, so they intentionally cannot read from `var(--accent)`.
+- **notes**: 2026-11-17 (DEC-138): moved from Configuration › Appearance to the home page's Settings Window — the theme is personal, not a tender's. CSS and behaviour moved with it (dashboard-et-config.html keeps only applying the theme on load); Light now comes first, as the default. 2026-10-09 (legacy cleanup): the swatches use the current theme values — dark #071A30 / #4C82FF, light #ffffff / #0B294A (they still showed #171b24 and #0050E3). `.theme-pick`/`.theme-opt`. Swatch previews are deliberately hardcoded hex gradients per a code comment — they must show both themes' literal accents regardless of which theme is currently active, so they intentionally cannot read from `var(--accent)`.
 
 ### Config Nav Item
 - **level**: molecule
@@ -1112,7 +1112,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: none
 - **added**: 2026-09-01
 - **changed**: 2026-11-17
-- **notes**: 2026-11-17 (DEC-128): « Appearance » is gone from the sidebar (10 items). `.cfg-nav-item`, 10 instances form the Config sidebar.
+- **notes**: 2026-11-17 (DEC-138): « Appearance » is gone from the sidebar (10 items). `.cfg-nav-item`, 10 instances form the Config sidebar.
 
 ### Attention List Item
 - **level**: molecule
@@ -1531,7 +1531,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Icon
 - **added**: 2026-11-16
 - **changed**: 2026-11-16
-- **notes**: `.ad-nav` (DEC-127). The five sections of Administration — Users, Tenders, Audit log, Statistics, AI tracking — with a note that a tender's own settings stay in its Configuration. Same role as the Config Sidebar Nav, drawn apart; width hardcoded 220px (170px below 900px). Hover uses the untracked `--panel-2`.
+- **notes**: `.ad-nav` (DEC-137). The five sections of Administration — Users, Tenders, Audit log, Statistics, AI tracking — with a note that a tender's own settings stay in its Configuration. Same role as the Config Sidebar Nav, drawn apart; width hardcoded 220px (170px below 900px). Hover uses the untracked `--panel-2`.
 
 ### Handover Panel
 - **level**: molecule
@@ -1541,7 +1541,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Select Dropdown, Ghost Button
 - **added**: 2026-11-16
 - **changed**: 2026-11-16
-- **notes**: `.ad-leave` (DEC-127, ACC-017). Opens on « Deactivate »: what the person leaves behind, and a replacement to name for each tender where they are the only active tender manager — refused until each is named. The destructive button `.btn-danger` is solid `--warn` with white text, the only one of its kind.
+- **notes**: `.ad-leave` (DEC-137, ACC-017). Opens on « Deactivate »: what the person leaves behind, and a replacement to name for each tender where they are the only active tender manager — refused until each is named. The destructive button `.btn-danger` is solid `--warn` with white text, the only one of its kind.
 
 ### Train Track
 - **level**: molecule
@@ -1563,7 +1563,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Brand Logo, Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
 - **changed**: 2026-11-17
-- **notes**: 2026-11-17 (DEC-128): home gains « Settings » (ghost button, sliders icon, for everyone), ahead of « Admin »; it and the avatar open the Settings Window. 2026-11-16 (micro-animations, lot 2): every screen's `#app` fades in on load (160ms), and the shell's own ground follows the theme (light #F4F5FA, dark #071A30, hardcoded in build_merge.py) — it was always dark, so a light screen flashed dark between two routes. 2026-11-16 (DEC-127): home gains « Admin » (shield icon, admins only); « ＋ New tender » shows only to a Tender leader (home and dashboard); admin.html has its own variant — crumb « Administration », « My tenders », avatar. 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req." in text (renamed from "SRM" on 2026-10-19; the header writes it with a full stop, 2026-10-20) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
+- **notes**: 2026-11-17 (DEC-138): home gains « Settings » (ghost button, sliders icon, for everyone), ahead of « Admin »; it and the avatar open the Settings Window. 2026-11-16 (micro-animations, lot 2): every screen's `#app` fades in on load (160ms), and the shell's own ground follows the theme (light #F4F5FA, dark #071A30, hardcoded in build_merge.py) — it was always dark, so a light screen flashed dark between two routes. 2026-11-16 (DEC-137): home gains « Admin » (shield icon, admins only); « ＋ New tender » shows only to a Tender leader (home and dashboard); admin.html has its own variant — crumb « Administration », « My tenders », avatar. 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req." in text (renamed from "SRM" on 2026-10-19; the header writes it with a full stop, 2026-10-20) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
 - **level**: organism
@@ -2022,7 +2022,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Warning / Notice Box, Config Field Row
 - **added**: 2026-09-01
 - **changed**: 2026-11-17
-- **notes**: 2026-11-17 (DEC-128): Appearance removed and Language loses « Interface language » — both are personal and moved to the home page's Settings Window; Language ends on an Option Description Box pointing there. The save toast no longer names the theme. 2026-10-09 (DEC-012): the "Restricted view (Redacted / Hidden)" row is removed from Team & contributors; the save toast names theme, partners and gap strategies only. 2026-10-09 (legacy cleanup): "Workflow & milestones" is "Reminders" (no milestones, DEC-084), and settings the prototype doesn't have are removed — Outdated-response re-flag (DEC-078), AI duplicate detection (DEC-116), Internal review before sending, Contributor notification on version switch, Default translation target. The variants above are the 11 sections as they stand (the list had fallen behind). `.cfg-sec`, the single most-repeated organism shape in the file. Body max-width capped at a hardcoded 680px.
+- **notes**: 2026-11-17 (DEC-138): Appearance removed and Language loses « Interface language » — both are personal and moved to the home page's Settings Window; Language ends on an Option Description Box pointing there. The save toast no longer names the theme. 2026-10-09 (DEC-012): the "Restricted view (Redacted / Hidden)" row is removed from Team & contributors; the save toast names theme, partners and gap strategies only. 2026-10-09 (legacy cleanup): "Workflow & milestones" is "Reminders" (no milestones, DEC-084), and settings the prototype doesn't have are removed — Outdated-response re-flag (DEC-078), AI duplicate detection (DEC-116), Internal review before sending, Contributor notification on version switch, Default translation target. The variants above are the 11 sections as they stand (the list had fallen behind). `.cfg-sec`, the single most-repeated organism shape in the file. Body max-width capped at a hardcoded 680px.
 
 ### Team & Experts Config Editor
 - **level**: organism
@@ -2092,7 +2092,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: App Header, Admin Side Nav, Risk List (`.rk-table`), Platform Status Tag, Handover Panel, AI Step Dot, Select Dropdown, Ghost Button, Toast
 - **added**: 2026-11-16
 - **changed**: 2026-11-16
-- **notes**: DEC-127 — the platform, not one tender, for admins only (reached from the home page's « Admin » button). Every section is a list: people (status, tenders, last sign-in; Tender leader granted or withdrawn; deactivation with handover), every tender (managers, stage, progress, region, archive), the audit trail of all tenders plus admin actions (read-only), platform tiles and breakdowns (never per person), AI processing per tender (steps, resume, low confidence, corrections, cost). Tables reuse the Risks screen's `.rk-table` styles copied into the file (no shared stylesheet beyond components.css). Tiles (`.ad-tile`), bars (`.ad-bar`) and the region code (`.ad-reg`, same look as the Tender Card's `.pc-region`) are local. Demo data from the shell (platform users, admin log, AI usage).
+- **notes**: DEC-137 — the platform, not one tender, for admins only (reached from the home page's « Admin » button). Every section is a list: people (status, tenders, last sign-in; Tender leader granted or withdrawn; deactivation with handover), every tender (managers, stage, progress, region, archive), the audit trail of all tenders plus admin actions (read-only), platform tiles and breakdowns (never per person), AI processing per tender (steps, resume, low confidence, corrections, cost). Tables reuse the Risks screen's `.rk-table` styles copied into the file (no shared stylesheet beyond components.css). Tiles (`.ad-tile`), bars (`.ad-bar`) and the region code (`.ad-reg`, same look as the Tender Card's `.pc-region`) are local. Demo data from the shell (platform users, admin log, AI usage).
 
 ### Settings Window
 - **level**: organism
@@ -2102,7 +2102,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **built-from**: Header Avatar, Theme Picker, Config Field Row (re-implemented under `.set-win`), Select Dropdown, Primary Button, Toast
 - **added**: 2026-11-17
 - **changed**: 2026-11-17
-- **notes**: DEC-128 — the person's own, general settings, reached from the home header (« Settings » or the avatar) by everyone, before any tender is open: who is signed in (name, title, company account), Appearance › Theme (Light / Dark, applied at once with « <Theme> theme applied ») and Language › Interface language (English; « Français — later » disabled). Closes on ✕, « Done », Esc or a click on the backdrop; nothing to save. `.set-back`/`.set-win`: same shape as documents.html's Modal Dialog but a separate copy — backdrop `rgba(0,0,0,.45)` and shadow `0 24px 80px rgba(0,0,0,.6)` hardcoded, max-width 560px hardcoded. Rows re-implement Config Field Row with the label on the left and the control on the right (no 230px column). Uses off-scale `--panel-2`, `--line-2` and the motion tokens (`--motion-base`, `--ease-out`). Section labels (`.set-st`) hardcode `letter-spacing:.06em`.
+- **notes**: DEC-138 — the person's own, general settings, reached from the home header (« Settings » or the avatar) by everyone, before any tender is open: who is signed in (name, title, company account), Appearance › Theme (Light / Dark, applied at once with « <Theme> theme applied ») and Language › Interface language (English; « Français — later » disabled). Closes on ✕, « Done », Esc or a click on the backdrop; nothing to save. `.set-back`/`.set-win`: same shape as documents.html's Modal Dialog but a separate copy — backdrop `rgba(0,0,0,.45)` and shadow `0 24px 80px rgba(0,0,0,.6)` hardcoded, max-width 560px hardcoded. Rows re-implement Config Field Row with the label on the left and the control on the right (no 230px column). Uses off-scale `--panel-2`, `--line-2` and the motion tokens (`--motion-base`, `--ease-out`). Section labels (`.set-st`) hardcode `letter-spacing:.06em`.
 
 ## Removed
 

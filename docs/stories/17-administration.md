@@ -2,7 +2,7 @@
 
 **Qui s'en sert.** L'admin de la plateforme. Il ne travaille dans aucun tender.
 
-**Le parcours.** L'admin gère ce qui dépasse un tender : les personnes et leurs droits, la liste de tous les tenders, le journal d'audit, les statistiques de la plateforme et le suivi de l'IA (DEC-127).
+**Le parcours.** L'admin gère ce qui dépasse un tender : les personnes et leurs droits, la liste de tous les tenders, le journal d'audit, les statistiques de la plateforme et le suivi de l'IA (DEC-137).
 
 **Termes.**
 - **Admin** : voit tout et agit sur les personnes et les tenders, mais n'a aucune autorité métier (ACC-016).
@@ -17,7 +17,7 @@
 - Plus tard, des rôles SSO (Bid Director, Bid Manager, Requirement Manager…) donneront ce statut d'eux-mêmes. Ce n'est pas actif au pilote : l'écran l'annonce comme « Later ».
 
 **Maquette :** Administration — `admin.html` (route `#admin`), section Users.
-**Règles :** DEC-127, ACC-015, ACC-018  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
+**Règles :** DEC-137, ACC-015, ACC-018  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. « Make tender leader » donne le statut ; la personne voit ensuite « ＋ New tender » sur l'accueil et le tableau de bord.
 2. « Withdraw leader » retire le statut ; « ＋ New tender » disparaît pour elle, et ses tenders existants restent les siens.
@@ -35,7 +35,7 @@
 - Le cas critique : la personne est le seul tender manager actif d'un tender. Il faut alors nommer quelqu'un avant de valider.
 
 **Maquette :** Administration — `admin.html` (route `#admin`), section Users › « Deactivate ».
-**Règles :** DEC-127, ACC-017, ACC-002, ACC-006  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
+**Règles :** DEC-137, ACC-017, ACC-002, ACC-006  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. « Deactivate » ouvre un encadré qui liste les tenders où la personne est seule tender manager active, chacun avec une liste pour choisir un remplaçant.
 2. Tant qu'un remplaçant manque, la désactivation est refusée avec « Name a tender manager for N tenders first ».
@@ -52,7 +52,7 @@
 - Archiver plutôt que supprimer : un tender archivé quitte les listes de tout le monde, mais reste lisible.
 
 **Maquette :** Administration — `admin.html` (route `#admin`), section Tenders.
-**Règles :** DEC-127, ACC-016, ACC-002  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
+**Règles :** DEC-137, ACC-016, ACC-002  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Chaque ligne montre : référence, nom, ligne, région, tender managers actifs, étape, avancement, jours avant soumission et dernière activité.
 2. La recherche (référence, nom, ligne), le filtre de région et le filtre d'étape réduisent la liste. « Show archived » réaffiche les tenders archivés.
@@ -69,7 +69,7 @@
 - Il est en lecture seule : rien ne s'y modifie ni ne s'y supprime.
 
 **Maquette :** Administration — `admin.html` (route `#admin`), section Audit log.
-**Règles :** DEC-127, ACC-018, PLAT-003  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
+**Règles :** DEC-137, ACC-018, PLAT-003  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Chaque entrée montre : date et heure, auteur, tender, élément (exigence), nature du changement, description et avant → après.
 2. Les entrées vont de la plus récente à la plus ancienne. Elles se filtrent par tender, par nature, par personne et par recherche libre.
@@ -85,7 +85,7 @@ Point ouvert : la durée de conservation du journal (OPEN-11).
 - Aucun classement de personnes (DEC-118).
 
 **Maquette :** Administration — `admin.html` (route `#admin`), section Statistics.
-**Règles :** DEC-127, DEC-118  ·  **Périmètre :** Après pilote  ·  **Variantes :** Toutes
+**Règles :** DEC-137, DEC-118  ·  **Périmètre :** Après pilote  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Les tuiles donnent :
    - les tenders en cours, soumis et archivés ;
@@ -105,7 +105,7 @@ Point ouvert : la durée de conservation du journal (OPEN-11).
 - Ce que les corrections apprennent aux modèles reste dans Configuration › AI feedback de chaque tender.
 
 **Maquette :** Administration — `admin.html` (route `#admin`), section AI tracking.
-**Règles :** DEC-127, AI-012, AI-013, AI-014, PLAT-003  ·  **Périmètre :** Après pilote  ·  **Variantes :** Toutes
+**Règles :** DEC-137, AI-012, AI-013, AI-014, PLAT-003  ·  **Périmètre :** Après pilote  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Chaque tender montre l'état de ses étapes : capture, traduction, caractérisation, allocation. Les états possibles sont terminé, en cours, échoué, en attente, ou sans objet (source en anglais).
 2. Un échec montre son message et un bouton « Resume ». Après reprise, l'étape repasse en cours, et la reprise s'inscrit au journal d'audit.
@@ -118,7 +118,7 @@ Point ouvert : la source réelle des coûts et des compteurs (chantier IA, DEC-0
 
 ## Couverture
 - Règles couvertes :
-  - DEC-127 → US-ADM-01 à 06 ;
+  - DEC-137 → US-ADM-01 à 06 ;
   - ACC-015 → US-ADM-01 ;
   - ACC-016 → US-ADM-03 ;
   - ACC-017 → US-ADM-02 ;

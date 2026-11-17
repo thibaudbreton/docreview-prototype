@@ -1228,7 +1228,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
           <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: the source language select isn't wired in this build.</div>
           <div class="frow"><div class="fl"><div class="flt">Source document language</div></div><div class="fc"><select class="sel"><option>English</option><option>French</option><option>German</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Working language</div><div class="fld">What a source in another language is translated into.</div></div><div class="fc"><div class="fval">English</div><div class="opt-desc">Not editable — translation always goes into English.</div></div></div>
-          <div class="opt-desc" style="margin-top:16px">Interface language and theme are personal, not the tender's: <b>Settings</b>, in the home page header (DEC-128).</div>
+          <div class="opt-desc" style="margin-top:16px">Interface language and theme are personal, not the tender's: <b>Settings</b>, in the home page header (DEC-138).</div>
         </section>
 
         <!-- AI feedback -->
@@ -1518,7 +1518,7 @@ document.getElementById("ph-risks").addEventListener("click",e=>{e.preventDefaul
 document.getElementById("ph-qa").addEventListener("click",e=>{e.preventDefault();goRoute("qa.html");});
 document.getElementById("demo-contributor-link").addEventListener("click",()=>goRoute("compliance.html#contributor"));
 document.getElementById("new-proj").addEventListener("click",e=>{e.preventDefault();goRoute("creation-projet.html");});
-// DEC-127 — only a Tender leader creates a tender
+// DEC-137 — only a Tender leader creates a tender
 try{ if(window.parent.canCreateTender && !window.parent.canCreateTender()) document.getElementById("new-proj").hidden=true; }catch(e){}
 
 /* Config nav */
@@ -2174,14 +2174,14 @@ renderCastingProgress();
 // effect, and both already apply immediately (add/removePartner, the strategy
 // calls) — nothing here actually waits on Save. Toast wording matches that
 // instead of implying a persisted save. The theme left for Settings on the home
-// page on 2026-11-17 (DEC-128).
+// page on 2026-11-17 (DEC-138).
 document.getElementById("cfg-save").addEventListener("click",()=>toast("Partners and gap strategies apply immediately — other settings on this page aren't wired in this build","ok"));
 document.getElementById("cfg-reset").addEventListener("click",()=>toast("Nothing to discard — most fields on this page aren't wired in this build","ok"));
 
 /* deep link #config */
 if(location.hash==="#config"){showConfig(true);}
 
-/* theme — chosen in Settings on the home page (DEC-128); this screen only applies it */
+/* theme — chosen in Settings on the home page (DEC-138); this screen only applies it */
 function applyThemeUI(t){
   document.documentElement.setAttribute("data-theme",t);
 }

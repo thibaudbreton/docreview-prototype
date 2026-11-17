@@ -215,7 +215,7 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 @keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes fadeOnly{from{opacity:0}to{opacity:1}}
 #app{animation:fadeOnly 160ms var(--ease-out)}
-/* ---- Settings (2026-11-17, DEC-128) — the personal, general settings ----
+/* ---- Settings (2026-11-17, DEC-138) — the personal, general settings ----
    Theme and interface language are the person's own, not a tender's: they
    open from the home header (« Settings » or the avatar), for everyone, before
    any tender is opened. Same window shape as documents.html's Modal Dialog;
@@ -357,7 +357,7 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
     </div>
   </div>
 </div>
-<!-- Settings (DEC-128) — personal, general settings, opened from the header -->
+<!-- Settings (DEC-138) — personal, general settings, opened from the header -->
 <div class="set-back" id="set-back">
   <div class="set-win" role="dialog" aria-modal="true" aria-labelledby="set-h">
     <div class="set-head">
@@ -543,7 +543,7 @@ function render(){
   grid.querySelectorAll(".pcard").forEach(c=>c.addEventListener("click",()=>openTender(projects.find(x=>x.id===c.dataset.id))));
 }
 document.getElementById("new-btn").addEventListener("click",()=>{ try{ window.parent.route("new"); }catch(e){} });
-/* DEC-127 — Administration for admins only; a tender is created by a Tender leader only */
+/* DEC-137 — Administration for admins only; a tender is created by a Tender leader only */
 (function(){ try{
   const P=window.parent, adm=document.getElementById("admin-btn");
   if(P.isAdmin && P.isAdmin()){ adm.hidden=false; adm.addEventListener("click",()=>P.route("admin")); }
@@ -555,7 +555,7 @@ document.getElementById("reset-btn").addEventListener("click",()=>{
     try{ if(window.parent!==window && window.parent.resetDemo) window.parent.resetDemo(); }catch(e){}
   }
 });
-/* Settings (2026-11-17, DEC-128) — theme and interface language, personal */
+/* Settings (2026-11-17, DEC-138) — theme and interface language, personal */
 (function(){
   const back=document.getElementById("set-back");
   const P=(window.parent!==window)?window.parent:null;

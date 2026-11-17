@@ -18,10 +18,10 @@
 | ACC-012 | **Le type et la classe d'une exigence appartiennent au tender manager.** Un contributeur (le responsable d'un sous-système) les voit mais ne peut pas les modifier — ni dans le détail, ni dans la table, ni par l'action groupée « Classify », ni dans la vue Document. Ils déterminent ce que le modèle dérive pour chaque sous-système. | DEC-086, DEC-126 |
 | ACC-013 | **Un contributeur ne modifie rien sur une exigence dont aucun sous-système ne lui est assigné** : il la lit (type, classe, allocation de chaque sous-système), sans aucun contrôle actif, dans le panneau comme dans la table. | DEC-100 |
 | ACC-014 | **Une personne appartient à un seul sous-système.** « Son » sous-système est celui dont elle est membre (plus celui où elle est affectée) : c'est ce qui décide ACC-013. Elle n'est proposée comme PIC d'un OBS que sur ce sous-système. Un sous-système est validé par son contributeur ou par le TM ; l'aiguillage Turnkey, par le TM seul. | DEC-102/104 |
-| ACC-015 | **Seul un Tender leader crée un tender** ; le statut est accordé (ou retiré) par un admin, et le créateur devient tender manager du tender créé. Retirer le statut ne retire rien sur les tenders existants. Plus tard, des rôles SSO (Bid Director, Bid Manager, Requirement Manager…) le donneront d'eux-mêmes — pas au pilote. | DEC-127 |
-| ACC-016 | **L'admin voit tous les tenders** (écran Administration, en liste) et agit sur les personnes et les tenders : statut Tender leader, désactivation, ajout d'un tender manager, archivage. **Aucune autorité métier** : il ne valide pas, ne donne pas de verdict, ne modifie pas le contenu d'un tender. | DEC-127 |
-| ACC-017 | **Désactiver une personne** l'empêche de se connecter et garde son travail (réponses, verdicts, historique à son nom). Si elle est le seul tender manager actif d'un tender, l'admin doit nommer un remplaçant avant de valider. Ses affectations (PIC) apparaissent sans personne chez les tender managers concernés. | DEC-127, ACC-002, ACC-006 |
-| ACC-018 | **Toute action d'administration s'inscrit au journal d'audit** (qui, quand, avant → après), consultable par l'admin avec le journal de tous les tenders, en lecture seule (PLAT-003). | DEC-127 |
+| ACC-015 | **Seul un Tender leader crée un tender** ; le statut est accordé (ou retiré) par un admin, et le créateur devient tender manager du tender créé. Retirer le statut ne retire rien sur les tenders existants. Plus tard, des rôles SSO (Bid Director, Bid Manager, Requirement Manager…) le donneront d'eux-mêmes — pas au pilote. | DEC-137 |
+| ACC-016 | **L'admin voit tous les tenders** (écran Administration, en liste) et agit sur les personnes et les tenders : statut Tender leader, désactivation, ajout d'un tender manager, archivage. **Aucune autorité métier** : il ne valide pas, ne donne pas de verdict, ne modifie pas le contenu d'un tender. | DEC-137 |
+| ACC-017 | **Désactiver une personne** l'empêche de se connecter et garde son travail (réponses, verdicts, historique à son nom). Si elle est le seul tender manager actif d'un tender, l'admin doit nommer un remplaçant avant de valider. Ses affectations (PIC) apparaissent sans personne chez les tender managers concernés. | DEC-137, ACC-002, ACC-006 |
+| ACC-018 | **Toute action d'administration s'inscrit au journal d'audit** (qui, quand, avant → après), consultable par l'admin avec le journal de tous les tenders, en lecture seule (PLAT-003). | DEC-137 |
 
 ## Matrice métier
 
@@ -37,7 +37,7 @@
 
 SIG dans Turnkey suit le même modèle de travail que SIG autonome, mais la gestion globale appartient à l'équipe du tender global. Un simple rattachement SIG ne donne pas les pouvoirs de TM Turnkey.
 
-Admin et Tender leader sont précisés par DEC-127 (ACC-015 à ACC-018) ; VIP reste un besoin historique non détaillé. Un rôle technique Admin n'ajoute pas implicitement une autorité métier. Les anciennes restrictions de lecture entre sous-systèmes et hiérarchies manager/expert sont dépassées par les décisions utilisateur.
+Admin et Tender leader sont précisés par DEC-137 (ACC-015 à ACC-018) ; VIP reste un besoin historique non détaillé. Un rôle technique Admin n'ajoute pas implicitement une autorité métier. Les anciennes restrictions de lecture entre sous-systèmes et hiérarchies manager/expert sont dépassées par les décisions utilisateur.
 
 ## Critères d'acceptation
 
