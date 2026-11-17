@@ -1293,17 +1293,7 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-10-07
 - **notes**: `versionsTabHTML()`. Only shown when the requirement changed in the version of its document in force (DEC-071) — no tab otherwise. No "reviewed / action" state of its own: the change sets the requirement back to To review and validating it is the treatment (DEC-072); the tab says when a more restrictive status (e.g. Incomplete) is what the pill shows. "Show in the document →" ("Open in Compare" until 2026-10-07, DEC-119) opens the Document view on its Changes, at the document and range of the change; not shown when already there. Replaces the Change Card. Depends on untracked `--ia-soft`, `--ok-soft`, `--panel-2`.
 
-#### Settings Window
-- **level**: organism
-- **file**: accueil.html
-- **variants**: none
-- **tokens**: --panel, --line, --text-3, --accent, --radius-lg, --radius-md, --space-1, --space-3, --space-4, --space-5, --text-xs, --text-sm, --text-base, --text-lg, --font-heading
-- **built-from**: Header Avatar, Theme Picker, Config Field Row (re-implemented under `.set-win`), Select Dropdown, Primary Button, Toast
-- **added**: 2026-11-17
-- **changed**: 2026-11-17
-- **notes**: DEC-128 — the person's own, general settings, reached from the home header (« Settings » or the avatar) by everyone, before any tender is open: who is signed in (name, title, company account), Appearance › Theme (Light / Dark, applied at once with « <Theme> theme applied ») and Language › Interface language (English; « Français — later » disabled). Closes on ✕, « Done », Esc or a click on the backdrop; nothing to save. `.set-back`/`.set-win`: same shape as documents.html's Modal Dialog but a separate copy — backdrop `rgba(0,0,0,.45)` and shadow `0 24px 80px rgba(0,0,0,.6)` hardcoded, max-width 560px hardcoded. Rows re-implement Config Field Row with the label on the left and the control on the right (no 230px column). Uses off-scale `--panel-2`, `--line-2` and the motion tokens (`--motion-base`, `--ease-out`). Section labels (`.set-st`) hardcode `letter-spacing:.06em`.
-
-## Removed Requirement Panel
+### Removed Requirement Panel
 - **level**: molecule
 - **file**: revue-documentaire.html
 - **variants**: none
@@ -2103,6 +2093,16 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **added**: 2026-11-16
 - **changed**: 2026-11-16
 - **notes**: DEC-127 — the platform, not one tender, for admins only (reached from the home page's « Admin » button). Every section is a list: people (status, tenders, last sign-in; Tender leader granted or withdrawn; deactivation with handover), every tender (managers, stage, progress, region, archive), the audit trail of all tenders plus admin actions (read-only), platform tiles and breakdowns (never per person), AI processing per tender (steps, resume, low confidence, corrections, cost). Tables reuse the Risks screen's `.rk-table` styles copied into the file (no shared stylesheet beyond components.css). Tiles (`.ad-tile`), bars (`.ad-bar`) and the region code (`.ad-reg`, same look as the Tender Card's `.pc-region`) are local. Demo data from the shell (platform users, admin log, AI usage).
+
+### Settings Window
+- **level**: organism
+- **file**: accueil.html
+- **variants**: none
+- **tokens**: --panel, --line, --text-3, --accent, --radius-lg, --radius-md, --space-1, --space-3, --space-4, --space-5, --text-xs, --text-sm, --text-base, --text-lg, --font-heading
+- **built-from**: Header Avatar, Theme Picker, Config Field Row (re-implemented under `.set-win`), Select Dropdown, Primary Button, Toast
+- **added**: 2026-11-17
+- **changed**: 2026-11-17
+- **notes**: DEC-128 — the person's own, general settings, reached from the home header (« Settings » or the avatar) by everyone, before any tender is open: who is signed in (name, title, company account), Appearance › Theme (Light / Dark, applied at once with « <Theme> theme applied ») and Language › Interface language (English; « Français — later » disabled). Closes on ✕, « Done », Esc or a click on the backdrop; nothing to save. `.set-back`/`.set-win`: same shape as documents.html's Modal Dialog but a separate copy — backdrop `rgba(0,0,0,.45)` and shadow `0 24px 80px rgba(0,0,0,.6)` hardcoded, max-width 560px hardcoded. Rows re-implement Config Field Row with the label on the left and the control on the right (no 230px column). Uses off-scale `--panel-2`, `--line-2` and the motion tokens (`--motion-base`, `--ease-out`). Section labels (`.set-st`) hardcode `letter-spacing:.06em`.
 
 ## Removed
 
