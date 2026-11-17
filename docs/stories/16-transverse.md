@@ -108,7 +108,7 @@ Point ouvert : modalités de reprise et de correspondance entre versions (OPEN-0
 4. Générer quand rien ne correspond est refusé (« Nothing to export — the current filters match 0 requirements »).
 5. Le texte d'exigence est exporté dans la langue originale du tender, ce que le panneau dit quand le tender n'est pas en anglais.
 6. Les exigences sortent dans l'ordre du document, le même qu'à la lecture.
-Écart maquette : aucun fichier n'est produit (message seulement) ; CSV et ReqIF sont proposés sans intégration.
+Écart maquette : seul le CSV produit un vrai fichier (depuis le 13 novembre 2026 : la table telle qu'elle est, dans l'ordre du document) ; les autres formats sont annoncés sans être générés, et ReqIF est proposé sans intégration.
 Point ouvert : formats, correspondances et aller-retour DOORS à contractualiser (PLAT-004, OPEN-10, OPEN-12).
 
 ### US-X-09 — Importer un export DOORS comme document du tender
