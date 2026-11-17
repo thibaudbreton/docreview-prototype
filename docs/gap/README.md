@@ -22,7 +22,7 @@
 | [CODE.md](CODE.md) | Le prototype : écrans, shell, build, données, fonctions ajoutées ou retirées, et ce qui ne relève que de la démo. | Pour reprendre un comportement ou retrouver où il est implémenté |
 | [INTERFACE.md](INTERFACE.md) | L'interface seule, écran par écran, jusqu'au 10 octobre : ce qui est apparu, a disparu ou a changé à l'écran (composants, libellés, comportements visibles, style), avec quelques captures avant / après. | Pour refaire le front |
 | [VOCABULAIRE-2026-10-26.md](VOCABULAIRE-2026-10-26.md) | Le changement de vocabulaire du 26 octobre (DEC-126) : Project → Tender, Team casting → Users, Assigned to → PIC, System → Sub-system (un seul niveau), Nature → Type, nouveau champ Region, Combination supprimé. | Avant de lire tout document daté d'avant le 26 octobre |
-| [SEMAINE-2026-11-16.md](SEMAINE-2026-11-16.md) | Les changements des 16 et 17 novembre : écran Administration et statut Tender leader (DEC-137), micro-animations, défilement du panneau du détail, panneau de traitement après la création d'un tender, paramètres généraux (Settings) depuis l'accueil (DEC-138). | Après VOCABULAIRE |
+| [SEMAINE-2026-11-16.md](SEMAINE-2026-11-16.md) | Les changements des 16 et 17 novembre : écran Administration et statut Tender leader (DEC-137), micro-animations, défilement du panneau du détail, panneau de traitement après la création d'un tender, paramètres généraux (Settings) depuis l'accueil (DEC-138), plan de notification (DEC-127 à DEC-136). | Après VOCABULAIRE |
 
 **Marques.**
 - **(R)** : règle métier, à appliquer dans le produit.
