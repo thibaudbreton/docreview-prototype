@@ -21,9 +21,9 @@ Point ouvert : qui a le droit de créer un tender n'est pas fixé (JRN-001, « p
 
 ### US-HOME-02 — Reprendre le tender en cours
 **Carte :** En tant que tender manager ou contributeur, je veux retrouver en un clic le tender sur lequel je travaillais et ce qu'il reste à y faire, afin de reprendre sans chercher.
-**Conversation :** Une carte « Pick up where you left off », dans le bandeau, met en avant un tender ouvert avec sa ligne en miniature et l'étape suivante chiffrée. Elle ne propose jamais un tender encore en traitement ni un tender soumis. Toute la carte ouvre le tender.
+**Conversation :** Une carte « Pick up where you left off », dans le bandeau, met en avant un tender ouvert avec sa ligne en miniature et l'étape suivante chiffrée. Elle ne propose jamais un tender encore en traitement ni un tender soumis. Toute la carte ouvre le tender. Quand une notification attend la personne, la carte laisse la place à « Since your last visit » ([US-HOME-07](#us-home-07--voir-ce-qui-a-changé-depuis-ma-dernière-visite), DEC-128).
 **Maquette :** Accueil — `accueil.html` (route `#home`), Continue Card dans le Home Hero.
-**Règles :** JRN-001, PLAT-001, DEC-126  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
+**Règles :** JRN-001, PLAT-001, DEC-128, DEC-126  ·  **Périmètre :** Pilote 1 (à confirmer)  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. La carte montre le nom du tender, sa référence (BO-ID), sa date de dernière mise à jour et sa ligne en miniature (voir [US-HOME-05](#us-home-05--lire-lavancement-dun-tender-sur-sa-ligne)).
 2. Tant qu'il reste des exigences à allouer, l'étape suivante dit « N requirements still to allocate ».
@@ -89,6 +89,18 @@ Point ouvert : pas de règle écrite, comportement tiré de la maquette ; le pas
 Écart maquette : l'ouverture des tenders de démonstration non construits est bloquée par un message ; sans objet dans le produit.
 Point ouvert : ouverture d'un tender en traitement depuis l'accueil (« Still processing — it will open when the models finish » dans la maquette) — reprise non décidée (JRN-001 → OPEN-05).
 
+### US-HOME-07 — Voir ce qui a changé depuis ma dernière visite
+**Carte :** En tant que contributeur ou tender manager, je veux qu'en arrivant sur l'accueil Smart Req me dise sur quels tenders quelque chose a bougé pour moi, afin de savoir où aller sans ouvrir chaque tender.
+**Conversation :** C'est le jumeau du résumé quotidien, dans l'application (DEC-128). Quand la personne a des notifications non vues, la carte « Pick up where you left off » ([US-HOME-02](#us-home-02--reprendre-le-tender-en-cours)) laisse la place à « Since your last visit » : une ligne par tender où quelque chose a bougé pour elle, avec un bouton Open. Sans nouveau, la carte garde sa forme actuelle. « Nouveau » veut dire les notifications non vues de la personne ([US-X-10](16-transverse.md#us-x-10--recevoir-les-notifications-dans-lapplication-et-par-e-mail)), jamais toute l'activité des autres sur le tender.
+**Maquette :** intention dans `proposals/notifications/index.html` (« Since your last visit ») ; Accueil — `accueil.html` (route `#home`), Continue Card dans le Home Hero.
+**Règles :** DEC-128, NOTIF-015, JRN-001, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
+**Critères d'acceptation :**
+1. Avec au moins une notification non vue, la carte s'intitule « Since your last visit · <date, heure> » et liste une ligne par tender concerné, avec ce qui a bougé et un bouton Open.
+2. Quand la personne a d'autres tenders sans nouveau, la carte finit par « Nothing new on your N other tenders ».
+3. Open ouvre le tableau de bord du tender ; dans la liste des tenders, la carte de chaque tender concerné porte une pastille « N new ».
+4. Sans notification non vue, la carte reprend « Pick up where you left off ».
+Écart maquette : l'accueil n'a ni cloche ni carte « Since your last visit ».
+
 ## Couverture
-- Règles couvertes : JRN-001 → [US-HOME-01](#us-home-01--être-accueilli-et-orienté-dès-larrivée), [US-HOME-02](#us-home-02--reprendre-le-tender-en-cours), [US-HOME-03](#us-home-03--comprendre-comment-un-tender-traverse-smart-req), [US-HOME-04](#us-home-04--voir-la-liste-de-mes-tenders), [US-HOME-05](#us-home-05--lire-lavancement-dun-tender-sur-sa-ligne), [US-HOME-06](#us-home-06--ouvrir-un-tender-depuis-laccueil) (la partie « création en quatre étapes » : US-NEW) ; TYPE-T06 → [US-HOME-04](#us-home-04--voir-la-liste-de-mes-tenders) (le type de chaque tender est affiché ; la règle de recette elle-même s'applique par le champ « Variantes » de chaque story).
+- Règles couvertes : JRN-001 → [US-HOME-01](#us-home-01--être-accueilli-et-orienté-dès-larrivée), [US-HOME-02](#us-home-02--reprendre-le-tender-en-cours), [US-HOME-03](#us-home-03--comprendre-comment-un-tender-traverse-smart-req), [US-HOME-04](#us-home-04--voir-la-liste-de-mes-tenders), [US-HOME-05](#us-home-05--lire-lavancement-dun-tender-sur-sa-ligne), [US-HOME-06](#us-home-06--ouvrir-un-tender-depuis-laccueil), [US-HOME-07](#us-home-07--voir-ce-qui-a-changé-depuis-ma-dernière-visite) (la partie « création en quatre étapes » : US-NEW) ; NOTIF-015 → [US-HOME-07](#us-home-07--voir-ce-qui-a-changé-depuis-ma-dernière-visite) ; TYPE-T06 → [US-HOME-04](#us-home-04--voir-la-liste-de-mes-tenders) (le type de chaque tender est affiché ; la règle de recette elle-même s'applique par le champ « Variantes » de chaque story).
 - Non couvertes, avec la raison : reprise d'un tender en traitement depuis l'accueil — point ouvert (JRN-001 → OPEN-05) ; DEC-115 (police de la marque) — pas de story, charte graphique (US-X).

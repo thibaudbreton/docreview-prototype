@@ -1,0 +1,29 @@
+Smart Req
+
+Daily summary · Wed 18 Nov
+
+3 updates for you since Tue 08:00
+
+Thibaud, here's what's new for you on 2 tenders.
+
+STB-2026 · Energy Monitoring System
+Tender manager · 61 of 104 requirements allocated · submission Fri 11 Dec, 23 days left
+
+* 5 reallocation requests to decide: 3 from SIG, 2 from SEN.
+  Decide: https://smartreq.example/tenders/STB-2026/allocation?show=requests
+
+* 1 missing sub-system proposed: TRK, on SRM-00063.
+  Review it: https://smartreq.example/tenders/STB-2026/requirements/SRM-00063
+
+RFP-2026-114 · Line 4 Resignalling — ETCS L2
+Tender manager · submission Fri 29 Jan 2027
+
+* Allocation is complete: all 318 requirements are allocated.
+  Open the dashboard: https://smartreq.example/tenders/RFP-2026-114/dashboard
+
+-- 
+You get this summary on working days when something new for you hasn't
+been seen in Smart Req. What you've already seen there isn't repeated.
+Notification settings — change the frequency, or stop emails for one
+tender: https://smartreq.example/settings/notifications
+Sent by Smart Req from an unattended mailbox: replies aren't read.

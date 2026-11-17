@@ -1,0 +1,20 @@
+Smart Req
+
+STB-2026 · Energy Monitoring System
+
+Interface Control Document couldn't be processed
+
+The document you added at 10:02 couldn't be read: the PDF is
+password-protected.
+
+Nothing else in the tender changed: the other documents and the work on
+them are untouched. Upload a copy without a password and Smart Req will
+process it.
+
+Open Documents: https://smartreq.example/tenders/STB-2026/documents
+
+-- 
+Sent because you added this document and hadn't seen the result in Smart
+Req 10 minutes later.
+Notification settings: https://smartreq.example/settings/notifications
+Sent by Smart Req from an unattended mailbox: replies aren't read.

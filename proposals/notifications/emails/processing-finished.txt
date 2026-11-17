@@ -1,0 +1,19 @@
+Smart Req
+
+STB-2026 · Energy Monitoring System
+
+Functional Specification v2.1 is processed
+
+The new version you uploaded at 08:51 finished processing at 09:24.
+
+* 7 requirements changed: 2 added, 4 modified, 1 removed.
+  See the changes: https://smartreq.example/tenders/STB-2026/documents/changes?from=v2.0&to=v2.1
+
+* 4 requirements went back to review in Allocation.
+  Open them: https://smartreq.example/tenders/STB-2026/allocation?show=back-to-review
+
+-- 
+Sent because you launched this processing and hadn't seen the result in
+Smart Req 10 minutes after it finished.
+Notification settings: https://smartreq.example/settings/notifications
+Sent by Smart Req from an unattended mailbox: replies aren't read.

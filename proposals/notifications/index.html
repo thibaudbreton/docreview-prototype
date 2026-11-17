@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Req — Notifications</title>
+<!-- Proposal page, not part of the prototype build (build_merge.py does not read it).
+     Plain HTML, CSS and a few lines of JS; the only dependency is the Noto Sans web font.
+     Names, tenders, requirements and figures are demo data. The rules behind it:
+     docs/current/NOTIFICATIONS.md -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Same token scale as the prototype's screens (accueil.html): dark in :root, light override. */
+:root{
+  --bg:#071A30; --panel:#0B294A; --panel-2:#143556; --panel-3:#1D4062;
+  --line:#1F3E5F; --line-2:#2E4E70;
+  --text:#EEF1F8; --text-2:#AAB6C6; --text-3:#8B9AAD;
+  --accent:#4C82FF; --accent-soft:#1B3F6B;
+  --ia:#E3A64B; --ok:#3FBE86; --human:#a06ef2; --warn:#F2604F; --warn-soft:rgba(242,96,79,.12);
+  --text-xs:11px; --text-sm:12px; --text-base:13px; --text-lg:16px; --text-xl:21px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
+  --radius-xs:4px; --radius-sm:6px; --radius-md:8px; --radius-lg:12px; --radius-pill:999px;
+  --font-ui:"Noto Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;
+  --brand-red:#E4002B;
+}
+html[data-theme="light"]{
+  --bg:#F4F5FA; --panel:#FFFFFF; --panel-2:#F4F5FA; --panel-3:#E6E6F0;
+  --line:#E1E3EE; --line-2:#CDD2E3;
+  --text:#1E3246; --text-2:#4A5A6E; --text-3:#637187;
+  --accent:#0B294A; --accent-soft:#E6EBF2;
+  --ia:#C67A16; --ok:#1E8E5A; --human:#8250dc; --warn:#DC3223; --warn-soft:rgba(220,50,35,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);font-size:var(--text-base);line-height:1.5}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+a{color:inherit}
+.mono{font-family:var(--font-mono);font-size:.92em}
+
+/* ---- page chrome ---- */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:var(--space-4);height:52px;padding:0 var(--space-6);background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{font-weight:700;letter-spacing:-.2px;font-size:14px}
+.crumb{color:var(--text-2)}
+.top .right{margin-left:auto;display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:var(--radius-md);padding:2px;background:var(--panel-2)}
+.seg button{padding:4px 10px;border-radius:var(--radius-sm);font-size:var(--text-sm);color:var(--text-2)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--text);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.seg-label{font-size:var(--text-sm);color:var(--text-3)}
+.tag{font-size:var(--text-sm);color:var(--text-2);border:1px dashed var(--line-2);border-radius:var(--radius-pill);padding:3px 10px;white-space:nowrap}
+.ghost{border:1px solid var(--line-2);border-radius:var(--radius-md);padding:5px 10px;font-size:var(--text-sm);color:var(--text-2)}
+.ghost:hover{color:var(--text);border-color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:var(--space-6) var(--space-6) 80px;display:grid;gap:var(--space-6)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:var(--space-5) var(--space-6);display:grid;gap:var(--space-4);min-width:0}
+.intro h1{margin:0;font-size:var(--text-xl);display:flex;align-items:center;gap:10px;line-height:1.3}
+.intro h1:before{content:"";width:5px;height:.9em;background:var(--brand-red);display:inline-block;flex-shrink:0}
+.intro p{margin:0;color:var(--text-2);max-width:900px}
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3)}
+.rule{border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);background:var(--panel-2)}
+.rule b{display:block;margin-bottom:2px}
+.rule span{color:var(--text-2);font-size:var(--text-sm)}
+h2{margin:0;font-size:var(--text-lg);display:flex;align-items:baseline;gap:var(--space-2)}
+h2 .n{font-size:var(--text-sm);color:var(--text-3);font-weight:600}
+h2 .sub{font-size:var(--text-sm);color:var(--text-3);font-weight:400}
+.why{font-size:var(--text-sm);color:var(--text-3);line-height:1.55;border-top:1px dashed var(--line);padding-top:var(--space-2)}
+.why b{color:var(--text-2)}
+.why p{margin:0 0 6px}.why p:last-child{margin:0}
+[data-role="ct"] .tm-only{display:none!important}
+[data-role="tm"] .ct-only{display:none!important}
+
+/* ---- flow: one event, three outcomes ---- */
+.flow{display:grid;grid-template-columns:200px 28px minmax(0,1fr);gap:var(--space-3);align-items:center}
+.fbox{border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-3);background:var(--panel-2)}
+.fbox b{display:block}
+.fbox span{font-size:var(--text-sm);color:var(--text-2)}
+.farrow{color:var(--text-3);text-align:center;font-size:18px}
+.fouts{display:grid;gap:var(--space-2)}
+.fout{display:grid;grid-template-columns:150px minmax(0,1fr) 190px;gap:var(--space-3);align-items:center;border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3)}
+.fout .k{font-weight:600}
+.fout .d{font-size:var(--text-sm);color:var(--text-2)}
+.fout .c{font-size:var(--text-sm);text-align:right;color:var(--text-2)}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:var(--text-xs);font-weight:600;border-radius:var(--radius-pill);padding:2px 8px;border:1px solid var(--line-2);color:var(--text-2);white-space:nowrap}
+.chip.now{border-color:var(--accent);color:var(--accent)}
+html:not([data-theme="light"]) .chip.now{color:#9DBBFF;border-color:#4C82FF}
+.chip.day{border-color:var(--ok);color:var(--ok)}
+.chip.no{border-style:dashed;color:var(--text-3)}
+
+/* ---- the matrix ---- */
+.mx-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius-md)}
+table.mx{border-collapse:collapse;width:100%;min-width:760px;font-size:var(--text-sm)}
+.mx th{text-align:left;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);font-weight:600;padding:var(--space-2) var(--space-3);background:var(--panel-2);border-bottom:1px solid var(--line)}
+.mx td{padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--line);vertical-align:top}
+.mx tr:last-child td{border-bottom:0}
+.mx td:first-child{font-weight:500;color:var(--text)}
+.mx td .ex{display:block;font-weight:400;color:var(--text-3);font-size:var(--text-xs);margin-top:2px}
+.mx .grp td{background:var(--panel-2);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);font-weight:700;padding-top:6px;padding-bottom:6px}
+.mx .who{color:var(--text-2)}
+.mx .yes{color:var(--text)}
+.mx .dim{color:var(--text-3)}
+.mx td .nt{display:block;color:var(--text-3);font-size:var(--text-xs);margin-top:4px}
+.never{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;font-size:var(--text-sm);color:var(--text-2)}
+.never .chip{font-weight:500}
+
+/* ---- mock app header + bell panel ---- */
+.stage{position:relative;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--bg);overflow:hidden;min-height:690px}
+.mh{display:flex;align-items:center;gap:var(--space-4);height:52px;padding:0 var(--space-4);background:var(--panel);border-bottom:1px solid var(--line)}
+.mh .logo{font-weight:800;letter-spacing:.5px;color:var(--text)}
+.mh .logo i{font-style:normal;color:var(--brand-red)}
+.mh .sep{width:1px;height:20px;background:var(--line-2)}
+.mh .app{font-weight:600}
+.mh .crumbs{color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mh .crumbs b{color:var(--text);font-weight:600}
+.mh .r{margin-left:auto;display:flex;align-items:center;gap:6px}
+.ib{width:32px;height:32px;border-radius:var(--radius-md);display:grid;place-items:center;color:var(--text-2);position:relative}
+.ib.on{background:var(--panel-3);color:var(--text)}
+.ib svg{width:16px;height:16px}
+.ib .dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 2px var(--panel)}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#e0a43c,#c4763a);display:grid;place-items:center;font-size:var(--text-xs);font-weight:700;color:#fff}
+.mbtn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-sm)}
+.mtitle{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--line);background:var(--panel)}
+.mtitle b{font-size:15px;display:flex;align-items:center;gap:8px}
+.mtitle b:before{content:"";width:4px;height:1em;background:var(--brand-red)}
+.mtitle .pill{font-size:var(--text-sm);border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:2px 10px;color:var(--text-2)}
+.ghostrows{padding:var(--space-4);display:grid;gap:10px}
+.ghostrows div{height:30px;border-radius:var(--radius-sm);background:var(--panel);border:1px solid var(--line);opacity:.7}
+
+.np{position:absolute;top:58px;right:84px;width:392px;max-width:calc(100% - 24px);background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 16px 48px rgba(0,0,0,.22);overflow:hidden;z-index:2}
+.np-head{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-4) var(--space-2)}
+.np-head b{font-size:var(--text-base)}
+.np-head .link{margin-left:auto;font-size:var(--text-sm);color:var(--text-2);text-decoration:underline;text-underline-offset:2px}
+.np-scope{display:flex;gap:var(--space-1);padding:0 var(--space-4) var(--space-2);border-bottom:1px solid var(--line)}
+.np-scope button{font-size:var(--text-sm);padding:4px 10px;border-radius:var(--radius-pill);color:var(--text-2);border:1px solid transparent}
+.np-scope button[aria-pressed="true"]{border-color:var(--line-2);background:var(--panel-2);color:var(--text);font-weight:600}
+.np-sec{padding:var(--space-2) var(--space-4) 2px;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);font-weight:700}
+.ni{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:var(--space-3);align-items:start;width:100%;text-align:left;padding:var(--space-2) var(--space-4);border-bottom:1px solid var(--line)}
+.ni:hover{background:var(--panel-2)}
+.ni .ico{color:var(--text-3);padding-top:2px}
+.ni .ico svg{width:16px;height:16px;display:block}
+.ni .t{display:block;font-size:var(--text-sm);color:var(--text-2);line-height:1.45}
+.ni .t b{color:var(--text);font-weight:600}
+.ni .m{display:block;font-size:var(--text-xs);color:var(--text-3);margin-top:3px}
+.ni .m .tn{font-family:var(--font-mono);font-size:10.5px;border:1px solid var(--line-2);border-radius:var(--radius-xs);padding:0 4px;margin-right:6px;color:var(--text-2)}
+.ni .u{width:8px;height:8px;border-radius:50%;margin-top:6px;background:transparent}
+.ni.unread .u{background:var(--accent)}
+html:not([data-theme="light"]) .ni.unread .u{background:#6F9BFF}
+.ni.read .t,.ni.read .t b{color:var(--text-3);font-weight:500}
+.np-wait{margin:var(--space-2) var(--space-4) var(--space-3);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);background:var(--panel-2);display:grid;gap:2px}
+.np-wait .h{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);font-weight:700}
+.np-wait .b{font-size:var(--text-sm);color:var(--text-2)}
+.np-wait .b b{color:var(--text)}
+.np-wait .go{font-size:var(--text-sm);font-weight:600;color:var(--text);justify-self:start;text-decoration:underline;text-underline-offset:2px}
+.np-foot{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);border-top:1px solid var(--line);background:var(--panel-2);font-size:var(--text-xs);color:var(--text-3)}
+.np-foot svg{width:13px;height:13px;flex-shrink:0}
+.np-foot .link{margin-left:auto;color:var(--text-2);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+.other{display:none}
+.scope-all .other{display:grid}
+/* the tender tag only earns its place once several tenders share the list */
+.np:not(.scope-all) .ni .m .tn{display:none}
+.scope-all .np-wait .other{display:block}
+.other-inline{display:none}
+.scope-all .other-inline{display:inline}
+.scope-all .here-only{display:none}
+
+/* ---- Home: since your last visit ---- */
+.homegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-5);align-items:start}
+.since{border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:var(--radius-lg);background:var(--panel);box-shadow:0 8px 24px rgba(0,0,0,.08);padding:var(--space-4) var(--space-5);display:grid;gap:var(--space-3)}
+html:not([data-theme="light"]) .since{border-top-color:#4C82FF}
+.since .k{font-size:var(--text-xs);letter-spacing:.8px;text-transform:uppercase;color:var(--text-3);font-weight:700}
+.trow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;border-top:1px solid var(--line)}
+.trow:first-of-type{border-top:0}
+.trow .nm{font-weight:600}
+.trow .id{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-3);margin-right:6px}
+.trow .what{font-size:var(--text-sm);color:var(--text-2);margin-top:1px}
+.trow .role{font-size:var(--text-xs);color:var(--text-3)}
+.btn-s{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius-md);background:var(--accent);color:#fff;font-weight:600;font-size:var(--text-sm);white-space:nowrap}
+.quiet{font-size:var(--text-sm);color:var(--text-3)}
+.tcard{border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);padding:var(--space-4);display:grid;gap:var(--space-2)}
+.tcard .row1{display:flex;align-items:center;gap:var(--space-2)}
+.tcard .type{font-size:var(--text-xs);font-weight:700;letter-spacing:.5px;background:var(--accent);color:#fff;border-radius:var(--radius-xs);padding:2px 6px}
+.tcard .tid{font-family:var(--font-mono);font-size:var(--text-sm);color:var(--text-2)}
+.tcard .new{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:var(--text-xs);font-weight:600;color:var(--text);border:1px solid var(--line-2);border-radius:var(--radius-pill);padding:2px 9px}
+.tcard .new:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.tcard .nm{font-weight:600;font-size:15px}
+.tcard .line{font-size:var(--text-sm);color:var(--text-2)}
+
+/* ---- settings ---- */
+.setgrid{display:grid;grid-template-columns:220px minmax(0,1fr);gap:var(--space-5);align-items:start}
+.menu{border:1px solid var(--line-2);border-radius:var(--radius-md);background:var(--panel);box-shadow:0 10px 28px rgba(0,0,0,.14);overflow:hidden}
+.menu .who{padding:var(--space-3);border-bottom:1px solid var(--line);font-size:var(--text-sm)}
+.menu .who b{display:block;font-size:var(--text-base)}
+.menu .who span{color:var(--text-3)}
+.menu .it{display:block;padding:8px var(--space-3);font-size:var(--text-sm);color:var(--text-2)}
+.menu .it.on{background:var(--panel-2);color:var(--text);font-weight:600}
+.modal{border:1px solid var(--line-2);border-radius:var(--radius-lg);background:var(--panel);box-shadow:0 16px 48px rgba(0,0,0,.18);max-width:620px}
+.modal .mh2{display:flex;align-items:center;padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--line)}
+.modal .mh2 b{font-size:15px}
+.modal .mh2 .x{margin-left:auto;color:var(--text-3)}
+.modal .body{padding:var(--space-4) var(--space-5);display:grid;gap:var(--space-5)}
+.fs{display:grid;gap:var(--space-2)}
+.fs .lg{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);font-weight:700}
+.fs .help{font-size:var(--text-sm);color:var(--text-3)}
+.opt{display:flex;align-items:flex-start;gap:var(--space-2);font-size:var(--text-sm)}
+.opt .box{width:15px;height:15px;border:1.5px solid var(--line-2);border-radius:4px;margin-top:2px;flex-shrink:0;display:grid;place-items:center}
+.opt .box.r{border-radius:50%}
+.opt .box.on{border-color:var(--accent);background:var(--accent)}
+.opt .box.on:after{content:"";width:6px;height:6px;border-radius:2px;background:#fff}
+.opt .box.r.on:after{border-radius:50%}
+.opt .box.lock{border-style:dashed;background:var(--panel-2)}
+.opt .d{color:var(--text-3)}
+.tl{display:grid;gap:0;border:1px solid var(--line);border-radius:var(--radius-md)}
+.tl .tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--space-3);align-items:center;padding:var(--space-2) var(--space-3);border-top:1px solid var(--line);font-size:var(--text-sm)}
+.tl .tr:first-child{border-top:0}
+.tl .tr span{color:var(--text-3);font-size:var(--text-xs)}
+.sw{width:30px;height:17px;border-radius:999px;background:var(--line-2);position:relative;flex-shrink:0}
+.sw:after{content:"";position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#fff;transition:left .15s}
+.sw.on{background:var(--accent)}
+.sw.on:after{left:15px}
+.modal .foot{display:flex;justify-content:flex-end;gap:var(--space-2);padding:var(--space-3) var(--space-5);border-top:1px solid var(--line)}
+
+/* ---- emails ---- */
+.tabs{display:flex;gap:var(--space-1);flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.tabs button{padding:8px 12px;font-size:var(--text-sm);color:var(--text-2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--text);font-weight:600;border-bottom-color:var(--brand-red)}
+.mailframe{border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;background:#fff;color:#1E3246}
+.mailhead{background:#F4F5FA;border-bottom:1px solid #E1E3EE;padding:12px 18px;display:grid;gap:3px;font-size:12.5px;color:#4A5A6E}
+.mailhead .subj{font-size:16px;font-weight:600;color:#1E3246;margin-bottom:4px}
+.mailhead b{color:#1E3246;font-weight:600}
+.mailhead .pre{color:#637187;font-style:italic}
+.mailbody{padding:22px 18px 26px;font-family:"Segoe UI",-apple-system,"Noto Sans",Arial,sans-serif;font-size:14px;line-height:1.55;max-width:640px}
+.mailbody p{margin:0 0 12px}
+.mailbody h3{font-size:14.5px;margin:18px 0 2px;color:#1E3246}
+.mailbody .ctx{font-size:12.5px;color:#637187;margin:0 0 6px}
+.mailbody ul{margin:6px 0 10px;padding-left:18px}
+.mailbody li{margin:3px 0}
+.mailbody a{color:#0B5CAD;text-decoration:underline}
+.mailbody .also{color:#637187}
+.mailbody .note{border-left:3px solid #CDD2E3;padding:4px 0 4px 12px;margin:4px 0 14px;color:#4A5A6E;font-style:italic}
+.mailbody .btn{display:inline-block;background:#0B294A;color:#fff!important;text-decoration:none;font-weight:600;padding:9px 16px;border-radius:6px;margin:6px 0 4px}
+.mailbody .rq{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
+.mailbody .foot{margin-top:22px;padding-top:12px;border-top:1px solid #E1E3EE;font-size:12px;color:#637187}
+.mailbody .foot p{margin:0 0 6px}
+.email{display:none}
+.email.on{display:block}
+
+@media (max-width:900px){
+  .rules,.homegrid,.setgrid{grid-template-columns:minmax(0,1fr)}
+  .flow{grid-template-columns:minmax(0,1fr)}
+  .farrow{transform:rotate(90deg)}
+  .fout{grid-template-columns:minmax(0,1fr)}
+  .fout .c{text-align:left}
+  .np{position:relative;top:auto;right:auto;margin:12px auto;width:auto;max-width:392px}
+  .stage{min-height:0}
+  .mh .crumbs,.mh .seg-mock{display:none}
+  .top{height:auto;flex-wrap:wrap;padding:8px 16px}
+  .wrap{padding:16px 16px 60px}
+  .card{padding:16px}
+}
+</style>
+</head>
+<body data-role="ct">
+
+<header class="top">
+  <span class="brand">Smart Req.</span>
+  <span class="crumb">Notifications — validated plan</span>
+  <div class="right">
+    <span class="seg-label">View as</span>
+    <div class="seg" role="group" aria-label="View as">
+      <button type="button" data-role-btn="ct" aria-pressed="true">Contributor</button>
+      <button type="button" data-role-btn="tm" aria-pressed="false">Tender manager</button>
+    </div>
+    <button type="button" class="ghost" id="theme-btn">Dark theme</button>
+    <span class="tag">Proposal page — not in the prototype build</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===================================================== intro -->
+  <section class="card intro">
+    <h1>Notifications: one bell for what's new, at most one email a day</h1>
+    <p>Plan de notification, in-app et e-mail, validé le 17 novembre 2026 (DEC-127 à DEC-136). Les règles numérotées sont dans <span class="mono">docs/current/NOTIFICATIONS.md</span> ; les e-mails réels, en HTML pour messagerie, sont dans <a href="emails/index.html">emails/</a>. Les libellés de l'interface sont en anglais, comme dans le prototype ; les notes « Pourquoi » sont en français.</p>
+    <div class="rules">
+      <div class="rule"><b>On ne prévient que la personne dont c'est le tour</b><span>Celle qui doit agir : la personne en charge (PIC) de l'organisation, le tender manager pour ses décisions, l'auteur d'une demande pour la réponse. Jamais l'auteur de l'action, jamais en copie « pour info ».</span></div>
+      <div class="rule"><b>L'application montre tout, l'e-mail ne rattrape que le non-vu</b><span>Tout ce qui concerne la personne arrive sous la cloche. Un e-mail n'est que le rattrapage de ce qu'elle n'a pas vu dans Smart Req, recalculé au moment de l'envoi.</span></div>
+      <div class="rule"><b>Un e-mail par jour au plus</b><span>Un résumé quotidien, tous tenders confondus, rien si rien de neuf. Seuls partent dans l'heure : une relance du tender manager, une mention, l'ajout à un tender et, pour le tender manager qui l'a lancé, la fin d'un traitement.</span></div>
+    </div>
+  </section>
+
+  <!-- ===================================================== flow -->
+  <section class="card">
+    <h2><span class="n">1</span> What happens to one event <span class="sub">— the rule behind every row of the table below</span></h2>
+    <div class="flow">
+      <div class="fbox"><b>Something happens</b><span>e.g. the tender manager validates SIG's allocation: 12 assignments are created for Louis Renaud.</span></div>
+      <div class="farrow" aria-hidden="true">→</div>
+      <div class="fouts">
+        <div class="fout"><span class="k">Under the bell</span><span class="d">At once, for the person whose move it is — grouped with what's already there (“12 new assignments in SIG”), with its live state (“9 answered since”).</span><span class="c"><span class="chip">Always</span></span></div>
+        <div class="fout"><span class="k">Right-away email</span><span class="d">Only for a reminder from a tender manager, a mention, being added to a tender — and, for the tender manager who launched it, a processing that finished or failed. Sent if still unseen after 10 minutes, grouped by tender.</span><span class="c"><span class="chip now">4 kinds only</span></span></div>
+        <div class="fout"><span class="k">Daily summary</span><span class="d">Everything else that asks something of the person and is still unseen at 8:00 on the next working day, in their own time zone — one email for all their tenders, none if nothing is left.</span><span class="c"><span class="chip day">≤ 1 a day</span></span></div>
+        <div class="fout"><span class="k">Nothing more</span><span class="d">Seen in Smart Req, done in the meantime, or undone (Undo, reassigned back): it drops out of every email — the content is recomputed when the email is built.</span><span class="c"><span class="chip no">No email</span></span></div>
+      </div>
+    </div>
+    <div class="why"><p><b>Pourquoi.</b> C'est le schéma documenté de Notion (e-mail seulement si la notification n'est pas vue en 5 minutes), de Linear (résumé des seules notifications non lues) et de Slack (e-mail seulement si l'on est inactif) : l'e-mail sert de filet quand la personne n'est pas dans l'outil, pas de second canal qui répète le premier. Smart Req va plus loin, un résumé par jour, parce que le rythme d'un tender se compte en jours.</p><p>Le recalcul à l'envoi règle les rafales (un tender manager qui valide 300 exigences d'un coup = une ligne « 300 new assignments », pas 300 e-mails ; Jira Cloud a réduit ses e-mails d'environ 30 % en regroupant ainsi par ticket) et les gestes annulés entre-temps.</p></div>
+  </section>
+
+  <!-- ===================================================== matrix -->
+  <section class="card">
+    <h2><span class="n">2</span> When Smart Req tells you something <span class="sub ct-only">— contributor rows; switch to “Tender manager” at the top for the others</span><span class="sub tm-only">— tender manager rows; switch to “Contributor” at the top for the others</span></h2>
+    <div class="mx-wrap">
+      <table class="mx">
+        <thead><tr><th style="width:34%">Event</th><th style="width:24%">Who is told</th><th style="width:16%">Under the bell</th><th style="width:26%">By email</th></tr></thead>
+        <tbody class="ct-only">
+          <tr class="grp"><td colspan="4">Addressed to you by a person — right away</td></tr>
+          <tr><td>A tender manager sends you a reminder<span class="ex">“Send a reminder”, R, or the bulk action (DEC-125)</span></td><td class="who">The PIC of each assignment reminded</td><td class="yes">Yes</td><td><span class="chip now">Right away</span><span class="nt">One email per reminder, listing every assignment it covers; capped by the tender's reminder cadence</span></td></tr>
+          <tr><td>Someone mentions you in a comment<span class="ex">Once “@” mentions exist (US-X-02, open)</span></td><td class="who">The person mentioned</td><td class="yes">Yes</td><td><span class="chip now">Right away</span><span class="nt">Grouped by tender</span></td></tr>
+          <tr><td>You're added to a tender<span class="ex">Staffed on a sub-system, or put in the tender team</span></td><td class="who">The person added</td><td class="yes">Yes</td><td><span class="chip now">Right away</span><span class="nt">Always — it's the first contact</span></td></tr>
+          <tr class="grp"><td colspan="4">Work that lands on you — in the daily summary</td></tr>
+          <tr><td>New assignments for you<span class="ex">Allocation validated, an assignment reassigned to you, a request approved in your favour</span></td><td class="who">The PIC of the organisation (DEC-087)</td><td class="yes">Yes, one line per tender: “12 new assignments”</td><td><span class="chip day">Daily summary</span></td></tr>
+          <tr><td>Your answer is reopened by a new document version<span class="ex">LIFE-007, US-CMP-27</span></td><td class="who">The PIC whose verdict went back to pending</td><td class="yes">Yes</td><td><span class="chip day">Daily summary</span></td></tr>
+          <tr><td>The client answered your question<span class="ex">Once the answer is confirmed in Q&amp;A (US-QA-08)</span></td><td class="who">Who asked, and the PIC of the assignment</td><td class="yes">Yes</td><td><span class="chip day">Daily summary</span></td></tr>
+          <tr><td>Your return or reallocation request is refused<span class="ex">US-ALM-30 — the assignment is yours again</span></td><td class="who">Who asked</td><td class="yes">Yes</td><td><span class="chip day">Daily summary</span></td></tr>
+          <tr><td>Your sub-system gets requirements to allocate<span class="ex">Turnkey pass 1 routes them; a new version sends some back to review</span></td><td class="who">To decide — nobody leads a sub-system (ACC-008, ACC-010)</td><td class="yes">Yes</td><td><span class="chip day">Daily summary</span><span class="nt">For whoever is chosen</span></td></tr>
+          <tr class="grp"><td colspan="4">Already waiting — no notification of its own</td></tr>
+          <tr><td>An assignment waits longer than the overdue threshold; the submission is 7 days away or less</td><td class="who">The PIC</td><td class="dim">In “Waiting on you”, not as news</td><td><span class="chip no">One line</span><span class="nt">In a summary that is sent anyway — never an email of its own</span></td></tr>
+          <tr class="grp"><td colspan="4">For information — in the app only</td></tr>
+          <tr><td>Your return or request is approved</td><td class="who">Who asked</td><td class="yes">Yes</td><td class="dim">—</td></tr>
+          <tr><td>A tender manager changes your verdict</td><td class="who">The PIC who gave it</td><td class="yes">Yes</td><td class="dim">—</td></tr>
+          <tr><td>A comment on one of your assignments</td><td class="who">The PIC</td><td class="yes">Yes, grouped: “3 new comments”</td><td class="dim">—</td></tr>
+          <tr><td>Your question was sent to the client</td><td class="who">Who asked</td><td class="yes">Yes</td><td class="dim">—</td></tr>
+        </tbody>
+        <tbody class="tm-only">
+          <tr class="grp"><td colspan="4">What the tender manager waits for — right away</td></tr>
+          <tr><td>Processing finished or failed<span class="ex">Capture at creation, a document added, a new version</span></td><td class="who">The tender manager who launched it; the others in the app only</td><td class="yes">Yes</td><td><span class="chip now">Right away</span><span class="nt">If unseen after 10 minutes</span></td></tr>
+          <tr class="grp"><td colspan="4">Decisions only a tender manager takes — in the daily summary</td></tr>
+          <tr><td>A return, a reallocation request, a missing sub-system proposed<span class="ex">US-ALM-10, US-ALM-29, US-CMP-19</span></td><td class="who">Every tender manager of the tender — the first to decide clears it for all</td><td class="yes">Yes, “5 requests to decide”</td><td><span class="chip day">Daily summary</span></td></tr>
+          <tr><td>Allocation complete; every requirement consolidated</td><td class="who">Every tender manager</td><td class="yes">Yes</td><td><span class="chip day">Daily summary</span><span class="nt">Once</span></td></tr>
+          <tr class="grp"><td colspan="4">Already waiting — no notification of its own</td></tr>
+          <tr><td>Assignments past the overdue threshold</td><td class="who">Every tender manager</td><td class="dim">In “Waiting on you”</td><td><span class="chip no">One line</span><span class="nt">Counted by sub-system (DEC-118); names only in Compliance, beside the reminder</span></td></tr>
+          <tr><td>Questions still to send, client's closing date in 3 days or less</td><td class="who">Every tender manager</td><td class="dim">In “Waiting on you”</td><td><span class="chip no">One line</span><span class="nt">In the summary</span></td></tr>
+          <tr class="grp"><td colspan="4">For information — in the app only</td></tr>
+          <tr><td>Another tender manager uploads a version, imports the client's answers, changes the deadline</td><td class="who">The other tender managers</td><td class="yes">Yes</td><td class="dim">—</td></tr>
+          <tr><td>Answers to confirm after an import; Not compliant without a strategy; weak OBS; uncertain segmentation</td><td class="who">—</td><td class="dim">Work in the tables and the dashboard, not news</td><td class="dim">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="never"><b>Never:</b>
+      <span class="chip">your own actions</span><span class="chip">AI proposals and confidence</span><span class="chip">statistics</span><span class="chip">another sub-system's work</span><span class="chip">the client</span><span class="chip">external partners</span><span class="chip">a read receipt to anyone</span>
+    </div>
+    <div class="why">
+      <p><b>Pourquoi.</b> Trois questions décident de chaque ligne : <i>est-ce adressé à cette personne ?</i> (sinon, rien), <i>doit-elle agir ?</i> (sinon, cloche seulement), <i>une personne s'adresse-t-elle à elle, ou attend-elle l'événement ?</i> (seul cas d'e-mail immédiat). Les retards et l'échéance ne créent pas de notification : ils sont déjà « en attente » ; en faire un e-mail automatique reviendrait à une relance que personne n'a décidée (DEC-125 garde la relance humaine).</p>
+      <p>Une ligne reste ouverte : <b>à qui dire qu'un sous-système a des exigences à allouer</b>, puisqu'aucun responsable de sous-système n'existe. Options dans le plan (§ Décisions).</p>
+    </div>
+  </section>
+
+  <!-- ===================================================== bell -->
+  <section class="card">
+    <h2><span class="n">3</span> The bell — the same on every screen, and it's yours <span class="sub">— here on Compliance</span></h2>
+    <div class="stage" id="stage">
+      <div class="mh">
+        <span class="app">Smart Req.</span>
+        <span class="crumbs">/ <b>STB-2026 · Energy Monitoring System</b></span>
+        <div class="r">
+          <span class="ib" title="Users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          <span class="ib" title="Risks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+          <span class="ib" title="Q&amp;A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/></svg></span>
+          <span class="ib on" title="Notifications — 3 new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></span>
+          <span class="mbtn">Export</span>
+          <span class="avatar ct-only">LR</span><span class="avatar tm-only">TB</span>
+        </div>
+      </div>
+      <div class="mtitle"><b>Compliance</b><span class="pill">46/104 consolidated</span><span class="pill">26 awaiting answer</span><span class="pill">13 reassignment needed</span></div>
+      <div class="ghostrows" aria-hidden="true"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+
+      <!-- the panel -->
+      <div class="np" id="np" role="dialog" aria-label="Notifications">
+        <div class="np-head"><b>Notifications</b><a class="link" href="#" onclick="return false">Mark all as read</a></div>
+        <div class="np-scope" role="group" aria-label="Which tenders">
+          <button type="button" data-scope="here" aria-pressed="true">STB-2026 · 3 new</button>
+          <button type="button" data-scope="all" aria-pressed="false"><span class="ct-only">All my tenders · 4 new</span><span class="tm-only">All my tenders · 5 new</span></button>
+        </div>
+
+        <!-- contributor -->
+        <div class="ct-only">
+          <div class="np-sec">New</div>
+          <button type="button" class="ni unread"><span class="ico" data-i="clock"></span><span><span class="t"><b>Thibaud Breton</b> sent you a reminder about <b>4 assignments</b></span><span class="m"><span class="tn">STB-2026</span>1 answered since · 2 h ago</span></span><span class="u"></span></button>
+          <button type="button" class="ni unread"><span class="ico" data-i="version"></span><span><span class="t"><b>3 of your answers</b> reopened by <b>Functional Specification v2.1</b> — the requirements changed</span><span class="m"><span class="tn">STB-2026</span>Today, 09:12</span></span><span class="u"></span></button>
+          <button type="button" class="ni unread"><span class="ico" data-i="qa"></span><span><span class="t">The client answered your question on <b>SRM-00013</b></span><span class="m"><span class="tn">STB-2026</span>Q-07 · Yesterday, 16:20</span></span><span class="u"></span></button>
+          <button type="button" class="ni unread other"><span class="ico" data-i="qa"></span><span><span class="t">The client answered <b>2 of your questions</b></span><span class="m"><span class="tn">RFP-2026-114</span>Yesterday, 11:05</span></span><span class="u"></span></button>
+          <div class="np-sec">Earlier</div>
+          <button type="button" class="ni read"><span class="ico" data-i="inbox"></span><span><span class="t"><b>12 new assignments</b> in SIG</span><span class="m"><span class="tn">STB-2026</span>9 answered since · Tue 17 Nov</span></span><span class="u"></span></button>
+          <button type="button" class="ni read"><span class="ico" data-i="return"></span><span><span class="t">Your return of <b>SRM-00024</b> was approved — it's now with Claire Moreau</span><span class="m"><span class="tn">STB-2026</span>Fri 13 Nov</span></span><span class="u"></span></button>
+          <div class="np-wait">
+            <span class="h">Waiting on you<span class="here-only"> in STB-2026</span></span>
+            <span class="b"><span class="other-inline">STB-2026: </span><b>16 assignments</b> to answer · <b>2</b> waiting more than 5 days</span>
+            <span class="b other">RFP-2026-114: <b>7 assignments</b> to answer</span>
+            <a class="go" href="#" onclick="return false">Open my queue →</a>
+          </div>
+        </div>
+
+        <!-- tender manager -->
+        <div class="tm-only">
+          <div class="np-sec">New</div>
+          <button type="button" class="ni unread"><span class="ico" data-i="return"></span><span><span class="t"><b>5 reallocation requests</b> to decide — 3 from SIG, 2 from SEN</span><span class="m"><span class="tn">STB-2026</span>Since yesterday, 17:40</span></span><span class="u"></span></button>
+          <button type="button" class="ni unread"><span class="ico" data-i="version"></span><span><span class="t"><b>Functional Specification v2.1</b> processed — 7 requirements changed, 3 answers reopened</span><span class="m"><span class="tn">STB-2026</span>Today, 09:12</span></span><span class="u"></span></button>
+          <button type="button" class="ni unread"><span class="ico" data-i="qa"></span><span><span class="t"><b>Marc Dubois</b> imported the client's answers — <b>2</b> to confirm</span><span class="m"><span class="tn">STB-2026</span>Yesterday, 17:30</span></span><span class="u"></span></button>
+          <button type="button" class="ni unread other"><span class="ico" data-i="qa"></span><span><span class="t">The client answered <b>2 of your questions</b></span><span class="m"><span class="tn">RFP-2026-114</span>Yesterday, 11:05 · you're a contributor there</span></span><span class="u"></span></button>
+          <button type="button" class="ni unread other"><span class="ico" data-i="inbox"></span><span><span class="t"><b>4 new assignments</b> in SIG</span><span class="m"><span class="tn">RFP-2026-114</span>Yesterday, 10:02</span></span><span class="u"></span></button>
+          <div class="np-sec">Earlier</div>
+          <button type="button" class="ni read"><span class="ico" data-i="check"></span><span><span class="t">Allocation complete — <b>all 104 requirements</b> allocated</span><span class="m"><span class="tn">STB-2026</span>Tue 17 Nov</span></span><span class="u"></span></button>
+          <div class="np-wait">
+            <span class="h">Waiting on you<span class="here-only"> in STB-2026</span></span>
+            <span class="b"><span class="other-inline">STB-2026: </span><b>5</b> decisions · <b>6</b> assignments past 5 days · <b>2</b> questions to send before Fri 20 Nov</span>
+            <span class="b other">RFP-2026-114: <b>4 assignments</b> to answer</span>
+            <a class="go" href="#" onclick="return false">Open the dashboard →</a>
+          </div>
+        </div>
+
+        <div class="np-foot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Email: a summary on working days at 8:00, only with what you haven't seen here.</span><a class="link" href="#settings">Settings</a></div>
+      </div>
+    </div>
+    <div class="why">
+      <p><b>Pourquoi.</b> Aujourd'hui chaque écran a sa propre cloche, calculée sur son seul contenu : la même icône dit des choses différentes selon l'endroit, l'accueil n'en a pas, et sur un vrai tender il y a toujours quelque chose « en attente », donc le point rouge resterait allumé en permanence — le défaut que PLATFORM.md reprochait déjà à l'ancienne cloche. Proposition : <b>une seule cloche, personnelle, identique partout</b> ; son point ne s'allume que pour du <b>nouveau</b> depuis la dernière ouverture.</p>
+      <p>La règle des cloches est gardée : résumé par nature avec son compte, l'exigence nommée quand il n'y en a qu'une, et chaque ligne garde son état réel (« 9 answered since »). Ce qui attend reste en bas, sur une ligne, avec le lien vers la file — le détail reste dans « What needs you now » et les compteurs de chaque écran. Ouvrir la cloche éteint le point ; cliquer une ligne la marque lue. Pas de pastille chiffrée sur l'icône : un point suffit, le compte est dans le panneau. Pas de toast pour l'action d'un autre : on ne coupe personne au milieu d'une saisie.</p>
+    </div>
+  </section>
+
+  <!-- ===================================================== home -->
+  <section class="card">
+    <h2><span class="n">4</span> Home — since your last visit <span class="sub">— across every tender you're on</span></h2>
+    <div class="homegrid">
+      <div class="since">
+        <span class="k">Since your last visit · Fri 13 Nov, 17:40</span>
+        <div class="ct-only" style="display:grid;gap:0">
+          <div class="trow"><div><div class="nm"><span class="id">STB-2026</span>Energy Monitoring System</div><div class="what">4 new assignments · a reminder from Thibaud Breton · 3 answers to give again</div><div class="role">Contributor · SIG</div></div><span class="btn-s">Open →</span></div>
+          <div class="trow"><div><div class="nm"><span class="id">RFP-2026-114</span>Line 4 Resignalling — ETCS L2</div><div class="what">The client answered 2 of your questions</div><div class="role">Contributor · SIG</div></div><span class="btn-s">Open →</span></div>
+        </div>
+        <div class="tm-only" style="display:grid;gap:0">
+          <div class="trow"><div><div class="nm"><span class="id">STB-2026</span>Energy Monitoring System</div><div class="what">5 reallocation requests to decide · Functional Specification v2.1 processed</div><div class="role">Tender manager</div></div><span class="btn-s">Open →</span></div>
+          <div class="trow"><div><div class="nm"><span class="id">RFP-2026-114</span>Line 4 Resignalling — ETCS L2</div><div class="what">4 new assignments · the client answered 2 of your questions</div><div class="role">Contributor · SIG</div></div><span class="btn-s">Open →</span></div>
+        </div>
+        <span class="quiet">Nothing new on your 4 other tenders.</span>
+      </div>
+      <div style="display:grid;gap:var(--space-3)">
+        <div class="tcard">
+          <div class="row1"><span class="type">TURNKEY</span><span class="tid">STB-2026</span><span class="new">3 new</span></div>
+          <div class="nm">Energy Monitoring System</div>
+          <div class="line ct-only">16 assignments to answer · 2 waiting more than 5 days</div>
+          <div class="line tm-only">Allocation 104/104 · Compliance 46/104 · 5 decisions waiting</div>
+        </div>
+        <div class="why" style="border-top:0;padding-top:0">
+          <p><b>Pourquoi.</b> Un contributeur est souvent sur plusieurs tenders, et un tender manager peut être contributeur ailleurs (la démo : 3 tenders menés, 3 où l'on contribue). Il manque une vue « qu'est-ce qui a bougé pour moi, partout ». La carte « Pick up where you left off » du hero devient <b>« Since your last visit »</b> dès qu'il y a du nouveau — c'est le jumeau, dans l'application, du résumé quotidien — et reprend sa forme actuelle sinon. Sur la carte du tender, une pastille « 3 new » ; la ligne du dessous dit ce qui attend, pas ce qui est nouveau.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== settings -->
+  <section class="card" id="settings">
+    <h2><span class="n">5</span> Notification settings <span class="sub">— personal, from the avatar menu; not in a tender's Configuration</span></h2>
+    <div class="setgrid">
+      <div class="menu" aria-hidden="true">
+        <div class="who"><b class="ct-only">Louis Renaud</b><b class="tm-only">Thibaud Breton</b><span>Signed in with your company account</span></div>
+        <span class="it on">Notification settings</span>
+        <span class="it">Theme: light / dark</span>
+        <span class="it">Keyboard shortcuts</span>
+        <span class="it">Sign out</span>
+      </div>
+      <div class="modal" role="dialog" aria-label="Notification settings">
+        <div class="mh2"><b>Notification settings</b><span class="x">✕</span></div>
+        <div class="body">
+          <div class="fs">
+            <span class="lg">In Smart Req</span>
+            <span class="help">Everything that concerns you is under the bell. Nothing to set here.</span>
+          </div>
+          <div class="fs">
+            <span class="lg">Daily email summary</span>
+            <label class="opt"><span class="box r on"></span><span>Working days at 8:00 <span class="d">— Monday to Friday</span></span></label>
+            <label class="opt"><span class="box r"></span><span>Every day at 8:00 <span class="d">— for the last weeks before a submission</span></span></label>
+            <label class="opt"><span class="box r"></span><span>Off <span class="d">— you'll see everything under the bell</span></span></label>
+            <span class="help">Sent only when something new hasn't been seen in Smart Req. Your time zone: Europe/Paris, from your company profile.</span>
+          </div>
+          <div class="fs">
+            <span class="lg">Right away by email</span>
+            <label class="opt"><span class="box on"></span><span>A tender manager sends you a reminder</span></label>
+            <label class="opt"><span class="box on"></span><span>Someone mentions you in a comment</span></label>
+            <label class="opt tm-only"><span class="box on"></span><span>A processing you launched finishes or fails <span class="d">— capture, new document, new version</span></span></label>
+            <label class="opt"><span class="box lock"></span><span>You're added to a tender <span class="d">— always sent: it's how you hear about the tender at all</span></span></label>
+            <span class="help">Sent 10 minutes later if you haven't seen it in Smart Req by then.</span>
+          </div>
+          <div class="fs">
+            <span class="lg">By tender</span>
+            <span class="help">Turn a tender off to keep it under the bell only — useful when you follow it from afar.</span>
+            <div class="tl">
+              <div class="tr"><div>STB-2026 · Energy Monitoring System<br><span class="ct-only">Contributor · SIG</span><span class="tm-only">Tender manager</span></div><span class="sw on" title="Emails on"></span></div>
+              <div class="tr"><div>RFP-2026-114 · Line 4 Resignalling — ETCS L2<br><span>Contributor · SIG</span></div><span class="sw on" title="Emails on"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="foot"><span class="ghost">Cancel</span><span class="btn-s">Save</span></div>
+      </div>
+    </div>
+    <div class="why">
+      <p><b>Pourquoi.</b> Peu de réglages, et des défauts sobres : la plupart des gens ne les ouvriront jamais. Rien ne se coupe dans l'application (c'est la référence) ; tout se règle côté e-mail, y compris par tender, sauf l'ajout à un tender, qui est le premier contact. Ces réglages sont <b>personnels</b> et suivent la personne sur tous ses tenders ; la cadence maximale des relances et le seuil de retard restent, eux, dans la Configuration du tender (US-CFG-05), parce qu'ils engagent tout le monde.</p>
+    </div>
+  </section>
+
+  <!-- ===================================================== emails -->
+  <section class="card">
+    <h2><span class="n">6</span> The emails <span class="sub">— short, text first, one link per line, no image, no tracking</span></h2>
+    <p class="sub" style="margin:0 0 var(--space-3)">Intent sketches. The real templates, in email-safe HTML with their plain-text part and an .eml for Outlook: <a href="emails/index.html">emails/</a> (8 emails).</p>
+    <div class="tabs" role="tablist" aria-label="Emails">
+      <button type="button" role="tab" data-mail="digest" aria-selected="true">Daily summary</button>
+      <button type="button" role="tab" data-mail="reminder" aria-selected="false">Reminder from a tender manager</button>
+      <button type="button" role="tab" data-mail="added" aria-selected="false">Added to a tender</button>
+      <button type="button" role="tab" data-mail="done" aria-selected="false">Processing finished</button>
+    </div>
+
+    <!-- daily summary, contributor -->
+    <div class="email on" data-mail-pane="digest">
+      <div class="mailframe ct-only">
+        <div class="mailhead">
+          <span class="subj">4 new assignments on STB-2026 — and 2 more updates</span>
+          <span><b>Smart Req</b> &lt;no-reply@smartreq.example&gt; · to Louis Renaud · Wed 18 Nov, 08:00</span>
+          <span class="pre">Preview line: Since Tue 08:00 · STB-2026, RFP-2026-114</span>
+        </div>
+        <div class="mailbody">
+          <p>Louis, here's what's new for you since Tuesday 08:00.</p>
+          <h3>STB-2026 · Energy Monitoring System</h3>
+          <p class="ctx">Contributor · SIG · submission Fri 11 Dec, 23 days left</p>
+          <ul>
+            <li><b>4 new assignments</b> in SIG — <a href="#" onclick="return false">open them</a></li>
+            <li><b>3 of your answers</b> were reopened by Functional Specification v2.1: the requirements changed — <a href="#" onclick="return false">give them again</a></li>
+            <li class="also">Still waiting: 2 assignments for more than 5 days — <a href="#" onclick="return false">open them</a></li>
+          </ul>
+          <h3>RFP-2026-114 · Line 4 Resignalling — ETCS L2</h3>
+          <p class="ctx">Contributor · SIG</p>
+          <ul>
+            <li>The client answered your question on <span class="rq">SRM-00031</span> (Q-12) — <a href="#" onclick="return false">read the answer</a></li>
+          </ul>
+          <div class="foot">
+            <p>You get this summary on working days when something new for you hasn't been seen in Smart Req. What you've already seen there isn't repeated here.</p>
+            <p><a href="#" onclick="return false">Notification settings</a> — change the frequency, or mute a tender.</p>
+          </div>
+        </div>
+      </div>
+      <div class="mailframe tm-only">
+        <div class="mailhead">
+          <span class="subj">5 reallocation requests to decide on STB-2026 — and 3 more updates</span>
+          <span><b>Smart Req</b> &lt;no-reply@smartreq.example&gt; · to Thibaud Breton · Wed 18 Nov, 08:00</span>
+          <span class="pre">Preview line: Since Tue 08:00 · STB-2026, RFP-2026-114</span>
+        </div>
+        <div class="mailbody">
+          <p>Thibaud, here's what's new for you since Tuesday 08:00.</p>
+          <h3>STB-2026 · Energy Monitoring System</h3>
+          <p class="ctx">Tender manager · 46/104 consolidated · submission Fri 11 Dec, 23 days left</p>
+          <ul>
+            <li><b>5 reallocation requests</b> to decide — 3 from SIG, 2 from SEN — <a href="#" onclick="return false">decide</a></li>
+            <li>Functional Specification v2.1 processed: 7 requirements changed, 3 answers reopened — <a href="#" onclick="return false">see the changes</a></li>
+            <li class="also">Still waiting: 6 assignments past 5 days (SIG 3, SEN 2, TRK 1) — <a href="#" onclick="return false">open them</a></li>
+            <li class="also">Still waiting: 2 questions to send before the client's closing date, Fri 20 Nov — <a href="#" onclick="return false">open Q&amp;A</a></li>
+          </ul>
+          <h3>RFP-2026-114 · Line 4 Resignalling — ETCS L2</h3>
+          <p class="ctx">Contributor · SIG</p>
+          <ul>
+            <li><b>4 new assignments</b> in SIG — <a href="#" onclick="return false">open them</a></li>
+            <li>The client answered 2 of your questions — <a href="#" onclick="return false">read the answers</a></li>
+          </ul>
+          <div class="foot">
+            <p>You get this summary on working days when something new for you hasn't been seen in Smart Req. What you've already seen there isn't repeated here.</p>
+            <p><a href="#" onclick="return false">Notification settings</a> — change the frequency, or mute a tender.</p>
+          </div>
+        </div>
+      </div>
+      <div class="why" style="margin-top:var(--space-3)">
+        <p><b>Pourquoi.</b> Un seul e-mail pour tous les tenders, groupé par tender puis par nature, la chose la plus importante dans l'objet, le reste en « and N more updates » ; la ligne d'aperçu dit la période et les tenders. Chaque ligne mène à l'endroit exact (écran + filtre, ou l'exigence quand il n'y en a qu'une). Ce qui attend depuis longtemps n'apparaît qu'en gris, en bas d'un e-mail qui part de toute façon — jamais seul. Les retards sont comptés par sous-système (DEC-118). Pas d'image ni de graphe, pas de pixel de suivi : il doit se lire en 20 secondes dans Outlook, même sur un téléphone. La version texte jointe se suffit à elle-même (Outlook classique peut forcer le texte brut), le HTML reste simple (le mode sombre d'Outlook inverse les couleurs), et aucun lien n'agit à l'ouverture : Safe Links peut ouvrir les liens avant la personne.</p>
+      </div>
+    </div>
+
+    <!-- reminder -->
+    <div class="email" data-mail-pane="reminder">
+      <div class="mailframe">
+        <div class="mailhead">
+          <span class="subj">STB-2026 — Reminder: 4 assignments waiting on your answer</span>
+          <span><b>Thibaud Breton via Smart Req</b> &lt;no-reply@smartreq.example&gt; · reply-to Thibaud Breton · to Louis Renaud · Wed 18 Nov, 14:32</span>
+          <span class="pre">Preview line: “We need SIG's answers before the QCD review on Thursday.”</span>
+        </div>
+        <div class="mailbody">
+          <p>Thibaud Breton is waiting on your answer for 4 assignments on <b>STB-2026 · Energy Monitoring System</b> (submission Fri 11 Dec).</p>
+          <p class="note">“We need SIG's answers before the QCD review on Thursday.”</p>
+          <ul>
+            <li><span class="rq">SRM-00001</span> The system SHALL route telemetry… — waiting 9 days</li>
+            <li><span class="rq">SRM-00004</span> The system SHALL provide consolidated… — waiting 6 days</li>
+            <li><span class="rq">SRM-00021</span> The alerting engine SHALL… — waiting 6 days</li>
+            <li><span class="rq">SRM-00030</span> The reporting module SHALL support… — waiting 3 days</li>
+          </ul>
+          <a class="btn" href="#" onclick="return false">Answer them in Smart Req</a>
+          <p style="margin-top:12px">Reply to this email to write to Thibaud directly.</p>
+          <div class="foot">
+            <p>A tender manager can remind you at most every 2 days on this tender. <a href="#" onclick="return false">Notification settings</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="why" style="margin-top:var(--space-3)">
+        <p><b>Pourquoi.</b> La relance reste un geste humain (DEC-125), donc l'e-mail parle au nom de la personne : « Thibaud Breton via Smart Req », réponse directe à Thibaud. <b>Une relance = un e-mail</b>, qui liste toutes les affectations relancées de cette personne, même si le tender manager en a sélectionné vingt. Un mot facultatif peut l'accompagner ; il remplace le coup de fil, il ne s'y ajoute pas. Le plafond « Maximum reminder cadence » de la Configuration (US-CFG-05) s'applique par personne et par tender : au-delà, le bouton dit quand la prochaine relance sera possible. Pas d'escalade vers un supérieur : la hiérarchie est hors de l'outil (ACC-010).</p>
+      </div>
+    </div>
+
+    <!-- added to a tender -->
+    <div class="email" data-mail-pane="added">
+      <div class="mailframe">
+        <div class="mailhead">
+          <span class="subj">STB-2026 — You've been added as a contributor for SIG</span>
+          <span><b>Smart Req</b> &lt;no-reply@smartreq.example&gt; · to Louis Renaud · Tue 10 Nov, 10:15</span>
+          <span class="pre">Preview line: Energy Monitoring System · submission Fri 11 Dec · nothing to do yet</span>
+        </div>
+        <div class="mailbody">
+          <p>Thibaud Breton added you to <b>STB-2026 · Energy Monitoring System</b> as a contributor for the <b>SIG</b> sub-system.</p>
+          <p>When the tender team routes a requirement to your organisation, it becomes an assignment for you: you read the requirement and say whether we comply. <b>Nothing to do yet</b> — you'll hear from Smart Req when there is.</p>
+          <p class="ctx">Tender manager: Thibaud Breton · submission Fri 11 Dec 2026</p>
+          <a class="btn" href="#" onclick="return false">Open STB-2026</a>
+          <p style="margin-top:12px">New to Smart Req? It's where this tender's requirements are captured, routed to the team that answers them, and declared to the client. Sign in with your company account.</p>
+          <div class="foot">
+            <p>From now on, Smart Req sends you at most one summary a day about your tenders. <a href="#" onclick="return false">Notification settings</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="why" style="margin-top:var(--space-3)">
+        <p><b>Pourquoi.</b> C'est le premier contact, et souvent le seul moyen pour un contributeur occasionnel de savoir que le tender existe : aujourd'hui, c'est par un e-mail qu'on est embarqué. Il dit qui, quoi, pour quel sous-système, ce qui va se passer et quand il faudra agir — « nothing to do yet » vaut mieux qu'une invitation qui pousse à ouvrir un outil vide. S'il y a déjà des affectations, la phrase change : « 12 assignments are already waiting for you ». Un staffing en masse (150 à 200 personnes, JRN-004) donne un e-mail par personne et par tender, jamais un par périmètre.</p>
+      </div>
+    </div>
+
+    <!-- processing finished -->
+    <div class="email" data-mail-pane="done">
+      <div class="mailframe">
+        <div class="mailhead">
+          <span class="subj">STB-2026 — Functional Specification v2.1 is processed: 7 requirements changed</span>
+          <span><b>Smart Req</b> &lt;no-reply@smartreq.example&gt; · to Thibaud Breton · Wed 18 Nov, 09:24</span>
+          <span class="pre">Preview line: 3 answers reopened in Compliance · 4 requirements back to review in Allocation</span>
+        </div>
+        <div class="mailbody">
+          <p>The new version you uploaded at 08:51 is processed.</p>
+          <ul>
+            <li>7 requirements changed: 2 added, 4 modified, 1 removed — <a href="#" onclick="return false">see the changes</a></li>
+            <li>4 requirements went back to review in Allocation — <a href="#" onclick="return false">open them</a></li>
+            <li>3 answers were reopened in Compliance; their contributors will find them in their next summary — <a href="#" onclick="return false">see which</a></li>
+          </ul>
+          <div class="foot">
+            <p>Sent because you launched this processing and hadn't seen the result in Smart Req 10 minutes after it finished. <a href="#" onclick="return false">Notification settings</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="why" style="margin-top:var(--space-3)">
+        <p><b>Pourquoi.</b> Le seul événement système qu'un tender manager attend vraiment : une capture ou une nouvelle version peut prendre du temps, et il est parti faire autre chose. S'il est resté dans Smart Req, la cloche suffit et rien ne part. Un échec suit le même chemin, avec ce qui a été traité et ce qui reste (US-CAP-11). Visible en vue « Tender manager » comme en vue « Contributor » : seul le tender manager qui a lancé le traitement le reçoit.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* Icons for the bell items — same 24px grid, 2px stroke as the prototype's glyphs. */
+const ICONS={
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  version:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 15h6M12 12v6"/></svg>',
+  qa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/></svg>',
+  return:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>'
+};
+document.querySelectorAll("[data-i]").forEach(el=>{ el.innerHTML=ICONS[el.dataset.i]||""; });
+
+/* View as: contributor / tender manager */
+document.querySelectorAll("[data-role-btn]").forEach(b=>b.addEventListener("click",()=>{
+  document.body.dataset.role=b.dataset.roleBtn;
+  document.querySelectorAll("[data-role-btn]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+}));
+
+/* Theme */
+const themeBtn=document.getElementById("theme-btn");
+themeBtn.addEventListener("click",()=>{
+  const light=document.documentElement.dataset.theme==="light";
+  document.documentElement.dataset.theme=light?"dark":"light";
+  themeBtn.textContent=light?"Light theme":"Dark theme";
+});
+
+/* Bell: this tender / all my tenders */
+const np=document.getElementById("np"), stage=document.getElementById("stage");
+/* the panel is drawn open over the screen, so the stage grows with it */
+function fitStage(){ stage.style.minHeight=""; if(getComputedStyle(np).position==="absolute") stage.style.minHeight=(np.offsetTop+np.offsetHeight+24)+"px"; }
+document.querySelectorAll("[data-scope]").forEach(b=>b.addEventListener("click",()=>{
+  np.classList.toggle("scope-all",b.dataset.scope==="all");
+  document.querySelectorAll("[data-scope]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+  fitStage();
+}));
+document.querySelectorAll("[data-role-btn]").forEach(b=>b.addEventListener("click",fitStage));
+window.addEventListener("resize",fitStage);
+fitStage();
+
+/* Email tabs */
+document.querySelectorAll("[data-mail]").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("[data-mail]").forEach(x=>x.setAttribute("aria-selected",String(x===b)));
+  document.querySelectorAll("[data-mail-pane]").forEach(p=>p.classList.toggle("on",p.dataset.mailPane===b.dataset.mail));
+}));
+
+/* A view can be linked to: ?role=tm&theme=dark&mail=reminder&scope=all */
+(function(){
+  const q=new URLSearchParams(location.search), click=sel=>{ const el=document.querySelector(sel); if(el) el.click(); };
+  if(q.get("role")==="tm") click('[data-role-btn="tm"]');
+  if(q.get("theme")==="dark") click("#theme-btn");
+  if(q.get("mail")) click(`[data-mail="${CSS.escape(q.get("mail"))}"]`);
+  if(q.get("scope")==="all") click('[data-scope="all"]');
+})();
+</script>
+</body>
+</html>

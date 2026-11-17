@@ -1,0 +1,21 @@
+Smart Req
+
+STB-2026 · Energy Monitoring System
+
+Claire Moreau mentioned you in a comment
+
+SRM-00057  Train detection shall remain available when one of the two
+           field units is out of service.
+           In Allocation · sub-system SEN
+
+> @Louis Renaud is this one for SIG or for TRK? Since v2.1 it also
+> covers the track circuits.
+> — Claire Moreau · SEN · 11:05
+
+Reply in Smart Req: https://smartreq.example/tenders/STB-2026/requirements/SRM-00057?comment=1842
+
+-- 
+You get an email for a mention only when you haven't seen it in Smart
+Req within 10 minutes.
+Notification settings: https://smartreq.example/settings/notifications
+Sent by Smart Req from an unattended mailbox: replies aren't read.

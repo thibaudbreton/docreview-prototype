@@ -227,7 +227,7 @@ Point ouvert : le tender manager pose-t-il aussi des questions depuis Compliance
 3. Sur une affectation « Awaiting Q&A », le panneau du tender manager montre le bloc « Question to the client » : chaque question avec son état « in the Q&A register » et, une fois « Answered », « Client's answer: … » ; « → Open the Q&A register » ouvre le registre.
 4. L'arrivée de la réponse du client ne change ni le statut de l'affectation ni son verdict : aucun verdict n'est jamais créé automatiquement.
 5. Une question posée depuis Compliance reste visible dans le registre et dans Compliance après navigation et reconnexion.
-Point ouvert : ce que l'arrivée d'une réponse change à l'avancement de l'affectation (elle reste « Awaiting Q&A » ?) et si son contributeur en est prévenu ne sont pas spécifiés ; QA-006 parle encore de « débloquer » (docs/gap SPECS, « Q&A avec le client », Toujours ouvert ; PLAT-005).
+Point ouvert : ce que l'arrivée d'une réponse change à l'avancement de l'affectation (elle reste « Awaiting Q&A » ?) n'est pas spécifié ; QA-006 parle encore de « débloquer » (docs/gap SPECS, « Q&A avec le client », Toujours ouvert). Qui est prévenu de la réponse : [US-QA-09](11-qa.md#us-qa-09--lire-la-réponse-du-client-sous-sa-question).
 
 ### US-CMP-18 — Refuser une question sur une affectation déjà répondue
 **Carte :** En tant que tender manager, je veux qu'on ne puisse plus questionner le client sur une affectation dont le verdict est donné, afin qu'aucune question tardive ne rouvre un travail terminé.
@@ -310,16 +310,17 @@ Point ouvert : sur un tender à un seul sous-système (SIG, Mainline), ce que pr
 
 ### US-CMP-24 — Relancer le contributeur d'une affectation due
 **Carte :** En tant que tender manager, je veux relancer en une action la personne d'une affectation qui attend encore sa réponse, afin que la consolidation n'avance pas en silence.
-**Conversation :** La relance est une seule action, quel que soit le chemin — bouton du panneau, touche R, action groupée — qui date « Last follow-up » et s'inscrit au journal (DEC-125). Elle vise la personne d'une affectation encore due (DEC-087) et n'est jamais proposée à ce contributeur lui-même (CONF-021). Un partenaire travaille hors de l'outil : on le suit directement.
-**Maquette :** Compliance — `compliance.html` (route `#compliance`), Detail / Assignment Panel (« Send a reminder »), Bulk Selection Action Bar (« Send reminder »), Shortcut Help (R).
-**Règles :** DEC-125, DEC-087, DEC-078, CONF-021, CONF-T18, PLAT-005, DEC-126  ·  **Périmètre :** Après pilote  ·  **Variantes :** Toutes
+**Conversation :** La relance est une seule action, quel que soit le chemin — bouton du panneau, touche R, action groupée — qui date « Last follow-up » et s'inscrit au journal (DEC-125). Elle vise la personne d'une affectation encore due (DEC-087) et n'est jamais proposée à ce contributeur lui-même (CONF-021). Un partenaire travaille hors de l'outil : on le suit directement. Chaque geste prévient chaque personne relancée une seule fois, au nom du tender manager : une notification, puis, si elle n'est pas vue en 10 minutes, un e-mail « <tender manager> via Smart Req » qui liste toutes ses affectations relancées par ce geste, avec leur âge et un mot facultatif ; y répondre écrit au tender manager (DEC-129, [US-X-17](16-transverse.md#us-x-17--recevoir-tout-de-suite-ce-qui-mest-adressé-ou-que-jattends)). Rien n'est relancé automatiquement : « Maximum reminder cadence » plafonne les relances d'une même personne sur le tender ([US-CFG-05](15-configuration.md#us-cfg-05--régler-le-seuil-de-retard-et-la-cadence-des-relances)). Pas d'escalade vers un supérieur : la hiérarchie est hors de l'outil (ACC-010).
+**Maquette :** Compliance — `compliance.html` (route `#compliance`), Detail / Assignment Panel (« Send a reminder »), Bulk Selection Action Bar (« Send reminder »), Shortcut Help (R) ; modèle d'e-mail `reminder` dans `proposals/notifications/emails/`.
+**Règles :** DEC-125, DEC-129, DEC-087, DEC-078, CONF-021, CONF-T18, NOTIF-006, NOTIF-019, NOTIF-020, PLAT-005, DEC-126  ·  **Périmètre :** Après pilote  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. « Send a reminder » (panneau), la touche R et « Send reminder » (barre de sélection) ont le même effet : « Last follow-up » prend la date du jour et le journal note « <SYS> — reminder sent to <personne> ».
 2. La relance n'est possible que sur une affectation « Awaiting answer » ou « Awaiting Q&A » qui a une personne ; ailleurs le bouton n'apparaît pas et R est refusé avec la raison (« Already answered — nobody owes anything on it », « Not dispatched yet — nobody owes an answer », « Returned to the tender team — reallocate it instead », « Nobody assigned yet on this assignment »).
-3. Sur un partenaire, R est refusé avec « <partenaire> works outside the tool — follow up with them directly ».
-4. Un contributeur ne relance jamais : sur son sous-système, R dit « It's waiting on your sub-system — answer it rather than remind yourself », et l'action groupée lui est masquée.
-5. En groupe, seules les affectations éligibles sont relancées ; le message compte les relancées et les ignorées (« … skipped — answered, not dispatched, returned or unassigned »).
-Point ouvert : le canal de la relance (notification interne, e-mail) et son contenu ne sont pas définis ; la maquette ne fait que dater et journaliser (PLAT-005, OPEN-11).
+3. Sur un partenaire, R est refusé avec « <partenaire> works outside the tool — follow up with them directly » ; un contributeur ne relance jamais : sur son sous-système, R dit « It's waiting on your sub-system — answer it rather than remind yourself », et l'action groupée lui est masquée.
+4. En groupe, seules les affectations éligibles sont relancées ; le message compte les relancées et les ignorées (« … skipped — answered, not dispatched, returned or unassigned »).
+5. Un geste donne à chaque personne relancée une seule notification et, si elle n'est pas vue en 10 minutes, un seul e-mail « Reminder: N assignments waiting on your answer » qui liste ses affectations relancées, avec leur âge et le mot facultatif du tender manager.
+6. Avant la fin du plafond réglé pour le tender, le bouton dit quand la prochaine relance de cette personne sera possible, et une action groupée la compte parmi les ignorées ; aucune relance ne part sans le geste d'un tender manager.
+Écart maquette : la maquette ne fait que dater et journaliser : ni notification, ni e-mail, ni plafond, ni mot facultatif.
 
 ### US-CMP-25 — Saisir ou modifier une réponse en tant que tender manager
 **Carte :** En tant que tender manager, je veux saisir ou corriger le verdict d'une affectation, même quand le dossier est complet, afin de garder la main sur la réponse du tender.
@@ -335,28 +336,29 @@ Point ouvert : le canal de la relance (notification interne, e-mail) et son cont
 Écart maquette : la maquette ne permet au tender manager de saisir que le verdict d'un partenaire ; personne n'y révise un verdict donné, hors annulation (⌘/Ctrl + Z) et réouverture par une version.
 Point ouvert : un contributeur peut-il réviser son propre verdict une fois donné ? Qui documente la stratégie et le risque d'un Not compliant saisi par le tender manager sur l'affectation d'un contributeur ? Rien ne le décide (docs/gap SPECS, « Modèle de conformité », Toujours ouvert ; SPEC-risks §1).
 
-### US-CMP-26 — Voir dans la cloche ce qui attend
-**Carte :** En tant que tender manager, je veux que la cloche de Compliance résume ce qui attend, par nature et avec un compte, afin d'aller droit au travail sans parcourir toute la table.
-**Conversation :** Une cloche se calcule depuis l'état réel de l'écran, résume par nature avec un compte (jamais une ligne par affectation) et dit quand rien n'attend (règle des notifications, PLATFORM). Dans Compliance : affectations renvoyées à réaffecter, questions chez le client (pour information, elles ne bloquent rien), réponses rouvertes par une nouvelle version. Les canaux de notification (e-mail, déclencheurs) relèvent de US-X.
-**Maquette :** Compliance — `compliance.html` (route `#compliance`), Notifications Dropdown, Notification Item, Notification Dot.
-**Règles :** PLAT-005, DEC-092, DEC-122, DEC-125, DEC-126  ·  **Périmètre :** Après pilote  ·  **Variantes :** Toutes
+### US-CMP-26 — Être prévenu de ce qui bouge dans Compliance
+**Carte :** En tant que contributeur ou tender manager, je veux être prévenu des affectations qui m'arrivent, me reviennent ou changent dans Compliance, afin de ne pas découvrir trop tard un travail qui m'attend.
+**Conversation :** Compliance ajoute ses événements au catalogue des notifications (DEC-127) ; ils passent par la cloche ([US-X-15](16-transverse.md#us-x-15--ouvrir-ma-cloche-la-même-sur-tous-les-écrans)) et, s'ils ne sont pas vus, par le résumé quotidien ([US-X-16](16-transverse.md#us-x-16--recevoir-le-résumé-quotidien-par-e-mail)). La personne en charge (PIC) d'une affectation est prévenue de ce qui lui demande d'agir : nouvelles affectations, réponses rouvertes par une nouvelle version. Les tender managers le sont de ce qui leur revient : affectations renvoyées comme « Not mine », exigences toutes consolidées. Un verdict modifié par un tender manager et les commentaires ne font que passer dans la cloche (DEC-133). Ce qui attend sans avoir changé — une question chez le client, une réponse en retard — n'est pas une notification : c'est un compteur, ou une ligne grise « Still waiting » du résumé. La relance est dans [US-CMP-24](#us-cmp-24--relancer-le-contributeur-dune-affectation-due).
+**Maquette :** intention dans `proposals/notifications/index.html` (matrice des événements) ; Compliance — `compliance.html` (route `#compliance`), Notifications Dropdown (cloche d'état actuelle de l'écran).
+**Règles :** DEC-127, DEC-133, DEC-087, DEC-092, DEC-122, DEC-125, NOTIF-001, NOTIF-008, NOTIF-013, DEC-126  ·  **Périmètre :** Après pilote  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
-1. La cloche liste une ligne par nature, avec son compte : « N assignments returned by contributors — reallocate them », « N assignments have a question with the client » (« nothing due from you »), « N answers reopened by a new document version — the requirements changed ».
-2. Une nature qui ne concerne qu'une affectation nomme son exigence, et cliquer l'ouvre ; cliquer une nature à plusieurs éléments filtre la table sur eux.
-3. Quand rien n'attend, la cloche dit « Nothing waiting on you here. » et son point disparaît.
-4. Pour un contributeur, la cloche ne compte que les affectations de son sous-système.
-5. Le contenu se recalcule à chaque ouverture et à chaque changement : il ne montre jamais un état périmé.
+1. Une allocation validée, une réaffectation ou un renvoi approuvé en sa faveur donnent à la PIC une ligne regroupée par tender (« 12 new assignments in SIG »), au niveau résumé.
+2. Une réponse rouverte par une nouvelle version prévient sa PIC au niveau résumé (« 3 of your answers were reopened by <document> <version> »).
+3. Un renvoi « Not mine — return it » prévient tous les tender managers au niveau résumé ; la consolidation de toutes les exigences aussi, une seule fois.
+4. Un verdict modifié par un tender manager et un commentaire sur une de ses affectations ne préviennent la PIC que dans la cloche, les commentaires regroupés (« 3 new comments on your assignments »).
+5. Une question chez le client ou une réponse en retard ne crée aucune notification ; le retard n'apparaît que dans les compteurs et en ligne « Still waiting » du résumé des tender managers.
+Écart maquette : la cloche de Compliance compte ce qui attend sur l'écran (renvois, questions chez le client, réponses rouvertes) au lieu de prévenir de ce qui a changé.
 
 ### US-CMP-27 — Rouvrir les verdicts d'une exigence modifiée par une nouvelle version
 **Carte :** En tant que tender manager, je veux que les verdicts d'une exigence dont le texte a changé dans une nouvelle version repassent en attente, afin qu'aucun verdict ne reste posé sur un texte qui n'existe plus.
 **Conversation :** Une nouvelle version d'un document qui modifie une exigence rouvre ses verdicts dans Compliance (DEC-016, DEC-122, LIFE-007) : chaque affectation répondue redemande un verdict, et la mention « Reopened by … » dit pourquoi. Les exigences inchangées ne bougent pas du seul fait du téléversement. Le nombre de réponses rouvertes annoncé par Documents & versions est exactement celui que Compliance rouvre. Le téléversement et l'écart entre versions sont dans US-DOC ; le retour en To review côté Allocation dans US-CHG.
 **Maquette :** Compliance — `compliance.html` (route `#compliance`), Decision Panel (bandeau « Reopened by »), Detail / Assignment Panel, Notifications Dropdown ; Documents & versions — `documents.html` (route `#documents`).
-**Règles :** LIFE-007, LIFE-T05, LIFE-T09, DEC-016, DEC-122, CONF-014, DEC-126  ·  **Périmètre :** Après pilote  ·  **Variantes :** Toutes
+**Règles :** LIFE-007, LIFE-T05, LIFE-T09, DEC-016, DEC-122, CONF-014, DEC-127, DEC-126  ·  **Périmètre :** Après pilote  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. Quand une nouvelle version modifie une exigence, chacune de ses affectations « Answered » repasse « Awaiting answer », sans verdict ni commentaire, avec un âge de 0 ; l'exigence n'est plus consolidée.
 2. Les affectations encore sans verdict et les exigences inchangées ne changent pas.
 3. L'affectation rouverte porte « Reopened by <document> <version> » : bandeau du panneau de décision (« … — the requirement changed, so the verdict went back to pending. Give it again. ») et phrase du panneau du tender manager.
-4. Chaque réouverture s'inscrit au journal de l'exigence (auteur « Documents & versions », verdict d'avant → « Awaiting answer »), et la cloche compte les réponses rouvertes.
+4. Chaque réouverture s'inscrit au journal de l'exigence (auteur « Documents & versions », verdict d'avant → « Awaiting answer »), et la PIC de l'affectation rouverte en est prévenue ([US-CMP-26](#us-cmp-26--être-prévenu-de-ce-qui-bouge-dans-compliance)).
 5. Le nombre « N answers reopened by this version » annoncé par Documents & versions est égal au nombre d'affectations rouvertes dans Compliance.
 Écart maquette : la maquette choisit elle-même les exigences « modifiées » et rejoue la réouverture à chaque ouverture de l'écran.
 Point ouvert : le sort de la stratégie d'écart, des risques liés et de la correction du tender manager d'une affectation rouverte n'est pas décidé (voir [US-RSK-09](10-risques.md#us-rsk-09--consolider-la-conformité-externe-dune-exigence)) ; l'effet d'une correction de traduction sur une exigence déjà répondue (To review seulement, ou verdicts rouverts ?) non plus (LIFE-008 ; docs/gap README).

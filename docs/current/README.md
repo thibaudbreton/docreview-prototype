@@ -39,6 +39,7 @@ Sept sources actives sont assemblées dans `index.html` et `docreview-app.html` 
 | Parcours et interactions des écrans | [Parcours](JOURNEYS.md) |
 | Comportement fonctionnel des traitements existants | [Frontière IA](AI.md) |
 | Persistance, intégrations, performance, métriques | [Exigences transverses](PLATFORM.md) |
+| Notifications dans l'application et par e-mail, modèles d'e-mails | [Plan de notification](NOTIFICATIONS.md) |
 | Décisions à prendre et contradictions | [Arbitrages](OPEN-QUESTIONS.md) |
 | Sources, changements, limites de l'audit | [Traçabilité](AUDIT.md) |
 | Préparer une tâche pour un agent | [Modèle de tâche](TASK-TEMPLATE.md) |

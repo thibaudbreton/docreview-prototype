@@ -1,0 +1,34 @@
+Smart Req
+
+Daily summary · Tue 1 Dec
+
+3 updates for you since Mon 08:00
+
+Louis, here's what's new for you on 2 tenders.
+
+STB-2026 · Energy Monitoring System
+Contributor · SIG · submission Fri 11 Dec, 10 days left
+
+* 4 new assignments in SIG.
+  Open them: https://smartreq.example/tenders/STB-2026/compliance?show=new-for-me
+
+* 3 of your answers were reopened by Functional Specification v2.2: the
+  requirements changed.
+  Answer them again: https://smartreq.example/tenders/STB-2026/compliance?show=reopened
+
+Still waiting
+* 2 of your assignments have been waiting more than 5 days.
+  Open them: https://smartreq.example/tenders/STB-2026/compliance?show=waiting
+
+RFP-2026-114 · Line 4 Resignalling — ETCS L2
+Contributor · SIG
+
+* The client answered your question on SRM-00031 (Q-12).
+  Read the answer: https://smartreq.example/tenders/RFP-2026-114/requirements/SRM-00031?tab=questions
+
+-- 
+You get this summary on working days when something new for you hasn't
+been seen in Smart Req. What you've already seen there isn't repeated.
+Notification settings — change the frequency, or stop emails for one
+tender: https://smartreq.example/settings/notifications
+Sent by Smart Req from an unattended mailbox: replies aren't read.
