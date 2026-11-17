@@ -686,16 +686,6 @@ textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
 .chip-tog{padding:6px var(--space-3);border-radius:var(--radius-pill);border:1px solid var(--line-2);font-size:var(--text-sm);color:var(--text-2);cursor:pointer;transition:all .12s}
 .chip-tog.on{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}
 .cfg-foot{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 40%);padding:var(--space-5) 0 var(--space-1);display:flex;gap:var(--space-3);justify-content:flex-end;margin-top:20px}
-.theme-pick{display:inline-flex;gap:8px}
-.theme-opt{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);border-radius:var(--radius-lg);border:1.5px solid var(--line-2);color:var(--text-2);font-size:var(--text-base);font-weight:500;transition:all .15s}
-.theme-opt:hover{border-color:var(--accent);color:var(--text)}
-.theme-opt.on{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
-.theme-opt .sw{width:26px;height:18px;border-radius:var(--radius-sm);border:1px solid var(--line-2)}
-/* Literal previews, not tokens on purpose — this swatch shows both themes'
-   accents at once regardless of which theme is currently active, so it can't
-   read from var(--accent). Keep these in sync with the current --accent values. */
-.theme-opt .sw-dark{background:linear-gradient(135deg,#071A30 50%,#4C82FF 50%)}
-.theme-opt .sw-light{background:linear-gradient(135deg,#ffffff 50%,#0B294A 50%)}
 /* AI feedback panel */
 .fb-accept{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3);margin-bottom:24px}
 .fb-card{border:1px solid var(--line);border-radius:var(--radius-lg);padding:14px}
@@ -1105,7 +1095,6 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
       <div class="cfg-nav-item" data-sec="workflow"><span class="ci"><i class=ic-flow></i></span> Reminders</div>
       <div class="cfg-nav-item" data-sec="model"><span class="ci"><i class=ic-refresh></i></span> Allocation model</div>
       <div class="cfg-nav-item" data-sec="compliance"><span class="ci"><i class=ic-flag></i></span> Compliance</div>
-      <div class="cfg-nav-item" data-sec="appearance"><span class="ci"><i class=ic-contrast></i></span> Appearance</div>
       <div class="cfg-nav-item" data-sec="ai"><span class="ci"><i class=ic-sparkle></i></span> Capture &amp; segmentation</div>
       <div class="cfg-nav-item" data-sec="feedback"><span class="ci"><i class=ic-undo></i></span> AI feedback</div>
       <div class="cfg-nav-item" data-sec="qa"><span class="ci"><i class=ic-ask></i></span> Q&amp;A &amp; submission</div>
@@ -1235,22 +1224,11 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
         <!-- Language -->
         <section class="cfg-sec" data-sec="lang">
           <div class="cfg-h">Language</div>
-          <div class="cfg-sub">Interface and translation defaults. Source text always remains authoritative.</div>
-          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: the UI stays English throughout regardless of these selects (a hard rule for this build — see <code>HANDOVER.md</code>). Not wired.</div>
+          <div class="cfg-sub">The tender's languages. Source text always remains authoritative.</div>
+          <div class="warnbox" style="margin-bottom:16px">⚠ TE2 — demo only: the source language select isn't wired in this build.</div>
           <div class="frow"><div class="fl"><div class="flt">Source document language</div></div><div class="fc"><select class="sel"><option>English</option><option>French</option><option>German</option></select></div></div>
           <div class="frow"><div class="fl"><div class="flt">Working language</div><div class="fld">What a source in another language is translated into.</div></div><div class="fc"><div class="fval">English</div><div class="opt-desc">Not editable — translation always goes into English.</div></div></div>
-          <div class="frow"><div class="fl"><div class="flt">Interface language</div></div><div class="fc"><select class="sel"><option>English</option><option>French</option></select></div></div>
-        </section>
-
-        <!-- Appearance -->
-        <section class="cfg-sec" data-sec="appearance">
-          <div class="cfg-h">Appearance</div>
-          <div class="cfg-sub">Applies across the whole application. Useful to match the room and screen when running user tests.</div>
-          <div class="frow"><div class="fl"><div class="flt">Theme</div><div class="fld">Light is the default. Dark reduces glare in low-light settings.</div></div>
-            <div class="fc"><div class="theme-pick" id="theme-pick">
-              <button class="theme-opt" data-theme="dark"><span class="sw sw-dark"></span>Dark</button>
-              <button class="theme-opt" data-theme="light"><span class="sw sw-light"></span>Light</button>
-            </div></div></div>
+          <div class="opt-desc" style="margin-top:16px">Interface language and theme are personal, not the tender's: <b>Settings</b>, in the home page header (DEC-128).</div>
         </section>
 
         <!-- AI feedback -->
@@ -2192,31 +2170,25 @@ document.getElementById("ph-team").addEventListener("click",()=>showScreen("team
 renderCastingProgress();
 
 /* Save */
-// TE2 — theme, the Turnkey partners and the gap strategies are the settings with real
-// effect, and all of them already apply immediately (setTheme, add/removePartner, the
-// strategy calls) — nothing here actually waits on Save. Toast wording matches that
-// instead of implying a persisted save.
-document.getElementById("cfg-save").addEventListener("click",()=>toast("Theme, partners and gap strategies apply immediately — other settings on this page aren't wired in this build","ok"));
+// TE2 — the Turnkey partners and the gap strategies are the settings with real
+// effect, and both already apply immediately (add/removePartner, the strategy
+// calls) — nothing here actually waits on Save. Toast wording matches that
+// instead of implying a persisted save. The theme left for Settings on the home
+// page on 2026-11-17 (DEC-128).
+document.getElementById("cfg-save").addEventListener("click",()=>toast("Partners and gap strategies apply immediately — other settings on this page aren't wired in this build","ok"));
 document.getElementById("cfg-reset").addEventListener("click",()=>toast("Nothing to discard — most fields on this page aren't wired in this build","ok"));
 
 /* deep link #config */
 if(location.hash==="#config"){showConfig(true);}
 
-/* theme picker */
+/* theme — chosen in Settings on the home page (DEC-128); this screen only applies it */
 function applyThemeUI(t){
   document.documentElement.setAttribute("data-theme",t);
-  document.querySelectorAll(".theme-opt").forEach(b=>b.classList.toggle("on",b.dataset.theme===t));
 }
 (function(){
   let t="light"; try{ if(window.parent!==window&&window.parent.getTheme) t=window.parent.getTheme(); }catch(e){}
   applyThemeUI(t);
 })();
-document.querySelectorAll(".theme-opt").forEach(b=>b.addEventListener("click",()=>{
-  const t=b.dataset.theme;
-  applyThemeUI(t);
-  try{ if(window.parent!==window&&window.parent.setTheme) window.parent.setTheme(t); }catch(e){}
-  toast(`${t.charAt(0).toUpperCase()+t.slice(1)} theme applied`,"ok");
-}));
 
 /* TB1 — mirrors revue-documentaire.html's SECTIONS requirement statuses (review/
    allocation phase) and compliance.html's REQS/consolidate() (follow-up

@@ -184,12 +184,11 @@ Lignes de `docs/current/` ou de décisions qui se contredisent ; la décision la
 - [US-CFG-05](15-configuration.md#us-cfg-05--régler-le-seuil-de-retard-et-la-cadence-des-relances) — le seuil remplace-t-il les 5 jours fixés par PLAT-008 pour le tableau de bord et les statistiques ; la cadence limite-t-elle les relances manuelles ou pilote-t-elle des relances automatiques (déclencheurs de PLAT-005, OPEN-11).
 - [US-CFG-06](15-configuration.md#us-cfg-06--consulter-le-sous-système-le-produit-et-le-modèle-appliqué) — produits et modèles RSC non fournis (DEC-047, OPEN-15) ; maille de l'OBS du modèle Urban non tranchée.
 - [US-CFG-07](15-configuration.md#us-cfg-07--changer-de-modèle-et-relancer-toute-la-dérivation) — statut des exigences après la relance (à revoir ou à valider) et sort des personnes affectées, des stratégies et des risques — non écrits ; forme du geste de confirmation renforcée ; changement de modèle sur un Turnkey (non décrit ; le champ « Combination » n'existe plus, DEC-126).
-- [US-CFG-10](15-configuration.md#us-cfg-10--choisir-son-thème-clair-ou-sombre) — place d'un réglage personnel dans les paramètres d'un tender (non décidé).
 - [US-CFG-11](15-configuration.md#us-cfg-11--capter-chaque-correction-dune-proposition-de-lia) — destination et anonymisation des retours vers le chantier IA (DEC-020).
 - [US-CFG-12](15-configuration.md#us-cfg-12--consulter-la-qualité-de-lia-dans--ai-feedback-) — formules — dénominateur, revue effective, corrections répétées (PLAT-008 « Corrections IA ») ; définition d'un motif récurrent ; période couverte au-delà de la session.
 - [US-CFG-13](15-configuration.md#us-cfg-13--choisir-le-canal-de-lémetteur-pour-les-questions) — gabarit attendu pour « Buyer portal » et « Standard form », non fourni.
 - [US-CFG-14](15-configuration.md#us-cfg-14--régler-la-numérotation-des-versions-et-la-détection-daddendum) — règle de numérotation (format, alias) ; ce que fait la détection d'addendum — où la proposition apparaît, qui la confirme (aucune règle écrite).
-- [US-CFG-15](15-configuration.md#us-cfg-15--voir-la-langue-de-travail-et-la-langue-source) — modifier la langue source après la capture (non décidé) ; langue de l'interface (seul l'anglais existe, aucune décision produit).
+- [US-CFG-15](15-configuration.md#us-cfg-15--voir-la-langue-de-travail-et-la-langue-source) — modifier la langue source après la capture (non décidé) ; langue de l'interface en français (annoncée « later » dans Settings, aucune décision produit).
 
 ### Transverse : journal, notifications, plateforme
 
@@ -359,12 +358,12 @@ La maquette simule ou diffère ; à corriger dans la maquette ou à ignorer, jam
 - [US-CFG-06](15-configuration.md#us-cfg-06--consulter-le-sous-système-le-produit-et-le-modèle-appliqué) — sur un tender RSC ou « Services », le produit affiche le message prévu pour un Turnkey.
 - [US-CFG-07](15-configuration.md#us-cfg-07--changer-de-modèle-et-relancer-toute-la-dérivation) — la section n'est qu'un affichage — le sélecteur est sans effet, le bouton désactivé et les chiffres viennent d'une copie.
 - [US-CFG-08](15-configuration.md#us-cfg-08--ajouter-un-partenaire-externe-à-la-liste-obs-turnkey) — la couleur des partenaires est hors de l'échelle de jetons.
-- [US-CFG-10](15-configuration.md#us-cfg-10--choisir-son-thème-clair-ou-sombre) — le thème est une valeur de la session de démo, rangée dans les paramètres du tender bien qu'il soit personnel.
+- [US-CFG-10](15-configuration.md#us-cfg-10--choisir-son-thème-clair-ou-sombre) — le thème est une valeur de la session de démo, perdue au rechargement.
 - [US-CFG-11](15-configuration.md#us-cfg-11--capter-chaque-correction-dune-proposition-de-lia) — le texte de la section promet encore une explication demandée quand l'IA était très confiante ; le retour n'est gardé que dans la session.
 - [US-CFG-12](15-configuration.md#us-cfg-12--consulter-la-qualité-de-lia-dans--ai-feedback-) — taux et motifs écrits à la main ; seule la liste de la session est réelle.
 - [US-CFG-13](15-configuration.md#us-cfg-13--choisir-le-canal-de-lémetteur-pour-les-questions) — le réglage n'agit pas sur l'écran Q&A.
 - [US-CFG-14](15-configuration.md#us-cfg-14--régler-la-numérotation-des-versions-et-la-détection-daddendum) — réglages sans effet (« TE2 — demo only »).
-- [US-CFG-15](15-configuration.md#us-cfg-15--voir-la-langue-de-travail-et-la-langue-source) — « Source document language » et « Interface language » sont des listes modifiables sans effet.
+- [US-CFG-15](15-configuration.md#us-cfg-15--voir-la-langue-de-travail-et-la-langue-source) — « Source document language » est une liste modifiable sans effet.
 
 ### Transverse : journal, notifications, plateforme
 

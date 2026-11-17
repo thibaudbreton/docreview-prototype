@@ -215,6 +215,43 @@ html[data-theme="light"] .brand-logo .brand-dark{display:none}
 @keyframes riseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes fadeOnly{from{opacity:0}to{opacity:1}}
 #app{animation:fadeOnly 160ms var(--ease-out)}
+/* ---- Settings (2026-11-17, DEC-128) — the personal, general settings ----
+   Theme and interface language are the person's own, not a tender's: they
+   open from the home header (« Settings » or the avatar), for everyone, before
+   any tender is opened. Same window shape as documents.html's Modal Dialog;
+   same rows as Configuration's Config Field Row; same Theme Picker. */
+.set-back{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:70;display:none;align-items:center;justify-content:center;padding:var(--space-4);animation:fadeOnly var(--motion-base) var(--ease-out)}
+.set-back.on{display:flex}
+.set-win{width:100%;max-width:560px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius-lg);box-shadow:0 24px 80px rgba(0,0,0,.6);padding:var(--space-5);animation:riseIn var(--motion-base) var(--ease-out)}
+.set-head{display:flex;align-items:flex-start;gap:var(--space-3);margin-bottom:var(--space-4)}
+.set-head h3{font-size:var(--text-lg);font-weight:700}
+.set-head p{font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-1);line-height:1.5}
+.set-x{margin-left:auto;width:28px;height:28px;border-radius:var(--radius-md);color:var(--text-3);display:grid;place-items:center;flex-shrink:0}
+.set-x:hover{background:var(--panel-2);color:var(--text)}
+.set-who{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:var(--space-2)}
+.set-who .avatar{cursor:default;flex-shrink:0}
+.set-who b{display:block;font-size:var(--text-base)}
+.set-who span{font-size:var(--text-sm);color:var(--text-3)}
+.set-st{font-size:var(--text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-top:var(--space-4)}
+.set-win .frow{display:flex;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:1px solid var(--line);align-items:center}
+.set-win .frow .fl{flex:1;min-width:0}
+.set-win .frow .flt{font-size:var(--text-base);font-weight:600}
+.set-win .frow .fld{font-size:var(--text-sm);color:var(--text-3);margin-top:var(--space-1);line-height:1.45}
+.set-win .frow .fc{flex-shrink:0}
+.set-win .sel{background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);color:var(--text);outline:none;font-size:var(--text-base);min-width:170px}
+.set-win .sel:focus{border-color:var(--accent)}
+.set-foot{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-5);font-size:var(--text-sm);color:var(--text-3)}
+.set-foot .btn-primary{margin-left:auto}
+.theme-pick{display:inline-flex;gap:8px}
+.theme-opt{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);border-radius:var(--radius-lg);border:1.5px solid var(--line-2);color:var(--text-2);font-size:var(--text-base);font-weight:500;transition:all .15s}
+.theme-opt:hover{border-color:var(--accent);color:var(--text)}
+.theme-opt.on{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
+.theme-opt .sw{width:26px;height:18px;border-radius:var(--radius-sm);border:1px solid var(--line-2)}
+/* Literal previews, not tokens on purpose — this swatch shows both themes'
+   accents at once regardless of which theme is currently active, so it can't
+   read from var(--accent). Keep these in sync with the current --accent values. */
+.theme-opt .sw-dark{background:linear-gradient(135deg,#071A30 50%,#4C82FF 50%)}
+.theme-opt .sw-light{background:linear-gradient(135deg,#ffffff 50%,#0B294A 50%)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* ---- brand touches (22 Sept 2026) ---------------------------------------
    Titles take the heading face. The red is DECORATIVE ONLY: a small mark
@@ -271,9 +308,10 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
     <div class="logo">Smart Req.</div>
     <div class="hdr-r">
       <button class="reset-btn" id="reset-btn" title="Reset the demo to its initial state (for user testing)">↺ Reset demo</button>
+      <button class="btn-ghost" id="settings-btn" title="Settings — theme and interface language, for every tender"><i class=ic-sliders></i> Settings</button>
       <button class="btn-ghost" id="admin-btn" hidden title="Administration — users, every tender, audit, statistics, AI"><i class=ic-shield></i> Admin</button>
       <button class="btn-primary" id="new-btn">＋ New tender</button>
-      <div class="avatar" id="header-avatar">TB</div>
+      <div class="avatar" id="header-avatar" role="button" tabindex="0">TB</div>
     </div>
   </header>
 
@@ -317,6 +355,29 @@ i[class^="ic-"]{display:inline-block;width:1.05em;height:1.05em;vertical-align:-
       <div class="grid" id="grid"></div>
 
     </div>
+  </div>
+</div>
+<!-- Settings (DEC-128) — personal, general settings, opened from the header -->
+<div class="set-back" id="set-back">
+  <div class="set-win" role="dialog" aria-modal="true" aria-labelledby="set-h">
+    <div class="set-head">
+      <div>
+        <h3 id="set-h">Settings</h3>
+        <p>Your own settings. They follow you into every tender and change nothing for anyone else.</p>
+      </div>
+      <button class="set-x" id="set-x" title="Close (Esc)" aria-label="Close">✕</button>
+    </div>
+    <div class="set-who"><div class="avatar" id="set-av">TB</div><div><b id="set-name">Thibaud Breton</b><span id="set-role">Bid Director · signed in with your company account</span></div></div>
+    <div class="set-st">Appearance</div>
+    <div class="frow"><div class="fl"><div class="flt">Theme</div><div class="fld">Light is the default. Dark reduces glare in a dim room.</div></div>
+      <div class="fc"><div class="theme-pick" id="theme-pick">
+        <button class="theme-opt" data-theme="light"><span class="sw sw-light"></span>Light</button>
+        <button class="theme-opt" data-theme="dark"><span class="sw sw-dark"></span>Dark</button>
+      </div></div></div>
+    <div class="set-st">Language</div>
+    <div class="frow"><div class="fl"><div class="flt">Interface language</div><div class="fld">The language of the screens. Requirement texts keep their own; a tender's source and working languages are in its Configuration.</div></div>
+      <div class="fc"><select class="sel" id="set-lang"><option value="en">English</option><option value="fr" disabled>Français — later</option></select></div></div>
+    <div class="set-foot"><span>Changes apply at once.</span><button class="btn-primary" id="set-done">Done</button></div>
   </div>
 </div>
 <div id="toast-zone"></div>
@@ -494,6 +555,38 @@ document.getElementById("reset-btn").addEventListener("click",()=>{
     try{ if(window.parent!==window && window.parent.resetDemo) window.parent.resetDemo(); }catch(e){}
   }
 });
+/* Settings (2026-11-17, DEC-128) — theme and interface language, personal */
+(function(){
+  const back=document.getElementById("set-back");
+  const P=(window.parent!==window)?window.parent:null;
+  function curTheme(){ try{ if(P&&P.getTheme) return P.getTheme(); }catch(e){} return document.documentElement.getAttribute("data-theme")||"light"; }
+  function paint(t){ document.querySelectorAll(".theme-opt").forEach(b=>b.classList.toggle("on",b.dataset.theme===t)); }
+  function open(){
+    try{ const u=(P&&P.getCurrentUser)?P.getCurrentUser():{name:"Thibaud Breton",title:"Bid Director",init:"TB"};
+      document.getElementById("set-av").textContent=u.init;
+      document.getElementById("set-name").textContent=u.name;
+      document.getElementById("set-role").textContent=(u.title?u.title+" · ":"")+"signed in with your company account";
+    }catch(e){}
+    paint(curTheme()); back.classList.add("on");
+    setTimeout(()=>{ const on=document.querySelector(".theme-opt.on"); if(on) on.focus(); },0);
+  }
+  function close(){ back.classList.remove("on"); }
+  document.getElementById("settings-btn").addEventListener("click",open);
+  const av=document.getElementById("header-avatar");
+  av.addEventListener("click",open);
+  av.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } });
+  av.title=(av.title?av.title+" — ":"")+"Settings";
+  document.getElementById("set-x").addEventListener("click",close);
+  document.getElementById("set-done").addEventListener("click",close);
+  back.addEventListener("click",e=>{ if(e.target===back) close(); });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&back.classList.contains("on")) close(); });
+  document.querySelectorAll(".theme-opt").forEach(b=>b.addEventListener("click",()=>{
+    const t=b.dataset.theme; if(t===curTheme()) return;
+    document.documentElement.setAttribute("data-theme",t); paint(t);
+    try{ if(P&&P.setTheme) P.setTheme(t); }catch(e){}
+    toast(`${t.charAt(0).toUpperCase()+t.slice(1)} theme applied`,"ok");
+  }));
+})();
 document.getElementById("howto-btn").addEventListener("click",()=>{
   try{ window.parent.setHomeIntroHidden(false); }catch(e){}
   renderHowto(); document.getElementById("howto").scrollIntoView({behavior:"smooth",block:"center"});

@@ -109,8 +109,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --text-xs
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.avatar`, byte-for-byte identical across every screen that has it (absent from creation-projet.html's header). Background is a hardcoded gradient `linear-gradient(135deg,#e0a43c,#c4763a)`, text hardcoded `#fff`, radius hardcoded `50%` instead of `--radius-pill` — none of this can follow a theme change.
+- **changed**: 2026-11-17
+- **notes**: 2026-11-17 (DEC-128): on the home page the avatar is a button (`role=button`, keyboard Enter/Space) that opens the Settings Window; elsewhere it still does nothing. `.avatar`, byte-for-byte identical across every screen that has it (absent from creation-projet.html's header). Background is a hardcoded gradient `linear-gradient(135deg,#e0a43c,#c4763a)`, text hardcoded `#fff`, radius hardcoded `50%` instead of `--radius-pill` — none of this can follow a theme change.
 
 ### Person Avatar
 - **level**: atom
@@ -1096,13 +1096,13 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 
 ### Theme Picker
 - **level**: molecule
-- **file**: dashboard-et-config.html
-- **variants**: dark option, light option
+- **file**: accueil.html
+- **variants**: light option, dark option
 - **tokens**: --radius-lg, --text-2, --text-base, --space-2, --space-4, --accent, --accent-soft, --text
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-10-09
-- **notes**: 2026-10-09 (legacy cleanup): the swatches use the current theme values — dark #071A30 / #4C82FF, light #ffffff / #0B294A (they still showed #171b24 and #0050E3). `.theme-pick`/`.theme-opt`. Swatch previews are deliberately hardcoded hex gradients per a code comment — they must show both themes' literal accents regardless of which theme is currently active, so they intentionally cannot read from `var(--accent)`.
+- **changed**: 2026-11-17
+- **notes**: 2026-11-17 (DEC-128): moved from Configuration › Appearance to the home page's Settings Window — the theme is personal, not a tender's. CSS and behaviour moved with it (dashboard-et-config.html keeps only applying the theme on load); Light now comes first, as the default. 2026-10-09 (legacy cleanup): the swatches use the current theme values — dark #071A30 / #4C82FF, light #ffffff / #0B294A (they still showed #171b24 and #0050E3). `.theme-pick`/`.theme-opt`. Swatch previews are deliberately hardcoded hex gradients per a code comment — they must show both themes' literal accents regardless of which theme is currently active, so they intentionally cannot read from `var(--accent)`.
 
 ### Config Nav Item
 - **level**: molecule
@@ -1111,8 +1111,8 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **tokens**: --space-2, --space-3, --radius-md, --text-2, --text-base, --accent-soft, --text
 - **built-from**: none
 - **added**: 2026-09-01
-- **changed**: 2026-09-01
-- **notes**: `.cfg-nav-item`, 9 instances form the Config sidebar.
+- **changed**: 2026-11-17
+- **notes**: 2026-11-17 (DEC-128): « Appearance » is gone from the sidebar (10 items). `.cfg-nav-item`, 10 instances form the Config sidebar.
 
 ### Attention List Item
 - **level**: molecule
@@ -1293,7 +1293,17 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 - **changed**: 2026-10-07
 - **notes**: `versionsTabHTML()`. Only shown when the requirement changed in the version of its document in force (DEC-071) — no tab otherwise. No "reviewed / action" state of its own: the change sets the requirement back to To review and validating it is the treatment (DEC-072); the tab says when a more restrictive status (e.g. Incomplete) is what the pill shows. "Show in the document →" ("Open in Compare" until 2026-10-07, DEC-119) opens the Document view on its Changes, at the document and range of the change; not shown when already there. Replaces the Change Card. Depends on untracked `--ia-soft`, `--ok-soft`, `--panel-2`.
 
-### Removed Requirement Panel
+#### Settings Window
+- **level**: organism
+- **file**: accueil.html
+- **variants**: none
+- **tokens**: --panel, --line, --text-3, --accent, --radius-lg, --radius-md, --space-1, --space-3, --space-4, --space-5, --text-xs, --text-sm, --text-base, --text-lg, --font-heading
+- **built-from**: Header Avatar, Theme Picker, Config Field Row (re-implemented under `.set-win`), Select Dropdown, Primary Button, Toast
+- **added**: 2026-11-17
+- **changed**: 2026-11-17
+- **notes**: DEC-128 — the person's own, general settings, reached from the home header (« Settings » or the avatar) by everyone, before any tender is open: who is signed in (name, title, company account), Appearance › Theme (Light / Dark, applied at once with « <Theme> theme applied ») and Language › Interface language (English; « Français — later » disabled). Closes on ✕, « Done », Esc or a click on the backdrop; nothing to save. `.set-back`/`.set-win`: same shape as documents.html's Modal Dialog but a separate copy — backdrop `rgba(0,0,0,.45)` and shadow `0 24px 80px rgba(0,0,0,.6)` hardcoded, max-width 560px hardcoded. Rows re-implement Config Field Row with the label on the left and the control on the right (no 230px column). Uses off-scale `--panel-2`, `--line-2` and the motion tokens (`--motion-base`, `--ease-out`). Section labels (`.set-st`) hardcode `letter-spacing:.06em`.
+
+## Removed Requirement Panel
 - **level**: molecule
 - **file**: revue-documentaire.html
 - **variants**: none
@@ -1558,12 +1568,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### App Header
 - **level**: organism
 - **file**: accueil.html, creation-projet.html, documents.html, qa.html, compliance.html, dashboard-et-config.html, revue-documentaire.html, risks.html, admin.html
-- **variants**: home (logo + reset + primary CTA + avatar), wizard (logo + static crumb + cancel), workspace (logo-link + crumb + nav/icon buttons + avatar), review (adds mode-switch, version pill), compliance (adds Demo Role Switcher, Icon Cluster, Export)
+- **variants**: home (logo + reset + Settings + Admin + primary CTA + avatar), wizard (logo + static crumb + cancel), workspace (logo-link + crumb + nav/icon buttons + avatar), review (adds mode-switch, version pill), compliance (adds Demo Role Switcher, Icon Cluster, Export)
 - **tokens**: --space-4, --space-5, --panel, --line
 - **built-from**: Brand Logo, Primary Button, Ghost Button, Icon Button, Nav Button, Demo / Prototype-Only Control, Header Avatar, Breadcrumb, Tab Bar / Segmented Control, Notification Dot
 - **added**: 2026-09-01
-- **changed**: 2026-11-16
-- **notes**: 2026-11-16 (micro-animations, lot 2): every screen's `#app` fades in on load (160ms), and the shell's own ground follows the theme (light #F4F5FA, dark #071A30, hardcoded in build_merge.py) — it was always dark, so a light screen flashed dark between two routes. 2026-11-16 (DEC-127): home gains « Admin » (shield icon, admins only); « ＋ New tender » shows only to a Tender leader (home and dashboard); admin.html has its own variant — crumb « Administration », « My tenders », avatar. 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req." in text (renamed from "SRM" on 2026-10-19; the header writes it with a full stop, 2026-10-20) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
+- **changed**: 2026-11-17
+- **notes**: 2026-11-17 (DEC-128): home gains « Settings » (ghost button, sliders icon, for everyone), ahead of « Admin »; it and the avatar open the Settings Window. 2026-11-16 (micro-animations, lot 2): every screen's `#app` fades in on load (160ms), and the shell's own ground follows the theme (light #F4F5FA, dark #071A30, hardcoded in build_merge.py) — it was always dark, so a light screen flashed dark between two routes. 2026-11-16 (DEC-127): home gains « Admin » (shield icon, admins only); « ＋ New tender » shows only to a Tender leader (home and dashboard); admin.html has its own variant — crumb « Administration », « My tenders », avatar. 2026-10-09: opens on the Brand Logo, a rule, then "Smart Req." in text (renamed from "SRM" on 2026-10-19; the header writes it with a full stop, 2026-10-20) — the Logo Mark is gone from the header (it stays the favicon), so the note below about re-embedding the SVG logo now applies to the Brand Logo's two PNGs. Fixed 52px height, consistently hardcoded across every screen (the app's one real cross-screen consistency win). Horizontal padding still drifts (`--space-5` in accueil.html vs `--space-4` elsewhere). Every screen re-embeds the same base64 SVG logo (light+dark variants) inline rather than sharing one asset.
 
 ### Triage Bar
 - **level**: organism
@@ -2017,12 +2027,12 @@ This inventory was seeded on 2026-09-01 by reading every screen's source HTML/CS
 ### Config Section
 - **level**: organism
 - **file**: dashboard-et-config.html
-- **variants**: General, Team & contributors, Reminders, Allocation model, Compliance, Appearance, Capture & segmentation, AI feedback, Q&A & submission, Versions, Language (11 total)
+- **variants**: General, Team & contributors, Reminders, Allocation model, Compliance, Capture & segmentation, AI feedback, Q&A & submission, Versions, Language (10 total)
 - **tokens**: --text-lg, --text-base, --text-3, --space-6
 - **built-from**: Warning / Notice Box, Config Field Row
 - **added**: 2026-09-01
-- **changed**: 2026-10-09
-- **notes**: 2026-10-09 (DEC-012): the "Restricted view (Redacted / Hidden)" row is removed from Team & contributors; the save toast names theme, partners and gap strategies only. 2026-10-09 (legacy cleanup): "Workflow & milestones" is "Reminders" (no milestones, DEC-084), and settings the prototype doesn't have are removed — Outdated-response re-flag (DEC-078), AI duplicate detection (DEC-116), Internal review before sending, Contributor notification on version switch, Default translation target. The variants above are the 11 sections as they stand (the list had fallen behind). `.cfg-sec`, the single most-repeated organism shape in the file. Body max-width capped at a hardcoded 680px.
+- **changed**: 2026-11-17
+- **notes**: 2026-11-17 (DEC-128): Appearance removed and Language loses « Interface language » — both are personal and moved to the home page's Settings Window; Language ends on an Option Description Box pointing there. The save toast no longer names the theme. 2026-10-09 (DEC-012): the "Restricted view (Redacted / Hidden)" row is removed from Team & contributors; the save toast names theme, partners and gap strategies only. 2026-10-09 (legacy cleanup): "Workflow & milestones" is "Reminders" (no milestones, DEC-084), and settings the prototype doesn't have are removed — Outdated-response re-flag (DEC-078), AI duplicate detection (DEC-116), Internal review before sending, Contributor notification on version switch, Default translation target. The variants above are the 11 sections as they stand (the list had fallen behind). `.cfg-sec`, the single most-repeated organism shape in the file. Body max-width capped at a hardcoded 680px.
 
 ### Team & Experts Config Editor
 - **level**: organism

@@ -1,16 +1,16 @@
 <!-- Généré depuis le backlog du 10 octobre 2026 ; voir README.md pour les conventions. -->
 # Paramètres du tender (US-CFG)
 
-L'écran Configuration réunit les réglages d'un tender en onze sections — General, Team & contributors, Reminders, Allocation model, Compliance, Appearance, Capture & segmentation, AI feedback, Q&A & submission, Versions, Language — et s'ouvre par la roue dentée de l'en-tête (route `#config`). Parcours JRN-007 : ne montrer que des réglages réellement appliqués. Certains choix sont figés à la création et seulement affichés : ligne produit, produit, mode d'assistance IA (DEC-049, DEC-095) ; la région du tender, saisie à la création, s'affiche dans General (DEC-126). Deux sections sont décrites ailleurs : la liste des stratégies d'écart (section Compliance) dans [US-RSK-01](10-risques.md#us-rsk-01--écrire-les-stratégies-décart-du-tender) à [US-RSK-03](10-risques.md#us-rsk-03--changer-le-résultat-dune-stratégie-déjà-utilisée), les réglages de conversion et le signal de découpe incertaine (section Capture & segmentation) dans [US-CAP-02](04-capture-ia.md#us-cap-02--régler-la-conversion-du-document-source) et [US-CAP-05](04-capture-ia.md#us-cap-05--signaler-une-découpe-incertaine). Termes : *modèle d'allocation* = ce qui dérive ABS → PBS → OBS pour un produit ; *partenaire externe* = entreprise ajoutée comme sous-système à la liste OBS d'un Turnkey. Point ouvert commun : qui peut modifier quels paramètres (JRN-007, OPEN-05) — seuls les stratégies et les partenaires sont attribués au tender manager par décision ; le thème est personnel.
+L'écran Configuration réunit les réglages d'un tender en dix sections — General, Team & contributors, Reminders, Allocation model, Compliance, Capture & segmentation, AI feedback, Q&A & submission, Versions, Language — et s'ouvre par la roue dentée de l'en-tête (route `#config`). Parcours JRN-007 : ne montrer que des réglages réellement appliqués. Certains choix sont figés à la création et seulement affichés : ligne produit, produit, mode d'assistance IA (DEC-049, DEC-095) ; la région du tender, saisie à la création, s'affiche dans General (DEC-126). Deux sections sont décrites ailleurs : la liste des stratégies d'écart (section Compliance) dans [US-RSK-01](10-risques.md#us-rsk-01--écrire-les-stratégies-décart-du-tender) à [US-RSK-03](10-risques.md#us-rsk-03--changer-le-résultat-dune-stratégie-déjà-utilisée), les réglages de conversion et le signal de découpe incertaine (section Capture & segmentation) dans [US-CAP-02](04-capture-ia.md#us-cap-02--régler-la-conversion-du-document-source) et [US-CAP-05](04-capture-ia.md#us-cap-05--signaler-une-découpe-incertaine). Termes : *modèle d'allocation* = ce qui dérive ABS → PBS → OBS pour un produit ; *partenaire externe* = entreprise ajoutée comme sous-système à la liste OBS d'un Turnkey. Point ouvert commun : qui peut modifier quels paramètres (JRN-007, OPEN-05) — seuls les stratégies et les partenaires sont attribués au tender manager par décision. Le thème et la langue de l'interface, personnels, ne sont plus ici : ils sont dans Settings, depuis l'accueil (DEC-128).
 
 ### US-CFG-01 — Ouvrir les paramètres et n'y trouver que des réglages réels
 **Carte :** En tant que tender manager, je veux ouvrir les paramètres du tender et les parcourir par section, en sachant que chaque réglage affiché agit vraiment, afin de régler le tender sans me fier à des contrôles décoratifs.
-**Conversation :** JRN-007 demande de distinguer les paramètres réellement appliqués de ceux seulement représentés : dans le produit, un réglage n'est livré que lorsque son effet est écrit. Un réglage enregistré est conservé (PLAT-001) et vaut pour tous les membres du tender, sauf le thème, personnel ([US-CFG-10](#us-cfg-10--choisir-son-thème-clair-ou-sombre)). Les sections Compliance et Capture & segmentation sont détaillées dans US-RSK et US-CAP. Les bandeaux « demo only » de la maquette ne font pas partie du produit.
+**Conversation :** JRN-007 demande de distinguer les paramètres réellement appliqués de ceux seulement représentés : dans le produit, un réglage n'est livré que lorsque son effet est écrit. Un réglage enregistré est conservé (PLAT-001) et vaut pour tous les membres du tender. Les réglages personnels (thème, langue de l'interface) sont hors du tender, dans Settings ([US-CFG-10](#us-cfg-10--choisir-son-thème-clair-ou-sombre), DEC-128). Les sections Compliance et Capture & segmentation sont détaillées dans US-RSK et US-CAP. Les bandeaux « demo only » de la maquette ne font pas partie du produit.
 **Maquette :** Configuration — `dashboard-et-config.html` (route `#config`), Config Sidebar Nav, Config Section, boutons « Save configuration » / « Discard changes ».
 **Règles :** JRN-007, PLAT-001, PLAT-002, DEC-035, DEC-084, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. La roue dentée « Tender configuration » de l'en-tête ouvre les paramètres du tender ouvert ; le bouton « Dashboard » ramène au tableau de bord.
-2. La navigation liste, dans cet ordre, General, Team & contributors, Reminders, Allocation model, Compliance, Appearance, Capture & segmentation, AI feedback, Q&A & submission, Versions, Language ; cliquer une section l'affiche.
+2. La navigation liste, dans cet ordre, General, Team & contributors, Reminders, Allocation model, Compliance, Capture & segmentation, AI feedback, Q&A & submission, Versions, Language ; cliquer une section l'affiche.
 3. Aucun réglage n'est affiché s'il ne change rien au tender.
 4. Un réglage enregistré est retrouvé à la réouverture, depuis un autre poste et par les autres membres du tender.
 5. Aucun réglage de jalon ou de verrou n'existe : ni « Enforce full validation before export », ni « Allocation completeness gate ».
@@ -128,17 +128,18 @@ Point ouvert : statut des exigences après la relance (à revoir ou à valider) 
 
 ### US-CFG-10 — Choisir son thème clair ou sombre
 **Carte :** En tant que contributeur ou tender manager, je veux choisir un thème clair ou sombre pour toute l'application, afin de travailler confortablement selon la salle et l'écran.
-**Conversation :** Le thème est une préférence personnelle : il ne change rien pour les autres membres du tender. Le clair est le défaut. Les deux thèmes gardent les mêmes sens de couleur ([US-X-14](16-transverse.md#us-x-14--lire-des-couleurs-qui-gardent-toujours-le-même-sens)).
-**Maquette :** Configuration — `dashboard-et-config.html` (route `#config`), section Appearance (Theme Picker).
-**Règles :** DEC-063, PLAT-001, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
+**Conversation :** Le thème est une préférence personnelle : il ne change rien pour les autres membres du tender. Il se règle donc hors de tout tender, dans **Settings**, ouvert depuis l'en-tête de l'accueil (DEC-128) ; la story garde son identifiant. Le clair est le défaut. Les deux thèmes gardent les mêmes sens de couleur ([US-X-14](16-transverse.md#us-x-14--lire-des-couleurs-qui-gardent-toujours-le-même-sens)).
+**Maquette :** Accueil — `accueil.html` (route `#home`), en-tête « Settings » ou avatar › Settings Window, rubrique Appearance (Theme Picker).
+**Règles :** DEC-063, PLAT-001, DEC-126, DEC-128  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
-1. « Appearance » propose « Dark » et « Light », le thème en cours étant marqué.
-2. Choisir un thème l'applique tout de suite à tous les écrans, avec « <Theme> theme applied ».
-3. Le thème choisi est retrouvé à la connexion suivante, sur tout poste.
-4. Le choix d'un utilisateur ne change pas le thème des autres.
-5. Un utilisateur qui n'a jamais choisi voit le thème clair.
-Écart maquette : le thème est une valeur de la session de démo, rangée dans les paramètres du tender bien qu'il soit personnel.
-Point ouvert : place d'un réglage personnel dans les paramètres d'un tender (non décidé).
+1. Sur l'accueil, « Settings » (ou l'avatar) ouvre la fenêtre Settings, ouverte à tout le monde ; sa rubrique « Appearance » propose « Light » et « Dark », le thème en cours étant marqué.
+2. ✕, « Done », Échap ou un clic hors de la fenêtre la ferment ; il n'y a rien à enregistrer.
+3. La Configuration d'un tender ne propose plus de thème.
+4. Choisir un thème l'applique tout de suite à tous les écrans, avec « <Theme> theme applied ».
+5. Le thème choisi est retrouvé à la connexion suivante, sur tout poste.
+6. Le choix d'un utilisateur ne change pas le thème des autres.
+7. Un utilisateur qui n'a jamais choisi voit le thème clair.
+Écart maquette : le thème est une valeur de la session de démo, perdue au rechargement.
 
 ### US-CFG-11 — Capter chaque correction d'une proposition de l'IA
 **Carte :** En tant que tender manager, je veux que chaque correction d'une proposition de l'IA soit enregistrée sans geste supplémentaire, afin d'améliorer les prochains modèles sans ralentir l'équipe.
@@ -198,16 +199,17 @@ Point ouvert : règle de numérotation (format, alias) ; ce que fait la détecti
 
 ### US-CFG-15 — Voir la langue de travail et la langue source
 **Carte :** En tant que tender manager, je veux voir que la langue de travail du tender est l'anglais et dans quelle langue sont ses documents, afin de savoir ce qui est traduit et ce qui part au client.
-**Conversation :** L'anglais est la langue de travail, fixe : un texte source dans une autre langue est traduit automatiquement en anglais et l'original est conservé (DEC-019, LANG-001 ; traduction : [US-CAP-07](04-capture-ia.md#us-cap-07--traduire-automatiquement-vers-langlais-de-travail)). Un tender n'a qu'une langue source, choisie à la création (DEC-096, [US-NEW-04](02-creation.md#us-new-04--déclarer-la-langue-source-unique-du-tender)). L'interface reste en anglais.
-**Maquette :** Configuration — `dashboard-et-config.html` (route `#config`), section Language (« Working language », « Source document language »).
-**Règles :** LANG-001, LANG-002, DEC-019, DEC-096, DEC-126  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
+**Conversation :** L'anglais est la langue de travail, fixe : un texte source dans une autre langue est traduit automatiquement en anglais et l'original est conservé (DEC-019, LANG-001 ; traduction : [US-CAP-07](04-capture-ia.md#us-cap-07--traduire-automatiquement-vers-langlais-de-travail)). Un tender n'a qu'une langue source, choisie à la création (DEC-096, [US-NEW-04](02-creation.md#us-new-04--déclarer-la-langue-source-unique-du-tender)). La langue de l'interface, personnelle, n'est pas un réglage du tender : elle est dans Settings, depuis l'accueil (DEC-128) ; elle reste l'anglais, le français y est annoncé « later ».
+**Maquette :** Configuration — `dashboard-et-config.html` (route `#config`), section Language (« Working language », « Source document language »), et Accueil — `accueil.html`, Settings Window, rubrique Language.
+**Règles :** LANG-001, LANG-002, DEC-019, DEC-096, DEC-126, DEC-128  ·  **Périmètre :** Pilote 1  ·  **Variantes :** Toutes
 **Critères d'acceptation :**
 1. « Working language » affiche « English » en lecture seule, avec « Not editable — translation always goes into English. ».
 2. La langue source du tender s'affiche telle que choisie à la création.
 3. Aucun réglage « Default translation target » n'est proposé.
 4. Aucun réglage ne permet de déclarer plusieurs langues sources pour un même tender.
-Écart maquette : « Source document language » et « Interface language » sont des listes modifiables sans effet.
-Point ouvert : modifier la langue source après la capture (non décidé) ; langue de l'interface (seul l'anglais existe, aucune décision produit).
+5. La section Language du tender ne propose pas de langue d'interface ; elle renvoie à Settings.
+Écart maquette : « Source document language » est une liste modifiable sans effet.
+Point ouvert : modifier la langue source après la capture (non décidé) ; langue de l'interface en français (annoncée « later » dans Settings, aucune décision produit).
 
 ## Couverture
 - Règles couvertes : JRN-007 → [US-CFG-01](#us-cfg-01--ouvrir-les-paramètres-et-ny-trouver-que-des-réglages-réels), [US-CFG-02](#us-cfg-02--consulter-les-informations-générales-du-tender) ; PLAT-001 → [US-CFG-01](#us-cfg-01--ouvrir-les-paramètres-et-ny-trouver-que-des-réglages-réels), [US-CFG-03](#us-cfg-03--régler-léchéance-de-soumission), [US-CFG-10](#us-cfg-10--choisir-son-thème-clair-ou-sombre) ; PLAT-002 → [US-CFG-01](#us-cfg-01--ouvrir-les-paramètres-et-ny-trouver-que-des-réglages-réels), [US-CFG-09](#us-cfg-09--retirer-un-partenaire-externe) ; PLAT-003 → [US-CFG-07](#us-cfg-07--changer-de-modèle-et-relancer-toute-la-dérivation), [US-CFG-11](#us-cfg-11--capter-chaque-correction-dune-proposition-de-lia) ; PLAT-005 → [US-CFG-05](#us-cfg-05--régler-le-seuil-de-retard-et-la-cadence-des-relances) (lien avec les relances, point ouvert) ; PLAT-008 « Corrections IA » → [US-CFG-11](#us-cfg-11--capter-chaque-correction-dune-proposition-de-lia), [US-CFG-12](#us-cfg-12--consulter-la-qualité-de-lia-dans--ai-feedback-) ; DOM-013 → [US-CFG-11](#us-cfg-11--capter-chaque-correction-dune-proposition-de-lia).
