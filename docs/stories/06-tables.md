@@ -248,7 +248,7 @@ Point ouvert : « un Not compliant sans déclaration » (DEC-085) date d'avant l
 4. Sans action à annuler, ⌘/Ctrl+Z affiche « Nothing to undo » et ne change rien.
 5. Annuler une action groupée la défait sur toutes les lignes concernées en une fois.
 6. Le curseur dans un champ texte, ⌘/Ctrl+Z annule la saisie du champ et aucune action de la table.
-Écart maquette : dans Allocation, seule l'assignation faite dans la cellule « PIC » d'une ligne s'annule, pas l'assignation groupée ni celle du panneau ; les annulations possibles sont perdues en quittant l'écran.
+Écart maquette : depuis le 13 novembre 2026, Allocation annule toutes les corrections, au-delà de la liste ci-dessus : ABS ou PBS (avec ce qu'ils effacent), rôle ajouté ou retiré, personne sur un rôle, changement de nature ou de classe, actions groupées dont la suppression. Les annulations possibles sont perdues en quittant l'écran ; la maquette demande confirmation avant de le quitter avec des modifications.
 Point ouvert : portée de l'annulation côté serveur — après un rechargement, ou quand une autre personne a modifié la même exigence entre-temps (DEC-085 décrit le geste, pas sa portée).
 
 ### US-TAB-19 — Consulter l'aide clavier au survol

@@ -13,7 +13,7 @@
 | ACC-007 | Un contributeur peut **tout consulter dans son tender**, mais ne peut pas modifier les autres sous-systèmes. Aucun accès aux tenders dont il n'est pas membre n'est déduit. | DEC-012 |
 | ACC-008 | TM : staffing du tender, sur l'écran Users. Contributeurs : gestion des rattachements dans leur sous-système. Aucun manager de sous-système obligatoire. | DEC-003, DEC-126 |
 | ACC-009 | Tous les contributeurs du sous-système peuvent répondre ; la personne responsable de l'exigence, si désignée, garde le suivi. | DEC-002/010 |
-| ACC-010 | Pas de hiérarchie de permissions entre contributeurs d'un sous-système ; hiérarchie organisationnelle hors SRM. | DEC-012 |
+| ACC-010 | Pas de hiérarchie de permissions entre contributeurs d'un sous-système ; hiérarchie organisationnelle hors Smart Req. | DEC-012 |
 | ACC-011 | Le TM peut saisir et modifier directement des réponses. Il ne verrouille plus rien ; il peut **corriger la conformité externe dérivée**, motif obligatoire et visible (DEC-106). | DEC-013/106 |
 | ACC-012 | **Le type et la classe d'une exigence appartiennent au tender manager.** Un contributeur (le responsable d'un sous-système) les voit mais ne peut pas les modifier — ni dans le détail, ni dans la table, ni par l'action groupée « Classify », ni dans la vue Document. Ils déterminent ce que le modèle dérive pour chaque sous-système. | DEC-086, DEC-126 |
 | ACC-013 | **Un contributeur ne modifie rien sur une exigence dont aucun sous-système ne lui est assigné** : il la lit (type, classe, allocation de chaque sous-système), sans aucun contrôle actif, dans le panneau comme dans la table. | DEC-100 |

@@ -9,57 +9,54 @@ Tracks the last completed run of the "Keep specs current" scheduled routine
 fixes unambiguous drift directly or opens a GitHub issue for anything
 ambiguous — see the routine's prompt for the full procedure).
 
-- Last run: 2026-09-23T22:09Z (covered commits from `314d2a5` through
-  `ccf3bb4`). Most of that range is the previous run landing and a
-  same-day reconciliation merge (`c07f072`, `db8fa39`, `ccf3bb4`) that
-  touch only this file — already accounted for by the 2026-09-21 entry
-  below, not re-derived. The only new content is two commits from the
-  `nature-field-placement` branch, merged via `db8fa39`.
-- Findings this run:
-  - `9435d3f` ("Nature goes above the qualification block, and its label
-    is a label again", DEC — repositions the Nature field above the
-    derivation chain on both the manager panel and the contributor view
-    in `revue-documentaire.html`, and moves its explanation out of the
-    label into a hint line) updates `docs/current/ALLOCATION.md` (ALLOC-017
-    gains a "Où elle se place" paragraph) in the same commit as the code.
-    Checked the diff against the doc addition line by line — order,
-    label text, and hint placement all match what shipped. Consistent,
-    no action needed.
-  - `b2ac7af` ("Advanced capture settings in the project configuration")
-    adds four conversion settings (conversion range, table conversion
-    format, sentences in paragraphs, equation format) to
-    `dashboard-et-config.html`, renames the "AI & segmentation" section
-    to "Capture & segmentation", and wires the table-format →
-    granularity dependency and the specific-pages field — all in the
-    same commit as new `docs/current/CAPTURE.md` (CAPT-T01–T04) and the
-    `docs/current/README.md` index entry. Checked the code diff against
-    CAPTURE.md's description of the section rename, field order, and the
-    two open questions it flags (granularity-vs-Image, whether settings
-    can change post-capture) — matches. Consistent, no action needed.
-  - **#20 (compliance model reversal) — still open, still not ours to
-    close.** No commit in `314d2a5..ccf3bb4` touches `COMPLIANCE.md`,
-    `DOMAIN.md`, `ACCESS.md`, `LIFECYCLE.md`, `PLATFORM.md`, or
-    `DECISIONS.md`. Confirmed via the issue thread that the only comment
-    since the last run's check is that run's own citation comment
-    (2026-09-21T22:05Z) — nothing has moved. Re-checked, not re-flagged.
-  - **#12 still open, unaddressed.** No commit this run touches
-    `docs/Faire`, `docs/SPEC-qa-screen.md`,
-    `docs/TICKET-casting-screen-redesign.md`, or
-    `docs/USER-TEST-session-3_2.md`. Re-checked, not re-flagged.
-  - **#15 still open, PR #14 still open and still conflicting**
-    (`mergeable_state: dirty`, no new commits or comments since
-    2026-09-08). No commit this run touches
-    `docs/specs/SPEC-translation.md`, `TICKETS-prototype-batch6.md`, or
-    adds a `docs/decisions/` entry for the pipeline-timing sign-off.
-    Re-checked, not re-flagged.
-  - Noted, not acted on: PR #24 (superseded, per the last run) is closed;
-    two unrelated open PRs, #25 and #26 (duplicate unmerged branches,
-    TH1), predate this run's window and touch neither specs nor
-    decisions — left untouched.
-- Baseline for the next run: commits after `ccf3bb4` (2026-09-23T22:09Z),
-  and #12 (still open, 2026-08-30), #15 (still open, 2026-09-07) plus
-  PR #14 (still open, conflicting), and #20 (still open, 2026-09-15,
-  last comment 2026-09-21) — check whether `COMPLIANCE.md`, `DOMAIN.md`,
-  `ACCESS.md`, `LIFECYCLE.md`, `PLATFORM.md`, or `DECISIONS.md` D6/D8 have
-  been brought in line with DEC-028/031/039 before re-flagging, and close
-  #20 once they have.
+- Last run: 2026-11-17T22:00Z (covered commits from `ccf3bb4` through
+  `3c07d9f`, 139 commits). The runs from 09-27 to 10-20 never landed:
+  their PRs (#27, #29–#36) were closed unmerged and without comment in
+  one cleanup on 2026-11-17. So this run starts from the last landed
+  baseline. Those runs found
+  `docs/current` in step for DEC-063–125; this run re-checked that span
+  briefly and looked closely at everything after 2026-10-14
+  (`c4d7e3b`..`3c07d9f`). Linear could not be reached (connector refused
+  by the proxy); GitHub issues and PRs were checked.
+- Consistent, no action needed: nearly every decision in the range
+  landed in its spec in the same commit — DEC-126 vocabulary (`d500869`),
+  Administration DEC-137 (`5e346fb`, `a369225`), Settings DEC-138
+  (`ec800ec`), the notification plan DEC-127–136 (`10b4aa0`, `f7a5b51`,
+  new `docs/current/NOTIFICATIONS.md`), the creation processing panel
+  (`59f9466`, stories/02). The micro-animations (`f400b62`..`0ec0ebe`),
+  the chevron + count control (`b2cc6a0`) and the header full stop
+  (`4bf3926`) are visual only. Showing the tender chat again (`57d4918`,
+  `1277fa1`) is a demo choice and does not contradict "REX/Chat out of
+  V1" (DEC-021). The unsaved-work prompt in `1356e23` protects the
+  prototype only (it stores nothing), so no spec change.
+- Fixed directly (low risk, factual):
+  - Tool rename to "Smart Req" (`c4d7e3b`): four references to "SRM" as
+    the tool name were left over — `docs/current/ACCESS.md` ACC-010,
+    `docs/current/QA.md` QA-003, `docs/stories/15-configuration.md`
+    (issuer channel, criterion 5) and the `docs/GLOSSARY.md` title.
+    Changed to "Smart Req". (The 10-20 run, PR #36, made the same fix;
+    it was closed in the cleanup above, with no review comment.) Requirement IDs
+    (`SRM-00001`…) keep that prefix, as the rename commit says.
+  - `docs/stories/16-transverse.md` US-X-08, mockup gap note: it said no
+    file is produced. Since `1356e23` the CSV export writes a real file
+    (the table as it stands). The note now says only the CSV is really
+    written and the other formats are only announced.
+  - `docs/stories/06-tables.md` US-TAB-18, mockup gap note: it said only
+    the PIC cell assignment could be undone in Allocation. Since `1356e23`
+    every Allocation correction can be undone (ABS/PBS, roles, people,
+    nature/class, bulk actions including delete), and leaving the screen
+    asks for confirmation first. The note now describes that. The story's
+    Conversation list of undoable actions was **not** extended: that is a
+    product decision, not a doc fix.
+- Open issues re-checked:
+  - **#20 still open.** No commit in the range brings `COMPLIANCE.md`
+    (intro table, CONF-003/005/006/007/013/014, the transition table,
+    CONF-T05/T06), `DOMAIN.md`, `ACCESS.md` ACC-011, `LIFECYCLE.md`,
+    `PLATFORM.md` or `docs/decisions/DECISIONS.md` D6/D8 in line with
+    DEC-028/031/039. Last comment 2026-10-14. Re-checked, not re-flagged.
+  - **#12** (2026-08-30) and **#15** (2026-09-07) still open, no change;
+    no commit touches the files they cite. #28 was closed on 2026-10-14.
+  - Open PR #38 (TH1 padding) touches no spec. Noted, not acted on.
+- Baseline for the next run: commits after `3c07d9f` (2026-11-17), plus
+  #12, #15 and #20. Close #20 once the compliance specs follow
+  DEC-028/031/039.
