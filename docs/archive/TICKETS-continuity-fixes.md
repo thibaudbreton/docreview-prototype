@@ -4,6 +4,10 @@
 >
 > **Group H (added 2026-08-20) is a separate, currently OPEN batch** — a vertical-space/UX-density audit, unrelated to the continuity/consistency fixes above. It reuses this file only because its ticket-queue heading is what the unattended nightly routine (`docs/prompts/PROMPT-nightly-ticket-routine.md`) matches on. Treat Group H's unchecked boxes as live work the routine may pick up.
 
+## Run log
+
+- **2026-11-23 (scheduled run)** — Completed: TH1. Blocked: none. Remaining untouched: TH2, TH3, TH4, TH5, TH6.
+
 > **Note (automated queue routine, 2026-08-13):** added `- [ ]`/`- [x]` checkboxes to each ticket below so this queue can drive the automated routine. Checked state mirrors the existing "DONE" markers; nothing about ticket content changed.
 
 > Consolidated from three audit passes (ad-hoc functional audit, `workflow-continuity-audit`, `journey-experience-audit`) run on 2026-08-13. Prototype / UI-only: fixes are about making the demo internally consistent and trustworthy for moderated user testing, not about production hardening. Build in order within each group; groups themselves are roughly ordered by how much they block a credible test session. Aligns with `SPEC-domain-model.md`, `SPEC-review-table.md`, `TICKETS-followup-workflow.md`.
@@ -172,7 +176,8 @@ Original ticket text, for reference:
 
 Test participants run the prototype on laptops with limited vertical screen real estate (Windows taskbar + Chrome tab/URL/bookmarks bars eating ~150-180px before the page even starts). Audited every screen and several reusable sub-components in a Chrome viewport of 1366×650 — a realistic worst case for this environment — measuring actual DOM heights rather than eyeballing. Two full audit passes: one across the six main screens, one across shared components (nav columns, detail panels, dropdowns, bulk-action bar, form fields). Findings below are ordered by how much visible content they cost on a constrained screen; Follow-up (TH3) is by far the worst offender. Not itself a continuity/consistency issue like Groups A–G — a straight information-density problem.
 
-- [ ] **TH1 — Drop the unjustified 80px bottom padding on Home and Dashboard**
+- [x] **TH1 — Drop the unjustified 80px bottom padding on Home and Dashboard**
+  > Done 2026-11-23: `.wrap` bottom padding 80px → `var(--space-8)` (32px) in `accueil.html` and `dashboard-et-config.html` (only transient toasts float on these screens); merged file rebuilt, `node --check` clean, 0 dead hrefs.
   Files: `accueil.html` (`.wrap`, line 58), `dashboard-et-config.html` (`.wrap`, line 100).
   `.wrap{padding:...80px}` on both files reserves 80px of trailing whitespace at the end of every scroll. That padding value is copied from `revue-documentaire.html`/`suivi-experts-et-versions.html`'s `.doc-scroll`, where it's load-bearing — it stops the last table row from being hidden behind the floating `.sel-bar` bulk-action bar. Neither Home nor Dashboard has any floating element covering their bottom edge, so on these two screens it's just 80px of dead space. Measured on Dashboard: total content is 949px against 598px of usable height (header deducted) on a 650px-tall viewport — this padding alone is ~9% of that overflow.
   Fix: reduce to `var(--space-6)` (24px) or `var(--space-8)` (32px) on both files' `.wrap`.
